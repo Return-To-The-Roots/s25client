@@ -1,6 +1,4 @@
-﻿// $Id: iwTools.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -44,23 +42,23 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-iwTools::iwTools(void)                      // qx:tools
+iwTools::iwTools(void)
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
       settings_changed(false)
 {
     // Einzelne Balken
-    AddProgress( 0, 17,  25, 132, 26, TC_GREY, 141, 140, 5, _("Tongs"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 1, 17,  53, 132, 26, TC_GREY, 145, 144, 5, _("Axe"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 2, 17,  81, 132, 26, TC_GREY, 147, 146, 5, _("Saw"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 3, 17, 109, 132, 26, TC_GREY, 149, 148, 5, _("Pick-axe"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 4, 17, 137, 132, 26, TC_GREY, 143, 142, 5, _("Hammer"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 5, 17, 165, 132, 26, TC_GREY, 151, 150, 5, _("Shovel"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 6, 17, 193, 132, 26, TC_GREY, 153, 152, 5, _("Crucible"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 7, 17, 221, 132, 26, TC_GREY, 155, 154, 5, _("Rod and line"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 8, 17, 249, 132, 26, TC_GREY, 157, 156, 5, _("Scythe"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 9, 17, 277, 132, 26, TC_GREY, 159, 158, 5, _("Cleaver"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress(10, 17, 305, 132, 26, TC_GREY, 161, 160, 5, _("Rolling pin"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress(11, 17, 333, 132, 26, TC_GREY, 163, 162, 5, _("Bow"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 0, 17,  25, 132, 26, TC_GREY, 141, 140, 10, _("Tongs"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 1, 17,  53, 132, 26, TC_GREY, 145, 144, 10, _("Axe"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 2, 17,  81, 132, 26, TC_GREY, 147, 146, 10, _("Saw"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 3, 17, 109, 132, 26, TC_GREY, 149, 148, 10, _("Pick-axe"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 4, 17, 137, 132, 26, TC_GREY, 143, 142, 10, _("Hammer"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 5, 17, 165, 132, 26, TC_GREY, 151, 150, 10, _("Shovel"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 6, 17, 193, 132, 26, TC_GREY, 153, 152, 10, _("Crucible"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 7, 17, 221, 132, 26, TC_GREY, 155, 154, 10, _("Rod and line"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 8, 17, 249, 132, 26, TC_GREY, 157, 156, 10, _("Scythe"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress( 9, 17, 277, 132, 26, TC_GREY, 159, 158, 10, _("Cleaver"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress(10, 17, 305, 132, 26, TC_GREY, 161, 160, 10, _("Rolling pin"), 4, 4, 0, _("Less often"), _("More often"));
+    AddProgress(11, 17, 333, 132, 26, TC_GREY, 163, 162, 10, _("Bow"), 4, 4, 0, _("Less often"), _("More often"));
 
     if (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING))
     {
@@ -82,7 +80,7 @@ iwTools::iwTools(void)                      // qx:tools
     AddImageButton(13, 118 + (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
-    for(unsigned char i = 0; i < 12; ++i)
+    for(unsigned char i = 0; i < TOOL_COUNT; ++i)
         GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
 
     // Netzwerk-Übertragungs-Timer
@@ -100,9 +98,8 @@ void iwTools::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        for(unsigned char i = 0; i < 12; ++i)
-            GAMECLIENT.visual_settings.tools_settings[i] =
-                (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
+        for(unsigned char i = 0; i < TOOL_COUNT; ++i)
+            GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
         GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer()->tools_ordered_delta);
 

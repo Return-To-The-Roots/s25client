@@ -1,6 +1,4 @@
-﻿// $Id: nofScout_LookoutTower.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,8 +22,7 @@
 /// Späher, der in einem Spähturm "arbeitet"
 class nofScout_LookoutTower : public nofBuildingWorker
 {
-    private:
-
+    protected:
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
         void WalkedDerived();
         /// Malt den Arbeiter beim Arbeiten
@@ -37,6 +34,7 @@ class nofScout_LookoutTower : public nofBuildingWorker
         /// Arbeitsplatz wurde erreicht
         void WorkplaceReached();
 
+        bool AreWaresAvailable() override;
 
     public:
 

@@ -1,6 +1,4 @@
-﻿// $Id: iwSettings.h
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,7 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "../driver/src/VideoDriver.h"
+#include "driver/src/VideoInterface.h"
 
 #include "desktops/dskGameInterface.h"
 
@@ -35,10 +33,9 @@ class iwSettings : public IngameWindow
         ~iwSettings();
 
     private:
-        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoMode> video_modes; ///< Vector für die Auflösungen
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
         void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
-        dskGameInterface* gameDesktop;
 };
 
 #endif // !iwSETTINGS_H_INCLUDED

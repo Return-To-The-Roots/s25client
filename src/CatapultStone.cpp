@@ -1,6 +1,4 @@
-﻿// $Id: CatapultStone.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -149,7 +147,7 @@ void CatapultStone::HandleEvent(const unsigned int id)
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
             if(!gwg->GetSpecObj<noBase>(dest_map))
-                gwg->SetNO(new noEnvObject(dest_map, 502 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)), dest_map);
+                gwg->SetNO(new noEnvObject(dest_map, 502 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)), dest_map);
         }
     }
 }

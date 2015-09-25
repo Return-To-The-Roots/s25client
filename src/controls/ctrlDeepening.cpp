@@ -1,6 +1,4 @@
-﻿// $Id: ctrlDeepening.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -49,14 +47,12 @@ ctrlDeepening::ctrlDeepening(Window* parent,
                              glArchivItem_Font* font,
                              unsigned int color)
     : ctrlText(parent, id, x, y, text, color, 0, font),
-      tc(tc)
+    tc(tc)
 {
     // We don't want to pass these through all those constructors
-    // of only-text objects down to the Window class. This is a special
-    // situation, as we are a Deepening _and_ a VarText instead
-    // of owning the VarText.
-    this->width  = width;
-    this->height = height;
+    // of only-text objects down to the Window class.
+    this->width_ = width;
+    this->height_ = height;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,9 +63,9 @@ ctrlDeepening::ctrlDeepening(Window* parent,
  */
 bool ctrlDeepening::Draw_(void)
 {
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
-    font->Draw(GetX() + width / 2, GetY() + height / 2, text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 
     DrawContent();
 
@@ -91,8 +87,6 @@ ctrlColorDeepening::ctrlColorDeepening(Window* parent,
                                        TextureColor tc,
                                        unsigned int fillColor)
     : ctrlDeepening(parent, id, x, y, width, height, tc, "", NormalFont, COLOR_YELLOW),
-      width(width),
-      height(height),
       fillColor(fillColor)
 {
 }
@@ -111,5 +105,5 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
  */
 void ctrlColorDeepening::DrawContent(void) const
 {
-    DrawRectangle(x + 3, y + 3, width - 6, height - 6, fillColor);
+    DrawRectangle(x_ + 3, y_ + 3, width_ - 6, height_ - 6, fillColor);
 }

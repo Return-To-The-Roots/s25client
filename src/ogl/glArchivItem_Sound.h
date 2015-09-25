@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Sound.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -30,7 +28,8 @@ class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
         /// Konstruktor von @p glArchivItem_Sound.
         glArchivItem_Sound(void);
         /// Kopiekonstruktor von @p glArchivItem_Sound.
-        glArchivItem_Sound(const glArchivItem_Sound* item);
+        glArchivItem_Sound(const glArchivItem_Sound& obj);
+        glArchivItem_Sound& operator=(const glArchivItem_Sound& obj);
 
         /// Destruktor von @p glArchivItem_Sound.
         virtual ~glArchivItem_Sound(void);
@@ -39,7 +38,8 @@ class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
         virtual unsigned Play(const unsigned char volume, const bool loop) = 0;
 
     protected:
-        Sound* sound; ///< Der Sound.
+        /// Handle to the sound, managed by driver, hence safe to copy
+        Sound* sound;
 };
 
 #endif // !GLARCHIVITEM_SOUND_INCLUDED

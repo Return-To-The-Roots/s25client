@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Bitmap_Raw.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,7 +30,7 @@ class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, p
         glArchivItem_Bitmap_Raw(void) : baseArchivItem_Bitmap(), baseArchivItem_Bitmap_Raw(), glArchivItem_Bitmap() {}
 
         /// Kopierkonstruktor von @p glArchivItem_Bitmap_Raw.
-        glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw* item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
+        glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw& item) : baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
 };
 
 #endif // !GLARCHIVITEM_BITMAP_RAW_H_INCLUDED

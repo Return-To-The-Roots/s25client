@@ -1,15 +1,12 @@
-#!/bin/bash
-###############################################################################
-## $Id: cmake.sh 7687 2011-12-30 09:17:47Z FloSoft $
-###############################################################################
+#!/bin/sh
 
-# Editable Variables
-CMAKE_COMMAND=cmake
+# You may override these from the environment
+: ${CMAKE_COMMAND:=cmake}
 
 ###############################################################################
 
-if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
-	echo "You have to install CMake"
+if [ -z "$($CMAKE_COMMAND) --version" ] ; then
+	echo "You have to install CMake" >&2
 	exit 1
 fi
 
@@ -29,47 +26,47 @@ mecho()
 ###############################################################################
 
 if [ ! -e bin ] ; then
-	mecho --blue "Creating symlink «bin» ..."
+	mecho --blue "Creating symlink 'bin' ..."
 	ln -vs . bin
 fi
 
 if [ ! -e RTTR ] ; then
 	if [ -e "${SRCDIR}/RTTR" ] ; then
-		mecho --blue "Creating symlink «RTTR» ..."
+		mecho --blue "Creating symlink 'RTTR' ..."
 		ln -vs "${SRCDIR}/RTTR" RTTR
 	else
-		mecho --red "Directory «RTTR» missing!"
+		mecho --red "Directory 'RTTR' missing!"
 		exit 1
 	fi
 fi
 
 if [ ! -e share ] ; then
-	mecho --blue "Creating symlink «share» ..."
+	mecho --blue "Creating symlink 'share' ..."
 	ln -vs . share
 fi
 
 if [ ! -e s25rttr ] ; then
-	mecho --blue "Creating symlink «s25rttr» ..."
+	mecho --blue "Creating symlink 's25rttr' ..."
 	ln -vs . s25rttr
 fi
 
 if [ ! -e S2 ] ; then
 	if [ -e "${SRCDIR}/S2" ] ; then
-		mecho --blue "Creating symlink «S2» ..."
+		mecho --blue "Creating symlink 'S2' ..."
 		ln -vs "${SRCDIR}/S2" S2
 	else
-		mecho --red "Directory «S2» missing!"
+		mecho --red "Directory 'S2' missing!"
 		mecho --yellow "Direct debugging from this directory will not work then!"
 	fi
 fi
 
-if ( [ ! -f cleanup.sh ] && [ -f "${SRCDIR}/build/cleanup.sh" ] ) ; then
-	mecho --blue "Creating symlink «cleanup.sh» ..."
+if [ ! -f cleanup.sh ] && [ -f "${SRCDIR}/build/cleanup.sh" ] ; then
+	mecho --blue "Creating symlink 'cleanup.sh' ..."
 	ln -vs $SRCDIR/build/cleanup.sh cleanup.sh
 fi
 
-if ( [ ! -f cmake.sh ] && [ -f "${SRCDIR}/build/cmake.sh" ] ) ; then
-	mecho --blue "Creating symlink «cmake.sh» ..."
+if [ ! -f cmake.sh ] && [ -f "${SRCDIR}/build/cmake.sh" ] ; then
+	mecho --blue "Creating symlink 'cmake.sh' ..."
 	ln -vs $SRCDIR/build/cmake.sh cmake.sh
 fi
 
@@ -79,7 +76,7 @@ PREFIX=/usr/local
 BINDIR=
 DATADIR=
 LIBDIR=
-ARCH=
+TOOL_CHAIN=
 NOARCH=
 GENERATOR=
 PARAMS=""
@@ -92,6 +89,11 @@ as_cr_alnum=$as_cr_Letters$as_cr_digits
 while test $# != 0 ; do
 	case $1 in
 		--*=*)
+			ac_option=`expr "X$1" : 'X\([^=]*\)='`
+			ac_optarg=`expr "X$1" : 'X[^=]*=\(.*\)'`
+			ac_shift=:
+		;;
+		-*=*)
 			ac_option=`expr "X$1" : 'X\([^=]*\)='`
 			ac_optarg=`expr "X$1" : 'X[^=]*=\(.*\)'`
 			ac_shift=:
@@ -120,9 +122,9 @@ while test $# != 0 ; do
 			$ac_shift
 			LIBDIR=$ac_optarg
 		;;
-		-arch | --arch | -target | --target)
+		-arch | --arch | -target | --target | -toolchain | --toolchain)
 			$ac_shift
-			ARCH=$ac_optarg
+			TOOL_CHAIN=$ac_optarg
 		;;
 		-no-arch | --no-arch)
 			$ac_shift
@@ -161,7 +163,7 @@ while test $# != 0 ; do
 						eval disable_$ac_feature=\$ac_optarg
 		;;
 		-D*)
-			PARAMS="$ac_option=$ac_optarg"
+			PARAMS="$PARAMS $ac_option=$ac_optarg"
 		;;
 		*)
 			echo "Unknown option: $ac_option"
@@ -171,16 +173,6 @@ while test $# != 0 ; do
 
 	shift
 done
-
-if [ -z "$ARCH" ] ; then
-	if [ "$(uname -s)" = "Darwin" ] ; then
-		ARCH=apple.local
-	elif [ "$(uname -s)" = "Linux" ] ; then
-		ARCH=linux.local
-	else
-		ARCH=windows.local
-	fi
-fi
 
 if [ -z "$GENERATOR" ] && [ "$(uname -s)" = "Darwin" ] ; then
 	GENERATOR="Xcode"
@@ -203,8 +195,16 @@ fi
 echo "Setting Path-Prefix to \"$PREFIX\""
 PARAMS="$PARAMS -DPREFIX=$PREFIX"
 
-echo "Setting Architecture to \"$ARCH\""
-PARAMS="$PARAMS -DCOMPILEFOR_PLATFORM=$ARCH"
+case "$TOOL_CHAIN" in
+	*local*)
+		TOOL_CHAIN=
+		;;
+esac
+
+if [ ! -z "$TOOL_CHAIN" ] ; then
+    echo "Using toolchain \"$TOOL_CHAIN\""
+    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=${SRCDIR}/cmake/toolchains/$TOOL_CHAIN.cmake"	
+fi
 
 echo "Setting Binary Dir to \"$BINDIR\""
 PARAMS="$PARAMS -DBINDIR=$BINDIR"
@@ -226,13 +226,13 @@ for I in $NOARCH ; do
 done
 
 case "$enable_debug" in
-	yes|YES|Yes)
+	[Yy][Ee][Ss])
 		mecho --magenta "Activating debug build"
 		PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=Debug"
 	;;
 	*)
 		case "$enable_reldeb" in
-			yes|YES|Yes)
+			[Yy][Ee][Ss])
 				mecho --magenta "Activating release build with debug information"
 				PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 			;;
@@ -245,7 +245,7 @@ case "$enable_debug" in
 esac
 
 case "$enable_verbose" in
-	yes|YES|Yes)
+	[Yy][Ee][Ss])
 		mecho --magenta "Activating verbose build"
 		PARAMS="$PARAMS -DCMAKE_VERBOSE_MAKEFILE=On"
 	;;

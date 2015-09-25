@@ -1,6 +1,4 @@
-﻿// $Id: nofGeologist.cpp 9540 2014-12-14 11:32:47Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -218,7 +216,7 @@ void nofGeologist::Walked()
         else
         {
             // Weg zum nächsten Punkt suchen
-            dir = gwg->FindHumanPath(pos, node_goal, 20);
+            unsigned char dir = gwg->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
             if(dir == 0xFF)
@@ -232,12 +230,11 @@ void nofGeologist::Walked()
                 {
                     state = STATE_GOTOFLAG;
                     Walked();
+                    return;
                 }
-                else
-                    StartWalking(dir);
             }
-            else
-                StartWalking(dir);
+            
+            StartWalking(dir);
         }
     }
     else if(state == STATE_GOTOFLAG)
@@ -373,7 +370,7 @@ unsigned char nofGeologist::GetNextNode()
         while(!available_nodes.empty())
         {
             // Dann einen Punkt zufällig auswählen
-            int randNode = RANDOM.Rand(__FILE__, __LINE__, obj_id, available_nodes.size());
+            int randNode = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_nodes.size());
             node_goal = available_nodes[randNode];
             // und aus der Liste entfernen
             available_nodes.erase(available_nodes.begin() + randNode);
@@ -408,7 +405,7 @@ void nofGeologist::GoToNextNode()
     }
 
     // ersten Punkt suchen
-    dir = GetNextNode();
+    unsigned char dir = GetNextNode();
 
     if(dir != 0xFF)
     {

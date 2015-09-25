@@ -1,6 +1,4 @@
-﻿// $Id: nobMilitary.h 9564 2014-12-30 10:53:04Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,7 +21,7 @@
 #include "nobBaseMilitary.h"
 #include "figures/nofSoldier.h"
 #include <list>
-#include <set>
+#include <vector>
 
 class nofPassiveSoldier;
 class nofActiveSoldier;
@@ -36,9 +34,6 @@ class iwMilitaryBuilding;
 /// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary
 {
-public: typedef std::set<nofPassiveSoldier*, ComparatorSoldiersByRank<true> > SortedTroopsContainer;
-
-private:
         /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
         bool new_built;
         /// Anzahl der Goldmünzen im Gebäude
@@ -50,7 +45,7 @@ private:
         /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
         unsigned char size;
         /// Bestellte Soldaten
-        SortedTroopsContainer ordered_troops;
+        SortedTroops ordered_troops;
         /// Bestellter Goldmünzen
         std::list<Ware*> ordered_coins;
         /// Gibt an, ob gerade die Eroberer in das Gebäude gehen (und es so nicht angegegriffen werden sollte)
@@ -71,7 +66,7 @@ private:
     public:
 
         /// Soldatenbesatzung
-        SortedTroopsContainer troops;
+        SortedTroops troops;
 
         // Das Fenster braucht ja darauf Zugriff
         friend class iwMilitaryBuilding;

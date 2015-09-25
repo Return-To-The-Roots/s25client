@@ -1,6 +1,4 @@
-﻿// $Id: dskGameInterface.cpp 9592 2015-02-01 09:39:38Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -68,6 +66,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
+#include "gameData/TerrainData.h"
 #include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -518,7 +517,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
  *
  *  @author Divan
  */
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)\
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -555,7 +554,7 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool dskGameInterface::Msg_RightUp(const MouseCoords& mc)
+bool dskGameInterface::Msg_RightUp(const MouseCoords& mc) //-V524
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -787,7 +786,7 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
     if(rm != RM_DISABLED)
     {
         road.route.clear();
-        assert(selected.x < width && selected.y < height);
+        assert(selected.x < width_ && selected.y < height_);
         road.start = road.point = selected;
     }
     else
@@ -903,7 +902,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     {
         for(unsigned char x = 0; x < 6; ++x)
         {
-            if(gwv->GetTerrainAround(cSel, x) == 14)
+            if(TerrainData::IsWater(gwv->GetTerrainAround(cSel, x)))
                 params = iwAction::AWFT_WATERFLAG;
         }
     }

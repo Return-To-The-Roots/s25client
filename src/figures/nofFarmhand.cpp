@@ -1,6 +1,4 @@
-﻿// $Id: nofFarmhand.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -159,7 +157,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 {
                     if(!available_points[i].empty())
                     {
-                        p = available_points[i][RANDOM.Rand(__FILE__, __LINE__, obj_id, available_points[i].size())];
+                        p = available_points[i][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points[i].size())];
                         break;
                     }
                 }
@@ -266,9 +264,12 @@ void nofFarmhand::WalkToWorkpoint()
         state = STATE_WORK;
         current_ev = em->AddEvent(this, JOB_CONSTS[job].work_length, 1);
         WorkStarted();
+        return;
     }
+
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    else if((dir = gwg->FindHumanPath(pos, dest, 20)) == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
+    unsigned char dir = gwg->FindHumanPath(pos, dest, 20);
+    if(dir == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
     {
         // Punkt freigeben
         gwg->GetNode(dest).reserved = false;
@@ -299,9 +300,12 @@ void nofFarmhand::WalkHome()
     {
         // Weiteres übernimmt nofBuildingWorker
         WorkingReady();
+        return;
     }
+
+    unsigned char dir = gwg->FindHumanPath(pos, dest, 40);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
-    else if((dir = gwg->FindHumanPath(pos, dest, 40)) == 0xFF)
+    if(dir == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         StartWandering();

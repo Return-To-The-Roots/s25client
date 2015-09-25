@@ -1,6 +1,4 @@
-﻿// $Id: iwTextfile.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 // Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
 //
 // This file is part of Return To The Roots.
@@ -62,7 +60,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
 
     std::ifstream file(path.c_str());
 
-    ctrlMultiline* text = AddMultiline(2, 10, 20, width - 20, 450, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
+    ctrlMultiline* text = AddMultiline(2, 10, 20, width_ - 20, 450, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
 
     if(!file.good())
     {

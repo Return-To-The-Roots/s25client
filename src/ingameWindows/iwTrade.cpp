@@ -1,6 +1,4 @@
-﻿// $Id: iwBuilding.cpp 7091 2011-03-27 10:57:38Z OLiver $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -37,6 +35,7 @@
 #include "iwHelp.h"
 #include "gameData/BuildingConsts.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "gameData/JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -78,15 +77,19 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
     // Create possible wares, figures
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        // Avoid strange things:
-        if(i == GD_SHIELDVIKINGS || i == GD_SHIELDAFRICANS || i == GD_SHIELDJAPANESE
-                || i == GD_NOTHING)
+        // Only add one shield type
+        if(i == GD_SHIELDVIKINGS || i == GD_SHIELDAFRICANS || i == GD_SHIELDJAPANESE)
+            continue;
+        // Don't add nothing or empty water
+        if(i == GD_NOTHING || i == GD_WATEREMPTY)
             continue;
         wares.push_back(GoodType(i));
     }
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        // Avoid strange things: // no strange things here
+        // Can't trade boat carriers
+        if(i == JOB_BOATCARRIER)
+            continue;
         jobs.push_back(Job(i));
     }
 
@@ -125,8 +128,8 @@ void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
     //pressed the send button
     unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
     bool ware_figure = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
-    GoodType gt = ware_figure ? GD_NOTHING : GoodType(ware_figure_selection);
-    Job job = ware_figure ? Job(ware_figure_selection) : JOB_NOTHING;
+    GoodType gt = ware_figure ? GD_NOTHING : wares[ware_figure_selection];
+    Job job = ware_figure ? jobs[ware_figure_selection] : JOB_NOTHING;
 
     const std::string number_str = GetCtrl<ctrlEdit>(6)->GetText();
 
@@ -178,7 +181,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(2250 + wares[selection]));
 
                 // Get the number of available wares/figures
-                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, GoodType(selection), JOB_NOTHING);
+                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, wares[selection], JOB_NOTHING);
             }
             else
             {
@@ -189,7 +192,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 GetCtrl<ctrlImage>(5)->SetImage(image);
 
                 // Get the number of available wares/figures
-                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, GD_NOTHING, Job(selection));
+                number = GAMECLIENT.GetLocalPlayer()->GetAvailableWaresForTrading(wh, GD_NOTHING, jobs[selection]);
             }
 
             char str[256];

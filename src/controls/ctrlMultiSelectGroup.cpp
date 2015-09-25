@@ -1,6 +1,4 @@
-﻿// $Id: ctrlMultiSelectGroup.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -78,8 +76,8 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 
     this->selection.insert(selection);
 
-    if(notify && parent)
-        parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent_)
+        parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,8 +100,8 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 
     this->selection.erase(selection);
 
-    if(notify && parent)
-        parent->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && parent_)
+        parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
 

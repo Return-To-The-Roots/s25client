@@ -1,6 +1,4 @@
-﻿// $Id: AudioDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,9 +20,11 @@
 
 #include "Singleton.h"
 #include "DriverWrapper.h"
-#include "../driver/src/AudioInterface.h"
+#include "driver/src/AudioDriverLoaderInterface.h"
+#include "driver/src/AudioType.h"
 
-class AudioDriver;
+class IAudioDriver;
+class Sound;
 
 #define MAX_DRIVER_COUNT 20
 const char* const EMPTY_STR = "";
@@ -43,8 +43,8 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
         bool LoadDriver(void);
 
         /// Lädt einen Sound.
-        Sound* LoadEffect(unsigned int data_type, unsigned char* data, unsigned int size);
-        Sound* LoadMusic(unsigned int data_type, unsigned char* data, unsigned int size);
+        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size);
+        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size);
 
         /// Spielt einen Sound
         unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop);
@@ -52,24 +52,23 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
         void StopEffect(const unsigned int play_id);
 
         /// Spielt Midi ab
-        void PlayMusic(Sound* sound, const unsigned repeats)
-        { if(audiodriver) audiodriver->PlayMusic(sound, repeats); }
+        void PlayMusic(Sound* sound, const unsigned repeats);
+
         /// Stoppt die Musik.
-        void StopMusic(void)
-        { if(audiodriver) audiodriver->StopMusic();  }
+        void StopMusic(void);
+
         /// Wird ein Sound (noch) abgespielt?
-        bool IsEffectPlaying(const unsigned play_id)
-        { if(audiodriver) return audiodriver->IsEffectPlaying(play_id); else return false; }
+        bool IsEffectPlaying(const unsigned play_id);
+
         /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-        void ChangeVolume(const unsigned play_id, const unsigned char volume)
-        { if(audiodriver) audiodriver->ChangeVolume(play_id, volume); }
+        void ChangeVolume(const unsigned play_id, const unsigned char volume);
 
-        void SetMasterEffectVolume(unsigned char volume)
-        { if(audiodriver) audiodriver->SetMasterEffectVolume(volume); }
-        void SetMasterMusicVolume(unsigned char volume)
-        { if(audiodriver) audiodriver->SetMasterMusicVolume(volume); }
+        void SetMasterEffectVolume(unsigned char volume);
 
-        const char* GetName(void) const { if(audiodriver) return audiodriver->GetName();    return EMPTY_STR; }
+        void SetMasterMusicVolume(unsigned char volume);
+
+        const char* GetName(void) const;
+
     private:
 
         void Msg_MusicFinished();
@@ -77,7 +76,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper>, public AudioDri
     private:
 
         DriverWrapper driver_wrapper;
-        AudioDriver* audiodriver;
+        IAudioDriver* audiodriver;
 };
 
 #define AUDIODRIVER AudioDriverWrapper::inst()

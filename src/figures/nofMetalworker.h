@@ -1,6 +1,4 @@
-﻿// $Id: nofMetalworker.h 9447 2014-06-20 21:40:55Z jh $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,21 +25,31 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofMetalworker : public nofWorkman
 {
+    GoodType nextProducedTool;
+    protected:
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const;
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();
+        /// Returns the next tool to be produced according to the orders
+        GoodType GetOrderedTool();
+        /// Returns a random tool according to the priorities
+        GoodType GetRandomTool();
         
         unsigned ToolsOrderedTotal() const;
+
+        bool ReadyForWork() override;
 
     public:
 
         nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMetalworker(SerializedGameData* sgd, const unsigned obj_id);
+        void Serialize(SerializedGameData* sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }
+        void HandleDerivedEvent(const unsigned int id) override;
 };
 
 #endif

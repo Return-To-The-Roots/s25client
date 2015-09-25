@@ -1,5 +1,5 @@
-﻿//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+//
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -201,8 +201,8 @@ bool noFigure::CalcFigurRelative(int& x, int& y)
 {
     int x1 = static_cast<int>(gwg->GetTerrainX(pos));
     int y1 = static_cast<int>(gwg->GetTerrainY(pos));
-    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, dir)));
-    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, dir)));
+    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, GetCurMoveDir())));
+    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, GetCurMoveDir())));
 
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
@@ -224,7 +224,7 @@ bool noFigure::CalcFigurRelative(int& x, int& y)
 
     MapPoint nb = gwg->GetNeighbour(pos, 1);
 
-    if(dir == 1 && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
+    if(GetCurMoveDir() == 1 && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
     {
         x2 += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointX();
         y2 += gwg->GetSpecObj<noBaseBuilding>(nb)->GetDoorPointY();
@@ -240,7 +240,7 @@ bool noFigure::CalcFigurRelative(int& x, int& y)
     }
 
     // Wenn die Träger runterlaufne, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(dir == 1 || dir == 2)
+    if(GetCurMoveDir() == 1 || GetCurMoveDir() == 2)
     {
         std::swap(x1, x2);
         std::swap(y1, y2);
@@ -251,38 +251,37 @@ bool noFigure::CalcFigurRelative(int& x, int& y)
     return 1;
 }
 
-void noFigure::StartWalking(const unsigned char dir)
+void noFigure::StartWalking(const unsigned char newDir)
 {
     assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
 
-    assert(dir <= 5);
-    if(dir > 5)
+    assert(newDir <= 5);
+    if(newDir > 5)
     {
-        LOG.lprintf("Achtung: Bug im Spiel entdeckt! noFigure::StartWalking: dir = %d\n", unsigned(dir));
+        LOG.lprintf("Achtung: Bug im Spiel entdeckt! noFigure::StartWalking: dir = %d\n", unsigned(newDir));
         return;
     }
 
     // Gehen wir in ein Gebäude?
-    if(dir == 1 && gwg->GetNO(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
+    if(newDir == 1 && gwg->GetNO(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
-    if(dir == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(newDir == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, dir), dir) &&
-            cur_rs)
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, newDir), newDir) && cur_rs)
     {
         // Dann stehen bleiben!
-        this->dir = dir;
+        FaceDir(newDir);
         waiting_for_free_node = true;
         // Andere Figuren stoppen
-        gwg->StopOnRoads(pos, dir);
+        gwg->StopOnRoads(pos, newDir);
     }
     else
     {
         // Normal hinlaufen
-        StartMoving(dir, 20);
+        StartMoving(newDir, 20);
     }
 }
 
@@ -333,7 +332,7 @@ void noFigure::DrawShadow(const int x, const int y, const unsigned char anistep,
 void noFigure::WalkFigure()
 {
     // Tür hinter sich zumachen, wenn wir aus einem Gebäude kommen
-    if(dir == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
     Walk();
@@ -343,7 +342,7 @@ void noFigure::WalkFigure()
 
 
     // oder in eins reingegangen sind
-    if(dir == 1 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == 1 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
 }
@@ -617,7 +616,7 @@ void noFigure::HandleEvent(const unsigned int id)
         WalkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
-        unsigned char old_dir = dir;
+        unsigned char old_dir = GetCurMoveDir();
 
         MapPoint old_pos(pos);
 
@@ -722,7 +721,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
     // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
-    wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, obj_id, WANDER_WAY_MAX - WANDER_WAY_MIN);
+    wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
     // Soldaten sind härter im Nehmen
     bool is_soldier = (job >= JOB_PRIVATE && job <= JOB_GENERAL);
     wander_tryings = is_soldier ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
@@ -812,7 +811,7 @@ void noFigure::Wander()
                 if(way < best_way)
                 {
                     // Gibts nen Weg zu dieser Flagge?
-                    if((dir = gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false)) != 0xFF)
+                    if(gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false) != 0xFF)
                     {
                         // gucken, ob ein Weg zu einem Warenhaus führt
                         if(gwg->GetPlayer(player)->FindWarehouse(*it, FW::Condition_StoreFigure, 0, true, &job, false))
@@ -842,15 +841,13 @@ void noFigure::Wander()
                 return;
             }
 
-
-
             // Wurde keine Flagge gefunden?
 
             // Haben wir noch Versuche?
             if(--wander_tryings > 0)
             {
                 // von vorne beginnen wieder mit Rumirren
-                wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, obj_id, WANDER_WAY_MAX - WANDER_WAY_MIN);
+                wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
             }
             else
             {
@@ -862,7 +859,7 @@ void noFigure::Wander()
 
         // weiter umherirren, einfach in eine zufällige Richtung
         // Müssen dabei natürlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
-        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
         for(unsigned char d = 0; d < 6; ++d)
         {
             unsigned char dir = (d + doffset) % 6;
@@ -1052,7 +1049,6 @@ void noFigure::WanderToFlag()
                                       gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job, false))
         {
             // ja, dann können wir ja hingehen
-            fs = FS_GOTOGOAL;
             goal = wh;
             cur_rs = 0;
             rs_pos = 0;
@@ -1072,7 +1068,8 @@ void noFigure::WanderToFlag()
 
     // Weiter zur Flagge gehen
     // Gibts noch nen Weg dahin bzw. existiert die Flagge noch?
-    if((dir = gwg->FindHumanPath(pos, flagPos, 60, false)) != 0xFF)
+    unsigned char dir = gwg->FindHumanPath(pos, flagPos, 60, false);
+    if(dir != 0xFF)
     {
         // weiter hinlaufen
         StartWalking(dir);
@@ -1228,14 +1225,14 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
     {
         // wir stehen genau in der Mitte
         // abhängig von der Richtung machen, in die man gerade läuft
-        if(dir == rs2->GetRoute(0))
+        if(GetCurMoveDir() == rs2->GetRoute(0))
         {
             // wir laufen auf dem 2. Teilstück
             cur_rs = rs2;
             // und wir sind da noch am Anfang
             rs_pos = 0;
         }
-        else if(dir == (cur_rs->GetRoute(cur_rs->GetLength() - 1) + 3) % 6)
+        else if(GetCurMoveDir() == (cur_rs->GetRoute(cur_rs->GetLength() - 1) + 3) % 6)
         {
             // wir laufen auf dem 1. Teilstück
 
@@ -1269,7 +1266,7 @@ void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    Loader::carrier_cache[ware][dir][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    Loader::carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
 }
 
 
@@ -1289,7 +1286,7 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][job][dir][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
+    Loader::bob_jobs_cache[gwg->GetPlayer(player)->nation][job][GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player)->color]);
 }
 
 
@@ -1302,8 +1299,8 @@ void noFigure::DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int id
     if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
         CalcFigurRelative(x, y);
     if(file)
-        file->Draw(id, dir, fat, ani_step, x, y, COLORS[gwg->GetPlayer(player)->color]);
-    DrawShadow(x, y, ani_step, dir);
+        file->Draw(id, GetCurMoveDir(), fat, ani_step, x, y, COLORS[gwg->GetPlayer(player)->color]);
+    DrawShadow(x, y, ani_step, GetCurMoveDir());
 
     /*char number[256];
     sprintf(number,"%u",obj_id);
@@ -1320,8 +1317,8 @@ void noFigure::DrawWalking(int x, int y, const char* const file, unsigned int id
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    LOADER.GetImageN(file, id + ((dir + 3) % 6) * 8 + ani_step)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
-    DrawShadow(x, y, ani_step, dir);
+    LOADER.GetImageN(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    DrawShadow(x, y, ani_step, GetCurMoveDir());
 }
 
 void noFigure::DrawWalking(int x, int y)
@@ -1339,9 +1336,9 @@ void noFigure::DrawWalking(int x, int y)
                 CalcFigurRelative(x, y);
 
             // Esel
-            LOADER.GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step)->Draw(x, y);
+            LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + dir % 3)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         } return;
         case JOB_CHARBURNER:
         {
@@ -1395,20 +1392,20 @@ void noFigure::NodeFreed(const MapPoint pt)
     if(waiting_for_free_node)
     {
         // Ist das der Punkt, zu dem wir hin wollen?
-        if(pt == gwg->GetNeighbour(this->pos, dir))
+        if(pt == gwg->GetNeighbour(this->pos, GetCurMoveDir()))
         {
             // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-            if(dir == 1 && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
+            if(GetCurMoveDir() == 1 && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
                 gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, 1))->CloseDoor();
             // oder aus einem raus?
-            if(dir == 4 && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
+            if(GetCurMoveDir() == 4 && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
                 gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
 
             // Wir stehen nun nicht mehr
             waiting_for_free_node = false;
 
             // Dann loslaufen
-            StartWalking(dir);
+            StartWalking(GetCurMoveDir());
 
             // anderen Leuten noch ggf Bescheid sagen
             gwg->RoadNodeAvailable(this->pos);
@@ -1445,12 +1442,12 @@ void noFigure::StopIfNecessary(const MapPoint pt)
         // Laufe ich zu diesem Punkt?
         if(current_ev)
         {
-            if(!waiting_for_free_node && gwg->GetNeighbour(this->pos, dir) == pt)
+            if(!waiting_for_free_node && gwg->GetNeighbour(this->pos, GetCurMoveDir()) == pt)
             {
                 // Dann stehenbleiben
                 PauseWalking();
                 waiting_for_free_node = true;
-                gwg->StopOnRoads(this->pos, dir);
+                gwg->StopOnRoads(this->pos, GetCurMoveDir());
             }
         }
     }
@@ -1487,8 +1484,7 @@ MapPoint noFigure::ExamineRouteBeforeShipping()
 {
     MapPoint next_harbor;
     // Calc new route
-    dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal, NULL, &next_harbor);
-
+    unsigned char dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal, NULL, &next_harbor);
 
     if(dir == 0xff)
         Abrogate();

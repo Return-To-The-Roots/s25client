@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Sound_Wave.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,7 +22,6 @@
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "../driver/src/AudioDriver.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -49,7 +46,7 @@ unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
         return 0xFFFFFFFF;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadEffect(AudioDriver::AD_WAVE, data, length);
+        sound = AUDIODRIVER.LoadEffect(AudioType::AD_WAVE, &data.front(), data.size());
 
     return AUDIODRIVER.PlayEffect(sound, volume, loop);
 }

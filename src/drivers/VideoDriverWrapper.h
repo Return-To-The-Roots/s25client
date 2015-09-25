@@ -1,6 +1,4 @@
-﻿// $Id: VideoDriverWrapper.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,7 +21,9 @@
 #include "Singleton.h"
 #include "ExtensionList.h"
 #include "DriverWrapper.h"
-#include "../driver/src/VideoDriver.h"
+#include "driver/src/VideoInterface.h"
+#include <string>
+#include <boost/array.hpp>
 
 class VideoDriver;
 
@@ -63,7 +63,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         int GetMouseY();
 
         /// Listet verfügbare Videomodi auf
-        void ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const;
+        void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
         void* GetMapPointer() const;
@@ -94,10 +94,10 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
         bool Initialize();
 
         // prüft ob eine Extension verfügbar ist
-        bool hasExtension(const char* extension);
+        bool hasExtension(const std::string& extension);
 
         // lädt eine Funktion aus den Extensions
-        void* loadExtension(const char* extension);
+        void* loadExtension(const std::string& extension);
 
         // Alle (im Programm benutzen) Extensions laden
         bool LoadAllExtensions();
@@ -105,9 +105,9 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
     private:
 
         DriverWrapper driver_wrapper;
-        VideoDriver* videodriver;
+        IVideoDriver* videodriver;
 
-        unsigned int texture_list[100000];
+        boost::array<unsigned int, 100000> texture_list;
         unsigned int texture_pos;
         unsigned int texture_current;
 };

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -42,7 +42,26 @@ enum TerrainType
     TT_STEPPE,
     TT_MOUNTAINMEADOW,
     TT_WATER,
-    TT_LAVA
+    TT_LAVA,
+    TT_WATER2,
+    TT_BUILDABLE_WATER,
+    TT_BUILDABLE_MOUNTAIN,
+    TT_LAVA2,
+    TT_LAVA3,
+    TT_LAVA4
+};
+
+// Keep this in sync with TerrainType
+static const unsigned char TT_COUNT = TT_LAVA4 + 1;
+
+enum EdgeType
+{
+    ET_NONE,
+    ET_SNOW,
+    ET_MOUNTAIN,
+    ET_DESSERT,
+    ET_MEADOW,
+    ET_WATER
 };
 
 /// Sichtbarkeit für ALLE Spieler

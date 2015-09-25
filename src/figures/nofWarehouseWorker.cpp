@@ -1,6 +1,4 @@
-﻿// $Id: nofWarehouseWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -44,7 +42,7 @@ static char THIS_FILE[] = __FILE__;
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
     : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))),
-      carried_ware(ware), task(task), fat((RANDOM.Rand(__FILE__, __LINE__, obj_id, 2)) ? true : false)
+      carried_ware(ware), task(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) ? true : false)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player)->IncreaseInventoryJob(JOB_HELPER, 1);

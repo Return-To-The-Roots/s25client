@@ -1,6 +1,4 @@
-﻿// $Id: VideoDriverWrapper.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,7 +31,7 @@
 #include "Log.h"
 
 #include <ctime>
-#include <cstring>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -51,7 +49,7 @@ static char THIS_FILE[] = __FILE__;
  */
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
-    memset(texture_list, 0, sizeof(unsigned int) * 100000);
+    std::fill(texture_list.begin(), texture_list.end(), 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,6 +61,8 @@ VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), t
 VideoDriverWrapper::~VideoDriverWrapper()
 {
     CleanUp();
+    PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
+    FreeVideoInstance(videodriver);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,12 +87,11 @@ bool VideoDriverWrapper::LoadDriver(void)
     if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
         return false;
 
-    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance;
-
-    CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
     // Instanz erzeugen
-    if(!(videodriver = CreateVideoInstance(&WINDOWMANAGER)))
+    videodriver = CreateVideoInstance(&WINDOWMANAGER);
+    if(!videodriver)
         return false;
 
     if(!videodriver->Initialize())
@@ -228,37 +227,30 @@ bool VideoDriverWrapper::DestroyScreen()
  *
  *  @author FloSoft
  */
-bool VideoDriverWrapper::hasExtension(const char* extension)
+bool VideoDriverWrapper::hasExtension(const std::string& extension)
 {
-    const unsigned char* extensions = NULL;
-
-    const unsigned char* start;
-    unsigned char* position, *ende;
-
     // Extension mit Leerzeichen gibts nich
-    position = (unsigned char*)strchr(extension, ' ');
-    if( position || *extension == '\0' )
+    if( extension.empty() || extension.find(' ') != std::string::npos)
         return false;
 
     // ermittle Extensions String
-    extensions = glGetString( GL_EXTENSIONS );
+    const std::string extensions = reinterpret_cast<const char*>(glGetString( GL_EXTENSIONS ));
 
     // such nach einer exakten Kopie des Extensions Strings
-    start = extensions;
-    for(;;)
-    {
-        position = (unsigned char*)strstr( (const char*)start, extension );
-        if( !position )
+    size_t curOffset = 0;
+    do{
+        size_t curPos = extensions.find(extension, curOffset);
+        if(curPos == std::string::npos)
             break;
 
-        ende = position + strlen( extension );
-        if( position == start || *( position - 1 ) == ' ' )
+        size_t endPos = curPos + extension.length();
+        if(curPos == 0 || extensions[curPos - 1] == ' ')
         {
-            if( *ende == ' ' || *ende == '\0' )
+            if(endPos == extensions.length() || extensions[endPos] == ' ')
                 return true;
         }
-        start = ende;
-    }
+        curOffset = endPos;
+    }while(curOffset < extensions.length());
 
     return false;
 }
@@ -271,9 +263,9 @@ bool VideoDriverWrapper::hasExtension(const char* extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-    glDeleteTextures(texture_pos, (const GLuint*)texture_list);
+    glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
 
-    memset(texture_list, 0, sizeof(unsigned int)*texture_pos);
+    std::fill(texture_list.begin(), texture_list.end(), 0);
     texture_pos = 0;
 }
 
@@ -285,9 +277,9 @@ void VideoDriverWrapper::CleanUp()
  */
 unsigned int VideoDriverWrapper::GenerateTexture()
 {
-    if(texture_pos >= 100000)
+    if(texture_pos >= texture_list.size())
     {
-        fatal_error("100000 texture-limit reached!!!!\n");
+        fatal_error("texture-limit reached!!!!\n");
         return 0;
     }
 
@@ -481,7 +473,7 @@ unsigned int VideoDriverWrapper::GetTickCount()
  *
  *  @author FloSoft
  */
-void* VideoDriverWrapper::loadExtension(const char* extension)
+void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
     if (!videodriver)
     {
@@ -489,7 +481,7 @@ void* VideoDriverWrapper::loadExtension(const char* extension)
         return(NULL);
     }
 
-    return videodriver->GetFunction(extension);
+    return videodriver->GetFunction(extension.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -569,14 +561,14 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
  *
  *  @author OLiver
  */
-void VideoDriverWrapper::ListVideoModes(std::vector<VideoDriver::VideoMode>& video_modes) const
+void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     if(!videodriver)
         return;
 
     // Standard-Modi hinzufügen
-    VideoDriver::VideoMode vm800  = {  800, 600 };
-    VideoDriver::VideoMode vm1024 = { 1024, 768 };
+    VideoMode vm800  = {  800, 600 };
+    VideoMode vm1024 = { 1024, 768 };
 
     video_modes.push_back(vm800);
     video_modes.push_back(vm1024);

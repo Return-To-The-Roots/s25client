@@ -1,6 +1,4 @@
-﻿// $Id: GameWorld.h 9578 2015-01-23 08:28:58Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,8 +29,8 @@
 #include "defines.h"
 #include "Point.h"
 #include "GamePlayerList.h"
-#include "TradeGraph.h"
 #include "buildings/nobBaseMilitary.h"
+#include "gameTypes/LandscapeType.h"
 #include <vector>
 #include <list>
 #include <set>
@@ -60,6 +58,7 @@ class glArchivItem_Map;
 class noShip;
 class nofActiveSoldier;
 class TradeGraph;
+class TradeRoute;
 
 struct RoadsBuilding;
 class FOWObject;
@@ -79,7 +78,7 @@ struct MapNode
     /// Schattierung
     unsigned char shadow;
     /// Terrain
-    unsigned char t1, t2;
+    TerrainType t1, t2;
     /// Ressourcen
     unsigned char resources;
     /// Reservierungen
@@ -116,13 +115,6 @@ struct MapNode
     noBase* obj;
     /// Figuren, Kämpfe, die sich dort befinden
     std::list<noBase*> figures;
-};
-
-enum LandscapeType
-{
-    LT_GREENLAND = 0,
-    LT_WASTELAND,
-    LT_WINTERWORLD
 };
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enthält nur deren Daten
@@ -238,12 +230,12 @@ class GameWorldBase
 
         /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
         unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
-        inline unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const
-        { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
+        inline unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
 
+        /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
+        MapPoint MakeMapPoint(Point<int> pt) const;
         // Erzeugt eindeutige ID aus gegebenen X und Y-Werten
-        inline unsigned MakeCoordID(const MapPoint pt) const
-        { return GetIdx(pt); }
+        inline unsigned MakeCoordID(const MapPoint pt) const { return GetIdx(pt); }
 
         // Returns the linear index for a map point
         inline unsigned GetIdx(const MapPoint pt) const
@@ -280,11 +272,11 @@ class GameWorldBase
         template<typename T> inline const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>( GetNode(pt).obj ); }
 
         /// Gibt ein Terrain-Dreieck um einen Punkt herum zurück.
-        unsigned char GetTerrainAround(const MapPoint pt, unsigned char dir) const;
+        TerrainType GetTerrainAround(const MapPoint pt, unsigned char dir) const;
         /// Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X,Y in Richtung DIR (Vorwärts).
-        unsigned char GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
+        TerrainType GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
         /// Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X,Y in Richtung DIR (Rückwärts).
-        unsigned char GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
+        TerrainType GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
         /// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
         bool IsSeaPoint(const MapPoint pt) const;
 
@@ -323,7 +315,7 @@ class GameWorldBase
         bool IsMilitaryBuilding(const MapPoint pt) const;
 
         /// Erstellt eine Liste mit allen Militärgebäuden in der Umgebung, radius bestimmt wie viele Kästchen nach einer Richtung im Umkreis
-        nobBaseMilitarySet LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
+        sortedMilitaryBlds LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 
         /// Prüft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zugänglich ist (kein Wasser,Lava,Sumpf)
         bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;
@@ -372,8 +364,7 @@ class GameWorldBase
         MapPoint ConvertCoords(int x, int y) const { return ConvertCoords(Point<int>(x, y)); }
 
         /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-        inline unsigned CreateGUIID(const MapPoint pt) const
-        { return 1000 + width * pt.y + pt.x; }
+        inline unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width * pt.y + pt.x; }
         /// Gibt Terrainkoordinaten zurück
         inline Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
         inline float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
@@ -394,8 +385,7 @@ class GameWorldBase
         /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
         MapPoint GetHarborPoint(const unsigned harbor_id) const;
         /// Gibt die ID eines Hafenpunktes zurück
-        inline unsigned GetHarborPointID(const MapPoint pt) const
-        { return GetNode(pt).harbor_id; }
+        inline unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
         /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
         /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
         unsigned short IsCoastalPoint(const MapPoint pt) const;
@@ -448,7 +438,6 @@ class GameWorldBase
         std::vector<PotentialSeaAttacker> GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const;
         /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
         unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
-
 
     protected:
 

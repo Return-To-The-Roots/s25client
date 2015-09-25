@@ -1,6 +1,4 @@
-﻿// $Id: noMovable.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -30,9 +28,9 @@ const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
 
 class noMovable : public noCoordBase
 {
+    unsigned char curMoveDir; // Richtung, in die es gerade läcft
     protected:
 
-        unsigned char dir; // Richtung, in die es gerade läcft
         unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
         EventManager::EventPointer current_ev;
         /// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
@@ -60,6 +58,10 @@ class noMovable : public noCoordBase
     protected:  void Serialize_noMovable(SerializedGameData* sgd) const;
     public:     void Serialize(SerializedGameData* sgd) const { Serialize_noMovable(sgd); }
 
+        /// Returns the direction in which the object is moving/which it is facing
+        unsigned char GetCurMoveDir() const { return curMoveDir; }
+        /// "Turns" the object in that direction without starting to walk
+        void FaceDir(unsigned char newDir);
         /// In aktueller Richtung ein Stück zurücklegen
         void Walk();
         // Starten zu Laufen, Event anmelden

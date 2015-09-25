@@ -1,6 +1,4 @@
-﻿// $Id: nobUsual.cpp 9505 2014-11-29 10:48:29Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -50,7 +48,7 @@ nobUsual::nobUsual(BuildingType type,
                    unsigned char player,
                    Nation nation)
     : noBuilding(type, pos, player, nation),
-      worker(NULL), productivity(0), disable_production(false), disable_production_virtual(false),
+      worker(NULL), productivity(50), disable_production(false), disable_production_virtual(false),
       last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), is_working(false)
 {
     wares[0] = wares[1] = wares[2] = 0;
@@ -100,7 +98,7 @@ nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
         ordered_wares.clear();
 
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
-        sgd->PopObjectList(ordered_wares[i], GOT_WARE);
+        sgd->PopObjectContainer(ordered_wares[i], GOT_WARE);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         last_productivities[i] = sgd->PopUnsignedShort();
 
@@ -174,7 +172,7 @@ void nobUsual::Serialize_nobUsual(SerializedGameData* sgd) const
     for(unsigned i = 0; i < 3; ++i)
         sgd->PushUnsignedChar(wares[i]);
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type - 10].wares_needed_count; ++i)
-        sgd->PushObjectList(ordered_wares[i], true);
+        sgd->PushObjectContainer(ordered_wares[i], true);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         sgd->PushUnsignedShort(last_productivities[i]);
 }
@@ -262,10 +260,8 @@ void nobUsual::Draw(int x, int y)
 
 
         /// Großes Schwein zeichnen
-        LOADER.GetMapImageN(2160)->Draw(
-            x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + obj_id))->Draw(
-            x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1]);
+        LOADER.GetMapImageN(2160)->Draw(x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))->Draw(x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1]);
 
         // Die 4 kleinen Schweinchen, je nach Produktivität
         for(unsigned i = 1; i < min<unsigned>(unsigned(productivity) / 20 + 1, 5); ++i)
@@ -279,11 +275,9 @@ void nobUsual::Draw(int x, int y)
                 2, 0, 0, 2, 2, 0, 1, 0, 3, 1, 2, 0, 1, 2, 2, 0,
                 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0
             };
-            const unsigned short animpos = GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * obj_id + GetY() * i);
-            LOADER.GetMapImageN(2160)->Draw(
-                x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->Draw(
-                x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1]);
+            const unsigned short animpos = GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
+            LOADER.GetMapImageN(2160)->Draw(x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->Draw(x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1]);
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
@@ -291,7 +285,7 @@ void nobUsual::Draw(int x, int y)
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(type >= BLD_GRANITEMINE && type <= BLD_GOLDMINE && worker && nation == NAT_AFRICANS)
-        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, obj_id + GetX() + GetY()))->
+        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
         Draw(x + NUBIAN_MINE_FIRE[type - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type - BLD_GRANITEMINE][1]);
 }
 

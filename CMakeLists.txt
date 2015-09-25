@@ -1,8 +1,5 @@
-################################################################################
-### $Id: CMakeLists.txt 8361 2012-09-30 16:52:07Z FloSoft $
-################################################################################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 CMAKE_POLICY(SET CMP0003 OLD)
 
 IF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} GREATER 7 AND ${CMAKE_PATCH_VERSION} GREATER 0)
@@ -11,33 +8,111 @@ ENDIF(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} GREATER 7 AND ${
 
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/contrib)
-SET(BOOST_INCLUDEDIR ${CMAKE_SOURCE_DIR}/contrib/boost)
-SET(Boost_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/contrib)
 
 INCLUDE(CMakeMacroSetCCache)
 INCLUDE(CMakeMacroAddFlags)
 INCLUDE(CMakeMacroForceAddFlags)
 INCLUDE(CMakeMacroCorrectLib)
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
+INCLUDE(CMakeDetectOsXArchs)
 
 ################################################################################
-IF(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows" OR WIN32)
-	SET(COMPILEFOR_PLATFORM "windows")
-	SET(COMPILEFOR "windows")
-	SET(CROSSCOMPILE "0")
-	SET(CROSS "")
-	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		SET(COMPILEARCH "x86_64")
-	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		SET(COMPILEARCH "i386")
-	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-ELSE()
-	INCLUDE(cmake/crosscompile.cmake)
-ENDIF()
 
 PROJECT(s25client)
 
 ################################################################################
+
+IF (DEFINED CMAKE_TOOLCHAIN_FILE)
+	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
+ENDIF()
+
+STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
+SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
+
+# Set PLATFORM_ARCH
+IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		SET(PLATFORM_ARCH "x86_64")
+	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+		SET(PLATFORM_ARCH "i386")
+	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+ELSE()
+	IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+		SET(PLATFORM_ARCH "i386")
+	ELSEIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64")
+		SET(PLATFORM_ARCH "x86_64")
+	ELSEIF(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+		SET(PLATFORM_ARCH "universal")
+	ELSE()
+		MESSAGE(FATAL_ERROR "Unknown processor arch: ${CMAKE_SYSTEM_PROCESSOR}")
+	ENDIF()
+ENDIF()
+# Fill cache for post-processing tools
+SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE STRING "Do not change" FORCE)
+
+MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
+
+IF (CMAKE_CROSSCOMPILING)
+	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
+	#Include cross-compile platform config
+	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${PLATFORM_NAME}.cmake")
+		MESSAGE(STATUS "Using cross-platform config cmake/c.${PLATFORM_NAME}.cmake")
+		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
+	ENDIF()
+ELSE (CMAKE_CROSSCOMPILING)
+	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
+ENDIF (CMAKE_CROSSCOMPILING)
+
+#Include generic platform config
+MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
+INCLUDE("cmake/${PLATFORM_NAME}.cmake")
+
+################################################################################
+
+SET(Boost_ADDITIONAL_VERSIONS "1.55" "1.56" "1.57" "1.58" "1.59")
+
+IF (MSVC)
+	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc2010.rar to contrib/full-contrib-msvc2010 first!")
+	ENDIF()
+	SET(CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" CACHE PATH "Path to base dir from contrib package")
+	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
+		SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CONTRIB_DIR}/VS2015")
+	ENDIF()
+	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CONTRIB_DIR})		
+ENDIF()
+
+IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/boost")
+	SET(BOOST_ROOT ${CMAKE_SOURCE_DIR}/contrib/boost CACHE PATH "Path to find boost at")
+ENDIF()
+
+FIND_PACKAGE(Boost 1.55.0)
+IF(NOT Boost_FOUND)
+	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable (currently: ${BOOST_ROOT}), since cmake was unable to find boost!")
+ENDIF()
+
+STRING(COMPARE LESS "${Boost_VERSION}" "105800" Boost_NEED_BACKPORT)
+IF(Boost_NEED_BACKPORT)
+	MESSAGE(STATUS "Boost version smaller than 1.58 detected. Using backport")
+	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.58")
+ELSE()
+	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
+ENDIF()
+
+# avoid lhs-path bug in windows
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+
+################################################################################
+
+IF ("${PREFIX}" STREQUAL "")
+    IF ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
+        SET(PREFIX .)
+    ELSE()
+        SET(PREFIX ${CMAKE_INSTALL_PREFIX})
+    ENDIF()
+ENDIF()
 
 SET(PREFIX ${PREFIX} CACHE STRING "Path prefix")
 SET(BINDIR ${BINDIR} CACHE STRING "Directory for the binaries")
@@ -65,11 +140,6 @@ IF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
 	MESSAGE(STATUS "Set DRIVERDIR to ${DRIVERDIR}")
 ENDIF (NOT "${LIBDIR}" STREQUAL "" AND "${DRIVERDIR}" STREQUAL "")
 
-# avoid lhs-path bug in windows
-IF ("${COMPILEFOR}" STREQUAL "windows")
-	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
-ENDIF ("${COMPILEFOR}" STREQUAL "windows")
-
 IF(NOT "$ENV{CMAKE_INSTALL_PREFIX}" STREQUAL "")
 	SET(ENV{DESTDIR} "$ENV{CMAKE_INSTALL_PREFIX}" CACHE STRING "" FORCE)
 	MESSAGE(STATUS "Set DESTDIR to $ENV{DESTDIR}")
@@ -90,44 +160,45 @@ SET (LOBBY_C TRUE)
 ################################################################################
 
 INCLUDE(CheckCXXCompilerFlag)
+MACRO(CheckAndAddFlag flag)
+	CHECK_CXX_COMPILER_FLAG(${flag} FLAG_${flag}_SUPPORTED)
+	IF (FLAG_${flag}_SUPPORTED)
+		ADD_DEFINITIONS(${flag})
+	ENDIF ()
+ENDMACRO()
 
-CHECK_CXX_COMPILER_FLAG("-Wall -Werror -pedantic -Wno-long-long -fno-strict-aliasing" WERROR_FLAGS)
-IF (WERROR_FLAGS)
-	IF (NOT "${COMPILEFOR}" STREQUAL "windows" )
-		ADD_DEFINITIONS(-Wall -pedantic -fno-strict-aliasing)
-	ELSE (NOT "${COMPILEFOR}" STREQUAL "windows" )
-		ADD_DEFINITIONS(-Wall -pedantic -Wno-long-long) # win32 cross build with -Werror does not work
-	ENDIF (NOT "${COMPILEFOR}" STREQUAL "windows" )
-ENDIF (WERROR_FLAGS)
+IF (MSVC)
+	CheckAndAddFlag("/W3")
+ELSE (MSVC)
+	CheckAndAddFlag("-Wall")
+ENDIF (MSVC)
+CheckAndAddFlag("-pedantic")
+CheckAndAddFlag("-Wno-long-long")
+CheckAndAddFlag("-fno-strict-aliasing")
 
 # avoid lhs-path bug in windows
-IF ("${COMPILEFOR}" STREQUAL "windows")
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(BINDIR "." CACHE STRING "" FORCE)
 	SET(DATADIR "." CACHE STRING "" FORCE)
 	SET(LIBDIR "." CACHE STRING "" FORCE)
 	SET(DRIVERDIR "./driver" CACHE STRING "" FORCE)
 	#ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501)
-ENDIF ("${COMPILEFOR}" STREQUAL "windows")
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 # add build directory to compiler search path
 FORCE_ADD_FLAGS(CMAKE_C_FLAGS -I${CMAKE_BINARY_DIR})
 FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -I${CMAKE_BINARY_DIR})
 
-IF (MSVC)
-	# disable MSVC "use secure function" and 4250: 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
-	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
-	# Strip unused symbols and us COMDAT folding
-	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
-    SET(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /OPT:REF /OPT:ICF")
-    SET(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /OPT:REF /OPT:ICF") 
-	# Add optimized debugging features
-	IF (MSVC_VERSION GREATER 1800) #VS13
-		ADD_DEFINITIONS(/d2Zi+)
-	ELSEIF (NOT(MSVC_VERSION LESS 1800)) # VS12
-		ADD_DEFINITIONS(/Zo)
-	ENDIF()
-ENDIF (MSVC)
+INCLUDE(CMakeDetectCxxFeatures)
+IF (CXX_HAVE_CONSTEXPR)
+	ADD_DEFINITIONS(-DCONSTEXPR=constexpr)
+ELSE()
+	ADD_DEFINITIONS(-DCONSTEXPR=const)
+ENDIF()
+IF (NOT CXX_HAVE_OVERRIDE)
+	ADD_DEFINITIONS(-Doverride=)
+ENDIF()
+
 
 ################################################################################
 
@@ -135,6 +206,8 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
 			   build_paths.h)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
 			   build_version.h)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
+			   build_version_defines.h)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/preinstall.sh.cmake"
 			   preinstall.sh @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
@@ -149,7 +222,7 @@ ADD_CUSTOM_TARGET(updateversion ALL
 				  DEPENDS version
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
-
+	
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_CUSTOM_TARGET(mrproper
 					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"

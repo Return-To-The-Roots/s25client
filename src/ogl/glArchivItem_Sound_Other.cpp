@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Sound_Other.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,7 +22,6 @@
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "../driver/src/AudioDriver.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -49,7 +46,7 @@ void glArchivItem_Sound_Other::Play(const unsigned repeats)
         return;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadMusic(AudioDriver::AD_OTHER, data, length);
+        sound = AUDIODRIVER.LoadMusic(AudioType::AD_OTHER, &data.front(), data.size());
 
     if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);

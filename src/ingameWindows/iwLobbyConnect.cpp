@@ -1,6 +1,4 @@
-﻿// $Id: iwLobbyConnect.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -211,7 +209,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
             LobbyForm(user, pass, email);
 
             // Einloggen
-            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, SETTINGS.server.ipv6))
+            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1).c_str()), user, pass, SETTINGS.server.ipv6))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;

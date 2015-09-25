@@ -1,6 +1,4 @@
-﻿// $Id: ctrlPreviewMinimap.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -66,7 +64,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
         void SetMap(glArchivItem_Map* s2map)
         {
             if(s2map)
-                SetDisplaySize(width, height, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
+                SetDisplaySize(width_, height_, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
             minimap.SetMap(s2map);
         }
 };

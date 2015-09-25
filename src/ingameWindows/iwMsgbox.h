@@ -1,6 +1,4 @@
-﻿// $Id: iwMsgbox.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,12 +20,9 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "ogl/glArchivItem_Font.h"
 
 class iwMsgbox : public IngameWindow
 {
-        /// Fenster, von dem aus die Box aufgerufen wurde
-        Window* parent;
         /// Buttons, die auf der Box erscheinen sollen
         MsgboxButton button;
         /// ID für die Msgbox, um unterschiedliche
@@ -36,9 +31,7 @@ class iwMsgbox : public IngameWindow
         /// (Haupt)Text, der angezeigt werden soll
         const std::string& text;
         /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
-        std::string* strings;
-        /// Anzahl der Stringzeilen
-        unsigned lines_count;
+        std::vector<std::string> strings;
 
     public:
         iwMsgbox(const std::string& title, const std::string& text, Window* parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);

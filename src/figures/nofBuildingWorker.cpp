@@ -1,6 +1,4 @@
-﻿// $Id: nofBuildingWorker.cpp 9567 2015-01-03 19:34:57Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -161,10 +159,7 @@ void nofBuildingWorker::Walked()
             else
             {
                 // Anfangen zu Arbeiten
-				if(job!=JOB_ARMORER)
-					TryToWork();
-				else
-					dynamic_cast<nofArmorer*>(this)->TryToWork();
+			    TryToWork();
             }
 
         } break;
@@ -225,20 +220,17 @@ void nofBuildingWorker::TryToWork()
         StartNotWorking();
     }
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
-    // (bei Bergwerken müssen zusätzlich noch Rohstoffvorkommen vorhanden sein!)
-    // (bei Brunnen muss ebenfalls auf Wasser geprüft werden!)
-    // Spähturm-Erkunder arbeiten nie!
-    // Charburner doesn't need wares for harvesting!
-    // -> Wares are considered when calling GetPointQuality!
-    else if( (workplace->WaresAvailable() || job == JOB_CHARBURNER) &&
-             (job != JOB_MINER || GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE)) &&
-             (job != JOB_HELPER || GetResources(4)) &&
-             job != JOB_SCOUT)
+    else if(AreWaresAvailable())
     {
-        state = STATE_WAITING1;
-        current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
-        StopNotWorking();
-
+        if(ReadyForWork())
+        {
+            state = STATE_WAITING1;
+            current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job].wait1_length, 1);
+            StopNotWorking();
+        }else
+        {
+            state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        }
     }
     else
     {
@@ -248,7 +240,15 @@ void nofBuildingWorker::TryToWork()
     }
 }
 
+bool nofBuildingWorker::AreWaresAvailable()
+{
+    return workplace->WaresAvailable();
+}
 
+bool nofBuildingWorker::ReadyForWork()
+{
+    return true;
+}
 
 void nofBuildingWorker::GotWareOrProductionAllowed()
 {
@@ -256,10 +256,7 @@ void nofBuildingWorker::GotWareOrProductionAllowed()
     if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
     {
         // anfangen zu arbeiten
-		if(job!=JOB_ARMORER)
-			TryToWork();
-		else
-			dynamic_cast<nofArmorer*>(this)->TryToWork();
+		TryToWork();
     }
 }
 

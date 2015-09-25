@@ -1,6 +1,4 @@
-﻿// $Id: GameServerPlayer.cpp 9558 2014-12-18 09:01:20Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -106,7 +104,7 @@ void GameServerPlayer::doTimeout()
 // setzt den Player auf "reserviert"
 // @param sock Socket
 // @param id Spieler-ID                                                        */
-void GameServerPlayer::reserve(Socket* sock, unsigned char id)
+void GameServerPlayer::reserve(Socket sock, unsigned char id)
 {
     clear();
 
@@ -114,7 +112,7 @@ void GameServerPlayer::reserve(Socket* sock, unsigned char id)
 
     connecttime = VIDEODRIVER.GetTickCount();
 
-    so = *sock;
+    so = sock;
 
     ps = PS_RESERVED;
 }

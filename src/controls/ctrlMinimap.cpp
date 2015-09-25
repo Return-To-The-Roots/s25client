@@ -1,6 +1,4 @@
-﻿// $Id: ctrlMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -72,8 +70,8 @@ void ctrlMinimap::Resize_(unsigned short width, unsigned short height)
  */
 void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned short height, const unsigned short map_width, const unsigned short map_height)
 {
-    this->width = width;
-    this->height = height;
+    this->width_ = width;
+    this->height_ = height;
 
     this->map_width = map_width;
     this->map_height = map_height;
@@ -124,6 +122,6 @@ void ctrlMinimap::DrawMap(Minimap& map)
  */
 void ctrlMinimap::RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min)
 {
-    width  = max<unsigned short>( width_show + padding_x * 2,  width_min);
-    height = max<unsigned short>(height_show + padding_y * 2, height_min);
+    width_  = max<unsigned short>( width_show + padding_x * 2,  width_min);
+    height_ = max<unsigned short>(height_show + padding_y * 2, height_min);
 }

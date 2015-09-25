@@ -39,7 +39,7 @@ if [ ! -d "$TARGET" ] ; then
 fi
 
 # get arch
-ARCH="$(grep COMPILEFOR CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep COMPILEARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
+ARCH="$(grep PLATFORM_NAME CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep PLATFORM_ARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
 
 # current and new package directory
 ARCHDIR=$TARGET/$ARCH
@@ -67,10 +67,10 @@ echo "Building $TYPE for $ARCH in $SRCDIR"
 make || error
 
 # get version
-VERSION=$(grep WINDOW_VERSION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2)
+VERSION=$(grep WINDOW_VERSION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
 # get revision
-REVISION=$(grep WINDOW_REVISION build_version.h | cut -d ' ' -f 3 | cut -d \" -f 2)
+REVISION=$(grep WINDOW_REVISION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
 if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
 	echo "error: revision is null"

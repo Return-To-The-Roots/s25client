@@ -1,6 +1,4 @@
-﻿// $Id: dskSinglePlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -38,6 +36,8 @@
 #include "fileFuncs.h"
 #include "files.h"
 
+#include <boost/filesystem.hpp>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -64,11 +64,11 @@ static char THIS_FILE[] = __FILE__;
 dskSinglePlayer::dskSinglePlayer(void) : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevision());
+    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // URL
     AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
     // Copyright
-    AddVarText(2, 800, 600, _("\xA9 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     // "Letztes Spiel fortsetzen"
     AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Resume last game"), NormalFont);
@@ -97,10 +97,9 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
             std::list<std::string> liste;
             std::string tmp = GetFilePath(FILE_PATHS[85]);
 
-            tmp += "*.sav";
-            ListDir(tmp.c_str(), false, NULL, NULL, &liste);
+            ListDir(tmp + "*.sav", false, NULL, NULL, &liste);
 
-            std::string path;
+            bfs::path path;
             unser_time_t recent = 0;
             for(std::list<std::string>::iterator it = liste.begin(); it != liste.end(); ++it)
             {
@@ -120,19 +119,18 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
             if (recent != 0)
             {
                 // Dateiname noch rausextrahieren aus dem Pfad
-                size_t pos = path.find_last_of('/');
-                if(pos == std::string::npos)
+                if(!path.has_filename())
                     return;
-                std::string extracted_filename = path.substr(pos + 1);
+                bfs::path fileName = path.filename();
 
                 // ".sav" am Ende weg
-                assert(extracted_filename.length() >= 4);
-                extracted_filename.erase(extracted_filename.length() - 4);
+                assert(fileName.has_extension());
+                fileName.replace_extension();
 
                 // Server info
                 CreateServerInfo csi;
 
-                csi.gamename = extracted_filename;
+                csi.gamename = fileName.string();
                 csi.password = "localgame";
                 csi.port = 3665;
                 csi.type = NP_LOCAL;
@@ -141,7 +139,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
 
                 WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
-                if(GAMESERVER.TryToStart(csi, path, MAPTYPE_SAVEGAME))
+                if(GAMESERVER.TryToStart(csi, path.string(), MAPTYPE_SAVEGAME))
                 {
                     WINDOWMANAGER.Draw();
                     WINDOWMANAGER.Show(new iwPleaseWait);
@@ -156,7 +154,6 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
             }
 
-            liste.clear();
         } break;
         case 4: // "Replay abspielen"
         {

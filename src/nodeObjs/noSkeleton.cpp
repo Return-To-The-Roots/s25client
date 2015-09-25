@@ -1,6 +1,4 @@
-﻿// $Id: noSkeleton.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -41,7 +39,7 @@ noSkeleton::noSkeleton(const MapPoint pos)
     : noCoordBase(NOP_ENVIRONMENT, pos),
       type(0)
 {
-    current_event = em->AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10000));
+    current_event = em->AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
 }
 
 noSkeleton::~noSkeleton()
@@ -85,7 +83,7 @@ void noSkeleton::HandleEvent(const unsigned int id)
     {
         // weiter verwesen, dann später sterben nach ner zufälligen Zeit
         type = 1;
-        current_event = em->AddEvent(this, 10000 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10000));
+        current_event = em->AddEvent(this, 10000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
     }
     else
     {

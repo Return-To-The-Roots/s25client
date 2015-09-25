@@ -1,4 +1,4 @@
-﻿
+
 #include "defines.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
@@ -83,7 +83,7 @@ void nofTradeLeader::Walked()
             if(next_dir == NO_PATH)
             {
                 CancelTradeCaravane();
-                next_dir = dir;
+                next_dir = GetCurMoveDir();
                 //StartWanderingFailedTrade();
             }
             StartWalking(next_dir);

@@ -1,6 +1,4 @@
-﻿// $Id: nofForester.cpp 9402 2014-05-10 06:54:13Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,6 +31,7 @@
 #include "SoundManager.h"
 #include "GameWorld.h"
 #include "GameInterface.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -120,7 +119,7 @@ void nofForester::WorkFinished()
 
         // jungen Baum einsetzen
         gwg->SetNO(new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
-                              [RANDOM.Rand(__FILE__, __LINE__, obj_id, AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), pos);
+                              [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), pos);
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);
@@ -160,12 +159,11 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt)
     }
 
     // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char t, good_terrains = 0;
+    unsigned char good_terrains = 0;
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = gwg->GetTerrainAround(pt, i);
-        if(t == 3 || (t >= 8 && t <= 12))
+        if(TerrainData::IsVital(gwg->GetTerrainAround(pt, i)))
             ++good_terrains;
     }
     if(good_terrains != 6)

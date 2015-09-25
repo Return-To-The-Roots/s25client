@@ -1,6 +1,4 @@
-﻿// $Id: ctrlList.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -45,21 +43,21 @@ class ctrlList : public Window
         /// liefert den Wert einer Zeile.
         const std::string& GetItemText(unsigned short line) const;
         /// liefert den Wert der aktuell gewählten Zeile.
-        const std::string& GetSelItemText(void) const { return GetItemText(selection); };
+        const std::string& GetSelItemText(void) const { return GetItemText(selection_); };
         /// Vertauscht zwei Zeilen.
         void Swap(unsigned short first, unsigned short second);
         /// Löscht ein Element
         void Remove(const unsigned short index);
 
         unsigned short GetLineCount(void) const { return static_cast<unsigned short>(lines.size()); }
-        unsigned short GetSelection(void) const { return static_cast<unsigned short>(selection); };
+        unsigned short GetSelection(void) const { return static_cast<unsigned short>(selection_); };
         void SetSelection(unsigned short selection)
         {
-            if(selection != this->selection && selection < lines.size())
+            if(selection != this->selection_ && selection < lines.size())
             {
-                this->selection = selection;
-                if(parent)
-                    parent->Msg_ListSelectItem(id, selection);
+                this->selection_ = selection;
+                if(parent_)
+                    parent_->Msg_ListSelectItem(id_, selection);
             }
         }
 
@@ -79,7 +77,7 @@ class ctrlList : public Window
 
         std::vector<std::string> lines;
 
-        unsigned short selection;
+        unsigned short selection_;
         unsigned short mouseover;
         unsigned int pagesize;
 

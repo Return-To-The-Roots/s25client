@@ -1,6 +1,4 @@
-ï»¿// $Id: AudioInterface.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,8 +17,50 @@
 #ifndef AUDIOINTERFACE_H_INCLUDED
 #define AUDIOINTERFACE_H_INCLUDED
 
+#include "Interface.h"
+#include "AudioType.h"
 
-#include "AudioDriver.h"
+class Sound;
+
+/// Interface for audio drivers (required for use across DLL boundaries)
+class IAudioDriver
+{
+public:
+    /// Destruktor von @p IAudioDriver.
+    virtual ~IAudioDriver(void) = 0;
+
+    /// Funktion zum Auslesen des Treibernamens.
+    virtual const char* GetName(void) const = 0;
+
+    /// Treiberinitialisierungsfunktion.
+    virtual bool Initialize(void) = 0;
+
+    /// Treiberaufräumfunktion.
+    virtual void CleanUp(void) = 0;
+
+    virtual Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) = 0;
+    virtual Sound* LoadMusic (AudioType data_type, const unsigned char* data, unsigned long size) = 0;
+
+    /// Spielt Sound ab
+    virtual unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;
+    /// Spielt Midi ab
+    virtual void PlayMusic(Sound* sound, const unsigned repeats) = 0;
+    /// Stoppt die Musik.
+    virtual void StopMusic(void) = 0;
+    /// Stoppt einen Sound
+    virtual void StopEffect(const unsigned int play_id) = 0;
+    /// Wird ein Sound (noch) abgespielt?
+    virtual bool IsEffectPlaying(const unsigned play_id) = 0;
+    /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+    virtual void ChangeVolume(const unsigned play_id, const unsigned char volume) = 0;
+
+    virtual void SetMasterEffectVolume(unsigned char volume) = 0;
+    virtual void SetMasterMusicVolume(unsigned char volume) = 0;
+
+    /// prüft auf Initialisierung.
+    virtual bool IsInitialized() = 0;
+
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -28,7 +68,6 @@
 #ifdef _WIN32
 #   if defined _USRDLL || defined _LIB || defined BUILD_DLL
 #       define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#       define class        class __declspec(dllexport)
 #   else
 #       define DRIVERDLLAPI extern "C" __declspec(dllimport)
 #   endif // !_USRDLL
@@ -36,10 +75,14 @@
 #   define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
+class AudioDriverLoaderInterface;
+
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI AudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* CallBack, void* device_dependent);
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* CallBack, void* device_dependent);
+DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver);
 
 ///
-typedef AudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void* );
+typedef IAudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void* );
+typedef void (*PDRIVER_FREEAUDIOINSTANCE)(IAudioDriver*);
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

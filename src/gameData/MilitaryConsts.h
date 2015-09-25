@@ -1,6 +1,4 @@
-﻿// $Id: MilitaryConsts.h 9536 2014-12-10 22:12:56Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,6 +17,8 @@
 
 #ifndef MILITARY_CONSTS_H_
 #define MILITARY_CONSTS_H_
+
+#include "gameData/NationConsts.h"
 
 /// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
 const unsigned short MILITARY_SQUARE_SIZE = 20;

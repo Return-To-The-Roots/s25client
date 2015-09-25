@@ -1,6 +1,4 @@
-﻿// $Id: iwMinimap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -35,8 +33,6 @@ const unsigned short MINIMAP_WINDOW_BIG_HEIGHT = 400;
 
 /// Abstand der Kartenränder zum Fensterrand
 const unsigned short WINDOW_MAP_SPACE = 5;
-/// Minimale Fensterbreite
-const unsigned short MIN_WINDOW_WIDTH = 200;
 /// Breite der unteren Buttons
 const unsigned short BUTTON_WIDTH = 36;
 /// Höhe der unteren Buttons
@@ -65,7 +61,7 @@ iwMinimap::iwMinimap(IngameMinimap* minimap, GameWorldViewer& gwv)
     AddImageButton(4, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 109));
 
 
-    ChangeWindowSize(width, height);
+    ChangeWindowSize(width_, height_);
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu

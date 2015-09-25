@@ -1,6 +1,4 @@
-﻿// $Id: RoadSegment.cpp 9599 2015-02-07 11:08:22Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -315,7 +313,7 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat
-    unsigned char first = RANDOM.Rand(__FILE__, __LINE__, this->obj_id, 2);
+    unsigned char first = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2);
     for(unsigned char i = 0; i < 2; ++i)
     {
         if(carrier[(i + first) % 2])

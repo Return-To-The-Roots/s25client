@@ -1,6 +1,4 @@
-﻿// $Id: iwPostWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -381,17 +379,14 @@ void iwPostWindow::SetMessageText(const std::string& message)
     glArchivItem_Font::WrapInfo wi;
 
     NormalFont->GetWrapInfo(message, 190, 190, wi);
-    std::string* lines = new std::string[wi.positions.size()];
-    wi.CreateSingleStrings(message, lines);
+    std::vector<std::string> lines = wi.CreateSingleStrings(message);
     for(unsigned i = 0; i < 3; ++i)
     {
-        if (i < wi.positions.size())
+        if (i < lines.size())
             text->SetLine(i, lines[i], COLOR_WINDOWBROWN);
         else
             text->SetLine(i, "", COLOR_WINDOWBROWN);
     }
-
-    delete [] lines;
 }
 
 void iwPostWindow::DeletePostMessage(PostMsg* pm)

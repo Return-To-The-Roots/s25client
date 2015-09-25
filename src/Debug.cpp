@@ -1,6 +1,4 @@
-﻿// $Id: Debug.cpp 7688 2011-12-30 09:33:43Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,6 +20,21 @@
 #include "defines.h"
 #include "Debug.h"
 #include "build_version.h"
+
+#include "Settings.h"
+#include "GameClient.h"
+
+#ifdef _WIN32
+#   include <windows.h>
+// Disable warning for faulty nameless enum typdef (check sfImage.../hdBase...)
+#   pragma warning(push)
+#   pragma warning(disable: 4091)
+#   include <dbghelp.h>
+#   pragma warning(pop)
+#else
+#   include <execinfo.h>
+#endif
+
 #include "../libutil/src/Log.h"
 #include <bzlib.h>
 
@@ -53,8 +66,11 @@ DebugInfo::DebugInfo() : Socket()
     // OS
 #ifdef _WIN32
     SendString("WIN");
+    // TODO: These should be based on uname(3) output.
 #elif defined __APPLE__
     SendString("MAC");
+#elif defined __FreeBSD__
+    SendString("BSD");
 #else
     SendString("LNX");
 #endif

@@ -1,6 +1,4 @@
-﻿// $Id: nofFlagWorker.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -118,7 +116,7 @@ void nofFlagWorker::GoToFlag()
     else
     {
         // Weg suchen
-        dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
+        unsigned char dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
 
         // Wenns keinen gibt, rumirren, ansonsten hinlaufen
         if(dir == 0xFF)

@@ -1,6 +1,4 @@
-﻿// $Id: ctrlVarDeepening.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -57,8 +55,8 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
     // of only-text objects down to the Window class. This is a special
     // situation, as we are a Deepening _and_ a VarText instead
     // of owning the VarText.
-    this->width  = width;
-    this->height = height;
+    this->width_  = width;
+    this->height_ = height;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,48 +67,9 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
  */
 bool ctrlVarDeepening::Draw_(void)
 {
-    Draw3D(x, y, width, height, tc, 2);
+    Draw3D(x_, y_, width_, height_, tc, 2);
 
-    char buffer[1025];
-
-    // variablen Inhalt erzeugen
-    for(unsigned int i = 0, j = 0, k = 0; i < text.length() && j < 1024; ++i)
-    {
-        if(text[i] == '%')
-        {
-            ++i;
-            char temp[1025];
-            switch(text[i])
-            {
-                case 'd':
-                {
-                    snprintf(temp, 1024, "%d", *(int*)vars[k++]);
-                    for(unsigned int x = 0; x < strlen(temp); ++x)
-                        buffer[j++] = temp[x];
-                } break;
-                case 's':
-                {
-                    snprintf(temp, 1024, "%s", (char*)vars[k++]);
-                    for(unsigned int x = 0; x < strlen(temp); ++x)
-                        buffer[j++] = temp[x];
-                } break;
-                default:
-                {
-                    buffer[j++] = text[i - 1];
-                    buffer[j++] = text[i];
-                } break;
-            }
-        }
-        else
-            buffer[j++] = text[i];
-        buffer[j] = '\0';
-    }
-    //vsnprintf(buffer, 1024, text, *(va_list*)&vars);
-
-    // letzte byte nullen (safety, vsnprintf schreibt bei zu großem string kein null-terminator)
-    buffer[1024] = '\0';
-
-    font->Draw(x + width / 2, y + height / 2, buffer, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+    font->Draw(x_ + width_ / 2, y_ + height_ / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
 
     return true;
 }

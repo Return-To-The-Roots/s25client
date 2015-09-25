@@ -1,6 +1,4 @@
-﻿// $Id: ctrlEdit.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,6 +22,7 @@
 
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Font.h"
+#include "driver/src/MouseCoords.h"
 
 #include <sstream>
 
@@ -54,8 +53,8 @@ ctrlEdit::ctrlEdit(Window* parent,
                    bool disabled,
                    bool notify)
     : Window(x, y, id, parent, width, height),
-      maxlength(maxlength), tc(tc), font(font), password(password), disabled(disabled),
-      focus(false), newfocus(false), notify(notify), number_only(false)
+      maxLength_(maxlength), texColor_(tc), font_(font), isPassword_(password), isDisabled_(disabled),
+      focus_(false), newFocus_(false), notify_(notify), numberOnly_(false)
 {
     SetText("");
 }
@@ -70,10 +69,10 @@ ctrlEdit::ctrlEdit(Window* parent,
  */
 void ctrlEdit::SetText(const std::string& text)
 {
-    cursor_pos = 0;
-    view_start = 0;
+    cursorPos_ = 0;
+    viewStart_ = 0;
 
-    this->text = L"";
+    this->text_ = L"";
 
     for(unsigned i = 0; i < unsigned(text.length()); ++i)
         AddChar(text.at(i));
@@ -84,10 +83,10 @@ void ctrlEdit::SetText(const unsigned int text)
     std::stringstream textt;
     textt << text;
 
-    cursor_pos = 0;
-    view_start = 0;
+    cursorPos_ = 0;
+    viewStart_ = 0;
 
-    this->text = L"";
+    this->text_ = L"";
 
     for(unsigned i = 0; i < unsigned(textt.str().length()); ++i)
         AddChar(textt.str().at(i));
@@ -96,8 +95,8 @@ void ctrlEdit::SetText(const unsigned int text)
 const std::string ctrlEdit::GetText(void) const
 {
     std::string t;
-    for(unsigned int i = 0; i < text.length(); ++i)
-        t += font->Unicode_to_Utf8(text[i]);
+    for(unsigned int i = 0; i < text_.length(); ++i)
+        t += font_->Unicode_to_Utf8(text_[i]);
     return t;
 }
 
@@ -112,54 +111,54 @@ const std::string ctrlEdit::GetText(void) const
 bool ctrlEdit::Draw_(void)
 {
     // Box malen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, texColor_, 2);
 
     std::wstring dtext;
 
     // Text zeichnen
-    if(password)
-        dtext = std::wstring(text.length(), '*');
+    if(isPassword_)
+        dtext = std::wstring(text_.length(), '*');
     else
-        dtext = text;
+        dtext = text_;
 
-    const unsigned max_width = width - 8 - font->getDx();
+    const unsigned max_width = width_ - 8 - font_->getDx();
     unsigned short max;
-    font->getWidth(dtext.substr(view_start), unsigned(text.length()) - view_start, max_width, &max);
-    while(max > 0 && text.length() - view_start > max)
+    font_->getWidth(dtext.substr(viewStart_), unsigned(text_.length()) - viewStart_, max_width, &max);
+    while(max > 0 && text_.length() - viewStart_ > max)
     {
-        ++view_start;
-        font->getWidth(&dtext[view_start], unsigned(text.length()) - view_start, max_width, &max);
+        ++viewStart_;
+        font_->getWidth(&dtext[viewStart_], unsigned(text_.length()) - viewStart_, max_width, &max);
     }
 
-    if(view_start > 0)
+    if(viewStart_ > 0)
     {
-        font->getWidth(dtext, unsigned(text.length()), max_width, &max);
-        while(view_start > 0 && unsigned(text.length()) - view_start <= max)
+        font_->getWidth(dtext, unsigned(text_.length()), max_width, &max);
+        while(viewStart_ > 0 && unsigned(text_.length()) - viewStart_ <= max)
         {
-            --view_start;
+            --viewStart_;
 
             if(max > 0)
-                font->getWidth(&dtext[view_start], unsigned(text.length()) - view_start, max_width, &max);
+                font_->getWidth(&dtext[viewStart_], unsigned(text_.length()) - viewStart_, max_width, &max);
         }
     }
 
-    unsigned short start = view_start;
-    if(cursor_pos > 5 && cursor_pos - 5 < view_start)
-        start = cursor_pos - 5;
-    if(cursor_pos <= 5)
+    unsigned short start = viewStart_;
+    if(cursorPos_ > 5 && cursorPos_ - 5 < viewStart_)
+        start = cursorPos_ - 5;
+    if(cursorPos_ <= 5)
         start = 0;
-    font->Draw(GetX() + 4, GetY() + height / 2, dtext.substr(start), glArchivItem_Font::DF_VCENTER,
-               (focus ? 0xFFFFA000 : COLOR_YELLOW), 0, width - 8);
+    font_->Draw(GetX() + 4, GetY() + height_ / 2, dtext.substr(start), glArchivItem_Font::DF_VCENTER,
+               (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, width_ - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
-    if(focus && !disabled && VIDEODRIVER.GetTickCount() % 1000 < 500)
+    if(focus_ && !isDisabled_ && VIDEODRIVER.GetTickCount() % 1000 < 500)
     {
         unsigned short cwidth = 5;
 
-        if(cursor_pos - start > 0)
-            cwidth = font->getWidth(&dtext[start], cursor_pos - start) + 4;
+        if(cursorPos_ > start)
+            cwidth = font_->getWidth(&dtext[start], cursorPos_ - start) + 4;
 
-        DrawRectangle(GetX() + cwidth , GetY() + ( height - (font->getHeight() + 2) ) / 2, 1, font->getHeight() + 2, 0xFFFFA000);
+        DrawRectangle(GetX() + cwidth , GetY() + ( height_ - (font_->getHeight() + 2) ) / 2, 1, font_->getHeight() + 2, 0xFFFFA000);
     }
 
     return true;
@@ -176,13 +175,13 @@ bool ctrlEdit::Draw_(void)
 void ctrlEdit::AddChar(unsigned int c)
 {
     // Number-only text fields accept numbers only ;)
-    if(number_only && !(c >= '0' && c <= '9'))
+    if(numberOnly_ && !(c >= '0' && c <= '9'))
         return;
 
-    if(maxlength > 0 && text.size() >= maxlength)
+    if(maxLength_ > 0 && text_.size() >= maxLength_)
         return;
 
-    text.insert(cursor_pos, 1, c);
+    text_.insert(cursorPos_, 1, c);
     CursorRight();
 }
 
@@ -194,13 +193,13 @@ void ctrlEdit::AddChar(unsigned int c)
  */
 void ctrlEdit::RemoveChar()
 {
-    if(cursor_pos > 0 && text.length() > 0)
+    if(cursorPos_ > 0 && text_.length() > 0)
     {
-        text.erase(cursor_pos - 1, 1);
+        text_.erase(cursorPos_ - 1, 1);
 
         // View verschieben
-        while(text.length() > 0 && text.length() <= view_start)
-            --view_start;
+        while(text_.length() > 0 && text_.length() <= viewStart_)
+            --viewStart_;
 
         CursorLeft();
     }
@@ -214,10 +213,10 @@ void ctrlEdit::RemoveChar()
  */
 void ctrlEdit::Notify()
 {
-    if(!notify || !parent)
+    if(!notify_ || !parent_)
         return;
 
-    parent->Msg_EditChange(GetID());
+    parent_->Msg_EditChange(GetID());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -228,7 +227,7 @@ void ctrlEdit::Notify()
  */
 void ctrlEdit::Msg_PaintAfter()
 {
-    focus = newfocus;
+    focus_ = newFocus_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -239,7 +238,7 @@ void ctrlEdit::Msg_PaintAfter()
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    if((newfocus = Coll(mc.x, mc.y, GetX(), GetY(), width, height)))
+    if((newFocus_ = Coll(mc.x, mc.y, GetX(), GetY(), width_, height_)))
         return false; /// vorläufig, um Fokus zu für andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
     else
         return false;
@@ -248,8 +247,8 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 // vorläufig
 bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 {
-    if(!Coll(mc.x, mc.y, GetX(), GetY(), width, height))
-        newfocus = false;
+    if(!Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+        newFocus_ = false;
 
     return false;
 }
@@ -263,7 +262,7 @@ bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 {
     // hat das Steuerelement den Fokus?
-    if(!focus)
+    if(!focus_)
         return false;
 
     switch(ke.kt)
@@ -282,24 +281,24 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while (cursor_pos > 0 && std::wstring(L" \t\n-+=").find(text[cursor_pos - 1]) != std::wstring::npos)
+                while (cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) != std::wstring::npos)
                 {
                     CursorLeft();
-                    if(cursor_pos == 0)
+                    if(cursorPos_ == 0)
                         break;
                 }
 
                 // Und dann über alles, was kein Trenner ist
-                while (cursor_pos > 0 && std::wstring(L" \t\n-+=").find(text[cursor_pos - 1]) == std::wstring::npos)
+                while (cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) == std::wstring::npos)
                 {
                     CursorLeft();
-                    if(cursor_pos == 0)
+                    if(cursorPos_ == 0)
                         break;
                 }
             }
 
             // Sonst nur einen Schritt
-            if (cursor_pos > 0)
+            if (cursorPos_ > 0)
                 CursorLeft();
         } break;
 
@@ -309,41 +308,41 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while (cursor_pos + 1 < text.length() && std::wstring(L" \t\n-+=").find(text[cursor_pos + 1]) != std::wstring::npos)
+                while (cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) != std::wstring::npos)
                 {
                     CursorRight();
-                    if(cursor_pos == text.length())
+                    if(cursorPos_ == text_.length())
                         break;
                 }
                 // Und dann über alles, was kein Trenner ist
-                while (cursor_pos + 1 < text.length() && std::wstring(L" \t\n-+=").find(text[cursor_pos + 1]) == std::wstring::npos)
+                while (cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) == std::wstring::npos)
                 {
                     CursorRight();
-                    if(cursor_pos == text.length())
+                    if(cursorPos_ == text_.length())
                         break;
                 }
             }
 
             // Sonst nur einen Schritt
-            if (cursor_pos < text.length())
+            if (cursorPos_ < text_.length())
                 CursorRight();
         } break;
 
         case KT_CHAR: // Zeichen eingegeben
         {
-            if(!disabled && font->CharExist( ke.c ))
+            if(!isDisabled_ && font_->CharExist( ke.c ))
                 AddChar(ke.c);
         } break;
 
         case KT_BACKSPACE: // Backspace gedrückt
         {
-            if(!disabled)
+            if(!isDisabled_)
                 RemoveChar();
         } break;
 
         case KT_DELETE: // Entfernen gedrückt
         {
-            if(!disabled && cursor_pos < text.length())
+            if(!isDisabled_ && cursorPos_ < text_.length())
             {
                 CursorRight();
                 RemoveChar();
@@ -352,19 +351,19 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
         case KT_RETURN: // Enter gedrückt
         {
-            if(!disabled && parent)
-                parent->Msg_EditEnter(GetID());
+            if(!isDisabled_ && parent_)
+                parent_->Msg_EditEnter(GetID());
         } break;
 
         case KT_HOME: // Pos1 gedrückt
         {
-            while(cursor_pos > 0)
+            while(cursorPos_ > 0)
                 CursorLeft();
         } break;
 
         case KT_END: // Ende gedrückt
         {
-            while(cursor_pos < text.length())
+            while(cursorPos_ < text_.length())
                 CursorRight();
         } break;
     }

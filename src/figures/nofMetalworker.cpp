@@ -1,6 +1,4 @@
-﻿// $Id: nofMetalworker.cpp 9447 2014-06-20 21:40:55Z jh $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,6 +29,7 @@
 #include "SoundManager.h"
 
 #include "ingameWindows/iwTools.h"
+#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -45,8 +44,20 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
 {
 }
 
-nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd->PopUnsignedChar()))
 {
+    if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
+    {
+        LOG.lprintf("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, report this!");
+        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        current_ev = em->AddEvent(this, 1000, 2);
+    }
+}
+
+void nofMetalworker::Serialize(SerializedGameData* sgd) const
+{
+    nofWorkman::Serialize(sgd);
+    sgd->PushUnsignedChar(nextProducedTool);
 }
 
 
@@ -94,7 +105,7 @@ unsigned short nofMetalworker::GetCarryID() const
 }
 
 /// Zuordnungen Werkzeugeinstellungs-ID - Richtige IDs
-const GoodType TOOLS_SETTINGS_IDS[12] =
+const GoodType TOOLS_SETTINGS_IDS[TOOL_COUNT] =
 {
     GD_TONGS,       // Zange
     GD_AXE,         // Axt,
@@ -118,62 +129,98 @@ unsigned nofMetalworker::ToolsOrderedTotal() const
     return sum;
 }
 
-GoodType nofMetalworker::ProduceWare()
+GoodType nofMetalworker::GetOrderedTool()
 {
     // qx:tools
+    int prio = -1;
+    int tool = -1;
+
+    for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        int prio = -1;
-        int tool = -1;
-        
-        for (unsigned i = 0; i < TOOL_COUNT; ++i)
+        if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->tools_settings[i] > prio) )
         {
-            if (gwg->GetPlayer(player)->tools_ordered[i] > 0 && (gwg->GetPlayer(player)->tools_settings[i] > prio) )
-            {
-                prio = gwg->GetPlayer(player)->tools_settings[i];
-                tool = i;
-            }
-        }
-        
-        if (tool != -1)
-        {
-            --gwg->GetPlayer(player)->tools_ordered[tool];
-            
-            if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
-            {
-                GAMECLIENT.SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
-            }
-            
-            iwTools::UpdateOrders();
-            return TOOLS_SETTINGS_IDS[tool];
+            prio = gwg->GetPlayer(player)->tools_settings[i];
+            tool = i;
         }
     }
 
+    if (tool != -1)
+    {
+        --gwg->GetPlayer(player)->tools_ordered[tool];
+
+        if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
+        {
+            GAMECLIENT.SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
+        }
+
+        iwTools::UpdateOrders();
+        return TOOLS_SETTINGS_IDS[tool];
+    }
+    return GD_NOTHING;
+}
+
+GoodType nofMetalworker::GetRandomTool()
+{
     // Je nach Werkzeugeinstellungen zufällig ein Werkzeug produzieren, je größer der Balken,
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
-    for(unsigned i = 0; i < 12; ++i)
+    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
         all_size += gwg->GetPlayer(player)->tools_settings[i];
 
-    // Wenn alle auf 0 gesetzt sind, einfach eins zufällig auswählen
-    if(!all_size)
-        return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, obj_id, 12)];
+	// if they're all zero
+    if(all_size == 0)
+	{
+	    // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
+		if (GAMECLIENT.GetGGS().isEnabled(ADDON_METALWORKSBEHAVIORONZERO) && GAMECLIENT.GetGGS().getSelection(ADDON_METALWORKSBEHAVIORONZERO) == 1)
+			return GD_NOTHING;
+		else
+			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 12)];
+	}
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
     // scheinlichkeit (Balken), desto öfter im Array enthalten
-    unsigned char* random_array = new unsigned char[all_size];
+    std::vector<unsigned char> random_array(all_size);
     unsigned pos = 0;
 
-    for(unsigned i = 0; i < 12; ++i)
+    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
     {
         for(unsigned g = 0; g < gwg->GetPlayer(player)->tools_settings[i]; ++g)
             random_array[pos++] = i;
     }
 
-    GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, obj_id, all_size)]];
-
-    delete [] random_array;
+    GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), all_size)]];
 
     return tool;
+}
 
+bool nofMetalworker::ReadyForWork()
+{
+    nextProducedTool = GetOrderedTool();
+    if(nextProducedTool == GD_NOTHING)
+        nextProducedTool = GetRandomTool();
+
+    if(nextProducedTool != GD_NOTHING)
+        return true;
+
+    // Try again in some time (3000GF ~= 2min at 40ms/GF)
+    current_ev = em->AddEvent(this, 3000, 2);
+    return false;
+}
+
+GoodType nofMetalworker::ProduceWare()
+{
+    return nextProducedTool;
+}
+
+void nofMetalworker::HandleDerivedEvent(const unsigned int id)
+{
+    if(id != 2)
+    {
+        nofWorkman::HandleDerivedEvent(id);
+        return;
+    }
+    assert(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
+    current_ev = NULL;
+    TryToWork();
 }

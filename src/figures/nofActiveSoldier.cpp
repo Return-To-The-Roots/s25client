@@ -1,6 +1,4 @@
-﻿// $Id: nofActiveSoldier.cpp 9601 2015-02-07 11:09:14Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -120,17 +118,20 @@ void nofActiveSoldier::WalkingHome()
     {
         // Enter via the door
         StartWalking(1);
+        return;
     }
     // or are have we come into the building?
-    else if(GetPos() == building->GetPos())
+    if(GetPos() == building->GetPos())
     {
         // We're there!
         building->AddActiveSoldier(this);
         // Remove myself from the map
         gwg->RemoveFigure(this, pos);
+        return;
     }
+    unsigned char dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
     // Or we don't find a route?
-    else if((dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100)) == 0xFF)
+    if(dir == 0xFF)
     {
         // Start wandering around then
         StartWandering();
@@ -147,7 +148,6 @@ void nofActiveSoldier::WalkingHome()
         if(FindEnemiesNearby())
             // Enemy found -> abort, because nofActiveSoldier handles all things now (inclusive one walking step)
             return;
-
 
         // Start walking
         StartWalking(dir);
@@ -252,7 +252,7 @@ void nofActiveSoldier::ExpelEnemies()
             // Not walking? (Could be carriers who are waiting for wares on roads)
             if(!fig->IsMoving())
                 // Go, go, go
-                fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+                fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
         }
     }
 }
@@ -343,13 +343,14 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 void nofActiveSoldier::IncreaseRank()
 {   
 	//max rank reached? -> dont increase!
-	if(MAX_MILITARY_RANK - (GetRank() + GAMECLIENT.GetGGS().getSelection(ADDON_MAX_RANK)) < 1)
+	if(GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
 		return;
-	// Einen Rang höher
+
+    // Einen Rang höher
+    // Inventur entsprechend erhöhen und verringern
+    gwg->GetPlayer(player)->DecreaseInventoryJob(job, 1);
     job = Job(unsigned(job) + 1);
-	// Inventur entsprechend erhöhen und verringern
     gwg->GetPlayer(player)->IncreaseInventoryJob(job, 1);
-    gwg->GetPlayer(player)->DecreaseInventoryJob(Job(unsigned(job) - 1), 1);
 }
 
 /// Handle state "meet enemy" after each walking step
@@ -404,8 +405,8 @@ void nofActiveSoldier::MeetingEnemy()
     // Not at the fighting spot yet, continue walking there
     else
     {
-        dir = gwg->FindHumanPath(pos, fight_spot, MAX_ATTACKING_RUN_DISTANCE);
-        if (dir != 255)
+        unsigned char dir = gwg->FindHumanPath(pos, fight_spot, MAX_ATTACKING_RUN_DISTANCE);
+        if (dir != 0xFF)
         {
             StartWalking(dir);
         }
@@ -462,7 +463,7 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
 bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot)
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
-    MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetDir());
+    MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
     MapPoint middle( (pos.x + otherPos.x) / 2, (pos.y + otherPos.y) / 2 );
 
     // Did we cross the borders ? ( horizontally)

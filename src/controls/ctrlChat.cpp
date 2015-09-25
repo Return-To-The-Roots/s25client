@@ -1,6 +1,4 @@
-﻿// $Id: ctrlChat.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,6 +23,7 @@
 #include "ctrlScrollBar.h"
 #include "ogl/glArchivItem_Font.h"
 #include "Log.h"
+#include "driver/src/MouseCoords.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -36,8 +35,6 @@ static char THIS_FILE[] = __FILE__;
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
-/// Einschubbreite für sekundäre Zeilen (die umgebrochen wurden)
-static const unsigned short SECONDARY_PUGGING = 30;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -104,7 +101,7 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
 
     // Remember some things
     const bool was_on_bottom = (scroll->GetPos() + page_size == chat_lines.size());
-    const bool width_changed = (this->width != width && chat_lines.size());
+    const bool width_changed = (this->width_ != width && chat_lines.size());
     unsigned short position = 0;
     // Remember the entry on top
     for(unsigned short i = 1; i <= scroll->GetPos(); ++i)
@@ -114,7 +111,7 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
     // Rewrap
     if(width_changed)
     {
-        this->width = width;
+        this->width_ = width;
         chat_lines.clear();
         for(unsigned short i = 0; i < raw_chat_lines.size(); ++i)
             WrapLine(i);
@@ -158,7 +155,7 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
 bool ctrlChat::Draw_()
 {
     // Box malen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     // Scrolleiste zeichnen
     DrawControls();
@@ -225,7 +222,7 @@ void ctrlChat::WrapLine(unsigned short i)
     unsigned short prefix_width = ( line.time_string.length() ? font->getWidth(line.time_string) : 0) + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0 );
 
     // Reicht die Breite des Textfeldes noch nichtmal dafür aus?
-    if(prefix_width > width - 2 - SCROLLBAR_WIDTH)
+    if(prefix_width > width_ - 2 - SCROLLBAR_WIDTH)
     {
         // dann können wir das gleich vergessen
         return;
@@ -234,19 +231,18 @@ void ctrlChat::WrapLine(unsigned short i)
     glArchivItem_Font::WrapInfo wi;
 
     // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
-    font->GetWrapInfo(line.msg, width - prefix_width - 2 - SCROLLBAR_WIDTH, width - 2 - SCROLLBAR_WIDTH, wi);
+    font->GetWrapInfo(line.msg, width_ - prefix_width - 2 - SCROLLBAR_WIDTH, width_ - 2 - SCROLLBAR_WIDTH, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::string* strings = new std::string[wi.positions.size()];
-
-    wi.CreateSingleStrings(line.msg, strings);
+    std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
 
     // Zeilen hinzufügen
-    for(unsigned int i = 0; i < wi.positions.size(); ++i)
+    for(unsigned int i = 0; i < strings.size(); ++i)
     {
         ChatLine wrap_line;
         // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
-        if(!(wrap_line.secondary = (i ? true : false)))
+        wrap_line.secondary = (i ? true : false);
+        if(!wrap_line.secondary)
         {
             wrap_line.time_string = line.time_string;
             wrap_line.player = line.player;
@@ -259,7 +255,6 @@ void ctrlChat::WrapLine(unsigned short i)
         chat_lines.push_back(wrap_line);
     }
 
-    delete [] strings;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -344,7 +339,7 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
     // Forward to ScrollBar, if mouse over control
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 2, height_ - 4))
     {
         // Simulate three Button Clicks
         scrollbar->Msg_ButtonClick(0);
@@ -368,7 +363,7 @@ bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
     // Forward to ScrollBar, if mouse over control
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 2, height_ - 4))
     {
         // Simulate three Button Clicks
         scrollbar->Msg_ButtonClick(1);

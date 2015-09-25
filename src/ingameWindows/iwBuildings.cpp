@@ -1,6 +1,4 @@
-﻿// $Id: iwBuildings.cpp 9595 2015-02-01 09:40:54Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -104,7 +102,7 @@ iwBuildings::iwBuildings(GameWorldViewer* const gwv, dskGameInterface* const gi)
     }
 
     // Hilfe-Button
-    AddImageButton(32, width - 14 - 30, height - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(32, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
 
 }
 
@@ -171,7 +169,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			{
 				gwv->MoveToMapObject((*it)->GetPos());
 				iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
-				nextscrn->Move(x,y);
+				nextscrn->Move(x_,y_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
 			}
@@ -186,7 +184,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			{
 				gwv->MoveToMapObject((*it)->GetPos());
 				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
-				nextscrn->Move(x,y);
+				nextscrn->Move(x_,y_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
 			}

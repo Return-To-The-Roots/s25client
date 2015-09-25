@@ -1,6 +1,4 @@
-﻿// $Id: customborderbuilder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -85,7 +83,7 @@ CustomBorderBuilder::~CustomBorderBuilder()
 int CustomBorderBuilder::loadEdges(const ArchivInfo* archiveInfo)
 {
     // simples Fehlerabfangen
-    if (archiveInfo->getCount() != 57)
+    if (archiveInfo->size() != 57)
         return 1; // nicht RESOURCE.DAT übergeben
 
     // Musterstücke einladen
@@ -262,8 +260,7 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
         glArchivItem_Bitmap_RLE* customEdgeRLE = new glArchivItem_Bitmap_RLE;
         customEdgeRLE->setWidth(customEdge[i]->w); customEdgeRLE->setHeight(customEdge[i]->h); customEdgeRLE->tex_alloc();
         BdrBitmap2BitmapRLE2(customEdge[i], customEdgeRLE);
-        borderInfo->setC(i, customEdgeRLE);
-        delete customEdgeRLE;
+        borderInfo->set(i, customEdgeRLE);
     }
     // Speicher der BdrBitmap's wieder freigeben
     for(unsigned char i = 0; i < 4; i++)

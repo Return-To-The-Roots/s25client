@@ -1,6 +1,4 @@
-﻿// $Id: iwRoadWindow.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,8 +27,7 @@ class iwRoadWindow : public IngameWindow
 {
     private:
         dskGameInterface* const GameInterface;
-        unsigned short last_x;
-        unsigned short last_y;
+        Point<unsigned short> mousePosAtOpen_;
 
     public:
         iwRoadWindow(dskGameInterface* const gi, bool flagpossible, int mouse_x, int mouse_y);

@@ -1,8 +1,5 @@
-#################################################################################
-### $Id: CMakeLists.txt 7104 2011-03-29 13:44:22Z FloSoft $
-#################################################################################
 
-IF ("${COMPILEFOR}" STREQUAL "windows" )
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 	FIND_LIBRARY(GDI32_LIBRARY    gdi32)
 	FIND_LIBRARY(OPENGL32_LIBRARY opengl32)
 	FIND_LIBRARY(USER32_LIBRARY   user32)
@@ -13,7 +10,7 @@ IF ("${COMPILEFOR}" STREQUAL "windows" )
 		INCLUDE_DIRECTORIES(../../../src)
 	
 		INCLUDE(AddFileDependencies)
-		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 		ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
 		ADD_DEPENDENCIES(videoWinAPI updateversion)
@@ -21,11 +18,8 @@ IF ("${COMPILEFOR}" STREQUAL "windows" )
 		TARGET_LINK_LIBRARIES(videoWinAPI videodrv gdi32 opengl32 user32) 
 		# ${GDI32_LIBRARY} ${OPENGL32_LIBRARY} ${USER32_LIBRARY})
 	
-		SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
-		IF ( "${COMPILEFOR}" STREQUAL "windows")
-			ADD_DEFINITIONS(-DBUILD_DLL)
-			SET(SL_PREFIX "")
-		ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+		ADD_DEFINITIONS(-DBUILD_DLL)
+		SET(SL_PREFIX "")
 		
 		IF (MSVC)
 			SET_TARGET_PROPERTIES(videoWinAPI PROPERTIES
@@ -38,6 +32,6 @@ IF ("${COMPILEFOR}" STREQUAL "windows" )
 
 		INSTALL(TARGETS videoWinAPI RUNTIME DESTINATION ${LIBDIR}/driver/video)
 	#ENDIF (GDI32_LIBRARY AND OPENGL_LIBRARY AND USER32_LIBRARY)
-ENDIF ("${COMPILEFOR}" STREQUAL "windows" )
+ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 
 #################################################################################

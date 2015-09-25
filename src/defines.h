@@ -1,6 +1,4 @@
-﻿// $Id: main.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -34,7 +32,7 @@
 #    define WIN32_LEAN_AND_MEAN
 #    ifdef _MSC_VER
 #        include <crtdbg.h>
-#        ifndef snprintf
+#        if !defined(snprintf) && _MSC_VER < 1800
 #            define snprintf _snprintf
 #        endif
 #        ifndef assert
@@ -108,6 +106,12 @@ inline T max(T a, T b) { return (a < b) ? b : a; }
 /// Berechnet Differenz von 2 (unsigned!) Werten
 template <typename T>
 inline T SafeDiff(T a, T b) { return (a > b) ? a - b : b - a; }
+
+// Fwd decl
+namespace boost{namespace filesystem{}}
+
+/// Shortcut for boost::filesystem
+namespace bfs = boost::filesystem;
 
 #endif // defines_h__
 

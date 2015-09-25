@@ -1,7 +1,4 @@
 #!/bin/bash
-###############################################################################
-## $Id: preinstall.sh.cmake 6807 2010-10-18 14:12:04Z FloSoft $
-###############################################################################
 
 # Editable Variables
 CMAKE_COMMAND=cmake
@@ -9,7 +6,7 @@ CMAKE_COMMAND=cmake
 ###############################################################################
 
 if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
-	echo "You have to install CMake"
+	echo "You have to install CMake" >&2
 	exit 1
 fi
 
@@ -32,7 +29,7 @@ mecho()
 
 ###############################################################################
 
-COMPILEFOR=@COMPILEFOR@
+SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
 PREFIX=@PREFIX@
 BINDIR=@BINDIR@
 DATADIR=@DATADIR@
@@ -40,71 +37,7 @@ LIBDIR=@LIBDIR@
 
 ###############################################################################
 
-while test $# != 0 ; do
-	case $1 in
-	--*=*)
-		ac_option=`expr "X$1" : 'X\([^=]*\)='`
-		ac_optarg=`expr "X$1" : 'X[^=]*=\(.*\)'`
-		ac_shift=:
-	;;
-	*)
-		ac_option=$1
-		ac_optarg=$2
-		ac_shift=shift
-	;;
-	esac
-
-	case $ac_option in
-	-compilefor | --compilefor)
-		$ac_shift
-		COMPILEFOR=$ac_optarg
-	;;
-	-prefix | --prefix)
-		$ac_shift
-		PREFIX=$ac_optarg
-	;;
-	-bindir | --bindir)
-		$ac_shift
-		BINDIR=$ac_optarg
-	;;
-	-datadir | --datadir)
-		$ac_shift
-		DATADIR=$ac_optarg
-	;;
-	-libdir | --libdir)
-		$ac_shift
-		LIBDIR=$ac_optarg
-	;;
-	*)
-		echo "Unknown option: $ac_option"
-		exit 1
-	;;
-	esac
-
-	shift
-done
-
-if [ -z "${COMPILEFOR}" ] ; then
-	COMPILEFOR=$(uname -s | tr '[:upper:]' '[:lower:]')
-fi
-
-if [ -z "${PREFIX}" ] ; then
-	PREFIX=/usr/local
-fi
-
-if [ -z "${BINDIR}" ] ; then
-	BINDIR=${PREFIX}/bin
-fi
-
-if [ -z "${DATADIR}" ] ; then
-	DATADIR=${PREFIX}/share/s25rttr
-fi
-
-if [ -z "${LIBDIR}" ] ; then
-	LIBDIR=${DATADIR}
-fi
-
-echo "## Installing for \"${COMPILEFOR}\""
+echo "## Installing for \"${SYSTEM_NAME}\""
 echo "## Using Path-Prefix \"${PREFIX}\""
 echo "## Using Binary Dir \"${BINDIR}\""
 echo "## Using Data Dir \"${DATADIR}\""
@@ -135,11 +68,20 @@ mkdir -vp ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
 
 mecho --blue "## Installing binaries"
 
-if [ "$COMPILEFOR" = "windows" ] ; then
-	cp -v ${SRCDIR}/release/bin/rttr.bat ${DESTDIR}${BINDIR} || exit 1
-elif [ "$COMPILEFOR" = "linux" ] ; then
-	cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
-fi
+case "$SYSTEM_NAME" in
+	Windows)
+		cp -v ${SRCDIR}/release/bin/rttr.bat ${DESTDIR}${BINDIR} || exit 1
+	;;
+	Linux|FreeBSD)
+		cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
+	;;
+	Darwin)
+	;;
+	*)
+		echo "$SYSTEM_NAME not supported" >&2
+		exit 1
+	;;
+esac
 
 mecho --blue "## Installing RTTR directory"
 if [ -d ${SRCDIR}/RTTR/.svn ] ; then
@@ -155,23 +97,29 @@ mecho --blue "## Installing language files"
 cp -v ${SRCDIR}/RTTR/languages/*.mo ${DESTDIR}${DATADIR}/RTTR/languages/ || exit 1
 
 mecho --blue "## Installing additional documents"
-if [ "$COMPILEFOR" = "windows" ] ; then
-	cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR} || exit 1
-	cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR} || exit 1
-else
-	cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
-	cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
-fi
+case "$SYSTEM_NAME" in
+	Windows)
+		cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR} || exit 1
+		cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR} || exit 1
+	;;
+	*)
+		cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
+		cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
+	;;
+esac
 
 mecho --blue "## Installing S2 placeholder"
 
-if [ "$COMPILEFOR" = "windows" ] ; then
-	echo "creating ${DESTDIR}put\ your\ S2-Installation\ in\ here"
-	echo "put your S2-Installation in here" > ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
-else
-	echo "creating ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
-	echo "put your S2-Installation in here" > ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
-fi
+case "$SYSTEM_NAME" in
+	Windows)
+		echo "creating ${DESTDIR}put\ your\ S2-Installation\ in\ here"
+		echo "put your S2-Installation in here" > ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
+	;;
+	*)
+		echo "creating ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
+		echo "put your S2-Installation in here" > ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
+	;;
+esac
 
 exit 0
 

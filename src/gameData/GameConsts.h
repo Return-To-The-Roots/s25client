@@ -1,6 +1,4 @@
-﻿// $Id: GameConsts.h 9394 2014-05-04 12:39:31Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,54 +18,13 @@
 #ifndef GAMECONSTS_H_
 #define GAMECONSTS_H_
 
-/// Maximale Anzahl an Spielern
-const unsigned MAX_PLAYERS = 8;
-
-#define NATIVE_NAT_COUNT 4
-
 #include "mygettext.h"
 
 #include "gameData/NationConsts.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/GoodTypes.h"
-
-/// Team
-enum Team
-{
-    TM_NOTEAM = 0,
-    TM_RANDOMTEAM,
-    TM_TEAM1,
-    TM_TEAM2,
-    TM_TEAM3,
-    TM_TEAM4,
-    TM_RANDOMTEAM2,
-    TM_RANDOMTEAM3,
-    TM_RANDOMTEAM4
-};
-
-/// Anzahl der Team-Optionen
-const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
-
-const BuildingQuality TERRAIN_BQ[] =
-{
-    BQ_DANGER,
-    BQ_FLAG,
-    BQ_NOTHING,
-    BQ_CASTLE,
-    BQ_MINE,
-    BQ_MINE,
-    BQ_MINE,
-    BQ_MINE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_CASTLE,
-    BQ_NOTHING,
-    BQ_DANGER
-};
+#include "gameData/PlayerConsts.h"
 
 struct RoadWindowInfo
 {

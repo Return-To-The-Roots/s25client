@@ -1,6 +1,4 @@
-﻿// $Id: GameWorldViewer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -39,6 +37,7 @@
 #include "Settings.h"
 
 #include "GameServer.h"
+#include "driver/src/MouseCoords.h"
 
 GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {
@@ -61,8 +60,8 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
 
-    nobBaseMilitarySet buildings = LookForMilitaryBuildings(pt, 3);
-    for(nobBaseMilitarySet::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)

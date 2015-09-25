@@ -1,6 +1,4 @@
-﻿// $Id: iwRoadWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -44,7 +42,7 @@ static char THIS_FILE[] = __FILE__;
  */
 iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossible, int mouse_x, int mouse_y)
     : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
-      GameInterface(GameInterface), last_x(mouse_x), last_y(mouse_y)
+      GameInterface(GameInterface), mousePosAtOpen_(mouse_x, mouse_y)
 {
     // Bau abbrechen
     ctrlButton* cancel = AddImageButton(1, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 110), _("Interrupt road building"));
@@ -57,10 +55,10 @@ iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossi
         cancel->Move(46, 20);
     }
 
-    if(x + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        x = mouse_x - GetWidth() - 40;
-    if(y + GetIwHeight() > VIDEODRIVER.GetScreenHeight())
-        y = mouse_y - GetIwHeight() - 40;
+    if(x_ + GetWidth() > VIDEODRIVER.GetScreenWidth())
+        x_ = mouse_x - GetWidth() - 40;
+    if(y_ + GetIwHeight() > VIDEODRIVER.GetScreenHeight())
+        y_ = mouse_y - GetIwHeight() - 40;
 
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 45);
 }
@@ -85,7 +83,7 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 
     // Maus an vorherige Stelle setzen
-    VIDEODRIVER.SetMousePos(last_x, last_y);
+    VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
 
     // und fenster schließen
     Close();

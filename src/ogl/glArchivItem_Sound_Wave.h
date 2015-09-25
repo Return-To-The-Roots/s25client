@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Sound_Wave.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,7 +29,7 @@ class glArchivItem_Sound_Wave : public libsiedler2::baseArchivItem_Sound_Wave, p
         glArchivItem_Sound_Wave(void) : baseArchivItem_Sound(), baseArchivItem_Sound_Wave(), glArchivItem_Sound() {}
 
         /// Kopierkonstruktor von @p glArchivItem_Sound_Wave.
-        glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave* item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
+        glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
 
         /// Spielt den Sound ab.
         unsigned Play(const unsigned char volume, const bool loop);

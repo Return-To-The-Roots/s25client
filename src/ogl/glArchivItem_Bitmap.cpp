@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Bitmap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,6 +25,7 @@
 #include "Loader.h"
 
 #include "../libsiedler2/src/types.h"
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -69,8 +68,8 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap* item)
-    : baseArchivItem_Bitmap(item), texture(0), filter(GL_NEAREST)
+glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
+    : baseArchivItem_Bitmap(item), texture(0), filter(item.filter)
 {
 }
 
@@ -83,6 +82,16 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap* item)
 glArchivItem_Bitmap::~glArchivItem_Bitmap(void)
 {
     DeleteTexture();
+}
+
+glArchivItem_Bitmap& glArchivItem_Bitmap::operator=(const glArchivItem_Bitmap& item)
+{
+    if(this == &item)
+        return *this;
+    baseArchivItem_Bitmap::operator=(item);
+    texture = 0;
+    filter = item.filter;
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,9 +108,9 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
         return;
 
     if(src_w == 0)
-        src_w = width;
+        src_w = width_;
     if(src_h == 0)
-        src_h = height;
+        src_h = height_;
     if(dst_w == 0)
         dst_w = src_w;
     if(dst_h == 0)
@@ -120,8 +129,8 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 
     GL_T2F_C4UB_V3F_Struct tmp[4];
 
-    int x = -nx + dst_x;
-    int y = -ny + dst_y;
+    int x = -nx_ + dst_x;
+    int y = -ny_ + dst_y;
 
     tmp[0].x = tmp[1].x = GLfloat(x);
     tmp[2].x = tmp[3].x = GLfloat(x + dst_w);
@@ -131,11 +140,11 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 
     tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0f;
 
-    tmp[0].tx = tmp[1].tx = (GLfloat)src_x / tex_width;
-    tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / tex_width;
+    tmp[0].tx = tmp[1].tx = (GLfloat)src_x / tex_width_;
+    tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / tex_width_;
 
-    tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height;
-    tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height;
+    tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height_;
+    tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height_;
 
     tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
     tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
@@ -202,7 +211,7 @@ void glArchivItem_Bitmap::GenerateTexture(void)
 {
     texture = VIDEODRIVER.GenerateTexture();
 
-    if(!palette)
+    if(!palette_)
         setPalette(LOADER.GetPaletteN("pal5"));
 
     VIDEODRIVER.BindTexture(texture);
@@ -212,12 +221,9 @@ void glArchivItem_Bitmap::GenerateTexture(void)
 
     int iformat = GL_RGBA, dformat = GL_BGRA;
 
-    unsigned char* buffer = new unsigned char[tex_width * tex_height * 4];
+    std::vector<unsigned char> buffer(tex_width_ * tex_height_ * 4);
 
-    memset(buffer, 0, tex_width * tex_height * 4);
-    print(buffer, tex_width, tex_height, libsiedler2::FORMAT_RGBA, palette, 0, 0, 0, 0, 0, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width, tex_height, 0, dformat, GL_UNSIGNED_BYTE, buffer);
-
-    delete[] buffer;
+    print(&buffer.front(), tex_width_, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 0, 0, 0, 0, 0, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width_, tex_height_, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
 }
 

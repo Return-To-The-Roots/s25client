@@ -1,6 +1,4 @@
-﻿// $Id: Loader.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,6 +27,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "ogl/glArchivItem_Bob.h"
+#include "gameTypes/MapTypes.h"
 #include "../libsiedler2/src/ArchivInfo.h"
 #include "../libsiedler2/src/ArchivItem_Text.h"
 #include "../libsiedler2/src/ArchivItem_Ini.h"
@@ -45,6 +44,7 @@ namespace libsiedler2{
 
 class glSmartBitmap;
 class glSmartTexturePacker;
+class glArchivItem_Bitmap_Raw;
 
 const std::string CONFIG_NAME = "config";
 
@@ -64,6 +64,8 @@ class Loader : public Singleton<Loader>
         /// Lädt Dateien von Addons.
         bool LoadFilesFromAddon(const AddonId id);
         void fillCaches();
+        /// Deletes all loaded terrain textures
+        void ClearTerrainTextures();
         /// Lädt das Terrain.
         bool CreateTerrainTextures(void);
 
@@ -78,10 +80,10 @@ class Loader : public Singleton<Loader>
 
     private:
         bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL, bool load_always = true);
-        bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv);
-        bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv);
-        void ExtractTexture(libsiedler2::ArchivInfo* destination, Rect& rect);
-        void ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& rect, unsigned char color_count, unsigned char start_index);
+        bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv);
+        bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv);
+        glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
+        libsiedler2::ArchivInfo* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index);
 
         bool LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool load_always = true);
         bool LoadLsts(unsigned int dir);
@@ -91,24 +93,31 @@ class Loader : public Singleton<Loader>
         static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned int max = 0xFFFFFFFF);
 
     public:
-        inline glArchivItem_Bitmap* GetImageN(std::string file, unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>( files[file].get(nr) ); }
-        inline glArchivItem_Font* GetFontN(std::string file, unsigned int nr) { return dynamic_cast<glArchivItem_Font*>( files[file].get(nr) ); }
-        inline libsiedler2::ArchivItem_Palette* GetPaletteN(std::string file, unsigned int nr = 0) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>( files[file].get(nr) ); }
-        inline glArchivItem_Sound* GetSoundN(std::string file, unsigned int nr) { return dynamic_cast<glArchivItem_Sound*>( files[file].get(nr) ); }
-        inline const char* GetTextN(std::string file, unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Text*>( files[file].get(nr) ) ? dynamic_cast<libsiedler2::ArchivItem_Text*>( files[file].get(nr) )->getText() : "text missing"; }
-        inline libsiedler2::ArchivInfo* GetInfoN(std::string file) { return dynamic_cast<libsiedler2::ArchivInfo*>( &files[file] ); }
-        inline glArchivItem_Bob* GetBobN(std::string file) { return dynamic_cast<glArchivItem_Bob*>( files[file].get(0) ); };
+        inline glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>( files[file].get(nr) ); }
+        inline glArchivItem_Font* GetFontN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Font*>( files[file].get(nr) ); }
+        inline libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned int nr = 0) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>( files[file].get(nr) ); }
+        inline glArchivItem_Sound* GetSoundN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Sound*>( files[file].get(nr) ); }
+        inline std::string GetTextN(const std::string& file, unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Text*>( files[file].get(nr) ) ? dynamic_cast<libsiedler2::ArchivItem_Text*>( files[file].get(nr) )->getText() : "text missing"; }
+        inline libsiedler2::ArchivInfo* GetInfoN(const std::string& file) { return dynamic_cast<libsiedler2::ArchivInfo*>( &files[file] ); }
+        inline glArchivItem_Bob* GetBobN(const std::string& file) { return dynamic_cast<glArchivItem_Bob*>( files[file].get(0) ); };
         inline glArchivItem_Bitmap* GetNationImageN(unsigned int nation, unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(nation_gfx[nation]->get(nr)); }
         inline glArchivItem_Bitmap* GetMapImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(map_gfx->get(nr)); }
         inline glArchivItem_Bitmap* GetTexImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr)); }
         inline libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr)); }
         inline libsiedler2::ArchivItem_Ini* GetSettingsIniN(std::string name) { return static_cast<libsiedler2::ArchivItem_Ini*>( GetInfoN(CONFIG_NAME)->find(name.c_str()) ); }
+        /// Returns the texture for the given terrain. For animated textures the given frame is returned
+        glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
         // should not use this!
         const std::map<std::string, libsiedler2::ArchivInfo> &GetFiles(void) const { return files; }
 
     private:
         std::map<std::string, libsiedler2::ArchivInfo> files;
+        /// Terraintextures (unanimated)
+        std::map<TerrainType, glArchivItem_Bitmap*> terrainTextures;
+        /// Terraintextures (animated) (currently only water and lava)
+        std::map<TerrainType, libsiedler2::ArchivInfo*> terrainTexturesAnim;
+
         unsigned char lastgfx;
         libsiedler2::ArchivInfo* nation_gfx[NAT_COUNT];
         libsiedler2::ArchivInfo* map_gfx;
@@ -117,9 +126,6 @@ class Loader : public Singleton<Loader>
     public:
         libsiedler2::ArchivInfo sng_lst;
 
-        libsiedler2::ArchivInfo textures;
-        libsiedler2::ArchivInfo water;
-        libsiedler2::ArchivInfo lava;
         libsiedler2::ArchivInfo borders;
         libsiedler2::ArchivInfo roads;
         libsiedler2::ArchivInfo roads_points;

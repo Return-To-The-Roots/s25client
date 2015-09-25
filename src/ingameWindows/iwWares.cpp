@@ -1,6 +1,4 @@
-﻿// $Id: iwWares.cpp 9374 2014-04-29 15:42:33Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,6 +25,7 @@
 #include "WindowManager.h"
 
 #include "GameClient.h"
+#include "gameData/JobConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -97,7 +96,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             x = 0;
             ++y;
             if(y == 7)
-                continue;
+                break;
 
             four = !four;
         }

@@ -1,6 +1,4 @@
-﻿// $Id: iwBaseWarehouse.cpp 9592 2015-02-01 09:39:38Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -215,19 +213,19 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 						if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 						{
 							iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);
-							nextscrn->Move(x,y);
+							nextscrn->Move(x_,y_);
 							WINDOWMANAGER.Show(nextscrn);
 						}
 						else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 						{
 							iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
-							nextscrn->Move(x,y);
+							nextscrn->Move(x_,y_);
 							WINDOWMANAGER.Show(nextscrn);
 						}
 						else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 						{
 							iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
-							nextscrn->Move(x,y);
+							nextscrn->Move(x_,y_);
 							WINDOWMANAGER.Show(nextscrn);
 						}
 						break;

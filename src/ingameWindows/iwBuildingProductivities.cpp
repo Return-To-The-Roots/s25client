@@ -1,6 +1,4 @@
-﻿// $Id: iwBuildingProductivities.cpp 9594 2015-02-01 09:40:27Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -106,7 +104,7 @@ iwBuildingProductivities::iwBuildingProductivities()
     UpdatePercents();
 
     // Hilfe-Button
-    AddImageButton(500, width - 14 - 30, height - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(500, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
 }
 
 /// Aktualisieren der Prozente

@@ -1,6 +1,4 @@
-﻿// $Id: nofDefender.cpp 9537 2014-12-10 22:14:07Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -171,7 +169,7 @@ void nofDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
 }
 
 

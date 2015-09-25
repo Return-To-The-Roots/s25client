@@ -1,6 +1,4 @@
-﻿// $Id: noBaseBuilding.cpp 9402 2014-05-10 06:54:13Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

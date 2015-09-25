@@ -1,6 +1,4 @@
-ï»¿// $Id: nofScout_LookoutTower.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -82,4 +80,10 @@ void nofScout_LookoutTower::WorkplaceReached()
         GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
                                                _("Lookout-tower occupied"), PMC_MILITARY, pos, workplace->GetBuildingType(), workplace->GetNation()));
 
+}
+
+bool nofScout_LookoutTower::AreWaresAvailable()
+{
+    // Spähturm-Erkunder arbeiten nie!
+    return false;
 }

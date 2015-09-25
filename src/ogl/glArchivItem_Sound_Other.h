@@ -1,6 +1,4 @@
-﻿// $Id $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,7 +29,7 @@ class glArchivItem_Sound_Other : public libsiedler2::baseArchivItem_Sound_Other,
         glArchivItem_Sound_Other(void) : baseArchivItem_Sound(), baseArchivItem_Sound_Other(), glArchivItem_Music() {}
 
         /// Kopierkonstruktor von @p glArchivItem_Sound_Other.
-        glArchivItem_Sound_Other(const glArchivItem_Sound_Other* item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Other(item), glArchivItem_Music(item) {}
+        glArchivItem_Sound_Other(const glArchivItem_Sound_Other& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Other(item), glArchivItem_Music(item) {}
 
         /// Spielt die Musik ab.
         void Play(const unsigned repeats);

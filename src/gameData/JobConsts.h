@@ -1,6 +1,4 @@
-﻿// $Id: JobConsts.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,6 +19,11 @@
 #define JOB_CONSTS_H_
 
 #include "gameData/GameConsts.h"
+#include "gameTypes/JobTypes.h"
+#include <boost/array.hpp>
+
+
+extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;
 
 /// Berufsstruktur
 struct JobConst

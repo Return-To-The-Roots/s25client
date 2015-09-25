@@ -1,6 +1,4 @@
-﻿// $Id: AIInterface.cpp
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,6 +24,7 @@
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noTree.h"
 #include "GameWorld.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -62,14 +61,14 @@ AIJH::Resource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
 {
     NodalObjectType no = gwb.GetNO(pt)->GetType();
-    unsigned char t1 = gwb.GetNode(pt).t1;
+    TerrainType t1 = gwb.GetNode(pt).t1;
     //valid terrain?
-    if(t1 != TT_WATER && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_SNOW)
+    if(TerrainData::IsUseable(t1))
     {
         if (no == NOP_TREE)
         {
             //exclude pineapple because it's not a real tree
-            if ((gwb.GetSpecObj<noTree>(pt))->type != 5)
+            if (gwb.GetSpecObj<noTree>(pt)->type != 5)
                 return AIJH::WOOD;
             else
                 return AIJH::BLOCKED;
@@ -85,155 +84,100 @@ AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
         return AIJH::BLOCKED;
 }
 
+int AIInterface::GetResourceRating(const MapPoint pt, AIJH::Resource res) const
+{
+    //surface resource?
+    if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
+    {
+        AIJH::Resource surfaceRes = GetSurfaceResource(pt);
+        TerrainType t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
+        if (surfaceRes == res ||
+            (res == AIJH::PLANTSPACE && surfaceRes == AIJH::NOTHING && TerrainData::IsVital(t1)) ||
+            (res == AIJH::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt)) && (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))))
+        {
+           return AIJH::RES_RADIUS[res];
+        }
+        //another building using our "resource"? reduce rating!
+        if(res == AIJH::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER))
+            return -40;
+        if(res == AIJH::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER))
+            return -40;
+    }
+    //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
+    else
+    {
+        if (GetSubsurfaceResource(pt) == res)
+            return AIJH::RES_RADIUS[res];
+    }
+    return 0;
+}
+
 int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char direction, int lastval) const
 {
-    int returnval = 0;
+    int returnVal = 0;
     if(direction == -1) //calculate complete value from scratch (3n^2+3n+1)
     {
-        for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= AIJH::RES_RADIUS[res]; tx = gwb.GetXA(tx, pt.y, 0), ++r)
+        MapPoint tmpPt = pt;
+        for(unsigned r = 1; r <= AIJH::RES_RADIUS[res]; ++r)
         {
-            MapPoint tP2(tx, pt.y);
+            tmpPt = gwb.GetNeighbour(tmpPt, 0);
+            MapPoint tmpPt2 = tmpPt;
             for(unsigned i = 2; i < 8; ++i)
             {
-                for(MapCoord r2 = 0; r2 < r; tP2 = gwb.GetNeighbour(tP2, i % 6), ++r2)
+                for(MapCoord r2 = 0; r2 < r; ++r2)
                 {
-                    //surface resource?
-                    if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-                    {
-                        AIJH::Resource tres = GetSurfaceResource(tP2);
-                        unsigned char t1 = gwb.GetNode(tP2).t1, t2 = gwb.GetNode(tP2).t2;
-                        if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(tP2) || !IsOwnTerritory(tP2)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-                        {
-                            returnval += (AIJH::RES_RADIUS[res]);
-                        }
-                        //another building using our "resource"? reduce rating!
-                        if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-                        {
-                            if((res == AIJH::WOOD && IsBuildingOnNode(tP2, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(tP2, BLD_FORESTER)))
-                                returnval -= (40);
-                        }
-                    }
-                    //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-                    else
-                    {
-                        if (GetSubsurfaceResource(tP2) == res)
-                        {
-                            returnval += (AIJH::RES_RADIUS[res]);
-                        }
-                    }
+                    returnVal += GetResourceRating(tmpPt2, res);
+                    tmpPt2 = gwb.GetNeighbour(tmpPt2, i % 6);
                 }
             }
         }
         //add the center point value
-        //surface resource?
-        if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-        {
-            AIJH::Resource tres = GetSurfaceResource(pt);
-            unsigned char t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
-            if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-            {
-                returnval += (AIJH::RES_RADIUS[res]);
-            }
-            //another building using our "resource"? reduce rating!
-            if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-            {
-                if((res == AIJH::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER)))
-                    returnval -= (40);
-            }
-        }
-        //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-        else
-        {
-            if (GetSubsurfaceResource(pt) == res)
-            {
-                returnval += (AIJH::RES_RADIUS[res]);
-            }
-        }
+        returnVal += GetResourceRating(pt, res);
     }
     else//calculate different nodes only (4n+2 ?anyways much faster)
     {
-        returnval += lastval;
+        returnVal += lastval;
         //add new points
         //first: go radius steps towards direction-1
-        MapPoint t(pt);
+        MapPoint tmpPt(pt);
         for(unsigned i = 0; i < AIJH::RES_RADIUS[res]; i++)
-            t = gwb.GetNeighbour(t, (direction + 5) % 6);
+            tmpPt = gwb.GetNeighbour(tmpPt, (direction + 5) % 6);
         //then clockwise around at radius distance to get all new points
         for(int i = direction + 1; i < (direction + 3); ++i)
         {
+            int resRadius = AIJH::RES_RADIUS[res];
             //add 1 extra step on the second side we check to complete the side
-            for(MapCoord r2 = 0; r2 < AIJH::RES_RADIUS[res] || (r2 < AIJH::RES_RADIUS[res] + 1 && i == direction + 2); ++r2)
+            if(i == direction + 2)
+                ++resRadius;
+            for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
-                //surface resource?
-                if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-                {
-                    AIJH::Resource tres = GetSurfaceResource(t);
-                    unsigned char t1 = gwb.GetNode(t).t1, t2 = gwb.GetNode(t).t2;
-                    if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(t) || !IsOwnTerritory(t)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-                    {
-                        returnval += (AIJH::RES_RADIUS[res]);
-                    }
-                    //another building using our "resource"? reduce rating!
-                    if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-                    {
-                        if((res == AIJH::WOOD && IsBuildingOnNode(t, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(t, BLD_FORESTER)))
-                            returnval -= (40);
-                    }
-                }
-                //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-                else
-                {
-                    if (GetSubsurfaceResource(t) == res)
-                    {
-                        returnval += (AIJH::RES_RADIUS[res]);
-                    }
-                }
-                t = gwb.GetNeighbour(t, i % 6);
+                returnVal += GetResourceRating(tmpPt, res);
+                tmpPt = gwb.GetNeighbour(tmpPt, i % 6);
             }
         }
         //now substract old points not in range of new point
         //go to old center point:
-        t = pt;
-        t = gwb.GetNeighbour(t, (direction + 3) % 6);
+        tmpPt = pt;
+        tmpPt = gwb.GetNeighbour(tmpPt, (direction + 3) % 6);
         //next: go to the first old point we have to substract
         for(unsigned i = 0; i < AIJH::RES_RADIUS[res]; i++)
-            t = gwb.GetNeighbour(t, (direction + 2) % 6);
+            tmpPt = gwb.GetNeighbour(tmpPt, (direction + 2) % 6);
         //now clockwise around at radius distance to remove all old points
         for(int i = direction + 4; i < (direction + 6); ++i)
         {
-            for(MapCoord r2 = 0; r2 < AIJH::RES_RADIUS[res] || (r2 < AIJH::RES_RADIUS[res] + 1 && i == direction + 5); ++r2)
+            int resRadius = AIJH::RES_RADIUS[res];
+            if(i == direction + 5)
+                ++resRadius;
+            for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
-                //surface resource?
-                if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
-                {
-                    AIJH::Resource tres = GetSurfaceResource(t);
-                    unsigned char t1 = gwb.GetNode(t).t1, t2 = gwb.GetNode(t).t2;
-                    if (tres == res || (res == AIJH::PLANTSPACE && tres == AIJH::NOTHING && t1 != TT_DESERT && t1 != TT_MOUNTAINMEADOW && t1 != TT_MOUNTAIN1 && t1 != TT_MOUNTAIN2 && t1 != TT_MOUNTAIN3 && t1 != TT_MOUNTAIN4) || (res == AIJH::BORDERLAND && (IsBorder(t) || !IsOwnTerritory(t)) && ((t1 != TT_SNOW && t1 != TT_LAVA && t1 != TT_SWAMPLAND && t1 != TT_WATER) || (t2 != TT_SNOW && t2 != TT_LAVA && t2 != TT_SWAMPLAND && t2 != TT_WATER))))
-                    {
-                        returnval -= (AIJH::RES_RADIUS[res]);
-                    }
-                    //another building using our "resource"? reduce rating!
-                    if(res == AIJH::WOOD || res == AIJH::PLANTSPACE)
-                    {
-                        if((res == AIJH::WOOD && IsBuildingOnNode(t, BLD_WOODCUTTER)) || (res == AIJH::PLANTSPACE && IsBuildingOnNode(t, BLD_FORESTER)))
-                            returnval += (40);
-                    }
-                }
-                //so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
-                else
-                {
-                    if (GetSubsurfaceResource(t) == res)
-                    {
-                        returnval -= (AIJH::RES_RADIUS[res]);
-                    }
-                }
-                t = gwb.GetNeighbour(t, i % 6);
+                returnVal -= GetResourceRating(tmpPt, res);
+                tmpPt = gwb.GetNeighbour(tmpPt, i % 6);
             }
         }
     }
     //if(returnval<0&&lastval>=0&&res==AIJH::BORDERLAND)
     //LOG.lprintf("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
-    return returnval;
+    return returnVal;
 }
 
 bool AIInterface::IsRoadPoint(const MapPoint pt) const
@@ -241,9 +185,7 @@ bool AIInterface::IsRoadPoint(const MapPoint pt) const
     for(unsigned char i = 0; i < 6; ++i)
     {
         if (gwb.GetPointRoad(pt, i))
-        {
             return true;
-        }
     }
     return false;
 }
@@ -259,7 +201,7 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
 /// player.FindWarehouse
 nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length)
 {
-	 nobBaseWarehouse* best = 0;
+	 nobBaseWarehouse* best = NULL;
 
 	//  unsigned char path = 0xFF, tpath = 0xFF;
     unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
@@ -267,16 +209,14 @@ nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode* const start, bool
 	for(std::list<nobBaseWarehouse*>::const_iterator w = player.GetStorehouses().begin(); w != player.GetStorehouses().end(); ++w)
     {
         // Lagerhaus geeignet?
-        if(IsWarehouseGood(*w, param))
+        if(!IsWarehouseGood(*w, param))
+            continue;
+        if(!gwb.FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden))
+            continue;
+        if(tlength < best_length || !best)
         {
-            if(gwb.FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden))
-            {
-                if(tlength < best_length || !best)
-                {
-                    best_length = tlength;
-                    best = (*w);
-                }
-            }
+            best_length = tlength;
+            best = (*w);
         }
     }
 

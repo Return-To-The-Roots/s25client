@@ -1,6 +1,4 @@
-﻿// $Id: dskCredits.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -34,6 +32,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Music.h"
 
+#include <boost/array.hpp>
 #include <cstdlib>
 #include <ctime>
 
@@ -235,7 +234,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     LOADER.LoadFilesAtGame(0, nations);
 
-    this->it = entries.begin();
+    this->itCurEntry = entries.begin();
     startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
 
     GetMusic(sng_lst, 8)->Play(0);
@@ -263,9 +262,9 @@ void dskCredits::Msg_PaintAfter()
 
     if (time > PAGE_TIME)
     {
-        ++this->it;
-        if (this->it == entries.end())
-            this->it = entries.begin();
+        ++this->itCurEntry;
+        if (this->itCurEntry == entries.end())
+            this->itCurEntry = entries.begin();
         this->startTime = VIDEODRIVER.GetTickCount();
     }
 
@@ -377,20 +376,20 @@ void dskCredits::Msg_PaintAfter()
     transparency = transparency << 24;
 
     // draw text
-    LargeFont->Draw(40, 100, it->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(40, 100, itCurEntry->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
 
-    unsigned int y[2] = {150, 150};
+    boost::array<unsigned int, 2> columnToY = {{150, 150}};
 
-    for(std::list<CreditsEntry::Line>::iterator line = this->it->lines.begin(); line != it->lines.end(); ++line)
+    for(std::list<CreditsEntry::Line>::iterator line = this->itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
-        LargeFont->Draw(60 + line->column * 350, y[line->column], line->line.c_str(), 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
-        y[line->column] += LargeFont->getHeight() + 5;
+        LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line.c_str(), 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
+        columnToY[line->column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(40, y[0] + 20, it->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(40, columnToY[0] + 20, itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
 
     // draw picture
-    glArchivItem_Bitmap* item = LOADER.GetImageN("credits", it->picId);
+    glArchivItem_Bitmap* item = LOADER.GetImageN("credits", itCurEntry->picId);
 
     if (item)
         item->Draw(VIDEODRIVER.GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);

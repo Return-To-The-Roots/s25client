@@ -1,6 +1,4 @@
-﻿// $Id: noDisappearingEnvObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -52,7 +50,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
     : noCoordBase(NOP_ENVIRONMENT, pos),
       disappearing(false)
 {
-    dead_event = em->AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, obj_id, add_var_living_time));
+    dead_event = em->AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
 }
 
 void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameData* sgd) const

@@ -1,6 +1,4 @@
-﻿// $Id: iwDiplomacy.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -58,10 +56,6 @@ const unsigned short PING_FIELD_POS = 150;
 const unsigned short TREATIES_POS = 240;
 /// Abstand zwischen den beiden Bündnis-Buttons (Achtung: von Mittelpunkten aus!)
 const unsigned short TREATIE_BUTTON_SPACE = 20;
-/// Länge des Verbleibenden-Zeit-Balkens
-const unsigned short REMAINING_TIME_WIDTH = 50;
-/// Zusätzlicher Abstand für diesen Balken
-const unsigned short REMAINING_TIME_SPACE = 10;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,7 +124,7 @@ void iwDiplomacy::Msg_PaintBefore()
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        Window::DrawRectangle(GetX() + LINE_DISTANCE_TO_MARGINS, GetY() + FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT), width - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT,
+        Window::DrawRectangle(GetX() + LINE_DISTANCE_TO_MARGINS, GetY() + FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT), width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT,
                               (COLORS[GAMECLIENT.GetPlayer(i)->color] & 0x00FFFFFF) | 0x40000000);
     }
 }

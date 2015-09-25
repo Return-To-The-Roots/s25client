@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -218,8 +218,14 @@ const char* const BUILDING_HELP_STRINGS[40] =
         "(in the Armory) and tools "
         "(in the metalworks)."),
 
-    // Nothing
-    "",
+    // Charburner
+    gettext_noop(
+        "The charburner stacks up piles of "
+        "wood and straw which is then burned "
+        "to create charcoal. This can be used "
+        "just like the coal from the mine without "
+        "any loss in quality."
+    ),
 
     // Pig farm
     gettext_noop(

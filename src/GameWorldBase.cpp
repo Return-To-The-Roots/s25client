@@ -1,6 +1,4 @@
-﻿// $Id: GameWorldBase.cpp 9556 2014-12-16 15:50:37Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -41,6 +39,7 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "luaIncludes.h"
 #include "Log.h"
+#include "gameData/TerrainData.h"
 #include "helpers/containerUtils.h"
 #include <set>
 #include <stdexcept>
@@ -372,25 +371,40 @@ MapCoord GameWorldBase::CalcDistanceAroundBorderY(const MapCoord y1, const MapCo
 unsigned GameWorldBase::CalcDistance(const int x1, const int y1, 
                                      const int x2, const int y2) const
 {
-    int dx = ((x1 - x2) << 1) + (y1 & 1) - (y2 & 1);
-    int dy = ((y1 > y2) ? (y1 - y2) : (y2 - y1)) << 1;
+    int dx = ((x1 - x2) * 2) + (y1 & 1) - (y2 & 1);
+    int dy = ((y1 > y2) ? (y1 - y2) : (y2 - y1)) * 2;
 
     if (dx < 0)
         dx = -dx;
 
     if (dy > height)
     {
-        dy = (height << 1) - dy;
+        dy = (height * 2) - dy;
     }
 
     if (dx > width)
     {
-        dx = (width << 1) - dx;
+        dx = (width  * 2) - dx;
     }
 
-    dx -= dy >> 1;
+    dx -= dy / 2;
 
-    return((dy + (dx > 0 ? dx : 0)) >> 1);
+    return((dy + (dx > 0 ? dx : 0)) / 2);
+}
+
+MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
+{
+    // Shift into range
+    pt.x %= width;
+    pt.y %= height;
+    // Handle negative values (sign is implementation defined, but |value| < width)
+    if(pt.x < 0)
+        pt.x += width;
+    if(pt.y < 0)
+        pt.y += height;
+    assert(pt.x >= 0 && pt.y >= 0);
+    assert(pt.x < width && pt.y < height);
+    return MapPoint(pt);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -496,13 +510,13 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
     if(!boat_road)
     {
         unsigned flag_hits = 0;
-        unsigned char t;
 
         for(unsigned char i = 0; i < 6; ++i)
         {
-            t = GetTerrainAround(pt, i);
-            if(TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_CASTLE || TERRAIN_BQ[t] == BQ_MINE || TERRAIN_BQ[t] == BQ_FLAG) ++flag_hits;
-            else if(TERRAIN_BQ[t] == BQ_DANGER)
+            BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+            if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG)
+                ++flag_hits;
+            else if(bq == BQ_DANGER)
                 return 0;
         }
 
@@ -527,7 +541,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
     {
         // Beim Wasserweg muss um den Punkt herum Wasser sein
         for(unsigned i = 0; i < 6; ++i)
-            if(GetTerrainAround(pt, i) != 14)
+            if(!TerrainData::IsWater(GetTerrainAround(pt, i)))
                 return false;
     }
 
@@ -642,7 +656,7 @@ bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
     return false;
 }
 
-nobBaseMilitarySet GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
+sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
 {
     // Radius auf Anzahl der Militärquadrate begrenzen, sonst gibt es Überlappungen
     radius = std::min<MapCoord>(width / MILITARY_SQUARE_SIZE + 1, radius);
@@ -663,7 +677,7 @@ nobBaseMilitarySet GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     last_x += radius;
     last_y += radius;
 
-    nobBaseMilitarySet buildings;
+    sortedMilitaryBlds buildings;
 
     // Liste erzeugen
     for(int cy = first_y; cy <= last_y; ++cy)
@@ -722,19 +736,22 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     unsigned building_hits = 0;
     unsigned mine_hits = 0;
     unsigned flag_hits = 0;
-    BuildingQuality val = BQ_CASTLE;
-    unsigned char t;
 
     // bebaubar?
     for(unsigned char i = 0; i < 6; ++i)
     {
-        t = GetTerrainAround(pt, i);
-        if(TERRAIN_BQ[t] == BQ_CASTLE) ++building_hits;
-        else if(TERRAIN_BQ[t] == BQ_MINE) ++mine_hits;
-        else if(TERRAIN_BQ[t] == BQ_FLAG) ++flag_hits;
-        else if(TERRAIN_BQ[t] == BQ_DANGER) return BQ_NOTHING;
+        BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        if(bq == BQ_CASTLE)
+            ++building_hits;
+        else if(bq == BQ_MINE)
+            ++mine_hits;
+        else if(bq == BQ_FLAG)
+            ++flag_hits;
+        else if(bq == BQ_DANGER)
+            return BQ_NOTHING;
     }
 
+    BuildingQuality val;
     if(flag_hits)
         val = BQ_FLAG;
     else if(mine_hits == 6)
@@ -755,7 +772,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     unsigned char ph = GetNode(pt).altitude, th;
 
     // Bergwerke anders handhaben
-    if(val == BQ_CASTLE && val != BQ_FLAG)
+    if(val == BQ_CASTLE)
     {
 
         if((th = GetNodeAround(pt, 4).altitude) > ph)
@@ -811,7 +828,8 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     //////////////////////////////////////////
     // 3. nach Objekten
 
-    if(flagonly) if(FlagNear(pt)) return BQ_NOTHING;
+    if(flagonly && FlagNear(pt))
+        return BQ_NOTHING;
 
 
     // allgemein nix bauen auf folgenden Objekten:
@@ -967,21 +985,17 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
 
 bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const
 {
-    // Nicht über Wasser, Lava, Sümpfe gehen
-    // Als Boot dürfen wir das natürlich
-    unsigned char t1 = GetWalkingTerrain1(pt, dir), 
-                  t2 = GetWalkingTerrain2(pt, dir);
-
     // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
     unsigned char road = GetPointRoad(pt, dir);
     if(road && road != RoadSegment::RT_BOAT + 1)
         return true;
 
-    if((t1 == TT_SNOW || t1 == TT_SWAMPLAND || t1 == TT_LAVA || (t1 == TT_WATER)) &&
-            (t2 == TT_SNOW || t2 == TT_SWAMPLAND || t2 == TT_LAVA || (t2 == TT_WATER )))
-        return false;
-    else
-        return true;
+    // Nicht über Wasser, Lava, Sümpfe gehen
+    // Als Boot dürfen wir das natürlich
+    TerrainType t1 = GetWalkingTerrain1(pt, dir), 
+        t2 = GetWalkingTerrain2(pt, dir);
+
+    return (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2));
 }
 
 noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i)
@@ -1095,10 +1109,8 @@ MapPoint GameWorldBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
  *  @author OLiver
  *  @author FloSoft
  */
-unsigned char GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
+TerrainType GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 {
-    assert(dir < 6);
-
     switch(dir)
     {
         case 0: return GetNodeAround(pt, 1).t1;
@@ -1109,7 +1121,7 @@ unsigned char GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char d
         case 5: return GetNodeAround(pt, 0).t2;
     }
 
-    return 0xFF;
+    throw std::logic_error("Invalid direction");
 }
 
 
@@ -1120,10 +1132,8 @@ unsigned char GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char d
  *
  *  @author OLiver
  */
-unsigned char GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
+TerrainType GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
-    assert(dir < 6);
-
     switch(dir)
     {
         case 0: return GetTerrainAround(pt, 5);
@@ -1134,7 +1144,7 @@ unsigned char GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char
         case 5: return GetTerrainAround(pt, 4);
     }
 
-    return 0xFF;
+    throw std::logic_error("Invalid direction");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1144,10 +1154,8 @@ unsigned char GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char
  *
  *  @author OLiver
  */
-unsigned char GameWorldBase::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
+TerrainType GameWorldBase::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
-    assert(dir < 6);
-
     switch(dir)
     {
         case 0: return GetTerrainAround(pt, 0);
@@ -1158,7 +1166,7 @@ unsigned char GameWorldBase::GetWalkingTerrain2(const MapPoint pt, unsigned char
         case 5: return GetTerrainAround(pt, 5);
     }
 
-    return 0xFF;
+    throw std::logic_error("Invalid direction");
 }
 
 /// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
@@ -1166,7 +1174,7 @@ bool GameWorldBase::IsSeaPoint(const MapPoint pt) const
 {
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetTerrainAround(pt, i) != TT_WATER)
+        if(!TerrainData::IsWater(GetTerrainAround(pt, i)))
             return false;
     }
 

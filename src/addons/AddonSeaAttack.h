@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -41,7 +41,7 @@ class AddonSeaAttack : public AddonList
                                          ADDONGROUP_MILITARY,
                                          gettext_noop("Sea attack settings"),
                                          gettext_noop("set restriction level for sea attacks\n\n"),
-                                         1
+                                         2
                                         )
         {
             addOption(gettext_noop("enemy harbors don't block"));

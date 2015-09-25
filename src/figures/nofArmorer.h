@@ -1,6 +1,4 @@
-﻿// $Id: nofArmorer.h 9567 2015-01-03 19:34:57Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,7 +30,7 @@ class nofArmorer : public nofWorkman
         /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
         bool sword_shield;
 
-    private:
+    protected:
         void DrawWorking(int x, int y);
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const;
@@ -40,11 +38,12 @@ class nofArmorer : public nofWorkman
         GoodType ProduceWare();
 		void HandleDerivedEvent(const unsigned int id);
 
+        bool AreWaresAvailable() override;
+
     public:
 
         nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofArmorer(SerializedGameData* sgd, const unsigned obj_id);
-		void TryToWork();
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofArmorer(SerializedGameData* sgd) const;

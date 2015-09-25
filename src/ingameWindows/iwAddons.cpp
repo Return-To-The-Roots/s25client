@@ -1,5 +1,3 @@
-﻿// $Id: iwAddons.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Siedler II.5 RTTR.
@@ -46,15 +44,15 @@ iwAddons::iwAddons(GlobalGameSettings* ggs, ChangePolicy policy)
     AddText(0, 20, 30, _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
 
     if(policy != READONLY)
-        AddTextButton(1,  20, height - 40, 200, 22, TC_GREY, _("Apply Changes"), NormalFont);
+        AddTextButton(1,  20, height_ - 40, 200, 22, TC_GREY, _("Apply Changes"), NormalFont);
 
-    AddTextButton(2, 250, height - 40, 200, 22, TC_RED1, _("Close Without Saving"), NormalFont);
+    AddTextButton(2, 250, height_ - 40, 200, 22, TC_RED1, _("Close Without Saving"), NormalFont);
 
     if(policy != READONLY)
-        AddTextButton(3, 480, height - 40, 200, 22, TC_GREY, _("Use S2 Defaults"), NormalFont);
+        AddTextButton(3, 480, height_ - 40, 200, 22, TC_GREY, _("Use S2 Defaults"), NormalFont);
 
     // Kategorien
-    ctrlOptionGroup* optiongroup = AddOptionGroup(5, ctrlOptionGroup::CHECK, scale);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(5, ctrlOptionGroup::CHECK, scale_);
     // "Alle"
     optiongroup->AddTextButton(ADDONGROUP_ALL,  20, 50, 120, 22, TC_GREEN2, _("All"), NormalFont);
     // "Militär"
@@ -66,7 +64,7 @@ iwAddons::iwAddons(GlobalGameSettings* ggs, ChangePolicy policy)
     // "Sonstiges"
     optiongroup->AddTextButton(ADDONGROUP_OTHER, 560, 50, 120, 22, TC_GREEN2, _("Other"), NormalFont);
 
-    ctrlScrollBar* scrollbar = AddScrollBar(6, width - SCROLLBAR_WIDTH - 20, 90, SCROLLBAR_WIDTH, height - 140, SCROLLBAR_WIDTH, TC_GREEN2, (height - 140) / 30 - 1);
+    ctrlScrollBar* scrollbar = AddScrollBar(6, width_ - SCROLLBAR_WIDTH - 20, 90, SCROLLBAR_WIDTH, height_ - 140, SCROLLBAR_WIDTH, TC_GREEN2, (height_ - 140) / 30 - 1);
     scrollbar->SetRange(ggs->getCount());
 
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
@@ -127,7 +125,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                 {
                     // send message via msgboxresult
                     MsgboxResult mbr = MSR_YES;
-                    parent->Msg_MsgBoxResult(GetID(), mbr);
+                    parent_->Msg_MsgBoxResult(GetID(), mbr);
                 } break;
             }
             Close();

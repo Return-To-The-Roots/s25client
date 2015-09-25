@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,8 +17,6 @@
 
 #ifndef JobTypes_h__
 #define JobTypes_h__
-
-#include "mygettext.h"
 
 enum Job
 {
@@ -60,39 +58,4 @@ enum Job
 // Anzahl an unterschiedlichen Berufstypen
 const unsigned JOB_TYPES_COUNT = JOB_NOTHING;
 
-const std::string JOB_NAMES[JOB_TYPES_COUNT] =
-{
-	gettext_noop("Helper"),
-	gettext_noop("Woodchopper"),
-	gettext_noop("Fisher"),
-	gettext_noop("Ranger"),
-	gettext_noop("Carpenter"),
-	gettext_noop("Stonemason"),
-	gettext_noop("Huntsman"),
-	gettext_noop("Farmer"),
-	gettext_noop("Miller"),
-	gettext_noop("Baker"),
-	gettext_noop("Butcher"),
-	gettext_noop("Miner"),
-	gettext_noop("Brewer"),
-	gettext_noop("Pig breeder"),
-	gettext_noop("Donkey breeder"),
-	gettext_noop("Iron founder"),
-	gettext_noop("Minter"),
-	gettext_noop("Metalworker"),
-	gettext_noop("Armorer"),
-	gettext_noop("Builder"),
-	gettext_noop("Planer"),
-	gettext_noop("Private"),
-	gettext_noop("Private first class"),
-	gettext_noop("Sergeant"),
-	gettext_noop("Officer"),
-	gettext_noop("General"),
-	gettext_noop("Geologist"),
-	gettext_noop("Shipwright"),
-	gettext_noop("Scout"),
-	gettext_noop("Pack donkey"),
-	"", // Bootsträger
-	gettext_noop("Charburner")
-};
 #endif // JobTypes_h__

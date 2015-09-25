@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,8 @@
 
 #include "mygettext.h"
 #include "JobTypes.h"
-#include <cstring>
+#include <boost/array.hpp>
+#include <algorithm>
 
 // Warentypen
 enum GoodType
@@ -110,13 +111,13 @@ const std::string WARE_NAMES[36] =
 /// Waren- und Berufsstruktur ( für HQs, Lagerhäüser usw )
 struct Goods
 {
-	unsigned int goods[WARE_TYPES_COUNT];
-	unsigned int people[JOB_TYPES_COUNT];
+	boost::array<unsigned int, WARE_TYPES_COUNT> goods;
+	boost::array<unsigned int, JOB_TYPES_COUNT> people;
 
 	void clear()
 	{
-		std::memset(goods, 0, sizeof(goods));
-		std::memset(people, 0, sizeof(people));
+        std::fill(goods.begin(), goods.end(), 0);
+        std::fill(people.begin(), people.end(), 0);
 	}
 
 	Goods() { clear(); }

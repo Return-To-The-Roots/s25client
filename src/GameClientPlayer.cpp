@@ -1,6 +1,4 @@
-﻿// $Id: GameClientPlayer.cpp 9599 2015-02-07 11:08:22Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -161,7 +159,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     GAMECLIENT.visual_settings.transport_order[12] = STD_TRANSPORT[GD_HAMMER];
     GAMECLIENT.visual_settings.transport_order[13] = STD_TRANSPORT[GD_BOAT];
 
-    // Militär- und Werkzeugeinstellungen
+    // military settings (military-window-slider, in 10th percent)
     military_settings[0] = 10;
     military_settings[1] = 3;
     military_settings[2] = 5;
@@ -171,13 +169,30 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     military_settings[6] = MILITARY_SETTINGS_SCALE[6];
     military_settings[7] = MILITARY_SETTINGS_SCALE[7];
     GAMECLIENT.visual_settings.military_settings = military_settings;
-    GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
-    // qx:tools
+    // metalwork tool request
+
+    // manually
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
+    {
         tools_ordered[i] = 0;
-    for (unsigned i = 0; i < TOOL_COUNT; ++i)
         tools_ordered_delta[i] = 0;
+    }
+
+    // percentage (tool-settings-window-slider, in 10th percent)
+    tools_settings[0]  = 1;
+    tools_settings[1]  = 4;
+    tools_settings[2]  = 2;
+    tools_settings[3]  = 5;
+    tools_settings[4]  = 7;
+    tools_settings[5]  = 1;
+    tools_settings[6]  = 3;
+    tools_settings[7]  = 1;
+    tools_settings[8]  = 2;
+    tools_settings[9]  = 1;
+    tools_settings[10] = 2;
+    tools_settings[11] = 1;
+    GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
     // Standardeinstellungen kopieren
     GAMECLIENT.default_settings = GAMECLIENT.visual_settings;
@@ -212,11 +227,11 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
     if(!(ps == PS_OCCUPIED || ps == PS_KI))
         return;
 
-    sgd->PushObjectList(warehouses, false);
-    sgd->PushObjectList(harbors, true);
+    sgd->PushObjectContainer(warehouses, false);
+    sgd->PushObjectContainer(harbors, true);
 
-    //sgd->PushObjectList(unoccupied_roads,true);
-    sgd->PushObjectList(roads, true);
+    //sgd->PushObjectContainer(unoccupied_roads,true);
+    sgd->PushObjectContainer(roads, true);
 
     sgd->PushUnsignedInt(jobs_wanted.size());
     for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
@@ -226,17 +241,17 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
     }
 
     for(unsigned i = 0; i < 30; ++i)
-        sgd->PushObjectList(buildings[i], true);
+        sgd->PushObjectContainer(buildings[i], true);
 
-    sgd->PushObjectList(building_sites, true);
+    sgd->PushObjectContainer(building_sites, true);
 
-    sgd->PushObjectList(military_buildings, true);
+    sgd->PushObjectContainer(military_buildings, true);
 
-    sgd->PushObjectList(ware_list, true);
+    sgd->PushObjectContainer(ware_list, true);
 
-    sgd->PushObjectList(flagworkers, false);
+    sgd->PushObjectContainer(flagworkers, false);
 
-    sgd->PushObjectVector(ships, true);
+    sgd->PushObjectContainer(ships, true);
 
     for(unsigned i = 0; i < 5; ++i)
         sgd->PushBool(defenders[i]);
@@ -323,11 +338,11 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_KI))
         return;
 
-    sgd->PopObjectList(warehouses, GOT_UNKNOWN);
-    sgd->PopObjectList(harbors, GOT_NOB_HARBORBUILDING);
+    sgd->PopObjectContainer(warehouses, GOT_UNKNOWN);
+    sgd->PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
 
-    //sgd->PopObjectList(unoccupied_roads,GOT_ROADSEGMENT);
-    sgd->PopObjectList(roads, GOT_ROADSEGMENT);
+    //sgd->PopObjectContainer(unoccupied_roads,GOT_ROADSEGMENT);
+    sgd->PopObjectContainer(roads, GOT_ROADSEGMENT);
 
     unsigned list_size = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < list_size; ++i)
@@ -341,17 +356,17 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
     }
 
     for(unsigned i = 0; i < 30; ++i)
-        sgd->PopObjectList(buildings[i], GOT_NOB_USUAL);
+        sgd->PopObjectContainer(buildings[i], GOT_NOB_USUAL);
 
-    sgd->PopObjectList(building_sites, GOT_BUILDINGSITE);
+    sgd->PopObjectContainer(building_sites, GOT_BUILDINGSITE);
 
-    sgd->PopObjectList(military_buildings, GOT_NOB_MILITARY);
+    sgd->PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
 
-    sgd->PopObjectList(ware_list, GOT_WARE);
+    sgd->PopObjectContainer(ware_list, GOT_WARE);
 
-    sgd->PopObjectList(flagworkers, GOT_UNKNOWN);
+    sgd->PopObjectContainer(flagworkers, GOT_UNKNOWN);
 
-    sgd->PopObjectVector(ships, GOT_SHIP);
+    sgd->PopObjectContainer(ships, GOT_SHIP);
 
     for(unsigned i = 0; i < 5; ++i)
         defenders[i] = sgd->PopBool();
@@ -863,23 +878,25 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
     }	
     else //no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
 	{
-		unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
-		Ware* tempbest=0;
+		unsigned bestLength = 0xFFFFFFFF;
+		Ware* bestWare = NULL;
 		for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); ++it)
 		{
 			if((*it)->IsLostWare() && (*it)->type==ware)
-			{ //got a lost ware with a road to goal -> find best
-				if((tlength=(*it)->CheckNewGoalForLostWare(goal)<best_length))
+			{
+                //got a lost ware with a road to goal -> find best
+                unsigned curLength = (*it)->CheckNewGoalForLostWare(goal);
+				if(curLength < bestLength)
 				{
-					best_length=tlength;
-					tempbest=(*it);	
+					bestLength = curLength;
+					bestWare = (*it);	
 				}
 			}
 		}
-		if(tempbest)
+		if(bestWare)
 		{
-			tempbest->SetNewGoalForLostWare(goal);
-			return tempbest;
+			bestWare->SetNewGoalForLostWare(goal);
+			return bestWare;
 		}
 	}
 	return 0;
@@ -922,15 +939,15 @@ RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode**
             // Beste Flagge von diesem Weg, und beste Wegstrecke
             noRoadNode* current_best_goal = 0;
             // Weg zu beiden Flaggen berechnen
-            unsigned length1 = 0, length2 = 0;
-            gwg->FindHumanPathOnRoads(start, (*it)->GetF1(), &length1, NULL, *it);
-            gwg->FindHumanPathOnRoads(start, (*it)->GetF2(), &length2, NULL, *it);
+            unsigned length1, length2;
+            bool isF1Reachable = gwg->FindHumanPathOnRoads(start, (*it)->GetF1(), &length1, NULL, *it) != 0xFF;
+            bool isF2Reachable = gwg->FindHumanPathOnRoads(start, (*it)->GetF2(), &length2, NULL, *it) != 0xFF;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
-            if(!length1)
-                current_best_goal = (length2) ? (*it)->GetF2() : 0;
-            else if(length2)
-                current_best_goal = (length1) ? (*it)->GetF1() : 0;
+            if(!isF1Reachable)
+                current_best_goal = (isF2Reachable) ? (*it)->GetF2() : 0;
+            else if(!isF2Reachable)
+                current_best_goal = (isF1Reachable) ? (*it)->GetF1() : 0;
             else
             {
                 // ansonsten die kürzeste von beiden
@@ -1402,29 +1419,34 @@ void GameClientPlayer::RecalcMilitaryFlags()
 /// entsprechende Soldatenanzahl im Lagerhaus verlangt
 void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
 {
+    assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
+    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         if((*it)->IsNewBuilt())
+        {
             (*it)->RegulateTroops();
+            // Used that soldier? Go out
+            if(!soldier_count)
+                return;
+        }
     }
-
-    if(!soldier_count)
-        return;
 
     // Als nächstes Gebäude in Grenznähe
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
+    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         if((*it)->GetFrontierDistance() == 2)
+        {
             (*it)->RegulateTroops();
+            // Used that soldier? Go out
+            if(!soldier_count)
+                return;
+        }
     }
 
-    if(!soldier_count)
-        return;
-
     // Und den Rest ggf.
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end() && soldier_count; ++it)
+    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
 	{
 		//already checked? -> skip
 		if((*it)->GetFrontierDistance() == 2 || (*it)->IsNewBuilt())

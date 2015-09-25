@@ -1,6 +1,4 @@
-﻿// $Id: nofWellguy.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,6 +25,7 @@ class nobUsualBuilding;
 /// Klasse für den Schreiner
 class nofWellguy : public nofWorkman
 {
+    protected:
         /// Zeichnet ihn beim Arbeiten
         void DrawWorking(int x, int y);
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
@@ -34,6 +33,8 @@ class nofWellguy : public nofWorkman
         unsigned short GetCarryID() const { return 111; }
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare();
+
+        bool AreWaresAvailable() override;
 
     public:
 

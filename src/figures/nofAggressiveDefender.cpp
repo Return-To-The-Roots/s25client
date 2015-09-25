@@ -1,6 +1,4 @@
-﻿// $Id: nofAggressiveDefender.cpp
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -133,7 +131,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
 }
 
 /// Wenn ein Kampf gewonnen wurde
@@ -278,7 +276,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         return;
 
     // Calc next walking direction
-    dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
+    unsigned char dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
 
     if(dir == 0xFF)
     {

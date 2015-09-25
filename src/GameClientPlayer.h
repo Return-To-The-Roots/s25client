@@ -1,6 +1,4 @@
-﻿// $Id: GameClientPlayer.h 9597 2015-02-01 09:42:22Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,7 +25,6 @@
 #include <algorithm>
 #include "gameTypes/MapTypes.h"
 #include "PostMsg.h"
-#include "TradeGraph.h"
 #include "Point.h"
 #include "GameMessage_GameCommand.h"
 #include "helpers/containerUtils.h"
@@ -463,8 +460,8 @@ class GameClientPlayer : public GamePlayerInfo
         Statistic statistic[STAT_TIME_COUNT];
 
         // Die Statistikwerte die 'aktuell' gemessen werden
-        unsigned int statisticCurrentData[STAT_TYPE_COUNT];
-        unsigned short statisticCurrentMerchandiseData[STAT_MERCHANDISE_TYPE_COUNT];
+        int statisticCurrentData[STAT_TYPE_COUNT];
+        int statisticCurrentMerchandiseData[STAT_MERCHANDISE_TYPE_COUNT];
 
         unsigned short incrStatIndex(unsigned short i) { return (i == STAT_STEP_COUNT - 1) ? 0 : ++i; }
         unsigned short decrStatIndex(unsigned short i) { return (i == 0) ? STAT_STEP_COUNT - 1 : --i; }

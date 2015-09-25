@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Bitmap.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -35,10 +33,12 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
         /// Konstruktor von @p glArchivItem_Bitmap.
         glArchivItem_Bitmap(void);
         /// Kopiekonstruktor von @p glArchivItem_Bitmap.
-        glArchivItem_Bitmap(const glArchivItem_Bitmap* item);
+        glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
         /// Destruktor von @p glArchivItem_Bitmap.
         virtual ~glArchivItem_Bitmap(void);
+
+        glArchivItem_Bitmap& operator=(const glArchivItem_Bitmap& item);
 
         /// Erzeugt und zeichnet die Textur.
         virtual void Draw(short dst_x, short dst_y, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE, const unsigned int unused = COLOR_WHITE);
@@ -50,8 +50,8 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
         /// Setzt den Texturfilter auf einen bestimmten Wert.
         virtual void setFilter(unsigned int filter);
 
-        unsigned short GetTexWidth() {return(tex_width);}
-        unsigned short GetTexHeight() {return(tex_width);}
+        unsigned short GetTexWidth() {return(tex_width_);}
+        unsigned short GetTexHeight() {return(tex_height_);}
 
     protected:
         /// Erzeugt die Textur.

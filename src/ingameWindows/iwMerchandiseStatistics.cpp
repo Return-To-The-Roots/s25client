@@ -1,5 +1,3 @@
-﻿// $Id: iwMerchandiseStatistics.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Siedler II.5 RTTR.
@@ -178,8 +176,8 @@ void iwMerchandiseStatistics::DrawStatistic()
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const int topLeftX = this->x + 34;
-    const int topLeftY = this->y + 64;
+    const int topLeftX = this->x_ + 34;
+    const int topLeftY = this->y_ + 64;
     const int stepX = sizeX / STAT_STEP_COUNT; // 6
 
     // Aktive Buttons holen (Achtung ID == BarColor + 1)
@@ -248,7 +246,7 @@ void iwMerchandiseStatistics::DrawRectangles()
 
     for (unsigned i = 0; i < 14; ++i)
     {
-        DrawRectangle(this->x + posX, this->y + posY, sizeX, sizeY, BarColors[i]);
+        DrawRectangle(this->x_ + posX, this->y_ + posY, sizeX, sizeY, BarColors[i]);
         posX += stepX;
         if (i == 6)
         {
@@ -263,8 +261,8 @@ void iwMerchandiseStatistics::DrawAxis()
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const int topLeftX = this->x + 34;
-    const int topLeftY = this->y + 64;
+    const int topLeftX = this->x_ + 34;
+    const int topLeftY = this->y_ + 64;
     const int topLeftXrel = 37;
     const int topLeftYrel = 64;
 

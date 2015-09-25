@@ -1,6 +1,4 @@
-// $Id: nobHarborBuilding.cpp 9546 2014-12-14 12:06:35Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -157,7 +155,7 @@ void nobHarborBuilding::Destroy()
 
         it->fig->Abrogate();
         it->fig->StartWandering();
-        it->fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+        it->fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
     }
     figures_for_ships.clear();
 
@@ -167,7 +165,7 @@ void nobHarborBuilding::Destroy()
 
         it->attacker->CancelAtHomeMilitaryBuilding();
         it->attacker->StartWandering();
-        it->attacker->StartWalking(RANDOM.Rand(__FILE__, __LINE__, obj_id, 6));
+        it->attacker->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
     }
     soldiers_for_ships.clear();
 
@@ -191,7 +189,7 @@ void nobHarborBuilding::Serialize(SerializedGameData* sgd) const
     sgd->PushObject(orderware_ev, true);
     for(unsigned i = 0; i < 6; ++i)
         sgd->PushUnsignedShort(sea_ids[i]);
-    sgd->PushObjectList(wares_for_ships, true);
+    sgd->PushObjectContainer(wares_for_ships, true);
     sgd->PushUnsignedInt(figures_for_ships.size());
     for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
@@ -221,7 +219,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj
     for(unsigned i = 0; i < 6; ++i)
         sea_ids[i] = sgd->PopUnsignedShort();
 
-    sgd->PopObjectList<Ware>(wares_for_ships, GOT_WARE);
+    sgd->PopObjectContainer(wares_for_ships, GOT_WARE);
 
     unsigned count = sgd->PopUnsignedInt();
     for(unsigned i = 0; i < count; ++i)
@@ -262,17 +260,17 @@ void nobHarborBuilding::Draw(int x, int y)
     // Hafenfeuer zeichnen // TODO auch für nicht-römer machen
     if (nation == NAT_ROMANS || nation == NAT_JAPANESES || nation == NAT_BABYLONIANS)
     {
-        LOADER.GetNationImageN(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, obj_id + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImageN(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y, 0, 0, 0, 0, 0, 0);
     }
     else if (nation == NAT_AFRICANS || nation == NAT_VIKINGS)
     {
-        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, obj_id + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y);
+        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y);
     }
 
     if (nation == NAT_ROMANS)
     {
         // Zusätzliches Feuer
-        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, obj_id + GetX() + GetY()))->Draw(x + EXTRAFIRE_POS[nation].x, y + EXTRAFIRE_POS[nation].y);
+        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(x + EXTRAFIRE_POS[nation].x, y + EXTRAFIRE_POS[nation].y);
     }
 
     // Läuft gerade eine Expedition?
@@ -1118,7 +1116,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*> figures,
         else //figure has a different goal
         {
             MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping();
-            unsigned char next_dir = (*it)->GetDir();
+            unsigned char next_dir = (*it)->GetCurMoveDir();
 
             if (next_dir == 4)
             {
@@ -1224,9 +1222,9 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
 std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack()
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
-    nobBaseMilitarySet all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
+    sortedMilitaryBlds all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(nobBaseMilitarySet::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
         if((*it)->GetGOT() != GOT_NOB_MILITARY)
             continue;
@@ -1253,9 +1251,9 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
 std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>& defender_harbors)
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
-    nobBaseMilitarySet all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
+    sortedMilitaryBlds all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(nobBaseMilitarySet::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(sortedMilitaryBlds::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
     {
         if((*it)->GetGOT() != GOT_NOB_MILITARY)
             continue;
@@ -1428,7 +1426,7 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
             it != figures_for_ships.end();)
     {
         it->dest = it->fig->ExamineRouteBeforeShipping();
-        unsigned char next_dir = it->fig->GetDir();
+        unsigned char next_dir = it->fig->GetCurMoveDir();
 
         if(next_dir == 0xff)
         {

@@ -1,6 +1,4 @@
-﻿// $Id: AIConstruction.cpp 9590 2015-02-01 09:38:32Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -306,7 +304,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
             MapPoint t = flag->GetPos();
             for(unsigned j = 0; j < tmpRoute.size(); ++j)
             {
-                t = aii->GetNeighbour(t, Direction::fromUInt(tmpRoute[j]));
+                t = aii->GetNeighbour(t, Direction::fromInt(tmpRoute[j]));
                 if(aii->GetBuildingQuality(t) < 1)
                     temp++;
                 else
@@ -369,8 +367,8 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
         if(((route[i] + 1) % 6 == route[i + 1]) || ((route[i] + 5) % 6 == route[i + 1])) //switching current and next route element will result in the same position after building both
         {
             MapPoint t(pStart);
-            t = aii->GetNeighbour(t, Direction::fromUInt(route[i + 1]));
-            pStart = aii->GetNeighbour(pStart, Direction::fromUInt(route[i]));
+            t = aii->GetNeighbour(t, Direction::fromInt(route[i + 1]));
+            pStart = aii->GetNeighbour(pStart, Direction::fromInt(route[i]));
             if(aii->RoadAvailable(t, route[i + 1]) && aii->IsOwnTerritory(t)) //can the alternative road be build?
             {
                 if(aii->CalcBQSumDifference(pStart, t)) //does the alternative road block a lower buildingquality point than the normal planned route?
@@ -392,7 +390,7 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
             }
         }
         else
-            pStart = aii->GetNeighbour(pStart, Direction::fromUInt(route[i]));
+            pStart = aii->GetNeighbour(pStart, Direction::fromInt(route[i]));
     }
     /*if(done)
     {
@@ -473,8 +471,8 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 		bld = BLD_FORTRESS;
 		return bld;
 	}
-    nobBaseMilitarySet military = aii->GetMilitaryBuildings(pt, 3);
-    for(nobBaseMilitarySet::iterator it = military.begin(); it != military.end(); ++it)
+    sortedMilitaryBlds military = aii->GetMilitaryBuildings(pt, 3);
+    for(sortedMilitaryBlds::iterator it = military.begin(); it != military.end(); ++it)
     {
         unsigned distance = aii->GetDistance((*it)->GetPos(), pt);
 
@@ -708,7 +706,7 @@ void AIConstruction::RefreshBuildingCount()
                 buildingsWanted[BLD_GRANITEMINE] = 0;
         }
     }
-    if(MAX_MILITARY_RANK - aijh->ggs.getSelection(ADDON_MAX_RANK) < 1)
+    if(aijh->ggs.GetMaxMilitaryRank() == 0)
     {
         buildingsWanted[BLD_GOLDMINE] = 0; // max rank is 0 = private / recruit ==> gold is useless!
     }
@@ -748,7 +746,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
     MapPoint t = flag->GetPos();
     for(unsigned i = 0; i < mainroad.size(); i++)
     {
-        t = aii->GetNeighbour(t, Direction::fromUInt(mainroad[i]));
+        t = aii->GetNeighbour(t, Direction::fromInt(mainroad[i]));
     }
     const noFlag* mainflag = aii->GetSpecObj<noFlag>(t);
 
@@ -784,12 +782,12 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
             t = flag->GetPos();
             for(unsigned j = 0; j < route.size(); ++j)
             {
-                t = aii->GetNeighbour(t, Direction::fromUInt(route[j]));
+                t = aii->GetNeighbour(t, Direction::fromInt(route[j]));
                 MapPoint t2 = flag->GetPos();
                 //check if we cross the planned main road
                 for(unsigned k = 0; k < mainroad.size(); ++k)
                 {
-                    t2 = aii->GetNeighbour(t2, Direction::fromUInt(mainroad[k]));
+                    t2 = aii->GetNeighbour(t2, Direction::fromInt(mainroad[k]));
                     if(t2 == t)
                     {
                         crossmainpath = true;

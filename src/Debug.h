@@ -1,6 +1,4 @@
-﻿// $Id: Debug.h 7680 2011-12-29 15:52:11Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,17 +17,9 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "defines.h"
-#include "Settings.h"
-#include "GameClient.h"
 #include "Random.h"
-
-#ifdef _WIN32
-#   include <windows.h>
-#   include <dbghelp.h>
-#else
-#   include <execinfo.h>
-#endif
+#include "../libutil/src/Socket.h"
+#include <list>
 
 class DebugInfo : Socket
 {

@@ -1,6 +1,4 @@
-﻿// $Id: nofMiner.cpp 9501 2014-11-29 10:45:47Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -93,4 +91,10 @@ GoodType nofMiner::ProduceWare()
         case BLD_COALMINE: return GD_COAL;
         default: return GD_STONES;
     }
+}
+
+bool nofMiner::AreWaresAvailable()
+{
+    return nofWorkman::AreWaresAvailable() &&
+        GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
 }

@@ -1,6 +1,4 @@
-﻿// $Id: ctrlTab.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,6 +24,7 @@
 #include "ctrlGroup.h"
 
 #include "Loader.h"
+#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -166,7 +165,7 @@ void ctrlTab::DeleteAllTabs(void)
 void ctrlTab::SetSelection(unsigned short nr, bool notify)
 {
     /// Eltern informieren, dass Tab geändert wurde
-    parent->Msg_TabChange(GetID(), tabs[nr]);
+    parent_->Msg_TabChange(GetID(), tabs[nr]);
 
     // Farbe des alten Buttons ändern
     ctrlButton* button;
@@ -223,9 +222,9 @@ bool ctrlTab::Draw_(void)
 {
     DrawControls();
 
-    LOADER.GetImageN("io", 3)->Draw(GetX() + tab_count * 36, GetY(), 0, 0, 0, 0, width - tab_count * 36, 45);
+    LOADER.GetImageN("io", 3)->Draw(GetX() + tab_count * 36, GetY(), 0, 0, 0, 0, width_ - tab_count * 36, 45);
 
-    Draw3D(GetX(), GetY() + 32, width, 13, TC_GREEN1, 0);
+    Draw3D(GetX(), GetY() + 32, width_, 13, TC_GREEN1, 0);
 
     ctrlButton* button = GetCtrl<ctrlButton>(tab_selection);
     if(button)
@@ -242,7 +241,7 @@ bool ctrlTab::Draw_(void)
  */
 void ctrlTab::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_ButtonClick(this->id, ctrl_id);
+    parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -253,7 +252,7 @@ void ctrlTab::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned 
  */
 void ctrlTab::Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_EditEnter(this->id, ctrl_id);
+    parent_->Msg_Group_EditEnter(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -264,7 +263,7 @@ void ctrlTab::Msg_Group_EditEnter(const unsigned int group_id, const unsigned in
  */
 void ctrlTab::Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_EditChange(this->id, ctrl_id);
+    parent_->Msg_Group_EditChange(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -275,7 +274,7 @@ void ctrlTab::Msg_Group_EditChange(const unsigned int group_id, const unsigned i
  */
 void ctrlTab::Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id)
 {
-    parent->Msg_Group_TabChange(this->id, ctrl_id, tab_id);
+    parent_->Msg_Group_TabChange(this->id_, ctrl_id, tab_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -286,7 +285,7 @@ void ctrlTab::Msg_Group_TabChange(const unsigned int group_id, const unsigned in
  */
 void ctrlTab::Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_ListSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -297,7 +296,7 @@ void ctrlTab::Msg_Group_ListSelectItem(const unsigned int group_id, const unsign
  */
 void ctrlTab::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_ComboSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -308,7 +307,7 @@ void ctrlTab::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsig
  */
 void ctrlTab::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked)
 {
-    parent->Msg_Group_CheckboxChange(this->id, ctrl_id, checked);
+    parent_->Msg_Group_CheckboxChange(this->id_, ctrl_id, checked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -319,7 +318,7 @@ void ctrlTab::Msg_Group_CheckboxChange(const unsigned int group_id, const unsign
  */
 void ctrlTab::Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position)
 {
-    parent->Msg_Group_ProgressChange(this->id, ctrl_id, position);
+    parent_->Msg_Group_ProgressChange(this->id_, ctrl_id, position);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -330,7 +329,7 @@ void ctrlTab::Msg_Group_ProgressChange(const unsigned int group_id, const unsign
  */
 void ctrlTab::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible)
 {
-    parent->Msg_Group_ScrollShow(this->id, ctrl_id, visible);
+    parent_->Msg_Group_ScrollShow(this->id_, ctrl_id, visible);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -341,7 +340,7 @@ void ctrlTab::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned i
  */
 void ctrlTab::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_OptionGroupChange(this->id, ctrl_id, selection);
+    parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -352,7 +351,7 @@ void ctrlTab::Msg_Group_OptionGroupChange(const unsigned int group_id, const uns
  */
 void ctrlTab::Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    parent->Msg_Group_Timer(this->id, ctrl_id);
+    parent_->Msg_Group_Timer(this->id_, ctrl_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -363,7 +362,7 @@ void ctrlTab::Msg_Group_Timer(const unsigned int group_id, const unsigned int ct
  */
 void ctrlTab::Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableSelectItem(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -374,7 +373,7 @@ void ctrlTab::Msg_Group_TableSelectItem(const unsigned int group_id, const unsig
  */
 void ctrlTab::Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableRightButton(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,5 +384,5 @@ void ctrlTab::Msg_Group_TableRightButton(const unsigned int group_id, const unsi
  */
 void ctrlTab::Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
 {
-    parent->Msg_Group_TableLeftButton(this->id, ctrl_id, selection);
+    parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
 }

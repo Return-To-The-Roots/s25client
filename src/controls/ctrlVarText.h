@@ -1,6 +1,4 @@
-﻿// $Id: ctrlVarText.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,6 +21,8 @@
 
 #include "ctrlText.h"
 #include <cstdarg>
+#include <vector>
+#include <string>
 
 class ctrlVarText : public ctrlText
 {
@@ -32,9 +32,11 @@ class ctrlVarText : public ctrlText
 
     protected:
         virtual bool Draw_(void);
+        /// Returns the text with placeholders replaced by the actual vars
+        std::string GetFormatedText() const;
 
     protected:
-        void** vars;
+        std::vector<void*> vars;
 };
 
 #endif // !CTRL_VARTEXT_H_INCLUDED

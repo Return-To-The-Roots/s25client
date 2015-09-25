@@ -1,6 +1,4 @@
-﻿// $Id: main.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,28 +20,21 @@
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////////////
-// System-Header
 #ifdef _WIN32
-#   define _CRTDBG_MAP_ALLOC
-#   define WINVER 0x0501
-#   define _WIN32_WINNT 0x0501
-#   include <windows.h>
-#   include <io.h>
+#    define WIN32_LEAN_AND_MEAN
+#    ifdef _MSC_VER
+#        include <crtdbg.h>
+#        ifndef assert
+#            define assert _ASSERT
+#        endif
+#    else
+#        include <assert.h>
+#    endif
+#    ifdef _DEBUG
+#        include <crtdbg.h>
+#    endif // _WIN32 && _DEBUG
 #else
-#   include <unistd.h>
-#   include <limits.h>
+#    include <assert.h>
 #endif // !_WIN32
-
-#if defined _WIN32 && defined _DEBUG
-#   include <crtdbg.h>
-#endif // _WIN32 && _DEBUG
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <algorithm>
-
-#include <SDL.h>
 
 #endif // !MAIN_H_INCLUDED

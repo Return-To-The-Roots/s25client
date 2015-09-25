@@ -1,35 +1,33 @@
-#################################################################################
-### $Id: CMakeLists.txt 7506 2011-09-07 13:16:08Z FloSoft $
-#################################################################################
 
 FIND_PACKAGE(SDL)
 
 IF (SDL_FOUND)
+	FIND_PACKAGE(Boost 1.55.0 REQUIRED)
 	INCLUDE(CMakeMacroCorrectLib)
 	
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/driver/src ${SDL_INCLUDE_DIR})
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/driver/src ${SDL_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 	INCLUDE(AddFileDependencies)
-	ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+	ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
-	ADD_LIBRARY(videoSDL SHARED SDL.cpp SDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
+	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(videoSDL updateversion)
-    IF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+    IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
         CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
         IF (FPIC_FLAGS)
             ADD_DEFINITIONS(-fPIC)
         ENDIF (FPIC_FLAGS)
-    ENDIF ( NOT "${COMPILEFOR}" STREQUAL "windows" )
+    ENDIF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 
 	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
 
 	SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
-	IF ( "${COMPILEFOR}" STREQUAL "windows")
+	IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 		ADD_DEFINITIONS(-DBUILD_DLL)
 		SET(SL_PREFIX "")
-	ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+	ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 	IF (MSVC)
 		SET_TARGET_PROPERTIES(videoSDL PROPERTIES

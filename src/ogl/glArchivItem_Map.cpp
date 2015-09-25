@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Map.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -51,21 +49,6 @@ glArchivItem_Map::glArchivItem_Map()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Kopierkonstruktor von @p glArchivItem_Map.
- *
- *  @param[in] item Quellitem.
- *
- *  @author FloSoft
- */
-glArchivItem_Map::glArchivItem_Map(const glArchivItem_Map* item)
-    : ArchivItem_Map(item)
-{
-    header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
-    assert(header);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Destruktor von @p glArchivItem_Map.
  *
  *  @author FloSoft
@@ -86,9 +69,9 @@ glArchivItem_Map::~glArchivItem_Map()
  *
  *  @author FloSoft
  */
-int glArchivItem_Map::load(FILE* file, bool only_header)
+int glArchivItem_Map::load(std::istream& file, bool only_header)
 {
-    if(loadHelper(file, only_header) != 0)
+    if(libsiedler2::ArchivItem_Map::load(file, only_header) != 0)
         return 1;
 
     alloc_inc(2);
@@ -99,37 +82,43 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
     if(only_header)
         return 0;
 
+    /* TODO: Not required anymore? Then remove it
     // Noch nicht am Ende der Datei?
-    unsigned i = 0, j = 0;
-    //if(!feof(file))
-    //{
-    //  // Gucken, wieviel noch danach kommt
-    //  i = ftell(file);
-    //  fseek(file, 0L, SEEK_END);
-    //  j = ftell(file);
-    //  fseek(file, i, SEEK_SET);
-    //}
+    unsigned curPos = 0, fileSize = 0;
+    if(!feof(file))
+    {
+      // Gucken, wieviel noch danach kommt
+      curPos = ftell(file);
+      fseek(file, 0L, SEEK_END);
+      fileSize = ftell(file);
+      fseek(file, i, SEEK_SET);
+    }
 
-    if((unsigned int)(j - i) > (unsigned int)(header->getWidth() * header->getHeight() * 2))
+    if((unsigned int)(fileSize - curPos) > (unsigned int)(header->getWidth() * header->getHeight() * 2))
     {
         // Wenn noch Platz ist, restliches Zeug noch auslesen
-        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(glAllocator(libsiedler2::BOBTYPE_RAW, 0, NULL));
-        if(reservations->load(file, header->getWidth() * header->getHeight()) != 0)
+        // @todo: Shouldn't we use libsiedler2::allocator?
+        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
+        if(reservations->load(file, header->getWidth() * header->getHeight()) != 0){
+            delete reservations;
             return 2;
+        }
         set(MAP_RESERVATIONS, reservations);
 
-        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(glAllocator(libsiedler2::BOBTYPE_RAW, 0, NULL));
-        if(owner->load(file, header->getWidth() * header->getHeight()) != 0)
+        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
+        if(owner->load(file, header->getWidth() * header->getHeight()) != 0){
+            delete owner;
             return 3;
+        }
         set(MAP_OWNER, owner);
     }
-    else
+    else*/
     {
-        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(glAllocator(libsiedler2::BOBTYPE_RAW, 0, NULL));
-        item->alloc(header->getWidth() * header->getHeight());
+        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
+        item->getData().resize(header->getWidth() * header->getHeight()); // TODO: Really required?
 
         set(MAP_RESERVATIONS, item);
-        setC(MAP_OWNER, item);
+        setC(MAP_OWNER, *item);
     }
 
     return 0;
@@ -143,7 +132,7 @@ int glArchivItem_Map::load(FILE* file, bool only_header)
  *
  *  @author FloSoft
  */
-const unsigned char* glArchivItem_Map::GetLayer(MapLayer type) const
+const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
     const libsiedler2::ArchivItem_Raw* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type));
     assert(item);
@@ -158,7 +147,7 @@ const unsigned char* glArchivItem_Map::GetLayer(MapLayer type) const
  *
  *  @author FloSoft
  */
-unsigned char* glArchivItem_Map::GetLayer(MapLayer type)
+std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
     libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type));
     assert(item);
@@ -176,10 +165,7 @@ unsigned char* glArchivItem_Map::GetLayer(MapLayer type)
  */
 unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) const
 {
-    const unsigned char* data = GetLayer(type);
-    assert(data);
-
-    return data[pos];
+    return GetLayer(type)[pos];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,10 +180,7 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) co
  */
 void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value)
 {
-    unsigned char* data = GetLayer(type);
-    assert(data);
-
-    data[pos] = value;
+    GetLayer(type)[pos] = value;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

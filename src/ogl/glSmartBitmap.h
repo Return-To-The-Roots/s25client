@@ -1,6 +1,4 @@
-﻿// $Id: glBitmap.cpp 8155 2012-09-06 02:11:55Z Maqs $
-//
-// Copyright (c) 2005 - 2012 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //

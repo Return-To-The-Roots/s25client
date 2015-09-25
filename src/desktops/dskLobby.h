@@ -1,6 +1,4 @@
-﻿// $Id: dskLobby.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -63,6 +61,12 @@ class dskLobby :
         void Msg_ButtonClick(const unsigned int ctrl_id);
         void Msg_EditEnter(const unsigned int ctrl_id);
         void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+
+        /**
+         * Connectes to the currently selected game and returns true on success
+         */
+        bool ConnectToSelectedGame();
 };
 
 #endif // dskLOBBY_H_INCLUDED

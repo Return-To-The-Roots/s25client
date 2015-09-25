@@ -1,6 +1,4 @@
-﻿// $Id: ctrlDeepening.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,8 +29,8 @@ class ctrlDeepening : public ctrlText
 
     protected:
         virtual bool Draw_(void);
-        /// Abgeleitete Klassen müssen erweiterten Inhalt zeichnen
-        virtual void DrawContent() const {}
+        /// Derived classes cann draw extended content
+        virtual void DrawContent() const{}
 
     private:
         TextureColor tc;
@@ -48,10 +46,9 @@ class ctrlColorDeepening : public ctrlDeepening, public ColorControlInterface
         virtual void SetColor(const unsigned int fill_color);
 
     protected:
-        void DrawContent() const;
+        void DrawContent() const override;
 
     protected:
-        unsigned short width, height;
         unsigned int fillColor;
 };
 

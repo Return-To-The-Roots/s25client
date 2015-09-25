@@ -1,6 +1,4 @@
-﻿// $Id: nofBuildingWorker.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -82,9 +80,15 @@ class nofBuildingWorker : public noFigure
         void StopNotWorking();
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace();
-        // Fängt das "Warten-vor-dem-Arbeiten" an, falls Rohstoffe zum Arbeiten vorhanden sind, ansonsten Warten auf Rohstoffe
+        /// Tries to start working. 
+        /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
         void TryToWork();
-
+        /// Returns true, when there are enough wares available for working.
+        /// Note: On false, we will wait for the next ware or production change till checking again
+        virtual bool AreWaresAvailable();
+        /// Gets called right before we start working (actually pre-Work-Waiting) and can do final checking and handling
+        /// If false returned, work is not started and NO extra event is set for trying again. So handling must include retries
+        virtual bool ReadyForWork();
     private:
 
         /// von noFigure aufgerufen
@@ -107,13 +111,13 @@ class nofBuildingWorker : public noFigure
         /// Zeichnen der Figur in sonstigen Arbeitslagen
         virtual void DrawOtherStates(const int x, const int y);
 
+    protected:
         /// nur für Bergarbeiter!
         /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut ggf eins
         /// ab, wenn dig = true ist
         bool GetResources(unsigned char type);
         /// Macht das gleiche wie GetResources nur direkt für einen Punkt
         bool GetResourcesOfNode(const MapPoint pt, const unsigned char type);
-
 
     public:
         State GetState() { return state; }

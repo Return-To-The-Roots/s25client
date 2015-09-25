@@ -1,6 +1,4 @@
-﻿// $Id: dskSelectMap.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -114,7 +112,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // "Weiter"
     AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
     // "Alte"
     optiongroup->AddTextButton(0, 10,  35, 90,  22, TC_GREY, _("Old maps"), NormalFont);
     // "Neue"
@@ -207,7 +205,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigne
 
                 libsiedler2::ArchivInfo ai;
                 // load map data
-                if(libsiedler2::loader::LoadMAP(path.c_str(), &ai) == 0)
+                if(libsiedler2::loader::LoadMAP(path.c_str(), ai) == 0)
                 {
                     glArchivItem_Map* map = dynamic_cast<glArchivItem_Map*>(ai.get(0));
                     if(map)
@@ -220,7 +218,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigne
                         text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
 
                         text = GetCtrl<ctrlText>(13);
-                        text->SetText(path.c_str());
+                        text->SetText(path);
                         text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
                     }
                 }
@@ -361,7 +359,7 @@ void dskSelectMap::CI_Error(const ClientError ce)
                 _("Lost connection to server!")
             };
 
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, id));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, id_));
         } break;
         default: break;
     }
@@ -410,7 +408,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
         return;
 
     // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(filename.c_str(), &map, true) == 0)
+    if(libsiedler2::loader::LoadMAP(filename.c_str(), map, true) == 0)
     {
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
         assert(header);
@@ -430,7 +428,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
             _("Winter world")
         };
 
-        tabelle->AddRow(0, header->getName(), header->getAuthor(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
+        tabelle->AddRow(0, header->getName().c_str(), header->getAuthor().c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
     }
 }
 

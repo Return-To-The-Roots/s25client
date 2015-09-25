@@ -1,4 +1,4 @@
-﻿
+
 #include "defines.h"
 
 
@@ -123,15 +123,14 @@ void nofTradeDonkey::Draw(int x, int y)
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step)->Draw(x, y);
+        LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y);
         // Schatten des Esels
-        LOADER.GetMapImageN(2048 + dir % 3)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
         if(gt != GD_NOTHING)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)
-            ->Draw(x + WARE_POS_DONKEY[dir * 16 + ani_step * 2], y + WARE_POS_DONKEY[dir * 16 + ani_step * 2 + 1]);
+            LOADER.GetMapImageN(2350 + gt)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
         }
     }
     else

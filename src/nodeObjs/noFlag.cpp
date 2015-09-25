@@ -1,6 +1,4 @@
-﻿// $Id: noFlag.cpp 9588 2015-02-01 09:37:32Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -37,6 +35,7 @@
 
 #include "ogl/glSmartBitmap.h"
 #include "GameServer.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -82,7 +81,7 @@ noFlag::noFlag(const MapPoint pos,
     // auf Wasseranteile prüfen
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetTerrainAround(pos, i) == 14)
+        if(TerrainData::IsWater(gwg->GetTerrainAround(pos, i)))
             flagtype = FT_WATER;
     }
 }

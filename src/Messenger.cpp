@@ -1,6 +1,4 @@
-﻿// $Id: Messenger.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -94,16 +92,14 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
     glArchivItem_Font::WrapInfo wi;
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    LargeFont->GetWrapInfo(msg.c_str(), VIDEODRIVER.GetScreenWidth() - 60
-                           - LargeFont->getWidth(author.c_str()) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
+    LargeFont->GetWrapInfo(msg, VIDEODRIVER.GetScreenWidth() - 60
+                           - LargeFont->getWidth(author) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
                            VIDEODRIVER.GetScreenWidth() - 60, wi);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::string* strings = new std::string[wi.positions.size()];
+    std::vector<std::string> strings = wi.CreateSingleStrings(msg);
 
-    wi.CreateSingleStrings(msg.c_str(), strings);
-
-    for(unsigned i = 0; i < wi.positions.size(); ++i)
+    for(unsigned i = 0; i < strings.size(); ++i)
     {
         Messenger::Msg tmp;
 
@@ -118,9 +114,9 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         tmp.msg = strings[i];
 
-        tmp.width = LargeFont->getWidth(msg.c_str());
+        tmp.width = LargeFont->getWidth(msg);
         if(i == 0)
-            tmp.width += LargeFont->getWidth(author.c_str());
+            tmp.width += LargeFont->getWidth(author);
 
         tmp.color_author = color_author;
         tmp.color_msg = color_msg;
@@ -128,6 +124,4 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         messages.push_back(tmp);
     }
-
-    delete [] strings;
 }

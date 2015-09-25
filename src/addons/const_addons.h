@@ -1,6 +1,4 @@
-﻿// $Id: const_addons.h 9596 2015-02-01 09:41:54Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -50,6 +48,7 @@ enum AddonId
     ADDON_REFUND_ON_EMERGENCY        = 0x00000004,
     ADDON_MANUAL_ROAD_ENLARGEMENT    = 0x00000005,
     ADDON_CATAPULT_GRAPHICS          = 0x00000006,
+	ADDON_METALWORKSBEHAVIORONZERO   = 0x00000007,
 
     ADDON_DEMOLITION_PROHIBITION     = 0x00100000,
     ADDON_CHARBURNER                 = 0x00100001,

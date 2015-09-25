@@ -1,6 +1,4 @@
-﻿// $Id: GlobalGameSettings.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -91,6 +89,10 @@ class GlobalGameSettings
         void LoadSettings();
         /// saves the current addon configuration to the SETTINGS.
         void SaveSettings() const;
+
+        /// Get current maximum rank for soldiers
+        /// 0 = Private, 1 = Private First Class, ...
+        unsigned int GetMaxMilitaryRank() const;
 
     private:
         void registerAddon(Addon* addon)

@@ -1,6 +1,4 @@
-﻿// $Id: iwShip.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -43,10 +41,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
-const unsigned IODAT_BOAT_ID = 219;
-const unsigned IODAT_SHIP_ID = 218;
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p iwShip.
@@ -57,7 +51,7 @@ const unsigned IODAT_SHIP_ID = 218;
  */
 iwShip::iwShip(GameWorldViewer* const gwv, dskGameInterface* const gi, noShip* const ship)
     : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gi(gi), ship_id(ship ? GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())
+      gwv(gwv), ship_id(ship ? GAMECLIENT.GetPlayer(ship->GetPlayer())->GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())
 {
     AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
     AddImageButton( 2, 18, 192, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
@@ -105,7 +99,7 @@ void iwShip::Msg_PaintAfter()
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
-            NormalFont->Draw(GetX() + width / 2, GetY() + 60, _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+            NormalFont->Draw(GetX() + width_ / 2, GetY() + 60, _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
@@ -236,8 +230,8 @@ void iwShip::DrawCargo()
     }
 
     // Start Offset zum malen
-    const int xStart = 40 + this->x;
-    const int yStart = 130 + this->y;
+    const int xStart = 40 + this->x_;
+    const int yStart = 130 + this->y_;
 
     // Step pro Ware/Figur
     const int xStep = 10;

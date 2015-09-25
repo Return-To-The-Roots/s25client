@@ -1,6 +1,4 @@
-﻿// $Id: iwAction.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -60,8 +58,7 @@ class iwAction : public IngameWindow
         GameWorldViewer* const gwv;
 
         MapPoint selectedPt;
-        unsigned short last_x;
-        unsigned short last_y;
+        Point<unsigned short> mousePosAtOpen_;
 
         /// Anzahl gewählter Soldaten für den Angriff und die Maximalanzahl
         unsigned int selected_soldiers_count;

@@ -1,6 +1,4 @@
-﻿// $Id: noFigure.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -204,9 +202,6 @@ class noFigure : public noMovable
         bool IsWaitingForFreeNode() const { return waiting_for_free_node; }
         /// Stoppt, wenn er auf diesen Punkt zuläuft
         void StopIfNecessary(const MapPoint pt);
-
-
-        unsigned char GetDir() const { return dir; }
 
         unsigned char GetPlayer() const { return player; }
 

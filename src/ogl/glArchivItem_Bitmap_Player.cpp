@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Bitmap_Player.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,6 +24,7 @@
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "../libsiedler2/src/types.h"
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -43,9 +42,9 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
         return;
 
     if(src_w == 0)
-        src_w = width;
+        src_w = width_;
     if(src_h == 0)
-        src_h = height;
+        src_h = height_;
     if(dst_w == 0)
         dst_w = src_w;
     if(dst_h == 0)
@@ -62,8 +61,8 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
     tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
 
-    int x = -nx + dst_x;
-    int y = -ny + dst_y;
+    int x = -nx_ + dst_x;
+    int y = -ny_ + dst_y;
 
     tmp[0].x = tmp[1].x = GLfloat(x);
     tmp[2].x = tmp[3].x = GLfloat(x + dst_w);
@@ -71,11 +70,11 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
     tmp[0].y = tmp[3].y = GLfloat(y);
     tmp[1].y = tmp[2].y = GLfloat(y + dst_h);
 
-    tmp[0].tx = tmp[1].tx = (GLfloat)(src_x) / (GLfloat)tex_width / 2.0f;
-    tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / (GLfloat)tex_width / 2.0f;
+    tmp[0].tx = tmp[1].tx = (GLfloat)(src_x) / (GLfloat)tex_width_ / 2.0f;
+    tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / (GLfloat)tex_width_ / 2.0f;
 
-    tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height;
-    tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height;
+    tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height_;
+    tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height_;
 
     tmp[4] = tmp[0];
     tmp[5] = tmp[1];
@@ -114,17 +113,14 @@ void glArchivItem_Bitmap_Player::GenerateTexture(void)
 
     int iformat = GL_RGBA, dformat = GL_BGRA; //GL_BGRA_EXT;
 
-    unsigned char* buffer = new unsigned char[tex_width * 2 * tex_height * 4];
+    std::vector<unsigned char> buffer(tex_width_ * 2 * tex_height_ * 4);
 
     VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
-    memset(buffer, 0, tex_width * 2 * tex_height * 4);
-    print(buffer, tex_width * 2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, 0, 0, 0, 0, 0, 0, false);
-    print(buffer, tex_width * 2, tex_height, libsiedler2::FORMAT_RGBA, palette, 128, tex_width, 0, 0, 0, 0, 0, true);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width * 2, tex_height, 0, dformat, GL_UNSIGNED_BYTE, buffer);
-
-    delete[] buffer;
+    print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, 0, 0, 0, 0, 0, 0, false);
+    print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, tex_width_, 0, 0, 0, 0, 0, true);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width_ * 2, tex_height_, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
 }

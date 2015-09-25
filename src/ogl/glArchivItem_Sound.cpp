@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Sound.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -49,9 +47,18 @@ glArchivItem_Sound::glArchivItem_Sound(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound* item)
-    : baseArchivItem_Sound(item), sound(NULL)
+glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item)
+    : baseArchivItem_Sound(item), sound(item.sound)
 {
+}
+
+glArchivItem_Sound& glArchivItem_Sound::operator=(const glArchivItem_Sound& item)
+{
+    if(this == &item)
+        return *this;
+    baseArchivItem_Sound::operator=(item);
+    sound = item.sound;
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,5 +68,4 @@ glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound* item)
  *  @author FloSoft
  */
 glArchivItem_Sound::~glArchivItem_Sound(void)
-{
-}
+{}

@@ -1,6 +1,4 @@
-﻿// $Id: dskOptions.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,7 +20,7 @@
 #pragma once
 
 #include "Desktop.h"
-#include "../driver/src/VideoDriver.h"
+#include "driver/src/VideoInterface.h"
 #include "GlobalGameSettings.h"
 
 /// Klasse des Optionen Desktops.
@@ -44,7 +42,7 @@ class dskOptions: public Desktop
 
     private:
         GlobalGameSettings ggs;
-        std::vector<VideoDriver::VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoMode> video_modes; ///< Vector für die Auflösungen
 };
 
 #endif // !dskOPTIONS_H_INCLUDED

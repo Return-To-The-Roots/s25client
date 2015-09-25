@@ -1,6 +1,4 @@
-﻿// $Id: noFighting.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -213,7 +211,7 @@ void noFighting::HandleEvent(const unsigned int id)
                 // Der Kampf hat gerade begonnen
 
                 // "Auslosen", wer als erstes dran ist mit Angreifen
-                turn = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, obj_id, 2));
+                turn = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2));
                 // anfangen anzugreifen
                 StartAttack();
             } return;
@@ -314,15 +312,15 @@ void noFighting::StartAttack()
         {
             case 0: // Maximale Stärke
             {
-                results[i] = RANDOM.Rand(__FILE__, __LINE__, obj_id, soldiers[i]->GetRank() + 6);
+                results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 6);
             } break;
             case 1: // Mittlere Stärke
             {
-                results[i] = RANDOM.Rand(__FILE__, __LINE__, obj_id, soldiers[i]->GetRank() + 10);
+                results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 10);
             } break;
             case 2: // Minimale Stärke
             {
-                results[i] = RANDOM.Rand(__FILE__, __LINE__, obj_id, 10);
+                results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10);
             } break;
         }
     }
@@ -333,7 +331,7 @@ void noFighting::StartAttack()
         defending_animation = 3;
     else
         // Der Verteidiger hat diesen Zug gewonnen, zufällige Verteidigungsanimation
-        defending_animation = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, obj_id, 3));
+        defending_animation = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 3));
 
     // Entsprechendes Event anmelden
     current_ev = em->AddEvent(this, 15);

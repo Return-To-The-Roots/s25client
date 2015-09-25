@@ -1,6 +1,4 @@
-﻿// $Id: noAnimal.cpp 9521 2014-11-30 23:31:02Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,12 +30,13 @@
 #include "figures/nofHunter.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "SerializedGameData.h"
+#include "gameData/TerrainData.h"
 
 #include "ogl/glSmartBitmap.h"
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
-    , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 15)), hunter(0), sound_moment(0)
+    , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(0), sound_moment(0)
 {
     if(hunter)
         hunter->AnimalLost();
@@ -91,7 +90,7 @@ void noAnimal::Draw(int x, int y)
             unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            Loader::animal_cache[species][dir][ani_step].draw(x, y);
+            Loader::animal_cache[species][GetCurMoveDir()][ani_step].draw(x, y);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
@@ -114,7 +113,7 @@ void noAnimal::Draw(int x, int y)
         case STATE_PAUSED:
         {
             // Stehend zeichnen
-            Loader::animal_cache[species][dir][0].draw(x, y);
+            Loader::animal_cache[species][GetCurMoveDir()][0].draw(x, y);
         } break;
         case STATE_DEAD:
         {
@@ -133,10 +132,10 @@ void noAnimal::Draw(int x, int y)
             {
                 Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }
-            else if (dir < 6)
+            else
             {
                 // Stehend zeichnen
-                Loader::animal_cache[species][dir][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+                Loader::animal_cache[species][GetCurMoveDir()][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }
 
         } break;
@@ -203,7 +202,8 @@ void noAnimal::StartWalking(const unsigned char dir)
 void noAnimal::StandardWalking()
 {
     // neuen Weg suchen
-    if( (dir = FindDir()) == 0xFF)
+    unsigned char dir = FindDir();
+    if( dir == 0xFF)
     {
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
@@ -242,8 +242,8 @@ void noAnimal::Walked()
             {
                 // dann stellt es sich hier hin und wartet erstmal eine Weile
                 state = STATE_PAUSED;
-                pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 15);
-                current_ev = em->AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 50), 1);
+                pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15);
+                current_ev = em->AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 50), 1);
             }
             else
             {
@@ -266,13 +266,14 @@ void noAnimal::Walked()
 unsigned char noAnimal::FindDir()
 {
     // mit zufälliger Richtung anfangen
-    unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
+    unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
     for(unsigned char dtmp = 0; dtmp < 6; ++dtmp)
     {
         unsigned char d = (dtmp + doffset) % 6;
 
-        unsigned char t1 = gwg->GetWalkingTerrain1(pos, d);
+        TerrainType t1 = gwg->GetWalkingTerrain1(pos, d);
+        TerrainType t2 = gwg->GetWalkingTerrain2(pos, d);
 
 		/* Animals are people, too. They should be allowed to cross borders as well!
 		
@@ -300,26 +301,21 @@ unsigned char noAnimal::FindDir()
 
         if(species == SPEC_DUCK)
         {
-            // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein (ID 14 = Wasser)
-            unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
-            
-            if(t1 == 14 &&
-                    t2 == 14)
+            // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein       
+            if(TerrainData::IsWater(t1) && TerrainData::IsWater(t2))
                 return d;
         }
         else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
-            unsigned char t2 = gwg->GetWalkingTerrain2(pos, d);
-
-            if(t1 == 0 ||
-                    t2 == 0)
+            LandscapeType lt = gwg->GetLandscapeType();
+            if(TerrainData::IsSnow(lt, t1) && TerrainData::IsSnow(lt, t2))
                 return d;
         }
         else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
-            if(!((t1 == 3 || (t1 >= 8 && t1 <= 13)) && (t1 == 3 || (t1 >= 8 && t1 <= 13))))
+            if(!TerrainData::IsUsableByAnimals(t1) || !TerrainData::IsUsableByAnimals(t2))
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein
@@ -383,7 +379,7 @@ MapPoint noAnimal::HunterIsNear()
     {
         // ansonsten nach dem Laufen stehenbleiben und die Koordinaten zurückgeben von dem Punkt, der erreicht wird
         state = STATE_WALKINGUNTILWAITINGFORHUNTER;
-        return gwg->GetNeighbour(pos, dir);
+        return gwg->GetNeighbour(pos, GetCurMoveDir());
     }
 }
 
@@ -409,8 +405,6 @@ void noAnimal::StopHunting()
         } break;
     }
 }
-
-
 
 void noAnimal::Die()
 {

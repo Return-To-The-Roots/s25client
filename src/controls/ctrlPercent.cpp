@@ -1,6 +1,4 @@
-﻿// $Id: ctrlPercent.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -81,15 +79,15 @@ bool ctrlPercent::Draw_(void)
         color = 0xFFFF8000;
 
     // Box zeichnen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     // Fortschritt zeichnen
-    DrawRectangle(GetX() + 4, GetY() + 4, (width - 8)*percentage / 100, height - 8, color);
+    DrawRectangle(GetX() + 4, GetY() + 4, (width_ - 8)*percentage / 100, height_ - 8, color);
 
     // Text zeichnen
     char caption[256];
     sprintf(caption, "%u%%", percentage);
-    font->Draw(GetX() + width / 2, GetY() + height / 2, caption, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, text_color);
+    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, caption, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, text_color);
 
     return true;
 }

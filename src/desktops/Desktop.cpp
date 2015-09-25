@@ -1,6 +1,4 @@
-﻿// $Id: Desktop.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,6 +22,7 @@
 
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "drivers/ScreenResizeEvent.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,10 +99,10 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
 // Keep the following block the same as in ctrlGroup class:
     // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-    if (scale)
+    if (scale_)
     {
         //Zunächst an die Kinder weiterleiten
-        for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+        for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
             if(it->second)
             {
                 Window* ctrl = it->second;

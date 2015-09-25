@@ -1,6 +1,4 @@
-﻿// $Id: glBitmap.cpp 8155 2012-09-06 02:11:55Z Maqs $
-//
-// Copyright (c) 2005 - 2012 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,6 +26,7 @@
 #include "../libsiedler2/src/types.h"
 
 #include <climits>
+#include <vector>
 #include <list>
 #include <cstdio>
 #include <algorithm>
@@ -232,19 +231,12 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;
 
-            unsigned char* buffer = new unsigned char[w * h * 4];
-
-            if (!buffer)
-            {
-                return(false);
-            }
-
-            memset(buffer, 0, w * h * 4);
+            std::vector<unsigned char> buffer(w * h * 4);
 
             // try storing bitmaps in the big texture
             for (std::vector<glSmartBitmap*>::const_iterator it = list.begin(); it != list.end(); ++it)
             {
-                if (!root->insert((*it), buffer, w, h, tmpVec))
+                if (!root->insert((*it), &buffer.front(), w, h, tmpVec))
                 {
                     // inserting this bitmap failed? just remember it for next texture
                     left.push_back((*it));
@@ -280,9 +272,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 
             if (left.empty())   // nothing left, just generate texture and return success
             {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
-
-                delete[] buffer;
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
 
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
 
@@ -296,9 +286,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
             else if (maxTex)    // maximum texture size reached and something still left
             {
                 // generate this texture and release the buffer
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
-
-                delete[] buffer;
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
 
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
 
@@ -314,8 +302,6 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
             // our pre-estimated size if the big texture was not enough for the algorithm to fit all textures in
             // delete buffer and try again with an increased big texture
             left.clear();
-
-            delete[] buffer;
         }
 
         // increase width or height, try whether opengl is able to handle textures that big
@@ -501,10 +487,9 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
             }
             case TYPE_ARCHIVITEM_BITMAP_SHADOW:
             {
-                unsigned char* tmp = new unsigned char[w * h * 4];
-                memset(tmp, 0, w * h * 4);
+                std::vector<unsigned char> tmp(w * h * 4);
 
-                (*it).bmp->print(tmp, w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, (*it).x, (*it).y, (*it).w, (*it).h);
+                (*it).bmp->print(&tmp.front(), w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, (*it).x, (*it).y, (*it).w, (*it).h);
 
                 unsigned tmpIdx = 0;
 
@@ -529,8 +514,6 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
                         tmpIdx += 4;
                     }
                 }
-
-                delete[] tmp;
 
                 break;
             }
@@ -565,19 +548,15 @@ void glSmartBitmap::generateTexture()
     // do we have a player-colored overlay?
     unsigned stride = hasPlayer ? w * 2 : w;
 
-    unsigned char* buffer = new unsigned char[stride * h * 4];
-    memset(buffer, 0, stride * h * 4);
-
-    drawTo(buffer, stride, h);
+    std::vector<unsigned char> buffer(stride * h * 4);
+    drawTo(&buffer.front(), stride, h);
 
     VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stride, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
-
-    delete[] buffer;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stride, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
 
     tmp[0].tx = tmp[1].tx = 0.0f;
     tmp[2].tx = tmp[3].tx = hasPlayer ? 0.5f : 1.0f;

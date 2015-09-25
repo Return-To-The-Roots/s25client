@@ -1,6 +1,4 @@
-﻿// $Id: iwPlayReplay.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -37,9 +35,9 @@ class iwPlayReplay : public IngameWindow
         void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
 
         /// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
-        static void FillReplayTable(const std::string& filename, void* param);
+        static void FillReplayTable(const std::string& filePath, void* param);
         /// Callbackfunktion zum löschen aller Replays
-        static void RemoveReplay(const std::string& filename, void* param);
+        static void RemoveReplay(const std::string& filePath, void* param);
 
         /// Startet das Replay (aktuell ausgewählter Eintrag)
         void StartReplay();

@@ -1,6 +1,4 @@
-﻿// $Id: win32_nanosleep.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -62,13 +60,13 @@ int usleep (useconds_t microseconds)
 /**
  *  nanosleep replacement for windows.
  */
-int nanosleep(const timespec_t* requested_delay, timespec_t* remaining_delay)
+int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay)
 {
     const useconds_t one_second = 1000000;
     const useconds_t nano_per_micro = 1000;
     useconds_t micro_delay;
 
-    micro_delay = requested_delay->tv_sec * one_second
+    micro_delay = useconds_t(requested_delay->tv_sec) * one_second
                   + ( requested_delay->tv_nsec + nano_per_micro - 1 )
                   / nano_per_micro;
 

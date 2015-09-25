@@ -1,6 +1,4 @@
-﻿// $Id: iwAction.cpp 9597 2015-02-01 09:42:22Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+﻿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -66,7 +64,7 @@ enum TabID
  */
 iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mouse_x, mouse_y, 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
-      gi(gi), gwv(gwv), selectedPt(selectedPt), last_x(mouse_x), last_y(mouse_y)
+      gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -292,10 +290,10 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
             nr = 94;
 
         // Straße aufwerten ggf anzeigen
-        unsigned int width = 180, x = 90;
-        AddUpgradeRoad(group, x, width);
+        unsigned int btWidth = 180, btPosX = 90;
+        AddUpgradeRoad(group, btPosX, btWidth);
 
-        group->AddImageButton(1, 0, 45, width, 36, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
+        group->AddImageButton(1, 0, 45, btWidth, 36, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
     }
 
     // Cut-main_tab
@@ -304,11 +302,11 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 19), _("Dig up road"), TAB_CUTROAD);
 
         // Straße aufwerten ggf anzeigen
-        unsigned int width = 180, x = 0;
+        unsigned int btWidth = 180, btPosX = 0;
         if(!tabs.setflag)
-            AddUpgradeRoad(group, x, width);
+            AddUpgradeRoad(group, btPosX, btWidth);
 
-        group->AddImageButton(1, x, 45, width, 36, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
+        group->AddImageButton(1, btPosX, 45, btWidth, 36, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
     }
 
     if(tabs.attack)
@@ -342,10 +340,10 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
 
     main_tab->SetSelection(0, true);
 
-    if(x + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        x = mouse_x - GetWidth() - 40;
-    if(y + GetHeight() > VIDEODRIVER.GetScreenHeight())
-        y = mouse_y - GetHeight() - 40;
+    if(x_ + GetWidth() > VIDEODRIVER.GetScreenWidth())
+        x_ = mouse_x - GetWidth() - 40;
+    if(y_ + GetHeight() > VIDEODRIVER.GetScreenHeight())
+        y_ = mouse_y - GetHeight() - 40;
 
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
 }
@@ -413,7 +411,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 
 iwAction::~iwAction()
 {
-    VIDEODRIVER.SetMousePos(last_x, last_y);
+    VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
     gi->ActionWindowClosed();
 }
 

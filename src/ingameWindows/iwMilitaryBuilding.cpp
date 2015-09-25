@@ -1,5 +1,5 @@
-﻿//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+//
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -86,17 +86,17 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
-    DrawRectangle(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2, GetY() + 60, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);
+    DrawRectangle(GetX() + width_ / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2, GetY() + 60, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);
     // Gold
     for(unsigned short i = 0; i < GOLD_COUNT[building->nation][building->size]; ++i)
-        LOADER.GetMapImageN(2278)->Draw(GetX() + width / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 72, 0, 0, 0, 0, 0, 0, ( i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF) );
+        LOADER.GetMapImageN(2278)->Draw(GetX() + width_ / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 72, 0, 0, 0, 0, 0, 0, ( i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF) );
 
     // Schwarzer Untergrund für Soldatenanzeige
-    DrawRectangle(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
+    DrawRectangle(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
     std::multiset<unsigned> soldiers;
-    for(nobMilitary::SortedTroopsContainer::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
+    for(SortedTroops::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
         soldiers.insert((*it)->GetRank());
 
     for(std::list<noFigure*>::iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)
@@ -113,7 +113,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     // Soldaten zeichnen
     unsigned short i = 0;
     for(std::multiset<unsigned>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
-        LOADER.GetMapImageN(2321 + *it)->Draw(GetX() + width / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(2321 + *it)->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
 }
 
 
@@ -177,7 +177,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 							it=GAMECLIENT.GetPlayer(building->GetPlayer())->GetMilitaryBuildings().begin();
 						gwv->MoveToMapObject((*it)->GetPos());
 						iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
-						nextscrn->Move(x,y);
+						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 						break;
 					}

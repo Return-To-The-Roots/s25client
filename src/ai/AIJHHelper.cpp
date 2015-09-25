@@ -1,6 +1,4 @@
-﻿// $Id: AIJHHelper.cpp 9589 2015-02-01 09:38:05Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -124,22 +122,17 @@ void AIJH::BuildJob::TryToBuild()
     {
         // TODO: tmp solution for testing: only woodcutter
         //hier machen für mehre gebäude
-        //erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
-        if (type != BLD_WOODCUTTER)
-        {
-            searchMode = SEARCHMODE_RADIUS;
-        }
-        else
-        {
-            searchMode = SEARCHMODE_RADIUS;
-            /*
+        /*erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
+        if (type == BLD_WOODCUTTER)
+        {          
+            
             PositionSearch *search = aijh->CreatePositionSearch(bPos, AIJH::WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
             SearchJob *job = new SearchJob(aijh, search);
             aijh->AddJob(job, true);
             status = AIJH::JOB_FINISHED;
-            return;*/
-        }
-
+            return;
+        }*/
+        searchMode = SEARCHMODE_RADIUS;
     }
 
 

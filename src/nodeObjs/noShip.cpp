@@ -1,6 +1,4 @@
-﻿// $Id: noShip.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -85,7 +83,7 @@ const Point<int> SHIPS_FLAG_POS[12] =
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos),
       player(player), state(STATE_IDLE), sea_id(0), goal_harbor_id(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, obj_id, ship_count)]),
+      name(ship_names[gwg->GetPlayer(player)->nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_count)]),
       lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
@@ -123,8 +121,8 @@ void noShip::Serialize(SerializedGameData* sgd) const
     sgd->PushUnsignedInt(covered_distance);
     for(unsigned i = 0; i < route.size(); ++i)
         sgd->PushUnsignedChar(route[i]);
-    sgd->PushObjectList(figures, false);
-    sgd->PushObjectList(wares, true);
+    sgd->PushObjectContainer(figures, false);
+    sgd->PushObjectContainer(wares, true);
 
 
 }
@@ -146,8 +144,8 @@ noShip::noShip(SerializedGameData* sgd, const unsigned obj_id) :
 {
     for(unsigned i = 0; i < route.size(); ++i)
         route[i] = sgd->PopUnsignedChar();
-    sgd->PopObjectList(figures, GOT_UNKNOWN);
-    sgd->PopObjectList(wares, GOT_WARE);
+    sgd->PopObjectContainer(figures, GOT_UNKNOWN);
+    sgd->PopObjectContainer(wares, GOT_WARE);
 }
 
 void noShip::Destroy()
@@ -159,12 +157,12 @@ void noShip::Destroy()
 /// Zeichnet das Schiff stehend mit oder ohne Waren
 void noShip::DrawFixed(const int x, const int y, const bool draw_wares)
 {
-    LOADER.GetImageN("boot_z",  ((dir + 3) % 6) * 2 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z",  ((dir + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z",  ((GetCurMoveDir() + 3) % 6) * 2 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z",  ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
 
     if(draw_wares)
         /// Waren zeichnen
-        LOADER.GetImageN("boot_z",  30 + ((dir + 3) % 6))->Draw(x, y);
+        LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
 }
 
 void noShip::Draw(int x, int y)
@@ -227,12 +225,12 @@ void noShip::Draw(int x, int y)
         } break;
     }
 
-    LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, obj_id))->
-    Draw(x + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].x, y + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
+    LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))->
+    Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player)->color]);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
-        LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, obj_id + 4))->
-        Draw(x + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[dir + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+        LOADER.GetImageN("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))->
+        Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
 
 }
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
@@ -241,8 +239,8 @@ void noShip::DrawDriving(int& x, int& y)
     // Interpolieren zwischen beiden Knotenpunkten
     CalcWalkingRelative(x, y);
 
-    LOADER.GetImageN("boot_z", 13 + ((dir + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + ((dir + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -251,10 +249,10 @@ void noShip::DrawDrivingWithWares(int& x, int& y)
     // Interpolieren zwischen beiden Knotenpunkten
     CalcWalkingRelative(x, y);
 
-    LOADER.GetImageN("boot_z", 13 + ((dir + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + ((dir + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
     /// Waren zeichnen
-    LOADER.GetImageN("boot_z",  30 + ((dir + 3) % 6))->Draw(x, y);
+    LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
 }
 
 
@@ -416,7 +414,7 @@ void noShip::HandleEvent(const unsigned int id)
                     gwg->AddFigure(attacker, pos);
 
                     current_ev = em->AddEvent(this, 30, 1);
-                    attacker->StartAttackOnOtherIsland(pos, obj_id);
+                    attacker->StartAttackOnOtherIsland(pos, GetObjId());
                     ;
                 };
                 case STATE_SEAATTACK_UNLOADING:
@@ -439,7 +437,7 @@ void noShip::StartDriving(const unsigned char dir)
 void noShip::Driven()
 {
     MapPoint enemy_territory_discovered(0xffff, 0xffff);
-    gwg->RecalcMovingVisibilities(pos, player, GetVisualRange(), dir, &enemy_territory_discovered);
+    gwg->RecalcMovingVisibilities(pos, player, GetVisualRange(), GetCurMoveDir(), &enemy_territory_discovered);
 
     // Feindliches Territorium entdeckt?
     if(enemy_territory_discovered.x != 0xffff)
@@ -1148,7 +1146,7 @@ void noShip::ContinueExplorationExpedition()
 
         else
             // Zufällig den nächsten Hafen auswählen
-            goal_harbor_id = hps[RANDOM.Rand(__FILE__, __LINE__, obj_id, hps.size())];
+            goal_harbor_id = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];
     }
 
     StartDrivingToHarborPlace();

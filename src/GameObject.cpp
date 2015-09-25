@@ -1,6 +1,4 @@
-﻿// $Id: GameObject.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -42,8 +40,8 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-unsigned int GameObject::obj_id_counter = 1;
-unsigned int GameObject::obj_counter = 0;
+unsigned int GameObject::objIdCounter_ = 1;
+unsigned int GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
 EventManager* GameObject::em = NULL;
@@ -57,23 +55,32 @@ GameClientPlayerList* GameObject::players = NULL;
  *
  *  @author OLiver
  */
-GameObject::GameObject(void) : obj_id(obj_id_counter++)
+GameObject::GameObject(void) : objId(objIdCounter_++)
 {
     // ein Objekt mehr
-    ++obj_counter;
+    ++objCounter_;
 }
 
-GameObject::GameObject(SerializedGameData* sgd, const unsigned obj_id) : obj_id(obj_id)
+GameObject::GameObject(SerializedGameData* sgd, const unsigned obj_id) : objId(obj_id)
 {
     // ein Objekt mehr
-    ++obj_counter;
+    ++objCounter_;
     sgd->AddObject(this);
 }
 
-GameObject::GameObject(const GameObject& go) : obj_id(go.obj_id)
+GameObject::GameObject(const GameObject& go) : objId(go.objId)
 {
     // ein Objekt mehr
-    ++obj_counter;
+    ++objCounter_;
+}
+
+GameObject& GameObject::operator=(const GameObject& obj)
+{
+    if(this == &obj)
+        return *this;
+    objId = obj.objId;
+    ++objCounter_;
+    return *this;
 }
 
 void GameObject::Destroy()
@@ -94,7 +101,7 @@ void GameObject::Serialize(SerializedGameData* sgd) const
 GameObject::~GameObject()
 {
     // ein Objekt weniger
-    --obj_counter;
+    --objCounter_;
 
     /*
     if (em)

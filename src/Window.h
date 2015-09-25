@@ -1,6 +1,4 @@
-﻿// $Id: Window.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,7 +21,6 @@
 
 #include "CollisionDetection.h"
 
-#include "drivers/MouseAndKeys.h"
 #include "Msgbox.h"
 #include "gameData/GameConsts.h"
 #include "colors.h"
@@ -64,6 +61,10 @@ class glArchivItem_Map;
 class glArchivItem_Font;
 class glArchivItem_Bitmap;
 
+struct KeyEvent;
+class MouseCoords;
+struct ScreenResizeEvent;
+
 /// Die Basisklasse der Fenster.
 class Window
 {
@@ -83,15 +84,15 @@ class Window
         /// liefert die Y-Koordinate.
         unsigned short GetY(bool absolute = true) const;
         /// liefert die Breite des Fensters.
-        unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width) : width; }
+        unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width_) : width_; }
         /// liefert die Höhe des Fensters.
-        unsigned short GetHeight(const bool scale = false) const { return (scale) ? ScaleY(height) : height; }
+        unsigned short GetHeight(const bool scale = false) const { return (scale) ? ScaleY(height_) : height_; }
         /// setzt die Größe des Fensters
-        void Resize(unsigned short width, unsigned short height) { Resize_(width, height); this->width = width; this->height = height; }
+        void Resize(unsigned short width, unsigned short height) { Resize_(width, height); this->width_ = width; this->height_ = height; }
         /// setzt die Breite des Fensters
-        void SetWidth(unsigned short width)   { Resize(width, this->height); }
+        void SetWidth(unsigned short width)   { Resize(width, this->height_); }
         /// setzt die Höhe des Fensters
-        void SetHeight(unsigned short height) { Resize(this->width, height); }
+        void SetHeight(unsigned short height) { Resize(this->width_, height); }
         /// Sendet eine Tastaturnachricht an die Steuerelemente.
         bool RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke);
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
@@ -107,25 +108,25 @@ class Window
         /// Größe verändern oder überhaupt setzen
 
         /// setzt das Parentfenster.
-        void SetParent(Window* parent) { this->parent = parent; }
+        void SetParent(Window* parent) { this->parent_ = parent; }
         /// verschiebt das Fenster.
-        void Move(short x, short y, bool absolute = true) { this->x = (absolute ? x : this->x + x); this->y = (absolute ? y : this->y + y); }
+        void Move(short x, short y, bool absolute = true) { this->x_ = (absolute ? x : this->x_ + x); this->y_ = (absolute ? y : this->y_ + y); }
 
         // macht das Fenster sichtbar oder blendet es aus
-        virtual void SetVisible(bool visible) { this->visible = visible; }
+        virtual void SetVisible(bool visible) { this->visible_ = visible; }
         /// Ist das Fenster sichtbar?
-        bool GetVisible() const { return visible; }
+        bool GetVisible() const { return visible_; }
         /// Ist das Fenster aktiv?
-        bool GetActive() const { return active; }
+        bool GetActive() const { return active_; }
         /// liefert das übergeordnete Fenster
-        Window* GetParent() const { return parent; }
-        const unsigned int GetID(void) const { return id; }
+        Window* GetParent() const { return parent_; }
+        const unsigned int GetID(void) const { return id_; }
 
         template<typename T>
         T* GetCtrl(unsigned int id)
         {
-            std::map<unsigned int, Window*>::iterator it = idmap.find(id);
-            if(it == idmap.end())
+            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
+            if(it == childIdToWnd_.end())
                 return NULL;
 
             return dynamic_cast<T*>( it->second );
@@ -134,8 +135,8 @@ class Window
         template<typename T>
         const T* GetCtrl(unsigned int id) const
         {
-            std::map<unsigned int, Window*>::const_iterator it = idmap.find(id);
-            if(it == idmap.end())
+            std::map<unsigned int, Window*>::const_iterator it = childIdToWnd_.find(id);
+            if(it == childIdToWnd_.end())
                 return NULL;
 
             return dynamic_cast<T*>( it->second );
@@ -143,18 +144,18 @@ class Window
 
         void DeleteCtrl(unsigned int id)
         {
-            std::map<unsigned int, Window*>::iterator it = idmap.find(id);
+            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
 
-            if(it == idmap.end())
+            if(it == childIdToWnd_.end())
                 return;
 
             delete it->second;
 
-            idmap.erase(it);
+            childIdToWnd_.erase(it);
         }
 
         /// fügt ein BuildingIcon hinzu.
-        ctrlBuildingIcon* AddBuildingIcon(unsigned int id, unsigned short x, unsigned short y, BuildingType type, const Nation nation, unsigned short size = 36, const std::string& tooltip = "");
+        ctrlBuildingIcon* AddBuildingIcon(unsigned int id_, unsigned short x_, unsigned short y_, BuildingType type, const Nation nation, unsigned short size = 36, const std::string& tooltip_ = "");
         /// fügt einen Text-ButtonCtrl hinzu.
         ctrlTextButton* AddTextButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip = "");
         /// fügt einen Color-ButtonCtrl hinzu.
@@ -281,12 +282,12 @@ class Window
     protected:
 
         /// gets the extent of the window
-        Rect GetRect() const { return Rect(x, y, GetWidth(), GetHeight()); }
+        Rect GetRect() const { return Rect(x_, y_, GetWidth(), GetHeight()); }
         /// scales X- und Y values to fit the screen
         unsigned short ScaleX(const unsigned short val) const;
         unsigned short ScaleY(const unsigned short val) const;
         /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
-        void SetScale(bool scale = true) { this->scale = scale; }
+        void SetScale(bool scale = true) { this->scale_ = scale; }
         /// zeichnet die Steuerelemente.
         void DrawControls(void);
         /// prüft ob Mauskoordinaten in einer gesperrten Region liegt.
@@ -301,15 +302,12 @@ class Window
         template <typename T>
         T* AddCtrl(unsigned int id, T* ctrl)
         {
-            assert(idmap.find(id) == idmap.end());
+            assert(childIdToWnd_.find(id) == childIdToWnd_.end());
             // ID auf control mappen
-            idmap.insert(std::make_pair(id, ctrl));
+            childIdToWnd_.insert(std::make_pair(id, ctrl));
 
             // scale-Eigenschaft weitervererben
-            ctrl->scale = scale;
-
-            //// Control zur Liste hinzufügen.
-            //controls.push_back(ctrl);
+            ctrl->scale_ = scale_;
 
             return ctrl;
         }
@@ -323,19 +321,19 @@ class Window
             BUTTON_UNKNOWN = 0xFF
         };
 
-        unsigned short x;         ///< X-Position des Fensters.
-        unsigned short y;         ///< Y-Position des Fensters.
-        unsigned short width;     ///< Breite des Fensters.
-        unsigned short height;    ///< Höhe des Fensters.
-        unsigned int id;          ///< ID des Fensters.
-        Window* parent;           ///< Handle auf das Parentfenster.
-        bool active;              ///< Fenster aktiv?
-        bool visible;             ///< Fenster sichtbar?
-        bool scale;               ///< Sollen Controls an Fenstergröße angepasst werden?
-        std::string tooltip;      ///< Tooltip des Fensters (nur bei Controls benutzt)
+        unsigned short x_;         ///< X-Position des Fensters.
+        unsigned short y_;         ///< Y-Position des Fensters.
+        unsigned short width_;     ///< Breite des Fensters.
+        unsigned short height_;    ///< Höhe des Fensters.
+        unsigned int id_;          ///< ID des Fensters.
+        Window* parent_;           ///< Handle auf das Parentfenster.
+        bool active_;              ///< Fenster aktiv?
+        bool visible_;             ///< Fenster sichtbar?
+        bool scale_;               ///< Sollen Controls an Fenstergröße angepasst werden?
+        std::string tooltip_;      ///< Tooltip des Fensters (nur bei Controls benutzt)
 
-        std::map<Window*, Rect> locked_areas;       ///< gesperrte Regionen des Fensters.
-        std::map<unsigned int, Window*> idmap; ///< Die Steuerelemente des Fensters.
+        std::map<Window*, Rect> lockedAreas_;       ///< gesperrte Regionen des Fensters.
+        std::map<unsigned int, Window*> childIdToWnd_; ///< Die Steuerelemente des Fensters.
 };
 
 #endif // !WINDOW_H_INCLUDED

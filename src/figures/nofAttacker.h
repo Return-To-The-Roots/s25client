@@ -1,6 +1,4 @@
-﻿// $Id: nofAttacker.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -71,10 +69,6 @@ class nofAttacker : public nofActiveSoldier
 
         /// Geht zum STATE_ATTACKING_WAITINGFORDEFENDER über und meldet gleichzeitig ein Block-Event an
         void SwitchStateAttackingWaitingForDefender();
-
-
-
-
 
         /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
         void CancelAtShip();

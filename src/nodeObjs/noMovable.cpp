@@ -1,6 +1,4 @@
-﻿// $Id: noMovable.cpp 9518 2014-11-30 09:22:47Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,7 +38,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
-    : noCoordBase(nop, pos), dir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
+    : noCoordBase(nop, pos), curMoveDir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
 {
 }
 
@@ -48,7 +46,7 @@ void noMovable::Serialize_noMovable(SerializedGameData* sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(dir);
+    sgd->PushUnsignedChar(curMoveDir);
     sgd->PushUnsignedChar(ascent);
     sgd->PushObject(current_ev, true);
     sgd->PushUnsignedInt(pause_walked_gf);
@@ -57,7 +55,7 @@ void noMovable::Serialize_noMovable(SerializedGameData* sgd) const
 }
 
 noMovable::noMovable(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    dir(sgd->PopUnsignedChar()),
+    curMoveDir(sgd->PopUnsignedChar()),
     ascent(sgd->PopUnsignedChar()),
     current_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
     pause_walked_gf(sgd->PopUnsignedInt()),
@@ -70,16 +68,16 @@ void noMovable::Walk()
 {
     moving = false;
 	
-	if ((dir != 1) && (dir != 2))
+	if ((curMoveDir != 1) && (curMoveDir != 2))
 	{
 		gwg->RemoveFigure(this, pos);
 		
-		pos = gwg->GetNeighbour(pos, dir);
+		pos = gwg->GetNeighbour(pos, curMoveDir);
 		
 		gwg->AddFigure(this, pos);
 	} else
 	{
-		pos = gwg->GetNeighbour(pos, dir);
+		pos = gwg->GetNeighbour(pos, curMoveDir);
 	}
 /*
     int tx = x, ty = y;
@@ -99,9 +97,16 @@ void noMovable::Walk()
         gwg->AddFigure(this, pos);*/
 }
 
-void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
+void noMovable::FaceDir(unsigned char newDir)
+{
+    assert(newDir < 6);
+    curMoveDir = newDir;
+}
+
+void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
 {
     assert(!moving);
+    assert(newDir < 6);
 
     // Ist das Wesen stehengeblieben mitten aufm Weg?
     if(pause_walked_gf)
@@ -116,7 +121,7 @@ void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
     // runter natürlich nich so viel schneller werden wie langsamer hoch
-    switch(int(gwg->GetNodeAround(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
+    switch(int(gwg->GetNodeAround(pos, newDir).altitude) - int(gwg->GetNode(pos).altitude))
     {
         default: ascent = 3; // gerade
         case 1: ascent = 4; gf_length+=(gf_length/2); break; // leicht hoch
@@ -128,14 +133,14 @@ void noMovable::StartMoving(const unsigned char dir, unsigned gf_length)
     }
 
     current_ev = em->AddEvent(this, gf_length);
-    this->dir = dir;
+    this->curMoveDir = newDir;
     moving = true;
 
     // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
-    if(dir == 1 || dir == 2)
+    if(newDir == 1 || newDir == 2)
     {
         gwg->RemoveFigure(this, pos);
-        gwg->AddFigure(this, gwg->GetNeighbour(pos, dir));
+        gwg->AddFigure(this, gwg->GetNeighbour(pos, newDir));
     }
 }
 
@@ -158,7 +163,7 @@ void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
     unsigned gf_length = current_ev ? current_ev->gf_length : pause_event_length;
     unsigned frame_time = current_ev ? GAMECLIENT.GetFrameTime() : 0;
 
-    if(dir != 1 && dir != 2)
+    if(curMoveDir != 1 && curMoveDir != 2)
     {
         x   -= (((x1 - x2) * int((gf_diff) * GAMECLIENT.GetGFLength() + frame_time)) / int(gf_length * GAMECLIENT.GetGFLength()));
         y   -= (((y1 - y2) * int((gf_diff) * GAMECLIENT.GetGFLength() + frame_time)) / int(gf_length * GAMECLIENT.GetGFLength()));
@@ -175,8 +180,8 @@ void noMovable::CalcWalkingRelative(int& x, int& y)
 {
     int x1 = static_cast<int>(gwg->GetTerrainX(this->pos));
     int y1 = static_cast<int>(gwg->GetTerrainY(this->pos));
-    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(this->pos, dir)));
-    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(this->pos, dir)));
+    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(this->pos, curMoveDir)));
+    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(this->pos, curMoveDir)));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
     if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
@@ -197,7 +202,7 @@ void noMovable::CalcWalkingRelative(int& x, int& y)
 
 
     // Wenn sie runterlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(dir == 1 || dir == 2)
+    if(curMoveDir == 1 || curMoveDir == 2)
     {
         std::swap(x1, x2);
         std::swap(y1, y2);
@@ -226,9 +231,9 @@ void noMovable::PauseWalking()
     {
         // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
         // --> rückgängig!
-        if(dir == 1 || dir == 2)
+        if(curMoveDir == 1 || curMoveDir == 2)
         {
-            gwg->RemoveFigure(this, gwg->GetNeighbour(pos, dir));
+            gwg->RemoveFigure(this, gwg->GetNeighbour(pos, curMoveDir));
             gwg->AddFigure(this, pos);
 
         }
@@ -251,7 +256,7 @@ MapPoint noMovable::GetDestinationForCurrentMove() const
     // Bewegt sich das Ding gerade?
     if(IsMoving())
         // Dann unsere Zielrichtung zur Berechnung verwenden
-        return MapPoint(gwg->GetNeighbour(pos, dir));
+        return MapPoint(gwg->GetNeighbour(pos, curMoveDir));
 
     return pos;
 }

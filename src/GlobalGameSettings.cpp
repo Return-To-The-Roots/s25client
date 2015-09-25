@@ -1,6 +1,4 @@
-﻿// $Id: GlobalGameSettings.cpp 9596 2015-02-01 09:41:54Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,6 +29,7 @@
 #include "addons/AddonRefundOnEmergency.h"
 #include "addons/AddonManualRoadEnlargement.h"
 #include "addons/AddonCatapultGraphics.h"
+#include "addons/AddonMetalworksBehaviorOnZero.h"
 
 #include "addons/AddonDemolitionProhibition.h"
 #include "addons/AddonCharburner.h"
@@ -66,6 +65,7 @@
 
 #include "Serializer.h"
 #include "Log.h"
+#include "gameData/MilitaryConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -128,6 +128,7 @@ void GlobalGameSettings::reset(bool recreate)
         registerAddon(new AddonRefundOnEmergency);
         registerAddon(new AddonManualRoadEnlargement);
         registerAddon(new AddonCatapultGraphics);
+        registerAddon(new AddonMetalworksBehaviorOnZero);
 
         registerAddon(new AddonDemolitionProhibition);
         registerAddon(new AddonCharburner);
@@ -262,4 +263,11 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
     }
 
     it->status = selection;
+}
+
+unsigned GlobalGameSettings::GetMaxMilitaryRank() const
+{
+    unsigned selection = getSelection(ADDON_MAX_RANK);
+    assert(selection <= MAX_MILITARY_RANK);
+    return MAX_MILITARY_RANK - selection;
 }

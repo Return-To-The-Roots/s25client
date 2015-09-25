@@ -1,6 +1,4 @@
-﻿// $Id: iwSettings.h
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -50,8 +48,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author NastX
  */
 iwSettings::iwSettings(dskGameInterface* gameDesktop)
-    : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41)),
-      gameDesktop(gameDesktop)
+    : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41))
 {
     AddText(  46,  15,  40, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
     AddText(  47,  15,  85, _("Mode:"), COLOR_YELLOW, 0, NormalFont);
@@ -59,8 +56,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale);
-    optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK, scale);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK, scale_);
     optiongroup->AddTextButton(1, 200, 70, 150, 22, TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(2, 200, 95, 150, 22, TC_GREY, _("Windowed"), NormalFont);
 

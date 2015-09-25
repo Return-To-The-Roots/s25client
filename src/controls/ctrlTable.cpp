@@ -1,6 +1,4 @@
-﻿// $Id: ctrlTable.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,6 +22,8 @@
 
 #include "ctrlButton.h"
 #include "ogl/glArchivItem_Font.h"
+#include "driver/src/MouseCoords.h"
+#include "driver/src/KeyEvent.h"
 #include <sstream>
 #include <cstdarg>
 
@@ -117,14 +117,14 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
 
     // If the size was enlarged we have to check that we don't try to
     // display more lines than present
-    if(height > this->height)
+    if(height > this->height_)
         while(rows.size() - scrollbar->GetPos() < line_count
                 && scrollbar->GetPos() > 0)
             scrollbar->SetPos(scrollbar->GetPos() - 1);
 
     // changed width
 
-    this->width = width;
+    this->width_ = width;
     ResetButtonWidths();
     if(scrollbar->GetVisible())
         Msg_ScrollShow(0, true);
@@ -168,8 +168,8 @@ void ctrlTable::SetSelection(unsigned short selection, bool left)
     else
         row_r_selection = selection;
 
-    if(parent)
-        parent->Msg_TableSelectItem(id, selection);
+    if(parent_)
+        parent_->Msg_TableSelectItem(id_, selection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -286,7 +286,7 @@ void ctrlTable::SortRows(unsigned short column, bool* direction)
  */
 bool ctrlTable::Draw_(void)
 {
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     DrawControls();
 
@@ -298,7 +298,7 @@ bool ctrlTable::Draw_(void)
         if(row_l_selection == i + scroll->GetPos())
         {
             // durchsichtig schwarze Markierung malen
-            DrawRectangle(GetX() + 2, GetY() + 2 + header_height + i * font->getHeight(), width - 4 - (scroll->GetVisible() ? 24 : 0), font->getHeight(), 0x80000000);
+            DrawRectangle(GetX() + 2, GetY() + 2 + header_height + i * font->getHeight(), width_ - 4 - (scroll->GetVisible() ? 24 : 0), font->getHeight(), 0x80000000);
         }
 
         unsigned short pos = 0;
@@ -334,14 +334,14 @@ void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
  */
 bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width - 20, height - header_height))
+    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
     {
         SetSelection((mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos());
-        if(parent)
-            parent->Msg_TableLeftButton(this->id, row_l_selection);
+        if(parent_)
+            parent_->Msg_TableLeftButton(this->id_, row_l_selection);
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent)
-            parent->Msg_TableChooseItem(this->id, row_l_selection);
+        if(mc.dbl_click && parent_)
+            parent_->Msg_TableChooseItem(this->id_, row_l_selection);
 
         return true;
     }
@@ -357,11 +357,11 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
  */
 bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width - 20, height))
+    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_))
     {
         SetSelection((mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos(), false);
-        if(parent)
-            parent->Msg_TableRightButton(this->id, row_r_selection);
+        if(parent_)
+            parent_->Msg_TableRightButton(this->id_, row_r_selection);
 
         return true;
     }
@@ -381,7 +381,7 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list or scrollbar
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate Button Click
         scrollbar->Msg_ButtonClick(0);
@@ -397,7 +397,7 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate Button Click
         scrollbar->Msg_ButtonClick(1);
@@ -492,7 +492,7 @@ void ctrlTable::ResetButtonWidths()
     unsigned short x_pos = 0;
     for(unsigned i = 0; i < columns.size(); ++i)
     {
-        GetCtrl<ctrlButton>(i + 1)->SetWidth(columns[i].width * width / 1000);
+        GetCtrl<ctrlButton>(i + 1)->SetWidth(columns[i].width * width_ / 1000);
         GetCtrl<ctrlButton>(i + 1)->Move(x_pos, 0);
         x_pos += GetCtrl<ctrlButton>(i + 1)->GetWidth();
     }
@@ -504,7 +504,7 @@ void ctrlTable::ResetButtonWidths()
         {
             GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1)
             ->SetWidth(GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1)->GetWidth() +
-                       (width - x_pos));
+                       (width_ - x_pos));
             break;
         }
     }
@@ -601,8 +601,8 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
             if(row_l_selection < unsigned(rows.size()) && row_l_selection)
                 --row_l_selection;
 
-            if(parent)
-                parent->Msg_TableSelectItem(id, row_l_selection);
+            if(parent_)
+                parent_->Msg_TableSelectItem(id_, row_l_selection);
 
         } return true;
         case KT_DOWN:
@@ -610,8 +610,8 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
             if(unsigned(row_l_selection) + 1 < unsigned(rows.size()))
                 ++row_l_selection;
 
-            if(parent)
-                parent->Msg_TableSelectItem(id, row_l_selection);
+            if(parent_)
+                parent_->Msg_TableSelectItem(id_, row_l_selection);
 
         } return true;
     }

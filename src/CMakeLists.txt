@@ -1,15 +1,12 @@
-################################################################################
-### $Id: CMakeLists.txt 9596 2015-02-01 09:41:54Z marcus $
-################################################################################
-
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost REQUIRED)
+FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system REQUIRED)
 
 ################################################################################
 
 INCLUDE_DIRECTORIES(
+					${CMAKE_SOURCE_DIR}
 					"${CMAKE_SOURCE_DIR}/liblobby/src/"
 					"${CMAKE_SOURCE_DIR}/libutil/src/"
 					"${CMAKE_SOURCE_DIR}/mygettext/src/"
@@ -18,6 +15,7 @@ INCLUDE_DIRECTORIES(
 					"${CMAKE_SOURCE_DIR}/src"
 					${BZIP2_INCLUDE_DIR}
 					${Boost_INCLUDE_DIR}
+					${OPENGL_INCLUDE_DIR}
 					)
 
 LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
@@ -77,7 +75,7 @@ GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
 
 # bzip linkerbug-fix
 SET(SOURCES_BZIP "")
-IF ( "${COMPILEFOR}" STREQUAL "windows" )
+IF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 	IF( IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3" )
 		SET(SOURCES_BZIP
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/blocksort.c
@@ -89,10 +87,10 @@ IF ( "${COMPILEFOR}" STREQUAL "windows" )
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/bzlib.c
 		)
 	ENDIF( IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3" )
-ENDIF ( "${COMPILEFOR}" STREQUAL "windows" )
+ENDIF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 
 INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 SET(s25client_SRCS
 	${PROJECT_SOURCE_DIR}/build_version.cpp
@@ -100,25 +98,19 @@ SET(s25client_SRCS
 	${SOURCES_SUBDIRS}
 )
 
-IF ( "${COMPILEFOR}" STREQUAL "windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
-
-	IF ( "${COMPILEARCH}" STREQUAL "i386" )
-		FIND_PROGRAM(WINDRES NAMES windres i686-pc-mingw32-windres i686-mingw32-windres i586-mingw32msvc-windres DOC "path to mingw's windres executable")
-	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
-		FIND_PROGRAM(WINDRES NAMES windres x86_64-pc-mingw32-windres x86_64-mingw32-windres amd64-mingw32msvc-windres DOC "path to mingw's windres executable")
-	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
 
 	# Add Icon to Application
 	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o
-					   COMMAND ${WINDRES} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
+					   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
 	SET(s25client_SRCS ${s25client_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)
-ENDIF ( "${COMPILEFOR}" STREQUAL "windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 
-IF ( "${COMPILEFOR}" STREQUAL "apple")
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	CORRECT_LIB(OPENGL_gl_LIBRARY OpenGL)
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
@@ -128,7 +120,7 @@ IF ( "${COMPILEFOR}" STREQUAL "apple")
 
 	# Add library
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL -L${CMAKE_SOURCE_DIR}/macos -lSDLmain)
-ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 
 ################################################################################
 # LUA
@@ -136,30 +128,44 @@ ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
 
 SET(LUA_VERSION "52")
 
-IF ( "${COMPILEFOR}" STREQUAL "windows")
-	IF ( "${COMPILEARCH}" STREQUAL "i386" )
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	IF ( "${PLATFORM_ARCH}" STREQUAL "i386" )
 		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win32")
-	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+	ELSE()
 		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
-	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
-ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+	ENDIF()
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
-IF ( "${COMPILEFOR}" STREQUAL "linux")
-	IF ( "${COMPILEARCH}" STREQUAL "i386" )
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+	IF ( "${PLATFORM_ARCH}" STREQUAL "i386" )
 		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin32")
-	ELSE ( "${COMPILEARCH}" STREQUAL "i386" )
+	ELSE()
 		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin64")
-	ENDIF ( "${COMPILEARCH}" STREQUAL "i386" )
-ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
+	ENDIF()
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 
-IF ( "${COMPILEFOR}" STREQUAL "apple")
+### XXX Add FindLua52
+#find_package(Lua52 REQUIRED)
+#IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+IF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "FreeBSD")
+	INCLUDE_DIRECTORIES("/usr/local/include/lua52")
+	SET(LUA_LIB "/usr/local/lib/liblua${LUA_VERSION}.a")
+ENDIF ()
+
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
-ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 
-IF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	SET(LUA_LIB "${CMAKE_SOURCE_DIR}/contrib/lib/lua${LUA_VERSION}.lib")
-ELSE ()
-	SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
+IF(NOT DEFINED LUA_LIB)
+	IF (MSVC)
+		IF(MSVC_VERSION GREATER 1800) # MSVC 2015
+			SET(LUA_LIB "${CONTRIB_DIR}/VS2015/lib/lua${LUA_VERSION}.lib" CACHE FILEPATH "Path to lua lib")
+		ELSE()
+			SET(LUA_LIB "${CONTRIB_DIR}/lib/lua${LUA_VERSION}.lib" CACHE FILEPATH "Path to lua lib" )
+		ENDIF()
+	ELSE ()
+		SET(LUA_LIB "${LUA_DIR}/liblua${LUA_VERSION}.a")
+	ENDIF ()
 ENDIF ()
 
 MESSAGE(STATUS "Checking LUA library at ${LUA_LIB}")
@@ -171,6 +177,11 @@ ENDIF ( NOT EXISTS "${LUA_LIB}" )
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua.so")
 	INCLUDE_DIRECTORIES("/usr/include/")
+ENDIF ( NOT EXISTS "${LUA_LIB}" )
+
+IF ( NOT EXISTS "${LUA_LIB}" )
+	SET(LUA_LIB "/usr/local/lib/liblua-5.2.so")
+	INCLUDE_DIRECTORIES("/usr/local/include/")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
@@ -200,28 +211,38 @@ TARGET_LINK_LIBRARIES(s25client
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIB}
+	${Boost_LIBRARIES}
 )
 
-IF ( "${COMPILEFOR}" STREQUAL "apple")
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	TARGET_LINK_LIBRARIES(s25client ${SDL_LIBRARY} SDLmain)
 	SET_TARGET_PROPERTIES(s25client PROPERTIES LINK_FLAGS "-framework Cocoa")
-ENDIF ( "${COMPILEFOR}" STREQUAL "apple")
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 
-IF ( "${COMPILEFOR}" STREQUAL "windows")
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi imagehlp)
 	IF (NOT MSVC)
 		TARGET_LINK_LIBRARIES(s25client bfd iberty)
 	ENDIF()
-ENDIF ( "${COMPILEFOR}" STREQUAL "windows")
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
-IF ( "${COMPILEFOR}" STREQUAL "linux")
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 	TARGET_LINK_LIBRARIES(s25client dl pthread)
-ENDIF ( "${COMPILEFOR}" STREQUAL "linux")
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+	TARGET_LINK_LIBRARIES(s25client execinfo)
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 
 IF (MSVC)
-	SET(CONTRIB_DLL_DIR "${CMAKE_SOURCE_DIR}/contrib/bin" CACHE PATH "Path to dll files from contrib package")
-	IF (EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
-		ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONTRIB_DLL_DIR} $<TARGET_FILE_DIR:s25client>)
+	ADD_CUSTOM_COMMAND( TARGET s25client
+						PRE_BUILD
+						COMMAND "$<TARGET_FILE:version>" "${CMAKE_SOURCE_DIR}"
+						DEPENDS version
+						WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
+	IF (EXISTS "${CONTRIB_DIR}/bin/libcurl.dll")
+		ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CONTRIB_DIR}/bin/ $<TARGET_FILE_DIR:s25client>)
 	ELSE()
 		MESSAGE(WARNING "Folder with DLLs not found. You may not be able to execute directly from VS")
 	ENDIF()

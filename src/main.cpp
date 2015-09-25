@@ -1,6 +1,4 @@
-﻿// $Id: main.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,9 +23,6 @@
 #ifdef _WIN32
 #   include <windows.h>
 #   define chdir !SetCurrentDirectoryA
-#   ifndef __CYGWIN__
-#       include <conio.h>
-#   endif
 #else
 #   include <unistd.h>
 #endif
@@ -82,7 +77,10 @@
 #   include <eh.h>
 #endif
 
+#include <boost/filesystem.hpp>
 #include <ctime>
+#include <iostream>
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -91,6 +89,18 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+void WaitForEnter()
+{
+    static bool waited = false;
+    if(waited)
+        return;
+    waited = true;
+    std::cout << "\n\nPress ENTER to close this window . . ." << std::endl;
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -102,9 +112,8 @@ void ExitHandler(void)
 {
     Socket::Shutdown();
 
-#if defined _WIN32 && !defined __CYGWIN__
-    LOG.lprintf("\n\nDr%ccken Sie eine beliebige Taste . . .\n", 129);
-    getch();
+#ifdef _DEBUG
+    WaitForEnter();
 #endif
 }
 
@@ -237,30 +246,33 @@ int main(int argc, char* argv[])
     const unsigned int dir_count = 7;
     unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
 
-#ifdef _WIN32
-    if(IsDir(GetFilePath("~/Siedler II.5 RttR")))
-        MoveFileA(GetFilePath("~/Siedler II.5 RttR").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
-#endif
+    std::string oldSettingsDir;
+    std::string newSettingsDir = GetFilePath(FILE_PATHS[94]);
 
-#ifdef __APPLE__
-    if(IsDir(GetFilePath("~/.s25rttr")))
-        rename(GetFilePath("~/.s25rttr").c_str(), GetFilePath(FILE_PATHS[94]).c_str());
+#ifdef _WIN32
+    oldSettingsDir = GetFilePath("~/Siedler II.5 RttR");
+#elif defined(__APPLE__)
+    oldSettingsDir = GetFilePath("~/.s25rttr");
 #endif
+    if(!oldSettingsDir.empty() && boost::filesystem::is_directory(oldSettingsDir))
+        boost::filesystem::rename(oldSettingsDir, newSettingsDir);
 
     for(unsigned int i = 0; i < dir_count; ++i)
     {
         std::string dir = GetFilePath(FILE_PATHS[dirs[i]]);
-
-        if(mkdir_p(dir) < 0)
+        boost::system::error_code ec;
+        boost::filesystem::create_directories(dir, ec);
+        if(ec != boost::system::errc::success)
         {
-            error("Verzeichnis %s konnte nicht erstellt werden: ", dir.c_str());
-            error("Das Spiel konnte nicht gestartet werden");
+            error("Directory %s could not be created: ", dir.c_str());
+            error("Failed to start the game");
+            WaitForEnter();
             return 1;
         }
     }
 
     libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
-    libsiedler2::setAllocator(glAllocator);
+    libsiedler2::setAllocator(new GlAllocator());
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
     srand(static_cast<unsigned int>(std::time(NULL)));
@@ -271,14 +283,17 @@ int main(int argc, char* argv[])
     // Socketzeug initialisieren
     if(!Socket::Initialize())
     {
-        error("Konnte Sockets nicht initialisieren!");
+        error("Could not init sockets!");
+        error("Failed to start the game");
+        WaitForEnter();
         return 1;
     }
 
     // Spiel starten
     if(!GAMEMANAGER.Start())
     {
-        error("Das Spiel konnte nicht gestartet werden");
+        error("Failed to start the game");
+        WaitForEnter();
         return 1;
     }
 

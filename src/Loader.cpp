@@ -1,6 +1,4 @@
-﻿// $Id: Loader.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,16 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// Conflict with DATADIR in shlwapi -> include build_paths later
-#define NO_BUILD_PATHS
 #include "defines.h"
-
-#ifdef _WIN32
-#   include <shlwapi.h>
-#   include "build_paths.h"
-#else
-#	include <sys/stat.h>
-#endif // _WIN32
 
 #include "Loader.h"
 #include "files.h"
@@ -47,12 +36,16 @@
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glAllocator.h"
 #include "gameData/JobConsts.h"
+#include "gameData/TerrainData.h"
+
 #include "../libsiedler2/src/types.h"
 #include "../libsiedler2/src/prototypen.h"
 
+#include <boost/filesystem.hpp>
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -84,6 +77,7 @@ Loader::~Loader(void)
     {
         delete stp;
     }
+    ClearTerrainTextures();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -128,29 +122,37 @@ bool Loader::LoadFilesAtStart(void)
  */
 bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always)
 {
+    if(file.at(0) == '~')
+        throw std::logic_error("You must use resolved pathes: " + file);
+
+    if(!boost::filesystem::exists(file))
+    {
+        LOG.lprintf(_("File or directory does not exist: %s\n"), file.c_str());
+        return false;
+    }
     // is the entry a directory?
-    if(IsDir(file))
+    if(boost::filesystem::is_directory(file))
     {
         // yes, load all files in the directory
         unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
-        LOG.lprintf("Lade LST,BOB,IDX,BMP,TXT,GER,ENG Dateien aus \"%s\"\n", GetFilePath(file).c_str());
+        LOG.lprintf(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG files from \"%s\"\n"), GetFilePath(file).c_str());
 
         std::list<std::string> lst;
-        ListDir(GetFilePath(file) + "*.lst", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.bob", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.idx", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.bmp", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.txt", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.ger", true, NULL, NULL, &lst);
-        ListDir(GetFilePath(file) + "*.eng", true, NULL, NULL, &lst);
+        ListDir(file + "*.lst", true, NULL, NULL, &lst);
+        ListDir(file + "*.bob", true, NULL, NULL, &lst);
+        ListDir(file + "*.idx", true, NULL, NULL, &lst);
+        ListDir(file + "*.bmp", true, NULL, NULL, &lst);
+        ListDir(file + "*.txt", true, NULL, NULL, &lst);
+        ListDir(file + "*.ger", true, NULL, NULL, &lst);
+        ListDir(file + "*.eng", true, NULL, NULL, &lst);
 
         for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
             if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
                 return false;
         }
-        LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
+        LOG.lprintf(_("finished in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
     }
     else
     {
@@ -186,8 +188,12 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
         if(files[i] == 0xFFFFFFFF)
             continue;
 
-        if(!LoadFileOrDir(FILE_PATHS[ files[i] ], files[i], load_always))
+        std::string filePath = GetFilePath(FILE_PATHS[ files[i] ]);
+        if(!LoadFileOrDir(filePath, files[i], load_always))
+        {
+            LOG.lprintf(_("Failed to load %s\n"), filePath.c_str());
             return false;
+        }
     }
 
     return true;
@@ -241,8 +247,9 @@ bool Loader::LoadLsts(unsigned int dir)
  */
 bool Loader::LoadSounds(void)
 {
+    std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
     // ist die konvertierte sound.lst vorhanden?
-    if(!FileExists(FILE_PATHS[55]))
+    if(!boost::filesystem::exists(soundLSTPath))
     {
         // nein, dann konvertieren
 
@@ -270,7 +277,7 @@ bool Loader::LoadSounds(void)
         std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
 #endif // _WIN32
 
-        LOG.lprintf("Starte Sound-Konverter ...");
+        LOG.lprintf(_("Starting Sound-Converter ..."));
         if(system(cmd.c_str()) == -1)
             return false;
 
@@ -278,10 +285,10 @@ bool Loader::LoadSounds(void)
     }
 
     // ggf original laden, hier das overriding benutzen wär ladezeitverschwendung
-    if(!FileExists(FILE_PATHS[55]))
+    if(!boost::filesystem::exists(soundLSTPath))
     {
         // existiert nicht
-        if(!LoadFile(FILE_PATHS[49]))
+        if(!LoadFile(GetFilePath(FILE_PATHS[49])))
             return false;
     }
 
@@ -294,15 +301,15 @@ bool Loader::LoadSounds(void)
     {
         libsiedler2::ArchivInfo sng;
 
-        LOG.lprintf("lade \"%s\": ", it->c_str());
-        if(libsiedler2::loader::LoadSND(it->c_str(), &sng) != 0 )
+        LOG.lprintf(_("Loading \"%s\": "), it->c_str());
+        if(libsiedler2::loader::LoadSND(it->c_str(), sng) != 0 )
         {
-            LOG.lprintf("fehlgeschlagen\n");
+            LOG.lprintf(_("failed\n"));
             return false;
         }
-        LOG.lprintf("fertig\n");
+        LOG.lprintf(_("finished\n"));
 
-        sng_lst.setC(i++, sng.get(0));
+        sng_lst.setC(i++, *sng.get(0));
     }
 
     // Siedler I MIDI-Musik
@@ -322,13 +329,10 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
 {
     int a, b;
 
-    std::string lf = lhs.substr(lhs.find_last_of('/') + 1);
-    std::string rf = rhs.substr(rhs.find_last_of('/') + 1);
-
     std::stringstream aa;
-    aa << lf;
+    aa << bfs::path(lhs).filename().string();
     std::stringstream bb;
-    bb << rf;
+    bb << bfs::path(rhs).filename().string();
 
     if( !(aa >> a) || !(bb >> b) )
     {
@@ -411,17 +415,16 @@ bool Loader::SaveSettings()
 {
     std::string file = GetFilePath(FILE_PATHS[0]);
 
-    LOG.lprintf("schreibe \"%s\": ", file.c_str());
+    LOG.lprintf(_("Writing \"%s\": "), file.c_str());
     fflush(stdout);
 
-    if(libsiedler2::Write(file.c_str(), &files.find("config")->second) != 0)
+    if(libsiedler2::Write(file.c_str(), files.find("config")->second) != 0)
         return false;
 
-#ifndef _WIN32
-    chmod(file.c_str(), S_IRUSR | S_IWUSR);
-#endif // !_WIN32
+    using namespace boost::filesystem;
+    permissions(file, owner_read | owner_write);
 
-    LOG.lprintf("fertig\n");
+    LOG.lprintf(_("finished\n"));
 
     return true;
 }
@@ -504,7 +507,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
         return false;
     }
 
-    if ((nations[4]) && !LoadFileOrDir(RTTRDIR "/LSTS/GAME/Babylonier/", 0, true))
+    if ((nations[4]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
     {
         lastgfx = 0xFF;
         return false;
@@ -941,6 +944,19 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
     return LoadFileOrDir(s.str(), 96, true);
 }
 
+void Loader::ClearTerrainTextures()
+{
+    for(std::map<TerrainType, glArchivItem_Bitmap*>::iterator it = terrainTextures.begin(); it != terrainTextures.end(); ++it)
+        delete it->second;
+    for(std::map<TerrainType, libsiedler2::ArchivInfo*>::iterator it = terrainTexturesAnim.begin(); it != terrainTexturesAnim.end(); ++it)
+        delete it->second;
+    terrainTextures.clear();
+    terrainTexturesAnim.clear();
+    borders.clear();
+    roads.clear();
+    roads_points.clear();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerschneidet die Terraintexturen.
@@ -952,31 +968,7 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
 bool Loader::CreateTerrainTextures(void)
 {
     assert(lastgfx <= 2);
-
-    // Unanimierte Texturen
-    Rect rects[16] =
-    {
-        Rect(0, 0, 48, 48),
-        Rect(48, 0, 48, 48),
-        Rect(96, 0, 48, 48),
-        Rect(144, 0, 48, 48),
-
-        Rect(0, 48, 48, 48),
-        Rect(48, 48, 48, 48),
-        Rect(96, 48, 48, 48),
-        Rect(144, 48, 48, 48),
-
-        Rect(0, 96, 48, 48),
-        Rect(48, 96, 48, 48),
-        Rect(96, 96, 48, 48),
-        Rect(144, 96, 48, 48),
-
-        Rect(0, 144, 48, 48),
-        Rect(48, 144, 48, 48),
-
-        Rect(192, 48, 55, 56),
-        Rect(192, 104, 55, 56)
-    };
+    ClearTerrainTextures();
 
     // Ränder
     Rect rec_raender[5] =
@@ -1002,33 +994,59 @@ bool Loader::CreateTerrainTextures(void)
         Rect(242, 160, 50, 16),
     };
 
-    textures.clear();
-    // (unanimiertes) Terrain
-    for(unsigned char i = 0; i < 14; ++i)
-        ExtractTexture(&textures, rects[i]);
+    bool waterLoaded = false;
 
-    // Wasser und Lava
-    water.clear();
-    ExtractAnimatedTexture(&water, rects[14], 8, 240);
-
-    lava.clear();
-    ExtractAnimatedTexture(&lava,  rects[15], 4, 248);
+    for(unsigned char i=0; i<TT_COUNT; ++i)
+    {
+        TerrainType t = TerrainType(i);
+        if(TerrainData::IsWater(t))
+        {
+            // All water uses the same texture, so load only once
+            if(waterLoaded)
+                continue;
+            t = TT_WATER;
+            waterLoaded = true;
+        }
+        if(TerrainData::IsAnimated(t))
+            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t));
+        else
+            terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
+    }
 
     // die 5 Ränder
-    borders.clear();
     for(unsigned char i = 0; i < 5; ++i)
-        ExtractTexture(&borders, rec_raender[i]);
+        borders.push(ExtractTexture(rec_raender[i]));
 
     // Wege
-    roads.clear();
-    roads_points.clear();
     for(unsigned char i = 0; i < 4; ++i)
     {
-        ExtractTexture(&roads, rec_roads[i]);
-        ExtractTexture(&roads_points, rec_roads[4 + i]);
+        roads.push(ExtractTexture(rec_roads[i]));
+        roads_points.push(ExtractTexture(rec_roads[4 + i]));
     }
 
     return true;
+}
+
+glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame/* = 0*/)
+{
+    if(TerrainData::IsAnimated(t))
+    {
+        if(TerrainData::IsWater(t))
+        {
+            // All water uses the same texture
+            t = TT_WATER;
+        }
+        libsiedler2::ArchivInfo* archive = terrainTexturesAnim[t];
+        if(!archive)
+            throw std::runtime_error("Invalid terrain texture requested");
+        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
+    }else
+    {
+        glArchivItem_Bitmap* bmp = terrainTextures[t];
+        if(!bmp)
+            throw std::runtime_error("Invalid terrain texture requested");
+        return *bmp;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1037,32 +1055,28 @@ bool Loader::CreateTerrainTextures(void)
  *
  *  @author OLiver
  */
-void Loader::ExtractTexture(libsiedler2::ArchivInfo* destination, Rect& rect)
+glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
-    glArchivItem_Bitmap_Raw bitmap;
     libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
     unsigned short width = rect.right - rect.left;
     unsigned short height = rect.bottom - rect.top;
 
-    unsigned char* buffer = new unsigned char[width * height];
+    std::vector<unsigned char> buffer(width * height, libsiedler2::TRANSPARENT_INDEX);
 
-    memset(buffer, libsiedler2::TRANSPARENT_INDEX, width * height);
-    image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-    for(unsigned int x = 0; x < (unsigned int)(width * height); ++x)
+    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
+    for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
     {
-        if(buffer[x] == 0)
-            buffer[x] = libsiedler2::TRANSPARENT_INDEX;
+        if(*it == 0)
+            *it = libsiedler2::TRANSPARENT_INDEX;
     }
 
-    bitmap.create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
-    bitmap.setPalette(palette);
-    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
-
-    delete[] buffer;
-
-    destination->pushC(&bitmap);
+    glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
+    bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+    bitmap->setPalette(palette);
+    bitmap->setFormat(libsiedler2::FORMAT_PALETTED);
+    return bitmap;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1071,45 +1085,40 @@ void Loader::ExtractTexture(libsiedler2::ArchivInfo* destination, Rect& rect)
  *
  *  @author OLiver
  */
-void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& rect, unsigned char color_count, unsigned char start_index)
+libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index)
 {
-    glArchivItem_Bitmap_Raw bitmap;
     libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
     glArchivItem_Bitmap* image = GetTexImageN(0);
-
-    bitmap.setPalette(palette);
-    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
 
     unsigned short width = rect.right - rect.left;
     unsigned short height = rect.bottom - rect.top;
 
-    unsigned char* buffer = new unsigned char[width * height];
-
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    memset(buffer, start_index, width * height);
+    std::vector<unsigned char> buffer(width * height, start_index);
 
-    image->print(buffer, width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
+    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
 
+    glArchivItem_Bitmap_Raw bitmap;
+    bitmap.setPalette(palette);
+    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
+
+    libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
     for(unsigned char i = 0; i < color_count; ++i)
     {
-        for(unsigned int x = 0; x < width; ++x)
+        for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
         {
-            for(unsigned int y = 0; y < height; ++y)
+            if(*it >= start_index && *it < start_index + color_count)
             {
-                if(buffer[y * width + x] >= start_index && buffer[y * width + x] < start_index + color_count)
-                {
-                    if(++buffer[y * width + x] >= start_index + color_count)
-                        buffer[y * width + x] = start_index;
-                }
+                if(++*it >= start_index + color_count)
+                    *it = start_index;
             }
         }
 
-        bitmap.create(width, height, buffer, width, height, libsiedler2::FORMAT_PALETTED, palette);
+        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
 
-        destination->pushC(&bitmap);
+        destination->pushC(bitmap);
     }
-
-    delete[] buffer;
+    return destination;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1124,22 +1133,22 @@ void Loader::ExtractAnimatedTexture(libsiedler2::ArchivInfo* destination, Rect& 
  *
  *  @author FloSoft
  */
-bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* archiv)
+bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv)
 {
     unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
     std::string file = GetFilePath(pfad);
 
-    LOG.lprintf("lade \"%s\": ", file.c_str());
+    LOG.lprintf(_("Loading \"%s\": "), file.c_str());
     fflush(stdout);
 
     if(libsiedler2::Load(file.c_str(), archiv, palette) != 0)
     {
-        LOG.lprintf("fehlgeschlagen\n");
+        LOG.lprintf(_("failed\n"));
         return false;
     }
 
-    LOG.lprintf("fertig (%ums)\n", VIDEODRIVER.GetTickCount() - ladezeit);
+    LOG.lprintf(_("done in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
 
     return true;
 }
@@ -1150,47 +1159,40 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
  *
  *  @author FloSoft
  */
-bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo* to)
+bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
 {
-    bool directory = false;
-#ifdef _WIN32
-    if(!PathFileExistsA(GetFilePath(pfad).c_str()))
+    if(filePath.at(0) == '~')
+        throw std::logic_error("You must use resolved pathes: " + filePath);
+
+    if(!boost::filesystem::exists(filePath))
     {
-        LOG.lprintf("Fehler: Datei oder Verzeichnis \"%s\" existiert nicht.\n", GetFilePath(pfad).c_str());
+        LOG.lprintf(_("File or directory does not exist: %s\n"), filePath.c_str());
         return false;
     }
-    if ( (GetFileAttributesA(GetFilePath(pfad).c_str()) & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY)
-        directory = true;
-#else
-    struct stat file_stat;
-    stat(GetFilePath(pfad).c_str(), &file_stat);
-    if(S_ISDIR(file_stat.st_mode))
-        directory = true;
-#endif
-
-    if(!directory)
+    if(boost::filesystem::is_regular_file(filePath))
+        return LoadArchiv(filePath, palette, to);
+    if(!boost::filesystem::is_directory(filePath))
     {
-        if(!LoadArchiv(pfad, palette, to))
-            return false;
-        return true;
+        LOG.lprintf(_("Could not determine type of path %s\n"), filePath.c_str());
+        return false;
     }
 
-    LOG.lprintf("lade Verzeichnis %s\n", GetFilePath(pfad).c_str());
+    LOG.lprintf(_("Loading directory %s\n"), GetFilePath(filePath).c_str());
     std::list<std::string> lst;
-    ListDir(GetFilePath(pfad) + "/*.bmp", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.txt", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.ger", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.eng", false, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.fon", true, NULL, NULL, &lst);
-    ListDir(GetFilePath(pfad) + "/*.empty", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.bmp", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.txt", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.ger", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.eng", false, NULL, NULL, &lst);
+    ListDir(filePath + "/*.fon", true, NULL, NULL, &lst);
+    ListDir(filePath + "/*.empty", false, NULL, NULL, &lst);
 
     lst.sort(SortFilesHelper);
 
-    unsigned char* buffer = new unsigned char[1000 * 1000 * 4];
-    for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
+    std::vector<unsigned char> buffer(1000 * 1000 * 4);
+    for(std::list<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
     {
         // read file number, to set the index correctly
-        std::string filename = i->substr(i->find_last_of('/') + 1);
+        std::string filename = bfs::path(*itFile).filename().string();
         std::stringstream nrs;
         int nr = -1;
         nrs << filename;
@@ -1198,9 +1200,9 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             nr = -1;
 
         // Dateiname zerlegen
-        std::vector<std::string> wf = ExplodeString(*i, '.');
+        std::vector<std::string> wf = ExplodeString(*itFile, '.');
 
-        unsigned int bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
+        libsiedler2::BOBTYPES bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
         short nx = 0;
         short ny = 0;
         unsigned char dx = 0;
@@ -1227,25 +1229,21 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
                 dy = atoi(it->substr(2).c_str());
         }
 
-        // Placeholder
-        if( wf.back() == "empty" )
+        if( wf.back() == "empty" ) // Placeholder
         {
-            LOG.lprintf("ueberspringe %s\n", i->c_str());
-            to->alloc_inc(1);
+            LOG.lprintf(_("Skipping %s\n"), itFile->c_str());
+            to.alloc_inc(1);
             continue;
-        }
-
-        // Bitmap
-        else if( wf.back() == "bmp" )
+        }else if( wf.back() == "bmp" ) // Bitmap
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *i, palette, &temp ) )
+            if(!LoadArchiv( *itFile, palette, temp ) )
                 return false;
 
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(bobtype, 0, NULL));
+            glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(bobtype));
 
             if(!out)
             {
@@ -1253,50 +1251,48 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
                 return false;
             }
 
-            out->setName(i->c_str());
+            out->setName(itFile->c_str());
             out->setNx(nx);
             out->setNy(ny);
 
-            memset(buffer, 0, 1000 * 1000 * 4);
-            in->print(buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+            std::fill(buffer.begin(), buffer.end(), 0);
+            in->print(&buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
 
             switch(bobtype)
             {
                 case libsiedler2::BOBTYPE_BITMAP_RLE:
                 case libsiedler2::BOBTYPE_BITMAP_SHADOW:
                 {
-                    out->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+                    out->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
                 } break;
                 case libsiedler2::BOBTYPE_BITMAP_PLAYER:
                 {
-                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), buffer, 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
+                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
                 } break;
+                case libsiedler2::BOBTYPE_BITMAP_RAW:
+                    break; // Nothing?
+                default:
+                    throw std::logic_error("Invalid Bitmap type");
             }
 
             item = out;
-        }
-
-        // Palettes
-        else if( (wf.back() == "bbm") || (wf.back() == "act") )
+        }else if( (wf.back() == "bbm") || (wf.back() == "act") ) // Palettes
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *i, palette, &temp ) )
+            if(!LoadArchiv( *itFile, palette, temp ) )
                 return false;
-            item = temp.get(0);
-        }
-
-        // Font
-        else if( wf.back() == "fon" )
+            item = GlAllocator().clone(*temp.get(0));
+        }else if( wf.back() == "fon" ) // Font
         {
-            glArchivItem_Font font;
-            font.setName(i->c_str());
-            font.setDx(dx);
-            font.setDy(dy);
+            glArchivItem_Font* font = new glArchivItem_Font();
+            font->setName(itFile->c_str());
+            font->setDx(dx);
+            font->setDy(dy);
 
-            if(!LoadFile(*i, palette, &font))
+            if(!LoadFile(*itFile, palette, *font))
                 return false;
 
-            item = &font;
+            item = font;
         }
 
         if(item)
@@ -1304,15 +1300,14 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             // had the filename a number? then set it to the corresponding item.
             if(nr >= 0)
             {
-                if(nr >= (int)to->getCount())
-                    to->alloc_inc(nr - to->getCount() + 1);
-                to->setC(nr, item);
+                if(nr >= (int)to.size())
+                    to.alloc_inc(nr - to.size() + 1);
+                to.setC(nr, *item);
             }
             else
-                to->pushC(item);
+                to.pushC(*item);
         }
     }
-    delete[] buffer;
 
     return true;
 }
@@ -1325,69 +1320,47 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
  */
 bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool load_always)
 {
-    std::string p = pfad;
-    transform ( p.begin(), p.end(), p.begin(), tolower );
+    std::string lowerPath = pfad;
+    std::transform( lowerPath.begin(), lowerPath.end(), lowerPath.begin(), tolower );
 
-    size_t pp = p.find_last_of("/\\");
-    if(pp != std::string::npos)
-        p = p.substr(pp + 1);
-
-    std::string e = p;
-    pp = p.find_first_of('.');
-    if(pp != std::string::npos)
-    {
-        e = p.substr(pp);
-        p = p.substr(0, pp);
-    }
+    boost::filesystem::path filePath(lowerPath);
+    boost::filesystem::path fileName = filePath.filename();
+    std::string name = fileName.stem().string();
 
     // bereits geladen und wir wollen kein nochmaliges laden
-    if(!load_always && files.find(p) != files.end() && files.find(p)->second.getCount() != 0)
+    if(!load_always && files[name].size() != 0)
         return true;
 
-    bool override_file = false;
-
-    libsiedler2::ArchivInfo archiv;
-    libsiedler2::ArchivInfo* to = &archiv;
-
-    if(files.find(p) == files.end() || files.find(p)->second.getCount() == 0)
-    {
-        // leeres Archiv in Map einfügen
-        files.insert(std::make_pair(p, archiv));
-        to = &files.find(p)->second;
-    }
-    else
-        override_file = true;
-
-    if(!LoadFile(pfad, palette, to))
-        return false;
+    if(files[name].size() == 0)
+        return LoadFile(pfad, palette, files[name]);
 
     // haben wir eine override file? dann nicht-leere items überschreiben
-    if(override_file)
+    libsiedler2::ArchivInfo newEntries;
+    if(!LoadFile(pfad, palette, newEntries))
+        return false;
+
+    LOG.lprintf(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
+
+    libsiedler2::ArchivInfo* existing = &files.find(name)->second;
+    if(fileName.extension() == ".bob")
     {
-        LOG.lprintf("Ersetze Daten der vorher geladenen Datei\n");
-        to = &files.find(p)->second;
-
-        if(e == ".bob")
-            to = dynamic_cast<libsiedler2::ArchivInfo*>(to->get(0));
-
-        if(!to)
+        existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));
+        if(!existing)
         {
-            LOG.lprintf("Fehler beim Ersetzen einer BOB-Datei\n");
+            LOG.lprintf(_("Error while replacing a BOB file\n"));
             return false;
         }
+    }
 
-        if(archiv.getCount() > to->getCount())
-            to->alloc_inc(archiv.getCount() - to->getCount());
+    if(newEntries.size() > existing->size())
+        existing->alloc_inc(newEntries.size() - existing->size());
 
-        for(unsigned int i = 0; i < archiv.getCount(); ++i)
+    for(unsigned int i = 0; i < newEntries.size(); ++i)
+    {
+        if(newEntries.get(i))
         {
-            if(archiv.get(i))
-            {
-                if(to->get(i))
-                    delete to->get(i);
-                LOG.lprintf("Ersetze Eintrag %d durch %s\n", i, archiv.get(i)->getName());
-                to->setC(i, archiv.get(i));
-            }
+            LOG.lprintf(_("Replacing entry %d with %s\n"), i, newEntries.get(i)->getName().c_str());
+            existing->setC(i, *newEntries.get(i));
         }
     }
 

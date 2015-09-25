@@ -1,6 +1,4 @@
-﻿// $Id: WinAPI.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,10 +21,13 @@
 #include "WinAPI.h"
 
 #include "../../../../win32/resource.h"
+#include "VideoDriverLoaderInterface.h"
 #include <build_version.h>
 #include <VideoInterface.h>
+#include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -46,9 +47,14 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-DRIVERDLLAPI VideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoWinAPI(CallBack);
+}
+
+DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+{
+    delete driver;
 }
 
 DRIVERDLLAPI const char* GetDriverName(void)
@@ -216,8 +222,6 @@ LPWSTR AnsiToUtf8(LPWSTR& wTarget, LPCSTR tSource, int nLength = -1)
  */
 bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-    char title[512];
-
     if(!initialized)
         return false;
 
@@ -267,9 +271,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 
     SetClipboardViewer(screen);
 
-    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
+    std::stringstream title;
+    title << GetWindowTitle() << " - v" << GetWindowVersion() << "-" << GetWindowRevisionShort();
 
-    AnsiToUtf8(wTitle, title);
+    AnsiToUtf8(wTitle, title.str().c_str());
 
     SetWindowTextW(screen, wTitle);
     SetWindowTextW(GetConsoleWindow(), wTitle);
@@ -390,20 +395,28 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     ShowWindow(screen, SW_HIDE);
 
     // Fensterstyle ggf. ändern
-    SetWindowLongPtr(screen, GWL_STYLE, (fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION) ) );
-    SetWindowLongPtr(screen, GWL_EXSTYLE, (fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE) ) );
-    SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    LONG_PTR wStyle   = fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
+    LONG_PTR wExStyle = fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+    SetWindowLongPtr(screen, GWL_STYLE, wStyle);
+    SetWindowLongPtr(screen, GWL_EXSTYLE, wExStyle);
+    //SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-    RECT pos =
+    RECT wRect;
+    if(fullscreen)
     {
-        (fullscreen ? 0 : GetSystemMetrics(SM_CXSCREEN) / 2 - (width) / 2),
-        (fullscreen ? 0 : GetSystemMetrics(SM_CYSCREEN) / 2 - (height) / 2),
-        (width) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME)),
-        (height) + (fullscreen ? 0 : 2 * GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION))
-    };
+        wRect.left = 0;
+        wRect.top  = 0;
+    }else{
+        wRect.left = (GetSystemMetrics(SM_CXSCREEN) - width)  / 2;
+        wRect.top  = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+    }
+    wRect.right  = wRect.left + width;
+    wRect.bottom = wRect.top  + height;
+    // Calculate real right/bottom based on the window style
+    AdjustWindowRectEx(&wRect, wStyle, false, wExStyle);
 
     // Fenstergröße ändern
-    SetWindowPos(screen, HWND_TOP, pos.left, pos.top, pos.right, pos.bottom, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
+    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
 
     // Bei Vollbild Auflösung umstellen
     if(fullscreen)

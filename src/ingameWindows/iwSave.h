@@ -1,6 +1,4 @@
-﻿// $Id: iwSave.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -44,7 +42,7 @@ class iwSaveLoad : public IngameWindow
         void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
 
         /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
-        static void FillSaveTable(const std::string& filename, void* param);
+        static void FillSaveTable(const std::string& filePath, void* param);
 };
 
 class iwSave: public iwSaveLoad

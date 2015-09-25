@@ -1,6 +1,4 @@
-﻿// $Id: nofScout_Free.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -66,7 +64,7 @@ void nofScout_Free::Draw(int x, int y)
 void nofScout_Free::GoalReached()
 {
     /// Bestimmte Anzahl an Punkten abklappern, leicht variieren
-    rest_way = 80 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 20);
+    rest_way = 80 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 20);
 
     state = STATE_SCOUT_SCOUTING;
 
@@ -137,13 +135,12 @@ void nofScout_Free::Scout()
     else
     {
         // Weg suchen
-        dir = gwg->FindHumanPath(pos, nextPos, 30);
+        unsigned char dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
         if(dir == 0xFF)
             // Neuen Punkt suchen
             GoToNewNode();
-
         else
             StartWalking(dir);
     }
@@ -177,7 +174,7 @@ void nofScout_Free::GoToNewNode()
     while(numPointsLeft && !found_point)
     {
         std::list< MapPoint >::iterator p = available_points.begin();
-        std::advance(p, RANDOM.Rand(__FILE__, __LINE__, obj_id, numPointsLeft));
+        std::advance(p, RANDOM.Rand(__FILE__, __LINE__, GetObjId(), numPointsLeft));
 
         // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in
         // einigermaßen vernünftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu

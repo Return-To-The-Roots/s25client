@@ -1,6 +1,4 @@
-﻿// $Id: iwOptionsWindow.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -68,7 +66,7 @@ iwOptionsWindow::iwOptionsWindow(dskGameInterface* gameDesktop)
     // Versionszeile
     AddVarText(2, 150, 76, _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // Copyright
-    AddVarText(3, 150, 96, _("\xA9 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(3, 150, 96, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     // "Tastaturbelegung"
     AddImageButton(4, 35, 120, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 79));

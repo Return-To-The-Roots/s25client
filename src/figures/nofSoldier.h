@@ -1,6 +1,4 @@
-﻿// $Id: nofSoldier.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,6 +19,7 @@
 #define NOF_SOLDIER_H_
 
 #include "figures/noFigure.h"
+#include <boost/container/flat_set.hpp>
 
 class nobBaseMilitary;
 
@@ -70,7 +69,7 @@ class nofSoldier : public noFigure
 template< bool T_SortAsc >
 struct ComparatorSoldiersByRank
 {
-    bool operator()(nofSoldier* left, nofSoldier* right)
+    bool operator()(nofSoldier* left, nofSoldier* right) const
     {
         if(left->GetRank() == right->GetRank())
             return (T_SortAsc) ? left->GetObjId() < right->GetObjId() : left->GetObjId() > right->GetObjId();
@@ -80,5 +79,8 @@ struct ComparatorSoldiersByRank
             return left->GetRank() > right->GetRank();
     }
 };
+
+class nofPassiveSoldier;
+typedef boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true> > SortedTroops;
 
 #endif

@@ -1,6 +1,4 @@
-﻿// $Id: ctrlImage.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -89,7 +87,7 @@ bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
     {
         // Jeweils Tooltip ein- und ausblenden, wenn die Maus über dem Bild ist
         if(Coll(mc.x, mc.y, GetX() - image->getNx(), GetY() - image->getNy(), image->getWidth(), image->getHeight()))
-            WINDOWMANAGER.SetToolTip(this, tooltip);
+            WINDOWMANAGER.SetToolTip(this, tooltip_);
         else
             WINDOWMANAGER.SetToolTip(this, "");
     }

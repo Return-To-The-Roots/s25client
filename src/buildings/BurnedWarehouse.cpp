@@ -1,6 +1,4 @@
-﻿// $Id: BurnedWarehouse.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -45,10 +43,9 @@ const unsigned GO_OUT_PHASES = 10;
 /// Länge zwischen zwei solchen Phasen
 const unsigned PHASE_LENGTH = 2;
 
-BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const unsigned* people)
-    : noCoordBase(NOP_BURNEDWAREHOUSE, pos), player(player), go_out_phase(0)
+BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const PeopleArray& people)
+    : noCoordBase(NOP_BURNEDWAREHOUSE, pos), player(player), go_out_phase(0), people(people)
 {
-    memcpy(this->people, people, 30 * sizeof(unsigned));
     // Erstes Event anmelden
     em->AddEvent(this, PHASE_LENGTH, 0);
 }
@@ -57,8 +54,8 @@ BurnedWarehouse::BurnedWarehouse(SerializedGameData* sgd, const unsigned obj_id)
     player(sgd->PopUnsignedChar()),
     go_out_phase(sgd->PopUnsignedInt())
 {
-    for(unsigned i = 0; i < 31; ++i)
-        people[i] = sgd->PopUnsignedInt();
+    for(PeopleArray::iterator it = people.begin(); it != people.end(); ++it)
+        *it = sgd->PopUnsignedInt();
 }
 
 
@@ -79,55 +76,57 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData* sgd) const
     sgd->PushUnsignedChar(player);
     sgd->PushUnsignedInt(go_out_phase);
 
-    for(unsigned i = 0; i < 31; ++i)
-        sgd->PushUnsignedInt(people[i]);
+    for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
+        sgd->PushUnsignedInt(*it);
 }
 
 
 void BurnedWarehouse::HandleEvent(const unsigned int id)
 {
-    for(unsigned i = 0; i < 30; ++i)
+    assert(go_out_phase != GO_OUT_PHASES);
+
+    bool dirIsPossible[6];
+    unsigned possibleDirCt = 0;
+
+    // Mögliche Richtungen zählen und speichern
+    for(unsigned char d = 0; d < 6; ++d)
+    {
+        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, d)))
+        {
+            dirIsPossible[d] = true;
+            ++possibleDirCt;
+        }
+        else
+            dirIsPossible[d] = false;
+    }
+
+    // GAR KEINE Richtungen?
+    if(possibleDirCt == 0)
+    {
+        // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
+        em->AddToKillList(this);
+        // restliche Leute von der Inventur abziehen
+        for(unsigned int i = 0; i < people.size(); ++i)
+            GAMECLIENT.GetPlayer(player)->DecreaseInventoryJob(Job(i), people[i]);
+
+        return;
+    }
+
+    for(unsigned int i = 0; i < people.size(); ++i)
     {
         // Anzahl ausrechnen, die in dieser Runde rausgeht
-        unsigned count = people[i] / (GO_OUT_PHASES - go_out_phase);
-
-        // Letzte Runde? Dann den Rest auch noch mit nehmen
-        if(go_out_phase == GO_OUT_PHASES)
-            count += people[i];
+        unsigned count;
+        if (go_out_phase + 1 >= GO_OUT_PHASES)
+            count = people[i]; // Take all on last round
+        else
+            count = people[i] / (GO_OUT_PHASES - go_out_phase);
 
         // Von der vorhandenen Abzahl abziehen
         people[i] -= count;
 
         // In Alle Richtungen verteilen
         // Startrichtung zufällig bestimmen
-        unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, obj_id, 6);
-
-        bool possible[6];
-        unsigned possible_count = 0;
-
-        // Mögliche Richtungen zählen und speichern
-        for(unsigned char d = 0; d < 6; ++d)
-        {
-            if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, d)))
-            {
-                possible[d] = true;
-                ++possible_count;
-            }
-            else
-                possible[d] = false;
-        }
-
-        // GAR KEINE Richtungen?
-        if(possible_count == 0)
-        {
-            // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
-            em->AddToKillList(this);
-            // restliche Leute von der Inventur abziehen
-            for(unsigned int i = 0; i < 30; ++i)
-                GAMECLIENT.GetPlayer(player)->DecreaseInventoryJob(Job(i), people[i]);
-
-            return;
-        }
+        unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
         // Letzte mögliche Richtung bestimmen
         unsigned char last_dir = 0xFF;
@@ -135,7 +134,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
         for(unsigned char d = 0; d < 6; ++d)
         {
             unsigned char dir = (start_dir + d) % 6;
-            if(possible[dir])
+            if(dirIsPossible[dir])
                 last_dir = dir;
         }
 
@@ -147,28 +146,26 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
             unsigned dir = (start_dir + d) % 6;
 
             // Wenn Richtung nicht möglich ist --> weglassen
-            if(!possible[dir])
+            if(!dirIsPossible[dir])
                 continue;
 
             // Anzahl jetzt für diese Richtung ausrechnen
-            unsigned dir_count = count / possible_count;
+            unsigned numPeopleInDir = count / possibleDirCt;
             // Bei letzter Richtung noch den übriggebliebenen Rest dazuaddieren
             if(dir == last_dir)
-                dir_count += count % possible_count;
+                numPeopleInDir += count % possibleDirCt;
 
             // Die Figuren schließlich rausschicken
-            for(unsigned z = 0; z < dir_count; ++z)
+            for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
                 nofPassiveWorker* figure = new nofPassiveWorker(Job(i), pos, player, NULL);
                 // Auf die Map setzen
                 gwg->AddFigure(figure, pos);
                 // Losrumirren in die jeweilige Richtung
-                figure->StartWandering(obj_id);
+                figure->StartWandering(GetObjId());
                 figure->StartWalking(dir);
-
             }
-
         }
     }
 
@@ -182,8 +179,8 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
         em->AddToKillList(this);
 #ifndef NDEBUG
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
-        for(unsigned i = 0; i < 30; ++i)
-            assert(people[i] == 0);
+        for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
+            assert(*it == 0);
 #endif
     }
     else

@@ -1,6 +1,4 @@
-﻿// $Id: iwObservate.cpp 7414 2011-08-25 17:44:38Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -72,20 +70,19 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
             break;
         case 3:
-            view->GetGameWorldViewer()->MoveToMapObject(MapPoint(
-                view->GetLastPt().x - (view->GetLastPt().x - view->GetLastPt().x) / 2,
-                view->GetLastPt().x - (view->GetLastPt().x - view->GetLastPt().x) / 2)
+            view->GetGameWorldViewer()->MoveToMapObject(
+                MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2)
                 );
             break;
         case 4:
-            int diff = width;
+            int diff = width_;
 
-            if (width == 260)
+            if (width_ == 260)
             {
                 SetWidth(300);
                 SetIwHeight(250);
             }
-            else if (width == 300)
+            else if (width_ == 300)
             {
                 SetWidth(340);
                 SetIwHeight(310);
@@ -98,33 +95,33 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
                 GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 109));
             }
 
-            diff -= width;
+            diff -= width_;
             diff /= 2;
 
-            view->Resize(width - 20, height - 20);
+            view->Resize(width_ - 20, height_ - 20);
 
             for (unsigned i = 1; i <= 4; ++i)
                 GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false) - diff, GetHeight() - 50);
 
-            if (x + width >= VIDEODRIVER.GetScreenWidth())
+            if (x_ + width_ >= VIDEODRIVER.GetScreenWidth())
             {
-                Move(VIDEODRIVER.GetScreenWidth() - width - 1, y);
+                Move(VIDEODRIVER.GetScreenWidth() - width_ - 1, y_);
             }
 
-            if (y + height >= VIDEODRIVER.GetScreenHeight())
+            if (y_ + height_ >= VIDEODRIVER.GetScreenHeight())
             {
-                Move(x, VIDEODRIVER.GetScreenHeight() - height - 1);
+                Move(x_, VIDEODRIVER.GetScreenHeight() - height_ - 1);
             }
     }
 }
 
 bool iwObservate::Draw_()
 {
-    if ((x != last_x) || (y != last_y))
+    if ((x_ != last_x) || (y_ != last_y))
     {
         view->SetPos(MapPoint(GetX() + 10, GetY() + 15));
-        last_x = x;
-        last_y = y;
+        last_x = x_;
+        last_y = y_;
     }
 
     if (!GetMinimized())

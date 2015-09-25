@@ -1,8 +1,6 @@
-################################################################################
-### $Id: CMakeMacroSetCCache.cmake 7115 2011-04-02 14:16:37Z FloSoft $
-################################################################################
 
-MACRO(SET_CCACHE var file)
+MACRO(SET_CCACHE var filepath)
+  GET_FILENAME_COMPONENT(file ${filepath} NAME)
 	IF(EXISTS /usr/lib/ccache_lipo/${file})
 		SET(${var} /usr/lib/ccache_lipo/${file})
 	ELSE(EXISTS /usr/lib/ccache_lipo/${file})

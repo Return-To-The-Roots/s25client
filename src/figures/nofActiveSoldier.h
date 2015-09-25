@@ -1,6 +1,4 @@
-﻿// $Id: nofActiveSoldier.h 9601 2015-02-07 11:09:14Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -98,9 +96,6 @@ class nofActiveSoldier : public nofSoldier
         bool GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot);
 		/// increase rank (used by addon CombatPromotion)
 		void IncreaseRank();
-
-
-
         /// The derived classes regain control after a fight of nofActiveSoldier
         virtual void FreeFightEnded() = 0;
 
@@ -111,7 +106,6 @@ class nofActiveSoldier : public nofSoldier
 
         /// Gets the visual range radius of this soldier
         virtual unsigned GetVisualRange() const;
-
 
     public:
 
@@ -152,7 +146,6 @@ class nofActiveSoldier : public nofSoldier
         bool IsReadyForFight() const;
         /// Informs a waiting soldier about the start of a fight
         void FightingStarted();
-
 
         /// Gets the current state
         SoldierState GetState() const { return state; }

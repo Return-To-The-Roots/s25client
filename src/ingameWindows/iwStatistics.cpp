@@ -1,5 +1,3 @@
-﻿// $Id: iwStatistics.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
 // Copyright (c) 2005-2010 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Siedler II.5 RTTR.
@@ -282,7 +280,7 @@ void iwStatistics::Msg_PaintAfter()
         }
         if (activePlayers[i])
         {
-            DrawRectangle(this->x + startX + pos * 34, this->y + 68, 34, 12, COLORS[GAMECLIENT.GetPlayer(i)->color]);
+            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[GAMECLIENT.GetPlayer(i)->color]);
         }
         pos++;
     }
@@ -305,8 +303,8 @@ void iwStatistics::DrawStatistic(StatisticType type)
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const int topLeftX = this->x + 34;
-    const int topLeftY = this->y + 124;
+    const int topLeftX = this->x_ + 34;
+    const int topLeftY = this->y_ + 124;
     const int stepX = sizeX / STAT_STEP_COUNT; // 6
 
     unsigned short currentIndex;
@@ -403,8 +401,8 @@ void iwStatistics::DrawAxis()
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const int topLeftX = this->x + 34;
-    const int topLeftY = this->y + 124;
+    const int topLeftX = this->x_ + 34;
+    const int topLeftY = this->y_ + 124;
     const int topLeftXrel = 37;
     const int topLeftYrel = 124;
 

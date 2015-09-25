@@ -1,6 +1,4 @@
-﻿// $Id: dskLobby.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -41,6 +39,8 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
 
+#include <boost/lexical_cast.hpp>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -59,11 +59,11 @@ static char THIS_FILE[] = __FILE__;
 dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL), servercreate(NULL)
 {
     // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevision());
+    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // URL
     AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
     // Copyright
-    AddText(2, 800, 600, _("\xA9 2005 - 2011 Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     // "Zurück"
     AddTextButton(3, 530, 530, 250, 22, TC_RED1, _("Back"), NormalFont);
@@ -125,29 +125,8 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Switch(new dskMultiPlayer);
         } break;
         case 4: // Verbinden - Button
-        {
-            if(serverlist)
-            {
-                ctrlTable* table = GetCtrl<ctrlTable>(10);
-
-                unsigned int selection = table->GetSelection();
-                if(selection < serverlist->getCount())
-                {
-                    selection = atoi(table->GetItemText(selection, 0).c_str());
-                    for(unsigned int i = 0; i < serverlist->getCount(); ++i)
-                    {
-                        if(serverlist->getElement(i)->getId() == selection)
-                        {
-                            iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
-                            connect->SetHost(serverlist->getElement(i)->getHost().c_str());
-                            connect->SetPort(serverlist->getElement(i)->getPort());
-                            WINDOWMANAGER.Show(connect);
-                            break;
-                        }
-                    }
-                }
-            }
-        } break;
+            ConnectToSelectedGame();
+            break;
         case 5: // Ranking - Button
         {
             LOBBYCLIENT.SendRankingListRequest();
@@ -185,7 +164,7 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
     ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
-        case 10:
+        case 10: // Server list
         {
             const std::string item = table->GetItemText(table->GetSelection(false), 0);
 
@@ -209,6 +188,12 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
             }
         } break;
     }
+}
+
+void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+{
+    if(ctrl_id == 10 && selection != 0xFFFF) // Server list
+        ConnectToSelectedGame();
 }
 
 void dskLobby::UpdatePlayerList(bool first)
@@ -244,9 +229,8 @@ void dskLobby::UpdatePlayerList(bool first)
             {
                 if(playerlist->getElement(i)->getId() != 0xFFFFFFFF)
                 {
-                    char punkte[128];
-                    snprintf(punkte, 128, "%d", playerlist->getElement(i)->getPunkte());
-                    playertable->AddRow(0, playerlist->getElement(i)->getName().c_str(), punkte, playerlist->getElement(i)->getVersion().c_str());
+                    std::string punkte = boost::lexical_cast<std::string>(playerlist->getElement(i)->getPunkte());
+                    playertable->AddRow(0, playerlist->getElement(i)->getName().c_str(), punkte.c_str(), playerlist->getElement(i)->getVersion().c_str());
                 }
             }
             if(first)
@@ -284,17 +268,13 @@ void dskLobby::UpdateServerList(bool first)
 
             for(unsigned int i = 0; i < serverlist->getCount(); ++i)
             {
-                if(!serverlist->getElement(i)->getName().empty() && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
+                if(!serverlist->getElement(i)->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
                 {
-                    char id[128];
-                    char player[128];
-                    char ping[128];
-                    char name[128];
-                    snprintf(id, 128, "%d", serverlist->getElement(i)->getId());
-                    snprintf(name, 128, "%s%s", (serverlist->getElement(i)->hasPassword() ? "(pwd) " : ""), serverlist->getElement(i)->getName().c_str());
-                    snprintf(player, 128, "%d/%d", serverlist->getElement(i)->getCurPlayers(), serverlist->getElement(i)->getMaxPlayers());
-                    snprintf(ping, 128, "%d", serverlist->getElement(i)->getPing());
-                    servertable->AddRow(0, id, name, serverlist->getElement(i)->getMap().c_str(), player, serverlist->getElement(i)->getVersion().c_str(), ping);
+                    std::string id = boost::lexical_cast<std::string>(serverlist->getElement(i)->getId());
+                    std::string name = (serverlist->getElement(i)->hasPassword() ? "(pwd) " : "") + serverlist->getElement(i)->getName();
+                    std::string ping = boost::lexical_cast<std::string>(serverlist->getElement(i)->getPing());
+                    std::string player = boost::lexical_cast<std::string>(serverlist->getElement(i)->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(serverlist->getElement(i)->getMaxPlayers());
+                    servertable->AddRow(0, id.c_str(), name.c_str(), serverlist->getElement(i)->getMap().c_str(), player.c_str(), serverlist->getElement(i)->getVersion().c_str(), ping.c_str());
                 }
             }
             if(first)
@@ -304,6 +284,37 @@ void dskLobby::UpdateServerList(bool first)
             servertable->SetSelection(selection);
         }
     }
+}
+
+bool dskLobby::ConnectToSelectedGame()
+{
+    if(!serverlist)
+        return false;
+
+    ctrlTable* table = GetCtrl<ctrlTable>(10);
+    unsigned int selection = table->GetSelection();
+    if(selection >= serverlist->getCount())
+        return false;
+
+    selection = atoi(table->GetItemText(selection, 0).c_str());
+    for(unsigned int i = 0; i < serverlist->getCount(); ++i)
+    {
+        if(serverlist->getElement(i)->getId() != selection)
+            continue;
+
+        if(serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion()))
+        {
+            iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
+            connect->SetHost(serverlist->getElement(i)->getHost().c_str());
+            connect->SetPort(serverlist->getElement(i)->getPort());
+            WINDOWMANAGER.Show(connect);
+            return true;
+        }
+        else
+            WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        break;
+    }
+    return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -362,25 +373,23 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
     unsigned int checksum = CalcChecksumOfBuffer(player.c_str(), unsigned(player.length())) * player.length();
     unsigned int color = checksum | (checksum << 12) | 0xff000000;
 
-    // Zeit holen
-    char time_string[64];
-    TIME.FormatTime(time_string, "(%H:%i:%s)", NULL);
+    std::string time = TIME.FormatTime("(%H:%i:%s)");
 
     if (!player.compare("LobbyBot"))
     {
         std::string self = LOBBYCLIENT.GetUser();
 
-        if ((text.length() > (self.length() + 3)) && !text.compare(0, 1, " "))
+        if ((text.length() > (self.length() + 3)) && text[0] == ' ')
         {
-            if (!text.compare(1, self.length(), self))
+            if (text.substr(1, self.length()) == self)
             {
-                if (!text.compare(self.length() + 1, 2, ": "))
+                if (text.substr(self.length() + 1, 2) == ": ")
                 {
                     WINDOWMANAGER.Show(new iwMsgbox("LobbyBot", text.substr(self.length() + 3), this, MSB_OK, MSB_EXCLAMATIONGREEN, 2));
                 }
-                else if (!text.compare(self.length() + 1, 2, ", "))
+                else if (text.substr(self.length() + 1, 2) == ", ")
                 {
-                    GetCtrl<ctrlChat>(20)->AddMessage(time_string, player, color, text.substr(self.length() + 3), COLOR_YELLOW);
+                    GetCtrl<ctrlChat>(20)->AddMessage(time, player, color, text.substr(self.length() + 3), COLOR_YELLOW);
                 }
             }
 
@@ -388,7 +397,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
         }
     }
 
-    GetCtrl<ctrlChat>(20)->AddMessage(time_string, player, color, text, COLOR_YELLOW);
+    GetCtrl<ctrlChat>(20)->AddMessage(time, player, color, text, COLOR_YELLOW);
 }
 
 

@@ -1,6 +1,4 @@
-﻿// $Id: iwSave.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -39,6 +37,8 @@
 #include "iwMsgbox.h"
 
 #include "Settings.h"
+
+#include <boost/filesystem.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -132,34 +132,32 @@ void iwSaveLoad::RefreshTable()
  *
  *  @author OLiver
  */
-void iwSaveLoad::FillSaveTable(const std::string& filename, void* param)
+void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
 {
-    char datestring[64];
-
     Savegame save;
 
     // Datei öffnen
-    if(!save.Load(filename, false, false))
+    if(!save.Load(filePath, false, false))
         return;
 
     // Zeitstring erstellen
-    TIME.FormatTime(datestring, "%d.%m.%Y - %H:%i", &save.save_time);
+    std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
 
     // Dateiname noch rausextrahieren aus dem Pfad
-    size_t pos = filename.find_last_of('/');
-    if(pos == std::string::npos)
+    bfs::path path = filePath;
+    if(!path.has_filename())
         return;
-    std::string extracted_filename = filename.substr(pos + 1);
+    bfs::path fileName = path.filename();
 
     // ".sav" am Ende weg
-    assert(extracted_filename.length() >= 4);
-    extracted_filename.erase(extracted_filename.length() - 4);
+    assert(fileName.has_extension());
+    fileName.replace_extension();
 
     char start_gf[32];
     sprintf(start_gf, "%u", save.start_gf);
 
     // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, extracted_filename.c_str(), save.map_name.c_str(), datestring, start_gf, filename.c_str());
+    static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), save.map_name.c_str(), dateStr.c_str(), start_gf, filePath.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

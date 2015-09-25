@@ -1,6 +1,4 @@
-﻿// $Id: nobBaseWarehouse.cpp 9580 2015-01-23 08:29:54Z marcus $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -70,7 +68,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(0),
       empty_event(0), store_event(0)
 {
-    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     for(unsigned i = 0; i < 5; ++i)
         reserve_soldiers_available[i] =
@@ -128,10 +126,10 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData* sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
 
-    sgd->PushObjectList(waiting_wares, true);
+    sgd->PushObjectContainer(waiting_wares, true);
     sgd->PushBool(fetch_double_protection);
-    sgd->PushObjectList(dependent_figures, false);
-    sgd->PushObjectList(dependent_wares, true);
+    sgd->PushObjectContainer(dependent_figures, false);
+    sgd->PushObjectContainer(dependent_wares, true);
     sgd->PushObject(producinghelpers_event, true);
     sgd->PushObject(recruiting_event, true);
     sgd->PushObject(empty_event, true);
@@ -160,10 +158,10 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData* sgd) const
 
 nobBaseWarehouse::nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
 {
-    sgd->PopObjectList(waiting_wares, GOT_WARE);
+    sgd->PopObjectContainer(waiting_wares, GOT_WARE);
     fetch_double_protection = sgd->PopBool();
-    sgd->PopObjectList(dependent_figures, GOT_UNKNOWN);
-    sgd->PopObjectList(dependent_wares, GOT_WARE);
+    sgd->PopObjectContainer(dependent_figures, GOT_UNKNOWN);
+    sgd->PopObjectContainer(dependent_wares, GOT_WARE);
 
     producinghelpers_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
     recruiting_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
@@ -421,7 +419,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
 
             if(go_out)
-                leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, obj_id, 10));
+                leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
         } break;
         // Träger-Produzier-Event
         case 1:
@@ -452,7 +450,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 gwg->GetPlayer(player)->DecreaseInventoryJob(JOB_HELPER, 1);
             }
 
-            producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, PRODUCE_HELPERS_RANDOM_GF), 1);
+            producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
 
 
             // Evtl. genau der Gehilfe, der zum Rekrutieren notwendig ist
@@ -488,7 +486,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 / MILITARY_SETTINGS_SCALE[0];
             // Wurde abgerundet?
             if (real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0] != 0)
-                if (unsigned(RANDOM.Rand(__FILE__, __LINE__, obj_id, MILITARY_SETTINGS_SCALE[0] - 1))
+                if (unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1))
                         < real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0])
                 {
                     ++real_recruits;
@@ -541,7 +539,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
             empty_event = 0;
 
-            std::vector<unsigned> type_list;
+            std::vector<unsigned> possibleIds;
             // Waren und Figuren zum Auslagern zusammensuchen (id >= 34 --> Figur!)
             // Wenn keine Platz an Flagge, dann keine Waren raus
             if(GetFlag()->IsSpaceForWare())
@@ -549,7 +547,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
                 {
                     if(CheckRealInventorySettings(0, 4, i) && real_goods.goods[i])
-                        type_list.push_back(i);
+                        possibleIds.push_back(i);
                 }
             }
 
@@ -557,22 +555,22 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             {
                 // Figuren, die noch nicht implementiert sind, nicht nehmen!
                 if(CheckRealInventorySettings(1, 4, i) && real_goods.people[i])
-                    type_list.push_back(WARE_TYPES_COUNT + i);
+                    possibleIds.push_back(WARE_TYPES_COUNT + i);
             }
 
             // Gibts überhaupos welche?
-            if(type_list.empty())
+            if(possibleIds.empty())
                 // ansonsten gleich tschüss
                 return;
 
             // Eine ID zufällig auswählen
-            unsigned type = type_list[RANDOM.Rand(__FILE__, __LINE__, obj_id, type_list.size())];
+            unsigned selectedId = possibleIds[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleIds.size())];
 
-            if(type < WARE_TYPES_COUNT)
+            if(selectedId < WARE_TYPES_COUNT)
             {
                 // Ware
 
-                Ware* ware = new Ware(GoodType(type), 0, this);
+                Ware* ware = new Ware(GoodType(selectedId), 0, this);
                 ware->goal = gwg->GetPlayer(player)->FindClientForWare(ware);
 
                 // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
@@ -581,7 +579,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 AddLeavingEvent();
 
                 // Ware aus Inventar entfernen
-                --(real_goods.goods[type]);
+                --(real_goods.goods[selectedId]);
 
                 // Evtl. kein Schwert/Schild/Bier mehr da, sodass das Rekrutieren gestoppos werden muss
                 TryStopRecruiting();
@@ -589,10 +587,10 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             else
             {
                 // Figur
-                type -= WARE_TYPES_COUNT;
+                selectedId -= WARE_TYPES_COUNT;
 
-                nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(this, FW::Condition_StoreFigure, 0, true, &type, false);
-                nofPassiveWorker* fig = new nofPassiveWorker(Job(type), pos, player, NULL);
+                nobBaseWarehouse* wh = gwg->GetPlayer(player)->FindWarehouse(this, FW::Condition_StoreFigure, 0, true, &selectedId, false);
+                nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
 
                 if(wh)
                     fig->GoHome(wh);
@@ -606,7 +604,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 AddLeavingFigure(fig);
 
                 // Person aus Inventar entfernen
-                --(real_goods.people[type]);
+                --(real_goods.people[selectedId]);
 
                 // Evtl. kein Gehilfe mehr da, sodass das Rekrutieren gestoppos werden muss
                 TryStopRecruiting();
@@ -1123,7 +1121,7 @@ void nobBaseWarehouse::TryRecruiting()
     if(!recruiting_event)
     {
         if(AreRecruitingConditionsComply())
-            recruiting_event = em->AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, obj_id, RECRUITE_RANDOM_GF), 2);
+            recruiting_event = em->AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
     }
 }
 

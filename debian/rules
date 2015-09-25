@@ -35,9 +35,9 @@ build/Makefile: .svn/entries
 	cd build && ./cmake.sh --prefix=/usr $(CMAKE_VERBOSE) $(CMAKE_ARCH) -DCMAKE_C_FLAGS="$(CFLAGS)" -DCMAKE_LD_FLAGS="-Wl,-z,defs" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" -DCMAKE_SKIP_RPATH=ON
 
 	# force version
-	cp ./build_version.h.cmake ./build/build_version.h
-	sed -i "s/\"20000211\"/\"${VERSION}\"/g;s/\"0\"/\"${REVISION}\"/g" ./build/build_version.h
-	touch ./build/build_version.h.force
+	cp ./build_version_defines.h.cmake ./build/build_version_defines.h
+	sed -i "s/\"20000211\"/\"${VERSION}\"/g;s/\"0\"/\"${REVISION}\"/g" ./build/build_version_defines.h
+	touch ./build/build_version_defines.h.force
 
 # and make
 build: build-stamp

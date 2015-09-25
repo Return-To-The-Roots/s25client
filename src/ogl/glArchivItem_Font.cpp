@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Font.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,8 +27,9 @@
 #include "Log.h"
 #include "glAllocator.h"
 
-#include "../libsiedler2/src/types.h"
+#include "../libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include <cmath>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -39,6 +38,29 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), chars_per_line(obj.chars_per_line), utf8_mapping(obj.utf8_mapping)
+{
+    if(obj._font)
+        _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font)));
+    if(obj._font_outline)
+        _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font_outline)));
+}
+
+glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
+{
+    if(this == &obj)
+        return *this;
+
+    libsiedler2::ArchivItem_Font::operator=(obj);
+    chars_per_line = obj.chars_per_line;
+    utf8_mapping = obj.utf8_mapping;
+    if(obj._font)
+        _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font)));
+    if(obj._font_outline)
+        _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font_outline)));
+    return *this;
+}
 
 std::string glArchivItem_Font::Unicode_to_Utf8(unsigned int c) const
 {
@@ -424,7 +446,8 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
         // haben wir das maximum erreicht?
         if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
         {
-            *max = i;
+            if(max)
+                *max = i;
             if(wm == 0)
                 wm = w;
             return wm;
@@ -461,7 +484,8 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
         // haben wir das maximum erreicht?
         if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
         {
-            *max = i;
+            if(max)
+                *max = i;
             if(wm == 0)
                 wm = w;
             return wm;
@@ -484,33 +508,23 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
  *
  *  @author OLiver
  */
-void glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text, std::string* dest_strings)
+std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text)
 {
-    // Kopie des ursprünglichen Strings erstellen
-    std::string copy(origin_text);
+    std::vector<std::string> destStrings;
+    if(positions.empty())
+        return destStrings;
 
-    for(unsigned i = 0; i < positions.size(); ++i)
+    destStrings.reserve(positions.size());
+    unsigned curStart = positions.front();
+    for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
     {
-        // Gibts noch weitere Teile danach?
-        char temp = 0;
-        if(i + 1 < positions.size())
-        {
-            // dann muss statt des Leerzeichens o.ä. ein Nullzeichen gesetzt werden, damit nur der Teilstring aufgenommen
-            // wird und nicht noch alles was danach kommt
-
-            // das Zeichen merken, was da vorher war
-            temp = origin_text[positions.at(i + 1)];
-            // Zeichen 0 setzen
-            copy[positions.at(i + 1)] = 0;
-        }
-
-        if(i < origin_text.length()) //in case of empty string dont try to read char 1 ...
-            dest_strings[i] = &copy[positions.at(i)];
-
-        // wieder ggf. zurücksetzen, siehe oben
-        if(i + 1 < positions.size())
-            copy[positions.at(i + 1)] = temp;
+        assert(*it >= curStart);
+        destStrings.push_back(origin_text.substr(curStart, *it - curStart));
+        curStart = *it;
     }
+    /* Push last part */
+    destStrings.push_back(origin_text.substr(curStart));
+    return destStrings;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -636,7 +650,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
     }
 
     // Ignore trailing newline
-    if(wi.positions[wi.positions.size() - 1] == length - 1)
+    if(wi.positions.back() == length - 1)
         wi.positions.pop_back();
 }
 
@@ -648,14 +662,14 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
  */
 void glArchivItem_Font::initFont()
 {
-    _font_outline = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
-    _font = dynamic_cast<glArchivItem_Bitmap*>(glAllocator(libsiedler2::BOBTYPE_BITMAP_RLE, 0, NULL));
+    // @todo: Shouldn't we use libsiedler2::allocator?
+    _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
+    _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
 
-    //memset(_charwidths, 0, sizeof(_charwidths));
 
     // first, we have to find how much chars we really have, but we can also skip first 32
     unsigned int chars = 32;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if(get(i))
             ++chars;
@@ -665,14 +679,12 @@ void glArchivItem_Font::initFont()
 
     int w = (dx + 2) * chars_per_line + 2;
     int h = (dy + 2) * chars_per_line + 2;
-    unsigned int buffersize = w * h * 4; // RGBA Puffer für alle Buchstaben
-    unsigned char* buffer = new unsigned char[buffersize];
-    memset(buffer, 0, buffersize);
+    std::vector<unsigned char> buffer(w * h * 4); // RGBA Puffer für alle Buchstaben
 
     int x = 1;
     int y = 1;
     chars = 0;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if( (chars % chars_per_line) == 0 && i != 32 )
         {
@@ -685,7 +697,7 @@ void glArchivItem_Font::initFont()
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
             // damit man per OpenGL einfärben kann!
-            c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
+            c->print(&buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
 
             char_info ci;
             ci.x = x;
@@ -700,12 +712,12 @@ void glArchivItem_Font::initFont()
 
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
-    _font->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
+    _font->create(w, h, &buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 
     x = 1;
     y = 1;
     chars = 0;
-    for(unsigned int i = 32; i < getCount(); ++i)
+    for(unsigned int i = 32; i < size(); ++i)
     {
         if( (chars % chars_per_line) == 0 && i != 32 )
         {
@@ -718,16 +730,14 @@ void glArchivItem_Font::initFont()
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
             // damit man per OpenGL einfärben kann!
-            c->print(buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
+            c->print(&buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
 
             x += dx + 2;
             ++chars;
         }
     }
 
-    _font_outline->create(w, h, buffer, w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
-
-    delete[] buffer;
+    _font_outline->create(w, h, &buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
 
     /*ArchivInfo items;
     items.pushC(_font);

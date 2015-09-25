@@ -1,6 +1,4 @@
-﻿// $Id: nofPigbreeder.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -65,8 +63,8 @@ void nofPigbreeder::DrawWorking(int x, int y)
     if(now_id < 16)
     {
         if (now_id < 8) LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_PIGFARM + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-        int walkx = x + walkstart[wpNation][0] + (((offsets[wpNation][0] - walkstart[wpNation][0]) * (now_id) / walksteps));
-        int walky = y + walkstart[wpNation][1] + (((offsets[wpNation][1] - walkstart[wpNation][1])) * (now_id) / walksteps);
+        int walkx = x + walkstart[wpNation][0] + ((offsets[wpNation][0] - walkstart[wpNation][0]) * now_id / walksteps);
+        int walky = y + walkstart[wpNation][1] + ((offsets[wpNation][1] - walkstart[wpNation][1]) * now_id / walksteps);
 
         Loader::bob_jobs_cache[wpNation][JOB_PIGBREEDER][4][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(14,4,false,now_id%8,walkx,walky,COLORS[plColor]);

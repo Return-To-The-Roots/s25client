@@ -1,6 +1,4 @@
-﻿// $Id: nofPlaner.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -67,7 +65,7 @@ void nofPlaner::GoalReached()
     state = STATE_WALKING;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd = ( RANDOM.Rand(__FILE__, __LINE__, obj_id, 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
+    pd = ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
 
     // Je nachdem erst nach rechts oder links gehen
     StartWalking((pd == PD_CLOCKWISE) ? 5 : 3);
@@ -215,25 +213,24 @@ void nofPlaner::HandleDerivedEvent(const unsigned int id)
         state = STATE_WALKING;
 
         // Planierung fertig --> weiterlaufen
+        unsigned char curDir = GetCurMoveDir();
 
         // Das erste Mal gelaufen?
-        if(pd == PD_CLOCKWISE && dir == 5)
+        if(pd == PD_CLOCKWISE && curDir == 5)
             StartWalking(1);
-        else if(pd == PD_COUNTERCLOCKWISE && dir == 3)
+        else if(pd == PD_COUNTERCLOCKWISE && curDir == 3)
             StartWalking(1);
 
         // Fertig -> zur Baustelle zurücklaufen
-        else if(pd == PD_CLOCKWISE && dir == 4)
+        else if(pd == PD_CLOCKWISE && curDir == 4)
             StartWalking(0);
-        else if(pd == PD_COUNTERCLOCKWISE && dir == 4)
+        else if(pd == PD_COUNTERCLOCKWISE && curDir == 4)
             StartWalking(2);
 
         // In nächste Richtung gehen
         else if(pd == PD_CLOCKWISE)
-            StartWalking((dir + 1) % 6);
+            StartWalking((curDir + 1) % 6);
         else
-            StartWalking((6 + dir - 1) % 6);
-
-
+            StartWalking((6 + curDir - 1) % 6);
     }
 }

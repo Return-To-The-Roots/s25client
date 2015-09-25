@@ -1,15 +1,12 @@
-#################################################################################
-### $Id: CMakeLists.txt 6458 2010-05-31 11:38:51Z FloSoft $
-#################################################################################
 
-IF ("${COMPILEFOR}/${COMPILEARCH}" STREQUAL "linux/i386" )
+IF (${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${PLATFORM_ARCH} STREQUAL "i386")
 	FIND_LIBRARY(GLFW_LIBRARY glfw) 
 	
 	IF (GLFW_LIBRARY)
 		INCLUDE_DIRECTORIES(../../../src)
 
 		INCLUDE(AddFileDependencies)
-		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version.h)
+		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 		ADD_LIBRARY(videoGLFW SHARED GLFW.cpp GLFW.h oem.cpp oem.h main.h .${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
 		ADD_DEPENDENCIES(videoGLFW updateversion)
@@ -29,6 +26,6 @@ IF ("${COMPILEFOR}/${COMPILEARCH}" STREQUAL "linux/i386" )
 	ELSE (GLFW_LIBRARY)
 		MESSAGE(WARNING ": GLFW library not found: Not building GLFW videodriver")
 	ENDIF (GLFW_LIBRARY)
-ENDIF ("${COMPILEFOR}/${COMPILEARCH}" STREQUAL "linux/i386" )
+ENDIF ()
 
 #################################################################################

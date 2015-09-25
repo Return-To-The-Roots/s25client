@@ -1,6 +1,4 @@
-﻿// $Id: nobBaseMilitary.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,7 +22,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/GameConsts.h"
 #include "EventManager.h"
-#include <set>
+#include <boost/container/flat_set.hpp>
 
 class nofSoldier;
 class nofActiveSoldier;
@@ -90,7 +88,7 @@ class nobBaseMilitary : public noBuilding
 
         /// Das Alter wird immer verglichen
         /// absteigend sortieren, da jünger <=> age größer
-        bool operator < (const nobBaseMilitary& other) const { return obj_id > other.GetObjId(); }
+        bool operator < (const nobBaseMilitary& other) const { return GetObjId() > other.GetObjId(); }
 
         /// Meldet ein neues "Rausgeh"-Event an, falls gerade keiner rausgeht
         /// (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)
@@ -148,9 +146,6 @@ class nobBaseMilitary : public noBuilding
         bool TestOnMission(nofActiveSoldier* soldier);
 
         // Vergleicht Gebäude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
-        static bool Compare(const nobBaseMilitary* const one, const nobBaseMilitary* const two)
-        { return (*one) < (*two); }
-
         struct Comparer{
             bool operator()(const nobBaseMilitary* const one, const nobBaseMilitary* const two) const {
                 return (*one) < (*two);
@@ -158,7 +153,7 @@ class nobBaseMilitary : public noBuilding
         };
 };
 
-typedef std::set<nobBaseMilitary*, nobBaseMilitary::Comparer> nobBaseMilitarySet;
+typedef boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer> sortedMilitaryBlds;
 
 
 #endif //! NOB_BASEMILITARY_H_

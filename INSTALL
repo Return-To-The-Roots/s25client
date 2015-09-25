@@ -1,6 +1,4 @@
 -------------------------------------------------------------------------------
-$Id: INSTALL 9056 2013-12-30 00:12:06Z OLiver $
--------------------------------------------------------------------------------
 
 Conditions:
 
@@ -9,7 +7,7 @@ be able to build the SDL video and SDL audio driver module. On not
 debian-based systems this dev-packages will be named different.
 
 Please add the DATA and GFX folders of the original game to the
-following folder: ../trunk/build/S2/
+following folder: s25client/build/S2/
 
 Installation:
 
@@ -24,7 +22,7 @@ make install            or rather ./start.sh
 Options:
 
 --enable-debug           Enables Debug-Build
---prefix                 Usually /usr/local, alternativly you can use 
+--prefix                 Usually /usr/local, alternatively you can use 
                          "." - relative paths work
 --arch=x                 compile for architecture x
                          x = "system.platform", i.e apple.universal

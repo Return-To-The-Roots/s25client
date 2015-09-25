@@ -1,6 +1,4 @@
-﻿// $Id: ctrlList.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -49,7 +47,7 @@ ctrlList::ctrlList(Window* parent,
                    TextureColor tc,
                    glArchivItem_Font* font)
     : Window(x, y, id, parent, width, height),
-      tc(tc), font(font), selection(0xFFFF), mouseover(0xFFFF)
+      tc(tc), font(font), selection_(0xFFFF), mouseover(0xFFFF)
 {
     pagesize = (height - 4) / font->getHeight();
 
@@ -78,12 +76,12 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Neue Selektierung
         mouseover = (mc.y - (GetY() + 2) ) / font->getHeight();
         WINDOWMANAGER.SetToolTip(this,
-                                         ((font->getWidth(GetItemText(mouseover)) > width - 22) ?
+                                         ((font->getWidth(GetItemText(mouseover)) > width_ - 22) ?
                                           GetItemText(mouseover) : ""));
         return true;
     }
@@ -107,17 +105,17 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
-        selection = mouseover + scrollbar->GetPos();
+        selection_ = mouseover + scrollbar->GetPos();
 
-        if(parent) parent->Msg_ListSelectItem(id, selection);
+        if(parent_) parent_->Msg_ListSelectItem(id_, selection_);
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent) parent->Msg_ListChooseItem(id, selection);
+        if(mc.dbl_click && parent_) parent_->Msg_ListChooseItem(id_, selection_);
 
         return true;
     }
@@ -137,14 +135,14 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - 22, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
 
         // aktuellen Eintrag selektieren
-        selection = mouseover + scrollbar->GetPos();
-        parent->Msg_ListSelectItem(id, selection);
+        selection_ = mouseover + scrollbar->GetPos();
+        parent_->Msg_ListSelectItem(id_, selection_);
 
         return true;
     }
@@ -179,7 +177,7 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list or scrollbar
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate Button Click
         scrollbar->Msg_ButtonClick(0);
@@ -201,7 +199,7 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // If mouse in list
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width - /*2*/2, height - 4))
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         // Simulate Button Click
         scrollbar->Msg_ButtonClick(1);
@@ -224,7 +222,7 @@ bool ctrlList::Draw_(void)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Box malen
-    Draw3D(GetX(), GetY(), width, height, tc, 2);
+    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
     // Scrolleiste zeichnen
     DrawControls();
@@ -237,10 +235,10 @@ bool ctrlList::Draw_(void)
     {
         // Schwarze Markierung, wenn die Maus drauf ist
         if(i == mouseover)
-            DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width - 22, font->getHeight(), 0x80000000);
+            DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width_ - 22, font->getHeight(), 0x80000000);
 
         // Text an sich
-        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width - 22);
+        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection_ == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width_ - 22);
     }
 
     return true;
@@ -280,7 +278,7 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
 void ctrlList::DeleteAllItems()
 {
     lines.clear();
-    selection = 0xFFFF;
+    selection_ = 0xFFFF;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -322,7 +320,7 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 
     // If the size was enlarged we have to check that we don't try to
     // display more lines than present
-    if(height > this->height)
+    if(height > this->height_)
         while(lines.size() - scrollbar->GetPos() < pagesize
                 && scrollbar->GetPos() > 0)
             scrollbar->SetPos(scrollbar->GetPos() - 1);
@@ -338,10 +336,10 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 void ctrlList::Swap(unsigned short first, unsigned short second)
 {
     // Evtl Selection auf das jeweilige Element beibehalten?
-    if(first == selection)
-        selection = second;
-    else if(second == selection)
-        selection = first;
+    if(first == selection_)
+        selection_ = second;
+    else if(second == selection_)
+        selection_ = first;
 
     // Strings vertauschen
     std::swap(lines[first], lines[second]);
@@ -360,9 +358,9 @@ void ctrlList::Remove(const unsigned short index)
         lines.erase(lines.begin() + index);
 
         // Ggf. selection korrigieren
-        if(selection)
-            --selection;
+        if(selection_)
+            --selection_;
         else
-            selection = 0xFFFF;
+            selection_ = 0xFFFF;
     }
 }

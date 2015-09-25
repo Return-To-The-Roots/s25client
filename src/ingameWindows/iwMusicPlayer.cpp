@@ -1,6 +1,4 @@
-﻿// $Id: iwMusicPlayer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -42,7 +40,7 @@
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer* parent, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, (unsigned short) - 2, (unsigned short) - 2,
-                   300, 100, title, LOADER.GetImageN("resource", 41), true), parent(parent), win_id(win_id)
+                   300, 100, title, LOADER.GetImageN("resource", 41), true, true, parent_), win_id(win_id)
 {
     AddEdit(0, 20, 30, GetWidth() - 40, 22, TC_GREEN2, NormalFont);
     AddTextButton(1, 20, 60, 100, 22, TC_GREEN1, _("OK"), NormalFont);
@@ -53,14 +51,14 @@ iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer* parent, const unsigned wi
 void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     if(ctrl_id == 1)
-        parent->Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
+        static_cast<iwMusicPlayer*>(parent_)->Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
 
     Close();
 }
 
 void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int ctrl_id)
 {
-    static_cast<iwMusicPlayer*>(parent)->Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
+    static_cast<iwMusicPlayer*>(parent_)->Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
     Close();
 }
 

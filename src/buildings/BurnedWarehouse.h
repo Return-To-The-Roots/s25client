@@ -1,6 +1,4 @@
-﻿// $Id: BurnedWarehouse.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,6 +18,8 @@
 #define BURNED_WAREHOUSE_H_
 
 #include "nodeObjs/noCoordBase.h"
+#include "gameTypes/JobTypes.h"
+#include <boost/array.hpp>
 
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase
@@ -29,11 +29,13 @@ class BurnedWarehouse : public noCoordBase
         /// Aktuelle Rausgeh-Phase
         unsigned go_out_phase;
         // Leute, die noch rauskommen müssen
-        unsigned people[30];
+        boost::array<unsigned, JOB_TYPES_COUNT> people;
 
     public:
 
-        BurnedWarehouse(const MapPoint pt, const unsigned char player, const unsigned* people);
+        typedef boost::array<unsigned, JOB_TYPES_COUNT> PeopleArray;
+
+        BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
         BurnedWarehouse(SerializedGameData* sgd, const unsigned obj_id);
 
         ~BurnedWarehouse();

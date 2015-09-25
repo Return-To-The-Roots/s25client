@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Bitmap_Direct.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,7 +30,7 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
         /// Konstruktor von @p glArchivItem_Bitmap_Direct.
         glArchivItem_Bitmap_Direct(void);
         /// Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
-        glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct* item);
+        glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item);
 
         /// setzt einen Pixel auf einen bestimmten Wert.
         virtual void tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette);
@@ -45,9 +43,9 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 
 
         /// lädt die Bilddaten aus einer Datei.
-        virtual int load(FILE* file, const libsiedler2::ArchivItem_Palette* palette) { return 254; }
+        virtual int load(std::istream& file, const libsiedler2::ArchivItem_Palette* palette) { return 254; }
         /// schreibt die Bilddaten in eine Datei.
-        virtual int write(FILE* file, const libsiedler2::ArchivItem_Palette* palette) const { return 254; }
+        virtual int write(std::ostream& file, const libsiedler2::ArchivItem_Palette* palette) const { return 254; }
 };
 
 #endif // !GLARCHIVITEM_BITMAP_DIRECT_H_INCLUDED

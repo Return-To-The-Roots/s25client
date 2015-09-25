@@ -1,6 +1,4 @@
-﻿// $Id: noAnimal.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -102,6 +100,7 @@ class noAnimal : public noMovable
 
         /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
         bool IsReadyForShooting() const { return (state == STATE_WAITINGFORHUNTER); }
+        bool IsGettingReadyForShooting() const { return (state == STATE_WALKINGUNTILWAITINGFORHUNTER); }
         /// Tier soll sterben - erstmal nur Leiche liegen lassen
         void Die();
         /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden

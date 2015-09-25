@@ -1,6 +1,4 @@
-﻿// $Id: WindowManager.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,6 +27,7 @@
 #include "Window.h"
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
+#include "drivers/ScreenResizeEvent.h"
 
 #include <ctime>
 #include <algorithm>
@@ -252,7 +251,7 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         if((*it)->ShouldBeClosed())
             continue;
 
-        if(window->id == (*it)->id)
+        if(window->id_ == (*it)->id_)
         {
             // Ja, also vorheriges schliessen
             (*it)->Close();
@@ -899,7 +898,7 @@ void WindowManager::Close(unsigned int id)
 {
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        if((*it)->id == id){
+        if((*it)->id_ == id){
             Close(*it);
             return;
         }

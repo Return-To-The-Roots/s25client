@@ -1,6 +1,4 @@
-﻿// $Id: nofHunter.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -74,6 +72,8 @@ class nofHunter : public nofBuildingWorker
         GO_Type GetGOT() const { return GOT_NOF_HUNTER; }
 
         void HandleDerivedEvent(const unsigned int id);
+
+        void TryStartHunting();
 
         /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
         void AnimalLost();

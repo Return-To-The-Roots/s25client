@@ -1,5 +1,3 @@
-﻿// $Id: DriverInterfaceVersion.h 6458 2010-05-31 11:38:51Z FloSoft $
-//
 // Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Siedler II.5 RTTR.
@@ -21,6 +19,6 @@
 
 #pragma once
 
-#define DRIVERAPIVERSION 1
+#define DRIVERAPIVERSION 2
 
 #endif // !DRIVERINTERFACEVERSION_H_INCLUDED

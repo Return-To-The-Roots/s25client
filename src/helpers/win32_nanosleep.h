@@ -1,6 +1,4 @@
-﻿// $Id: win32_nanosleep.h 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,22 +20,23 @@
 #pragma once
 
 #ifdef _WIN32
+#include <ctime>
 typedef unsigned int useconds_t;
 
-#ifndef _TIMESPEC_DEFINED
+#if !defined(_TIMESPEC_DEFINED) && (!defined(_MSC_VER) || _MSC_VER < 1900)
 #define _TIMESPEC_DEFINED
-typedef struct timespec
+struct timespec
 {
-    unsigned int tv_sec;    // Seconds.
-    long int tv_nsec;       // Nanoseconds.
-} timespec_t;
+    time_t tv_sec;    // Seconds.
+    long   tv_nsec;   // Nanoseconds.
+};
 #endif
 
 /// Sleep at least some number of microseconds.
 int usleep (useconds_t microseconds);
 
 /// nanosleep replacement for windows.
-int nanosleep(const timespec_t* requested_delay, timespec_t* remaining_delay);
+int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay);
 
 #endif // _WIN32
 

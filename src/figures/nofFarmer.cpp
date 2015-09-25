@@ -1,6 +1,4 @@
-﻿// $Id: nofFarmer.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,6 +31,7 @@
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "SerializedGameData.h"
+#include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -183,11 +182,10 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt)
         }
 
         // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-        unsigned char t, good_terrains = 0;
+        unsigned char good_terrains = 0;
         for(unsigned char i = 0; i < 6; ++i)
         {
-            t = gwg->GetTerrainAround(pt, i);
-            if(t == 3 || (t >= 8 && t <= 12))
+            if(TerrainData::IsVital(gwg->GetTerrainAround(pt, i)))
                 ++good_terrains;
         }
         if (good_terrains != 6)

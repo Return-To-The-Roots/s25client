@@ -1,6 +1,4 @@
-﻿// $Id: AIInterface.h
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -101,6 +99,9 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
         int CalcResourceValue(const MapPoint pt, AIJH::Resource res, char direction = -1, int lastval = 0xffff) const;
 
+        /// Calculates the resource value for a given point
+        int GetResourceRating(const MapPoint pt, AIJH::Resource res) const;
+
         /// Tests whether a given point is part of the border or not
         bool IsBorder(const MapPoint pt) const  { return gwb.GetNode(pt).boundary_stones[0] == (playerID + 1); }
 
@@ -116,7 +117,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool GetPointRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt()) > 0; }
 
         /// Returns the terrain around a given point in a given direction
-        unsigned char GetTerrainAround(const MapPoint pt, Direction direction) const { return gwb.GetTerrainAround(pt, direction.toUInt()); }
+        TerrainType GetTerrainAround(const MapPoint pt, Direction direction) const { return gwb.GetTerrainAround(pt, direction.toUInt()); }
 
         /// Tests whether there is a object of a certain type on a spot
         bool IsObjectTypeOnNode(const MapPoint pt, NodalObjectType objectType) const { return gwb.GetNO(pt)->GetType() == objectType; }
@@ -161,7 +162,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
 		nobBaseWarehouse* FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
 		
         /// Returns a list of military buildings around a given point and a given radius
-		nobBaseMilitarySet GetMilitaryBuildings(const MapPoint pt, unsigned radius) const { return gwb.LookForMilitaryBuildings(pt, radius); }
+		sortedMilitaryBlds GetMilitaryBuildings(const MapPoint pt, unsigned radius) const { return gwb.LookForMilitaryBuildings(pt, radius); }
 
         /// Returns the headquarter of the player (or null if destroyed)
         const nobHQ* GetHeadquarter() const;

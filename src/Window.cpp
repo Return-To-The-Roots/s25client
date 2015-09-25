@@ -1,6 +1,4 @@
-﻿// $Id: Window.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,6 +23,7 @@
 #include "Loader.h"
 #include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "driver/src/MouseCoords.h"
 #include <cstdarg>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,7 +41,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 Window::Window(void)
-    : x(0), y(0), width(0), height(0), id(0), parent(NULL), active(false), visible(true), scale(false), tooltip("")
+    : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_("")
 {
 }
 
@@ -64,7 +63,7 @@ Window::Window(unsigned short x,
                unsigned short width,
                unsigned short height,
                const std::string& tooltip)
-    : x(x), y(y), width(width), height(height), id(id), parent(parent), active(false), visible(true), scale(false), tooltip(tooltip)
+    : x_(x), y_(y), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip)
 {
 }
 
@@ -77,7 +76,7 @@ Window::Window(unsigned short x,
 Window::~Window(void)
 {
     // Steuerelemente aufräumen
-    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
         delete it->second;
 }
 
@@ -89,7 +88,7 @@ Window::~Window(void)
  */
 bool Window::Draw(void)
 {
-    if(visible)
+    if(visible_)
         return Draw_();
 
     return true;
@@ -108,17 +107,17 @@ bool Window::Draw(void)
 unsigned short Window::GetX(bool absolute) const
 {
     if(!absolute)
-        return x;
+        return x_;
 
-    unsigned short abs_x = x;
+    unsigned short abs_x = x_;
     const Window* temp = this;
 
     // Relative Koordinaten in absolute umrechnen
     // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
-    while(temp->parent)
+    while(temp->parent_)
     {
-        temp = temp->parent;
-        abs_x += temp->x;
+        temp = temp->parent_;
+        abs_x += temp->x_;
     }
 
     return abs_x;
@@ -137,17 +136,17 @@ unsigned short Window::GetX(bool absolute) const
 unsigned short Window::GetY(bool absolute) const
 {
     if(!absolute)
-        return y;
+        return y_;
 
-    unsigned short abs_y = y;
+    unsigned short abs_y = y_;
     const Window* temp = this;
 
     // Relative Koordinaten in absolute umrechnen
     // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
-    while(temp->parent)
+    while(temp->parent_)
     {
-        temp = temp->parent;
-        abs_y += temp->y;
+        temp = temp->parent_;
+        abs_y += temp->y_;
     }
 
     return abs_y;
@@ -173,9 +172,9 @@ bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const Ke
 
     // Alle Controls durchgehen
     // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
+    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end() && active_; ++it)
     {
-        if(it->second->visible && it->second->active)
+        if(it->second->visible_ && it->second->active_)
             if((it->second->*msg)(ke))
                 return true;
     }
@@ -195,13 +194,13 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
     // Alle Controls durchgehen
     // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
-    for(std::map<unsigned int, Window*>::reverse_iterator it = idmap.rbegin(); it != idmap.rend() && active; ++it)
+    for(std::map<unsigned int, Window*>::reverse_iterator it = childIdToWnd_.rbegin(); it != childIdToWnd_.rend() && active_; ++it)
     {
-        if(!locked_areas.empty())
+        if(!lockedAreas_.empty())
             if(TestWindowInRegion(it->second, mc))
                 continue;
 
-        if(it->second->visible && it->second->active)
+        if(it->second->visible_ && it->second->active_)
             // Falls von einem Steuerelement verarbeitet --> abbrechen
             if((it->second->*msg)(mc))
             {
@@ -239,7 +238,7 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
  */
 void Window::SetActive(bool activate)
 {
-    this->active = activate;
+    this->active_ = activate;
     ActivateControls(activate);
 }
 
@@ -253,7 +252,7 @@ void Window::SetActive(bool activate)
  */
 void Window::ActivateControls(bool activate)
 {
-    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
         it->second->SetActive(activate);
 }
 
@@ -268,7 +267,7 @@ void Window::ActivateControls(bool activate)
  */
 void Window::LockRegion(Window* window, const Rect& rect)
 {
-    locked_areas[window] = rect;
+    lockedAreas_[window] = rect;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -281,7 +280,7 @@ void Window::LockRegion(Window* window, const Rect& rect)
  */
 void Window::FreeRegion(Window* window)
 {
-    locked_areas.erase(window);
+    lockedAreas_.erase(window);
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -304,7 +303,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
         unsigned short size,
         const std::string& tooltip)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -335,7 +334,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
 /// fügt einen Text-ButtonCtrl hinzu.
 ctrlTextButton* Window::AddTextButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -349,7 +348,7 @@ ctrlTextButton* Window::AddTextButton(unsigned int id, unsigned short x, unsigne
 /// fügt einen Color-ButtonCtrl hinzu.
 ctrlColorButton* Window::AddColorButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned int fillColor, const std::string& tooltip)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -364,7 +363,7 @@ ctrlColorButton* Window::AddColorButton(unsigned int id, unsigned short x, unsig
 /// fügt einen Image-ButtonCtrl hinzu.
 ctrlImageButton* Window::AddImageButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -390,7 +389,7 @@ ctrlChat* Window::AddChatCtrl(unsigned int id,
                               TextureColor tc,
                               glArchivItem_Font* font)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -417,7 +416,7 @@ ctrlCheck* Window::AddCheckBox(unsigned int id,
                                glArchivItem_Font* font,
                                bool readonly)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -444,7 +443,7 @@ ctrlComboBox* Window::AddComboBox(unsigned int id,
                                   unsigned short max_list_height,
                                   bool readonly)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -471,7 +470,7 @@ ctrlDeepening* Window::AddDeepening(unsigned int id,
                                     glArchivItem_Font* font,
                                     unsigned int color)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -496,7 +495,7 @@ ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
         TextureColor tc,
         unsigned int fillColor)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -525,7 +524,7 @@ ctrlEdit* Window::AddEdit(unsigned int id,
                           bool disabled,
                           bool notify)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -558,7 +557,7 @@ ctrlImage* Window::AddImage(unsigned int id,
                             unsigned short y,
                             glArchivItem_Bitmap* image, const std::string& tooltip)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -581,7 +580,7 @@ ctrlList* Window::AddList(unsigned int id,
                           TextureColor tc,
                           glArchivItem_Font* font)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -607,7 +606,7 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
                                     glArchivItem_Font* font,
                                     unsigned int format)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -670,7 +669,7 @@ ctrlPercent* Window::AddPercent(unsigned int id,
                                 glArchivItem_Font* font,
                                 const unsigned short* percentage)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -703,7 +702,7 @@ ctrlProgress* Window::AddProgress(unsigned int id,
                                   const std::string& button_minus_tooltip,
                                   const std::string& button_plus_tooltip)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -729,7 +728,7 @@ ctrlScrollBar* Window::AddScrollBar(unsigned int id,
                                     TextureColor tc,
                                     unsigned short page_size)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -752,7 +751,7 @@ ctrlTab* Window::AddTabCtrl(unsigned int id,
                             unsigned short y,
                             unsigned short width)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -783,7 +782,7 @@ ctrlTable* Window::AddTable(unsigned int id,
     va_list liste;
     va_start(liste, columns);
 
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -836,7 +835,7 @@ ctrlText* Window::AddText(unsigned int id,
                           unsigned int format,
                           glArchivItem_Font* font)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -867,7 +866,7 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
     va_list liste;
     va_start(liste, parameters);
 
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -917,7 +916,7 @@ ctrlVarText* Window::AddVarText(unsigned int id,
     va_list liste;
     va_start(liste, parameters);
 
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -937,7 +936,7 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
         unsigned short height,
         glArchivItem_Map* const map)
 {
-    if(scale)
+    if(scale_)
     {
         x = ScaleX(x);
         y = ScaleY(y);
@@ -1131,7 +1130,7 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
  */
 void Window::DrawControls(void)
 {
-    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
     {
         Window* control = it->second;
         assert(control);
@@ -1140,7 +1139,7 @@ void Window::DrawControls(void)
         control->Draw();
     }
 
-    for(std::map<unsigned int, Window*>::iterator it = idmap.begin(); it != idmap.end(); ++it)
+    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
     {
         Window* control = it->second;
         assert(control);
@@ -1163,12 +1162,12 @@ void Window::DrawControls(void)
  */
 bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
 {
-    for(std::map<Window*, Rect>::const_iterator it = locked_areas.begin(); it != locked_areas.end(); ++it)
+    for(std::map<Window*, Rect>::const_iterator it = lockedAreas_.begin(); it != lockedAreas_.end(); ++it)
     {
         if(it->first == window)
             continue; // Locking window can always access its locked regions
         // All others cannot:
-        if(Coll(mc.x + GetX(), mc.y + GetY(), it->second))
+        if(Coll(mc.x, mc.y, it->second))
             return true;
     }
     return false;

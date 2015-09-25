@@ -1,6 +1,4 @@
-﻿// $Id: glArchivItem_Music.cpp 9357 2014-04-25 15:35:25Z FloSoft $
-//
-// Copyright (c) 2005 - 2011 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -49,9 +47,18 @@ glArchivItem_Music::glArchivItem_Music(void)
  *
  *  @author FloSoft
  */
-glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music* item)
-    : libsiedler2::baseArchivItem_Sound(item), sound(NULL)
+glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music& item)
+    : libsiedler2::baseArchivItem_Sound(item), sound(item.sound)
 {
+}
+
+glArchivItem_Music& glArchivItem_Music::operator=(const glArchivItem_Music& item)
+{
+    if(this == &item)
+        return *this;
+    libsiedler2::baseArchivItem_Sound::operator=(item);
+    sound = item.sound;
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
