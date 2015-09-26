@@ -23,6 +23,7 @@
 #include "GameWorld.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
+#include "helpers/containerUtils.h"
 
 #include <list>
 
@@ -217,7 +218,7 @@ bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id)
 // only used for debugging purposes
 void EventManager::RemoveAllEventsOfObject(GameObject* obj)
 {
-    for(std::map< unsigned, std::list<Event*> >::iterator it = eis.begin(); it != eis.end(); ++it)
+    for(std::map< unsigned, std::list<Event*> >::iterator it = eis.begin(); it != eis.end();)
     {
         for(std::list<Event*>::iterator e_it = it->second.begin(); e_it != it->second.end();)
         {
@@ -228,34 +229,35 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
             else
                 ++e_it;
         }
-        if(it->second.size() == 0)
-            eis.erase(it);
+        if(it->second.empty())
+            it = helpers::erase(eis, it);
+        else
+            ++it;
     }
 }
 
 void EventManager::RemoveEvent(EventPointer ep)
 {
     if (!ep)
-    {
         return;
-    }
 
     std::map<unsigned, std::list<Event*> >::iterator it = eis.find(ep->gf_next);
     if(it != eis.end())
     {
-        std::list<Event*>::iterator e_it = std::find(it->second.begin(), it->second.end(), ep);
+        std::list<Event*>& events = it->second;
+        std::list<Event*>::iterator e_it = std::find(events.begin(), events.end(), ep);
         do
         {
-            if(e_it == it->second.end())
+            if(e_it == events.end())
                 break;
 
-            e_it = it->second.erase(e_it);
-            if(e_it != it->second.end())
-                e_it = std::find(e_it, it->second.end(), ep);
+            e_it = events.erase(e_it);
+            if(e_it != events.end())
+                e_it = std::find(e_it, events.end(), ep);
         }
-        while(e_it != it->second.end());
+        while(e_it != events.end());
 
-        if(it->second.size() == 0)
+        if(events.empty())
             eis.erase(it);
     }
 
