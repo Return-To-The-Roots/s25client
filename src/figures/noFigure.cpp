@@ -1484,14 +1484,13 @@ MapPoint noFigure::ExamineRouteBeforeShipping()
 {
     MapPoint next_harbor;
     // Calc new route
-    unsigned char new_dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal, NULL, &next_harbor);
-    FaceDir(new_dir);
+    unsigned char dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal, NULL, &next_harbor);
 
-    if(GetCurMoveDir() == 0xff)
+    if(dir == 0xff)
         Abrogate();
 
     // Going by ship?
-    if(GetCurMoveDir() == SHIP_DIR)
+    if(dir == SHIP_DIR)
         // All ok, return next harbor (could be another one!)
         return next_harbor;
     else
