@@ -201,6 +201,11 @@ bool nofMetalworker::ReadyForWork()
     if(nextProducedTool == GD_NOTHING)
         nextProducedTool = GetRandomTool();
 
+    if(current_ev)
+    {
+        assert(current_ev->id == 2 && state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
+        em->RemoveEvent(current_ev);
+    }
     if(nextProducedTool != GD_NOTHING)
         return true;
 
