@@ -222,11 +222,17 @@ void dskGameInterface::Msg_PaintBefore()
     dynamic_cast<glArchivItem_Bitmap*>(borders.get(2))->Draw(0, 12); // links
     dynamic_cast<glArchivItem_Bitmap*>(borders.get(3))->Draw(VIDEODRIVER.GetScreenWidth() - 12, 12); // rechts
 
-    LOADER.GetImageN("resource", 17)->Draw(12, 12, 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 18)->Draw(VIDEODRIVER.GetScreenWidth() - 12 - LOADER.GetImageN("resource", 18)->getWidth(), 12, 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 19)->Draw(12, VIDEODRIVER.GetScreenHeight() - 12 - LOADER.GetImageN("resource", 19)->getHeight(), 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 20)->Draw(VIDEODRIVER.GetScreenWidth() - 12 - LOADER.GetImageN("resource", 20)->getWidth(), VIDEODRIVER.GetScreenHeight() - 12 - LOADER.GetImageN("resource", 20)->getHeight(), 0, 0, 0, 0, 0, 0);
-    LOADER.GetImageN("resource", 29)->Draw(VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2, VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight(), 0, 0, 0, 0, 0, 0);
+    // The figure/statues and the button bar
+    glArchivItem_Bitmap& imgFigLeftTop  = *LOADER.GetImageN("resource", 17);
+    glArchivItem_Bitmap& imgFigRightTop = *LOADER.GetImageN("resource", 18);
+    glArchivItem_Bitmap& imgFigLeftBot  = *LOADER.GetImageN("resource", 19);
+    glArchivItem_Bitmap& imgFigRightBot = *LOADER.GetImageN("resource", 20);
+    glArchivItem_Bitmap& imgButtonBar   = *LOADER.GetImageN("resource", 29);
+    imgFigLeftTop.Draw(12, 12, 0, 0, 0, 0, 0, 0);
+    imgFigRightTop.Draw(VIDEODRIVER.GetScreenWidth() - 12 - imgFigRightTop.getWidth(), 12, 0, 0, 0, 0, 0, 0);
+    imgFigLeftBot.Draw(12, VIDEODRIVER.GetScreenHeight() - 12 - imgFigLeftBot.getHeight(), 0, 0, 0, 0, 0, 0);
+    imgFigRightBot.Draw(VIDEODRIVER.GetScreenWidth() - 12 - imgFigRightBot.getWidth(), VIDEODRIVER.GetScreenHeight() - 12 - imgFigRightBot.getHeight(), 0, 0, 0, 0, 0, 0);
+    imgButtonBar.Draw(VIDEODRIVER.GetScreenWidth() / 2 - imgButtonBar.getWidth() / 2, VIDEODRIVER.GetScreenHeight() - imgButtonBar.getHeight(), 0, 0, 0, 0, 0, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
