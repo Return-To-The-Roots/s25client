@@ -43,12 +43,16 @@ class ctrlStatisticTable : public Window
 
     public:
         ctrlStatisticTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, 
-            unsigned short width, unsigned short height, const std::vector<Column>& column_titles, unsigned num_rows);
+            unsigned short width, unsigned short height, unsigned num_columns, unsigned num_rows);
 
         virtual ~ctrlStatisticTable(void);
               
         void AddPlayerInfos(const std::vector<EndStatisticData::PlayerInfo> &player_infos);
-        void AddColumn(unsigned col_idx, const std::vector<unsigned> &points);
+        void AddColumn(unsigned col_idx, 
+            const std::string& title,
+            bool is_button,
+            const std::string& tooltip,
+            const std::vector<unsigned> &points);
 
         virtual void Msg_ButtonClick(const unsigned int ctrl_id);
         virtual bool Msg_MouseMove(const MouseCoords& mc);
@@ -78,7 +82,7 @@ class ctrlStatisticTable : public Window
         } s;
 
 
-        std::vector<Column> _columns;
+        unsigned _num_columns;
         unsigned _max_num_rows;
         unsigned _num_rows;
         unsigned short _fifty;

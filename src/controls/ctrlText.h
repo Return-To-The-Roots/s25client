@@ -51,11 +51,16 @@ class ctrlText : public Window, public ctrlBaseText
 {
     public:
         ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+        
+        void SetToolTipText(const std::string& text);
+
+        virtual bool Msg_MouseMove(const MouseCoords& mc);
+
     protected:
         virtual bool Draw_(void);
 
     protected:
-
+        std::string tool_tip_text;
         unsigned int format;
 };
 

@@ -905,7 +905,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             delete no;
 
             // count destroyed building for new_player in endstatistic
-            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_DESTROYED_BUILDINGS, new_player);
+            GAMECLIENT.GetEndStatisticData()->IncreaseValue(EndStatisticData::MIL_DESTROYED_BUILDINGS, new_player - 1); // -1 because the player indexing works different here: 0 is "no player"
 
             return;
         }

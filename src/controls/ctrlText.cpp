@@ -20,6 +20,9 @@
 #include "defines.h"
 #include "ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
+#include "CollisionDetection.h"
+#include "WindowManager.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -48,7 +51,7 @@ ctrlText::ctrlText(Window* parent,
                    unsigned int color,
                    unsigned int format,
                    glArchivItem_Font* font)
-    : Window(x, y, id, parent), ctrlBaseText(text, color, font), format(format)
+    : Window(x, y, id, parent), ctrlBaseText(text, color, font), format(format), tool_tip_text("")
 {
 }
 
@@ -64,4 +67,45 @@ bool ctrlText::Draw_(void)
         font->Draw(GetX(), GetY(), text.c_str(), format, color);
 
     return true;
+}
+
+void ctrlText::SetToolTipText(const std::string& text)
+{
+    tool_tip_text = text;
+}
+
+
+bool ctrlText::Msg_MouseMove(const MouseCoords& mc)
+{
+    if (!tool_tip_text.empty() && text.length())
+    {
+        unsigned width = font->getWidth(text);
+        unsigned height = font->getHeight();
+
+        unsigned my_x = GetX();
+        unsigned my_y = GetY();
+
+        if ((format & 3) == glArchivItem_Font::DF_RIGHT)
+            my_x -= width;
+        else if ((format & 3) == glArchivItem_Font::DF_CENTER)
+            my_x -= width / 2;
+
+        if ((format & 12) == glArchivItem_Font::DF_BOTTOM)
+            my_y -= height;
+        else if ((format & 12) == glArchivItem_Font::DF_VCENTER)
+            my_y -= height / 2;
+
+
+        if(Coll(mc.x, mc.y, my_x, my_y, width, height))
+        {
+            WINDOWMANAGER.SetToolTip(this, tool_tip_text);
+        }
+        else
+        {
+            WINDOWMANAGER.SetToolTip(this, "");
+        }
+    }
+
+    // ButtonMessages weiterleiten
+    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }

@@ -19,7 +19,7 @@
 
 #include "EndStatisticData.h"
 #include "defines.h"
-#include "mygettext.h" //?? TODO ok?
+#include "mygettext.h"
 
 #include "SerializedGameData.h"
 #include "GamePlayerList.h"
@@ -41,100 +41,100 @@ EndStatisticData::EndStatisticData(const GameClientPlayerList& players) : _playe
 
     _main_categories[ECONOMY].title = _("Economy");
     
-    _values[ECO_COINS] = Value (_("Coins"), _(""), number_of_players);
+    _values[ECO_COINS] = Value (_("Coins"), _("Number of produced coins"), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_COINS);
 
-    _values[ECO_TOOLS] = Value (_("Tools"), _(""), number_of_players);
+    _values[ECO_TOOLS] = Value (_("Tools"), _("Number of produced tools"), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_TOOLS);
 
-    _values[ECO_PRODUCED_WARES] = Value (_("Produced Wares"), _(""), number_of_players);
+    _values[ECO_PRODUCED_WARES] = Value (_("Produced Wares"), _("Number of produced wares"), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_PRODUCED_WARES);
 
-    _values[ECO_USED_WARES] = Value (_("Consumed Wares"), _(""), number_of_players);  // TODO: decide wether building sites should count as ware consumer (currently not)
+    _values[ECO_USED_WARES] = Value (_("Consumed Wares"), _("Number of consumed wares"), number_of_players);  // TODO: decide wether building sites should count as ware consumer (currently not)
     _main_categories[ECONOMY].values.push_back(ECO_USED_WARES);
 
-    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _(""), number_of_players);
+    _values[ECO_RESOURCE_SHORTAGE] = Value (_("Resource Shortages"), _("Number of times a building could not work because resources were missing"), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_RESOURCE_SHORTAGE);
 
-    _values[ECO_SHIPS] = Value (_("Ships"), _(""), number_of_players);
+    _values[ECO_SHIPS] = Value (_("Ships"), _("Number of ships built"), number_of_players);
     _main_categories[ECONOMY].values.push_back(ECO_SHIPS);
 
 
     _main_categories[INFRASTRUCTURE].title = _("Infrastructure");
 
-    _values[INF_BUILDINGS] = Value (_("Buildings"), _(""), number_of_players);
+    _values[INF_BUILDINGS] = Value (_("Buildings"), _("Number of building built"), number_of_players);
     _main_categories[INFRASTRUCTURE].values.push_back(INF_BUILDINGS);
 
-    _values[INF_WAYLENGTH] = Value (_("Way length"), _(""), number_of_players);
+    _values[INF_WAYLENGTH] = Value (_("Way length"), _("Total length of ways built"), number_of_players);
     _main_categories[INFRASTRUCTURE].values.push_back(INF_WAYLENGTH);
 
-    _values[INF_FLAGS] = Value (_("Flags"), _(""), number_of_players);
+    _values[INF_FLAGS] = Value (_("Flags"), _("Total number of flags set"), number_of_players);
     _main_categories[INFRASTRUCTURE].values.push_back(INF_FLAGS);
 
-    _values[INF_STOREHOUSES] = Value (_("Storehouses"), _(""), number_of_players);
+    _values[INF_STOREHOUSES] = Value (_("Storehouses"), _("Total number of storeshouses built"), number_of_players);
     _main_categories[INFRASTRUCTURE].values.push_back(INF_STOREHOUSES);
 
-    _values[INF_CATAPULTS] = Value (_("Catapults"), _(""), number_of_players);
+    _values[INF_CATAPULTS] = Value (_("Catapults"), _("Total number of catapults built"), number_of_players);
     _main_categories[INFRASTRUCTURE].values.push_back(INF_CATAPULTS);
 
 
     _main_categories[PRODUCTION].title = _("Production");
 
-    _values[PROD_SETTLERS] = Value (_("Settlers"), _(""), number_of_players); // TODO: currently only counts 'newly' created settlers *with* tools, not the living ones the player start with. Should this be different?
+    _values[PROD_SETTLERS] = Value (_("Settlers"), _("Total number of trained settlers (no carriers)"), number_of_players); // TODO: currently only counts 'newly' created settlers *with* tools, not the living ones the player start with. Should this be different?
     _main_categories[PRODUCTION].values.push_back(PROD_SETTLERS);
 
-    _values[PROD_BUILING_MATERIALS] = Value (_("Building Materials"), _(""), number_of_players);
+    _values[PROD_BUILING_MATERIALS] = Value (_("Building Materials"), _("Total number of buildings built for building materials (Wood and Stones)"), number_of_players);
     _main_categories[PRODUCTION].values.push_back(PROD_BUILING_MATERIALS);
 
-    _values[PROD_FOOD] = Value (_("Food"), _(""), number_of_players);
+    _values[PROD_FOOD] = Value (_("Food"), _("Total number of buildings built for food (Fishery, farm, ...)"), number_of_players);
     _main_categories[PRODUCTION].values.push_back(PROD_FOOD);
 
-    _values[PROD_HEAVY_INDUSTRY] = Value (_("Heavy Industry"), _(""), number_of_players);
+    _values[PROD_HEAVY_INDUSTRY] = Value (_("Heavy Industry"), _("Total number of buildings built working with metal"), number_of_players);
     _main_categories[PRODUCTION].values.push_back(PROD_HEAVY_INDUSTRY);
 
-    _values[PROD_HEAVY_INDUSTRY_PRODUCTIVITY] = Value (_("Heavy Industry Productivity"), _(""), number_of_players); // TODO
+    _values[PROD_HEAVY_INDUSTRY_PRODUCTIVITY] = Value (_("Heavy Industry Productivity"), _("Productivity of heavy industry (implementation missing)"), number_of_players); // TODO
     _main_categories[PRODUCTION].values.push_back(PROD_HEAVY_INDUSTRY_PRODUCTIVITY);
 
     
     _main_categories[MILITARY].title = _("Military");
     
-    _values[MIL_TRAINED_SOLDIERS] = Value (_("Trained Soldiers"), _(""), number_of_players);
+    _values[MIL_TRAINED_SOLDIERS] = Value (_("Trained Soldiers"), _("Total number of trained soldiers"), number_of_players);
     _main_categories[MILITARY].values.push_back(MIL_TRAINED_SOLDIERS);
 
-    _values[MIL_TRAINED_GENERALS] = Value (_("Trained Generals"), _(""), number_of_players);
+    _values[MIL_TRAINED_GENERALS] = Value (_("Trained Generals"), _("Total number of soldiers of the highest rank"), number_of_players);
     _main_categories[MILITARY].values.push_back(MIL_TRAINED_GENERALS);
 
-    _values[MIL_KILLED_ENEMIES] = Value (_("Killed Enemies"), _(""), number_of_players);
+    _values[MIL_KILLED_ENEMIES] = Value (_("Killed Enemies"), _("Total number of killed enemies"), number_of_players);
     _main_categories[MILITARY].values.push_back(MIL_KILLED_ENEMIES);
 
-    _values[MIL_LOST_SOLDIERS] = Value (_("Lost Soldiers"), _(""), number_of_players);
+    _values[MIL_LOST_SOLDIERS] = Value (_("Lost Soldiers"), _("Total number of lost soldiers"), number_of_players);
     _main_categories[MILITARY].values.push_back(MIL_LOST_SOLDIERS);
 
-    _values[MIL_DESTROYED_BUILDINGS] = Value (_("Destroyed Buildings"), _(""), number_of_players);
+    _values[MIL_DESTROYED_BUILDINGS] = Value (_("Destroyed Buildings"), _("Total number of builings destroyed by conquering other military buildings"), number_of_players);
     _main_categories[MILITARY].values.push_back(MIL_DESTROYED_BUILDINGS);
 
-    _values[MIL_LOST_MILBUILDINGS] = Value (_("Lost Military Buildings"), _(""), number_of_players);
+    _values[MIL_LOST_MILBUILDINGS] = Value (_("Lost Military Buildings"), _("Total number of lost own military buildings"), number_of_players);
     _main_categories[MILITARY].values.push_back(MIL_LOST_MILBUILDINGS);
 
 
     _main_categories[MISC].title = _("Miscellaneous");
     
-    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _(""), number_of_players);   // TODO: I think fog of war will kill the counting mechanism (possible counting multiple times)
+    _values[MISC_EXPLORED_MAP] = Value (_("Explored"), _("Number of nodes explored"), number_of_players);   // TODO: I think fog of war will kill the counting mechanism (possible counting multiple times)
     _main_categories[MISC].values.push_back(MISC_EXPLORED_MAP);
 
-    _values[MISC_ACTIONS] = Value (_("Player Actions"), _(""), number_of_players);
+    _values[MISC_ACTIONS] = Value (_("Player Actions"), _("Number of commands issued by the player"), number_of_players);
     _main_categories[MISC].values.push_back(MISC_ACTIONS);
 
-    _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _(""), number_of_players); // TODO
+    _values[MISC_TRADED_WARES] = Value (_("Traded Wares"), _("(implementation missing)"), number_of_players); // TODO
     _main_categories[MISC].values.push_back(MISC_TRADED_WARES);
 
-    _values[MISC_ATTACKS] = Value (_("Attacks"), _(""), number_of_players);
+    _values[MISC_ATTACKS] = Value (_("Attacks"), _("Number of attacks issued by the player"), number_of_players);
     _main_categories[MISC].values.push_back(MISC_ATTACKS);
 
-    _values[MISC_SPYTOWERS] = Value (_("Spy Towers"), _(""), number_of_players);
+    _values[MISC_SPYTOWERS] = Value (_("Spy Towers"), _("Number of spy towers built"), number_of_players);
     _main_categories[MISC].values.push_back(MISC_SPYTOWERS);
 
-    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _(""), number_of_players);
+    _values[MISC_CATAPULT_SHOTS] = Value (_("Catapult Shots"), _("Number of catapult shots fired"), number_of_players);
     _main_categories[MISC].values.push_back(MISC_CATAPULT_SHOTS);
 }
 

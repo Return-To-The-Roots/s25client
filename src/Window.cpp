@@ -813,7 +813,7 @@ ctrlStatisticTable* Window::AddStatisticTable(unsigned int id,
                             unsigned short y,
                             unsigned short width,
                             unsigned short height,
-                            const std::vector<std::pair<std::string,bool> >& column_titles,
+                            unsigned num_columns,
                             unsigned num_rows)
 {
     ctrlStatisticTable* ctrl;
@@ -826,11 +826,11 @@ ctrlStatisticTable* Window::AddStatisticTable(unsigned int id,
         height = ScaleY(height);
     }
 
-    std::vector<ctrlStatisticTable::Column> columns;
-    for (unsigned i = 0; i < column_titles.size(); ++i)
-        columns.push_back(ctrlStatisticTable::Column(column_titles[i].first,column_titles[i].second));
+    //std::vector<ctrlStatisticTable::Column> columns;
+    //for (unsigned i = 0; i < column_titles.size(); ++i)
+    //    columns.push_back(ctrlStatisticTable::Column(column_titles[i].first,column_titles[i].second));
 
-    ctrl = new ctrlStatisticTable(this, id, x, y, width, height, columns, num_rows);
+    ctrl = new ctrlStatisticTable(this, id, x, y, width, height, num_columns, num_rows);
 
     return AddCtrl(id, ctrl);
 }

@@ -85,7 +85,7 @@ void dskEndStatistics::ShowOverview()
 
     main_categories.push_back(std::make_pair(_("Total"), false));
 
-    ctrlStatisticTable *table = AddStatisticTable(2, 25, 50, 750, 500, main_categories, num_players);
+    ctrlStatisticTable *table = AddStatisticTable(2, 25, 50, 750, 500, main_categories.size(), num_players);
 
     table->AddPlayerInfos(data->GetPlayerInfos());
 
@@ -95,7 +95,7 @@ void dskEndStatistics::ShowOverview()
         for (unsigned i = 0; i < num_players; ++i)
             points.push_back(data->CalcPointsForCategory((EndStatisticData::CategoryIndex)cat, i));
 
-        table->AddColumn(cat+1, points);
+        table->AddColumn(cat+1, data->GetCategories()[cat].title, true, "", points);
     }
 
 
@@ -103,7 +103,7 @@ void dskEndStatistics::ShowOverview()
     for (unsigned i = 0; i < num_players; ++i)
         total_points.push_back(data->CalcTotalPoints(i));
 
-    table->AddColumn(EndStatisticData::MAX_CATEGORIES + 2, total_points);
+    table->AddColumn(EndStatisticData::MAX_CATEGORIES + 2, _("Total"), false, "", total_points);
 
 }
 
@@ -120,13 +120,17 @@ void dskEndStatistics::ShowCategory(EndStatisticData::CategoryIndex cat)
     for (unsigned i = 0; i < value_indices.size(); ++i)
         categories.push_back(std::make_pair(data->GetValue(value_indices[i]).name, false));
 
-    ctrlStatisticTable *table = AddStatisticTable(2, 25, 50, 750, 500, categories, num_players);
+    ctrlStatisticTable *table = AddStatisticTable(2, 25, 50, 750, 500, value_indices.size() + 1, num_players);
 
     table->AddPlayerInfos(data->GetPlayerInfos());
 
     for (unsigned i = 0; i < value_indices.size(); ++i)
     {
-        table->AddColumn(i+1, data->GetValue(value_indices[i]).value_per_player);
+        table->AddColumn(i+1, 
+            data->GetValue(value_indices[i]).name, 
+            false, 
+            data->GetValue(value_indices[i]).description, 
+            data->GetValue(value_indices[i]).value_per_player);
     }
 }
 

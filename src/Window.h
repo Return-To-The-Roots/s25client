@@ -205,7 +205,7 @@ class Window
         /// fügt eine Tabelle hinzu.
         ctrlTable* AddTable(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned int columns, ...);
         /// fügt eine Statistik-Tabelle hinzu.
-        ctrlStatisticTable* AddStatisticTable(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const std::vector<std::pair<std::string,bool> >& column_titles, unsigned num_rows);
+        ctrlStatisticTable* AddStatisticTable(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned num_columns, unsigned num_rows);
         /// fügt ein TextCtrl hinzu.
         ctrlText* AddText(unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
         /// fügt einen Timer hinzu.

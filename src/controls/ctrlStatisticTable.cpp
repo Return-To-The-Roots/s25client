@@ -44,9 +44,9 @@ ctrlStatisticTable::ctrlStatisticTable(Window* parent,
                      unsigned short y,
                      unsigned short width,
                      unsigned short height, 
-                     const std::vector<Column>& column_titles,
+                     unsigned num_columns,
                      unsigned max_num_rows)
-    : Window(x, y, id, parent, width, height), _columns(column_titles), _max_num_rows(max_num_rows), _num_rows(0)
+    : Window(x, y, id, parent, width, height), _num_columns(num_columns), _max_num_rows(max_num_rows), _num_rows(0)
 {
     s.col_width = ScaleX(100);
     s.player_col_width = ScaleX(100);
@@ -54,32 +54,8 @@ ctrlStatisticTable::ctrlStatisticTable(Window* parent,
     s.x_start = s.player_col_width;
     s.y_start = 0;
 
-    s.x_grid = (width - s.player_col_width) / (column_titles.size() - 1);
+    s.x_grid = (width - s.player_col_width) / (num_columns - 1);
     s.y_grid = height / (8 + 1); // fix for now, TODO: add scrollbar
-
-    _fifty = 50;
-
-    for(unsigned short i = 0; i < _columns.size(); ++i)
-    {
-        // Button für die Spalte hinzufügen
-        if (_columns[i].is_button)
-        {
-            AddTextButton(i + 1, 
-                s.x_start + (i-1) * s.x_grid + (s.x_grid/2) - (s.col_width/2), 
-                0, 
-                s.col_width, 22, TC_GREY, _columns[i].title, NormalFont);
-        }
-        else
-        {
-            AddText(i + 1, 
-                (i == 0) ? (s.player_col_width/4) : (s.x_start + (i-1) * s.x_grid + (s.x_grid/2)), 
-                5, 
-                _columns[i].title, COLOR_YELLOW, (i == 0) ? glArchivItem_Font::DF_LEFT : glArchivItem_Font::DF_CENTER, NormalFont);
-        }
-    }
-
-
-
 }
 
 
@@ -102,6 +78,13 @@ void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::Play
 
     SetScale(false);
 
+    // Add column header
+    AddText(1, 
+        s.player_col_width/4, 
+        5, 
+        _("Player"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+
+
     for (unsigned i = 0; i < player_infos.size(); ++i)
     {
         unsigned id = 10 + i;
@@ -119,12 +102,35 @@ void ctrlStatisticTable::AddPlayerInfos(const std::vector<EndStatisticData::Play
     SetScale(true);
 }
 
-void ctrlStatisticTable::AddColumn(unsigned col_idx, const std::vector<unsigned> &points)
+void ctrlStatisticTable::AddColumn(unsigned col_idx, 
+    const std::string& title,
+    bool is_button,
+    const std::string& tooltip,
+    const std::vector<unsigned> &points)
 {
     assert(col_idx > 0);
     assert(points.size() == _max_num_rows);
 
     SetScale(false);
+
+    // Button/Title für die Spalte hinzufügen
+    if (is_button)
+    {
+        AddTextButton(col_idx + 1, 
+            s.x_start + (col_idx-1) * s.x_grid + (s.x_grid/2) - (s.col_width/2), 
+            0, 
+            s.col_width, 22, TC_GREY, title, NormalFont);
+    }
+    else
+    {
+        ctrlText *text = AddText(col_idx + 1, 
+            s.x_start + (col_idx-1) * s.x_grid + (s.x_grid/2), 
+            5, 
+            title, COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+
+        text->SetToolTipText(tooltip);
+    }
+    
 
     unsigned max_points = *std::max_element(points.begin(), points.end());
 
@@ -139,7 +145,7 @@ void ctrlStatisticTable::AddColumn(unsigned col_idx, const std::vector<unsigned>
         unsigned height_center_offset = ScaleY(40)/2 - (box_height/2) - 4; // TODO why 4?
 
         AddColorBar(id, 
-            s.x_start + (col_idx - 1) * s.x_grid + (s.x_grid/2) - (s.col_width/2),  //was: (col_idx+1)
+            s.x_start + (col_idx - 1) * s.x_grid + (s.x_grid/2) - (s.col_width/2),
             s.y_start + (i + 1) * s.y_grid - height_center_offset,
             s.col_width, box_height, 
             TC_GREY,
@@ -155,7 +161,7 @@ void ctrlStatisticTable::AddColumn(unsigned col_idx, const std::vector<unsigned>
 
         }
     }
-    _num_rows++;
+
     SetScale(true);
 }
 
@@ -184,7 +190,7 @@ bool ctrlStatisticTable::Draw_()
 
 void ctrlStatisticTable::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    if (ctrl_id > 1 && ctrl_id < _columns.size() + 1)
+    if (ctrl_id > 1 && ctrl_id < _num_columns + 1)
     {
         parent_->Msg_StatisticGroupChange(id_, ctrl_id - 1);
     }
