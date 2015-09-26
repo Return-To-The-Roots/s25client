@@ -228,7 +228,8 @@ class noFigure : public noMovable
 
         /// Examines the route (maybe harbor, road destroyed?) before start shipping
         /// Returns (maybe new) destination harbor ((0,0) if he doesn't go by ship)
-        MapPoint ExamineRouteBeforeShipping();
+        /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays on board
+        MapPoint ExamineRouteBeforeShipping(unsigned char& newDir);
 };
 
 #endif

@@ -1120,15 +1120,15 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
         }
         else //figure has a different goal
         {
-            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping();
-            unsigned char next_dir = (*it)->GetCurMoveDir();
+            unsigned char nextDir;
+            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir);
 
-            if (next_dir == 4)
+            if (nextDir == 4)
             {
                 AddLeavingFigure(*it);
                 (*it)->ShipJourneyEnded();
             }
-            else if (next_dir == SHIP_DIR)
+            else if (nextDir == SHIP_DIR)
             {
                 AddFigureForShip(*it, next_harbor);
             }
@@ -1430,10 +1430,10 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
     for(std::list<FigureForShip>::iterator it = figures_for_ships.begin();
             it != figures_for_ships.end();)
     {
-        it->dest = it->fig->ExamineRouteBeforeShipping();
-        unsigned char next_dir = it->fig->GetCurMoveDir();
+        unsigned char nextDir;
+        it->dest = it->fig->ExamineRouteBeforeShipping(nextDir);
 
-        if(next_dir == 0xff)
+        if(nextDir == 0xff)
         {
             // No route found!
             // I.E. insert the worker in this harbor
@@ -1441,7 +1441,7 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
             it = figures_for_ships.erase(it);
             AddFigure(fig, false);
         }
-        else if(next_dir != SHIP_DIR)
+        else if(nextDir != SHIP_DIR)
         {
             // Figure want to continue walking to its goal but not on ship anymore
             noFigure* fig = it->fig;

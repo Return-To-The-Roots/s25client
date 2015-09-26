@@ -614,7 +614,7 @@ void noFigure::HandleEvent(const unsigned int id)
     }
     else
     {
-        current_ev = 0;
+        current_ev = NULL;
         WalkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
@@ -1482,17 +1482,17 @@ void noFigure::ShipJourneyEnded()
 }
 
 /// Examines the route (maybe harbor, road destroyed?) before start shipping
-MapPoint noFigure::ExamineRouteBeforeShipping()
+MapPoint noFigure::ExamineRouteBeforeShipping(unsigned char& newDir)
 {
     MapPoint next_harbor;
     // Calc new route
-    unsigned char dir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal_, NULL, &next_harbor);
+    newDir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal_, NULL, &next_harbor);
 
-    if(dir == 0xff)
+    if(newDir == 0xff)
         Abrogate();
 
     // Going by ship?
-    if(dir == SHIP_DIR)
+    if(newDir == SHIP_DIR)
         // All ok, return next harbor (could be another one!)
         return next_harbor;
     else
