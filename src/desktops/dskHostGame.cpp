@@ -253,7 +253,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     switch(player.ps)
     {
         default:
-            name = "";
+            name.clear();
             break;
         case PS_OCCUPIED:
         case PS_KI:
@@ -400,8 +400,9 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
             if(player_id == GAMECLIENT.GetPlayerID())
             {
                 GAMECLIENT.Command_ToggleNation();
-                GAMECLIENT.GetLocalPlayer().nation = Nation((unsigned(GAMECLIENT.GetLocalPlayer().nation) + 1) % NAT_COUNT);
-                ChangeNation(GAMECLIENT.GetPlayerID(), GAMECLIENT.GetLocalPlayer().nation);
+                GameClientPlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+                localPlayer.nation = Nation((unsigned(localPlayer.nation) + 1) % NAT_COUNT);
+                ChangeNation(GAMECLIENT.GetPlayerID(), localPlayer.nation);
             }
         } break;
 

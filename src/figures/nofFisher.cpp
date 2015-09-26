@@ -121,8 +121,8 @@ void nofFisher::WorkStarted()
     for(unsigned char i = 0; i < 6; ++i)
     {
         fishing_dir = (i + doffset) % 6;
-        if(gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources > 0x80 &&
-                gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources < 0x90)
+        unsigned char neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources;
+        if(neighbourRes > 0x80 && neighbourRes < 0x90)
             break;
     }
 

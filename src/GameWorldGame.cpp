@@ -1538,7 +1538,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
             LUA_EventExplored(player, pt);
         }
 
-        GetNode(pt).fow[player].visibility = VIS_VISIBLE;
+        GetNode(pt).fow[player].visibility = VIS_VISIBLE; //-V807
 
         // Etwaige FOW-Objekte zerstören
         delete GetNode(pt).fow[player].object;

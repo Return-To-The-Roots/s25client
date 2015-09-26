@@ -291,8 +291,9 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
 bool nofGeologist::IsNodeGood(const MapPoint pt)
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
-    if(!gwg->IsNodeForFigures(pt) || gwg->GetNO(pt)->GetGOT() == GOT_SIGN
-            || gwg->GetNO(pt)->GetType() == NOP_FLAG || gwg->GetNO(pt)->GetType() == NOP_TREE)
+    const noBase& obj = *gwg->GetNO(pt);
+    if(!gwg->IsNodeForFigures(pt) || obj.GetGOT() == GOT_SIGN
+            || obj.GetType() == NOP_FLAG || obj.GetType() == NOP_TREE)
         return false;
 
     return true;

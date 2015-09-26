@@ -363,7 +363,8 @@ void nofBuildingWorker::LostWork()
 bool nofBuildingWorker::GetResources(unsigned char type)
 {
     //this makes granite mines work everywhere
-    if (type == 0 && GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES))
+    const GlobalGameSettings& settings = GAMECLIENT.GetGGS();
+    if (type == 0 && settings.isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES))
         return true;
     // in Map-Resource-Koordinaten konvertieren
     type = RESOURCES_MINE_TO_MAP[type];
@@ -397,8 +398,8 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     if(found)
     {
         // Minen / Brunnen unerschöpflich?
-        if( (type == 4 && GAMECLIENT.GetGGS().isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
-                (type != 4 && !GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
+        if( (type == 4 && settings.isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
+                (type != 4 && !settings.isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
             --gwg->GetNode(mP).resources;
         return true;
     }

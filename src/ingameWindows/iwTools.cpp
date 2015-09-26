@@ -156,7 +156,7 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         else
         {
             // inc
-            if ( (GAMECLIENT.GetLocalPlayer().tools_ordered[tool] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool]) < 100 )
+            if ( (GAMECLIENT.GetLocalPlayer().tools_ordered[tool] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool]) < 100 ) //-V807
             {
                 ++GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool];
                 settings_changed = true;

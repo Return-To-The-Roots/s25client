@@ -145,27 +145,28 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 7: // "Verbinden"
         {
-            ctrlEdit* host = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+            ctrlEdit* edtHost = GetCtrl<ctrlEdit>(1);
+            ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
+            ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
 
-            if(atoi(port->GetText().c_str()) <= 0 || atoi(port->GetText().c_str()) >= 65535 || atoi(port->GetText().c_str()) == 3664)
+            int iPort = atoi(edtPort->GetText().c_str());
+            if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
             {
                 SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);
-                host->SetFocus(false);
-                port->SetFocus(true);
-                pass->SetFocus(false);
+                edtHost->SetFocus(false);
+                edtPort->SetFocus(true);
+                edtPw->SetFocus(false);
                 break;
             }
 
             // einstellung speichern
-            SETTINGS.server.last_ip = host->GetText();
+            SETTINGS.server.last_ip = edtHost->GetText();
 
             // Text auf "Verbinde mit Host..." setzen und Button deaktivieren
             SetText( _("Connecting with Host..."), COLOR_RED, false);
 
             GAMECLIENT.Stop();
-            if(!GAMECLIENT.Connect(host->GetText(), pass->GetText(), server_type, (unsigned short)atoi(port->GetText().c_str()), false, SETTINGS.server.ipv6))
+            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, static_cast<unsigned short>(iPort), false, SETTINGS.server.ipv6))
             {
                 // Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
                 SetText( _("Connection failed!"), COLOR_RED, true);

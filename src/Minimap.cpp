@@ -236,7 +236,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             owner = gwv.GetNode(pt).fow[GAMECLIENT.GetPlayerID()].owner;
 
         // Baum an dieser Stelle?
-        if((!fow && gwv.GetNO(pt)->GetGOT() == GOT_TREE) || (fow && gwv.GetFOWObject(pt, viewing_player)->GetType() == FOW_TREE))
+        if((!fow && gwv.GetNO(pt)->GetGOT() == GOT_TREE) || (fow && gwv.GetFOWObject(pt, viewing_player)->GetType() == FOW_TREE)) //-V807
         {
             color = VaryBrightness(TREE_COLOR, VARY_TREE_COLOR);
             drawn_object = DO_TERRAIN;
@@ -321,7 +321,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
  */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
-    unsigned color = TerrainData::GetColor(gwv.GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2);
+    unsigned color = TerrainData::GetColor(gwv.GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2); //-V807
 
     // Schattierung
     int shadow = gwv.GetNode(pt).shadow;

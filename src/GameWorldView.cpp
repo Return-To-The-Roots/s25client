@@ -92,7 +92,8 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
     glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
 
-    gwv->GetTerrainRenderer()->Draw(*this, water);
+    TerrainRenderer& terrainRenderer = *gwv->GetTerrainRenderer();
+    terrainRenderer.Draw(*this, water);
 
     glTranslatef((GLfloat) pos.x, (GLfloat) pos.y, 0.0f);
 
@@ -108,7 +109,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         for(int x = firstPt.x; x < lastPt.x; ++x)
         {
             Point<int> curOffset;
-            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(Point<int>(x, y), &curOffset);
+            MapPoint t = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
             Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
             if(std::abs(VIDEODRIVER.GetMouseX() - curPos.x) + std::abs(VIDEODRIVER.GetMouseY() - curPos.y) < shortest_len)
@@ -174,7 +175,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 ////////////////////////////////////////////////
 
                 //Construction aid mode
-                if(show_bq && gwv->GetNode(t).bq && gwv->GetNode(t).bq < 7)
+                if(show_bq && gwv->GetNode(t).bq && gwv->GetNode(t).bq < 7) //-V807
                 {
                     BuildingQuality bq = gwv->GetNode(t).bq;
                     glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
@@ -222,7 +223,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 {
                     if (d_what == 1)
                     {
-                        if(ai->GetAINode(t).bq && ai->GetAINode(t).bq  < 7)
+                        if(ai->GetAINode(t).bq && ai->GetAINode(t).bq  < 7) //-V807
                             LOADER.GetMapImageN(49 + ai->GetAINode(t).bq)->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     }
                     else if (d_what == 2)
@@ -262,7 +263,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             {
                 // Coordinate transform
                 Point<int> curOffset;
-                MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(Point<int>(x, y), &curOffset);
+                MapPoint t = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
                 Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
                 // Name bzw Produktivität anzeigen
@@ -385,7 +386,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         {
             // Coordinates transform
             Point<int> curOffset;
-            MapPoint t = gwv->GetTerrainRenderer()->ConvertCoords(Point<int>(x, y), &curOffset);
+            MapPoint t = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
             Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
 
             /// Current point indicated by Mouse

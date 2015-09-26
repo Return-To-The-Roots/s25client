@@ -72,7 +72,7 @@ void ctrlEdit::SetText(const std::string& text)
     cursorPos_ = 0;
     viewStart_ = 0;
 
-    this->text_ = L"";
+    text_.clear();
 
     for(unsigned i = 0; i < unsigned(text.length()); ++i)
         AddChar(text.at(i));
@@ -86,13 +86,13 @@ void ctrlEdit::SetText(const unsigned int text)
     cursorPos_ = 0;
     viewStart_ = 0;
 
-    this->text_ = L"";
+    text_.clear();
 
     for(unsigned i = 0; i < unsigned(textt.str().length()); ++i)
         AddChar(textt.str().at(i));
 }
 
-const std::string ctrlEdit::GetText(void) const
+std::string ctrlEdit::GetText(void) const
 {
     std::string t;
     for(unsigned int i = 0; i < text_.length(); ++i)

@@ -73,10 +73,7 @@ Loader::Loader(void) : lastgfx(0xFF), stp(NULL)
  */
 Loader::~Loader(void)
 {
-    if (stp)
-    {
-        delete stp;
-    }
+    delete stp;
     ClearTerrainTextures();
 }
 
@@ -536,11 +533,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
 void Loader::fillCaches()
 {
-    if (stp)
-    {
-        delete stp;
-    }
-
+    delete stp;
     stp = new glSmartTexturePacker();
 
 // Animals

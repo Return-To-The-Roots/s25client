@@ -239,19 +239,19 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) cons
         // Then check if team members have a better (="younger", see our economy) fow object
         for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         {
-            if(GAMECLIENT.GetPlayer(i).IsAlly(local_player))
+            if(!GAMECLIENT.GetPlayer(i).IsAlly(local_player))
+                continue;
+            // Has the player FOW at this point at all?
+            const MapNode::FoWData& name = GetNode(pos).fow[i];
+            if(name.visibility == VIS_FOW)
             {
-                // Has the player FOW at this point at all?
-                if(GetNode(pos).fow[i].visibility == VIS_FOW)
+                // Younger than the youngest or no object at all?
+                if(name.last_update_time > youngest_time)
                 {
-                    // Younger than the youngest or no object at all?
-                    if(GetNode(pos).fow[i].last_update_time > youngest_time)
-                    {
-                        // Then take it
-                        youngest_time = GetNode(pos).fow[i].last_update_time;
-                        // And remember its owner
-                        youngest_player = i;
-                    }
+                    // Then take it
+                    youngest_time = name.last_update_time;
+                    // And remember its owner
+                    youngest_player = i;
                 }
             }
         }

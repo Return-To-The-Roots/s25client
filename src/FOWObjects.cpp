@@ -229,10 +229,11 @@ void fowFlag::Serialize(SerializedGameData* sgd) const
 
 void fowFlag::Draw(int x, int y) const
 {
+    GameClientPlayer& owner = GAMECLIENT.GetPlayer(player);
     // Flagge
-    LOADER.GetNationImageN(GAMECLIENT.GetPlayer(player).nation, 100 + flag_type * 20)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(COLORS[GAMECLIENT.GetPlayer(player).color]));
+    LOADER.GetNationImageN(owner.nation, 100 + flag_type * 20)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(COLORS[owner.color]));
     // Schatten
-    LOADER.GetNationImageN(GAMECLIENT.GetPlayer(player).nation, 100 + flag_type * 20 + 10)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetNationImageN(owner.nation, 100 + flag_type * 20 + 10)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

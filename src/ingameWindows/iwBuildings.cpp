@@ -132,7 +132,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 {	
 	//no buildings of type complete? -> do nothing
 	BuildingCount bc;
-	GAMECLIENT.GetLocalPlayer().GetBuildingCount(bc);	
+	GAMECLIENT.GetLocalPlayer().GetBuildingCount(bc);//-V807
 	if(bc.building_counts[bts[ctrl_id]] < 1)
 		return;
 

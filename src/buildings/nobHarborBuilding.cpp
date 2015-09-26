@@ -152,21 +152,23 @@ void nobHarborBuilding::Destroy()
     // Leute, die noch aufs Schiff warten, rausschicken
     for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
-        gwg->AddFigure(it->fig, pos);
+        noFigure* figure = it->fig;
+        gwg->AddFigure(figure, pos);
 
-        it->fig->Abrogate();
-        it->fig->StartWandering();
-        it->fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+        figure->Abrogate();
+        figure->StartWandering();
+        figure->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
     }
     figures_for_ships.clear();
 
     for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
     {
-        gwg->AddFigure(it->attacker, pos);
+        nofAttacker* soldier = it->attacker;
+        gwg->AddFigure(soldier, pos);
 
-        it->attacker->CancelAtHomeMilitaryBuilding();
-        it->attacker->StartWandering();
-        it->attacker->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+        soldier->CancelAtHomeMilitaryBuilding();
+        soldier->StartWandering();
+        soldier->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
     }
     soldiers_for_ships.clear();
 

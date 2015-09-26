@@ -44,15 +44,16 @@ static char THIS_FILE[] = __FILE__;
  */
 void Languages::loadLanguages()
 {
-    unsigned int count = LOADER.GetInfoN("lang")->size();
+    libsiedler2::ArchivInfo& langInfo = *LOADER.GetInfoN("lang");
+    unsigned int count = langInfo.size();
 
     // abrunden
     count -= (count % 2);
 
     for(unsigned int i = 0; i < count; i += 2)
     {
-        libsiedler2::ArchivItem_Text* n = dynamic_cast<libsiedler2::ArchivItem_Text*>(LOADER.GetInfoN("lang")->get(i));
-        libsiedler2::ArchivItem_Text* c = dynamic_cast<libsiedler2::ArchivItem_Text*>(LOADER.GetInfoN("lang")->get(i + 1));
+        libsiedler2::ArchivItem_Text* n = dynamic_cast<libsiedler2::ArchivItem_Text*>(langInfo.get(i));
+        libsiedler2::ArchivItem_Text* c = dynamic_cast<libsiedler2::ArchivItem_Text*>(langInfo.get(i + 1));
 
         if(!n)
             continue;
@@ -115,7 +116,7 @@ unsigned int Languages::getCount(void)
  */
 void Languages::setLanguage(const std::string& lang_code)
 {
-    SETTINGS.language.language = lang_code;
+    SETTINGS.language.language = lang_code; //-V807
 
     std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
     if(SETTINGS.language.language.length() == 0)

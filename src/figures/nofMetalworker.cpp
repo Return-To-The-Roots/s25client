@@ -135,18 +135,19 @@ GoodType nofMetalworker::GetOrderedTool()
     int prio = -1;
     int tool = -1;
 
+    GameClientPlayer& owner = gwg->GetPlayer(player);
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        if (gwg->GetPlayer(player).tools_ordered[i] > 0 && (gwg->GetPlayer(player).toolsSettings_[i] > prio) )
+        if (owner.tools_ordered[i] > 0 && (owner.toolsSettings_[i] > prio) )
         {
-            prio = gwg->GetPlayer(player).toolsSettings_[i];
+            prio = owner.toolsSettings_[i];
             tool = i;
         }
     }
 
     if (tool != -1)
     {
-        --gwg->GetPlayer(player).tools_ordered[tool];
+        --owner.tools_ordered[tool];
 
         if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
         {

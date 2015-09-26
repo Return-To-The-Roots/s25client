@@ -559,13 +559,14 @@ void GameClientPlayer::RoadDestroyed()
 			(*it)->RecalcRoute();			
 			//special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and drop
 			//it off at the goal was just destroyed? -> try to pick another flip route or tell the goal about failure.
-			if((*it)->goal && (*it)->GetNextDir()==1 && (*it)->GetLocation()->GetX()==(*it)->goal->GetFlag()->GetX() && (*it)->GetLocation()->GetY()==(*it)->goal->GetFlag()->GetY() && (((*it)->goal->GetBuildingType()!=BLD_STOREHOUSE && (*it)->goal->GetBuildingType()!=BLD_HEADQUARTERS && (*it)->goal->GetBuildingType()!=BLD_HARBORBUILDING) || (*it)->goal->GetType()==NOP_BUILDINGSITE))
+            noRoadNode& wareLocation = *(*it)->GetLocation();
+			if((*it)->goal && (*it)->GetNextDir()==1 && wareLocation.GetPos() == (*it)->goal->GetFlag()->GetPos() && (((*it)->goal->GetBuildingType()!=BLD_STOREHOUSE && (*it)->goal->GetBuildingType()!=BLD_HEADQUARTERS && (*it)->goal->GetBuildingType()!=BLD_HARBORBUILDING) || (*it)->goal->GetType()==NOP_BUILDINGSITE))
 			{
 				//LOG.lprintf("road destroyed special at %i,%i gf: %u \n", (*it)->GetLocation()->GetX(),(*it)->GetLocation()->GetY(),GAMECLIENT.GetGFNumber());
 				unsigned gotfliproute=1;
 				for(unsigned i=2;i<7;i++)
 				{
-					if((*it)->GetLocation()->routes[i%6])
+					if(wareLocation.routes[i%6])
 					{
 						gotfliproute=i;
 						break;
@@ -578,11 +579,11 @@ void GameClientPlayer::RoadDestroyed()
 				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
 				{
 					(*it)->NotifyGoalAboutLostWare();
-					nobBaseWarehouse* wh = gwg->GetPlayer((*it)->GetLocation()->GetPlayer()).FindWarehouse((*it)->GetLocation(), FW::Condition_StoreWare, 0, true, &(*it)->type, true);
+					nobBaseWarehouse* wh = gwg->GetPlayer(wareLocation.GetPlayer()).FindWarehouse(&wareLocation, FW::Condition_StoreWare, 0, true, &(*it)->type, true);
 					if(wh)
 					{
 						(*it)->goal = wh;
-						(*it)->SetNextDir(gwg->FindPathForWareOnRoads((*it)->GetLocation(), (*it)->goal, NULL, &(*it)->next_harbor));
+						(*it)->SetNextDir(gwg->FindPathForWareOnRoads(&wareLocation, (*it)->goal, NULL, &(*it)->next_harbor));
 						wh->TakeWare((*it));
 					}
 					else
@@ -595,7 +596,7 @@ void GameClientPlayer::RoadDestroyed()
 
 			// notify carriers/flags about news if there are any
 			if((*it)->GetNextDir() != 0xFF && (*it)->GetNextDir()!=last_next_dir)
-				(*it)->GetLocation()->routes[(*it)->GetNextDir()]->AddWareJob((*it)->GetLocation());
+				wareLocation.routes[(*it)->GetNextDir()]->AddWareJob(&wareLocation);
 			//if the next direction changed: notify current flag that transport in the old direction might not longer be required
 			if((*it)->GetNextDir()!=last_next_dir)
 				(*it)->RemoveWareJobForCurrentDir(last_next_dir);
@@ -2380,7 +2381,7 @@ void GameClientPlayer::TestPacts()
 bool GameClientPlayer::CanBuildCatapult() const
 {
     // Wenn ADDON_LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-    if(!GAMECLIENT.GetGGS().isEnabled(ADDON_LIMIT_CATAPULTS))
+    if(!GAMECLIENT.GetGGS().isEnabled(ADDON_LIMIT_CATAPULTS)) //-V807
         return true;
 
     BuildingCount bc;

@@ -78,7 +78,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     CreditsEntry entry = CreditsEntry();
     entry.title = "Florian Doersch (FloSoft):";
     entry.picId = 1;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Project management")));
     entry.lines.push_back(CreditsEntry::Line(_("Server management")));
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));
@@ -91,7 +91,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Oliver Siebert (Oliverr):";
     entry.picId = 4;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Project management")));
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));
     entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
@@ -101,7 +101,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Stefan Schüchl (Z-Stef):";
     entry.picId = 6;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
     entry.lines.push_back(CreditsEntry::Line(_("Website Programming")));
 
@@ -110,7 +110,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Patrick Haak (Demophobie):";
     entry.picId = 0;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
     entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
 
@@ -119,7 +119,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Jonas Trampe (NastX):";
     entry.picId = 3;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
     entry.lines.push_back(CreditsEntry::Line(_("Mapping")));
 
@@ -128,7 +128,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Jan-Henrik Kluth (jh):";
     entry.picId = 2;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));
     entry.lines.push_back(CreditsEntry::Line(_("Artificial Intelligence (AI)")));
 
@@ -137,7 +137,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Christopher Kuehnel (Spikeone):";
     entry.picId = 5;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Additional graphics")));
     entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
     entry.lines.push_back(CreditsEntry::Line(_("Mapping")));
@@ -147,7 +147,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Marcus Ströbel (Maqs):";
     entry.picId = -1;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));
     entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
 
@@ -156,7 +156,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = "Alex Grund (Flamefire):";
     entry.picId = -1;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line(_("Programming")));
     entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
 
@@ -165,7 +165,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = _("Additional Programming:");
     entry.picId = -1;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line("Siegfried Oleg Pammer (siegi44)"));
     entry.lines.push_back(CreditsEntry::Line("Lienhart Woitok (liwo)"));
     entry.lines.push_back(CreditsEntry::Line("Christoph Erhardt (Airhardt)"));
@@ -179,7 +179,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = _("Additional Graphics:");
     entry.picId = -1;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line("Marcus Bullin (Parasit)"));
 
     this->entries.push_back(entry);
@@ -187,7 +187,7 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     entry.title = _("Other Support:");
     entry.picId = -1;
-    entry.lastLine = "";
+    entry.lastLine.clear();
     entry.lines.push_back(CreditsEntry::Line("muhahahaha"));
     entry.lines.push_back(CreditsEntry::Line("Sotham"));
     entry.lines.push_back(CreditsEntry::Line("Fenan"));

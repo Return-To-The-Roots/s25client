@@ -91,9 +91,9 @@ void GameServer::ServerConfig::Clear()
 {
     servertype = 0;
     playercount = 0;
-    gamename = "";
-    password = "";
-    mapname = "";
+    gamename.clear();
+    password.clear();
+    mapname.clear();
     port = 0;
 }
 GameServer::MapInfo::MapInfo()
@@ -107,7 +107,7 @@ void GameServer::MapInfo::Clear()
     ziplength = 0;
     length = 0;
     checksum = 0;
-    name = "";
+    name.clear();
     delete [] zipdata;
     zipdata = 0;
     map_type = MAPTYPE_OLDMAP;
@@ -1733,26 +1733,27 @@ void GameServer::SetAIName(const unsigned player_id)
 {
     // Baby mit einem Namen Taufen ("Name (KI)")
     char str[128];
-    if (players[player_id].aiInfo.type == AI::DUMMY)
+    GameServerPlayer& player = players[player_id];
+    if (player.aiInfo.type == AI::DUMMY)
         sprintf(str, _("Dummy %u"), unsigned(player_id));
     else
         sprintf(str, _("Computer %u"), unsigned(player_id));
 
-    players[player_id].name = str;
-    players[player_id].name += _(" (AI)");
+    player.name = str;
+    player.name += _(" (AI)");
 
-    if (players[player_id].aiInfo.type == AI::DEFAULT)
+    if (player.aiInfo.type == AI::DEFAULT)
     {
-        switch(players[player_id].aiInfo.level)
+        switch(player.aiInfo.level)
         {
         case AI::EASY:
-            players[player_id].name += _(" (easy)");
+            player.name += _(" (easy)");
             break;
         case AI::MEDIUM:
-            players[player_id].name += _(" (medium)");
+            player.name += _(" (medium)");
             break;
         case AI::HARD:
-            players[player_id].name += _(" (hard)");
+            player.name += _(" (hard)");
             break;
         }
     }

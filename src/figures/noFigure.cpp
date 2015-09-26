@@ -676,7 +676,7 @@ void noFigure::GoHome(noRoadNode* goal)
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == 0)
         {
-            assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ ||
+            assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
                    gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
                    || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 

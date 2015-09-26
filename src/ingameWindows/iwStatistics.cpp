@@ -275,13 +275,14 @@ void iwStatistics::Msg_PaintAfter()
     unsigned pos = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        if (!(GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED))
+        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        if (!(player.ps == PS_KI || player.ps == PS_OCCUPIED))
         {
             continue;
         }
         if (activePlayers[i])
         {
-            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[GAMECLIENT.GetPlayer(i).color]);
+            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[player.color]);
         }
         pos++;
     }
@@ -326,7 +327,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
             {
                 max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }
-            if (SETTINGS.ingame.scale_statistics && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
+            if (SETTINGS.ingame.scale_statistics && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) //-V807
             {
                 min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }

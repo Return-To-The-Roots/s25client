@@ -70,11 +70,11 @@ static char THIS_FILE[] = __FILE__;
  */
 void GameClient::ClientConfig::Clear()
 {
-    server = "";
-    gamename = "";
-    password = "";
-    mapfile = "";
-    mapfilepath = "";
+    server.clear();
+    gamename.clear();
+    password.clear();
+    mapfile.clear();
+    mapfilepath.clear();
     servertyp = 0;
     port = 0;
     host = false;
@@ -93,7 +93,7 @@ void GameClient::MapInfo::Clear()
     ziplength = 0;
     length = 0;
     checksum = 0;
-    title = "";
+    title.clear();
     delete [] zipdata;
     zipdata = 0;
 }
@@ -140,7 +140,7 @@ void GameClient::ReplayInfo::Clear()
     async = 0;
     end = false;
     next_gf = 0;
-    filename = "";
+    filename.clear();
     all_visible = false;
 }
 
@@ -201,7 +201,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     clientconfig.host = host;
 
     // Verbinden
-    if(!socket.Connect(server.c_str(), port, use_ipv6, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port))
+    if(!socket.Connect(server.c_str(), port, use_ipv6, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port)) //-V807
     {
         LOG.lprintf("GameClient::Connect: ERROR: Connect failed!\n");
         return false;
@@ -1057,8 +1057,7 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     temp_ui = 0;
     temp_ul = 0;
 
-    if(mapinfo.zipdata)
-        delete[] mapinfo.zipdata;
+    delete[] mapinfo.zipdata;
     mapinfo.zipdata = new unsigned char[mapinfo.ziplength + 1];
 }
 

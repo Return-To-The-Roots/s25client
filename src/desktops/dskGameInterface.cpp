@@ -376,8 +376,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         iwAction::Tabs action_tabs;
 
-        MapPoint cSel = gwv->GetSel();
-
+        const MapPoint cSel = gwv->GetSel();
 
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = gwv->GetShip(cSel, GAMECLIENT.GetPlayerID()))
@@ -387,9 +386,10 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         }
 
         // Evtl ists nen Haus? (unser Haus)
-        if(gwv->GetNO(cSel)->GetType() == NOP_BUILDING   && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
+        const noBase& selObj = *gwv->GetNO(cSel);
+        if(selObj.GetType() == NOP_BUILDING   && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
         {
-            BuildingType bt = static_cast<noBuilding*>(gwv->GetNO(cSel))->GetBuildingType();
+            BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwv->GetSpecObj<nobHQ>(cselx,csely)));
@@ -409,25 +409,24 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         }
 
         // oder vielleicht eine Baustelle?
-        else if(gwv->GetNO(cSel)->GetType() == NOP_BUILDINGSITE && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
+        else if(selObj.GetType() == NOP_BUILDINGSITE && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
         {
             WINDOWMANAGER.Show(new iwBuildingSite(gwv, gwv->GetSpecObj<noBuildingSite>(cSel)));
             return true;
-
         }
-
 
         action_tabs.watch = true;
         // Unser Land
-        if(gwv->GetNode(cSel).owner == GAMECLIENT.GetPlayerID() + 1)
+        MapNode& selNode = gwv->GetNode(cSel);
+        if(selNode.owner == GAMECLIENT.GetPlayerID() + 1)
         {
             // Kann hier was gebaut werden?
-            if(gwv->GetNode(gwv->GetSel()).bq >= BQ_HUT)
+            if(selNode.bq >= BQ_HUT)
             {
                 action_tabs.build = true;
 
                 // Welches Gebäude kann gebaut werden?
-                switch(gwv->GetNode(gwv->GetSel()).bq)
+                switch(selNode.bq)
                 {
                     case BQ_HUT: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
                     case BQ_HOUSE: action_tabs.build_tabs = iwAction::Tabs::BT_HOUSE; break;
@@ -444,12 +443,10 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 // Militärgebäude gebaut werden
                 enable_military_buildings = !gwv->IsMilitaryBuildingNearNode(cSel, GAMECLIENT.GetPlayerID());
             }
-            else if(gwv->GetNode(gwv->GetSel()).bq == BQ_FLAG)
+            else if(selNode.bq == BQ_FLAG)
                 action_tabs.setflag = true;
 
-
-
-            if(gwv->GetNO(cSel)->GetType() == NOP_FLAG)
+            if(selObj.GetType() == NOP_FLAG)
                 action_tabs.flag = true;
 
             // Prüfen, ob irgendwo Straßen anliegen
@@ -459,14 +456,14 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     roads = true;
 
             if( (roads) && !(
-                        gwv->GetNO(cSel)->GetType() == NOP_FLAG ||
-                        gwv->GetNO(cSel)->GetType() == NOP_BUILDING) )
+                        selObj.GetType() == NOP_FLAG ||
+                        selObj.GetType() == NOP_BUILDING) )
                 action_tabs.cutroad = true;
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
         else if(gwv->GetVisibility(cSel) == VIS_VISIBLE)
         {
-            if(gwv->GetNO(cSel)->GetType() == NOP_BUILDING)
+            if(selObj.GetType() == NOP_BUILDING)
             {
                 noBuilding* building = gwv->GetSpecObj<noBuilding>(cSel);
                 BuildingType bt = building->GetBuildingType();
@@ -496,7 +493,6 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             }
         }
 
-
         // Bisheriges Actionfenster schließen, falls es eins gab
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         WINDOWMANAGER.Close(actionwindow);
@@ -505,7 +501,6 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         ShowActionWindow(action_tabs, cSel, mc.x, mc.y, enable_military_buildings);
 
         selected = cSel;
-
     }
 
     return true;

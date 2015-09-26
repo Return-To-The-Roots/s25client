@@ -258,10 +258,11 @@ void GameWorldBase::Unload()
 
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
-            if(nodes[i].fow[z].object)
+            MapNode::FoWData& fow = nodes[i].fow[z];
+            if(fow.object)
             {
-                delete nodes[i].fow[z].object;
-                nodes[i].fow[z].object = NULL;
+                delete fow.object;
+                fow.object = NULL;
             }
         }
     }
@@ -2477,13 +2478,14 @@ int GameWorldBase::LUA_AddStaticObject(lua_State *L)
         }
     }
     
-    if (gwg->GetNode(pt).obj && (gwg->GetNode(pt).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(pt).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(pt).obj->GetGOT() != GOT_ENVOBJECT))
+    MapNode& node = gwg->GetNode(pt);
+    if (node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
     
-    gwg->GetNode(pt).obj = new noStaticObject(pt, id, file, size);
+    node.obj = new noStaticObject(pt, id, file, size);
     gwg->RecalcBQAroundPoint(pt);
        
     lua_pushnumber(L, 1);
@@ -2520,13 +2522,14 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
         file = (unsigned) luaL_checknumber(L, 4);
     }
     
-    if (gwg->GetNode(pt).obj && (gwg->GetNode(pt).obj->GetGOT() != GOT_NOTHING) && (gwg->GetNode(pt).obj->GetGOT() != GOT_STATICOBJECT) && (gwg->GetNode(pt).obj->GetGOT() != GOT_ENVOBJECT))
+    MapNode& node = gwg->GetNode(pt);
+    if (node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
     
-    gwg->GetNode(pt).obj = new noEnvObject(pt, id, file);
+    node.obj = new noEnvObject(pt, id, file);
     gwg->RecalcBQAroundPoint(pt);   
     
     lua_pushnumber(L, 1);

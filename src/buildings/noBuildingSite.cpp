@@ -91,16 +91,15 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
       build_progress(0)
 {
     builder = new nofBuilder(pos, player, this);
+    GameClientPlayer& owner = gwg->GetPlayer(player);
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
-    gwg->GetPlayer(player).AddBuildingSite(this);
+    owner.AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
     gwg->AddFigure(builder, pos);
 
     // Baumaterialien in der Inventur verbuchen
-    gwg->GetPlayer(player).DecreaseInventoryWare(GD_BOARDS, boards);
-    gwg->GetPlayer(player).DecreaseInventoryWare(GD_STONES, stones);
-
-
+    owner.DecreaseInventoryWare(GD_BOARDS, boards);
+    owner.DecreaseInventoryWare(GD_STONES, stones);
 }
 
 noBuildingSite::~noBuildingSite()

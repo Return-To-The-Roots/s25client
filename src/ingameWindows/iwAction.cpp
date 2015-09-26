@@ -204,7 +204,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         }
 
         // Catapult
-        if (!GAMECLIENT.GetLocalPlayer().CanBuildCatapult())
+        if (!GAMECLIENT.GetLocalPlayer().CanBuildCatapult()) //-V807
             building_available[1][12] = false;
 
         // Charburner

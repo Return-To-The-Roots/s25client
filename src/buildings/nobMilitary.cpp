@@ -457,7 +457,8 @@ void nobMilitary::RegulateTroops()
         // Zuerst die bestellten Soldaten wegschicken
         // Weak ones first
         std::vector<nofPassiveSoldier*> notNeededSoldiers;
-        if (gwg->GetPlayer(player).militarySettings_[1] > MILITARY_SETTINGS_SCALE[1] / 2)
+        GameClientPlayer& owner = gwg->GetPlayer(player);
+        if (owner.militarySettings_[1] > MILITARY_SETTINGS_SCALE[1] / 2)
         {
             for(SortedTroops::iterator it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
             {
@@ -482,11 +483,11 @@ void nobMilitary::RegulateTroops()
         }
 
         // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(gwg->GetPlayer(player).FindWarehouse(this, FW::NoCondition, 0, true, 0, false))
+        if(owner.FindWarehouse(this, FW::NoCondition, 0, true, 0, false))
         {
             // Dann den Rest (einer muss immer noch drinbleiben!)
             // erst die schwachen Soldaten raus
-            if (gwg->GetPlayer(player).militarySettings_[1] > MILITARY_SETTINGS_SCALE[1] / 2)
+            if (owner.militarySettings_[1] > MILITARY_SETTINGS_SCALE[1] / 2)
             {
                 for(SortedTroops::iterator it = troops.begin(); diff && troops.size() > 1; ++diff)
                 {

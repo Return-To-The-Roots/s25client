@@ -256,7 +256,7 @@ void MusicPlayer::PlayNext()
     std::string song = list.getNextSong();
 
     // Am Ende der Liste angekommen?
-    if(song == "")
+    if(song.empty())
     {
         Stop();
         return;

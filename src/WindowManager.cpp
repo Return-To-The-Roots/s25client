@@ -69,13 +69,10 @@ void WindowManager::CleanUp()
         delete (*it);
     windows.clear();
 
-    if(curDesktop)
-        delete curDesktop;
+    delete curDesktop;
     curDesktop = NULL;
-    if(nextdesktop)
-        delete nextdesktop;
+    delete nextdesktop;
     nextdesktop = NULL;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -454,13 +451,14 @@ void WindowManager::Msg_LeftUp(const MouseCoords& mc)
         else if(windows.back())
         {
             // ja, dann Msg_LeftUp aufrufen
-            windows.back()->Msg_LeftUp(mc);
+            IngameWindow& activeWnd = *windows.back();
+            activeWnd.Msg_LeftUp(mc);
 
             // und den anderen Fenstern auch Bescheid geben
-            windows.back()->RelayMouseMessage(&Window::Msg_LeftUp, mc);
+            activeWnd.RelayMouseMessage(&Window::Msg_LeftUp, mc);
 
             // und noch MouseLeftUp vom Fenster aufrufen
-            windows.back()->MouseLeftUp(mc);
+            activeWnd.MouseLeftUp(mc);
         }
     }
 
@@ -644,14 +642,15 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         // und raus
         return;
     }
-    if(windows.back()->GetModal())
+    IngameWindow& activeWnd = *windows.back();
+    if(activeWnd.GetModal())
     {
-        windows.back()->Msg_WheelDown(mc);
-        windows.back()->RelayMouseMessage(&Window::Msg_WheelDown, mc);
+        activeWnd.Msg_WheelDown(mc);
+        activeWnd.RelayMouseMessage(&Window::Msg_WheelDown, mc);
         return;
     }
     IngameWindow* foundWindow = FindWindowUnderMouse(mc);
-    windows.back()->SetActive(false);
+    activeWnd.SetActive(false);
 
     if(foundWindow)
     {
@@ -698,14 +697,15 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
         }
         else if(!windows.empty())
         {
+            IngameWindow& activeWnd = *windows.back();
             // und MouseMove vom Fenster aufrufen
-            windows.back()->MouseMove(mc);
+            activeWnd.MouseMove(mc);
 
             // ja, dann Msg_MouseMove aufrufen
-            windows.back()->Msg_MouseMove(mc);
+            activeWnd.Msg_MouseMove(mc);
 
             // und alles drunter auch benachrichtigen
-            windows.back()->RelayMouseMessage(&Window::Msg_MouseMove, mc);
+            activeWnd.RelayMouseMessage(&Window::Msg_MouseMove, mc);
         }
     }
 }
@@ -815,7 +815,7 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     sr.newWidth  = screenWidth  = (width < 800 ? 800 : width);
     sr.newHeight = screenHeight = (height < 600 ? 600 : height);
 
-    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
+    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen(); //-V807
     // Wenn es absolut nicht anders geht, lassen wir im temporï¿½r doch
     // kleiner als 800x600 zu, abspeichern tun wir die aber nie.
     if(!SETTINGS.video.fullscreen)

@@ -46,7 +46,7 @@ iwBuildOrder::iwBuildOrder(void)
 
     // Liste füllen
     for(unsigned char i = 0; i < 31; ++i)
-        list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]));
+        list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]])); //-V807
 
     // Nach ganz oben
     AddImageButton(1, 250, 194, 48, 20, TC_GREY, LOADER.GetImageN("io", 215), _("Top"));

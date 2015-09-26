@@ -178,7 +178,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         for(MapCoord x = 0; x < width; ++x)
         {
             MapPoint pt(x, y);
-            TerrainType t1 = gwv.GetNode(pt).t1;
+            TerrainType t1 = gwv.GetNode(pt).t1; //-V807
             TerrainType t2 = gwv.GetNode(pt).t2;
             unsigned int pos = GetVertexIdx(pt);
 
@@ -320,7 +320,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
     {
         texCoord.pos[1].x = 0.225f;
         texCoord.pos[1].y = 0.f;
-        texCoord.pos[2].x = 0.f;
+        texCoord.pos[2].x = 0.f; //-V807
         texCoord.pos[2].y = 0.45f;
         texCoord.pos[0].x = 0.45f;
         texCoord.pos[0].y = texCoord.pos[2].y;
@@ -353,7 +353,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
     {
         texCoord2.pos[1].x = 0.235f;
         texCoord2.pos[1].y = 0.45f;
-        texCoord2.pos[2].x = 0.47f;
+        texCoord2.pos[2].x = 0.47f; //-V807
         texCoord2.pos[2].y = 0.0f;
         texCoord2.pos[0].x = 0.0f;
         texCoord2.pos[0].y = texCoord2.pos[2].y;
@@ -485,9 +485,9 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
         if(!first_offset)
             first_offset = offset;
 
-        gl_colors[offset].colors[i ? 0 : 2].r = gl_colors[offset].colors[i ? 0 : 2].g = gl_colors[offset].colors[i ? 0 : 2].b = GetColor(pt);
-        gl_colors[offset].colors[1        ].r = gl_colors[offset].colors[1        ].g = gl_colors[offset].colors[1        ].b = GetColor(gwv.GetNeighbour(pt, 4));
-        gl_colors[offset].colors[i ? 2 : 0].r = gl_colors[offset].colors[i ? 2 : 0].g = gl_colors[offset].colors[i ? 2 : 0].b = GetBColor(pt, i);
+        gl_colors[offset].colors[i ? 0 : 2].r = gl_colors[offset].colors[i ? 0 : 2].g = gl_colors[offset].colors[i ? 0 : 2].b = GetColor(pt); //-V807
+        gl_colors[offset].colors[1        ].r = gl_colors[offset].colors[1        ].g = gl_colors[offset].colors[1        ].b = GetColor(gwv.GetNeighbour(pt, 4)); //-V807
+        gl_colors[offset].colors[i ? 2 : 0].r = gl_colors[offset].colors[i ? 2 : 0].g = gl_colors[offset].colors[i ? 2 : 0].b = GetBColor(pt, i); //-V807
 
         ++count_borders;
     }
@@ -526,9 +526,9 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
         gl_colors[offset].colors[1        ].r = gl_colors[offset].colors[1        ].g = gl_colors[offset].colors[1        ].b = GetColor(gwv.GetNeighbour(pt, 4));
 
         if(i == 0)
-            gl_colors[offset].colors[2].r = gl_colors[offset].colors[2].g = gl_colors[offset].colors[2].b = GetBColor(pt, i);
+            gl_colors[offset].colors[2].r = gl_colors[offset].colors[2].g = gl_colors[offset].colors[2].b = GetBColor(pt, i); //-V807
         else
-            gl_colors[offset].colors[0].r = gl_colors[offset].colors[0].g = gl_colors[offset].colors[0].b = GetBColor(gwv.GetNeighbour(pt, 5), i);
+            gl_colors[offset].colors[0].r = gl_colors[offset].colors[0].g = gl_colors[offset].colors[0].b = GetBColor(gwv.GetNeighbour(pt, 5), i); //-V807
 
         ++count_borders;
     }

@@ -80,7 +80,7 @@ GamePlayerInfo::~GamePlayerInfo(void)
 // Rausschmeisser
 void GamePlayerInfo::clear(void)
 {
-    name = "";
+    name.clear();
     defeated = false;
     ps = PS_FREE;
     /*nation = team = color = 0;*/

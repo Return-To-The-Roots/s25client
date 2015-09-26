@@ -159,31 +159,32 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 7: // "Starten"
         {
-            ctrlEdit* name = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+            ctrlEdit* edtName = GetCtrl<ctrlEdit>(1);
+            ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
+            ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
 
-            if(name->GetText().length() < 1)
+            if(edtName->GetText().empty())
             {
                 SetText(_("Please enter a name for the game"), COLOR_RED, false);
-                name->SetFocus(true);
-                port->SetFocus(false);
-                pass->SetFocus(false);
+                edtName->SetFocus(true);
+                edtPort->SetFocus(false);
+                edtPw->SetFocus(false);
                 break;
             }
-            if(atoi(port->GetText().c_str()) <= 0 || atoi(port->GetText().c_str()) >= 65535 || atoi(port->GetText().c_str()) == 3664)
+            int iPort = atoi(edtPort->GetText().c_str());
+            if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
             {
                 SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);
-                name->SetFocus(false);
-                port->SetFocus(true);
-                pass->SetFocus(false);
+                edtName->SetFocus(false);
+                edtPort->SetFocus(true);
+                edtPw->SetFocus(false);
                 break;
             }
 
             CreateServerInfo csi;
-            csi.gamename = name->GetText();
-            csi.password = pass->GetText();
-            csi.port = static_cast<unsigned short>(atoi(port->GetText().c_str()));
+            csi.gamename = edtName->GetText();
+            csi.password = edtPw->GetText();
+            csi.port = static_cast<unsigned short>(iPort);
             csi.type = server_type;
             csi.ipv6 = SETTINGS.server.ipv6;
             csi.use_upnp = (SETTINGS.global.use_upnp == 1);

@@ -30,7 +30,7 @@ class ctrlEdit : public Window
         void SetText(const std::string& text);
         void SetText(const unsigned int text);
 
-        const std::string GetText(void) const;
+        std::string GetText(void) const;
         const std::wstring& GetWText(void) const { return text_; }
         void SetFocus(bool focus = true) { newFocus_ = focus; }
         void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }

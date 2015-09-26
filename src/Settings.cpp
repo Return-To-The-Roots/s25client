@@ -85,15 +85,15 @@ bool Settings::LoadDefaults()
 
     // language
     // {
-    language.language = "";
+    language.language.clear();
     // }
 
     LANGUAGES.setLanguage(language.language);
 
     // driver
     // {
-    driver.audio = "";
-    driver.video = "";
+    driver.audio.clear();
+    driver.video.clear();
     // }
 
     // sound
@@ -116,20 +116,20 @@ bool Settings::LoadDefaults()
 #endif // !_WIN32
 
     lobby.name = tmp_name;
-    lobby.password = "";
-    lobby.email = "";
+    lobby.password.clear();
+    lobby.email.clear();
     lobby.save_password = false;
     // }
 
     // server
     // {
-    server.last_ip = "";
+    server.last_ip.clear();
     server.ipv6 = false;
     // }
 
     // proxy
     // {
-    proxy.proxy = "";
+    proxy.proxy.clear();
     proxy.port = 0;
     proxy.typ = 0;
     // }
@@ -275,12 +275,12 @@ bool Settings::Load(void)
     // }
 
     // leere proxyadresse deaktiviert proxy komplett
-    if(proxy.proxy == "")
+    if(proxy.proxy.empty())
         proxy.typ = 0;
 
     // deaktivierter proxy entfernt proxyadresse
     if(proxy.typ == 0)
-        proxy.proxy = "";
+        proxy.proxy.clear();
 
     // aktivierter Socks v4 deaktiviert ipv6
     else if(proxy.typ == 4 && server.ipv6)
@@ -315,14 +315,15 @@ bool Settings::Load(void)
 // Routine zum Speichern der Konfiguration
 void Settings::Save(void)
 {
-    if(LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
+    libsiedler2::ArchivInfo& configInfo = *LOADER.GetInfoN(CONFIG_NAME);
+    if(configInfo.size() != SETTINGS_SECTIONS)
     {
         libsiedler2::ArchivItem_Ini item;
-        LOADER.GetInfoN(CONFIG_NAME)->alloc(SETTINGS_SECTIONS);
+        configInfo.alloc(SETTINGS_SECTIONS);
         for(unsigned int i = 0; i < SETTINGS_SECTIONS; ++i)
         {
             item.setName(SETTINGS_SECTION_NAMES[i]);
-            LOADER.GetInfoN(CONFIG_NAME)->setC(i, item);
+            configInfo.setC(i, item);
         }
     }
 
@@ -396,12 +397,12 @@ void Settings::Save(void)
     // }
 
     // leere proxyadresse deaktiviert proxy komplett
-    if(proxy.proxy == "")
+    if(proxy.proxy.empty())
         proxy.typ = 0;
 
     // deaktivierter proxy entfernt proxyadresse
     if(proxy.typ == 0)
-        proxy.proxy = "";
+        proxy.proxy.clear();
 
     // aktivierter Socks v4 deaktiviert ipv6
     else if(proxy.typ == 4 && server.ipv6)

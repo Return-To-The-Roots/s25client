@@ -91,7 +91,7 @@ ptrdiff_t GameWorld::myRandom(ptrdiff_t max)
 
 void GameWorld::Scan(glArchivItem_Map* map)
 {
-    width_ = map->getHeader().getWidth();
+    width_ = map->getHeader().getWidth(); //-V807
     height_ = map->getHeader().getHeight();
     lt = LandscapeType(map->getHeader().getGfxSet());
 

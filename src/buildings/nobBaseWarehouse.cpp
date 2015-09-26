@@ -430,15 +430,16 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 ++real_goods.people[JOB_HELPER];
                 ++goods_.people[JOB_HELPER];
 
-                gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
+                GameClientPlayer& owner = gwg->GetPlayer(player);
+                owner.IncreaseInventoryJob(JOB_HELPER, 1);
 
                 if(real_goods.people[JOB_HELPER] == 1)
                 {
 
                     // Wenn vorher keine Träger da waren, müssen alle unbesetzen Wege gucken, ob sie nen Weg hierher finden, könnte ja sein, dass vorher nich genug Träger da waren
-                    gwg->GetPlayer(player).FindWarehouseForAllRoads();
+                    owner.FindWarehouseForAllRoads();
                     // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
-                    gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_NOTHING);
+                    owner.FindWarehouseForAllJobs(JOB_NOTHING);
                 }
             }
             else if(real_goods.people[JOB_HELPER] > 100)
@@ -831,14 +832,15 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         else
         {
             // Evtl. Abnehmer für die Figur wieder finden
-            gwg->GetPlayer(player).FindWarehouseForAllJobs(job);
+            GameClientPlayer& owner = gwg->GetPlayer(player);
+            owner.FindWarehouseForAllJobs(job);
             // Wenns ein Träger war, auch Wege prüfen
             if(job == JOB_HELPER && real_goods.people[JOB_HELPER] == 1)
             {
                 // evtl als Träger auf Straßen schicken
-                gwg->GetPlayer(player).FindWarehouseForAllRoads();
+                owner.FindWarehouseForAllRoads();
                 // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
-                gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_NOTHING);
+                owner.FindWarehouseForAllJobs(JOB_NOTHING);
             }
 
         }
@@ -1543,39 +1545,40 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
         AddLeavingFigure(next);
     }
 
+    GameClientPlayer& owner = gwg->GetPlayer(player);
     // Also diminish the count of donkeys
     if(job == JOB_NOTHING)
     {
         job = JOB_PACKDONKEY;
         // Diminish the goods in the warehouse
         --real_goods.people[JOB_HELPER];
-        this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+        owner.DecreaseInventoryJob(JOB_HELPER, 1);
         if(gt != GD_NOTHING)
         {
             real_goods.goods[gt] -= count;
-            this->players->getElement(player)->DecreaseInventoryWare(gt, count);
+            owner.DecreaseInventoryWare(gt, count);
         }
         if(job != JOB_NOTHING) //now that we have removed the goods lets remove the donkeys
         {
             real_goods.people[job] -= count;
-            this->players->getElement(player)->DecreaseInventoryJob(job, count);
+            owner.DecreaseInventoryJob(job, count);
         }
     }
     else
     {
         --real_goods.people[JOB_HELPER];
-        this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER, 1);
+        owner.DecreaseInventoryJob(JOB_HELPER, 1);
         if(gt != GD_NOTHING)
         {
             real_goods.goods[gt] -= count;
-            this->players->getElement(player)->DecreaseInventoryWare(gt, count);
+            owner.DecreaseInventoryWare(gt, count);
         }
         if(job != JOB_NOTHING) //we shouldnt have had goods so lets remove the jobs & the helpers
         {
             real_goods.people[job] -= count;
-            this->players->getElement(player)->DecreaseInventoryJob(job, count);
+            owner.DecreaseInventoryJob(job, count);
             real_goods.people[JOB_HELPER] -= count;
-            this->players->getElement(player)->DecreaseInventoryJob(JOB_HELPER, count);
+            owner.DecreaseInventoryJob(JOB_HELPER, count);
         }
     }
 

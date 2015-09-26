@@ -105,13 +105,14 @@ void AIJH::BuildJob::ExecuteJob()
 void AIJH::BuildJob::TryToBuild()
 {
     MapPoint bPos = around;
+    AIConstruction& aiConstruction = *aijh->GetConstruction();
 
     if (aii->GetBuildingSites().size() > 40)
     {
         return;
     }
 
-    if (!aijh->GetConstruction()->Wanted(type))
+    if (!aiConstruction.Wanted(type))
     {
         status = AIJH::JOB_FINISHED;
         return;
@@ -142,27 +143,27 @@ void AIJH::BuildJob::TryToBuild()
         {
             case BLD_WOODCUTTER:
             {
-                unsigned numWoodcutter = aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER);
-                foundPos = aijh->FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_WOODCUTTER) * 10, 11);
+                unsigned numWoodcutter = aiConstruction.GetBuildingCount(BLD_WOODCUTTER);
+                foundPos = aijh->FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aiConstruction.GetBuildingCount(BLD_WOODCUTTER) * 10, 11);
                 if(foundPos && !aijh->ValidTreeinRange(bPos))
                     foundPos = false;
                 break;
             }
             case BLD_FORESTER:
-				if ((aijh->GetConstruction()->GetBuildingCount(BLD_FORESTER)<2 || !aijh->GetConstruction()->OtherUsualBuildingInRadius(bPos, 35, BLD_FORESTER)) && (aijh->GetDensity(bPos, AIJH::PLANTSPACE, 7) > 30 || (aijh->GetDensity(bPos, AIJH::PLANTSPACE, 7) > 15 && aijh->GetConstruction()->GetBuildingCount(BLD_FORESTER) < 2)))
+				if ((aiConstruction.GetBuildingCount(BLD_FORESTER)<2 || !aiConstruction.OtherUsualBuildingInRadius(bPos, 35, BLD_FORESTER)) && (aijh->GetDensity(bPos, AIJH::PLANTSPACE, 7) > 30 || (aijh->GetDensity(bPos, AIJH::PLANTSPACE, 7) > 15 && aiConstruction.GetBuildingCount(BLD_FORESTER) < 2)))
                     foundPos = aijh->FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 0, 11);
                 break;
             case BLD_HUNTER:
             {
                 //check if there are any animals in range
-                if(aijh->HuntablesinRange(bPos, (2 << aijh->GetConstruction()->GetBuildingCount(BLD_HUNTER))))
+                if(aijh->HuntablesinRange(bPos, (2 << aiConstruction.GetBuildingCount(BLD_HUNTER))))
                     foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
                 break;
             }
             case BLD_QUARRY:
             {
-                unsigned numQuarries = aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY);
-                foundPos = aijh->FindBestPosition(bPos, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aijh->GetConstruction()->GetBuildingCount(BLD_QUARRY) * 10, 11);
+                unsigned numQuarries = aiConstruction.GetBuildingCount(BLD_QUARRY);
+                foundPos = aijh->FindBestPosition(bPos, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aiConstruction.GetBuildingCount(BLD_QUARRY) * 10, 11);
                 if(foundPos && !aijh->ValidStoneinRange(bPos))
                 {
                     foundPos = false;
@@ -207,7 +208,7 @@ void AIJH::BuildJob::TryToBuild()
                 }
                 break;
             case BLD_STOREHOUSE:
-                if(!aijh->GetConstruction()->OtherStoreInRadius(bPos, 15))
+                if(!aiConstruction.OtherStoreInRadius(bPos, 15))
                     foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[BLD_STOREHOUSE], 11);
                 break;
             case BLD_HARBORBUILDING:
@@ -258,8 +259,8 @@ void AIJH::BuildJob::TryToBuild()
     aii->SetBuildingSite(bPos, type);
     target = bPos;
     status = AIJH::JOB_EXECUTING_ROAD1;
-	aijh->GetConstruction()->constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nwf
-	aijh->GetConstruction()->constructionorders[type]++;
+	aiConstruction.constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nwf
+	aiConstruction.constructionorders[type]++;
     return;
 }
 
@@ -294,10 +295,11 @@ void AIJH::BuildJob::BuildMainRoad()
     }
     const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
     // Gucken noch nicht ans Wegnetz angeschlossen
-    if (!aijh->GetConstruction()->IsConnectedToRoadSystem(houseFlag))
+    AIConstruction& aiConstruction = *aijh->GetConstruction();
+    if (!aiConstruction.IsConnectedToRoadSystem(houseFlag))
     {
         // Bau unmöglich?
-        if (!aijh->GetConstruction()->ConnectFlagToRoadSytem(houseFlag, route))
+        if (!aiConstruction.ConnectFlagToRoadSytem(houseFlag, route))
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
@@ -311,7 +313,7 @@ void AIJH::BuildJob::BuildMainRoad()
         }
         else
         {
-			aijh->GetConstruction()->constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nwf
+			aiConstruction.constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nwf
             // Warten bis Weg da ist...
             //return;
         }
@@ -532,7 +534,8 @@ void AIJH::ConnectJob::ExecuteJob()
 #endif
 	
 	//can the ai still construct here? else return and try again later
-	if (!aijh->GetConstruction()->CanStillConstructHere(flagPos))
+    AIConstruction& construction = *aijh->GetConstruction();
+	if (!construction.CanStillConstructHere(flagPos))
 		return; 
 
     const noFlag* flag = aii->GetSpecObj<noFlag>(flagPos);
@@ -560,13 +563,13 @@ void AIJH::ConnectJob::ExecuteJob()
 	}
 
     // already connected?
-    if (!aijh->GetConstruction()->IsConnectedToRoadSystem(flag))
+    if (!construction.IsConnectedToRoadSystem(flag))
     {
 #ifdef DEBUG_AI
         std::cout << "Flag is not connected..." << std::endl;
 #endif
         // building road possible?
-        if (!aijh->GetConstruction()->ConnectFlagToRoadSytem(flag, route, 24))
+        if (!construction.ConnectFlagToRoadSytem(flag, route, 24))
         {
 #ifdef DEBUG_AI
             std::cout << "Flag is not connectable." << std::endl;
@@ -580,7 +583,7 @@ void AIJH::ConnectJob::ExecuteJob()
             std::cout << "Connecting flag..." << std::endl;
 #endif
             // constructing road... wait...
-			aijh->GetConstruction()->constructionlocations.push_back(flagPos); // add new construction area to the list of active orders in the current nwf
+			construction.constructionlocations.push_back(flagPos); // add new construction area to the list of active orders in the current nwf
             return;
         }
     }

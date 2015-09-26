@@ -292,7 +292,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Vollbild" setzen
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(47);
-    optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 48 : 49) );
+    optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 48 : 49) ); //-V807
 
     // "Limit Framerate" füllen
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(51);
@@ -401,7 +401,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
         case 33: // Sprache
         {
             // Language changed?
-            std::string old_lang = SETTINGS.language.language;
+            std::string old_lang = SETTINGS.language.language; //-V807
             SETTINGS.language.language = LANGUAGES.setLanguage(selection);
             if(SETTINGS.language.language != old_lang)
                 WINDOWMANAGER.Switch(new dskOptions);

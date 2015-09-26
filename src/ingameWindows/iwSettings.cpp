@@ -62,7 +62,7 @@ iwSettings::iwSettings(dskGameInterface* gameDesktop)
 
     // "Vollbild" setzen
     optiongroup = GetCtrl<ctrlOptionGroup>(3);
-    optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 1 : 2) );
+    optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 1 : 2) ); //-V807
     VIDEODRIVER.ListVideoModes(video_modes);
 
     // "Auflösung"

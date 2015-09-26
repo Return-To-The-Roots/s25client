@@ -1033,10 +1033,11 @@ void Window::Draw3D(const unsigned short x,
             glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
         }
 
-        LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 2, y + 2, width - 4, 2, 0, 0, width - 4, 2);
-        LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 2, y + 2, 2, height - 4, 0, 0, 2, height - 4);
+        glArchivItem_Bitmap* img = LOADER.GetImageN("io", tc * 2 + 1);
+        img->Draw(x + 2, y + 2, width - 4, 2, 0, 0, width - 4, 2);
+        img->Draw(x + 2, y + 2, 2, height - 4, 0, 0, 2, height - 4);
 
-        LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 4, y + 4, width - 6, height - 6, 0, 0, width - 6, height - 6);
+        img->Draw(x + 4, y + 4, width - 6, height - 6, 0, 0, width - 6, height - 6);
 
         if(illuminated)
         {

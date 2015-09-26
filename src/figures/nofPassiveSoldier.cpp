@@ -165,11 +165,12 @@ void nofPassiveSoldier::Upgrade()
     job_ = Job(unsigned(job_) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
-    hitpoints = HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE];
+    GameClientPlayer& owner = gwg->GetPlayer(player);
+    hitpoints = HITPOINTS[owner.nation][job_ - JOB_PRIVATE];
 
     // Inventur entsprechend erhöhen und verringern
-    gwg->GetPlayer(player).IncreaseInventoryJob(job_, 1);
-    gwg->GetPlayer(player).DecreaseInventoryJob(Job(unsigned(job_) - 1), 1);
+    owner.IncreaseInventoryJob(job_, 1);
+    owner.DecreaseInventoryJob(Job(unsigned(job_) - 1), 1);
 }
 
 void nofPassiveSoldier::Walked()

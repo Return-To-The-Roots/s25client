@@ -99,30 +99,30 @@ void AIConstruction::ExecuteJobs(unsigned limit)
 	unsigned initbuildjobs = buildJobs.size()<5?buildJobs.size():5;
 	for(;i<limit && connectJobs.size() && i < initconjobs ;i++) //go through list, until limit is reached or list empty or when every entry has been checked
 	{
-		connectJobs.front()->ExecuteJob();
-		if(connectJobs.front()->GetStatus() != AIJH::JOB_FINISHED && connectJobs.front()->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
+        AIJH::ConnectJob* job = connectJobs.front();
+		job->ExecuteJob();
+		if(job->GetStatus() != AIJH::JOB_FINISHED && job->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
 		{
-			connectJobs.push_back(connectJobs.front());
+			connectJobs.push_back(job);
 			connectJobs.pop_front();
 		}
 		else //job done of failed -> delete job and remove from list
 		{
-			AIJH::Job* job = connectJobs.front();
 			connectJobs.pop_front();
 			delete job;
 		}
 	}	
 	for(;i<limit && buildJobs.size() && i < (initconjobs+initbuildjobs) ;i++)
 	{
-		buildJobs.front()->ExecuteJob();
-		if(buildJobs.front()->GetStatus() != AIJH::JOB_FINISHED && buildJobs.front()->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
+        AIJH::BuildJob* job = buildJobs.front();
+		job->ExecuteJob();
+		if(job->GetStatus() != AIJH::JOB_FINISHED && job->GetStatus() != AIJH::JOB_FAILED) //couldnt do job? -> move to back of list
 		{
-			buildJobs.push_back(buildJobs.front());
+			buildJobs.push_back(job);
 			buildJobs.pop_front();
 		}
 		else //job done of failed -> delete job and remove from list
 		{
-			AIJH::Job* job = buildJobs.front();
 			buildJobs.pop_front();
 			delete job;
 		}

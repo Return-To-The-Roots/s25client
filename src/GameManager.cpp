@@ -82,7 +82,7 @@ bool GameManager::Start()
     }
 
     // Im Vollbildmodus überprüfen, ob Video-Mode überhaupt existiert
-    if(SETTINGS.video.fullscreen)
+    if(SETTINGS.video.fullscreen) //-V807
     {
         std::vector<VideoMode> available_video_modes;
         VIDEODRIVER.ListVideoModes(available_video_modes);
@@ -117,7 +117,7 @@ bool GameManager::Start()
     }
 
     /// Lautstärken gleich mit setzen
-    AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
+    AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume); //-V807
     AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
 
     // Treibereinstellungen abspeichern
