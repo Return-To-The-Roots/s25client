@@ -196,7 +196,7 @@ void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
     bfs::path path = filePath;
     if(!path.has_filename())
         return;
-    bfs::path fileName = path.filename();
+	std::string fileName = path.filename().string();
 
     char gfl[50];
     snprintf(gfl, 50, "%u", replay.last_gf);
