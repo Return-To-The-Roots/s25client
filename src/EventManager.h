@@ -39,19 +39,17 @@ class EventManager
         {
             public:
 
-                GameObject* obj;
-                unsigned int gf;
-                unsigned int gf_length;
-                unsigned int gf_next;
-                unsigned int id;
+                GameObject* const obj;
+                const unsigned gf;
+                const unsigned gf_length;
+                const unsigned gf_next;
+                const unsigned id;
 
             public:
 
                 Event(GameObject* const  obj, const unsigned int gf, const unsigned int gf_length, const unsigned int id)
-                    : obj(obj), gf(gf), gf_length(gf_length), id(id)
-                {
-                    gf_next = gf + gf_length;
-                }
+                    : obj(obj), gf(gf), gf_length(gf_length), gf_next(gf + gf_length), id(id)
+                {}
 
                 Event(SerializedGameData* sgd, const unsigned obj_id);
 
@@ -64,7 +62,8 @@ class EventManager
                 GO_Type GetGOT() const { return GOT_EVENT; }
 
                 // Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
-                bool operator <= (const Event& other) const { return gf + gf_length <= other.gf + other.gf_length; }
+                bool operator<= (const Event& other) const { return gf_next <= other.gf_next; }
+                bool operator< (const Event& other) const { return gf_next < other.gf_next; }
         };
         typedef Event* EventPointer;
 
@@ -83,8 +82,8 @@ class EventManager
 
         /// Löscht alle Listen für Spielende
         void Clear() { eis.clear(); kill_list.clear(); }
-        /// Event entfernen
-        void RemoveEvent(EventPointer ep);
+        /// Removes an event and sets the pointer to NULL
+        void RemoveEvent(EventPointer& ep);
         /// Objekt will gekillt werden
         void AddToKillList(GameObject* obj) { assert(!helpers::contains(kill_list, obj)); kill_list.push_back(obj); }
 

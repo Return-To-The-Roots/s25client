@@ -164,10 +164,9 @@ EventManager::Event::Event(SerializedGameData* sgd, const unsigned obj_id) : Gam
     obj(sgd->PopObject<GameObject>(GOT_UNKNOWN)),
     gf(sgd->PopUnsignedInt()),
     gf_length(sgd->PopUnsignedInt()),
+    gf_next(gf + gf_length),
     id(sgd->PopUnsignedInt())
-{
-    gf_next = gf + gf_length;
-}
+{}
 
 
 void EventManager::Serialize(SerializedGameData* sgd) const
@@ -237,7 +236,7 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
     }
 }
 
-void EventManager::RemoveEvent(EventPointer ep)
+void EventManager::RemoveEvent(EventPointer& ep)
 {
     if (!ep)
         return;
@@ -263,5 +262,6 @@ void EventManager::RemoveEvent(EventPointer ep)
     }
 
     delete ep;
+    ep = NULL;
 }
 
