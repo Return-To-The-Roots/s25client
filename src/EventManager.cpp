@@ -24,6 +24,7 @@
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
+#include "helpers/mapTraits.h"
 
 #include <list>
 

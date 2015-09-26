@@ -15,20 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef setTraits_h__
-#define setTraits_h__
+#ifndef mapTraits_h__
+#define mapTraits_h__
 
 // This file defines the traits for std::set
 // You can include this instead of <set>
 
 #include "traits.h"
-#include <set>
+#include <map>
 
 namespace helpers{
     template<class T, class Pr, class Alloc>
-    struct EraseIterValidyImpl<std::set<T, Pr, Alloc> >{
+    struct EraseIterValidyImpl<std::map<T, Pr, Alloc> >{
         static CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid; 
     };
 } // namespace helpers
 
-#endif // setTraits_h__
+#endif // mapTraits_h__
