@@ -375,6 +375,11 @@ void glSmartBitmap::reset()
         VIDEODRIVER.DeleteTexture(texture);
     }
 
+    for(std::vector<glBitmapItem>::iterator it = items.begin(); it != items.end(); ++it)
+    {
+        if(it->isOwning_)
+            delete it->bmp;
+    }
     items.clear();
 
     texture = 0;

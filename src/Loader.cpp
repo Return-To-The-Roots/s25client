@@ -893,7 +893,7 @@ void Loader::fillCaches()
                 bitmap->setNx(image->getNx());
                 bitmap->setNy(image->getNy());
 
-                bmp.add(bitmap);
+                bmp.add(bitmap, true);
                 bmp.addShadow(shadow);
 
                 stp->add(bmp);
