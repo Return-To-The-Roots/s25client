@@ -31,6 +31,8 @@
 /build/src
 /build/version
 /build/WORLDS
+/build/S2/DATA
+/build/S2/GFX
 /contrib/full-contrib-msvc2010
 /contrib/boost*
 /DATA
