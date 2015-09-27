@@ -7,7 +7,8 @@ IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 	# bug: cmake cross detection's not implemented, so he never finds anything!
 	
 	#IF (GDI32_LIBRARY AND OPENGL_LIBRARY AND USER32_LIBRARY)
-		INCLUDE_DIRECTORIES(../../../src)
+		FIND_PACKAGE(Boost 1.55.0 REQUIRED)
+		INCLUDE_DIRECTORIES(../../../src ${Boost_INCLUDE_DIR})
 	
 		INCLUDE(AddFileDependencies)
 		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)

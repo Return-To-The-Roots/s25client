@@ -24,6 +24,7 @@
 #include "Loader.h"
 #include "controls/controls.h"
 #include "LobbyClient.h"
+#include <boost/lexical_cast.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -54,13 +55,11 @@ void iwLobbyRanking::UpdateRankings(bool first)
         {
             for(unsigned int i = 0; i < rankinglist->getCount() && i < 10; ++i)
             {
-                //const LobbyPlayerInfo *player = rankinglist->getElement(i);
-                char gewonnen[128], verloren[128], punkte[128];
                 const LobbyPlayerInfo& rankInfo = *rankinglist->getElement(i);
-                snprintf(punkte, 128, "%d", rankInfo.getPunkte());
-                snprintf(verloren, 128, "%d", rankInfo.getVerloren());
-                snprintf(gewonnen, 128, "%d", rankInfo.getGewonnen());
-                rankingtable->AddRow(0, rankInfo.getName().c_str(), punkte, verloren, gewonnen);
+                std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
+                std::string numLost = boost::lexical_cast<std::string>(rankInfo.getVerloren());
+                std::string numWon = boost::lexical_cast<std::string>(rankInfo.getGewonnen());
+                rankingtable->AddRow(0, rankInfo.getName().c_str(), points.c_str(), numLost.c_str(), numWon.c_str());
             }
             if(first)
                 rankingtable->SetSelection(0);

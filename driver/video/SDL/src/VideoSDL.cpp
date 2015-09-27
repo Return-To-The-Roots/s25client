@@ -23,6 +23,7 @@
 #include "VideoDriverLoaderInterface.h"
 #include <VideoInterface.h>
 #include <build_version.h>
+#include <algorithm>
 
 #ifdef _WIN32
 #include "../../../../win32/resource.h"
@@ -224,7 +225,7 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
     SetWindowTextA(GetConsoleWindow(), title);
 #endif
 
-    memset(keyboard, false, sizeof(bool) * 512);
+    std::fill(keyboard.begin(), keyboard.end(), false);
 
     this->screenWidth  = width;
     this->screenHeight = height;

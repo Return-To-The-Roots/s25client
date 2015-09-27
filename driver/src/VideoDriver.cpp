@@ -19,7 +19,7 @@
 // Header
 #include "main.h"
 #include "VideoDriver.h"
-#include <cstring>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -98,7 +98,7 @@ IVideoDriver::~IVideoDriver(){}
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), isFullscreen_(false)
 {
-    memset(keyboard, 0, 512);
+    std::fill(keyboard.begin(), keyboard.end(), false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
