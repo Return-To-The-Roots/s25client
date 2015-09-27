@@ -69,6 +69,18 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
+OPTION(USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" YES)
+IF(NOT ${Boost_USE_STATIC_LIBS} EQUAL ${USE_STATIC_BOOST})
+    set(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
+    unset(Boost_INCLUDE_DIR CACHE)
+    unset(Boost_LIBRARY_DIRS CACHE)
+ENDIF()
+if(Boost_USE_STATIC_LIBS)
+   message(STATUS "Linking against boost static libraries")
+else(Boost_USE_STATIC_LIBS)
+   message(STATUS "Linking against boost dynamic libraries")
+endif(Boost_USE_STATIC_LIBS)
+
 SET(Boost_ADDITIONAL_VERSIONS "1.55" "1.56" "1.57" "1.58" "1.59")
 
 IF (MSVC)
