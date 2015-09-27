@@ -1295,10 +1295,10 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             {
                 if(nr >= (int)to.size())
                     to.alloc_inc(nr - to.size() + 1);
-                to.setC(nr, *item);
+                to.set(nr, item);
             }
             else
-                to.pushC(*item);
+                to.push(item);
         }
     }
 
