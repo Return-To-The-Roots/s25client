@@ -205,13 +205,13 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
 
 #ifdef _WIN32
     // das spinnt ja total unter windows ...
-    this->fullscreen = false;
+    this->isFullscreen_ = false;
 #else
-    this->fullscreen = fullscreen;
+    this->isFullscreen_ = fullscreen;
 #endif
 
     // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         return false;
@@ -258,13 +258,13 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
 
 #ifdef _WIN32
     // das spinnt ja total unter windows ...
-    this->fullscreen = false;
+    this->isFullscreen_ = false;
 #else
-    this->fullscreen = fullscreen;
+    this->isFullscreen_ = fullscreen;
 #endif
 
     // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         return false;

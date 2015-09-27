@@ -55,7 +55,7 @@ class VideoDriver: public IVideoDriver
         //
         virtual unsigned short GetScreenWidth()  const { return screenWidth;  }
         virtual unsigned short GetScreenHeight() const { return screenHeight; }
-        virtual bool IsFullscreen() const { return fullscreen; }
+        virtual bool IsFullscreen() const { return isFullscreen_; }
 
         /// prüft auf Initialisierung.
         virtual bool IsInitialized() { return initialized; }
@@ -67,6 +67,6 @@ class VideoDriver: public IVideoDriver
         bool keyboard[512];          ///< Status der Tastatur;
         unsigned short screenWidth;  ///< aktuelle Bildschirm-/Fensterbreite
         unsigned short screenHeight; ///< aktuelle Bildschirm-/Fensterhöhe
-        bool fullscreen;             ///< Vollbild an/aus?
+        bool isFullscreen_;             ///< Vollbild an/aus?
 };
 #endif // !VIDEODRIVER_H_INCLUDED

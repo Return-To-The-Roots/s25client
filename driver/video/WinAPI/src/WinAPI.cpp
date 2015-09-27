@@ -358,7 +358,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
 
     this->screenWidth  = width;
     this->screenHeight = height;
-    this->fullscreen = fullscreen;
+    this->isFullscreen_ = fullscreen;
 
     // Das Fenster anzeigen
     ShowWindow(screen, SW_SHOW);
@@ -389,7 +389,7 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     if(!initialized)
         return false;
 
-    if(this->fullscreen && !fullscreen)
+    if(this->isFullscreen_ && !fullscreen)
         ChangeDisplaySettings(NULL, 0);
 
     ShowWindow(screen, SW_HIDE);
@@ -433,7 +433,7 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
 
     this->screenWidth  = width;
     this->screenHeight = height;
-    this->fullscreen = fullscreen;
+    this->isFullscreen_ = fullscreen;
 
     // Das Fenster anzeigen
     ShowWindow(screen, SW_SHOW);
@@ -482,7 +482,7 @@ void VideoWinAPI::DestroyScreen(void)
 
     UnregisterClassA(GetWindowTitle(), GetModuleHandle(NULL));
 
-    fullscreen = false;
+    isFullscreen_ = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

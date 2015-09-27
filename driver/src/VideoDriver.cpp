@@ -96,7 +96,7 @@ IVideoDriver::~IVideoDriver(){}
  *
  *  @author FloSoft
  */
-VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), fullscreen(false)
+VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), isFullscreen_(false)
 {
     memset(keyboard, 0, 512);
 }

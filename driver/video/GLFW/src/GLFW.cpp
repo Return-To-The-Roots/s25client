@@ -184,7 +184,7 @@ bool VideoGLFW::CreateScreen(unsigned short width, unsigned short height, bool f
     memset(keyboard, false, sizeof(bool) * 512);
     this->screenWidth  = width;
     this->screenHeight = height;
-    this->fullscreen = fullscreen;
+    this->isFullscreen_ = fullscreen;
 
     // buggy im Fenstermodus
     if(fullscreen)
@@ -234,7 +234,7 @@ bool VideoGLFW::ResizeScreen(unsigned short* width, unsigned short* height, bool
 
     this->screenWidth  = *width;
     this->screenHeight = *height;
-    this->fullscreen = fullscreen;
+    this->isFullscreen_ = fullscreen;
 
     return true;
 }
@@ -250,7 +250,7 @@ void VideoGLFW::DestroyScreen(void)
     // Fenster schliessen
     glfwCloseWindow();
 
-    fullscreen = false;
+    isFullscreen_ = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
