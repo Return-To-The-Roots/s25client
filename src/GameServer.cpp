@@ -394,15 +394,6 @@ bool GameServer::Start()
     GAMECLIENT.Connect("localhost", serverconfig.password, serverconfig.servertype, serverconfig.port, true, serverconfig.ipv6);
 
 // clear async logs if necessary
-    for (std::list<RandomEntry>::iterator it = async_player1_log.begin(); it != async_player1_log.end(); ++it)
-    {
-        delete[] it->src_name;
-    }
-
-    for (std::list<RandomEntry>::iterator it = async_player2_log.begin(); it != async_player2_log.end(); ++it)
-    {
-        delete[] it->src_name;
-    }
 
     async_player1_log.clear();
     async_player2_log.clear();
@@ -1564,11 +1555,6 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
     }
     else
     {
-        for (std::list<RandomEntry>::iterator it = in->begin(); it != in->end(); ++it)
-        {
-            delete[] it->src_name;
-        }
-
         LOG.lprintf("Received async log from %u, but did not expect it!\n", msg.player);
 
         return;
@@ -1646,15 +1632,15 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
         if (identical)
         {
             // write last common line
-            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name, it1->src_line, it1->obj_id);
+            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name.c_str(), it1->src_line, it1->obj_id);
 
             ++it1; ++it2;
         }
 
         while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
         {
-            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name, it1->src_line, it1->obj_id);
-            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it2->counter, it2->max, (it2->value * it2->max) / 32768, it2->value, it2->src_name, it2->src_line, it2->obj_id);
+            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it2->counter, it2->max, (it2->value * it2->max) / 32768, it2->value, it2->src_name.c_str(), it2->src_line, it2->obj_id);
 
             ++it1;
             ++it2;
@@ -1667,16 +1653,6 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
     else
     {
         LOG.lprintf("Failed to save async log at \"%s\"\n", fileName.c_str());
-    }
-
-    for (std::list<RandomEntry>::iterator it = async_player1_log.begin(); it != async_player1_log.end(); ++it)
-    {
-        delete[] it->src_name;
-    }
-
-    for (std::list<RandomEntry>::iterator it = async_player2_log.begin(); it != async_player2_log.end(); ++it)
-    {
-        delete[] it->src_name;
     }
 
     async_player1_log.clear();

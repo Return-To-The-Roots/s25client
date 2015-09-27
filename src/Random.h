@@ -22,6 +22,7 @@
 #include "Singleton.h"
 #include <list>
 #include <cstddef>
+#include <string>
 
 #ifdef max
     #undef max
@@ -32,12 +33,12 @@ struct RandomEntry
     unsigned counter;
     int max;
     int value;
-    const char* src_name;
+    std::string src_name;
     unsigned src_line;
     unsigned obj_id;
 
-    RandomEntry(unsigned counter, int max, int value, const char* src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
-    RandomEntry() : counter(0), max(0), value(0), src_name(NULL), src_line(0), obj_id(0) {};
+    RandomEntry(unsigned counter, int max, int value, const std::string& src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
+    RandomEntry() : counter(0), max(0), value(0), src_line(0), obj_id(0) {};
 };
 
 class Random : public Singleton<Random>

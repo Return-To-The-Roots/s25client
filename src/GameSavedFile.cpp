@@ -24,6 +24,7 @@
 #include "GamePlayerInfo.h"
 #include "../libutil/src/Serializer.h"
 #include "../libutil/src/Log.h"
+#include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

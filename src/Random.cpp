@@ -102,7 +102,7 @@ void Random::SaveLog(const char* const filename)
     for (unsigned int i = 0; i < max; ++i)
     {
         RandomEntry* it = &(async_log[(i + counter) % 1024]);
-        fprintf(file, "%u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it->counter, it->max, (it->value * it->max) / 32768, it->value, it->src_name, it->src_line, it->obj_id);
+        fprintf(file, "%u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it->counter, it->max, (it->value * it->max) / 32768, it->value, it->src_name.c_str(), it->src_line, it->obj_id);
     }
 
     fclose(file);

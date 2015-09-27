@@ -31,6 +31,7 @@ class DebugInfo : Socket
         bool SendSigned(signed i);
         bool SendUnsigned(unsigned i);
         bool SendString(const char* str, unsigned len = 0);
+        bool SendString(const std::string& str);
 
 #ifdef _MSC_VER
         bool SendStackTrace(LPCONTEXT ctx = NULL);

@@ -139,6 +139,16 @@ bool DebugInfo::SendString(const char* str, unsigned len)
     return(Send(str, len));
 }
 
+bool DebugInfo::SendString(const std::string& str)
+{
+    if (!SendUnsigned(str.length()))
+    {
+        return(false);
+    }
+
+    return(Send(str.c_str(), str.length()));
+}
+
 #ifdef _WIN32
 void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase)
 {
@@ -351,15 +361,15 @@ bool DebugInfo::SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list
     // if there were any identical lines, include only the last one
     if (identical)
     {
-        len += 4 + 4 + 4 + strlen(it_a->src_name) + 1 + 4 + 4 + 4;
+        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
 
         ++cnt; ++it_a; ++it_b;
     }
 
     while ((it_a != a.end()) && (it_b != b.end()))
     {
-        len += 4 + 4 + 4 + strlen(it_a->src_name) + 1 + 4 + 4 + 4;
-        len += 4 + 4 + 4 + strlen(it_b->src_name) + 1 + 4 + 4 + 4;
+        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
+        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
 
         cnt += 2;
 

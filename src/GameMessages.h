@@ -859,7 +859,7 @@ class GameMessage_SendAsyncLog : public GameMessage
                 PushUnsignedInt(it->counter);
                 PushSignedInt(it->max);
                 PushSignedInt(it->value);
-                PushString(it->src_name ? it->src_name : "");
+                PushString(it->src_name);
                 PushUnsignedInt(it->src_line);
                 PushUnsignedInt(it->obj_id);
             }
@@ -873,7 +873,7 @@ class GameMessage_SendAsyncLog : public GameMessage
             unsigned counter;
             int max;
             int value;
-            char* src_name;
+            std::string src_name;
             unsigned int src_line;
             unsigned obj_id;
 
@@ -886,9 +886,7 @@ class GameMessage_SendAsyncLog : public GameMessage
                 counter = PopUnsignedInt();
                 max = PopSignedInt();
                 value = PopSignedInt();
-                std::string str = PopString();
-                src_name = new char [str.size() + 1];
-                strcpy(src_name, str.c_str());
+                src_name = PopString();
                 src_line = PopUnsignedInt();
                 obj_id = PopUnsignedInt();
 
