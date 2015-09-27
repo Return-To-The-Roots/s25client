@@ -157,7 +157,7 @@ void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
     sprintf(start_gf, "%u", save.start_gf);
 
     // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), save.map_name.c_str(), dateStr.c_str(), start_gf, filePath.c_str());
+    static_cast<ctrlTable*>(param)->AddRow(0, fileName.string().c_str(), save.map_name.c_str(), dateStr.c_str(), start_gf, filePath.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
