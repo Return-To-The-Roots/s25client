@@ -96,7 +96,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     }
 
     // Standardverteilung der Waren
-    std::vector<unsigned char>& visDistribution = GAMECLIENT.visual_settings.distribution;
+    std::vector<unsigned char>& visDistribution = GAMECLIENT.visual_settings.distribution; //-V807
     visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
     visDistribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
     visDistribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;

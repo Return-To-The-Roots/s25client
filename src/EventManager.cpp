@@ -220,16 +220,17 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
 {
     for(std::map< unsigned, std::list<Event*> >::iterator it = eis.begin(); it != eis.end();)
     {
-        for(std::list<Event*>::iterator e_it = it->second.begin(); e_it != it->second.end();)
+        std::list<Event*>& events = it->second;
+        for(std::list<Event*>::iterator e_it = events.begin(); e_it != events.end();)
         {
             if(*e_it && (*e_it)->obj == obj)
             {
-                e_it = it->second.erase(e_it);
+                e_it = events.erase(e_it);
             }
             else
                 ++e_it;
         }
-        if(it->second.empty())
+        if(events.empty())
             it = helpers::erase(eis, it);
         else
             ++it;

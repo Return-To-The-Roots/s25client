@@ -576,22 +576,22 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
     }
 
     // ist das zuletzt aktiv gewesene Fenster Modal?
-    if(windows.back()->GetModal())
+    IngameWindow& activeWnd = *windows.back();
+    if(activeWnd.GetModal())
     {
         // Msg_LeftDownaufrufen
-        windows.back()->Msg_WheelUp(mc);
+        activeWnd.Msg_WheelUp(mc);
 
         // und allen unten drunter auch Bescheid sagen
-        windows.back()->RelayMouseMessage(&Window::Msg_WheelUp, mc);
+        activeWnd.RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
         // und raus
         return;
     }
 
     IngameWindow* foundWindow = FindWindowUnderMouse(mc);
-    // ja, also aktives Fenster deaktivieren (falls ok)
-    if(windows.back())
-        windows.back()->SetActive(false);
+    // ja, also aktives Fenster deaktivieren
+    activeWnd.SetActive(false);
 
     if(foundWindow)
     {

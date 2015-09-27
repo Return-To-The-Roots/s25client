@@ -342,19 +342,21 @@ bool IngameWindow::Draw_()
     }
     else
     {
-        unsigned side_width = width_ - LOADER.GetImageN("resource", 45)->getWidth() * 2;
-        title_count = side_width / LOADER.GetImageN("resource", 40)->getWidth();
+        glArchivItem_Bitmap& imgBorderSide = *LOADER.GetImageN("resource", 45);
+        glArchivItem_Bitmap& imgTitleBar = *LOADER.GetImageN("resource", 40);
+        unsigned side_width = width_ - imgBorderSide.getWidth() * 2;
+        title_count = side_width / imgTitleBar.getWidth();
 
         for(unsigned short i = 0; i < title_count; ++i)
-            LOADER.GetImageN("resource", 40)->Draw(x_ + LOADER.GetImageN("resource", 45)->getWidth() + i * LOADER.GetImageN("resource", 40)->getWidth(), y_ + 20, 0, 0, 0, 0, 0, 0);
+            imgTitleBar.Draw(x_ + imgBorderSide.getWidth() + i * imgTitleBar.getWidth(), y_ + 20, 0, 0, 0, 0, 0, 0);
 
-        rest = side_width % LOADER.GetImageN("resource", 40)->getWidth();
+        rest = side_width % imgTitleBar.getWidth();
 
         if(rest)
-            LOADER.GetImageN("resource", 40)->Draw(x_ + LOADER.GetImageN("resource", 45)->getWidth() + title_count * LOADER.GetImageN("resource", 40)->getWidth(), y_ + 20, rest, 0, 0, 0, rest, 0);
+            imgTitleBar.Draw(x_ + imgBorderSide.getWidth() + title_count * imgTitleBar.getWidth(), y_ + 20, rest, 0, 0, 0, rest, 0);
 
-        LOADER.GetImageN("resource", 45)->Draw(x_, y_ + 16, 0, 0, 0, 0, 0, 0);
-        LOADER.GetImageN("resource", 45)->Draw(x_ + width_ - 16, y_ + 16, 0, 0, 0, 0, 0, 0);
+        imgBorderSide.Draw(x_, y_ + 16, 0, 0, 0, 0, 0, 0);
+        imgBorderSide.Draw(x_ + width_ - 16, y_ + 16, 0, 0, 0, 0, 0, 0);
     }
 
     return true;

@@ -361,9 +361,10 @@ void iwPostWindow::DisplayPostMessage()
             SetMessageText(pm->GetText());
             GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);
 
-            postImage->SetImage(ipm->GetImage_());
-            postImage->Move(xImgBottomCenter + ipm->GetImage_()->getNx() - ipm->GetImage_()->getWidth() / 2,
-                            yImgBottomCenter + ipm->GetImage_()->getNy() - ipm->GetImage_()->getHeight());
+            glArchivItem_Bitmap* img = ipm->GetImage_();
+            postImage->SetImage(img);
+            postImage->Move(xImgBottomCenter + img->getNx() - img->getWidth() / 2,
+                            yImgBottomCenter + img->getNy() - img->getHeight());
 
             postImage->SetVisible(true);
             gotoButton->SetVisible(true);

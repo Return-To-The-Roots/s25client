@@ -479,8 +479,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                                real_goods.people[JOB_HELPER],
                                max_recruits);
 
-            const unsigned recruiting_ratio
-            = gwg->GetPlayer(player).militarySettings_[0];
+            GameClientPlayer& owner = gwg->GetPlayer(player);
+            const unsigned recruiting_ratio = owner.militarySettings_[0];
             unsigned real_recruits =
                 max_recruits
                 * recruiting_ratio
@@ -495,23 +495,23 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
             real_goods.people[JOB_PRIVATE] += real_recruits;
             goods_.people[JOB_PRIVATE] += real_recruits;
-            gwg->GetPlayer(player).IncreaseInventoryJob(JOB_PRIVATE, real_recruits);
+            owner.IncreaseInventoryJob(JOB_PRIVATE, real_recruits);
 
             real_goods.people[JOB_HELPER] -= real_recruits;
             goods_.people[JOB_HELPER] -= real_recruits;
-            gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, real_recruits);
+            owner.DecreaseInventoryJob(JOB_HELPER, real_recruits);
 
             real_goods.goods[GD_SWORD] -= real_recruits;
             goods_.goods[GD_SWORD] -= real_recruits;
-            gwg->GetPlayer(player).DecreaseInventoryWare(GD_SWORD, real_recruits);
+            owner.DecreaseInventoryWare(GD_SWORD, real_recruits);
 
             real_goods.goods[GD_SHIELDROMANS] -= real_recruits;
             goods_.goods[GD_SHIELDROMANS] -= real_recruits;
-            gwg->GetPlayer(player).DecreaseInventoryWare(GD_SHIELDROMANS, real_recruits);
+            owner.DecreaseInventoryWare(GD_SHIELDROMANS, real_recruits);
 
             real_goods.goods[GD_BEER] -= real_recruits;
             goods_.goods[GD_BEER] -= real_recruits;
-            gwg->GetPlayer(player).DecreaseInventoryWare(GD_BEER, real_recruits);
+            owner.DecreaseInventoryWare(GD_BEER, real_recruits);
 
 
             // Evtl. versuchen nächsten zu rekrutieren
@@ -524,7 +524,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             // Wenn vorher keine Soldaten hier waren, Militärgebäude prüfen (evtl kann der Soldat ja wieder in eins gehen)
             if(real_goods.people[JOB_PRIVATE] == real_recruits)
                 for (unsigned short i = 0; i < real_recruits; ++i)
-                    gwg->GetPlayer(player).NewSoldierAvailable(real_goods.people[JOB_PRIVATE]);
+                    owner.NewSoldierAvailable(real_goods.people[JOB_PRIVATE]);
 
 
         } break;
