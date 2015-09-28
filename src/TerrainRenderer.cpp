@@ -43,12 +43,12 @@ static char THIS_FILE[] = __FILE__;
 
 TerrainRenderer::TerrainRenderer() :
 	width(0), height(0),
-    vbo_vertices(0), vbo_texcoords(0), vbo_colors(0)
+    vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false)
 {}
 
 TerrainRenderer::~TerrainRenderer()
 {
-    if(SETTINGS.video.vbo)
+    if(vboBuffersUsed)
     {
         glDeleteBuffersARB(1, (const GLuint*)&vbo_vertices);
         glDeleteBuffersARB(1, (const GLuint*)&vbo_texcoords);
@@ -249,6 +249,8 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB );
         glColorPointer(3, GL_FLOAT, 0, NULL);
+
+        vboBuffersUsed = true;
     }
     else
     {
@@ -274,7 +276,7 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer
     gl_vertices[pos].pos[1] = GetTerrainAround(pt, 4);
     gl_vertices[pos].pos[2] = GetTerrainAround(pt, 3);
 
-    if(update && SETTINGS.video.vbo)
+    if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_vertices[pos - 1]);
@@ -303,7 +305,7 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, const GameWorldView
 
 
     /// Bei Vertexbuffern das die Daten aktualisieren
-    if(update && SETTINGS.video.vbo)
+    if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(ColorTriangle), 2 * sizeof(ColorTriangle), &gl_colors[pos - 1]);
@@ -378,7 +380,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
     }
 
     /// Bei Vertexbuffern das die Daten aktualisieren
-    if(update && SETTINGS.video.vbo)
+    if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_texcoords[pos - 1]);
@@ -457,7 +459,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorld
     }
 
     /// Bei Vertexbuffern das die Daten aktualisieren
-    if(update && SETTINGS.video.vbo)
+    if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_vertices[first_offset]);
@@ -534,7 +536,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
     }
 
     /// Bei Vertexbuffern das die Daten aktualisieren
-    if(update && SETTINGS.video.vbo)
+    if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(ColorTriangle), count_borders * sizeof(ColorTriangle), &gl_colors[first_offset]);
@@ -607,7 +609,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
     }
 
     /// Bei Vertexbuffern das die Daten aktualisieren
-    if(update && SETTINGS.video.vbo)
+    if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_texcoords[first_offset]);
@@ -754,7 +756,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 
     lastOffset = PointI(0, 0);
 
-    if(SETTINGS.video.vbo)
+    if(vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
         glVertexPointer(2, GL_FLOAT, 0, NULL);
@@ -985,7 +987,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         PointI( 3,  3)
     }};
 
-    if (SETTINGS.video.vbo)
+    if (vboBuffersUsed)
     {
         // unbind VBO
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -1155,7 +1157,7 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
         for(MapCoord x = 0; x < width; ++x)
             UpdateBorderTriangleColor(MapPoint(x, y), gwv, false);
 
-    if(SETTINGS.video.vbo)
+    if(vboBuffersUsed)
     {
         // Generiere und Binde den Color Buffer
         glGenBuffersARB(1, (GLuint*)&vbo_colors);
