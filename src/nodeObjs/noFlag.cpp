@@ -194,7 +194,7 @@ void noFlag::Draw(int x, int y)
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
-    Loader::flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = 8; i; --i)

@@ -27,7 +27,11 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "ogl/glArchivItem_Bob.h"
+#include "ogl/glSmartBitmap.h" // Todo: Remove and use fwd decl
 #include "gameTypes/MapTypes.h"
+#include "gameData/AnimalConsts.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/JobTypes.h"
 #include "../libsiedler2/src/ArchivInfo.h"
 #include "../libsiedler2/src/ArchivItem_Text.h"
 #include "../libsiedler2/src/ArchivItem_Ini.h"
@@ -134,19 +138,19 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 
         glSmartTexturePacker* stp;
 
-        static glSmartBitmap animal_cache[8][6][9];
-        static glSmartBitmap building_cache[NAT_COUNT][40][2];
-        static glSmartBitmap flag_cache[NAT_COUNT][3][8];
-        static glSmartBitmap building_flag_cache[8];
-        static glSmartBitmap tree_cache[9][15];
-        static glSmartBitmap bob_jobs_cache[NAT_COUNT][33][6][8];
-        static glSmartBitmap granite_cache[2][6];
-        static glSmartBitmap grainfield_cache[2][4];
-        static glSmartBitmap carrier_cache[35][6][8][2];
-        static glSmartBitmap boundary_stone_cache[NAT_COUNT];
-        static glSmartBitmap boat_cache[6][8];
-        static glSmartBitmap donkey_cache[6][8];
-        static glSmartBitmap gateway_cache[5];
+        glSmartBitmap animal_cache[8][6][ANIMAL_MAX_ANIMATION_STEPS + 1];
+        glSmartBitmap building_cache[NAT_COUNT][BUILDING_TYPES_COUNT][2];
+        glSmartBitmap flag_cache[NAT_COUNT][3][8];
+        glSmartBitmap building_flag_cache[8];
+        glSmartBitmap tree_cache[9][15];
+        glSmartBitmap bob_jobs_cache[NAT_COUNT][JOB_TYPES_COUNT + 1][6][8];
+        glSmartBitmap granite_cache[2][6];
+        glSmartBitmap grainfield_cache[2][4];
+        glSmartBitmap carrier_cache[WARE_TYPES_COUNT][6][8][2];
+        glSmartBitmap boundary_stone_cache[NAT_COUNT];
+        glSmartBitmap boat_cache[6][8];
+        glSmartBitmap donkey_cache[6][8];
+        glSmartBitmap gateway_cache[5];
 };
 
 ///////////////////////////////////////////////////////////////////////////////

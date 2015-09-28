@@ -90,7 +90,7 @@ void noAnimal::Draw(int x, int y)
             unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            Loader::animal_cache[species][GetCurMoveDir()][ani_step].draw(x, y);
+            LOADER.animal_cache[species][GetCurMoveDir()][ani_step].draw(x, y);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
@@ -113,13 +113,13 @@ void noAnimal::Draw(int x, int y)
         case STATE_PAUSED:
         {
             // Stehend zeichnen
-            Loader::animal_cache[species][GetCurMoveDir()][0].draw(x, y);
+            LOADER.animal_cache[species][GetCurMoveDir()][0].draw(x, y);
         } break;
         case STATE_DEAD:
         {
-            if (Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
+            if (LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
             {
-                Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y);
+                LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y);
             }
         } break;
         case STATE_DISAPPEARING:
@@ -128,14 +128,14 @@ void noAnimal::Draw(int x, int y)
             unsigned char alpha = 0xFF - GAMECLIENT.Interpolate(0xFF, current_ev);
 
             // Gibts ein Leichenbild?
-            if (Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
+            if (LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
             {
-                Loader::animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }
             else
             {
                 // Stehend zeichnen
-                Loader::animal_cache[species][GetCurMoveDir()][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.animal_cache[species][GetCurMoveDir()][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }
 
         } break;

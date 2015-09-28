@@ -247,7 +247,7 @@ void noBuildingSite::Draw(int x, int y)
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 
-        Loader::building_cache[nation][type_][1].drawPercent(x, y, p1 * 100 / p2);
+        LOADER.building_cache[nation][type_][1].drawPercent(x, y, p1 * 100 / p2);
 
         // Das richtige Haus
         if(BUILDING_COSTS[nation][GetBuildingType()].stones)
@@ -263,7 +263,7 @@ void noBuildingSite::Draw(int x, int y)
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 
-        Loader::building_cache[nation][type_][0].drawPercent(x, y, p1 * 100 / p2);
+        LOADER.building_cache[nation][type_][0].drawPercent(x, y, p1 * 100 / p2);
     }
 
     //char number[256];

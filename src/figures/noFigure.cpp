@@ -1268,7 +1268,7 @@ void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    Loader::carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 }
 
 
@@ -1288,7 +1288,7 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
     if(!waiting_for_free_node || pause_walked_gf)
         CalcFigurRelative(x, y);
 
-    Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 }
 
 

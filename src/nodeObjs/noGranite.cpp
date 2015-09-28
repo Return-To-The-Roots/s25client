@@ -55,7 +55,7 @@ noGranite::noGranite(SerializedGameData* sgd, const unsigned obj_id) : noBase(sg
 
 void noGranite::Draw(int x, int y)
 {
-    Loader::granite_cache[type][state].draw(x, y);
+    LOADER.granite_cache[type][state].draw(x, y);
 }
 
 FOWObject* noGranite::CreateFOWObject() const

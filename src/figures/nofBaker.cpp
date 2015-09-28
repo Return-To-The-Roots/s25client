@@ -82,18 +82,18 @@ void nofBaker::DrawWorking(int x, int y)
     if(now_id < 2) //hinauslaufen teil 1
     {
         LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-        Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][0],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id >= 2) && (now_id < 4) ) //hinauslaufen teil 2
     {
         LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-        Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][1],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id >= 4) && (now_id < 8) ) //hinauslaufen teil 3
     {
-        Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][2]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][2]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][2],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id >= 8) && (now_id < 16) ) //brot in den ofen schieben
@@ -127,19 +127,19 @@ void nofBaker::DrawWorking(int x, int y)
     }
     if((now_id >= max_id - 8) && (now_id < max_id - 4) ) //reingehn teil 1
     {
-        Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][3]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][3]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][3],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2) ) //reingehn teil 1
     {
         LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-        Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][4],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     if((now_id >= max_id - 2) && (now_id < max_id) ) //reingehn teil 2
     {
         LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-        Loader::bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][5],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
 

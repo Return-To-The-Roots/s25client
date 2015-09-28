@@ -88,24 +88,24 @@ void noGrainfield::Draw( int x, int y)
         case STATE_GROWING_WAITING:
         case STATE_NORMAL:
         {
-            Loader::grainfield_cache[type][size].draw(x, y);
+            LOADER.grainfield_cache[type][size].draw(x, y);
         } break;
         case STATE_GROWING:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // altes Feld ausblenden
-            Loader::grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // neues Feld einblenden
-            Loader::grainfield_cache[type][size + 1].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+            LOADER.grainfield_cache[type][size + 1].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
         } break;
         case STATE_WITHERING:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // Feld ausblenden
-            Loader::grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF - alpha));
         } break;
     }
 

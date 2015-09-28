@@ -101,7 +101,7 @@ void noStaticObject::Draw(int x, int y)
 
     if ((file == 0xFFFF) && (id == 561))
     {
-        Loader::gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(x, y);
+        LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(x, y);
         return;
     }
     else  if (file == 0xFFFF)

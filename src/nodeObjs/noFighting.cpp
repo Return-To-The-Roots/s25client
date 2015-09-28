@@ -130,7 +130,7 @@ void noFighting::Draw(int x, int y)
 
             for(unsigned i = 0; i < 2; ++i)
             {
-                Loader::bob_jobs_cache[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank() + JOB_PRIVATE][(i == 0) ? 0 : 3][GAMECLIENT.Interpolate(8, current_ev)].draw(x + ((i == 0) ? (-x_diff) : x_diff), y, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer()).color]);
+                LOADER.bob_jobs_cache[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank() + JOB_PRIVATE][(i == 0) ? 0 : 3][GAMECLIENT.Interpolate(8, current_ev)].draw(x + ((i == 0) ? (-x_diff) : x_diff), y, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer()).color]);
             }
 
         } break;

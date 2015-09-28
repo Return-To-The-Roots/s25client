@@ -501,7 +501,7 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
         unsigned nation = gwv->GetPlayer(owner - 1).nation;
         unsigned player_color = COLORS[gwv->GetPlayer(owner - 1).color];
 
-        Loader::boundary_stone_cache[nation].draw(curPos.x, curPos.y, fow ? FOW_DRAW_COLOR : COLOR_WHITE, fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
+        LOADER.boundary_stone_cache[nation].draw(curPos.x, curPos.y, fow ? FOW_DRAW_COLOR : COLOR_WHITE, fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 
         for(unsigned i = 0; i < 3; ++i)
         {
@@ -509,13 +509,13 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
             {
                 Point<int> tmp = curPos - Point<int>( (gwv->GetTerrain(t) - gwv->GetTerrainRenderer()->GetTerrainAround(t, 3 + i)) / 2.0f );
 
-                Loader::boundary_stone_cache[nation].draw(
+                LOADER.boundary_stone_cache[nation].draw(
                     tmp.x, tmp.y,
                     fow ? FOW_DRAW_COLOR : COLOR_WHITE,
                     fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 
                 /* Why twice?
-                Loader::boundary_stone_cache[nation].draw(
+                LOADER.boundary_stone_cache[nation].draw(
                     tmp.x, tmp.y,
                     fow ? FOW_DRAW_COLOR : COLOR_WHITE,
                     fow ? CalcPlayerFOWDrawColor(player_color) : player_color);*/

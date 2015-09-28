@@ -281,7 +281,7 @@ void nofCarrier::Draw(int x, int y)
 
                 if(!animation)
                 {
-                    Loader::bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
                 }
                 else
                     // Steht und wartet (ohne Ware)
@@ -292,7 +292,7 @@ void nofCarrier::Draw(int x, int y)
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 // Steht und wartet (mit Ware)
-                Loader::carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
                 // Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 //              LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
@@ -317,7 +317,7 @@ void nofCarrier::Draw(int x, int y)
                 // Steht und wartet (ohne Ware)
 
                 // Esel
-                Loader::donkey_cache[GetCurMoveDir()][0].draw(x, y);
+                LOADER.donkey_cache[GetCurMoveDir()][0].draw(x, y);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
@@ -325,7 +325,7 @@ void nofCarrier::Draw(int x, int y)
                 //// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 
                 // Esel
-                Loader::donkey_cache[GetCurMoveDir()][0].draw(x, y);
+                LOADER.donkey_cache[GetCurMoveDir()][0].draw(x, y);
 
                 // Ware im Korb zeichnen
                 LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + 1]);
@@ -341,7 +341,7 @@ void nofCarrier::Draw(int x, int y)
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                Loader::donkey_cache[GetCurMoveDir()][ani_step].draw(x, y);
+                LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(x, y);
 
                 if(carried_ware)
                 {
@@ -361,11 +361,11 @@ void nofCarrier::Draw(int x, int y)
             }
             else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
             {
-                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
-                Loader::boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
                 // Ware im Boot zeichnen
                 LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_BOAT[GetCurMoveDir() * 2], y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
@@ -379,7 +379,7 @@ void nofCarrier::Draw(int x, int y)
                 CalcFigurRelative(x, y);
 
                 // ruderndes Boot zeichnen
-                Loader::boat_cache[GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.boat_cache[GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)

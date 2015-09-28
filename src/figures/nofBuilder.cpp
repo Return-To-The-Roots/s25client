@@ -313,7 +313,7 @@ void nofBuilder::Draw(int x, int y)
             x += (GAMECLIENT.Interpolate(rel_x, next_rel_x, current_ev) + building_site->GetDoorPointX());
             y += (GAMECLIENT.Interpolate(rel_y, next_rel_y, current_ev) + building_site->GetDoorPointY());
 
-            Loader::bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][GetCurMoveDir()][GAMECLIENT.Interpolate(12, current_ev) % 8].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+            LOADER.bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][GetCurMoveDir()][GAMECLIENT.Interpolate(12, current_ev) % 8].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //          LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate(12,current_ev)%8,x,y,COLORS[gwg->GetPlayer(player).color]);
 //          DrawShadow(x,y,GAMECLIENT.Interpolate(12,current_ev)%8,dir);
 

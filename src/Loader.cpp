@@ -426,43 +426,6 @@ bool Loader::SaveSettings()
     return true;
 }
 
-glSmartBitmap Loader::animal_cache[SPEC_COUNT][6][ANIMAL_MAX_ANIMATION_STEPS + 1] = {{{glSmartBitmap()}}};
-
-// building_cache[nation][type][skeleton?]
-glSmartBitmap Loader::building_cache[NAT_COUNT][BUILDING_TYPES_COUNT][2] = {{{glSmartBitmap()}}};
-
-// flag_cache[nation][type][animation]
-glSmartBitmap Loader::flag_cache[NAT_COUNT][3][8] = {{{glSmartBitmap()}}};
-
-glSmartBitmap Loader::building_flag_cache[8] = {glSmartBitmap()};
-
-// 0 - 7 animation, 8 & 9 growing, 11 - 13 falling, 14 fallen
-glSmartBitmap Loader::tree_cache[9][15] = {{glSmartBitmap()}};
-
-// Bobs from jobs.bob: bob_jobs_cache[nation][job][direction][animation]
-glSmartBitmap Loader::bob_jobs_cache[NAT_COUNT][JOB_TYPES_COUNT + 1][6][8];
-
-// Granit - zwei Typen, sechs größen
-glSmartBitmap Loader::granite_cache[2][6];
-
-// Felder - 2 Typen, vier Größen
-glSmartBitmap Loader::grainfield_cache[2][4];
-
-// carrier_cache[ware][direction][animation_step][fat]
-glSmartBitmap Loader::carrier_cache[WARE_TYPES_COUNT][6][8][2];
-
-// boundary_stone_cache[nation]
-glSmartBitmap Loader::boundary_stone_cache[NAT_COUNT];
-
-// boat_cache[direction][animation_step]
-glSmartBitmap Loader::boat_cache[6][8];
-
-// donkey_cache[direction][animation_step]
-glSmartBitmap Loader::donkey_cache[6][8];
-
-// gateway animation
-glSmartBitmap Loader::gateway_cache[5];
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
