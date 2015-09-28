@@ -150,8 +150,8 @@ void GameClient::ReplayInfo::Clear()
  *  @author FloSoft
  */
 GameClient::GameClient(void)
-    : recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game),
-      ci(NULL), human_ai(NULL)
+    : gw(NULL), em(NULL), playerId_(0xFF), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game),
+      ci(NULL), human_ai(NULL), game_log(NULL)
 {
     clientconfig.Clear();
     framesinfo.Clear();
