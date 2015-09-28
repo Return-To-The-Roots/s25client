@@ -142,6 +142,9 @@ bool GameManager::Start()
  */
 void GameManager::Stop()
 {
+    GAMECLIENT.Stop();
+    GAMESERVER.Stop();
+    LOBBYCLIENT.Stop();
     // Global Einstellungen speichern
     SETTINGS.Save();
 
