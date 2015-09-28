@@ -334,9 +334,9 @@ class GameClientPlayer : public GamePlayerInfo
         void RegulateAllTroops();
         /// Prüft von allen Militärgebäuden die Fahnen neu
         void RecalcMilitaryFlags();
-        /// Sucht für EINEN Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
+        /// Sucht für Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
         /// entsprechende Soldatenanzahl im Lagerhaus verlangt
-        void NewSoldierAvailable(const unsigned& soldier_count);
+        void NewSoldiersAvailable(const unsigned& soldier_count);
         /// Aktualisiert die Verteidiger-Liste
         void RefreshDefenderList();
         /// Prüft, ob für einen angreifenden Soldaten ein Verteidger geschickt werden soll

@@ -522,9 +522,9 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 this->RefreshReserve(0);
 
             // Wenn vorher keine Soldaten hier waren, Militärgebäude prüfen (evtl kann der Soldat ja wieder in eins gehen)
-            if(real_goods.people[JOB_PRIVATE] == real_recruits)
-                for (unsigned short i = 0; i < real_recruits; ++i)
-                    owner.NewSoldierAvailable(real_goods.people[JOB_PRIVATE]);
+            if(real_goods.people[JOB_PRIVATE] == real_recruits && real_goods.people[JOB_PRIVATE] > 0)
+                //for (unsigned short i = 0; i < real_recruits; ++i)
+                    owner.NewSoldiersAvailable(real_goods.people[JOB_PRIVATE]);
 
 
         } break;
@@ -814,7 +814,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         // Reserve prüfen
         RefreshReserve(job - JOB_PRIVATE);
         // Truppen prüfen in allen Häusern
-        gwg->GetPlayer(player).NewSoldierAvailable(real_goods.people[job]);
+        gwg->GetPlayer(player).NewSoldiersAvailable(real_goods.people[job]);
     }
     else
     {

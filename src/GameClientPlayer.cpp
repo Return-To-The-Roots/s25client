@@ -1417,9 +1417,9 @@ void GameClientPlayer::RecalcMilitaryFlags()
         (*it)->LookForEnemyBuildings(NULL);
 }
 
-/// Sucht für EINEN Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
+/// Sucht für Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
 /// entsprechende Soldatenanzahl im Lagerhaus verlangt
-void GameClientPlayer::NewSoldierAvailable(const unsigned& soldier_count)
+void GameClientPlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 {
     assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde

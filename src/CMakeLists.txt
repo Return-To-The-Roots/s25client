@@ -27,7 +27,7 @@ SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
 SET(SOURCES_SUBDIRS )
 MACRO(AddDirectory dir)
-	FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h)
+	FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
 	SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
 	SOURCE_GROUP(${dir} FILES ${SUB_FILES})
 ENDMACRO()
