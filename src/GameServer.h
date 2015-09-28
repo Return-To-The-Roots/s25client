@@ -30,6 +30,8 @@
 
 #include "ai/AIEventManager.h"
 
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class GameServerPlayer;
 class GlobalGameSettings;
@@ -164,7 +166,7 @@ class GameServer : public Singleton<GameServer>, public GameMessageInterface
                 unsigned int length;
                 unsigned int checksum;
                 std::string name;
-                unsigned char* zipdata;
+                boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
                 MapType map_type;
                 std::string script;
         } mapinfo;

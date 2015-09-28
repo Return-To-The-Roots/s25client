@@ -320,7 +320,7 @@ class GameClient : public Singleton<GameClient>, public GameMessageInterface, pu
                 unsigned length;
                 unsigned checksum;
                 std::string title;
-                boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char> > zipdata;
+                boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
                 Savegame savegame;
         } mapinfo;
 

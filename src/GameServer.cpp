@@ -108,8 +108,7 @@ void GameServer::MapInfo::Clear()
     length = 0;
     checksum = 0;
     name.clear();
-    delete [] zipdata;
-    zipdata = 0;
+    zipdata.reset();
     map_type = MAPTYPE_OLDMAP;
 }
 
@@ -231,7 +230,7 @@ bool GameServer::Start()
     fseek(map_f, 0, SEEK_SET);
 
     char* map_data = new char[mapinfo.length + 1];
-    mapinfo.zipdata = new unsigned char[mapinfo.length * 2 + 600]; // + 1prozent + 600 ;)
+    mapinfo.zipdata.reset(new unsigned char[mapinfo.length * 2 + 600]); // + 1prozent + 600 ;)
 
     mapinfo.ziplength = mapinfo.length * 2 + 600;
 
@@ -280,7 +279,7 @@ bool GameServer::Start()
 
     // map mit bzip2 komprimieren
     int err = BZ_OK;
-    if( (err = BZ2_bzBuffToBuffCompress( (char*)mapinfo.zipdata, (unsigned int*)&mapinfo.ziplength, map_data, mapinfo.length, 9, 0, 250)) != BZ_OK)
+    if( (err = BZ2_bzBuffToBuffCompress( (char*)mapinfo.zipdata.get(), (unsigned int*)&mapinfo.ziplength, map_data, mapinfo.length, 9, 0, 250)) != BZ_OK)
     {
         LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n", err);
         return false;
@@ -1353,7 +1352,7 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
         unsigned data_size = ( (mapinfo.ziplength - player->temp_ul) > MAP_PART_SIZE )
                              ? MAP_PART_SIZE : (mapinfo.ziplength - player->temp_ul);
 
-        player->send_queue.push(new GameMessage_Map_Data(&mapinfo.zipdata[player->temp_ul], data_size));
+        player->send_queue.push(new GameMessage_Map_Data(mapinfo.zipdata.get() + player->temp_ul, data_size));
         player->temp_ul += data_size;
     }
 }

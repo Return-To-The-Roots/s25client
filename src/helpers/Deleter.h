@@ -26,4 +26,12 @@ struct Deleter {
     }
 };
 
+template<typename T>
+struct Deleter<T[]> {
+    void operator()(T *p)
+    {
+        delete[] p;
+    }
+};
+
 #endif // Deleter_h__
