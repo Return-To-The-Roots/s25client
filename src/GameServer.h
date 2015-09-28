@@ -39,9 +39,11 @@ struct CreateServerInfo;
 class GameMessage;
 class AIBase;
 
-class GameServer : public Singleton<GameServer>, public GameMessageInterface
+class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {
     public:
+        static const unsigned Longevity = 6;
+
         GameServer(void);
         ~GameServer(void);
 

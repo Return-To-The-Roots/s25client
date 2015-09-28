@@ -27,7 +27,7 @@ class glArchivItem_Sound;
 /// Game-naher SoundManager, der die abgespielten Sounds speichert und immer entscheidet, ob derjenige Sound abgespielt
 /// wird oder nicht, weil er eben bereits abgespielt wird
 /// verwaltet auch "globale" Sounds wie Vogelgezwitscher und Meeresrauschen
-class SoundManager : public Singleton<SoundManager>
+class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLongevity>
 {
         /// Objekt-spezifischer Sound (NO-Sound)
         struct NOSound
@@ -53,6 +53,7 @@ class SoundManager : public Singleton<SoundManager>
         unsigned ocean_play_id;
 
     public:
+        static const unsigned Longevity = 29;
 
         SoundManager();
         ~SoundManager();

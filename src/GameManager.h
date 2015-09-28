@@ -33,9 +33,11 @@ enum CursorType
 };
 
 /// "Die" GameManager-Klasse
-class GameManager : public Singleton<GameManager>
+class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevity>
 {
     public:
+        static const unsigned Longevity = 15;
+
         GameManager(void);
 
         bool Start();

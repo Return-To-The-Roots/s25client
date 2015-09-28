@@ -29,9 +29,12 @@ class VideoDriver;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
-class VideoDriverWrapper : public Singleton<VideoDriverWrapper>
+class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicies::WithLongevity>
 {
     public:
+
+        static const unsigned Longevity = 30;
+
         /// Konstruktor von @p DriverWrapper
         VideoDriverWrapper();
         /// Destruktor von @p DriverWrapper

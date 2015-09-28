@@ -49,9 +49,11 @@ class glArchivItem_Bitmap_Raw;
 const std::string CONFIG_NAME = "config";
 
 /// Loader Klasse.
-class Loader : public Singleton<Loader>
+class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 {
     public:
+        static const unsigned Longevity = 19;
+
         /// Konstruktor von @p Loader.
         Loader(void);
         /// Desktruktor von @p Loader.

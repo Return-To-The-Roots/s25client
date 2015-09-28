@@ -29,9 +29,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Klasse für die Konfiguration
-class Settings : public Singleton<Settings>
+class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
     public:
+        static const unsigned Longevity = 18;
+
         Settings(void);
 
         bool Load(void); // Lädt Einstellungen

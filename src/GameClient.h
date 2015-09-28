@@ -43,13 +43,15 @@ class ClientInterface;
 class GameMessage;
 class AIBase;
 
-class GameClient : public Singleton<GameClient>, public GameMessageInterface, public GameCommandFactory<GameClient>
+class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
     friend class GameCommandFactory<GameClient>;
     /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
     bool AddGC(gc::GameCommand* gc);
 
     public:
+        static const unsigned Longevity = 5;
+
         enum ClientState
         {
             CS_STOPPED = 0,
