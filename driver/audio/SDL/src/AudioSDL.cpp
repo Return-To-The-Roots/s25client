@@ -160,6 +160,7 @@ void AudioSDL::CleanUp(void)
     sounds.clear();
 
     Mix_CloseAudio();
+    Mix_HookMusicFinished(NULL);
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 
     // nun sind wir nicht mehr initalisiert

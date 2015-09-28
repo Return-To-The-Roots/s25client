@@ -62,9 +62,11 @@ class Playlist
 };
 
 /// Globaler Musikplayer bzw. eine abspielbare Playlist
-class MusicPlayer : public Singleton<MusicPlayer>
+class MusicPlayer : public Singleton<MusicPlayer, SingletonPolicies::WithLongevity>
 {
     public:
+        static const unsigned Longevity = 31; // After AudioDriverWrapper
+
         MusicPlayer();
 
         /// Startet Abspielvorgang
