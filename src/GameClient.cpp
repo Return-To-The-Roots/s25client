@@ -94,8 +94,7 @@ void GameClient::MapInfo::Clear()
     length = 0;
     checksum = 0;
     title.clear();
-    delete [] zipdata;
-    zipdata = 0;
+    zipdata.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -421,9 +420,8 @@ void GameClient::StartGame(const unsigned int random_init)
     // Daten nach dem Schreiben des Replays ggf wieder löschen
     if(mapinfo.zipdata)
     {
-        delete [] mapinfo.zipdata;
+        mapinfo.zipdata.reset();
         replayinfo.replay.map_data = 0;
-        mapinfo.zipdata = NULL;
     }
 }
 
@@ -1057,8 +1055,7 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     temp_ui = 0;
     temp_ul = 0;
 
-    delete[] mapinfo.zipdata;
-    mapinfo.zipdata = new unsigned char[mapinfo.ziplength + 1];
+    mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength + 1]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1069,7 +1066,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.GetNetLength());
 
     unsigned char* data = msg.map_data;
-    memcpy(&mapinfo.zipdata[temp_ul], data, msg.GetNetLength());
+    memcpy(mapinfo.zipdata.get() + temp_ul, data, msg.GetNetLength());
     temp_ul += msg.GetNetLength();
 
     ++(temp_ui);
@@ -1090,7 +1087,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
         unsigned int length = mapinfo.length;
 
         int err = BZ_OK;
-        if( (err = BZ2_bzBuffToBuffDecompress(map_data, &length, (char*)mapinfo.zipdata, mapinfo.ziplength, 0, 0)) != BZ_OK)
+        if( (err = BZ2_bzBuffToBuffDecompress(map_data, &length, (char*)mapinfo.zipdata.get(), mapinfo.ziplength, 0, 0)) != BZ_OK)
         {
             LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
             Stop();
@@ -1709,7 +1706,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
             // Größe der gepackten Map
             replayinfo.replay.map_zip_length = mapinfo.ziplength;
             // Gepackte Map
-            replayinfo.replay.map_data = mapinfo.zipdata;
+            replayinfo.replay.map_data = mapinfo.zipdata.get();
         } break;
         case MAPTYPE_SAVEGAME:
         {
