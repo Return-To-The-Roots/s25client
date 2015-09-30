@@ -358,11 +358,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
     if(mapinfo.savegame)
     {
-        mapinfo.savegame->sgd.PrepareDeserialization(em);
-        gw->Deserialize(mapinfo.savegame->sgd);
-        em->Deserialize(mapinfo.savegame->sgd);
-        for(unsigned i = 0; i < players.getCount(); ++i)
-            GetPlayer(i).Deserialize(mapinfo.savegame->sgd);
+        mapinfo.savegame->sgd.ReadSnapshot(*gw, *em);
 
         // TODO: schöner machen:
         // Die Fläche, die nur von einem Allierten des Spielers gesehen werden, müssen noch dem TerrainRenderer mitgeteilt werden

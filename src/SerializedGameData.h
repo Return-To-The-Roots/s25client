@@ -52,7 +52,8 @@ public:
     /// Liest den Buffer aus einer Datei
     void ReadFromFile(BinaryFile& file) override;
 
-    void PrepareDeserialization(EventManager* const em) { this->em = em; }
+    /// Reads the snapshot from the internal buffer
+    void ReadSnapshot(GameWorld& gw, EventManager& em);
 
     //////////////////////////////////////////////////////////////////////////
     // Write methods

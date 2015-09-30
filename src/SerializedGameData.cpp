@@ -222,13 +222,27 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
     writtenObjIds.clear();
 }
 
-void SerializedGameData::ReadFromFile(BinaryFile& file)
+void SerializedGameData::ReadSnapshot(GameWorld& gw, EventManager& evMgr)
 {
     Prepare(true);
-    Serializer::ReadFromFile(file);
+
+    em = &evMgr;
 
     expectedObjectsReadCount = PopUnsignedInt();
     GameObject::SetObjCount(expectedObjectsReadCount);
+
+    gw.Deserialize(*this);
+    evMgr.Deserialize(*this);
+    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+        GAMECLIENT.GetPlayer(i).Deserialize(*this);
+
+    em = NULL;
+    readObjects.clear();
+}
+
+void SerializedGameData::ReadFromFile(BinaryFile& file)
+{
+    Serializer::ReadFromFile(file);
 }
 
 void SerializedGameData::PushObject(const GameObject* go, const bool known)
