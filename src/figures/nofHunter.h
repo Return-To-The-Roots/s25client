@@ -62,12 +62,12 @@ class nofHunter : public nofBuildingWorker
     public:
 
         nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofHunter(SerializedGameData* sgd, const unsigned obj_id);
+        nofHunter(SerializedGameData& sgd, const unsigned obj_id);
         ~nofHunter() {/* assert(obj_id != 266501);*/ }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofHunter(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofHunter(sgd); }
+    protected:  void Serialize_nofHunter(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofHunter(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_HUNTER; }
 

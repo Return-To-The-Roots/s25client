@@ -35,11 +35,11 @@ class nofMinter : public nofWorkman
     public:
 
         nofMinter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMinter(SerializedGameData* sgd, const unsigned obj_id);
+        nofMinter(SerializedGameData& sgd, const unsigned obj_id);
 
 /// Serialisierungsfunktionen
-    protected:  void Serialize_nofMinter(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofMinter(sgd); }
+    protected:  void Serialize_nofMinter(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofMinter(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_MINTER; }
 };

@@ -39,7 +39,7 @@ nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, n
 {
 }
 
-nofIronfounder::nofIronfounder(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofIronfounder::nofIronfounder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

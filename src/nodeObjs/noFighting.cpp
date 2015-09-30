@@ -67,28 +67,28 @@ noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) :
     gwg->SetVisibilitiesAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
 }
 
-void noFighting::Serialize_noFighting(SerializedGameData* sgd) const
+void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);
 
-    sgd->PushUnsignedChar(turn);
-    sgd->PushUnsignedChar(defending_animation);
-    sgd->PushObject(current_ev, true);
-    sgd->PushUnsignedChar(player_won);
+    sgd.PushUnsignedChar(turn);
+    sgd.PushUnsignedChar(defending_animation);
+    sgd.PushObject(current_ev, true);
+    sgd.PushUnsignedChar(player_won);
 
     for(unsigned i = 0; i < 2; ++i)
-        sgd->PushObject(soldiers[i], false);
+        sgd.PushObject(soldiers[i], false);
 }
 
-noFighting::noFighting(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    turn(sgd->PopUnsignedChar()),
-    defending_animation(sgd->PopUnsignedChar()),
-    current_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-    player_won(sgd->PopUnsignedChar())
+noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
+    turn(sgd.PopUnsignedChar()),
+    defending_animation(sgd.PopUnsignedChar()),
+    current_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    player_won(sgd.PopUnsignedChar())
 
 {
     for(unsigned i = 0; i < 2; ++i)
-        soldiers[i] = sgd->PopObject<nofActiveSoldier>(GOT_UNKNOWN);
+        soldiers[i] = sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN);
 }
 
 void noFighting::Destroy_noFighting()

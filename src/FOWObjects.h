@@ -51,7 +51,7 @@ class FOWObject
         /// An x,y zeichnen.
         virtual void Draw(int x, int y) const = 0;
         /// Serialisierungsfunktion.
-        virtual void Serialize(SerializedGameData* sgd) const = 0;
+        virtual void Serialize(SerializedGameData& sgd) const = 0;
         /// Gibt Typ zurück
         virtual FOW_Type GetType() const = 0;
 };
@@ -62,8 +62,8 @@ class fowNothing : public FOWObject
     public:
 
         fowNothing();
-        fowNothing(SerializedGameData* sgd);
-        void Serialize(SerializedGameData* sgd) const;
+        fowNothing(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
         void Draw(int x, int y) const;
         FOW_Type GetType() const { return FOW_NOTHING; }
 } const nothing;
@@ -81,8 +81,8 @@ class fowBuilding : public FOWObject
     public:
 
         fowBuilding(const BuildingType type, const Nation nation);
-        fowBuilding(SerializedGameData* sgd);
-        void Serialize(SerializedGameData* sgd) const;
+        fowBuilding(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
         void Draw(int x, int y) const;
         FOW_Type GetType() const { return FOW_BUILDING; }
 };
@@ -102,8 +102,8 @@ class fowBuildingSite : public FOWObject
     public:
 
         fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
-        fowBuildingSite(SerializedGameData* sgd);
-        void Serialize(SerializedGameData* sgd) const;
+        fowBuildingSite(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
         void Draw(int x, int y) const;
         FOW_Type GetType() const { return FOW_BUILDINGSITE; }
 };
@@ -121,8 +121,8 @@ class fowFlag : public FOWObject
     public:
 
         fowFlag(const unsigned char player, const FlagType flag_type);
-        fowFlag(SerializedGameData* sgd);
-        void Serialize(SerializedGameData* sgd) const;
+        fowFlag(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
         void Draw(int x, int y) const;
         FOW_Type GetType() const { return FOW_FLAG; }
 };
@@ -140,8 +140,8 @@ class fowTree : public FOWObject
     public:
 
         fowTree(const unsigned char type, const unsigned char size);
-        fowTree(SerializedGameData* sgd);
-        void Serialize(SerializedGameData* sgd) const;
+        fowTree(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
         void Draw(int x, int y) const;
         FOW_Type GetType() const { return FOW_TREE; }
 };
@@ -157,8 +157,8 @@ class fowGranite : public FOWObject
     public:
 
         fowGranite(const GraniteType type, const unsigned char state);
-        fowGranite(SerializedGameData* sgd);
-        void Serialize(SerializedGameData* sgd) const;
+        fowGranite(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
         void Draw(int x, int y) const;
         FOW_Type GetType() const { return FOW_GRANITE; }
 };

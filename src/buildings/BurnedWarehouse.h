@@ -36,7 +36,7 @@ class BurnedWarehouse : public noCoordBase
         typedef boost::array<unsigned, JOB_TYPES_COUNT> PeopleArray;
 
         BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
-        BurnedWarehouse(SerializedGameData* sgd, const unsigned obj_id);
+        BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id);
 
         ~BurnedWarehouse();
 
@@ -44,8 +44,8 @@ class BurnedWarehouse : public noCoordBase
 
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_BurnedWarehouse(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_BurnedWarehouse(sgd); }
+    protected:  void Serialize_BurnedWarehouse(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_BurnedWarehouse(sgd); }
 
         GO_Type GetGOT() const { return GOT_BURNEDWAREHOUSE; }
 

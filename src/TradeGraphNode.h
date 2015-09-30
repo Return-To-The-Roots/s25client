@@ -41,8 +41,8 @@ struct TradeGraphNode
 
     TradeGraphNode();
 
-    void Deserialize(SerializedGameData* sgd);
-    void Serialize(SerializedGameData* sgd) const;
+    void Deserialize(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const;
 
     /// Converts map coords to TG coords
     static MapPoint ConverToTGCoords(const MapPoint pos)

@@ -35,7 +35,7 @@ class nofBaker : public nofWorkman
     public:
 
         nofBaker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofBaker(SerializedGameData* sgd, const unsigned obj_id);
+        nofBaker(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_BAKER; }
 };

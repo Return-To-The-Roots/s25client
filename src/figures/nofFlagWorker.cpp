@@ -53,17 +53,17 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
         this->flag = 0;
 }
 
-nofFlagWorker::nofFlagWorker(SerializedGameData* sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), flag(sgd->PopObject<noFlag>(GOT_FLAG)), state(State(sgd->PopUnsignedChar()))
+nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GOT_FLAG)), state(State(sgd.PopUnsignedChar()))
 {
 }
 
-void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData* sgd) const
+void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushObject(flag, true);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushObject(flag, true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
 }
 
 void nofFlagWorker::Destroy_nofFlagWorker()

@@ -41,7 +41,7 @@ nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual*
 {
 }
 
-nofWellguy::nofWellguy(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

@@ -103,57 +103,57 @@ void noFigure::Destroy_noFigure()
     assert(!players->getElement(player)->CheckDependentFigure(this));
 }
 
-void noFigure::Serialize_noFigure(SerializedGameData* sgd) const
+void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
 {
     Serialize_noMovable(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(fs));
-    sgd->PushUnsignedChar(static_cast<unsigned char>(job_));
-    sgd->PushUnsignedChar(player);
-    sgd->PushObject(cur_rs, true);
-    sgd->PushUnsignedShort(rs_pos);
-    sgd->PushBool(rs_dir);
-    sgd->PushBool(on_ship);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(fs));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(job_));
+    sgd.PushUnsignedChar(player);
+    sgd.PushObject(cur_rs, true);
+    sgd.PushUnsignedShort(rs_pos);
+    sgd.PushBool(rs_dir);
+    sgd.PushBool(on_ship);
 
     if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
-        sgd->PushObject(goal_, false);
+        sgd.PushObject(goal_, false);
 
-    sgd->PushBool(waiting_for_free_node);
+    sgd.PushBool(waiting_for_free_node);
 
     if(fs == FS_WANDER)
     {
-        sgd->PushUnsignedShort(wander_way);
-        sgd->PushUnsignedShort(wander_tryings);
-        sgd->PushMapPoint(flagPos_);
-        sgd->PushUnsignedInt(flag_obj_id);
-        sgd->PushUnsignedInt(burned_wh_id);
+        sgd.PushUnsignedShort(wander_way);
+        sgd.PushUnsignedShort(wander_tryings);
+        sgd.PushMapPoint(flagPos_);
+        sgd.PushUnsignedInt(flag_obj_id);
+        sgd.PushUnsignedInt(burned_wh_id);
     }
 }
 
-noFigure::noFigure(SerializedGameData* sgd, const unsigned obj_id) : noMovable(sgd, obj_id),
-    fs(FigureState(sgd->PopUnsignedChar())),
-    job_(Job(sgd->PopUnsignedChar())),
-    player(sgd->PopUnsignedChar()),
-    cur_rs(sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT)),
-    rs_pos(sgd->PopUnsignedShort()),
-    rs_dir(sgd->PopBool()),
-    on_ship(sgd->PopBool()),
+noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id) : noMovable(sgd, obj_id),
+    fs(FigureState(sgd.PopUnsignedChar())),
+    job_(Job(sgd.PopUnsignedChar())),
+    player(sgd.PopUnsignedChar()),
+    cur_rs(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)),
+    rs_pos(sgd.PopUnsignedShort()),
+    rs_dir(sgd.PopBool()),
+    on_ship(sgd.PopBool()),
     last_id(0xFFFFFFFF)
 {
     if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
-        goal_ = sgd->PopObject<noRoadNode>(GOT_UNKNOWN);
+        goal_ = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
     else
         goal_ = 0;
 
-    waiting_for_free_node = sgd->PopBool();
+    waiting_for_free_node = sgd.PopBool();
 
     if(fs == FS_WANDER)
     {
-        wander_way = sgd->PopUnsignedShort();
-        wander_tryings = sgd->PopUnsignedShort();
-        flagPos_ = sgd->PopMapPoint();
-        flag_obj_id = sgd->PopUnsignedInt();
-        burned_wh_id = sgd->PopUnsignedInt();
+        wander_way = sgd.PopUnsignedShort();
+        wander_tryings = sgd.PopUnsignedShort();
+        flagPos_ = sgd.PopMapPoint();
+        flag_obj_id = sgd.PopUnsignedInt();
+        burned_wh_id = sgd.PopUnsignedInt();
     }
 }
 

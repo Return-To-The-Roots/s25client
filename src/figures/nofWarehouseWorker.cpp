@@ -72,19 +72,19 @@ void nofWarehouseWorker::Destroy_nofWarehouseWorker()
 }
 
 
-void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData* sgd) const
+void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushObject(carried_ware, true);
-    sgd->PushBool(task);
-    sgd->PushBool(fat);
+    sgd.PushObject(carried_ware, true);
+    sgd.PushBool(task);
+    sgd.PushBool(fat);
 }
 
-nofWarehouseWorker::nofWarehouseWorker(SerializedGameData* sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    carried_ware(sgd->PopObject<Ware>(GOT_WARE)),
-    task(sgd->PopBool()),
-    fat(sgd->PopBool())
+nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
+    carried_ware(sgd.PopObject<Ware>(GOT_WARE)),
+    task(sgd.PopBool()),
+    fat(sgd.PopBool())
 {
 }
 

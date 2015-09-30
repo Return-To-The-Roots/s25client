@@ -39,20 +39,20 @@ nofCatapultMan::nofCatapultMan(const MapPoint pos,
 {
 }
 
-nofCatapultMan::nofCatapultMan(SerializedGameData* sgd,
+nofCatapultMan::nofCatapultMan(SerializedGameData& sgd,
                                const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id),
-      wheel_steps( sgd->PopSignedInt() ), target( sgd )
+      wheel_steps( sgd.PopSignedInt() ), target( sgd )
 {
 
 }
 
 
-void nofCatapultMan::Serialize_nofCatapultMan(SerializedGameData* sgd) const
+void nofCatapultMan::Serialize_nofCatapultMan(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 
-    sgd->PushSignedInt(wheel_steps);
+    sgd.PushSignedInt(wheel_steps);
     target.Serialize_PossibleTarget(sgd);
 }
 

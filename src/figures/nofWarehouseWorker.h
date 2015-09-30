@@ -64,7 +64,7 @@ class nofWarehouseWorker : public noFigure
     public:
 
         nofWarehouseWorker(const MapPoint pt, const unsigned char player, Ware* ware, const bool task);
-        nofWarehouseWorker(SerializedGameData* sgd, const unsigned obj_id);
+        nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         ~nofWarehouseWorker();
 
@@ -73,8 +73,8 @@ class nofWarehouseWorker : public noFigure
     public:     void Destroy() { Destroy_nofWarehouseWorker(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofWarehouseWorker(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofWarehouseWorker(sgd); }
+    protected:  void Serialize_nofWarehouseWorker(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofWarehouseWorker(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_WAREHOUSEWORKER; }
 

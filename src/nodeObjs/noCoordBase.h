@@ -30,15 +30,15 @@ class noCoordBase : public noBase
 
         /// Konstruktor von @p noCoordBase.
         noCoordBase(const NodalObjectType nop, const MapPoint pt) : noBase(nop), pos(pt) {}
-        noCoordBase(SerializedGameData* sgd, const unsigned obj_id);
+        noCoordBase(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noCoordBase(void) { Destroy_noBase(); }
     public:     void Destroy(void) { Destroy_noCoordBase(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noCoordBase(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noCoordBase(sgd); }
+    protected:  void Serialize_noCoordBase(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noCoordBase(sgd); }
 
         /// liefert die X-Koordinate.
         MapCoord GetX(void) const { return pos.x; }

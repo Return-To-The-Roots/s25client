@@ -98,39 +98,39 @@ void nofAttacker::Destroy_nofAttacker()
 }
 
 
-void nofAttacker::Serialize_nofAttacker(SerializedGameData* sgd) const
+void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
 {
     Serialize_nofActiveSoldier(sgd);
 
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
-        sgd->PushObject(attacked_goal, false);
-        sgd->PushBool(should_haunted);
-        sgd->PushUnsignedShort(radius);
+        sgd.PushObject(attacked_goal, false);
+        sgd.PushBool(should_haunted);
+        sgd.PushUnsignedShort(radius);
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
-            sgd->PushObject(blocking_event, true);
+            sgd.PushObject(blocking_event, true);
 
-        sgd->PushMapPoint(harborPos);
-        sgd->PushMapPoint(shipPos);
-        sgd->PushUnsignedInt(ship_obj_id);
+        sgd.PushMapPoint(harborPos);
+        sgd.PushMapPoint(shipPos);
+        sgd.PushUnsignedInt(ship_obj_id);
     }
 }
 
-nofAttacker::nofAttacker(SerializedGameData* sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
+nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
-        attacked_goal = sgd->PopObject<nobBaseMilitary>(GOT_UNKNOWN);
-        should_haunted = sgd->PopBool();
-        radius = sgd->PopUnsignedShort();
+        attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
+        should_haunted = sgd.PopBool();
+        radius = sgd.PopUnsignedShort();
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
-            blocking_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
+            blocking_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
 
-        harborPos = sgd->PopMapPoint();
-        shipPos = sgd->PopMapPoint();
-        ship_obj_id = sgd->PopUnsignedInt();
+        harborPos = sgd.PopMapPoint();
+        shipPos = sgd.PopMapPoint();
+        ship_obj_id = sgd.PopUnsignedInt();
     }
     else
     {

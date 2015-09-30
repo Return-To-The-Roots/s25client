@@ -40,7 +40,7 @@ class nofStonemason : public nofFarmhand
     public:
 
         nofStonemason(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofStonemason(SerializedGameData* sgd, const unsigned obj_id);
+        nofStonemason(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_STONEMASON; }
 

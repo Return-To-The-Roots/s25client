@@ -45,7 +45,7 @@ nofWoodcutter::nofWoodcutter(const MapPoint pos, const unsigned char player, nob
 {
 }
 
-nofWoodcutter::nofWoodcutter(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
+nofWoodcutter::nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
 {
 }
 

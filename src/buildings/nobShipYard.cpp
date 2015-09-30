@@ -8,17 +8,17 @@ nobShipYard::nobShipYard(const MapPoint pos, const unsigned char player, const N
 {
 }
 
-nobShipYard::nobShipYard(SerializedGameData* sgd, const unsigned obj_id)
-    : nobUsual(sgd, obj_id), mode(nobShipYard::Mode(sgd->PopUnsignedChar()))
+nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)
+    : nobUsual(sgd, obj_id), mode(nobShipYard::Mode(sgd.PopUnsignedChar()))
 {
 }
 
 /// Serialisierungsfunktionen
-void nobShipYard::Serialize(SerializedGameData* sgd) const
+void nobShipYard::Serialize(SerializedGameData& sgd) const
 {
     Serialize_nobUsual(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(mode));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(mode));
 }
 
 /// Schaltet Modus entsprechend um

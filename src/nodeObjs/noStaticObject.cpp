@@ -69,19 +69,19 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     }
 }
 
-void noStaticObject::Serialize_noStaticObject(SerializedGameData* sgd) const
+void noStaticObject::Serialize_noStaticObject(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedShort(id);
-    sgd->PushUnsignedShort(file);
-    sgd->PushUnsignedChar(size);
+    sgd.PushUnsignedShort(id);
+    sgd.PushUnsignedShort(file);
+    sgd.PushUnsignedChar(size);
 }
 
-noStaticObject::noStaticObject(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    id(sgd->PopUnsignedShort()),
-    file(sgd->PopUnsignedShort()),
-    size(sgd->PopUnsignedChar())
+noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    id(sgd.PopUnsignedShort()),
+    file(sgd.PopUnsignedShort()),
+    size(sgd.PopUnsignedChar())
 {
 }
 

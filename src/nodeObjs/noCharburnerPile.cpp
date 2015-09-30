@@ -71,21 +71,21 @@ void noCharburnerPile::Destroy_noCharburnerPile()
     Destroy_noCoordBase();
 }
 
-void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData* sgd) const
+void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushUnsignedShort(step);
-    sgd->PushUnsignedShort(sub_step);
-    sgd->PushObject(event, true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushUnsignedShort(step);
+    sgd.PushUnsignedShort(sub_step);
+    sgd.PushObject(event, true);
 }
 
-noCharburnerPile::noCharburnerPile(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    state(State(sgd->PopUnsignedChar())),
-    step(sgd->PopUnsignedShort()),
-    sub_step(sgd->PopUnsignedShort()),
-    event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    state(State(sgd.PopUnsignedChar())),
+    step(sgd.PopUnsignedShort()),
+    sub_step(sgd.PopUnsignedShort()),
+    event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
 }
 

@@ -63,21 +63,21 @@ void noGrainfield::Destroy_noGrainfield()
     Destroy_noCoordBase();
 }
 
-void noGrainfield::Serialize_noGrainfield(SerializedGameData* sgd) const
+void noGrainfield::Serialize_noGrainfield(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(type);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushUnsignedChar(size);
-    sgd->PushObject(event, true);
+    sgd.PushUnsignedChar(type);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushUnsignedChar(size);
+    sgd.PushObject(event, true);
 }
 
-noGrainfield::noGrainfield(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    type(sgd->PopUnsignedChar()),
-    state(State(sgd->PopUnsignedChar())),
-    size(sgd->PopUnsignedChar()),
-    event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    type(sgd.PopUnsignedChar()),
+    state(State(sgd.PopUnsignedChar())),
+    size(sgd.PopUnsignedChar()),
+    event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
 }
 

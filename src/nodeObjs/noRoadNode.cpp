@@ -56,11 +56,11 @@ void noRoadNode::Destroy_noRoadNode()
     Destroy_noCoordBase();
 }
 
-void noRoadNode::Serialize_noRoadNode(SerializedGameData* sgd) const
+void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(player);
+    sgd.PushUnsignedChar(player);
 
     // the trick only seems to work for flags
     if (this->GetGOT() == GOT_FLAG)
@@ -70,24 +70,24 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData* sgd) const
         // -> RoadSegment will set these later
         for (unsigned i = 0; i < 6; ++i)
         {
-            sgd->PushObject(NULL, true);
+            sgd.PushObject(NULL, true);
         }
     }
     else
     {
         for (unsigned i = 0; i < 6; ++i)
         {
-            sgd->PushObject(routes[i], true);
+            sgd.PushObject(routes[i], true);
         }
     }
 }
 
-noRoadNode::noRoadNode(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    player(sgd->PopUnsignedChar())
+noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    player(sgd.PopUnsignedChar())
 {
     for (unsigned i = 0; i < 6; ++i)
     {
-        routes[i] = sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT);
+        routes[i] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
 
     coord_id = gwg->MakeCoordID(pos);

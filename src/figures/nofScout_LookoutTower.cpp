@@ -39,13 +39,13 @@ nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned 
 {
 }
 
-nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData* sgd, const unsigned obj_id)
+nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id)
 {
 }
 
 
-void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData* sgd) const
+void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 }

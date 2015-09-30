@@ -35,7 +35,7 @@ class nofBrewer : public nofWorkman
     public:
 
         nofBrewer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofBrewer(SerializedGameData* sgd, const unsigned obj_id);
+        nofBrewer(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_BREWER; }
 };

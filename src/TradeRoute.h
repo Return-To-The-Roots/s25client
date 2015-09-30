@@ -53,9 +53,9 @@ public:
 
     TradeRoute(const TradeGraph* const tg, const MapPoint start, const MapPoint goal) :
         tg(tg), start(start), goal(goal), current_pos(start), global_pos(0), local_pos(0) { RecalcGlobalRoute(); }
-    TradeRoute(SerializedGameData* sgd, const GameWorldGame* const gwg, const unsigned char player);
+    TradeRoute(SerializedGameData& sgd, const GameWorldGame* const gwg, const unsigned char player);
 
-    void Serialize(SerializedGameData* sgd) const;
+    void Serialize(SerializedGameData& sgd) const;
 
     /// Was a route found?
     bool IsValid() const { return !local_route.empty(); }

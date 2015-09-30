@@ -115,15 +115,15 @@ class nofActiveSoldier : public nofSoldier
         /// (Copy-)Constructor
         nofActiveSoldier(const nofSoldier& other, const SoldierState init_state);
         /// Deserializer
-        nofActiveSoldier(SerializedGameData* sgd, const unsigned obj_id);
+        nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Tidy up
     protected:  void Destroy_nofActiveSoldier() { Destroy_nofSoldier(); }
     public:     void Destroy() { Destroy_nofActiveSoldier(); }
 
         /// Serializer
-    protected:  void Serialize_nofActiveSoldier(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofActiveSoldier(sgd); }
+    protected:  void Serialize_nofActiveSoldier(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofActiveSoldier(sgd); }
 
         /// Draw soldier (for all types of soldiers done by this base class!)
         void Draw(int x, int y);

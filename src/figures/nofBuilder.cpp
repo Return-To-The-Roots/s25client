@@ -59,27 +59,27 @@ nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNod
     }
 }
 
-void nofBuilder::Serialize_nofBuilder(SerializedGameData* sgd) const
+void nofBuilder::Serialize_nofBuilder(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushObject(building_site, true);
-    sgd->PushSignedShort(rel_x);
-    sgd->PushSignedShort(rel_y);
-    sgd->PushSignedShort(next_rel_x);
-    sgd->PushSignedShort(next_rel_y);
-    sgd->PushUnsignedChar(building_steps_available);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushObject(building_site, true);
+    sgd.PushSignedShort(rel_x);
+    sgd.PushSignedShort(rel_y);
+    sgd.PushSignedShort(next_rel_x);
+    sgd.PushSignedShort(next_rel_y);
+    sgd.PushUnsignedChar(building_steps_available);
 }
 
-nofBuilder::nofBuilder(SerializedGameData* sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    state(BuilderState(sgd->PopUnsignedChar())),
-    building_site(sgd->PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-    rel_x(sgd->PopSignedShort()),
-    rel_y(sgd->PopSignedShort()),
-    next_rel_x(sgd->PopSignedShort()),
-    next_rel_y(sgd->PopSignedShort()),
-    building_steps_available(sgd->PopUnsignedChar())
+nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
+    state(BuilderState(sgd.PopUnsignedChar())),
+    building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
+    rel_x(sgd.PopSignedShort()),
+    rel_y(sgd.PopSignedShort()),
+    next_rel_x(sgd.PopSignedShort()),
+    next_rel_y(sgd.PopSignedShort()),
+    building_steps_available(sgd.PopUnsignedChar())
 {
 }
 

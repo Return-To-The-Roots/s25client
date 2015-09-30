@@ -60,9 +60,9 @@ class nofCharburner : public nofFarmhand
     public:
 
         nofCharburner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofCharburner(SerializedGameData* sgd, const unsigned obj_id);
+        nofCharburner(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_CHARBURNER; }
 

@@ -35,7 +35,7 @@ nofPassiveWorker::nofPassiveWorker(const Job job, const MapPoint pos, const unsi
 {
 }
 
-nofPassiveWorker::nofPassiveWorker(SerializedGameData* sgd, const unsigned obj_id)
+nofPassiveWorker::nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id)
 {
 }

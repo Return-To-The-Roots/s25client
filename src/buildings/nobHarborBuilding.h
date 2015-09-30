@@ -30,8 +30,8 @@ class nobHarborBuilding : public nobBaseWarehouse
         struct ExpeditionInfo
         {
             ExpeditionInfo() : boards(0), stones(0), active(false), builder(false) {}
-            ExpeditionInfo(SerializedGameData* sgd);
-            void Serialize(SerializedGameData* sgd) const;
+            ExpeditionInfo(SerializedGameData& sgd);
+            void Serialize(SerializedGameData& sgd) const;
 
             /// Anzahl an Brettern und Steinen, die bereits angesammelt wurden
             unsigned boards, stones;
@@ -44,8 +44,8 @@ class nobHarborBuilding : public nobBaseWarehouse
         struct ExplorationExpeditionInfo
         {
             ExplorationExpeditionInfo() : active(false), scouts(0) {}
-            ExplorationExpeditionInfo(SerializedGameData* sgd);
-            void Serialize(SerializedGameData* sgd) const;
+            ExplorationExpeditionInfo(SerializedGameData& sgd);
+            void Serialize(SerializedGameData& sgd) const;
 
             /// Expedition in Vorbereitung?
             bool active;
@@ -106,7 +106,7 @@ class nobHarborBuilding : public nobBaseWarehouse
         friend class SerializedGameData;
         friend class BuildingFactory;
         nobHarborBuilding(const MapPoint pt, const unsigned char player, const Nation nation);
-        nobHarborBuilding(SerializedGameData* sgd, const unsigned obj_id);
+        nobHarborBuilding(SerializedGameData& sgd, const unsigned obj_id);
 public:
 
         MapCoord GetMilitaryRadius() const { return HARBOR_ALONE_RADIUS; }
@@ -114,7 +114,7 @@ public:
         /// Aufräummethoden
         void Destroy();
         /// Serialisierung
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
         GO_Type GetGOT() const { return GOT_NOB_HARBORBUILDING; }
         void Draw(int x, int y);
         void HandleEvent(const unsigned int id);

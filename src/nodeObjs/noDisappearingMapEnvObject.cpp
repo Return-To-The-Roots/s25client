@@ -49,15 +49,15 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const
 {
 }
 
-void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData* sgd) const
+void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const
 {
     Serialize_noDisappearingEnvObject(sgd);
 
-    sgd->PushUnsignedShort(map_id);
+    sgd.PushUnsignedShort(map_id);
 }
 
-noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData* sgd, const unsigned obj_id)
-    : noDisappearingEnvObject(sgd, obj_id), map_id(sgd->PopUnsignedShort())
+noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id)
+    : noDisappearingEnvObject(sgd, obj_id), map_id(sgd.PopUnsignedShort())
 {
 }
 

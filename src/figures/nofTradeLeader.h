@@ -49,9 +49,9 @@ class nofTradeLeader : public noFigure
     public:
 
         nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal);
-        nofTradeLeader(SerializedGameData* sgd, const unsigned obj_id);
+        nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_TRADELEADER; }
 

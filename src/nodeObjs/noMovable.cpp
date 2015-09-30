@@ -42,25 +42,25 @@ noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
 {
 }
 
-void noMovable::Serialize_noMovable(SerializedGameData* sgd) const
+void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(curMoveDir);
-    sgd->PushUnsignedChar(ascent);
-    sgd->PushObject(current_ev, true);
-    sgd->PushUnsignedInt(pause_walked_gf);
-    sgd->PushUnsignedInt(pause_event_length);
-    sgd->PushBool(moving);
+    sgd.PushUnsignedChar(curMoveDir);
+    sgd.PushUnsignedChar(ascent);
+    sgd.PushObject(current_ev, true);
+    sgd.PushUnsignedInt(pause_walked_gf);
+    sgd.PushUnsignedInt(pause_event_length);
+    sgd.PushBool(moving);
 }
 
-noMovable::noMovable(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    curMoveDir(sgd->PopUnsignedChar()),
-    ascent(sgd->PopUnsignedChar()),
-    current_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-    pause_walked_gf(sgd->PopUnsignedInt()),
-    pause_event_length(sgd->PopUnsignedInt())
-    , moving(sgd->PopBool())
+noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    curMoveDir(sgd.PopUnsignedChar()),
+    ascent(sgd.PopUnsignedChar()),
+    current_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    pause_walked_gf(sgd.PopUnsignedInt()),
+    pause_event_length(sgd.PopUnsignedInt())
+    , moving(sgd.PopBool())
 {
 }
 

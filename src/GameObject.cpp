@@ -61,11 +61,11 @@ GameObject::GameObject(void) : objId(objIdCounter_++)
     ++objCounter_;
 }
 
-GameObject::GameObject(SerializedGameData* sgd, const unsigned obj_id) : objId(obj_id)
+GameObject::GameObject(SerializedGameData& sgd, const unsigned obj_id) : objId(obj_id)
 {
     // ein Objekt mehr
     ++objCounter_;
-    sgd->AddObject(this);
+    sgd.AddObject(this);
 }
 
 GameObject::GameObject(const GameObject& go) : objId(go.objId)
@@ -87,7 +87,7 @@ void GameObject::Destroy()
 {
 }
 
-void GameObject::Serialize(SerializedGameData* sgd) const
+void GameObject::Serialize(SerializedGameData& sgd) const
 {
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }

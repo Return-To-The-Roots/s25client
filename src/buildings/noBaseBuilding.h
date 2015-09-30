@@ -48,7 +48,7 @@ class noBaseBuilding : public noRoadNode
     public:
 
         noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pt, const unsigned char player);
-        noBaseBuilding(SerializedGameData* sgd, const unsigned obj_id);
+        noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
         virtual ~noBaseBuilding();
 
@@ -57,8 +57,8 @@ class noBaseBuilding : public noRoadNode
     public:     void Destroy() { Destroy_noBaseBuilding(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noBaseBuilding(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noBaseBuilding(sgd); }
+    protected:  void Serialize_noBaseBuilding(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noBaseBuilding(sgd); }
 
         /// Eine bestellte Ware konnte doch nicht kommen
         virtual void WareLost(Ware* ware) = 0;

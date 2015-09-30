@@ -40,7 +40,7 @@ nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUs
 {
 }
 
-nofCarpenter::nofCarpenter(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

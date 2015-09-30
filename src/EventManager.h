@@ -51,13 +51,13 @@ class EventManager
                     : obj(obj), gf(gf), gf_length(gf_length), gf_next(gf + gf_length), id(id)
                 {}
 
-                Event(SerializedGameData* sgd, const unsigned obj_id);
+                Event(SerializedGameData& sgd, const unsigned obj_id);
 
                 void Destroy(void);
 
                 /// Serialisierungsfunktionen
-            protected: void Serialize_Event(SerializedGameData* sgd) const;
-            public: void Serialize(SerializedGameData* sgd) const { Serialize_Event(sgd); }
+            protected: void Serialize_Event(SerializedGameData& sgd) const;
+            public: void Serialize(SerializedGameData& sgd) const { Serialize_Event(sgd); }
 
                 GO_Type GetGOT() const { return GOT_EVENT; }
 
@@ -75,7 +75,7 @@ class EventManager
         /// fügt ein Event der Eventliste hinzu.
         EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id = 0);
         /// Deserialisiert ein Event und fügt es hinzu
-        EventPointer AddEvent(SerializedGameData* sgd, const unsigned obj_id);
+        EventPointer AddEvent(SerializedGameData& sgd, const unsigned obj_id);
         /// Fügt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
         /// Ein altes Event wird also quasi fortgeführt (um gf_elapsed in der Vergangenheit angelegt)
         EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
@@ -88,9 +88,9 @@ class EventManager
         void AddToKillList(GameObject* obj) { assert(!helpers::contains(kill_list, obj)); kill_list.push_back(obj); }
 
         /// Serialisieren
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
         /// Deserialisieren
-        void Deserialize(SerializedGameData* sgd);
+        void Deserialize(SerializedGameData& sgd);
 
         /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
         bool IsEventActive(const GameObject* const obj, const unsigned id) const;

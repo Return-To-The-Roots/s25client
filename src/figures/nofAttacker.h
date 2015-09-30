@@ -86,7 +86,7 @@ class nofAttacker : public nofActiveSoldier
         /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal,
                     const nobHarborBuilding* const harbor);
-        nofAttacker(SerializedGameData* sgd, const unsigned obj_id);
+        nofAttacker(SerializedGameData& sgd, const unsigned obj_id);
         ~nofAttacker();
 
         /// Aufräummethoden
@@ -94,8 +94,8 @@ class nofAttacker : public nofActiveSoldier
     public:     void Destroy() { Destroy_nofAttacker(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofAttacker(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofAttacker(sgd); }
+    protected:  void Serialize_nofAttacker(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofAttacker(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_ATTACKER; }
 

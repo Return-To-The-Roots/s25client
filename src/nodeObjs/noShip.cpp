@@ -103,49 +103,49 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     players->getElement(player)->RegisterShip(this);
 }
 
-void noShip::Serialize(SerializedGameData* sgd) const
+void noShip::Serialize(SerializedGameData& sgd) const
 {
     Serialize_noMovable(sgd);
 
-    sgd->PushUnsignedChar(player);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushUnsignedShort(seaId_);
-    sgd->PushUnsignedInt(goal_harbor_id);
-    sgd->PushUnsignedChar(goal_dir);
-    sgd->PushString(name);
-    sgd->PushUnsignedInt(curRouteIdx);
-    sgd->PushUnsignedInt(route_.size());
-    sgd->PushBool(lost);
-    sgd->PushUnsignedInt(remaining_sea_attackers);
-    sgd->PushUnsignedInt(home_harbor);
-    sgd->PushUnsignedInt(covered_distance);
+    sgd.PushUnsignedChar(player);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushUnsignedShort(seaId_);
+    sgd.PushUnsignedInt(goal_harbor_id);
+    sgd.PushUnsignedChar(goal_dir);
+    sgd.PushString(name);
+    sgd.PushUnsignedInt(curRouteIdx);
+    sgd.PushUnsignedInt(route_.size());
+    sgd.PushBool(lost);
+    sgd.PushUnsignedInt(remaining_sea_attackers);
+    sgd.PushUnsignedInt(home_harbor);
+    sgd.PushUnsignedInt(covered_distance);
     for(unsigned i = 0; i < route_.size(); ++i)
-        sgd->PushUnsignedChar(route_[i]);
-    sgd->PushObjectContainer(figures, false);
-    sgd->PushObjectContainer(wares, true);
+        sgd.PushUnsignedChar(route_[i]);
+    sgd.PushObjectContainer(figures, false);
+    sgd.PushObjectContainer(wares, true);
 
 
 }
 
-noShip::noShip(SerializedGameData* sgd, const unsigned obj_id) :
+noShip::noShip(SerializedGameData& sgd, const unsigned obj_id) :
     noMovable(sgd, obj_id),
-    player(sgd->PopUnsignedChar()),
-    state(State(sgd->PopUnsignedChar())),
-    seaId_(sgd->PopUnsignedShort()),
-    goal_harbor_id(sgd->PopUnsignedInt()),
-    goal_dir(sgd->PopUnsignedChar()),
-    name(sgd->PopString()),
-    curRouteIdx(sgd->PopUnsignedInt()),
-    route_(sgd->PopUnsignedInt()),
-    lost(sgd->PopBool()),
-    remaining_sea_attackers(sgd->PopUnsignedInt()),
-    home_harbor(sgd->PopUnsignedInt()),
-    covered_distance(sgd->PopUnsignedInt())
+    player(sgd.PopUnsignedChar()),
+    state(State(sgd.PopUnsignedChar())),
+    seaId_(sgd.PopUnsignedShort()),
+    goal_harbor_id(sgd.PopUnsignedInt()),
+    goal_dir(sgd.PopUnsignedChar()),
+    name(sgd.PopString()),
+    curRouteIdx(sgd.PopUnsignedInt()),
+    route_(sgd.PopUnsignedInt()),
+    lost(sgd.PopBool()),
+    remaining_sea_attackers(sgd.PopUnsignedInt()),
+    home_harbor(sgd.PopUnsignedInt()),
+    covered_distance(sgd.PopUnsignedInt())
 {
     for(unsigned i = 0; i < route_.size(); ++i)
-        route_[i] = sgd->PopUnsignedChar();
-    sgd->PopObjectContainer(figures, GOT_UNKNOWN);
-    sgd->PopObjectContainer(wares, GOT_WARE);
+        route_[i] = sgd.PopUnsignedChar();
+    sgd.PopObjectContainer(figures, GOT_UNKNOWN);
+    sgd.PopObjectContainer(wares, GOT_WARE);
 }
 
 void noShip::Destroy()

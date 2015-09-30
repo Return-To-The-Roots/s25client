@@ -61,17 +61,17 @@ void noFire::Destroy_noFire()
     Destroy_noCoordBase();
 }
 
-void noFire::Serialize_noFire(SerializedGameData* sgd) const
+void noFire::Serialize_noFire(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(size);
-    sgd->PushObject(dead_event, true);
+    sgd.PushUnsignedChar(size);
+    sgd.PushObject(dead_event, true);
 }
 
-noFire::noFire(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    size(sgd->PopUnsignedChar()),
-    dead_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
+noFire::noFire(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    size(sgd.PopUnsignedChar()),
+    dead_event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
     was_sounding(false),
     last_sound(0),
     next_interval(0)

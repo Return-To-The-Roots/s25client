@@ -27,15 +27,15 @@ class nobHQ : public nobBaseWarehouse
 
 
         nobHQ(const MapPoint pt, const unsigned char player, const Nation nation);
-        nobHQ(SerializedGameData* sgd, const unsigned obj_id);
+        nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nobHQ();
     public:     void Destroy() { Destroy_nobHQ(); }
 
         /// Serialisierungsfunktionen
-    protected: void Serialize_nobHQ(SerializedGameData* sgd) const;
-    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobHQ(sgd); }
+    protected: void Serialize_nobHQ(SerializedGameData& sgd) const;
+    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobHQ(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOB_HQ; }
 

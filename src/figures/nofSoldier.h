@@ -48,15 +48,15 @@ class nofSoldier : public noFigure
                    nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
         nofSoldier(const MapPoint pt, const unsigned char player,
                    nobBaseMilitary* const home, const unsigned char rank);
-        nofSoldier(SerializedGameData* sgd, const unsigned obj_id);
+        nofSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nofSoldier() { Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofSoldier(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofSoldier(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofSoldier(sgd); }
+    protected:  void Serialize_nofSoldier(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofSoldier(sgd); }
 
         /// Liefert Rang des Soldaten
         unsigned char GetRank() const { return (job_ - JOB_PRIVATE); }

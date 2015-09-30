@@ -51,17 +51,17 @@ noSign::noSign(const MapPoint pos,
 {
 }
 
-void noSign::Serialize_noSign(SerializedGameData* sgd) const
+void noSign::Serialize_noSign(SerializedGameData& sgd) const
 {
     Serialize_noDisappearingEnvObject(sgd);
 
-    sgd->PushUnsignedChar(type);
-    sgd->PushUnsignedChar(quantity);
+    sgd.PushUnsignedChar(type);
+    sgd.PushUnsignedChar(quantity);
 }
 
-noSign::noSign(SerializedGameData* sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id),
-    type(sgd->PopUnsignedChar()),
-    quantity(sgd->PopUnsignedChar())
+noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id),
+    type(sgd.PopUnsignedChar()),
+    quantity(sgd.PopUnsignedChar())
 {
 }
 

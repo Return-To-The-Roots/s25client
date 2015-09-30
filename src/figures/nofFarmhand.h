@@ -75,15 +75,15 @@ class nofFarmhand : public nofBuildingWorker
     public:
 
         nofFarmhand(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofFarmhand(SerializedGameData* sgd, const unsigned obj_id);
+        nofFarmhand(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nofFarmhand() { Destroy_nofBuildingWorker(); }
     public:     void Destroy() { Destroy_nofFarmhand(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFarmhand(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFarmhand(sgd); }
+    protected:  void Serialize_nofFarmhand(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFarmhand(sgd); }
 
 
 

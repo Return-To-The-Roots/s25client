@@ -355,12 +355,12 @@ void nobHQ::Destroy_nobHQ()
     gwg->GetMilitarySquare(pos).remove(this);
 }
 
-void nobHQ::Serialize_nobHQ(SerializedGameData* sgd) const
+void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
 {
     Serialize_nobBaseWarehouse(sgd);
 }
 
-nobHQ::nobHQ(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
+nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);

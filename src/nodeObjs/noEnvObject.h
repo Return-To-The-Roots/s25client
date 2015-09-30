@@ -25,13 +25,13 @@ class noEnvObject : public noStaticObject
 {
     public:
         noEnvObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF);
-        noEnvObject(SerializedGameData* sgd, const unsigned obj_id);
+        noEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
         void Destroy() { Destroy_noEnvObject(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noEnvObject(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noEnvObject(sgd); }
+    protected:  void Serialize_noEnvObject(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noEnvObject(sgd); }
 
         GO_Type GetGOT() const { return GOT_ENVOBJECT; }
 

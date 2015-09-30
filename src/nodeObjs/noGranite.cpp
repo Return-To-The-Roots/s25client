@@ -39,17 +39,17 @@ noGranite::noGranite(const GraniteType type, const unsigned char state) : noBase
 {
 }
 
-void noGranite::Serialize_noGranite(SerializedGameData* sgd) const
+void noGranite::Serialize_noGranite(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
-    sgd->PushUnsignedChar(state);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd.PushUnsignedChar(state);
 }
 
-noGranite::noGranite(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    type(GraniteType(sgd->PopUnsignedChar())),
-    state(sgd->PopUnsignedChar())
+noGranite::noGranite(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
+    type(GraniteType(sgd.PopUnsignedChar())),
+    state(sgd.PopUnsignedChar())
 {
 }
 

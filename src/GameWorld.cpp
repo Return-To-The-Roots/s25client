@@ -508,21 +508,21 @@ void GameWorld::Scan(glArchivItem_Map* map)
 
 }
 
-void GameWorld::Serialize(SerializedGameData* sgd) const
+void GameWorld::Serialize(SerializedGameData& sgd) const
 {
     // Headinformationen
-    sgd->PushUnsignedShort(width_);
-    sgd->PushUnsignedShort(height_);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(lt));
+    sgd.PushUnsignedShort(width_);
+    sgd.PushUnsignedShort(height_);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(lt));
 
     // Obj-ID-Counter reinschreiben
-    sgd->PushUnsignedInt(GameObject::GetObjIDCounter());
+    sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
     /// Serialize trade graphs first if they exist
     // Only if trade is enabled
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
     {
-        sgd->PushUnsignedChar(static_cast<unsigned char>(tgs.size()));
+        sgd.PushUnsignedChar(static_cast<unsigned char>(tgs.size()));
         for(unsigned i = 0; i < tgs.size(); ++i)
             tgs[i]->Serialize(sgd);
     }
@@ -534,91 +534,91 @@ void GameWorld::Serialize(SerializedGameData* sgd) const
         for(unsigned z = 0; z < 3; ++z)
         {
             if(nodes[i].roads_real[z])
-                sgd->PushUnsignedChar(nodes[i].roads[z]);
+                sgd.PushUnsignedChar(nodes[i].roads[z]);
             else
-                sgd->PushUnsignedChar(0);
+                sgd.PushUnsignedChar(0);
         }
 
-        sgd->PushUnsignedChar(nodes[i].altitude);
-        sgd->PushUnsignedChar(nodes[i].shadow);
-        sgd->PushUnsignedChar(nodes[i].t1);
-        sgd->PushUnsignedChar(nodes[i].t2);
-        sgd->PushUnsignedChar(nodes[i].resources);
-        sgd->PushBool(nodes[i].reserved);
-        sgd->PushUnsignedChar(nodes[i].owner);
+        sgd.PushUnsignedChar(nodes[i].altitude);
+        sgd.PushUnsignedChar(nodes[i].shadow);
+        sgd.PushUnsignedChar(nodes[i].t1);
+        sgd.PushUnsignedChar(nodes[i].t2);
+        sgd.PushUnsignedChar(nodes[i].resources);
+        sgd.PushBool(nodes[i].reserved);
+        sgd.PushUnsignedChar(nodes[i].owner);
         for(unsigned b = 0; b < 4; ++b)
-            sgd->PushUnsignedChar(nodes[i].boundary_stones[b]);
-        sgd->PushUnsignedChar(static_cast<unsigned char>(nodes[i].bq));
+            sgd.PushUnsignedChar(nodes[i].boundary_stones[b]);
+        sgd.PushUnsignedChar(static_cast<unsigned char>(nodes[i].bq));
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             const MapNode::FoWData& fow = nodes[i].fow[z];
-            sgd->PushUnsignedChar(static_cast<unsigned char>(fow.visibility));
+            sgd.PushUnsignedChar(static_cast<unsigned char>(fow.visibility));
             // Nur im FoW können FOW-Objekte stehen
             if(fow.visibility == VIS_FOW)
             {
-                sgd->PushUnsignedInt(fow.last_update_time);
-                sgd->PushFOWObject(fow.object);
+                sgd.PushUnsignedInt(fow.last_update_time);
+                sgd.PushFOWObject(fow.object);
                 for(unsigned r = 0; r < 3; ++r)
-                    sgd->PushUnsignedChar(fow.roads[r]);
-                sgd->PushUnsignedChar(fow.owner);
+                    sgd.PushUnsignedChar(fow.roads[r]);
+                sgd.PushUnsignedChar(fow.owner);
                 for(unsigned b = 0; b < 4; ++b)
-                    sgd->PushUnsignedChar(fow.boundary_stones[b]);
+                    sgd.PushUnsignedChar(fow.boundary_stones[b]);
             }
         }
-        sgd->PushObject(nodes[i].obj, false);
-        sgd->PushObjectContainer(nodes[i].figures, false);
-        sgd->PushUnsignedShort(nodes[i].sea_id);
-        sgd->PushUnsignedInt(nodes[i].harbor_id);
+        sgd.PushObject(nodes[i].obj, false);
+        sgd.PushObjectContainer(nodes[i].figures, false);
+        sgd.PushUnsignedShort(nodes[i].sea_id);
+        sgd.PushUnsignedInt(nodes[i].harbor_id);
     }
 
     // Katapultsteine serialisieren
-    sgd->PushObjectContainer(catapult_stones, true);
+    sgd.PushObjectContainer(catapult_stones, true);
     // Meeresinformationen serialisieren
-    sgd->PushUnsignedInt(seas.size());
+    sgd.PushUnsignedInt(seas.size());
     for(unsigned i = 0; i < seas.size(); ++i)
     {
-        sgd->PushUnsignedInt(seas[i].nodes_count);
+        sgd.PushUnsignedInt(seas[i].nodes_count);
     }
     // Hafenpositionen serialisieren
-    sgd->PushUnsignedInt(harbor_pos.size());
+    sgd.PushUnsignedInt(harbor_pos.size());
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
-        sgd->PushMapPoint(harbor_pos[i].pos);
+        sgd.PushMapPoint(harbor_pos[i].pos);
         for(unsigned z = 0; z < 6; ++z)
-            sgd->PushUnsignedShort(harbor_pos[i].cps[z].sea_id);
+            sgd.PushUnsignedShort(harbor_pos[i].cps[z].sea_id);
         for(unsigned z = 0; z < 6; ++z)
         {
-            sgd->PushUnsignedInt(harbor_pos[i].neighbors[z].size());
+            sgd.PushUnsignedInt(harbor_pos[i].neighbors[z].size());
 
             for(unsigned c = 0; c < harbor_pos[i].neighbors[z].size(); ++c)
             {
-                sgd->PushUnsignedInt(harbor_pos[i].neighbors[z][c].id);
-                sgd->PushUnsignedInt(harbor_pos[i].neighbors[z][c].distance);
+                sgd.PushUnsignedInt(harbor_pos[i].neighbors[z][c].id);
+                sgd.PushUnsignedInt(harbor_pos[i].neighbors[z][c].distance);
             }
         }
     }
 
-    sgd->PushObjectContainer(harbor_building_sites_from_sea, true);
+    sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
 }
 
-void GameWorld::Deserialize(SerializedGameData* sgd)
+void GameWorld::Deserialize(SerializedGameData& sgd)
 {
     // Headinformationen
-    width_ = sgd->PopUnsignedShort();
-    height_ = sgd->PopUnsignedShort();
-    lt = LandscapeType(sgd->PopUnsignedChar());
+    width_ = sgd.PopUnsignedShort();
+    height_ = sgd.PopUnsignedShort();
+    lt = LandscapeType(sgd.PopUnsignedChar());
 
     // Initialisierungen
     Init();
 
     // Obj-ID-Counter setzen
-    GameObject::SetObjIDCounter(sgd->PopUnsignedInt());
+    GameObject::SetObjIDCounter(sgd.PopUnsignedInt());
 
     // Trade graphs
     // Only if trade is enabled
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
     {
-        tgs.resize(sgd->PopUnsignedChar());
+        tgs.resize(sgd.PopUnsignedChar());
         for(unsigned i = 0; i < tgs.size(); ++i)
             tgs[i] = new TradeGraph(sgd, this);
     }
@@ -628,35 +628,35 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     {
         for(unsigned z = 0; z < 3; ++z)
         {
-            nodes[i].roads[z] = sgd->PopUnsignedChar();
+            nodes[i].roads[z] = sgd.PopUnsignedChar();
             nodes[i].roads_real[z] = nodes[i].roads[z] ? true : false;
         }
 
 
-        nodes[i].altitude = sgd->PopUnsignedChar();
-        nodes[i].shadow = sgd->PopUnsignedChar();
-        nodes[i].t1 = TerrainType(sgd->PopUnsignedChar());
-        nodes[i].t2 = TerrainType(sgd->PopUnsignedChar());
-        nodes[i].resources = sgd->PopUnsignedChar();
-        nodes[i].reserved = sgd->PopBool();
-        nodes[i].owner = sgd->PopUnsignedChar();
+        nodes[i].altitude = sgd.PopUnsignedChar();
+        nodes[i].shadow = sgd.PopUnsignedChar();
+        nodes[i].t1 = TerrainType(sgd.PopUnsignedChar());
+        nodes[i].t2 = TerrainType(sgd.PopUnsignedChar());
+        nodes[i].resources = sgd.PopUnsignedChar();
+        nodes[i].reserved = sgd.PopBool();
+        nodes[i].owner = sgd.PopUnsignedChar();
         for(unsigned b = 0; b < 4; ++b)
-            nodes[i].boundary_stones[b] = sgd->PopUnsignedChar();
-        nodes[i].bq = BuildingQuality(sgd->PopUnsignedChar());
+            nodes[i].boundary_stones[b] = sgd.PopUnsignedChar();
+        nodes[i].bq = BuildingQuality(sgd.PopUnsignedChar());
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
             MapNode::FoWData& fow = nodes[i].fow[z];
-            fow.visibility = Visibility(sgd->PopUnsignedChar());
+            fow.visibility = Visibility(sgd.PopUnsignedChar());
             // Nur im FoW können FOW-Objekte stehen
             if(fow.visibility == VIS_FOW)
             {
-                fow.last_update_time = sgd->PopUnsignedInt();
-                fow.object = sgd->PopFOWObject();
+                fow.last_update_time = sgd.PopUnsignedInt();
+                fow.object = sgd.PopFOWObject();
                 for(unsigned r = 0; r < 3; ++r)
-                    fow.roads[r] = sgd->PopUnsignedChar();
-                fow.owner = sgd->PopUnsignedChar();
+                    fow.roads[r] = sgd.PopUnsignedChar();
+                fow.owner = sgd.PopUnsignedChar();
                 for(unsigned b = 0; b < 4; ++b)
-                    fow.boundary_stones[b] = sgd->PopUnsignedChar();
+                    fow.boundary_stones[b] = sgd.PopUnsignedChar();
             }
             else
             {
@@ -669,10 +669,10 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
                     fow.boundary_stones[b] = 0;
             }
         }
-        nodes[i].obj = sgd->PopObject<noBase>(GOT_UNKNOWN);
-        sgd->PopObjectContainer(nodes[i].figures, GOT_UNKNOWN);
-        nodes[i].sea_id = sgd->PopUnsignedShort();
-        nodes[i].harbor_id = sgd->PopUnsignedInt();
+        nodes[i].obj = sgd.PopObject<noBase>(GOT_UNKNOWN);
+        sgd.PopObjectContainer(nodes[i].figures, GOT_UNKNOWN);
+        nodes[i].sea_id = sgd.PopUnsignedShort();
+        nodes[i].harbor_id = sgd.PopUnsignedInt();
 
         if (nodes[i].harbor_id)
         {
@@ -682,34 +682,34 @@ void GameWorld::Deserialize(SerializedGameData* sgd)
     }
 
     // Katapultsteine deserialisieren
-    sgd->PopObjectContainer(catapult_stones, GOT_CATAPULTSTONE);
+    sgd.PopObjectContainer(catapult_stones, GOT_CATAPULTSTONE);
 
     // Meeresinformationen deserialisieren
-    seas.resize(sgd->PopUnsignedInt());
+    seas.resize(sgd.PopUnsignedInt());
     for(unsigned i = 0; i < seas.size(); ++i)
     {
-        seas[i].nodes_count = sgd->PopUnsignedInt();
+        seas[i].nodes_count = sgd.PopUnsignedInt();
     }
 
     // Hafenpositionen serialisieren
-    harbor_pos.resize(sgd->PopUnsignedInt());
+    harbor_pos.resize(sgd.PopUnsignedInt());
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
     {
-        harbor_pos[i].pos = sgd->PopMapPoint();
+        harbor_pos[i].pos = sgd.PopMapPoint();
         for(unsigned z = 0; z < 6; ++z)
-            harbor_pos[i].cps[z].sea_id = sgd->PopUnsignedShort();
+            harbor_pos[i].cps[z].sea_id = sgd.PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)
         {
-            harbor_pos[i].neighbors[z].resize(sgd->PopUnsignedInt());
+            harbor_pos[i].neighbors[z].resize(sgd.PopUnsignedInt());
             for(unsigned c = 0; c < harbor_pos[i].neighbors[z].size(); ++c)
             {
-                harbor_pos[i].neighbors[z][c].id = sgd->PopUnsignedInt();
-                harbor_pos[i].neighbors[z][c].distance = sgd->PopUnsignedInt();
+                harbor_pos[i].neighbors[z][c].id = sgd.PopUnsignedInt();
+                harbor_pos[i].neighbors[z][c].distance = sgd.PopUnsignedInt();
             }
         }
     }
 
-    sgd->PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
+    sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 
     // BQ neu berechnen
     for(unsigned y = 0; y < height_; ++y)

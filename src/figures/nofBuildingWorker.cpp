@@ -51,33 +51,33 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
 {
 }
 
-void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData* sgd) const
+void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
 
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
-        sgd->PushObject(workplace, false);
-        sgd->PushUnsignedChar(static_cast<unsigned char>(ware));
-        sgd->PushUnsignedShort(not_working);
-        sgd->PushUnsignedInt(since_not_working);
-        sgd->PushBool(was_sounding);
+        sgd.PushObject(workplace, false);
+        sgd.PushUnsignedChar(static_cast<unsigned char>(ware));
+        sgd.PushUnsignedShort(not_working);
+        sgd.PushUnsignedInt(since_not_working);
+        sgd.PushBool(was_sounding);
     }
-    sgd->PushBool(OutOfRessourcesMsgSent);
+    sgd.PushBool(OutOfRessourcesMsgSent);
 }
 
-nofBuildingWorker::nofBuildingWorker(SerializedGameData* sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    state(State(sgd->PopUnsignedChar()))
+nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
+    state(State(sgd.PopUnsignedChar()))
 {
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
-        workplace = sgd->PopObject<nobUsual>(GOT_UNKNOWN);
-        ware = GoodType(sgd->PopUnsignedChar());
-        not_working = sgd->PopUnsignedShort();
-        since_not_working = sgd->PopUnsignedInt();
-        was_sounding = sgd->PopBool();
+        workplace = sgd.PopObject<nobUsual>(GOT_UNKNOWN);
+        ware = GoodType(sgd.PopUnsignedChar());
+        not_working = sgd.PopUnsignedShort();
+        since_not_working = sgd.PopUnsignedInt();
+        was_sounding = sgd.PopBool();
     }
     else
     {
@@ -87,7 +87,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData* sgd, const unsigned obj
         since_not_working = 0xFFFFFFFF;
         was_sounding = false;
     }
-    OutOfRessourcesMsgSent = sgd->PopBool();
+    OutOfRessourcesMsgSent = sgd.PopBool();
 }
 
 

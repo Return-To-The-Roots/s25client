@@ -30,7 +30,7 @@ class noBase : public GameObject
         /// Konstruktor von @p noBase.
         noBase(const NodalObjectType nop) : nop(nop) {}
         /// Deserialisierungskonstruktor
-        noBase(SerializedGameData* sgd, const unsigned obj_id);
+        noBase(SerializedGameData& sgd, const unsigned obj_id);
 
         /// An x,y zeichnen.
         virtual void Draw(int x, int y) = 0;
@@ -38,7 +38,7 @@ class noBase : public GameObject
         /// Type zurückgeben.
         NodalObjectType GetType(void) const { return nop; }
         /// Serialisierungsfunktion.
-        void Serialize(SerializedGameData* sgd) const { Serialize_noBase(sgd); }
+        void Serialize(SerializedGameData& sgd) const { Serialize_noBase(sgd); }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         virtual FOWObject* CreateFOWObject() const;
@@ -67,7 +67,7 @@ class noBase : public GameObject
         /// Räumt das Basisobjekt auf.
         void Destroy_noBase(void) {}
         /// serialisiert das Basisobjekt.
-        void Serialize_noBase(SerializedGameData* sgd) const;
+        void Serialize_noBase(SerializedGameData& sgd) const;
 
     protected:
         NodalObjectType nop; ///< Typ des NodeObjekt ( @see NodalObjectTypes.h )

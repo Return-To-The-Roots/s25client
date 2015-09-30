@@ -21,40 +21,40 @@
 #include "GameWorld.h"
 #include "SerializedGameData.h"
 
-TradeRoute::TradeRoute(SerializedGameData* sgd, const GameWorldGame* const gwg, const unsigned char player) :
+TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame* const gwg, const unsigned char player) :
     tg(gwg->GetTradeGraph(player)),
-    start(sgd->PopMapPoint()),
-    goal(sgd->PopMapPoint()),
-    current_pos(sgd->PopMapPoint()),
-    current_pos_tg(sgd->PopMapPoint())
+    start(sgd.PopMapPoint()),
+    goal(sgd.PopMapPoint()),
+    current_pos(sgd.PopMapPoint()),
+    current_pos_tg(sgd.PopMapPoint())
 {
-    global_route.resize(sgd->PopUnsignedInt());
+    global_route.resize(sgd.PopUnsignedInt());
     for(unsigned i = 0; i < global_route.size(); ++i)
-        global_route[i] = sgd->PopUnsignedChar();
-    global_pos = sgd->PopUnsignedInt();
+        global_route[i] = sgd.PopUnsignedChar();
+    global_pos = sgd.PopUnsignedInt();
 
-    local_route.resize(sgd->PopUnsignedInt());
+    local_route.resize(sgd.PopUnsignedInt());
     for(unsigned i = 0; i < local_route.size(); ++i)
-        local_route[i] = sgd->PopUnsignedChar();
-    local_pos = sgd->PopUnsignedInt();
+        local_route[i] = sgd.PopUnsignedChar();
+    local_pos = sgd.PopUnsignedInt();
 }
 
-void TradeRoute::Serialize(SerializedGameData* sgd) const
+void TradeRoute::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushMapPoint(start);
-    sgd->PushMapPoint(goal);
-    sgd->PushMapPoint(current_pos);
-    sgd->PushMapPoint(current_pos_tg);
+    sgd.PushMapPoint(start);
+    sgd.PushMapPoint(goal);
+    sgd.PushMapPoint(current_pos);
+    sgd.PushMapPoint(current_pos_tg);
 
-    sgd->PushUnsignedInt(global_route.size());
+    sgd.PushUnsignedInt(global_route.size());
     for(unsigned i = 0; i < global_route.size(); ++i)
-        sgd->PushUnsignedChar(global_route[i]);
-    sgd->PushUnsignedInt(global_pos);
+        sgd.PushUnsignedChar(global_route[i]);
+    sgd.PushUnsignedInt(global_pos);
 
-    sgd->PushUnsignedInt(local_route.size());
+    sgd.PushUnsignedInt(local_route.size());
     for(unsigned i = 0; i < local_route.size(); ++i)
-        sgd->PushUnsignedChar(local_route[i]);
-    sgd->PushUnsignedInt(local_pos);
+        sgd.PushUnsignedChar(local_route[i]);
+    sgd.PushUnsignedInt(local_pos);
 }
 
 

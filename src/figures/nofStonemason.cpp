@@ -42,7 +42,7 @@ nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nob
 {
 }
 
-nofStonemason::nofStonemason(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
+nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
 {
 }
 

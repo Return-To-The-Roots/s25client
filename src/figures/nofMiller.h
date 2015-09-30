@@ -42,11 +42,11 @@ class nofMiller : public nofWorkman
     public:
 
         nofMiller(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMiller(SerializedGameData* sgd, const unsigned obj_id);
+        nofMiller(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofMiller(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofMiller(sgd); }
+    protected:  void Serialize_nofMiller(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofMiller(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_MILLER; }
 };

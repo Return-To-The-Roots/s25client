@@ -44,7 +44,7 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
 {
 }
 
-nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd->PopUnsignedChar()))
+nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
 {
     if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
     {
@@ -54,10 +54,10 @@ nofMetalworker::nofMetalworker(SerializedGameData* sgd, const unsigned obj_id) :
     }
 }
 
-void nofMetalworker::Serialize(SerializedGameData* sgd) const
+void nofMetalworker::Serialize(SerializedGameData& sgd) const
 {
     nofWorkman::Serialize(sgd);
-    sgd->PushUnsignedChar(nextProducedTool);
+    sgd.PushUnsignedChar(nextProducedTool);
 }
 
 

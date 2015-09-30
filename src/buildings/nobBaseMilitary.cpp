@@ -115,30 +115,30 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     Destroy_noBuilding();
 }
 
-void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData* sgd) const
+void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
 {
     Serialize_noBuilding(sgd);
 
-    sgd->PushObjectContainer(leave_house, false);
-    sgd->PushObject(leaving_event, true);
-    sgd->PushBool(go_out);
-    sgd->PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
-    sgd->PushObjectContainer(troops_on_mission, false);
-    sgd->PushObjectContainer(aggressors, true);
-    sgd->PushObjectContainer(aggressive_defenders, true);
-    sgd->PushObject(defender_, true);
+    sgd.PushObjectContainer(leave_house, false);
+    sgd.PushObject(leaving_event, true);
+    sgd.PushBool(go_out);
+    sgd.PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
+    sgd.PushObjectContainer(troops_on_mission, false);
+    sgd.PushObjectContainer(aggressors, true);
+    sgd.PushObjectContainer(aggressive_defenders, true);
+    sgd.PushObject(defender_, true);
 }
 
-nobBaseMilitary::nobBaseMilitary(SerializedGameData* sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
+nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
 {
-    sgd->PopObjectContainer(leave_house, GOT_UNKNOWN);
-    leaving_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
-    go_out = sgd->PopBool();
-    sgd->PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
-    sgd->PopObjectContainer(troops_on_mission, GOT_UNKNOWN);
-    sgd->PopObjectContainer(aggressors, GOT_NOF_ATTACKER);
-    sgd->PopObjectContainer(aggressive_defenders, GOT_NOF_AGGRESSIVEDEFENDER);
-    defender_ = sgd->PopObject<nofDefender>(GOT_NOF_DEFENDER);
+    sgd.PopObjectContainer(leave_house, GOT_UNKNOWN);
+    leaving_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    go_out = sgd.PopBool();
+    sgd.PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
+    sgd.PopObjectContainer(troops_on_mission, GOT_UNKNOWN);
+    sgd.PopObjectContainer(aggressors, GOT_NOF_ATTACKER);
+    sgd.PopObjectContainer(aggressive_defenders, GOT_NOF_AGGRESSIVEDEFENDER);
+    defender_ = sgd.PopObject<nofDefender>(GOT_NOF_DEFENDER);
 }
 
 void nobBaseMilitary::AddLeavingEvent()

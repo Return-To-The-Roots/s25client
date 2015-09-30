@@ -51,9 +51,9 @@ FOWObject::~FOWObject()
 
 fowNothing::fowNothing()
 {}
-fowNothing::fowNothing(SerializedGameData* sgd)
+fowNothing::fowNothing(SerializedGameData& sgd)
 {}
-void fowNothing::Serialize(SerializedGameData* sgd) const
+void fowNothing::Serialize(SerializedGameData& sgd) const
 {}
 void fowNothing::Draw(int x, int y) const
 {}
@@ -65,15 +65,15 @@ void fowNothing::Draw(int x, int y) const
 fowBuilding::fowBuilding(const BuildingType type, const Nation nation) : type(type), nation(nation)
 {}
 
-fowBuilding::fowBuilding(SerializedGameData* sgd) :
-    type(BuildingType(sgd->PopUnsignedChar())),
-    nation(Nation(sgd->PopUnsignedChar()))
+fowBuilding::fowBuilding(SerializedGameData& sgd) :
+    type(BuildingType(sgd.PopUnsignedChar())),
+    nation(Nation(sgd.PopUnsignedChar()))
 {}
 
-void fowBuilding::Serialize(SerializedGameData* sgd) const
+void fowBuilding::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
-    sgd->PushUnsignedChar(static_cast<unsigned char>(nation));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(nation));
 }
 
 void fowBuilding::Draw(int x, int y) const
@@ -99,19 +99,19 @@ fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, co
     : planing(planing), type(type), nation(nation), build_progress(build_progress)
 {}
 
-fowBuildingSite::fowBuildingSite(SerializedGameData* sgd) :
-    planing(sgd->PopBool()),
-    type(BuildingType(sgd->PopUnsignedChar())),
-    nation(Nation(sgd->PopUnsignedChar())),
-    build_progress(sgd->PopUnsignedChar())
+fowBuildingSite::fowBuildingSite(SerializedGameData& sgd) :
+    planing(sgd.PopBool()),
+    type(BuildingType(sgd.PopUnsignedChar())),
+    nation(Nation(sgd.PopUnsignedChar())),
+    build_progress(sgd.PopUnsignedChar())
 {}
 
-void fowBuildingSite::Serialize(SerializedGameData* sgd) const
+void fowBuildingSite::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushBool(planing);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
-    sgd->PushUnsignedChar(static_cast<unsigned char>(nation));
-    sgd->PushUnsignedChar(build_progress);
+    sgd.PushBool(planing);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(nation));
+    sgd.PushUnsignedChar(build_progress);
 }
 
 void fowBuildingSite::Draw(int x, int y) const
@@ -216,15 +216,15 @@ void fowBuildingSite::Draw(int x, int y) const
 fowFlag::fowFlag(const unsigned char player, const FlagType flag_type) : player(player), flag_type(flag_type)
 {}
 
-fowFlag::fowFlag(SerializedGameData* sgd) :
-    player(sgd->PopUnsignedChar()),
-    flag_type(FlagType(sgd->PopUnsignedChar()))
+fowFlag::fowFlag(SerializedGameData& sgd) :
+    player(sgd.PopUnsignedChar()),
+    flag_type(FlagType(sgd.PopUnsignedChar()))
 {}
 
-void fowFlag::Serialize(SerializedGameData* sgd) const
+void fowFlag::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushUnsignedChar(player);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(flag_type));
+    sgd.PushUnsignedChar(player);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(flag_type));
 }
 
 void fowFlag::Draw(int x, int y) const
@@ -242,15 +242,15 @@ void fowFlag::Draw(int x, int y) const
 fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type), size(size)
 {}
 
-fowTree::fowTree(SerializedGameData* sgd) :
-    type(sgd->PopUnsignedChar()),
-    size(sgd->PopUnsignedChar())
+fowTree::fowTree(SerializedGameData& sgd) :
+    type(sgd.PopUnsignedChar()),
+    size(sgd.PopUnsignedChar())
 {}
 
-void fowTree::Serialize(SerializedGameData* sgd) const
+void fowTree::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushUnsignedChar(type);
-    sgd->PushUnsignedChar(size);
+    sgd.PushUnsignedChar(type);
+    sgd.PushUnsignedChar(size);
 }
 
 void fowTree::Draw(int x, int y) const
@@ -274,15 +274,15 @@ void fowTree::Draw(int x, int y) const
 fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state)
 {}
 
-fowGranite::fowGranite(SerializedGameData* sgd) :
-    type(GraniteType(sgd->PopUnsignedChar())),
-    state(sgd->PopUnsignedChar())
+fowGranite::fowGranite(SerializedGameData& sgd) :
+    type(GraniteType(sgd.PopUnsignedChar())),
+    state(sgd.PopUnsignedChar())
 {}
 
-void fowGranite::Serialize(SerializedGameData* sgd) const
+void fowGranite::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
-    sgd->PushUnsignedChar(state);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd.PushUnsignedChar(state);
 }
 
 void fowGranite::Draw(int x, int y) const

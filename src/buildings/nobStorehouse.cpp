@@ -65,12 +65,12 @@ void nobStorehouse::Destroy_nobStorehouse()
     Destroy_nobBaseWarehouse();
 }
 
-void nobStorehouse::Serialize_nobStorehouse(SerializedGameData* sgd) const
+void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const
 {
     Serialize_nobBaseWarehouse(sgd);
 }
 
-nobStorehouse::nobStorehouse(SerializedGameData* sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
+nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
 {
 }
 

@@ -41,7 +41,7 @@ nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nob
 {
 }
 
-nofPigbreeder::nofPigbreeder(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

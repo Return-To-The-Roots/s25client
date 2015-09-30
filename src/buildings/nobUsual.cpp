@@ -78,19 +78,19 @@ nobUsual::nobUsual(BuildingType type,
  *
  *  @author OLiver
  */
-nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
+nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
     : noBuilding(sgd, obj_id),
-      worker(sgd->PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
-      productivity(sgd->PopUnsignedShort()),
-      disable_production(sgd->PopBool()),
-      disable_production_virtual(sgd->PopBool()),
-      last_ordered_ware(sgd->PopUnsignedChar()),
-      orderware_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-      productivity_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-      is_working(sgd->PopBool())
+      worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
+      productivity(sgd.PopUnsignedShort()),
+      disable_production(sgd.PopBool()),
+      disable_production_virtual(sgd.PopBool()),
+      last_ordered_ware(sgd.PopUnsignedChar()),
+      orderware_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+      productivity_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+      is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)
-        wares[i] = sgd->PopUnsignedChar();
+        wares[i] = sgd.PopUnsignedChar();
 
     if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
         ordered_wares.resize(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count);
@@ -98,9 +98,9 @@ nobUsual::nobUsual(SerializedGameData* sgd, const unsigned int obj_id)
         ordered_wares.clear();
 
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
-        sgd->PopObjectContainer(ordered_wares[i], GOT_WARE);
+        sgd.PopObjectContainer(ordered_wares[i], GOT_WARE);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
-        last_productivities[i] = sgd->PopUnsignedShort();
+        last_productivities[i] = sgd.PopUnsignedShort();
 
     // Visuellen Produktionszustand dem realen anpassen
     disable_production_virtual = disable_production;
@@ -156,25 +156,25 @@ void nobUsual::Destroy_nobUsual()
  *
  *  @author OLiver
  */
-void nobUsual::Serialize_nobUsual(SerializedGameData* sgd) const
+void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
 {
     Serialize_noBuilding(sgd);
 
-    sgd->PushObject(worker, false);
-    sgd->PushUnsignedShort(productivity);
-    sgd->PushBool(disable_production);
-    sgd->PushBool(disable_production_virtual);
-    sgd->PushUnsignedChar(last_ordered_ware);
-    sgd->PushObject(orderware_ev, true);
-    sgd->PushObject(productivity_ev, true);
-    sgd->PushBool(is_working);
+    sgd.PushObject(worker, false);
+    sgd.PushUnsignedShort(productivity);
+    sgd.PushBool(disable_production);
+    sgd.PushBool(disable_production_virtual);
+    sgd.PushUnsignedChar(last_ordered_ware);
+    sgd.PushObject(orderware_ev, true);
+    sgd.PushObject(productivity_ev, true);
+    sgd.PushBool(is_working);
 
     for(unsigned i = 0; i < 3; ++i)
-        sgd->PushUnsignedChar(wares[i]);
+        sgd.PushUnsignedChar(wares[i]);
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
-        sgd->PushObjectContainer(ordered_wares[i], true);
+        sgd.PushObjectContainer(ordered_wares[i], true);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
-        sgd->PushUnsignedShort(last_productivities[i]);
+        sgd.PushUnsignedShort(last_productivities[i]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

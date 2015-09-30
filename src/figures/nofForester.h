@@ -40,7 +40,7 @@ class nofForester : public nofFarmhand
     public:
 
         nofForester(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofForester(SerializedGameData* sgd, const unsigned obj_id);
+        nofForester(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_FORESTER; }
 

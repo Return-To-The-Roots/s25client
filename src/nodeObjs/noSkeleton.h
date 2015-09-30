@@ -28,15 +28,15 @@ class noSkeleton: public noCoordBase
     public:
 
         noSkeleton(const MapPoint pt);
-        noSkeleton(SerializedGameData* sgd, const unsigned obj_id);
+        noSkeleton(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noSkeleton();
 
         void Destroy() { Destroy_noSkeleton(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noSkeleton(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noSkeleton(sgd); }
+    protected:  void Serialize_noSkeleton(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noSkeleton(sgd); }
 
         GO_Type GetGOT() const { return GOT_SKELETON; }
 

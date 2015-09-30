@@ -25,15 +25,15 @@ class nobStorehouse : public nobBaseWarehouse
     friend class SerializedGameData;
     friend class BuildingFactory;
     nobStorehouse(const MapPoint pt, const unsigned char player, const Nation nation);
-    nobStorehouse(SerializedGameData* sgd, const unsigned obj_id);
+    nobStorehouse(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nobStorehouse();
     public:     void Destroy() { Destroy_nobStorehouse(); }
 
         /// Serialisierungsfunktionen
-    protected: void Serialize_nobStorehouse(SerializedGameData* sgd) const;
-    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobStorehouse(sgd); }
+    protected: void Serialize_nobStorehouse(SerializedGameData& sgd) const;
+    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobStorehouse(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOB_STOREHOUSE; }
 

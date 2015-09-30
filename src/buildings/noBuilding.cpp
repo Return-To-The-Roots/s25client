@@ -71,11 +71,11 @@ void noBuilding::Destroy_noBuilding()
  *
  *  @author OLiver
  */
-void noBuilding::Serialize_noBuilding(SerializedGameData* sgd) const
+void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
 {
     Serialize_noBaseBuilding(sgd);
 
-    sgd->PushUnsignedChar(opendoor);
+    sgd.PushUnsignedChar(opendoor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,8 +84,8 @@ void noBuilding::Serialize_noBuilding(SerializedGameData* sgd) const
  *
  *  @author OLiver
  */
-noBuilding::noBuilding(SerializedGameData* sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
-    opendoor(sgd->PopUnsignedChar())
+noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
+    opendoor(sgd.PopUnsignedChar())
 {
 }
 

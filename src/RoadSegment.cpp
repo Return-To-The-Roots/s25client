@@ -61,18 +61,18 @@ RoadSegment::RoadSegment(const RoadType rt,
  *
  *  @author OLiver
  */
-RoadSegment::RoadSegment(SerializedGameData* sgd, const unsigned int obj_id)
+RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned int obj_id)
     : GameObject(sgd, obj_id),
-      rt(static_cast<RoadType>(sgd->PopUnsignedChar())),
-      f1(sgd->PopObject<noRoadNode>(GOT_UNKNOWN)),
-      f2(sgd->PopObject<noRoadNode>(GOT_UNKNOWN)),
-      route(sgd->PopUnsignedShort())
+      rt(static_cast<RoadType>(sgd.PopUnsignedChar())),
+      f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
+      f2(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
+      route(sgd.PopUnsignedShort())
 {
-    carriers_[0] = sgd->PopObject<nofCarrier>(GOT_NOF_CARRIER);
-    carriers_[1] = sgd->PopObject<nofCarrier>(GOT_NOF_CARRIER);
+    carriers_[0] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
+    carriers_[1] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
 
     for(unsigned short i = 0; i < route.size(); ++i)
-        route[i] = sgd->PopUnsignedChar();
+        route[i] = sgd.PopUnsignedChar();
 
     // tell the noRoadNodes about our existance
     f1->routes[route[0]] = this;
@@ -136,19 +136,19 @@ void RoadSegment::Destroy_RoadSegment()
  *
  *  @author OLiver
  */
-void RoadSegment::Serialize_RoadSegment(SerializedGameData* sgd) const
+void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(rt));
-    sgd->PushObject(f1, false);
-    sgd->PushObject(f2, false);
-    sgd->PushUnsignedShort(route.size());
-    sgd->PushObject(carriers_[0], true);
-    sgd->PushObject(carriers_[1], true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(rt));
+    sgd.PushObject(f1, false);
+    sgd.PushObject(f2, false);
+    sgd.PushUnsignedShort(route.size());
+    sgd.PushObject(carriers_[0], true);
+    sgd.PushObject(carriers_[1], true);
 
     for(unsigned short i = 0; i < route.size(); ++i)
-        sgd->PushUnsignedChar(route[i]);
+        sgd.PushUnsignedChar(route[i]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

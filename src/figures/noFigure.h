@@ -125,7 +125,7 @@ class noFigure : public noMovable
         /// Konstruktor für Figuren, die im Job-Modus starten
         noFigure(const Job job, const MapPoint pt, const unsigned char player);
 
-        noFigure(SerializedGameData* sgd, const unsigned obj_id);
+        noFigure(SerializedGameData& sgd, const unsigned obj_id);
 
 
         /// Aufräummethoden
@@ -133,8 +133,8 @@ class noFigure : public noMovable
     public:     void Destroy() { Destroy_noFigure(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noFigure(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noFigure(sgd); }
+    protected:  void Serialize_noFigure(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noFigure(sgd); }
 
         void HandleEvent(const unsigned int id);
 

@@ -46,7 +46,7 @@ class noGrainfield : public noCoordBase
     public:
 
         noGrainfield(const MapPoint pt);
-        noGrainfield(SerializedGameData* sgd, const unsigned obj_id);
+        noGrainfield(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noGrainfield();
 
@@ -55,8 +55,8 @@ class noGrainfield : public noCoordBase
     public:     void Destroy() { Destroy_noGrainfield(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noGrainfield(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noGrainfield(sgd); }
+    protected:  void Serialize_noGrainfield(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noGrainfield(sgd); }
 
         GO_Type GetGOT() const { return GOT_GRAINFIELD; }
 

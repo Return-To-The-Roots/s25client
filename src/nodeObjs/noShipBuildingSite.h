@@ -25,10 +25,10 @@ class noShipBuildingSite: public noCoordBase
     public:
 
         noShipBuildingSite(const MapPoint pt, const unsigned char player);
-        noShipBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
+        noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
         ~noShipBuildingSite();
         void Destroy();
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
         GO_Type GetGOT() const { return GOT_SHIPBUILDINGSITE; }
 
         /// Gibt den Eigentümer zurück

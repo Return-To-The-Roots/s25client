@@ -57,17 +57,17 @@ void noSkeleton::Destroy_noSkeleton()
     Destroy_noCoordBase();
 }
 
-void noSkeleton::Serialize_noSkeleton(SerializedGameData* sgd) const
+void noSkeleton::Serialize_noSkeleton(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(type);
-    sgd->PushObject(current_event, true);
+    sgd.PushUnsignedChar(type);
+    sgd.PushObject(current_event, true);
 }
 
-noSkeleton::noSkeleton(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    type(sgd->PopUnsignedChar()),
-    current_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    type(sgd.PopUnsignedChar()),
+    current_event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
 
 }

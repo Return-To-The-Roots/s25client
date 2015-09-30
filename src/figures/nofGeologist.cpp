@@ -48,39 +48,39 @@ nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoa
     node_goal.y = 0;
 }
 
-void nofGeologist::Serialize_nofGeologist(SerializedGameData* sgd) const
+void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
 {
     Serialize_nofFlagWorker(sgd);
 
-    sgd->PushUnsignedShort(signs);
+    sgd.PushUnsignedShort(signs);
 
-    sgd->PushUnsignedInt(available_nodes.size());
+    sgd.PushUnsignedInt(available_nodes.size());
     for(std::vector< MapPoint >::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
     {
-        sgd->PushMapPoint(*it);
+        sgd.PushMapPoint(*it);
     }
 
-    sgd->PushMapPoint(node_goal);
+    sgd.PushMapPoint(node_goal);
 
     for(unsigned i = 0; i < 5; ++i)
-        sgd->PushBool(resAlreadyFound[i]);
+        sgd.PushBool(resAlreadyFound[i]);
 
 }
 
-nofGeologist::nofGeologist(SerializedGameData* sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    signs(sgd->PopUnsignedShort()), resAlreadyFound(std::vector<bool>(5))
+nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
+    signs(sgd.PopUnsignedShort()), resAlreadyFound(std::vector<bool>(5))
 {
-    unsigned available_nodes_count = sgd->PopUnsignedInt();
+    unsigned available_nodes_count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
     {
-        MapPoint p = sgd->PopMapPoint();
+        MapPoint p = sgd.PopMapPoint();
         available_nodes.push_back(p);
     }
 
-    node_goal = sgd->PopMapPoint();
+    node_goal = sgd.PopMapPoint();
 
     for(unsigned i = 0; i < 5; ++i)
-        resAlreadyFound[i] = sgd->PopBool();
+        resAlreadyFound[i] = sgd.PopBool();
 }
 
 void nofGeologist::Draw(int x, int y)

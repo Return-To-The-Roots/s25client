@@ -64,13 +64,13 @@ class noAnimal : public noMovable
 
         /// Konstruktor
         noAnimal(const Species species, const MapPoint pt);
-        noAnimal(SerializedGameData* sgd, const unsigned obj_id);
+        noAnimal(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noAnimal() {}
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noAnimal(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noAnimal(sgd); }
+    protected:  void Serialize_noAnimal(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noAnimal(sgd); }
 
         /// Aufräummethoden
     protected:  void Destroy_noAnimal() { Destroy_noMovable(); }

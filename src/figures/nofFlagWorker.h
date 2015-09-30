@@ -51,15 +51,15 @@ class nofFlagWorker : public noFigure
     public:
 
         nofFlagWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofFlagWorker(SerializedGameData* sgd, const unsigned obj_id);
+        nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nofFlagWorker();
     public:     void Destroy() { Destroy_nofFlagWorker(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFlagWorker(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFlagWorker(sgd); }
+    protected:  void Serialize_nofFlagWorker(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFlagWorker(sgd); }
 
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde

@@ -48,12 +48,12 @@ class nofFarmer : public nofFarmhand
     public:
 
         nofFarmer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofFarmer(SerializedGameData* sgd, const unsigned obj_id);
+        nofFarmer(SerializedGameData& sgd, const unsigned obj_id);
 
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFarmer(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFarmer(sgd); }
+    protected:  void Serialize_nofFarmer(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFarmer(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_FARMER; }
 

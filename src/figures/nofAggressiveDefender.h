@@ -56,7 +56,7 @@ class nofAggressiveDefender : public nofActiveSoldier
         nofAggressiveDefender(const MapPoint pt, const unsigned char player,
                               nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker);
         nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
-        nofAggressiveDefender(SerializedGameData* sgd, const unsigned obj_id);
+        nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id);
 
         ~nofAggressiveDefender();
 
@@ -67,8 +67,8 @@ class nofAggressiveDefender : public nofActiveSoldier
     public:     void Destroy() { Destroy_nofAggressiveDefender(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofAggressiveDefender(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofAggressiveDefender(sgd); }
+    protected:  void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofAggressiveDefender(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_AGGRESSIVEDEFENDER; }
 

@@ -92,18 +92,18 @@ noFlag::noFlag(const MapPoint pos,
  *
  *  @author OLiver
  */
-noFlag::noFlag(SerializedGameData* sgd, const unsigned int obj_id)
+noFlag::noFlag(SerializedGameData& sgd, const unsigned int obj_id)
     : noRoadNode(sgd, obj_id),
-      ani_offset(rand() % 20000), flagtype(FlagType(sgd->PopUnsignedChar()))
+      ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
 {
     for(unsigned char i = 0; i < 8; ++i)
-        wares[i] = sgd->PopObject<Ware>(GOT_WARE);
+        wares[i] = sgd.PopObject<Ware>(GOT_WARE);
 
     // BWUs laden
     for(unsigned char i = 0; i < MAX_BWU; ++i)
     {
-        bwus[i].id = sgd->PopUnsignedInt();
-        bwus[i].last_gf = sgd->PopUnsignedInt();
+        bwus[i].id = sgd.PopUnsignedInt();
+        bwus[i].last_gf = sgd.PopUnsignedInt();
     }
 }
 
@@ -155,19 +155,19 @@ void noFlag::Destroy_noFlag()
  *
  *  @author OLiver
  */
-void noFlag::Serialize_noFlag(SerializedGameData* sgd) const
+void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(flagtype));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(flagtype));
     for(unsigned char i = 0; i < 8; ++i)
-        sgd->PushObject(wares[i], true);
+        sgd.PushObject(wares[i], true);
 
     // BWUs speichern
     for(unsigned char i = 0; i < MAX_BWU; ++i)
     {
-        sgd->PushUnsignedInt(bwus[i].id);
-        sgd->PushUnsignedInt(bwus[i].last_gf);
+        sgd.PushUnsignedInt(bwus[i].id);
+        sgd.PushUnsignedInt(bwus[i].last_gf);
     }
 }
 

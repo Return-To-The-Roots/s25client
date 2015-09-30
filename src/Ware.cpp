@@ -59,25 +59,25 @@ void Ware::Destroy(void)
 	
 }
 
-void Ware::Serialize_Ware(SerializedGameData* sgd) const
+void Ware::Serialize_Ware(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd->PushUnsignedChar(next_dir);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushObject(location, false);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type));
-    sgd->PushObject(goal, false);
-    sgd->PushMapPoint(next_harbor);
+    sgd.PushUnsignedChar(next_dir);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushObject(location, false);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd.PushObject(goal, false);
+    sgd.PushMapPoint(next_harbor);
 }
 
-Ware::Ware(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    next_dir(sgd->PopUnsignedChar()),
-    state(State(sgd->PopUnsignedChar())),
-    location(sgd->PopObject<noRoadNode>(GOT_UNKNOWN)),
-    type(GoodType(sgd->PopUnsignedChar())),
-    goal(sgd->PopObject<noBaseBuilding>(GOT_UNKNOWN)),
-    next_harbor(sgd->PopMapPoint())
+Ware::Ware(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
+    next_dir(sgd.PopUnsignedChar()),
+    state(State(sgd.PopUnsignedChar())),
+    location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
+    type(GoodType(sgd.PopUnsignedChar())),
+    goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)),
+    next_harbor(sgd.PopMapPoint())
 {   
     //assert(obj_id != 1197877);
 }

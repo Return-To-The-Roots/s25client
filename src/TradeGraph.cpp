@@ -43,18 +43,18 @@ void TradeGraph::Create()
         }
 }
 
-TradeGraph::TradeGraph(SerializedGameData* sgd, const GameWorldGame* const gwg) :
-    gwg(gwg), player(sgd->PopUnsignedChar()), size(sgd->PopMapPoint()),
+TradeGraph::TradeGraph(SerializedGameData& sgd, const GameWorldGame* const gwg) :
+    gwg(gwg), player(sgd.PopUnsignedChar()), size(sgd.PopMapPoint()),
     trade_graph(size.x* size.y)
 {
     for(unsigned i = 0; i < trade_graph.size(); ++i)
         trade_graph[i].Deserialize(sgd);
 }
 
-void TradeGraph::Serialize(SerializedGameData* sgd) const
+void TradeGraph::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushUnsignedChar(player);
-    sgd->PushMapPoint(size);
+    sgd.PushUnsignedChar(player);
+    sgd.PushMapPoint(size);
     for(unsigned i = 0; i < trade_graph.size(); ++i)
         trade_graph[i].Serialize(sgd);
 }

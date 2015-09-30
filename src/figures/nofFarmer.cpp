@@ -47,15 +47,15 @@ nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* w
 }
 
 
-void nofFarmer::Serialize_nofFarmer(SerializedGameData* sgd) const
+void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
 {
     Serialize_nofFarmhand(sgd);
 
-    sgd->PushBool(harvest);
+    sgd.PushBool(harvest);
 }
 
-nofFarmer::nofFarmer(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    harvest(sgd->PopBool())
+nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
+    harvest(sgd.PopBool())
 {
 }
 

@@ -122,69 +122,69 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
 }
 
 
-void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData* sgd) const
+void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData& sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
 
-    sgd->PushObjectContainer(waiting_wares, true);
-    sgd->PushBool(fetch_double_protection);
-    sgd->PushObjectContainer(dependent_figures, false);
-    sgd->PushObjectContainer(dependent_wares, true);
-    sgd->PushObject(producinghelpers_event, true);
-    sgd->PushObject(recruiting_event, true);
-    sgd->PushObject(empty_event, true);
-    sgd->PushObject(store_event, true);
+    sgd.PushObjectContainer(waiting_wares, true);
+    sgd.PushBool(fetch_double_protection);
+    sgd.PushObjectContainer(dependent_figures, false);
+    sgd.PushObjectContainer(dependent_wares, true);
+    sgd.PushObject(producinghelpers_event, true);
+    sgd.PushObject(recruiting_event, true);
+    sgd.PushObject(empty_event, true);
+    sgd.PushObject(store_event, true);
 
     for(unsigned i = 0; i < 5; ++i)
     {
         // Nur das Reale, nicht das visuelle speichern, das wäre sinnlos!, beim Laden ist das visuelle = realem
-        sgd->PushUnsignedInt(reserve_soldiers_available[i]);
-        sgd->PushUnsignedInt(reserve_soldiers_claimed_real[i]);
+        sgd.PushUnsignedInt(reserve_soldiers_available[i]);
+        sgd.PushUnsignedInt(reserve_soldiers_claimed_real[i]);
     }
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        sgd->PushUnsignedInt(goods_.goods[i]);
-        sgd->PushUnsignedInt(real_goods.goods[i]);
-        sgd->PushUnsignedChar(inventory_settings_real.wares[i]);
+        sgd.PushUnsignedInt(goods_.goods[i]);
+        sgd.PushUnsignedInt(real_goods.goods[i]);
+        sgd.PushUnsignedChar(inventory_settings_real.wares[i]);
     }
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        sgd->PushUnsignedInt(goods_.people[i]);
-        sgd->PushUnsignedInt(real_goods.people[i]);
-        sgd->PushUnsignedChar(inventory_settings_real.figures[i]);
+        sgd.PushUnsignedInt(goods_.people[i]);
+        sgd.PushUnsignedInt(real_goods.people[i]);
+        sgd.PushUnsignedChar(inventory_settings_real.figures[i]);
     }
 }
 
-nobBaseWarehouse::nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
+nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
 {
-    sgd->PopObjectContainer(waiting_wares, GOT_WARE);
-    fetch_double_protection = sgd->PopBool();
-    sgd->PopObjectContainer(dependent_figures, GOT_UNKNOWN);
-    sgd->PopObjectContainer(dependent_wares, GOT_WARE);
+    sgd.PopObjectContainer(waiting_wares, GOT_WARE);
+    fetch_double_protection = sgd.PopBool();
+    sgd.PopObjectContainer(dependent_figures, GOT_UNKNOWN);
+    sgd.PopObjectContainer(dependent_wares, GOT_WARE);
 
-    producinghelpers_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
-    recruiting_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
-    empty_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
-    store_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
+    producinghelpers_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    recruiting_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    empty_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    store_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
 
     for(unsigned i = 0; i < 5; ++i)
     {
-        reserve_soldiers_available[i] = sgd->PopUnsignedInt();
-        reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd->PopUnsignedInt();
+        reserve_soldiers_available[i] = sgd.PopUnsignedInt();
+        reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.PopUnsignedInt();
     }
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        goods_.goods[i] = sgd->PopUnsignedInt();
-        real_goods.goods[i] = sgd->PopUnsignedInt();
-        inventory_settings_real.wares[i] = inventory_settings_visual.wares[i] = sgd->PopUnsignedChar();
+        goods_.goods[i] = sgd.PopUnsignedInt();
+        real_goods.goods[i] = sgd.PopUnsignedInt();
+        inventory_settings_real.wares[i] = inventory_settings_visual.wares[i] = sgd.PopUnsignedChar();
     }
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        goods_.people[i] = sgd->PopUnsignedInt();
-        real_goods.people[i] = sgd->PopUnsignedInt();
-        inventory_settings_real.figures[i] = inventory_settings_visual.figures[i] = sgd->PopUnsignedChar();
+        goods_.people[i] = sgd.PopUnsignedInt();
+        real_goods.people[i] = sgd.PopUnsignedInt();
+        inventory_settings_real.figures[i] = inventory_settings_visual.figures[i] = sgd.PopUnsignedChar();
     }
 }
 

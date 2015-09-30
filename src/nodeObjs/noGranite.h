@@ -29,15 +29,15 @@ class noGranite : public noBase
     public:
 
         noGranite(const GraniteType type, const unsigned char state);
-        noGranite(SerializedGameData* sgd, const unsigned obj_id);
+        noGranite(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noGranite() { Destroy_noBase(); }
     public:     void Destroy() { Destroy_noGranite(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noGranite(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noGranite(sgd); }
+    protected:  void Serialize_noGranite(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noGranite(sgd); }
 
         GO_Type GetGOT() const { return GOT_GRANITE; }
 

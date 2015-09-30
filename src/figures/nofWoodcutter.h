@@ -44,7 +44,7 @@ class nofWoodcutter : public nofFarmhand
     public:
 
         nofWoodcutter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofWoodcutter(SerializedGameData* sgd, const unsigned obj_id);
+        nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_WOODCUTTER; }
 

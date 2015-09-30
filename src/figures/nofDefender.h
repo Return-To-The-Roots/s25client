@@ -48,15 +48,15 @@ class nofDefender : public nofActiveSoldier
         nofDefender(const MapPoint pt, const unsigned char player, nobBaseMilitary* const building,
                     const unsigned char rank, nofAttacker* const attacker);
         nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
-        nofDefender(SerializedGameData* sgd, const unsigned obj_id);
+        nofDefender(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nofDefender() { Destroy_nofActiveSoldier(); }
     public:     void Destroy() { Destroy_nofDefender(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofDefender(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofDefender(sgd); }
+    protected:  void Serialize_nofDefender(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofDefender(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_DEFENDER; }
 

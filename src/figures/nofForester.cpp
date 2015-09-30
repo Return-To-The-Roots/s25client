@@ -46,7 +46,7 @@ nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsua
 {
 }
 
-nofForester::nofForester(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
+nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
 {
 }
 

@@ -26,14 +26,14 @@ class noDisappearingEnvObject : public noCoordBase
         /// Konstruktor von @p noDisappearingEnvObject.
         noDisappearingEnvObject(const MapPoint pt, const unsigned living_time,
                                 const unsigned add_var_living_time);
-        noDisappearingEnvObject(SerializedGameData* sgd, const unsigned obj_id);
+        noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noDisappearingEnvObject();
     public:     void Destroy() { Destroy_noDisappearingEnvObject(); }
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noDisappearingEnvObject(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noDisappearingEnvObject(sgd); }
+    protected:  void Serialize_noDisappearingEnvObject(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noDisappearingEnvObject(sgd); }
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
         void HandleEvent_noDisappearingEnvObject(const unsigned int id);

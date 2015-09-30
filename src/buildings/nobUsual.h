@@ -53,7 +53,7 @@ protected:
         friend class SerializedGameData;
         friend class BuildingFactory;
         nobUsual(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-        nobUsual(SerializedGameData* sgd, const unsigned obj_id);
+        nobUsual(SerializedGameData& sgd, const unsigned obj_id);
     public:
 
         /// Wird gerade gearbeitet oder nicht?
@@ -66,8 +66,8 @@ protected:
     public:     void Destroy() { Destroy_nobUsual(); }
 
         /// Serialisierungsfunktionen
-    protected: void Serialize_nobUsual(SerializedGameData* sgd) const;
-    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobUsual(sgd); }
+    protected: void Serialize_nobUsual(SerializedGameData& sgd) const;
+    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobUsual(sgd); }
 
         virtual GO_Type GetGOT() const { return GOT_NOB_USUAL; }
 

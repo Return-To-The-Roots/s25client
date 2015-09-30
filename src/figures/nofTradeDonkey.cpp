@@ -17,29 +17,29 @@ nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
 {
 }
 
-nofTradeDonkey::nofTradeDonkey(SerializedGameData* sgd, const unsigned obj_id)
+nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id),
-      leader(sgd->PopObject<nofTradeLeader>(GOT_NOF_TRADELEADER)),
-      successor(sgd->PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
-      gt(GoodType(sgd->PopUnsignedChar())),
-      next_dirs(sgd->PopUnsignedInt())
+      leader(sgd.PopObject<nofTradeLeader>(GOT_NOF_TRADELEADER)),
+      successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
+      gt(GoodType(sgd.PopUnsignedChar())),
+      next_dirs(sgd.PopUnsignedInt())
 {
     for(unsigned i = 0; i < next_dirs.size(); ++i)
-        next_dirs[i] = sgd->PopUnsignedChar();
+        next_dirs[i] = sgd.PopUnsignedChar();
 }
 
 
-void nofTradeDonkey::Serialize(SerializedGameData* sgd) const
+void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushObject(leader, true);
-    sgd->PushObject(successor, true);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(gt));
-    sgd->PushUnsignedInt(next_dirs.size());
+    sgd.PushObject(leader, true);
+    sgd.PushObject(successor, true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(gt));
+    sgd.PushUnsignedInt(next_dirs.size());
 
     for(unsigned i = 0; i < next_dirs.size(); ++i)
-        sgd->PushUnsignedChar(next_dirs[i]);
+        sgd.PushUnsignedChar(next_dirs[i]);
 }
 
 void nofTradeDonkey::GoalReached()

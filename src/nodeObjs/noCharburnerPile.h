@@ -50,7 +50,7 @@ class noCharburnerPile : public noCoordBase
     public:
 
         noCharburnerPile(const MapPoint pt);
-        noCharburnerPile(SerializedGameData* sgd, const unsigned obj_id);
+        noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noCharburnerPile();
 
@@ -59,8 +59,8 @@ class noCharburnerPile : public noCoordBase
     public:     void Destroy() { Destroy_noCharburnerPile(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noCharburnerPile(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noCharburnerPile(sgd); }
+    protected:  void Serialize_noCharburnerPile(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noCharburnerPile(sgd); }
 
         GO_Type GetGOT() const { return GOT_CHARBURNERPILE; }
 

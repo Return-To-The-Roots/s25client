@@ -40,7 +40,7 @@ nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual*
 {
 }
 
-nofButcher::nofButcher(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

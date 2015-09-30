@@ -70,11 +70,11 @@ class nofBuilder : public noFigure
     public:
 
         nofBuilder(const MapPoint pt, const unsigned char player, noRoadNode* building_site);
-        nofBuilder(SerializedGameData* sgd, const unsigned obj_id);
+        nofBuilder(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofBuilder(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofBuilder(sgd); }
+    protected:  void Serialize_nofBuilder(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofBuilder(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_BUILDER; }
 

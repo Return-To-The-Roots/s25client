@@ -44,19 +44,19 @@ nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingS
 {
 }
 
-void nofPlaner::Serialize_nofPlaner(SerializedGameData* sgd) const
+void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushObject(building_site, true);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(pd));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushObject(building_site, true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(pd));
 }
 
-nofPlaner::nofPlaner(SerializedGameData* sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    state(PlanerState(sgd->PopUnsignedChar())),
-    building_site(sgd->PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-    pd(PlaningDir(sgd->PopUnsignedChar()))
+nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
+    state(PlanerState(sgd.PopUnsignedChar())),
+    building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
+    pd(PlaningDir(sgd.PopUnsignedChar()))
 {
 }
 

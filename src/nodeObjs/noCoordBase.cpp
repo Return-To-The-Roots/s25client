@@ -22,15 +22,15 @@
 #include "SerializedGameData.h"
 #include "GameWorld.h"
 
-void noCoordBase::Serialize_noCoordBase(SerializedGameData* sgd) const
+void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);
 
-    sgd->PushMapPoint(pos);
+    sgd.PushMapPoint(pos);
 }
 
-noCoordBase::noCoordBase(SerializedGameData* sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    pos(sgd->PopMapPoint())
+noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
+    pos(sgd.PopMapPoint())
 {
 }
 

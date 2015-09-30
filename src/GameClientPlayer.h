@@ -135,8 +135,8 @@ class GameClientPlayer : public GamePlayerInfo
             bool want_cancel;
 
             Pact() : duration(0), start(0), accepted(false), want_cancel(false) {}
-            Pact(SerializedGameData* ser);
-            void Serialize(SerializedGameData* ser);
+            Pact(SerializedGameData& sgd);
+            void Serialize(SerializedGameData& sgd);
         };
         /// Bündnisse dieses Spielers mit anderen Spielern
         Pact pacts[MAX_PLAYERS][PACTS_COUNT];
@@ -193,9 +193,9 @@ class GameClientPlayer : public GamePlayerInfo
         GameClientPlayer(const unsigned playerid);
 
         /// Serialisieren
-        void Serialize(SerializedGameData* sgd);
+        void Serialize(SerializedGameData& sgd);
         // Deserialisieren
-        void Deserialize(SerializedGameData* sgd);
+        void Deserialize(SerializedGameData& sgd);
 
         /// Tauscht Spieler
         void SwapPlayer(GameClientPlayer& two);

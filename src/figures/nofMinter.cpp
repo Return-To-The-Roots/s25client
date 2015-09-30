@@ -39,12 +39,12 @@ nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* w
 {
 }
 
-void nofMinter::Serialize_nofMinter(SerializedGameData* sgd) const
+void nofMinter::Serialize_nofMinter(SerializedGameData& sgd) const
 {
     Serialize_nofWorkman(sgd);
 }
 
-nofMinter::nofMinter(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

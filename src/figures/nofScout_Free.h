@@ -46,11 +46,11 @@ class nofScout_Free : public nofFlagWorker
     public:
 
         nofScout_Free(const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofScout_Free(SerializedGameData* sgd, const unsigned obj_id);
+        nofScout_Free(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofScout_Free(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofScout_Free(sgd); }
+    protected:  void Serialize_nofScout_Free(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofScout_Free(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_SCOUT_FREE; }
 

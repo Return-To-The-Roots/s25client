@@ -78,7 +78,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
     return event;
 }
 
-EventManager::EventPointer EventManager::AddEvent(SerializedGameData* sgd, const unsigned obj_id)
+EventManager::EventPointer EventManager::AddEvent(SerializedGameData& sgd, const unsigned obj_id)
 {
     Event* event = new Event(sgd, obj_id);
     eis[event->gf_next].push_back(event);
@@ -150,26 +150,26 @@ void EventManager::Event::Destroy(void)
 {
 }
 
-void EventManager::Event::Serialize_Event(SerializedGameData* sgd) const
+void EventManager::Event::Serialize_Event(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd->PushObject(obj, false);
-    sgd->PushUnsignedInt(gf);
-    sgd->PushUnsignedInt(gf_length);
-    sgd->PushUnsignedInt(id);
+    sgd.PushObject(obj, false);
+    sgd.PushUnsignedInt(gf);
+    sgd.PushUnsignedInt(gf_length);
+    sgd.PushUnsignedInt(id);
 }
 
-EventManager::Event::Event(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    obj(sgd->PopObject<GameObject>(GOT_UNKNOWN)),
-    gf(sgd->PopUnsignedInt()),
-    gf_length(sgd->PopUnsignedInt()),
+EventManager::Event::Event(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
+    obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
+    gf(sgd.PopUnsignedInt()),
+    gf_length(sgd.PopUnsignedInt()),
     gf_next(gf + gf_length),
-    id(sgd->PopUnsignedInt())
+    id(sgd.PopUnsignedInt())
 {}
 
 
-void EventManager::Serialize(SerializedGameData* sgd) const
+void EventManager::Serialize(SerializedGameData& sgd) const
 {
     // Kill-Liste muss leer sein!
     assert(!kill_list.size());
@@ -180,22 +180,22 @@ void EventManager::Serialize(SerializedGameData* sgd) const
     {
         for(std::list<Event*>::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
         {
-            if ((*e_it) && !sgd->GetConstGameObject((*e_it)->GetObjId()))
+            if ((*e_it) && !sgd.GetConstGameObject((*e_it)->GetObjId()))
                 save_events.push_back(*e_it);
         }
     }
 
-    sgd->PushObjectContainer(save_events, true);
+    sgd.PushObjectContainer(save_events, true);
 }
 
-void EventManager::Deserialize(SerializedGameData* sgd)
+void EventManager::Deserialize(SerializedGameData& sgd)
 {
     // Events laden
     // Nicht zur Eventliste hinzufügen, da dies ohnehin schon in Create_GameObject geschieht!!
-    unsigned size = sgd->PopUnsignedInt();
+    unsigned size = sgd.PopUnsignedInt();
     // einzelne Objekte
     for(unsigned i = 0; i < size; ++i)
-        sgd->PopObject<Event>(GOT_EVENT);
+        sgd.PopObject<Event>(GOT_EVENT);
 }
 
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?

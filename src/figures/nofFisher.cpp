@@ -41,17 +41,17 @@ nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* w
 {
 }
 
-void nofFisher::Serialize_nofFisher(SerializedGameData* sgd) const
+void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
 {
     Serialize_nofFarmhand(sgd);
 
-    sgd->PushUnsignedChar(fishing_dir);
-    sgd->PushBool(successful);
+    sgd.PushUnsignedChar(fishing_dir);
+    sgd.PushBool(successful);
 }
 
-nofFisher::nofFisher(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    fishing_dir(sgd->PopUnsignedChar()),
-    successful(sgd->PopBool())
+nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
+    fishing_dir(sgd.PopUnsignedChar()),
+    successful(sgd.PopBool())
 {
 }
 

@@ -44,13 +44,13 @@ class nofFisher : public nofFarmhand
     public:
 
         nofFisher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofFisher(SerializedGameData* sgd, const unsigned obj_id);
+        nofFisher(SerializedGameData& sgd, const unsigned obj_id);
 
         ~nofFisher() {}
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFisher(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofFisher(sgd); }
+    protected:  void Serialize_nofFisher(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFisher(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_FISHER; }
 

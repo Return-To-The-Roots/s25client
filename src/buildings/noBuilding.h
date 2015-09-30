@@ -30,15 +30,15 @@ class noBuilding : public noBaseBuilding
         unsigned char opendoor;
 
         noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-        noBuilding(SerializedGameData* sgd, const unsigned obj_id);
+        noBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noBuilding();
     public:     void Destroy() { Destroy_noBuilding(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noBuilding(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noBuilding(sgd); }
+    protected:  void Serialize_noBuilding(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noBuilding(sgd); }
 
         /// Zeichnet das Gebäude an sich mit Tür ohne zusätzlichen Schnickschnack
         void DrawBaseBuilding(int x, int y);

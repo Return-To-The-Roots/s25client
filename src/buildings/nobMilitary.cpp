@@ -145,7 +145,7 @@ void nobMilitary::Destroy_nobMilitary()
 
 }
 
-void nobMilitary::Serialize_nobMilitary(SerializedGameData* sgd) const
+void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
 
@@ -162,50 +162,50 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData* sgd) const
         bitfield |= (1 << 1);
     }
 
-    sgd->PushUnsignedChar(bitfield);
+    sgd.PushUnsignedChar(bitfield);
 
-    sgd->PushUnsignedChar(coins);
-    sgd->PushBool(disable_coins);
-    sgd->PushBool(disable_coins_virtual);
-    sgd->PushUnsignedChar(frontier_distance);
-    sgd->PushUnsignedChar(size);
-    sgd->PushBool(capturing);
-    sgd->PushUnsignedInt(capturing_soldiers);
-    sgd->PushObject(goldorder_event, true);
-    sgd->PushObject(upgrade_event, true);
+    sgd.PushUnsignedChar(coins);
+    sgd.PushBool(disable_coins);
+    sgd.PushBool(disable_coins_virtual);
+    sgd.PushUnsignedChar(frontier_distance);
+    sgd.PushUnsignedChar(size);
+    sgd.PushBool(capturing);
+    sgd.PushUnsignedInt(capturing_soldiers);
+    sgd.PushObject(goldorder_event, true);
+    sgd.PushObject(upgrade_event, true);
 
-    sgd->PushObjectContainer(ordered_troops, true);
-    sgd->PushObjectContainer(ordered_coins, true);
-    sgd->PushObjectContainer(troops, true);
-    sgd->PushObjectContainer(far_away_capturers, true);
+    sgd.PushObjectContainer(ordered_troops, true);
+    sgd.PushObjectContainer(ordered_coins, true);
+    sgd.PushObjectContainer(troops, true);
+    sgd.PushObjectContainer(far_away_capturers, true);
 }
 
-nobMilitary::nobMilitary(SerializedGameData* sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id),
+nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id),
     is_regulating_troops(false)
 {
     // use a bitfield instead of 1 unsigned char per boolean
     // mainly for compatibility :-)
 
-    unsigned char bitfield = sgd->PopUnsignedChar();
+    unsigned char bitfield = sgd.PopUnsignedChar();
 
     new_built = bitfield & (1 << 0);
     captured_not_built = !(bitfield & (1 << 1));
 
-    coins = sgd->PopUnsignedChar();
-    disable_coins = sgd->PopBool();
-    disable_coins_virtual = sgd->PopBool();
-    frontier_distance = sgd->PopUnsignedChar();
-    size = sgd->PopUnsignedChar();
-    capturing = sgd->PopBool();
-    capturing_soldiers = sgd->PopUnsignedInt();
-    goldorder_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
-    upgrade_event = sgd->PopObject<EventManager::Event>(GOT_EVENT);
+    coins = sgd.PopUnsignedChar();
+    disable_coins = sgd.PopBool();
+    disable_coins_virtual = sgd.PopBool();
+    frontier_distance = sgd.PopUnsignedChar();
+    size = sgd.PopUnsignedChar();
+    capturing = sgd.PopBool();
+    capturing_soldiers = sgd.PopUnsignedInt();
+    goldorder_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    upgrade_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
 
 
-    sgd->PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
-    sgd->PopObjectContainer(ordered_coins, GOT_WARE);
-    sgd->PopObjectContainer(troops, GOT_NOF_PASSIVESOLDIER);
-    sgd->PopObjectContainer(far_away_capturers, GOT_NOF_ATTACKER);
+    sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
+    sgd.PopObjectContainer(ordered_coins, GOT_WARE);
+    sgd.PopObjectContainer(troops, GOT_NOF_PASSIVESOLDIER);
+    sgd.PopObjectContainer(far_away_capturers, GOT_NOF_ATTACKER);
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);

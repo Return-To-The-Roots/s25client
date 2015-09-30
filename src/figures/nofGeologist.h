@@ -67,11 +67,11 @@ class nofGeologist : public nofFlagWorker
     public:
 
         nofGeologist(const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofGeologist(SerializedGameData* sgd, const unsigned obj_id);
+        nofGeologist(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofGeologist(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofGeologist(sgd); }
+    protected:  void Serialize_nofGeologist(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofGeologist(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_GEOLOGIST; }
 

@@ -27,24 +27,24 @@ TradeGraphNode::TradeGraphNode(): main_pos(MapPoint::Invalid())
     std::fill(dont_run_over_player_territory.begin(), dont_run_over_player_territory.end(), false);
 }
 
-void TradeGraphNode::Deserialize(SerializedGameData* sgd)
+void TradeGraphNode::Deserialize(SerializedGameData& sgd)
 {
-    main_pos = sgd->PopMapPoint();
+    main_pos = sgd.PopMapPoint();
     for(unsigned i = 0; i < 8; ++i)
     {
-        dirs[i] = sgd->PopUnsignedShort();
-        not_possible_forever[i] = sgd->PopBool();
-        dont_run_over_player_territory[i] = sgd->PopBool();
+        dirs[i] = sgd.PopUnsignedShort();
+        not_possible_forever[i] = sgd.PopBool();
+        dont_run_over_player_territory[i] = sgd.PopBool();
     }
 }
 
-void TradeGraphNode::Serialize(SerializedGameData* sgd) const
+void TradeGraphNode::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushMapPoint(main_pos);
+    sgd.PushMapPoint(main_pos);
     for(unsigned i = 0; i < 8; ++i)
     {
-        sgd->PushUnsignedShort(dirs[i]);
-        sgd->PushBool(not_possible_forever[i]);
-        sgd->PushBool(dont_run_over_player_territory[i]);
+        sgd.PushUnsignedShort(dirs[i]);
+        sgd.PushBool(not_possible_forever[i]);
+        sgd.PushBool(dont_run_over_player_territory[i]);
     }
 }

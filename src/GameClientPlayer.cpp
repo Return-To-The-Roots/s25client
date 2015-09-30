@@ -219,83 +219,83 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     emergency = false;
 }
 
-void GameClientPlayer::Serialize(SerializedGameData* sgd)
+void GameClientPlayer::Serialize(SerializedGameData& sgd)
 {
     // PlayerStatus speichern, ehemalig
-    sgd->PushUnsignedChar(static_cast<unsigned char>(ps));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(ps));
 
     // Nur richtige Spieler serialisieren
     if(!(ps == PS_OCCUPIED || ps == PS_KI))
         return;
 
-    sgd->PushObjectContainer(warehouses, false);
-    sgd->PushObjectContainer(harbors, true);
+    sgd.PushObjectContainer(warehouses, false);
+    sgd.PushObjectContainer(harbors, true);
 
-    //sgd->PushObjectContainer(unoccupied_roads,true);
-    sgd->PushObjectContainer(roads, true);
+    //sgd.PushObjectContainer(unoccupied_roads,true);
+    sgd.PushObjectContainer(roads, true);
 
-    sgd->PushUnsignedInt(jobs_wanted.size());
+    sgd.PushUnsignedInt(jobs_wanted.size());
     for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
     {
-        sgd->PushUnsignedChar(it->job);
-        sgd->PushObject(it->workplace, false);
+        sgd.PushUnsignedChar(it->job);
+        sgd.PushObject(it->workplace, false);
     }
 
     for(unsigned i = 0; i < 30; ++i)
-        sgd->PushObjectContainer(buildings[i], true);
+        sgd.PushObjectContainer(buildings[i], true);
 
-    sgd->PushObjectContainer(building_sites, true);
+    sgd.PushObjectContainer(building_sites, true);
 
-    sgd->PushObjectContainer(military_buildings, true);
+    sgd.PushObjectContainer(military_buildings, true);
 
-    sgd->PushObjectContainer(ware_list, true);
+    sgd.PushObjectContainer(ware_list, true);
 
-    sgd->PushObjectContainer(flagworkers, false);
+    sgd.PushObjectContainer(flagworkers, false);
 
-    sgd->PushObjectContainer(ships, true);
+    sgd.PushObjectContainer(ships, true);
 
     for(unsigned i = 0; i < 5; ++i)
-        sgd->PushBool(defenders[i]);
-    sgd->PushUnsignedShort(defenders_pos);
+        sgd.PushBool(defenders[i]);
+    sgd.PushUnsignedShort(defenders_pos);
 
-    sgd->PushMapPoint(hqPos);
+    sgd.PushMapPoint(hqPos);
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
         for (unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
         {
-            sgd->PushUnsignedChar(distribution[i].percent_buildings[bldType]);
+            sgd.PushUnsignedChar(distribution[i].percent_buildings[bldType]);
         }
-        sgd->PushUnsignedInt(distribution[i].client_buildings.size());
+        sgd.PushUnsignedInt(distribution[i].client_buildings.size());
         for(std::list<BuildingType>::iterator it = distribution[i].client_buildings.begin(); it != distribution[i].client_buildings.end(); ++it)
-            sgd->PushUnsignedChar(*it);
-        sgd->PushUnsignedInt(unsigned(distribution[i].goals.size()));
+            sgd.PushUnsignedChar(*it);
+        sgd.PushUnsignedInt(unsigned(distribution[i].goals.size()));
         for(unsigned z = 0; z < distribution[i].goals.size(); ++z)
-            sgd->PushUnsignedChar(distribution[i].goals[z]);
-        sgd->PushUnsignedInt(distribution[i].selected_goal);
+            sgd.PushUnsignedChar(distribution[i].goals[z]);
+        sgd.PushUnsignedInt(distribution[i].selected_goal);
     }
 
-    sgd->PushUnsignedChar(orderType_);
+    sgd.PushUnsignedChar(orderType_);
 
     for(unsigned i = 0; i < 31; ++i)
-        sgd->PushUnsignedChar(build_order[i]);
+        sgd.PushUnsignedChar(build_order[i]);
 
-    sgd->PushRawData(transport, WARE_TYPES_COUNT);
+    sgd.PushRawData(transport, WARE_TYPES_COUNT);
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
-        sgd->PushUnsignedChar(militarySettings_[i]);
+        sgd.PushUnsignedChar(militarySettings_[i]);
 
     for(unsigned i = 0; i < 12; ++i)
-        sgd->PushUnsignedChar(toolsSettings_[i]);
+        sgd.PushUnsignedChar(toolsSettings_[i]);
 
     //qx:tools
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
-        sgd->PushUnsignedChar(tools_ordered[i]);
+        sgd.PushUnsignedChar(tools_ordered[i]);
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
-        sgd->PushUnsignedInt(global_inventory.goods[i]);
+        sgd.PushUnsignedInt(global_inventory.goods[i]);
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
-        sgd->PushUnsignedInt(global_inventory.people[i]);
+        sgd.PushUnsignedInt(global_inventory.people[i]);
 
     // für Statistik
     for (unsigned i = 0; i < STAT_TIME_COUNT; ++i)
@@ -303,21 +303,21 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
         // normale Statistik
         for (unsigned j = 0; j < STAT_TYPE_COUNT; ++j)
             for (unsigned k = 0; k < STAT_STEP_COUNT; ++k)
-                sgd->PushUnsignedInt(statistic[i].data[j][k]);
+                sgd.PushUnsignedInt(statistic[i].data[j][k]);
 
         // Warenstatistik
         for (unsigned j = 0; j < STAT_MERCHANDISE_TYPE_COUNT; ++j)
             for (unsigned k = 0; k < STAT_STEP_COUNT; ++k)
-                sgd->PushUnsignedShort(statistic[i].merchandiseData[j][k]);
+                sgd.PushUnsignedShort(statistic[i].merchandiseData[j][k]);
 
-        sgd->PushUnsignedShort(statistic[i].currentIndex);
-        sgd->PushUnsignedShort(statistic[i].counter);
+        sgd.PushUnsignedShort(statistic[i].currentIndex);
+        sgd.PushUnsignedShort(statistic[i].counter);
     }
     for (unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
-        sgd->PushUnsignedInt(statisticCurrentData[i]);
+        sgd.PushUnsignedInt(statisticCurrentData[i]);
 
     for (unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
-        sgd->PushUnsignedShort(statisticCurrentMerchandiseData[i]);
+        sgd.PushUnsignedShort(statisticCurrentMerchandiseData[i]);
 
     // Serialize Pacts:
     for (unsigned i = 0; i < MAX_PLAYERS; ++i)
@@ -328,73 +328,73 @@ void GameClientPlayer::Serialize(SerializedGameData* sgd)
         }
     }
 
-    sgd->PushBool(emergency);
+    sgd.PushBool(emergency);
 }
 
-void GameClientPlayer::Deserialize(SerializedGameData* sgd)
+void GameClientPlayer::Deserialize(SerializedGameData& sgd)
 {
     // Ehemaligen PS auslesen
-    PlayerState origin_ps = PlayerState(sgd->PopUnsignedChar());
+    PlayerState origin_ps = PlayerState(sgd.PopUnsignedChar());
     // Nur richtige Spieler serialisieren
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_KI))
         return;
 
-    sgd->PopObjectContainer(warehouses, GOT_UNKNOWN);
-    sgd->PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
+    sgd.PopObjectContainer(warehouses, GOT_UNKNOWN);
+    sgd.PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
 
-    //sgd->PopObjectContainer(unoccupied_roads,GOT_ROADSEGMENT);
-    sgd->PopObjectContainer(roads, GOT_ROADSEGMENT);
+    //sgd.PopObjectContainer(unoccupied_roads,GOT_ROADSEGMENT);
+    sgd.PopObjectContainer(roads, GOT_ROADSEGMENT);
 
-    unsigned list_size = sgd->PopUnsignedInt();
+    unsigned list_size = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < list_size; ++i)
     {
         JobNeeded nj;
-        nj.job = Job(sgd->PopUnsignedChar());
-        nj.workplace = sgd->PopObject<noRoadNode>(
+        nj.job = Job(sgd.PopUnsignedChar());
+        nj.workplace = sgd.PopObject<noRoadNode>(
                            GOT_UNKNOWN);
         jobs_wanted.push_back(nj);
 
     }
 
     for(unsigned i = 0; i < 30; ++i)
-        sgd->PopObjectContainer(buildings[i], GOT_NOB_USUAL);
+        sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
 
-    sgd->PopObjectContainer(building_sites, GOT_BUILDINGSITE);
+    sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
 
-    sgd->PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+    sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
 
-    sgd->PopObjectContainer(ware_list, GOT_WARE);
+    sgd.PopObjectContainer(ware_list, GOT_WARE);
 
-    sgd->PopObjectContainer(flagworkers, GOT_UNKNOWN);
+    sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
 
-    sgd->PopObjectContainer(ships, GOT_SHIP);
+    sgd.PopObjectContainer(ships, GOT_SHIP);
 
     for(unsigned i = 0; i < 5; ++i)
-        defenders[i] = sgd->PopBool();
-    defenders_pos = sgd->PopUnsignedShort();
+        defenders[i] = sgd.PopBool();
+    defenders_pos = sgd.PopUnsignedShort();
 
-    hqPos = sgd->PopMapPoint();
+    hqPos = sgd.PopMapPoint();
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
         for (unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
         {
-            distribution[i].percent_buildings[bldType] = sgd->PopUnsignedChar();
+            distribution[i].percent_buildings[bldType] = sgd.PopUnsignedChar();
         }
-        list_size = sgd->PopUnsignedInt();
+        list_size = sgd.PopUnsignedInt();
         for(unsigned z = 0; z < list_size; ++z)
-            distribution[i].client_buildings.push_back(BuildingType(sgd->PopUnsignedChar()));
-        unsigned goal_count = sgd->PopUnsignedInt();
+            distribution[i].client_buildings.push_back(BuildingType(sgd.PopUnsignedChar()));
+        unsigned goal_count = sgd.PopUnsignedInt();
         distribution[i].goals.resize(goal_count);
         for(unsigned z = 0; z < goal_count; ++z)
-            distribution[i].goals[z] = sgd->PopUnsignedChar();
-        distribution[i].selected_goal = sgd->PopUnsignedInt();
+            distribution[i].goals[z] = sgd.PopUnsignedChar();
+        distribution[i].selected_goal = sgd.PopUnsignedInt();
     }
 
-    orderType_ = sgd->PopUnsignedChar();
+    orderType_ = sgd.PopUnsignedChar();
 
     for(unsigned i = 0; i < 31; ++i)
-        build_order[i] = sgd->PopUnsignedChar();
+        build_order[i] = sgd.PopUnsignedChar();
 
     char str[256] = "";
     for(unsigned char i = 0; i < 31; ++i)
@@ -406,24 +406,24 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
     strcat(str, "\n");
     puts(str);
 
-    sgd->PopRawData(transport, WARE_TYPES_COUNT);
+    sgd.PopRawData(transport, WARE_TYPES_COUNT);
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
-        militarySettings_[i] = sgd->PopUnsignedChar();
+        militarySettings_[i] = sgd.PopUnsignedChar();
 
     for(unsigned i = 0; i < 12; ++i)
-        toolsSettings_[i] = sgd->PopUnsignedChar();
+        toolsSettings_[i] = sgd.PopUnsignedChar();
 
     // qx:tools
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
-        tools_ordered[i] = sgd->PopUnsignedChar();
+        tools_ordered[i] = sgd.PopUnsignedChar();
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
         tools_ordered_delta[i] = 0;
 
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
-        global_inventory.goods[i] = sgd->PopUnsignedInt();
+        global_inventory.goods[i] = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
-        global_inventory.people[i] = sgd->PopUnsignedInt();
+        global_inventory.people[i] = sgd.PopUnsignedInt();
 
     // Visuelle Einstellungen festlegen
 
@@ -433,21 +433,21 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
         // normale Statistik
         for (unsigned j = 0; j < STAT_TYPE_COUNT; ++j)
             for (unsigned k = 0; k < STAT_STEP_COUNT; ++k)
-                statistic[i].data[j][k] = sgd->PopUnsignedInt();
+                statistic[i].data[j][k] = sgd.PopUnsignedInt();
 
         // Warenstatistik
         for (unsigned j = 0; j < STAT_MERCHANDISE_TYPE_COUNT; ++j)
             for (unsigned k = 0; k < STAT_STEP_COUNT; ++k)
-                statistic[i].merchandiseData[j][k] = sgd->PopUnsignedShort();
+                statistic[i].merchandiseData[j][k] = sgd.PopUnsignedShort();
 
-        statistic[i].currentIndex = sgd->PopUnsignedShort();
-        statistic[i].counter = sgd->PopUnsignedShort();
+        statistic[i].currentIndex = sgd.PopUnsignedShort();
+        statistic[i].counter = sgd.PopUnsignedShort();
     }
     for (unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
-        statisticCurrentData[i] = sgd->PopUnsignedInt();
+        statisticCurrentData[i] = sgd.PopUnsignedInt();
 
     for (unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
-        statisticCurrentMerchandiseData[i] = sgd->PopUnsignedShort();
+        statisticCurrentMerchandiseData[i] = sgd.PopUnsignedShort();
 
     // Deserialize Pacts:
     for (unsigned i = 0; i < MAX_PLAYERS; ++i)
@@ -458,7 +458,7 @@ void GameClientPlayer::Deserialize(SerializedGameData* sgd)
         }
     }
 
-    emergency = sgd->PopBool();
+    emergency = sgd.PopBool();
 }
 
 void GameClientPlayer::SwapPlayer(GameClientPlayer& two)
@@ -1779,15 +1779,15 @@ void GameClientPlayer::StatisticStep()
     }
 }
 
-GameClientPlayer::Pact::Pact(SerializedGameData* ser)
-    : duration(ser->PopUnsignedInt()), start(ser->PopUnsignedInt()), accepted(ser->PopBool()), want_cancel (ser->PopBool()) { }
+GameClientPlayer::Pact::Pact(SerializedGameData& sgd)
+    : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel (sgd.PopBool()) { }
 
-void GameClientPlayer::Pact::Serialize(SerializedGameData* ser)
+void GameClientPlayer::Pact::Serialize(SerializedGameData& sgd)
 {
-    ser->PushBool(accepted);
-    ser->PushUnsignedInt(duration);
-    ser->PushUnsignedInt(start);
-    ser->PushBool(want_cancel);
+    sgd.PushBool(accepted);
+    sgd.PushUnsignedInt(duration);
+    sgd.PushUnsignedInt(start);
+    sgd.PushBool(want_cancel);
 }
 
 /// Macht Bündnisvorschlag an diesen Spieler

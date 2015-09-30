@@ -49,32 +49,32 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData* sgd) :
-    boards(sgd->PopUnsignedInt()),
-    stones(sgd->PopUnsignedInt()),
-    active(sgd->PopBool()),
-    builder(sgd->PopBool())
+nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
+    boards(sgd.PopUnsignedInt()),
+    stones(sgd.PopUnsignedInt()),
+    active(sgd.PopBool()),
+    builder(sgd.PopBool())
 {
 }
 
-void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData* sgd) const
+void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushBool(active);
-    sgd->PushUnsignedInt(boards);
-    sgd->PushUnsignedInt(stones);
-    sgd->PushBool(builder);
+    sgd.PushBool(active);
+    sgd.PushUnsignedInt(boards);
+    sgd.PushUnsignedInt(stones);
+    sgd.PushBool(builder);
 }
 
-nobHarborBuilding::ExplorationExpeditionInfo::ExplorationExpeditionInfo(SerializedGameData* sgd) :
-    active(sgd->PopBool()),
-    scouts(sgd->PopUnsignedInt())
+nobHarborBuilding::ExplorationExpeditionInfo::ExplorationExpeditionInfo(SerializedGameData& sgd) :
+    active(sgd.PopBool()),
+    scouts(sgd.PopUnsignedInt())
 {
 }
 
-void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData* sgd) const
+void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData& sgd) const
 {
-    sgd->PushBool(active);
-    sgd->PushUnsignedInt(scouts);
+    sgd.PushBool(active);
+    sgd.PushUnsignedInt(scouts);
 }
 
 
@@ -184,61 +184,61 @@ void nobHarborBuilding::Destroy()
     gwg->GetMilitarySquare(pos).remove(this);
 }
 
-void nobHarborBuilding::Serialize(SerializedGameData* sgd) const
+void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
 {
     Serialize_nobBaseWarehouse(sgd);
     expedition.Serialize(sgd);
     exploration_expedition.Serialize(sgd);
-    sgd->PushObject(orderware_ev, true);
+    sgd.PushObject(orderware_ev, true);
     for(unsigned i = 0; i < 6; ++i)
-        sgd->PushUnsignedShort(sea_ids[i]);
-    sgd->PushObjectContainer(wares_for_ships, true);
-    sgd->PushUnsignedInt(figures_for_ships.size());
+        sgd.PushUnsignedShort(sea_ids[i]);
+    sgd.PushObjectContainer(wares_for_ships, true);
+    sgd.PushUnsignedInt(figures_for_ships.size());
     for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
-        sgd->PushMapPoint(it->dest);
-        sgd->PushObject(it->fig, false);
+        sgd.PushMapPoint(it->dest);
+        sgd.PushObject(it->fig, false);
     }
-    sgd->PushUnsignedInt(soldiers_for_ships.size());
+    sgd.PushUnsignedInt(soldiers_for_ships.size());
     for(std::list<SoldierForShip>::const_iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
     {
-        sgd->PushMapPoint(it->dest);
-        sgd->PushObject(it->attacker, true);
+        sgd.PushMapPoint(it->dest);
+        sgd.PushObject(it->attacker, true);
     }
 
 
 
 }
 
-nobHarborBuilding::nobHarborBuilding(SerializedGameData* sgd, const unsigned obj_id)
+nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj_id)
     : nobBaseWarehouse(sgd, obj_id),
       expedition(sgd),
       exploration_expedition(sgd),
-      orderware_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+      orderware_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);
 
     for(unsigned i = 0; i < 6; ++i)
-        sea_ids[i] = sgd->PopUnsignedShort();
+        sea_ids[i] = sgd.PopUnsignedShort();
 
-    sgd->PopObjectContainer(wares_for_ships, GOT_WARE);
+    sgd.PopObjectContainer(wares_for_ships, GOT_WARE);
 
-    unsigned count = sgd->PopUnsignedInt();
+    unsigned count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < count; ++i)
     {
         FigureForShip ffs;
-        ffs.dest = sgd->PopMapPoint();
-        ffs.fig = sgd->PopObject<noFigure>(GOT_UNKNOWN);
+        ffs.dest = sgd.PopMapPoint();
+        ffs.fig = sgd.PopObject<noFigure>(GOT_UNKNOWN);
         figures_for_ships.push_back(ffs);
     }
 
-    count = sgd->PopUnsignedInt();
+    count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < count; ++i)
     {
         SoldierForShip ffs;
-        ffs.dest = sgd->PopMapPoint();
-        ffs.attacker = sgd->PopObject<nofAttacker>(GOT_NOF_ATTACKER);
+        ffs.dest = sgd.PopMapPoint();
+        ffs.attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
         soldiers_for_ships.push_back(ffs);
     }
 

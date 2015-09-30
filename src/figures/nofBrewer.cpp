@@ -40,7 +40,7 @@ nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* w
 {
 }
 
-nofBrewer::nofBrewer(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

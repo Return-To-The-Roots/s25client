@@ -42,7 +42,7 @@ nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* wor
 {
 }
 
-nofBaker::nofBaker(SerializedGameData* sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
+nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 

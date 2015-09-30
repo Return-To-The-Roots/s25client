@@ -33,31 +33,31 @@ static char THIS_FILE[] = __FILE__;
 PostMsg::PostMsg(const std::string& text, PostMessageCategory cat)
     : text(text), type(PMT_NORMAL), cat(cat), sendFrame(GAMECLIENT.GetGFNumber()) { }
 
-PostMsg::PostMsg(SerializedGameData* sgd)
-    : text(sgd->PopString()), type(PostMessageType(sgd->PopUnsignedInt())),
-      cat(PostMessageCategory(sgd->PopUnsignedInt())), sendFrame(sgd->PopUnsignedInt()) { }
+PostMsg::PostMsg(SerializedGameData& sgd)
+    : text(sgd.PopString()), type(PostMessageType(sgd.PopUnsignedInt())),
+      cat(PostMessageCategory(sgd.PopUnsignedInt())), sendFrame(sgd.PopUnsignedInt()) { }
 
 
 PostMsg::~PostMsg() { }
 
-void PostMsg::Serialize(SerializedGameData* sgd)
+void PostMsg::Serialize(SerializedGameData& sgd)
 {
-    sgd->PushString(text);
-    sgd->PushUnsignedInt(type);
-    sgd->PushUnsignedInt(cat);
-    sgd->PushUnsignedInt(sendFrame);
+    sgd.PushString(text);
+    sgd.PushUnsignedInt(type);
+    sgd.PushUnsignedInt(cat);
+    sgd.PushUnsignedInt(sendFrame);
 }
 
 PostMsgWithLocation::PostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt)
     : PostMsg(text, cat), pt(pt) { type = PMT_WITH_LOCATION; }
 
-PostMsgWithLocation::PostMsgWithLocation(SerializedGameData* sgd)
-    : PostMsg(sgd), pt(sgd->PopMapPoint()) { }
+PostMsgWithLocation::PostMsgWithLocation(SerializedGameData& sgd)
+    : PostMsg(sgd), pt(sgd.PopMapPoint()) { }
 
-void PostMsgWithLocation::Serialize(SerializedGameData* sgd)
+void PostMsgWithLocation::Serialize(SerializedGameData& sgd)
 {
     PostMsg::Serialize(sgd);
-    sgd->PushMapPoint(pt);
+    sgd.PushMapPoint(pt);
 }
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,
@@ -74,8 +74,8 @@ ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, Post
     type = PMT_IMAGE_WITH_LOCATION;
 }
 
-ImagePostMsgWithLocation::ImagePostMsgWithLocation(SerializedGameData* sgd)
-    : PostMsgWithLocation(sgd), senderBuilding(BuildingType(sgd->PopUnsignedInt())), senderNation(Nation(sgd->PopUnsignedInt())) { }
+ImagePostMsgWithLocation::ImagePostMsgWithLocation(SerializedGameData& sgd)
+    : PostMsgWithLocation(sgd), senderBuilding(BuildingType(sgd.PopUnsignedInt())), senderNation(Nation(sgd.PopUnsignedInt())) { }
 
 glArchivItem_Bitmap* ImagePostMsgWithLocation::GetImage_() const
 {
@@ -88,11 +88,11 @@ glArchivItem_Bitmap* ImagePostMsgWithLocation::GetImage_() const
 
 
 
-void ImagePostMsgWithLocation::Serialize(SerializedGameData* sgd)
+void ImagePostMsgWithLocation::Serialize(SerializedGameData& sgd)
 {
     PostMsgWithLocation::Serialize(sgd);
-    sgd->PushUnsignedInt(senderBuilding);
-    sgd->PushUnsignedInt(senderNation);
+    sgd.PushUnsignedInt(senderBuilding);
+    sgd.PushUnsignedInt(senderNation);
 }
 
 /// Titel für die Fenster für unterschiedliche Bündnistypen
@@ -134,12 +134,12 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     text = msg;
 }
 
-DiplomacyPostQuestion::DiplomacyPostQuestion(SerializedGameData* sgd)
+DiplomacyPostQuestion::DiplomacyPostQuestion(SerializedGameData& sgd)
     : PostMsg(sgd)
 {
 }
 
-void DiplomacyPostQuestion::Serialize(SerializedGameData* sgd)
+void DiplomacyPostQuestion::Serialize(SerializedGameData& sgd)
 {
     PostMsg::Serialize(sgd);
 }
@@ -162,12 +162,12 @@ DiplomacyPostInfo::DiplomacyPostInfo(const unsigned char other_player, const Typ
 }
 
 
-DiplomacyPostInfo::DiplomacyPostInfo(SerializedGameData* sgd) : PostMsg(sgd)
+DiplomacyPostInfo::DiplomacyPostInfo(SerializedGameData& sgd) : PostMsg(sgd)
 {
 }
 
 
-void DiplomacyPostInfo::Serialize(SerializedGameData* sgd)
+void DiplomacyPostInfo::Serialize(SerializedGameData& sgd)
 {
     PostMsg::Serialize(sgd);
 }

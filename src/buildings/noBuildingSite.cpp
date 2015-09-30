@@ -151,34 +151,34 @@ void noBuildingSite::Destroy_noBuildingSite()
         Destroy_noBaseBuilding();
 }
 
-void noBuildingSite::Serialize_noBuildingSite(SerializedGameData* sgd) const
+void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const
 {
     Serialize_noBaseBuilding(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushObject(planer, true);
-    sgd->PushObject(builder, true);
-    sgd->PushUnsignedChar(boards);
-    sgd->PushUnsignedChar(stones);
-    sgd->PushUnsignedChar(used_boards);
-    sgd->PushUnsignedChar(used_stones);
-    sgd->PushUnsignedChar(build_progress);
-    sgd->PushObjectContainer(ordered_boards, true);
-    sgd->PushObjectContainer(ordered_stones, true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushObject(planer, true);
+    sgd.PushObject(builder, true);
+    sgd.PushUnsignedChar(boards);
+    sgd.PushUnsignedChar(stones);
+    sgd.PushUnsignedChar(used_boards);
+    sgd.PushUnsignedChar(used_stones);
+    sgd.PushUnsignedChar(build_progress);
+    sgd.PushObjectContainer(ordered_boards, true);
+    sgd.PushObjectContainer(ordered_stones, true);
 }
 
-noBuildingSite::noBuildingSite(SerializedGameData* sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
-    state(static_cast<State>(sgd->PopUnsignedChar())),
-    planer(sgd->PopObject<nofPlaner>(GOT_NOF_PLANER)),
-    builder(sgd->PopObject<nofBuilder>(GOT_NOF_BUILDER)),
-    boards(sgd->PopUnsignedChar()),
-    stones(sgd->PopUnsignedChar()),
-    used_boards(sgd->PopUnsignedChar()),
-    used_stones(sgd->PopUnsignedChar()),
-    build_progress(sgd->PopUnsignedChar())
+noBuildingSite::noBuildingSite(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
+    state(static_cast<State>(sgd.PopUnsignedChar())),
+    planer(sgd.PopObject<nofPlaner>(GOT_NOF_PLANER)),
+    builder(sgd.PopObject<nofBuilder>(GOT_NOF_BUILDER)),
+    boards(sgd.PopUnsignedChar()),
+    stones(sgd.PopUnsignedChar()),
+    used_boards(sgd.PopUnsignedChar()),
+    used_stones(sgd.PopUnsignedChar()),
+    build_progress(sgd.PopUnsignedChar())
 {
-    sgd->PopObjectContainer(ordered_boards, GOT_WARE);
-    sgd->PopObjectContainer(ordered_stones, GOT_WARE);
+    sgd.PopObjectContainer(ordered_boards, GOT_WARE);
+    sgd.PopObjectContainer(ordered_stones, GOT_WARE);
 }
 
 void noBuildingSite::OrderConstructionMaterial()

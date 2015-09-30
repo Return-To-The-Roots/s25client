@@ -139,11 +139,11 @@ class noShip : public noMovable
 
         /// Konstruktor
         noShip(const MapPoint pt, const unsigned char player);
-        noShip(SerializedGameData* sgd, const unsigned obj_id);
+        noShip(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noShip() {}
 
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
         void Destroy();
 
         GO_Type GetGOT() const { return GOT_SHIP; }

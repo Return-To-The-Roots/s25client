@@ -49,7 +49,7 @@ class CatapultStone : public GameObject
         CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                       const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration);
 
-        CatapultStone(SerializedGameData* sgd, const unsigned obj_id);
+        CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
 
         ~CatapultStone() {}
 
@@ -57,8 +57,8 @@ class CatapultStone : public GameObject
         void Destroy();
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_CatapultStone(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_CatapultStone(sgd); }
+    protected:  void Serialize_CatapultStone(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_CatapultStone(sgd); }
 
         // Zeichnet den fliegenden Stein
         void Draw(const GameWorldView& gwv, const int xoffset, const int yoffset);

@@ -51,18 +51,18 @@ nofDefender::nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
 {
 }
 
-void nofDefender::Serialize_nofDefender(SerializedGameData* sgd) const
+void nofDefender::Serialize_nofDefender(SerializedGameData& sgd) const
 {
     Serialize_nofActiveSoldier(sgd);
 
     if(state != STATE_FIGUREWORK)
-        sgd->PushObject(attacker, true);
+        sgd.PushObject(attacker, true);
 }
 
-nofDefender::nofDefender(SerializedGameData* sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
+nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
     if(state != STATE_FIGUREWORK)
-        attacker = sgd->PopObject<nofAttacker>(GOT_NOF_ATTACKER);
+        attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
     else
         attacker = 0;
 }

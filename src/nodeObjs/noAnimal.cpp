@@ -42,21 +42,21 @@ noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_AN
         hunter->AnimalLost();
 }
 
-void noAnimal::Serialize_noAnimal(SerializedGameData* sgd) const
+void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
 {
     Serialize_noMovable(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(species));
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushUnsignedShort(pause_way);
-    sgd->PushObject(hunter, true);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(species));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushUnsignedShort(pause_way);
+    sgd.PushObject(hunter, true);
 }
 
-noAnimal::noAnimal(SerializedGameData* sgd, const unsigned obj_id) : noMovable(sgd, obj_id),
-    species(Species(sgd->PopUnsignedChar())),
-    state(State(sgd->PopUnsignedChar())),
-    pause_way(sgd->PopUnsignedShort()),
-    hunter(sgd->PopObject<nofHunter>(GOT_NOF_HUNTER)),
+noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id) : noMovable(sgd, obj_id),
+    species(Species(sgd.PopUnsignedChar())),
+    state(State(sgd.PopUnsignedChar())),
+    pause_way(sgd.PopUnsignedShort()),
+    hunter(sgd.PopObject<nofHunter>(GOT_NOF_HUNTER)),
     sound_moment(0)
 {
 }

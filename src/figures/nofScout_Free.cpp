@@ -41,15 +41,15 @@ nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noR
 {
 }
 
-void nofScout_Free::Serialize_nofScout_Free(SerializedGameData* sgd) const
+void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const
 {
     Serialize_nofFlagWorker(sgd);
 
-    sgd->PushMapPoint(nextPos);
+    sgd.PushMapPoint(nextPos);
 }
 
-nofScout_Free::nofScout_Free(SerializedGameData* sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    nextPos(sgd->PopMapPoint())
+nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
+    nextPos(sgd.PopMapPoint())
 {
 }
 

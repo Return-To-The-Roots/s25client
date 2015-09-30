@@ -25,7 +25,7 @@ class noStaticObject : public noCoordBase
 {
     public:
         noStaticObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 0, NodalObjectType type = NOP_OBJECT);
-        noStaticObject(SerializedGameData* sgd, const unsigned obj_id);
+        noStaticObject(SerializedGameData& sgd, const unsigned obj_id);
 
         void Destroy() { Destroy_noStaticObject(); }
 
@@ -42,8 +42,8 @@ class noStaticObject : public noCoordBase
         void Draw(int x, int y);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noStaticObject(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noStaticObject(sgd); }
+    protected:  void Serialize_noStaticObject(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noStaticObject(sgd); }
 
         GO_Type GetGOT() const { return GOT_STATICOBJECT; }
 

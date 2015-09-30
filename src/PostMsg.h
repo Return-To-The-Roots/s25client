@@ -31,14 +31,14 @@ class PostMsg
 {
     public:
         PostMsg(const std::string& text, PostMessageCategory cat);
-        PostMsg(SerializedGameData* sgd);
+        PostMsg(SerializedGameData& sgd);
         virtual ~PostMsg();
 
         const std::string& GetText() const { return text; }
         PostMessageType GetType() const { return type; }
         PostMessageCategory GetCategory() const { return cat; }
         unsigned GetSendFrame() const { return sendFrame; }
-        virtual void Serialize(SerializedGameData* sgd);
+        virtual void Serialize(SerializedGameData& sgd);
 
     protected:
         std::string text;
@@ -52,12 +52,12 @@ class PostMsgWithLocation : public PostMsg
 {
     public:
         PostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt);
-        PostMsgWithLocation(SerializedGameData* sgd);
+        PostMsgWithLocation(SerializedGameData& sgd);
 
         MapCoord GetX() const { return pt.x; }
         MapCoord GetY() const { return pt.y; }
         MapPoint GetPos() const { return pt; }
-        virtual void Serialize(SerializedGameData* sgd);
+        virtual void Serialize(SerializedGameData& sgd);
 
     private:
         MapPoint pt;
@@ -69,10 +69,10 @@ class ImagePostMsgWithLocation : public PostMsgWithLocation
     public:
         ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt, BuildingType senderBuilding, Nation senderNation);
         ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat, const MapPoint pt, Nation senderNation);
-        ImagePostMsgWithLocation(SerializedGameData* sgd);
+        ImagePostMsgWithLocation(SerializedGameData& sgd);
 
         glArchivItem_Bitmap* GetImage_() const;
-        virtual void Serialize(SerializedGameData* sgd);
+        virtual void Serialize(SerializedGameData& sgd);
 
     private:
         BuildingType senderBuilding;
@@ -97,10 +97,10 @@ class DiplomacyPostQuestion : public PostMsg
         DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt, const unsigned duration);
         /// Vertrag auflösen
         DiplomacyPostQuestion(const unsigned id, const unsigned char player, const PactType pt);
-        DiplomacyPostQuestion(SerializedGameData* sgd);
+        DiplomacyPostQuestion(SerializedGameData& sgd);
 
         unsigned GetPlayerID() const { return player; }
-        virtual void Serialize(SerializedGameData* sgd);
+        virtual void Serialize(SerializedGameData& sgd);
 
     private:
         /// Typ der Diplomatienachricht
@@ -126,9 +126,9 @@ class DiplomacyPostInfo : public PostMsg
         };
 
         DiplomacyPostInfo(const unsigned char other_player, const Type dp_type, const PactType pt);
-        DiplomacyPostInfo(SerializedGameData* sgd);
+        DiplomacyPostInfo(SerializedGameData& sgd);
 
-        virtual void Serialize(SerializedGameData* sgd);
+        virtual void Serialize(SerializedGameData& sgd);
 
         /// Typ der Diplomatienachricht
 

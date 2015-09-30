@@ -46,15 +46,15 @@ class noFighting : public noBase
     public:
 
         noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
-        noFighting(SerializedGameData* sgd, const unsigned obj_id);
+        noFighting(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noFighting();
     public:     void Destroy() { Destroy_noFighting(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noFighting(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noFighting(sgd); }
+    protected:  void Serialize_noFighting(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noFighting(sgd); }
 
         GO_Type GetGOT() const { return GOT_FIGHTING; }
 

@@ -123,26 +123,26 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
  *
  *  @author OLiver
  */
-nofCarrier::nofCarrier(SerializedGameData* sgd, unsigned int obj_id)
+nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
     : noFigure(sgd, obj_id),
-      ct( CarrierType(sgd->PopUnsignedChar()) ),
-      state( CarrierState(sgd->PopUnsignedChar()) ),
-      fat( sgd->PopBool() ),
-      workplace( sgd->PopObject<RoadSegment>(GOT_ROADSEGMENT) ),
-      carried_ware( sgd->PopObject<Ware>(GOT_WARE) ),
-      productivity_ev(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-      productivity(sgd->PopUnsignedInt()),
-      worked_gf(sgd->PopUnsignedInt()),
-      since_working_gf(sgd->PopUnsignedInt()),
+      ct( CarrierType(sgd.PopUnsignedChar()) ),
+      state( CarrierState(sgd.PopUnsignedChar()) ),
+      fat( sgd.PopBool() ),
+      workplace( sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT) ),
+      carried_ware( sgd.PopObject<Ware>(GOT_WARE) ),
+      productivity_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+      productivity(sgd.PopUnsignedInt()),
+      worked_gf(sgd.PopUnsignedInt()),
+      since_working_gf(sgd.PopUnsignedInt()),
       next_animation(0),
       shore_path(NULL)
 {
 
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
-        shore_path = new std::vector<unsigned char>(sgd->PopUnsignedInt());
+        shore_path = new std::vector<unsigned char>(sgd.PopUnsignedInt());
         for(unsigned i = 0; i < shore_path->size(); ++i)
-            shore_path->at(i) = sgd->PopUnsignedChar();
+            shore_path->at(i) = sgd.PopUnsignedChar();
     }
 }
 
@@ -152,25 +152,25 @@ nofCarrier::nofCarrier(SerializedGameData* sgd, unsigned int obj_id)
  *
  *  @author OLiver
  */
-void nofCarrier::Serialize_nofCarrier(SerializedGameData* sgd) const
+void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(ct));
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushBool(fat);
-    sgd->PushObject(workplace, true);
-    sgd->PushObject(carried_ware, true);
-    sgd->PushObject(productivity_ev, true);
-    sgd->PushUnsignedInt(productivity);
-    sgd->PushUnsignedInt(worked_gf);
-    sgd->PushUnsignedInt(since_working_gf);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(ct));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushBool(fat);
+    sgd.PushObject(workplace, true);
+    sgd.PushObject(carried_ware, true);
+    sgd.PushObject(productivity_ev, true);
+    sgd.PushUnsignedInt(productivity);
+    sgd.PushUnsignedInt(worked_gf);
+    sgd.PushUnsignedInt(since_working_gf);
 
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
-        sgd->PushUnsignedInt(shore_path->size());
+        sgd.PushUnsignedInt(shore_path->size());
         for(unsigned i = 0; i < shore_path->size(); ++i)
-            sgd->PushUnsignedChar(shore_path->at(i));
+            sgd.PushUnsignedChar(shore_path->at(i));
     }
 }
 

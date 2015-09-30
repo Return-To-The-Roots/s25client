@@ -64,7 +64,7 @@ class noBuildingSite : public noBaseBuilding
         noBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
         /// Konstruktor für Hafenbaustellen vom Schiff aus
         noBuildingSite(const MapPoint pt, const unsigned char player);
-        noBuildingSite(SerializedGameData* sgd, const unsigned obj_id);
+        noBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noBuildingSite();
 
@@ -73,8 +73,8 @@ class noBuildingSite : public noBaseBuilding
     public:     void Destroy() { Destroy_noBuildingSite(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noBuildingSite(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noBuildingSite(sgd); }
+    protected:  void Serialize_noBuildingSite(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noBuildingSite(sgd); }
 
         GO_Type GetGOT() const { return GOT_BUILDINGSITE; }
 

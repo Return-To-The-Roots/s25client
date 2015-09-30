@@ -72,23 +72,23 @@ void nofAggressiveDefender::Destroy_nofAggressiveDefender()
     //assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
-void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData* sgd) const
+void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& sgd) const
 {
     Serialize_nofActiveSoldier(sgd);
 
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
-        sgd->PushObject(attacker, true);
-        sgd->PushObject(attacked_goal, false);
+        sgd.PushObject(attacker, true);
+        sgd.PushObject(attacked_goal, false);
     }
 }
 
-nofAggressiveDefender::nofAggressiveDefender(SerializedGameData* sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
+nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
-        attacker = sgd->PopObject<nofAttacker>(GOT_NOF_ATTACKER);
-        attacked_goal = sgd->PopObject<nobBaseMilitary>(GOT_UNKNOWN);
+        attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
+        attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
     }
     else
     {

@@ -45,13 +45,13 @@ noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short f
 {
 }
 
-void noEnvObject::Serialize_noEnvObject(SerializedGameData* sgd) const
+void noEnvObject::Serialize_noEnvObject(SerializedGameData& sgd) const
 {
     Serialize_noStaticObject(sgd);
 
 
 }
 
-noEnvObject::noEnvObject(SerializedGameData* sgd, const unsigned obj_id) : noStaticObject(sgd, obj_id)
+noEnvObject::noEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noStaticObject(sgd, obj_id)
 {
 }

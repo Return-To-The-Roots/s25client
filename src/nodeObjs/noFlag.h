@@ -26,11 +26,11 @@ class noFlag : public noRoadNode
 {
     public:
         noFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 0xFF);
-        noFlag(SerializedGameData* sgd, const unsigned int obj_id);
+        noFlag(SerializedGameData& sgd, const unsigned int obj_id);
         ~noFlag();
 
         void Destroy()  {   Destroy_noFlag();   }
-        void Serialize(SerializedGameData* sgd) const { Serialize_noFlag(sgd);  }
+        void Serialize(SerializedGameData& sgd) const { Serialize_noFlag(sgd);  }
 
         inline GO_Type GetGOT() const { return GOT_FLAG; }
         inline FlagType GetFlagType() const { return flagtype; }
@@ -88,7 +88,7 @@ class noFlag : public noRoadNode
 
     protected:
         void Destroy_noFlag();
-        void Serialize_noFlag(SerializedGameData* sgd) const;
+        void Serialize_noFlag(SerializedGameData& sgd) const;
 
     private:
         unsigned short ani_offset;

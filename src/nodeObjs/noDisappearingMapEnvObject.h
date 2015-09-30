@@ -27,14 +27,14 @@ class noDisappearingMapEnvObject : public noDisappearingEnvObject
     public:
         /// Konstruktor von @p noSign.
         noDisappearingMapEnvObject(const MapPoint pt, const unsigned short map_id);
-        noDisappearingMapEnvObject(SerializedGameData* sgd, const unsigned obj_id);
+        noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noDisappearingMapEnvObject();
     public:     void Destroy() { Destroy_noDisappearingMapEnvObject(); }
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noDisappearingMapEnvObject(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noDisappearingMapEnvObject(sgd); }
+    protected:  void Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noDisappearingMapEnvObject(sgd); }
 
         GO_Type GetGOT() const { return GOT_DISAPPEARINGMAPENVOBJECT; }
 

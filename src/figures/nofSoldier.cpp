@@ -48,24 +48,24 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
 {
 }
 
-void nofSoldier::Serialize_nofSoldier(SerializedGameData* sgd) const
+void nofSoldier::Serialize_nofSoldier(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
     if(fs != FS_WANDER && fs != FS_GOHOME)
-        sgd->PushObject(building, false);
+        sgd.PushObject(building, false);
 
-    sgd->PushUnsignedChar(hitpoints);
+    sgd.PushUnsignedChar(hitpoints);
 }
 
-nofSoldier::nofSoldier(SerializedGameData* sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
+nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
     if(fs != FS_WANDER && fs != FS_GOHOME)
-        building = sgd->PopObject<nobBaseMilitary>(GOT_UNKNOWN);
+        building = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
     else
         building = 0;
 
-    hitpoints = sgd->PopUnsignedChar();
+    hitpoints = sgd.PopUnsignedChar();
 }
 
 void nofSoldier::DrawSoldierWalking(int x, int y, bool waitingsoldier)

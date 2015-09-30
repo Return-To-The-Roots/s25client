@@ -35,7 +35,7 @@ class nofPigbreeder : public nofWorkman
     public:
 
         nofPigbreeder(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofPigbreeder(SerializedGameData* sgd, const unsigned obj_id);
+        nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_PIGBREEDER; }
 

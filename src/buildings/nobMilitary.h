@@ -90,7 +90,7 @@ class nobMilitary : public nobBaseMilitary
         friend class SerializedGameData;
         friend class BuildingFactory;
         nobMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-        nobMilitary(SerializedGameData* sgd, const unsigned obj_id);
+        nobMilitary(SerializedGameData& sgd, const unsigned obj_id);
     public:
 
         ~nobMilitary();
@@ -100,8 +100,8 @@ class nobMilitary : public nobBaseMilitary
     public:     void Destroy() { Destroy_nobMilitary(); }
 
         /// Serialisierungsfunktionen
-    protected: void Serialize_nobMilitary(SerializedGameData* sgd) const;
-    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobMilitary(sgd); }
+    protected: void Serialize_nobMilitary(SerializedGameData& sgd) const;
+    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobMilitary(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOB_MILITARY; }
 

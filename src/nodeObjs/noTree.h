@@ -86,7 +86,7 @@ class noTree : public noCoordBase
     public:
 
         noTree(const MapPoint pt, const unsigned char type, const unsigned char size);
-        noTree(SerializedGameData* sgd, const unsigned obj_id);
+        noTree(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noTree();
 
@@ -95,8 +95,8 @@ class noTree : public noCoordBase
     public:     void Destroy() { Destroy_noTree(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noTree(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noTree(sgd); }
+    protected:  void Serialize_noTree(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noTree(sgd); }
 
         GO_Type GetGOT() const { return GOT_TREE; }
 

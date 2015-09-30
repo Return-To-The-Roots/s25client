@@ -38,7 +38,7 @@ protected:
     public:
 
         nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMiner(SerializedGameData* sgd, const unsigned obj_id);
+        nofMiner(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_MINER; }
 };

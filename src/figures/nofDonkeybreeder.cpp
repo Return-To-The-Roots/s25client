@@ -54,7 +54,7 @@ nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nob
  *
  *  @author FloSoft
  */
-nofDonkeybreeder::nofDonkeybreeder(SerializedGameData* sgd, unsigned int obj_id)
+nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
     : nofWorkman(sgd, obj_id)
 {
 }

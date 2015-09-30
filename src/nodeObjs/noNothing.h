@@ -31,7 +31,7 @@ class noNothing : public noBase
     public:     void Destroy() { Destroy_noNothing(); }
 
         /// Serialisierungsfunktionen
-    public:     void Serialize(SerializedGameData* sgd) const {}
+    public:     void Serialize(SerializedGameData& sgd) const {}
 
         GO_Type GetGOT() const { return GOT_UNKNOWN; }
 

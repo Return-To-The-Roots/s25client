@@ -123,15 +123,15 @@ class nofBuildingWorker : public noFigure
         State GetState() { return state; }
 
         nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofBuildingWorker(SerializedGameData* sgd, const unsigned obj_id);
+        nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_nofBuildingWorker() { Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofBuildingWorker(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofBuildingWorker(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofBuildingWorker(sgd); }
+    protected:  void Serialize_nofBuildingWorker(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofBuildingWorker(sgd); }
 
 
         void Draw(int x, int y);

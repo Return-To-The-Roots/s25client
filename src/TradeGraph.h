@@ -50,9 +50,9 @@ class TradeGraph
     public:
 
         TradeGraph(const unsigned char player, const GameWorldGame* const gwg);
-        TradeGraph(SerializedGameData* sgd, const GameWorldGame* const gwg);
+        TradeGraph(SerializedGameData& sgd, const GameWorldGame* const gwg);
 
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
 
         /// Creates a new complete graph
         void Create();

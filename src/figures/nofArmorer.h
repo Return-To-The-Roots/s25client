@@ -43,11 +43,11 @@ class nofArmorer : public nofWorkman
     public:
 
         nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofArmorer(SerializedGameData* sgd, const unsigned obj_id);
+        nofArmorer(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofArmorer(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofArmorer(sgd); }
+    protected:  void Serialize_nofArmorer(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofArmorer(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_ARMORER; }
 };

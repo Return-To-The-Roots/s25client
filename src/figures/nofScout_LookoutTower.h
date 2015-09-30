@@ -39,11 +39,11 @@ class nofScout_LookoutTower : public nofBuildingWorker
     public:
 
         nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofScout_LookoutTower(SerializedGameData* sgd, const unsigned obj_id);
+        nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofScout_LookoutTower(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofScout_LookoutTower(sgd); }
+    protected:  void Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofScout_LookoutTower(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
 

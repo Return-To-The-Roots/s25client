@@ -107,7 +107,7 @@ class GameObject
         /// Konstruktor von @p GameObject.
         GameObject(void);
         /// Deserialisierungskonstruktor
-        GameObject(SerializedGameData* sgd, const unsigned obj_id);
+        GameObject(SerializedGameData& sgd, const unsigned obj_id);
         /// Copy-Konstruktor
         GameObject(const GameObject& go);
         /// Destruktor von @p GameObject.
@@ -125,7 +125,7 @@ class GameObject
         unsigned GetObjId() const { return objId; }
 
         /// Serialisierungsfunktion.
-        virtual void Serialize(SerializedGameData* sgd) const = 0;
+        virtual void Serialize(SerializedGameData& sgd) const = 0;
         /// Liefert den GOT (siehe oben)
         virtual GO_Type GetGOT(void) const = 0;
 
@@ -147,7 +147,7 @@ class GameObject
     protected:
 
         /// Serialisierungsfunktion.
-        void Serialize_GameObject(SerializedGameData* sgd) const {}
+        void Serialize_GameObject(SerializedGameData& sgd) const {}
 
     protected:
 

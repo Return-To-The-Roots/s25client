@@ -891,8 +891,8 @@ class GameWorld : public GameWorldViewer, public GameWorldGame
         bool LoadMap(const std::string& filename);
 
         /// Serialisiert den gesamten GameWorld
-        void Serialize(SerializedGameData* sgd) const;
-        void Deserialize(SerializedGameData* sgd);
+        void Serialize(SerializedGameData& sgd) const;
+        void Deserialize(SerializedGameData& sgd);
 
         /// Sagt der GW Bescheid, dass ein Objekt von Bedeutung an x,y vernichtet wurde, damit dieser
         /// dass ggf. an den WindowManager weiterleiten kann, damit auch ein Fenster wieder geschlossen wird

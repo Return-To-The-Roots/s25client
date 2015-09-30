@@ -49,7 +49,7 @@ class nofPassiveSoldier : public nofSoldier
 
         nofPassiveSoldier(const nofSoldier& soldier);
         nofPassiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
-        nofPassiveSoldier(SerializedGameData* sgd, const unsigned obj_id);
+        nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         ~nofPassiveSoldier();
 
@@ -58,8 +58,8 @@ class nofPassiveSoldier : public nofSoldier
     public:     void Destroy() { Destroy_nofPassiveSoldier(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofPassiveSoldier(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofPassiveSoldier(sgd); }
+    protected:  void Serialize_nofPassiveSoldier(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofPassiveSoldier(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_PASSIVESOLDIER; }
 

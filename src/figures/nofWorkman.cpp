@@ -43,12 +43,12 @@ nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char pl
 {
 }
 
-void nofWorkman::Serialize_nofWorkman(SerializedGameData* sgd) const
+void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 }
 
-nofWorkman::nofWorkman(SerializedGameData* sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
+nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
 {
 }
 

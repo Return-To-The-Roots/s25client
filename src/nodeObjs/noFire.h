@@ -39,7 +39,7 @@ class noFire : public noCoordBase
     public:
 
         noFire(const MapPoint pt, const unsigned char size);
-        noFire(SerializedGameData* sgd, const unsigned obj_id);
+        noFire(SerializedGameData& sgd, const unsigned obj_id);
 
         ~noFire();
         /// Aufräummethoden
@@ -47,8 +47,8 @@ class noFire : public noCoordBase
     public:     void Destroy() { Destroy_noFire(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noFire(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noFire(sgd); }
+    protected:  void Serialize_noFire(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noFire(sgd); }
 
         GO_Type GetGOT() const { return GOT_FIRE; }
 

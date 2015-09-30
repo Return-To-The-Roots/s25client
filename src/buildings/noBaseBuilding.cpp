@@ -183,21 +183,21 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     Destroy_noRoadNode();
 }
 
-void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData* sgd) const
+void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(type_));
-    sgd->PushUnsignedChar(nation);
-    sgd->PushSignedInt(door_point_x);
-    sgd->PushSignedInt(door_point_y);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(type_));
+    sgd.PushUnsignedChar(nation);
+    sgd.PushSignedInt(door_point_x);
+    sgd.PushSignedInt(door_point_y);
 }
 
-noBaseBuilding::noBaseBuilding(SerializedGameData* sgd, const unsigned obj_id) : noRoadNode(sgd, obj_id),
-    type_(BuildingType(sgd->PopUnsignedChar())),
-    nation(Nation(sgd->PopUnsignedChar())),
-    door_point_x(sgd->PopSignedInt()),
-    door_point_y(sgd->PopSignedInt())
+noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id) : noRoadNode(sgd, obj_id),
+    type_(BuildingType(sgd.PopUnsignedChar())),
+    nation(Nation(sgd.PopUnsignedChar())),
+    door_point_x(sgd.PopSignedInt()),
+    door_point_y(sgd.PopSignedInt())
 {
 }
 

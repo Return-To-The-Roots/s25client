@@ -61,15 +61,15 @@ void nofPassiveSoldier::Destroy_nofPassiveSoldier()
     em->RemoveEvent(healing_event);
 }
 
-void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData* sgd) const
+void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) const
 {
     Serialize_nofSoldier(sgd);
 
-    sgd->PushObject(healing_event, true);
+    sgd.PushObject(healing_event, true);
 }
 
-nofPassiveSoldier::nofPassiveSoldier(SerializedGameData* sgd, const unsigned obj_id) : nofSoldier(sgd, obj_id),
-    healing_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id) : nofSoldier(sgd, obj_id),
+    healing_event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
 }
 

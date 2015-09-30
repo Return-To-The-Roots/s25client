@@ -48,15 +48,15 @@ class noMovable : public noCoordBase
     public:
 
         noMovable(const NodalObjectType nop, const MapPoint pt);
-        noMovable(SerializedGameData* sgd, const unsigned obj_id);
+        noMovable(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noMovable() { Destroy_noCoordBase(); }
     public:     void Destroy() { Destroy_noMovable(); }
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noMovable(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noMovable(sgd); }
+    protected:  void Serialize_noMovable(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noMovable(sgd); }
 
         /// Returns the direction in which the object is moving/which it is facing
         unsigned char GetCurMoveDir() const { return curMoveDir; }

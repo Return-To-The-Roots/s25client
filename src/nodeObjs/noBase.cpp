@@ -21,16 +21,16 @@
 #include "noBase.h"
 #include "SerializedGameData.h"
 
-noBase::noBase(SerializedGameData* sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
+noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
 {
-    nop = NodalObjectType(sgd->PopUnsignedChar());
+    nop = NodalObjectType(sgd.PopUnsignedChar());
 }
 
-void noBase::Serialize_noBase(SerializedGameData* sgd) const
+void noBase::Serialize_noBase(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd->PushUnsignedChar(static_cast<unsigned char>(nop));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(nop));
 }
 
 FOWObject* noBase::CreateFOWObject() const

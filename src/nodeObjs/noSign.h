@@ -27,14 +27,14 @@ class noSign : public noDisappearingEnvObject
     public:
         /// Konstruktor von @p noSign.
         noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
-        noSign(SerializedGameData* sgd, const unsigned obj_id);
+        noSign(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
     protected:  void Destroy_noSign();
     public:     void Destroy() { Destroy_noSign(); }
         /// Serialisierungsfunktionen
-    protected:  void Serialize_noSign(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_noSign(sgd); }
+    protected:  void Serialize_noSign(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noSign(sgd); }
 
         GO_Type GetGOT() const { return GOT_SIGN; }
 

@@ -50,25 +50,25 @@ nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* w
 {
 }
 
-void nofHunter::Serialize_nofHunter(SerializedGameData* sgd) const
+void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 
     if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
     {
-        sgd->PushObject(animal, true);
-        sgd->PushMapPoint(shootingPos);
-        sgd->PushUnsignedChar(shooting_dir);
+        sgd.PushObject(animal, true);
+        sgd.PushMapPoint(shootingPos);
+        sgd.PushUnsignedChar(shooting_dir);
     }
 }
 
-nofHunter::nofHunter(SerializedGameData* sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
+nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
 {
     if(state != STATE_FIGUREWORK && state != STATE_WAITING1)
     {
-        animal = sgd->PopObject<noAnimal>(GOT_ANIMAL);
-        shootingPos = sgd->PopMapPoint();
-        shooting_dir = sgd->PopUnsignedChar();
+        animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
+        shootingPos = sgd.PopMapPoint();
+        shooting_dir = sgd.PopUnsignedChar();
     }
 }
 

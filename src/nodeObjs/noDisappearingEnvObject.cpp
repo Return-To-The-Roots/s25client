@@ -53,17 +53,17 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
     dead_event = em->AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
 }
 
-void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameData* sgd) const
+void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushBool(disappearing);
-    sgd->PushObject(dead_event, true);
+    sgd.PushBool(disappearing);
+    sgd.PushObject(dead_event, true);
 }
 
-noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    disappearing(sgd->PopBool()),
-    dead_event(sgd->PopObject<EventManager::Event>(GOT_EVENT))
+noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    disappearing(sgd.PopBool()),
+    dead_event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
 }
 

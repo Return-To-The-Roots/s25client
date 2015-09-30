@@ -55,17 +55,17 @@ void noShipBuildingSite::Destroy()
     Destroy_noCoordBase();
 }
 
-void noShipBuildingSite::Serialize(SerializedGameData* sgd) const
+void noShipBuildingSite::Serialize(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(player);
-    sgd->PushUnsignedChar(progress);
+    sgd.PushUnsignedChar(player);
+    sgd.PushUnsignedChar(progress);
 }
 
-noShipBuildingSite::noShipBuildingSite(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    player(sgd->PopUnsignedChar()),
-    progress(sgd->PopUnsignedChar())
+noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    player(sgd.PopUnsignedChar()),
+    progress(sgd.PopUnsignedChar())
 {
 }
 

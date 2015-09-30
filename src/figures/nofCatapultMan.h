@@ -39,12 +39,12 @@ class nofCatapultMan : public nofBuildingWorker
 
                 PossibleTarget() : pos(0, 0), distance(0) {}
                 PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
-                PossibleTarget(SerializedGameData* sgd) : pos(sgd->PopMapPoint()), distance(sgd->PopUnsignedInt()) {}
+                PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt()) {}
 
-                void Serialize_PossibleTarget(SerializedGameData* sgd) const
+                void Serialize_PossibleTarget(SerializedGameData& sgd) const
                 {
-                    sgd->PushMapPoint(pos);
-                    sgd->PushUnsignedInt(distance);
+                    sgd.PushMapPoint(pos);
+                    sgd.PushUnsignedInt(distance);
                 }
 
         } target; /// das anvisierte Ziel
@@ -65,11 +65,11 @@ class nofCatapultMan : public nofBuildingWorker
     public:
 
         nofCatapultMan(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofCatapultMan(SerializedGameData* sgd, const unsigned obj_id);
+        nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_nofCatapultMan(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_nofCatapultMan(sgd); }
+    protected:  void Serialize_nofCatapultMan(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofCatapultMan(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_CATAPULTMAN; }
 

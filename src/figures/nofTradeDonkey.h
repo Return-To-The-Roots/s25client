@@ -49,9 +49,9 @@ class nofTradeDonkey : public noFigure
 
         nofTradeDonkey(const MapPoint pt, const unsigned char player,
                        nofTradeLeader* const leader, const GoodType gt, const Job job);
-        nofTradeDonkey(SerializedGameData* sgd, const unsigned obj_id);
+        nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Serialize(SerializedGameData* sgd) const;
+        void Serialize(SerializedGameData& sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_TRADEDONKEY; }
 

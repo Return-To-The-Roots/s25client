@@ -47,9 +47,9 @@ nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nob
 {
 }
 
-nofCharburner::nofCharburner(SerializedGameData* sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    harvest(sgd->PopBool()),
-    wt(WareType(sgd->PopUnsignedChar()))
+nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
+    harvest(sgd.PopBool()),
+    wt(WareType(sgd.PopUnsignedChar()))
 {
 }
 
@@ -215,12 +215,12 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
 }
 
 
-void nofCharburner::Serialize(SerializedGameData* sgd) const
+void nofCharburner::Serialize(SerializedGameData& sgd) const
 {
     Serialize_nofFarmhand(sgd);
 
-    sgd->PushBool(harvest);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(wt));
+    sgd.PushBool(harvest);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(wt));
 }
 
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)

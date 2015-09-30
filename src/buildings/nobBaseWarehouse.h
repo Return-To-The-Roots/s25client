@@ -109,7 +109,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         void AddToInventory();
 
         nobBaseWarehouse(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-        nobBaseWarehouse(SerializedGameData* sgd, const unsigned obj_id);
+        nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id);
     public:
 
         void Clear();
@@ -123,8 +123,8 @@ class nobBaseWarehouse : public nobBaseMilitary
         void Destroy() { Destroy_nobBaseWarehouse(); }
 
         /// Serialisierungsfunktionen
-    protected: void Serialize_nobBaseWarehouse(SerializedGameData* sgd) const;
-    public: void Serialize(SerializedGameData* sgd) const { Serialize_nobBaseWarehouse(sgd); }
+    protected: void Serialize_nobBaseWarehouse(SerializedGameData& sgd) const;
+    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobBaseWarehouse(sgd); }
 
         const Goods& GetInventory() const;
 

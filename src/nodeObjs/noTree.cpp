@@ -79,25 +79,25 @@ void noTree::Destroy_noTree()
     Destroy_noCoordBase();
 }
 
-void noTree::Serialize_noTree(SerializedGameData* sgd) const
+void noTree::Serialize_noTree(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd->PushUnsignedChar(type);
-    sgd->PushUnsignedChar(size);
-    sgd->PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd->PushObject(event, true);
-    sgd->PushObject(produce_animal_event, true);
-    sgd->PushBool(produce_animals);
+    sgd.PushUnsignedChar(type);
+    sgd.PushUnsignedChar(size);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushObject(event, true);
+    sgd.PushObject(produce_animal_event, true);
+    sgd.PushBool(produce_animals);
 }
 
-noTree::noTree(SerializedGameData* sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    type(sgd->PopUnsignedChar()),
-    size(sgd->PopUnsignedChar()),
-    state(State(sgd->PopUnsignedChar())),
-    event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-    produce_animal_event(sgd->PopObject<EventManager::Event>(GOT_EVENT)),
-    produce_animals(sgd->PopBool())
+noTree::noTree(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
+    type(sgd.PopUnsignedChar()),
+    size(sgd.PopUnsignedChar()),
+    state(State(sgd.PopUnsignedChar())),
+    event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    produce_animal_event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    produce_animals(sgd.PopBool())
 {
 }
 

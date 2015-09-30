@@ -45,8 +45,8 @@ class nofMetalworker : public nofWorkman
     public:
 
         nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMetalworker(SerializedGameData* sgd, const unsigned obj_id);
-        void Serialize(SerializedGameData* sgd) const;
+        nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
+        void Serialize(SerializedGameData& sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }
         void HandleDerivedEvent(const unsigned int id) override;

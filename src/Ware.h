@@ -57,15 +57,15 @@ class Ware : public GameObject
     public:
 
         Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location);
-        Ware(SerializedGameData* sgd, const unsigned obj_id);
+        Ware(SerializedGameData& sgd, const unsigned obj_id);
 
         ~Ware();
 
         void Destroy(void);
 
         /// Serialisierungsfunktionen
-    protected:  void Serialize_Ware(SerializedGameData* sgd) const;
-    public:     void Serialize(SerializedGameData* sgd) const { Serialize_Ware(sgd); }
+    protected:  void Serialize_Ware(SerializedGameData& sgd) const;
+    public:     void Serialize(SerializedGameData& sgd) const { Serialize_Ware(sgd); }
 
         GO_Type GetGOT() const { return GOT_WARE; }
 
