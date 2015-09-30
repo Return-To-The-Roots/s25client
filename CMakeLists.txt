@@ -81,7 +81,8 @@ else(Boost_USE_STATIC_LIBS)
    message(STATUS "Linking against boost dynamic libraries")
 endif(Boost_USE_STATIC_LIBS)
 
-SET(Boost_ADDITIONAL_VERSIONS "1.55" "1.56" "1.57" "1.58" "1.59")
+# For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
+SET(Boost_ADDITIONAL_VERSIONS "1.55.0" "1.55" "1.56.0" "1.56" "1.57.0" "1.57" "1.58.0" "1.58" "1.59.0" "1.59")
 
 IF (MSVC)
 	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
