@@ -106,7 +106,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
 {
     switch(got)
     {
-        default: return 0;
+        default: return NULL;
         case GOT_NOB_HQ: return new nobHQ(*this, obj_id);
         case GOT_NOB_MILITARY: return new nobMilitary(*this, obj_id);
         case GOT_NOB_STOREHOUSE: return new nobStorehouse(*this, obj_id);
@@ -179,7 +179,7 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
 {
     switch(fowtype)
     {
-        default: return 0;
+        default: return NULL;
         case FOW_BUILDING: return new fowBuilding(*this);
         case FOW_BUILDINGSITE: return new fowBuildingSite(*this);
         case FOW_FLAG: return new fowFlag(*this);
@@ -338,6 +338,20 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
     }
 
     return go;
+}
+
+void SerializedGameData::PushMapPoint(const MapPoint p)
+{
+    PushUnsignedShort(p.x);
+    PushUnsignedShort(p.y);
+}
+
+MapPoint SerializedGameData::PopMapPoint()
+{
+    MapPoint p;
+    p.x = PopUnsignedShort();
+    p.y = PopUnsignedShort();
+    return p;
 }
 
 void SerializedGameData::AddObject(GameObject* go)

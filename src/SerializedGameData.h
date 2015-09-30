@@ -19,164 +19,122 @@
 
 #pragma once
 
-#include <memory.h>
-#include <set>
-#include <list>
-#include <vector>
-#include "BinaryFile.h"
 #include "GameObject.h"
 #include "FOWObjects.h"
 #include "Serializer.h"
-#include "Point.h"
-#include "helpers/traits.h"
+#include "helpers/ReserveElements.hpp"
+#include "helpers/GetInsertIterator.hpp"
 
 class noBase;
 class GameObject;
 class GameWorld;
-
+class EventManager;
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
 {
-        /// Objektreferenzen
-        union
-        {
-            const GameObject** objects_write;
-            GameObject** objects_read;
-        };
-        /// Voraussichtliche Gesamtanzahl an Objekten (nur beim Laden)
-        unsigned total_objects_count;
-        /// Aktuelle Anzahl an Objekten
-        unsigned objects_count;
+public:
 
-        EventManager* em;
+    SerializedGameData();
 
-    private:
+    /// Nimmt das gesamte Spiel auf und speichert es im Buffer
+    void MakeSnapshot(GameWorld& gw, EventManager& em);
+    /// Liest den Buffer aus einer Datei
+    void ReadFromFile(BinaryFile& file);
 
-        /// Objekt(referenzen) lesen
-        GameObject* PopObject_(GO_Type got);
+    void PrepareDeserialization(EventManager* const em) { this->em = em; }
 
-        /// Reserves space if possible
-        template<class T, bool T_hasReserve = helpers::has_member_function_reserve<void (T::*)(size_t)>::value>
-        struct ReserveElements
-        {
-            static void reserve(T& gos, unsigned size)
-            {
-                gos.reserve(size);
-            }
-        };
-        template<class T>
-        struct ReserveElements<T, false>
-        {
-            static void reserve(T& gos, unsigned size)
-            {}
-        };
+    //////////////////////////////////////////////////////////////////////////
+    // Write methods
+    //////////////////////////////////////////////////////////////////////////
 
-        /// Returns the most efficient insert operator defining its type as "iterator"
-        template<class T, bool T_hasPushBack = helpers::has_member_function_push_back<void (T::*)(const typename T::value_type&)>::value>
-        struct GetInsertIterator
-        {
-            typedef std::back_insert_iterator<T> iterator;
-            static iterator get(T& gos)
-            {
-                return iterator(gos);
-            }
-        };
-        template<class T>
-        struct GetInsertIterator<T, false>
-        {
-            typedef std::insert_iterator<T> iterator;
-            static iterator get(T& gos)
-            {
-                return iterator(gos, gos.end());
-            }
-        };
+    /// Objekt(referenzen) kopieren
+    void PushObject(const GameObject* go, const bool known);
 
-    public:
+    /// Copies a container of GameObjects
+    template <typename T>
+    void PushObjectContainer(const T& gos, const bool known);
 
-        SerializedGameData();
+    /// FoW-Objekt
+    void PushFOWObject(const FOWObject* fowobj);
 
-        /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-        void MakeSnapshot(GameWorld& gw, EventManager& em);
-        /// Liest den Buffer aus einer Datei
-        void ReadFromFile(BinaryFile& file);
+    /// Point of map coords
+    void PushMapPoint(const MapPoint p);
 
-        void PrepareDeserialization(EventManager* const em) { this->em = em; }
+    //////////////////////////////////////////////////////////////////////////
+    // Read methods
+    //////////////////////////////////////////////////////////////////////////
 
-        /// Erzeugt GameObject
-        GameObject* Create_GameObject(const GO_Type got, const unsigned obj_id);
-        /// Erzeugt FOWObject
-        FOWObject* Create_FOWObject(const FOW_Type fowtype);
+    /// Objekt(referenzen) lesen
+    template <typename T>
+    T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
 
-        /// Kopiermethoden
+    /// FoW-Objekt
+    FOWObject* PopFOWObject();
 
-        /// Objekt(referenzen) kopieren
-        void PushObject(const GameObject* go, const bool known);
+    /// Liest einen Vektor von GameObjects
+    template <typename T>
+    void PopObjectContainer(T& gos, GO_Type got);
 
-        /// Copies a container of GameObjects
-        template <typename T>
-        void PushObjectContainer(const T& gos, const bool known)
-        {
-            // Anzahl
-            PushUnsignedInt(gos.size());
-            // einzelne Objekte
-            for(typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
-                PushObject(*it, known);
-        }
+    /// Point of map coords
+    MapPoint PopMapPoint();
 
-        /// FoW-Objekt
-        void PushFOWObject(const FOWObject* fowobj);
+    /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
+    void AddObject(GameObject* go);
 
-        /// Point of map coords
-        void PushMapPoint(const MapPoint p)
-        {
-            PushUnsignedShort(p.x);
-            PushUnsignedShort(p.y);
-        }
+    /// Sucht ein Objekt, falls vorhanden
+    const GameObject* GetConstGameObject(const unsigned obj_id) const;
+    GameObject* GetGameObject(const unsigned obj_id) const;
 
-        //////////////////////////////////////////////////////////////////////////
-        //Lesemethoden
-        //////////////////////////////////////////////////////////////////////////
+private:
+    /// Objektreferenzen
+    union
+    {
+        const GameObject** objects_write;
+        GameObject** objects_read;
+    };
+    /// Voraussichtliche Gesamtanzahl an Objekten (nur beim Laden)
+    unsigned total_objects_count;
+    /// Aktuelle Anzahl an Objekten
+    unsigned objects_count;
 
-        /// Point of map coords
-        MapPoint PopMapPoint()
-        {
-            MapPoint p;
-            p.x = PopUnsignedShort();
-            p.y = PopUnsignedShort();
-            return p;
-        }
+    EventManager* em;
 
-        /// Objekt(referenzen) lesen
-        template <typename T>
-        T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
+    /// Erzeugt GameObject
+    GameObject* Create_GameObject(const GO_Type got, const unsigned obj_id);
+    /// Erzeugt FOWObject
+    FOWObject* Create_FOWObject(const FOW_Type fowtype);
 
-        /// FoW-Objekt
-        FOWObject* PopFOWObject();
-
-
-        /// Liest einen Vektor von GameObjects
-        template <typename T>
-        void PopObjectContainer(T& gos, GO_Type got)
-        {
-            typedef typename T::value_type ObjectPtr;
-            typedef typename helpers::remove_pointer<ObjectPtr>::type Object;
-
-            unsigned size = PopUnsignedInt();
-            ReserveElements<T>::reserve(gos, size);
-            typename GetInsertIterator<T>::iterator it = GetInsertIterator<T>::get(gos);
-            for(unsigned i = 0; i < size; ++i)
-                *it = PopObject<Object>(got);
-        }
-
-        /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
-        void AddObject(GameObject* go);
-
-
-        /// Sucht ein Objekt, falls vorhanden
-        const GameObject* GetConstGameObject(const unsigned obj_id) const;
-        GameObject* GetGameObject(const unsigned obj_id) const;
+    /// Objekt(referenzen) lesen
+    GameObject* PopObject_(GO_Type got);
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Implementation
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+void SerializedGameData::PushObjectContainer(const T& gos, const bool known)
+{
+    // Anzahl
+    PushUnsignedInt(gos.size());
+    // einzelne Objekte
+    for (typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
+        PushObject(*it, known);
+}
+
+template <typename T>
+void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
+{
+    typedef typename T::value_type ObjectPtr;
+    typedef typename helpers::remove_pointer<ObjectPtr>::type Object;
+
+    unsigned size = PopUnsignedInt();
+    helpers::ReserveElements<T>::reserve(gos, size);
+    typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(gos);
+    for (unsigned i = 0; i < size; ++i)
+        *it = PopObject<Object>(got);
+}
 
 #endif // !SERIALIZED_GAME_DATA_H_

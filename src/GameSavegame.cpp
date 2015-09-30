@@ -19,6 +19,7 @@
 // Header
 #include "defines.h"
 #include "GameSavegame.h"
+#include "BinaryFile.h"
 #include "Log.h"
 
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
