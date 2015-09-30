@@ -34,8 +34,6 @@ static char THIS_FILE[] = __FILE__;
 
 ///////////////////////////////////////////////////////////////////////////////
 // lists the files of a directory
-//void ListDir(const std::string& path, void (*CallBack)(const std::string& filename, void * param), void *param, StringList *liste)
-
 void ListDir(const std::string& path, bool directories, void (*CallBack)(const std::string& filename, void* param), void* param, std::list<std::string> *liste)
 {
     namespace bfs = boost::filesystem;
@@ -47,6 +45,8 @@ void ListDir(const std::string& path, bool directories, void (*CallBack)(const s
     bfs::path parentPath = fullPath.parent_path();
     std::string extension = fullPath.extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
+    if(!bfs::exists(parentPath))
+        return;
 
     for(bfs::directory_iterator it = bfs::directory_iterator(parentPath); it != bfs::directory_iterator(); ++it)
     {
