@@ -24,6 +24,9 @@
 #include "Serializer.h"
 #include "helpers/ReserveElements.hpp"
 #include "helpers/GetInsertIterator.hpp"
+#include <set>
+#include <map>
+#include <stdexcept>
 
 class noBase;
 class GameObject;
@@ -35,12 +38,19 @@ class SerializedGameData : public Serializer
 {
 public:
 
+    /// Exception that is thrown if an error during (de)serialization occured
+    class Error: public std::runtime_error
+    {
+    public:
+        explicit Error(const std::string& msg): std::runtime_error(msg){}
+    };
+
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
     void MakeSnapshot(GameWorld& gw, EventManager& em);
     /// Liest den Buffer aus einer Datei
-    void ReadFromFile(BinaryFile& file);
+    void ReadFromFile(BinaryFile& file) override;
 
     void PrepareDeserialization(EventManager* const em) { this->em = em; }
 
@@ -79,27 +89,29 @@ public:
     /// Point of map coords
     MapPoint PopMapPoint();
 
-    /// Fügt ein gelesenes Objekt zur globalen Objektliste dazu
+    /// Adds a deserialized object to the storage. Must be called exactly once per read GameObject
     void AddObject(GameObject* go);
 
-    /// Sucht ein Objekt, falls vorhanden
-    const GameObject* GetConstGameObject(const unsigned obj_id) const;
-    GameObject* GetGameObject(const unsigned obj_id) const;
+    /// Returns whether the object with the given id was already serialized (only valid during writing)
+    bool IsObjectSerialized(const unsigned obj_id) const;
 
 private:
-    /// Objektreferenzen
-    union
-    {
-        const GameObject** objects_write;
-        GameObject** objects_read;
-    };
-    /// Voraussichtliche Gesamtanzahl an Objekten (nur beim Laden)
-    unsigned total_objects_count;
+    /// Stores the ids of all written objects (-> only valid during writing)
+    std::set<unsigned> writtenObjIds;
+    /// Maps already read object ids to GameObjects (-> only valid during reading)
+    std::map<unsigned, GameObject*> readObjects;
+
     /// Aktuelle Anzahl an Objekten
-    unsigned objects_count;
+    unsigned objectsCount;
+    /// Expected number of objects during reading
+    unsigned expectedObjectsReadCount;
 
     EventManager* em;
+    /// Is set to true when currently in read mode
+    bool isReading;
 
+    /// Starts reading or writing according to the param
+    void Prepare(bool reading);
     /// Erzeugt GameObject
     GameObject* Create_GameObject(const GO_Type got, const unsigned obj_id);
     /// Erzeugt FOWObject
@@ -107,6 +119,9 @@ private:
 
     /// Objekt(referenzen) lesen
     GameObject* PopObject_(GO_Type got);
+
+    /// Returns the object with the given id when it was read, NULL otherwhise (only valid during reading)
+    GameObject* GetReadGameObject(const unsigned obj_id) const;
 };
 
 

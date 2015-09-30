@@ -180,7 +180,7 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     {
         for(std::list<Event*>::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
         {
-            if ((*e_it) && !sgd.GetConstGameObject((*e_it)->GetObjId()))
+            if ((*e_it) && !sgd.IsObjectSerialized((*e_it)->GetObjId()))
                 save_events.push_back(*e_it);
         }
     }

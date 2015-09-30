@@ -94,6 +94,8 @@
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/BurnedWarehouse.h"
 
+#include "helpers/containerUtils.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -188,19 +190,23 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
     }
 }
 
-SerializedGameData::SerializedGameData() : objects_write(0), objects_count(0)
-{
-}
+SerializedGameData::SerializedGameData() : objectsCount(0), expectedObjectsReadCount(0), isReading(false), em(NULL)
+{}
 
+void SerializedGameData::Prepare(bool reading)
+{
+    if(!reading)
+        Clear();
+    writtenObjIds.clear();
+    readObjects.clear();
+    objectsCount = 0;
+    expectedObjectsReadCount = 0;
+    isReading = reading;
+}
 
 void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
 {
-    // Buffer erzeugen
-    Clear();
-
-    // Objektreferenzen reservieren
-    objects_write = new const GameObject*[GameObject::GetObjCount()];
-    memset(objects_write, 0, GameObject::GetObjCount()*sizeof(GameObject*));
+    Prepare(false);
 
     // Anzahl Objekte reinschreiben
     PushUnsignedInt(GameObject::GetObjCount());
@@ -213,21 +219,21 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
         GAMECLIENT.GetPlayer(i).Serialize(*this);
 
-    delete [] objects_write;
+    writtenObjIds.clear();
 }
 
 void SerializedGameData::ReadFromFile(BinaryFile& file)
 {
+    Prepare(true);
     Serializer::ReadFromFile(file);
 
-    total_objects_count = PopUnsignedInt();
-    objects_count = 0;
-    objects_read = new GameObject*[total_objects_count];
-    GameObject::SetObjCount(total_objects_count);
+    expectedObjectsReadCount = PopUnsignedInt();
+    GameObject::SetObjCount(expectedObjectsReadCount);
 }
 
 void SerializedGameData::PushObject(const GameObject* go, const bool known)
 {
+    assert(!isReading);
     if(go)
     {
         //assert(go->GetObjId() < GameObject::GetObjIDCounter());
@@ -243,33 +249,30 @@ void SerializedGameData::PushObject(const GameObject* go, const bool known)
     {
         // Null draufschreiben
         PushUnsignedInt(0);
+        return;
     }
-    // Ist das Objekt schon vorhanden?
-    else if(GetConstGameObject(go->GetObjId()))
-    {
-        // Dann nur die Obj-ID draufpushen
-        PushUnsignedInt(go->GetObjId());
-    }
-    else
-    {
-        // Obj-ID
-        PushUnsignedInt(go->GetObjId());
 
-        // Objekt nich bekannt? Dann Type-ID noch mit drauf
-        if(!known)
-            PushUnsignedShort(go->GetGOT());
+    PushUnsignedInt(go->GetObjId());
 
-        // Objekt merken
-        objects_write[objects_count++] = go;
+    // If the object was already serialized skip the data
+    if(IsObjectSerialized(go->GetObjId()))
+        return;
 
-        assert(objects_count <= GameObject::GetObjCount());
+    // Objekt nich bekannt? Dann Type-ID noch mit drauf
+    if(!known)
+        PushUnsignedShort(go->GetGOT());
 
-        // Objekt serialisieren
-        go->Serialize(*this);
+    // Objekt merken
+    writtenObjIds.insert(go->GetObjId());
 
-        // Sicherheitscode reinschreiben
-        PushUnsignedShort(0xFFFF);
-    }
+    objectsCount++;
+    assert(objectsCount <= GameObject::GetObjCount());
+
+    // Objekt serialisieren
+    go->Serialize(*this);
+
+    // Sicherheitscode reinschreiben
+    PushUnsignedShort(0xFFFF);
 }
 
 /// FoW-Objekt
@@ -305,17 +308,18 @@ FOWObject* SerializedGameData::PopFOWObject()
 
 GameObject* SerializedGameData::PopObject_(GO_Type got)
 {
+    assert(isReading);
     // Obj-ID holen
     unsigned obj_id = PopUnsignedInt();
 
     // Obj-ID = 0 ? Dann Null-Pointer zurueckgeben
     if(!obj_id)
-        return 0;
+        return NULL;
 
-    GameObject* go;
+    GameObject* go = GetReadGameObject(obj_id);
 
     // Schon vorhanden?
-    if( (go = GetGameObject(obj_id)))
+    if(go)
         // dann das nehmen
         return go;
 
@@ -331,10 +335,8 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
 
     if(safety_code != 0xFFFF)
     {
-        LOG.lprintf("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n",
-                    obj_id, got);
-        assert(false);
-        return 0;
+        LOG.lprintf("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n", obj_id, got);
+        throw Error("Invalid safety code after PopObject");
     }
 
     return go;
@@ -356,29 +358,25 @@ MapPoint SerializedGameData::PopMapPoint()
 
 void SerializedGameData::AddObject(GameObject* go)
 {
-    objects_read[objects_count++] = go;
+    assert(isReading);
+    assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
+    readObjects[go->GetObjId()] = go;
+    objectsCount++;
+    assert(objectsCount <= expectedObjectsReadCount);
 }
 
-const GameObject* SerializedGameData::GetConstGameObject(const unsigned obj_id) const
+bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
 {
-    // Objekt suchen
-    for(unsigned i = 0; i < objects_count; ++i)
-    {
-        if(objects_write[i]->GetObjId() == obj_id)
-            return objects_write[i];
-    }
-
-    return 0;
+    assert(!isReading);
+    return helpers::contains(writtenObjIds, obj_id);
 }
 
-GameObject* SerializedGameData::GetGameObject(const unsigned obj_id) const
+GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
-    // Objekt suchen
-    for(unsigned i = 0; i < objects_count; ++i)
-    {
-        if(objects_read[i]->GetObjId() == obj_id)
-            return objects_read[i];
-    }
-
-    return 0;
+    assert(isReading);
+    std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
+    if(foundObj == readObjects.end())
+        return NULL;
+    else
+        return foundObj->second;
 }
