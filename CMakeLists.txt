@@ -70,7 +70,8 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 ################################################################################
 
 OPTION(USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" YES)
-IF(NOT ${Boost_USE_STATIC_LIBS} EQUAL ${USE_STATIC_BOOST})
+IF((NOT ${Boost_USE_STATIC_LIBS} AND ${USE_STATIC_BOOST}) OR
+   (${Boost_USE_STATIC_LIBS} AND NOT ${USE_STATIC_BOOST}))
     set(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
     unset(Boost_INCLUDE_DIR CACHE)
     unset(Boost_LIBRARY_DIRS CACHE)
