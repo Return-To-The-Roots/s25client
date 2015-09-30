@@ -813,8 +813,11 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
     {
         // Reserve prüfen
         RefreshReserve(job - JOB_PRIVATE);
-        // Truppen prüfen in allen Häusern
-        gwg->GetPlayer(player).NewSoldiersAvailable(real_goods.people[job]);
+        if(real_goods.people[job] > 0)
+        {
+            // Truppen prüfen in allen Häusern
+            gwg->GetPlayer(player).NewSoldiersAvailable(real_goods.people[job]);
+        }
     }
     else
     {
