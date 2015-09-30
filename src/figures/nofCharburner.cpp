@@ -33,6 +33,7 @@
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
+#include "SerializedGameData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

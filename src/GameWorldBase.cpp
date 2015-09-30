@@ -21,6 +21,7 @@
 #include "GameWorld.h"
 #include "GameObject.h"
 #include "nodeObjs/noFlag.h"
+#include "FOWObjects.h"
 #include "RoadSegment.h"
 #include "nodeObjs/noTree.h"
 #include "buildings/noBaseBuilding.h"

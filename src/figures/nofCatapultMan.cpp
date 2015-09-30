@@ -27,9 +27,18 @@
 #include "CatapultStone.h"
 #include "MapGeometry.h"
 #include "gameData/MapConsts.h"
+#include "SerializedGameData.h"
 
 const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
 
+nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
+{}
+
+void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData& sgd) const
+{
+    sgd.PushMapPoint(pos);
+    sgd.PushUnsignedInt(distance);
+}
 
 nofCatapultMan::nofCatapultMan(const MapPoint pos,
                                const unsigned char player,

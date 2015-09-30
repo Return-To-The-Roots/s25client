@@ -33,7 +33,7 @@ const unsigned short Replay::REPLAY_VERSION = 26;
  *  @author OLiver
  */
 Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_length(0), map_zip_length(0), map_data(0),
-    savegame(0), lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
+                   lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
 
@@ -197,7 +197,8 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
             } break;
             case MAPTYPE_SAVEGAME:
             {
-                // Savegame speichern
+                // Load savegame
+                savegame.reset(new Savegame);
                 if(!savegame->Load(file, true, true))
                     return false;
             } break;

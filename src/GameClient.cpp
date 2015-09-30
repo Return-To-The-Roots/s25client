@@ -23,7 +23,7 @@
 
 #include "GameManager.h"
 #include "GameMessages.h"
-
+#include "GameSavegame.h"
 #include "GlobalVars.h"
 #include "SocketSet.h"
 #include "Loader.h"
@@ -95,6 +95,7 @@ void GameClient::MapInfo::Clear()
     checksum = 0;
     title.clear();
     zipdata.reset();
+    savegame.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -335,7 +336,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
     // framesinfo vorinitialisieren
     // bei gespeicherten Spielen mit einem bestimmten GF natürlich beginnen!
-    framesinfo.nr = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? mapinfo.savegame.start_gf : 0;
+    framesinfo.nr = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
     framesinfo.pause = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
@@ -355,15 +356,13 @@ void GameClient::StartGame(const unsigned int random_init)
     if(ci)
         ci->CI_GameStarted(gw);
 
-    Savegame* savegame = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? &mapinfo.savegame : 0;
-
-    if(savegame)
+    if(mapinfo.savegame)
     {
-        savegame->sgd.PrepareDeserialization(em);
-        gw->Deserialize(savegame->sgd);
-        em->Deserialize(savegame->sgd);
+        mapinfo.savegame->sgd.PrepareDeserialization(em);
+        gw->Deserialize(mapinfo.savegame->sgd);
+        em->Deserialize(mapinfo.savegame->sgd);
         for(unsigned i = 0; i < players.getCount(); ++i)
-            GetPlayer(i).Deserialize(savegame->sgd);
+            GetPlayer(i).Deserialize(mapinfo.savegame->sgd);
 
         // TODO: schöner machen:
         // Die Fläche, die nur von einem Allierten des Spielers gesehen werden, müssen noch dem TerrainRenderer mitgeteilt werden
@@ -383,6 +382,7 @@ void GameClient::StartGame(const unsigned int random_init)
     }
     else
     {
+        assert(mapinfo.map_type != MAPTYPE_SAVEGAME);
         /// Startbündnisse setzen
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
             players[i].MakeStartPacts();
@@ -1128,17 +1128,18 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
             } break;
             case MAPTYPE_SAVEGAME:
             {
-                if(!mapinfo.savegame.Load(clientconfig.mapfilepath.c_str(), true, true))
+                mapinfo.savegame.reset(new Savegame);
+                if(!mapinfo.savegame->Load(clientconfig.mapfilepath.c_str(), true, true))
                 {
                     Stop();
                     return;
                 }
 
                 players.clear();
-                for(unsigned i = 0; i < mapinfo.savegame.player_count; ++i)
+                for(unsigned i = 0; i < mapinfo.savegame->player_count; ++i)
                     players.push_back(GameClientPlayer(i));
 
-                mapinfo.title = mapinfo.savegame.map_name;
+                mapinfo.title = mapinfo.savegame->map_name;
 
 
             } break;
@@ -1710,7 +1711,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
         } break;
         case MAPTYPE_SAVEGAME:
         {
-            replayinfo.replay.savegame = &mapinfo.savegame;
+            replayinfo.replay.savegame = mapinfo.savegame;
         } break;
     }
 
@@ -1726,10 +1727,11 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
 unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 {
     replayinfo.filename = path;
-    replayinfo.replay.savegame = &mapinfo.savegame;
 
     if(!replayinfo.replay.LoadHeader(path, true))
         return 42;
+
+    mapinfo.savegame = replayinfo.replay.savegame;
 
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
@@ -1756,6 +1758,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     ggs = replayinfo.replay.ggs;
 
     // Map-Type auslesen
+    mapinfo.Clear();
     mapinfo.map_type = replayinfo.replay.map_type;
     mapinfo.title = replayinfo.replay.map_name;
 

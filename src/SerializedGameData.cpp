@@ -190,7 +190,7 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
     }
 }
 
-SerializedGameData::SerializedGameData() : objectsCount(0), expectedObjectsReadCount(0), isReading(false), em(NULL)
+SerializedGameData::SerializedGameData() : objectsCount(0), expectedObjectsReadCount(0), em(NULL), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)

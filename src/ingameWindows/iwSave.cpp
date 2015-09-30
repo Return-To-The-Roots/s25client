@@ -32,6 +32,7 @@
 #include "LobbyClient.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskHostGame.h"
+#include "GameSavegame.h"
 
 #include "iwPleaseWait.h"
 #include "iwMsgbox.h"

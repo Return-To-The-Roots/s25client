@@ -24,7 +24,7 @@
 #include "GameWorld.h"
 #include "GameClient.h"
 #include "gameData/TerrainData.h"
-
+#include "FOWObjects.h"
 #include "ogl/glArchivItem_Map.h"
 
 #include "../libsiedler2/src/types.h"

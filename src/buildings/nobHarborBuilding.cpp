@@ -37,6 +37,7 @@
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
 #include "ogl/glSmartBitmap.h"
+#include "SerializedGameData.h"
 
 #include <set>
 

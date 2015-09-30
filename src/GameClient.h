@@ -19,14 +19,12 @@
 
 #include "Singleton.h"
 #include "Socket.h"
-#include "BinaryFile.h"
 
 #include "GameMessageInterface.h"
 
 #include "GamePlayerList.h"
 
 #include "EventManager.h"
-#include "GameSavegame.h"
 #include "GameReplay.h"
 #include "GameWorld.h"
 #include "GlobalGameSettings.h"
@@ -35,6 +33,7 @@
 
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/smart_ptr.hpp>
 
 class Window;
 class GameClientPlayer;
@@ -42,6 +41,7 @@ class WorldManager;
 class ClientInterface;
 class GameMessage;
 class AIBase;
+class Savegame;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
@@ -323,7 +323,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 unsigned checksum;
                 std::string title;
                 boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
-                Savegame savegame;
+                boost::shared_ptr<Savegame> savegame;
         } mapinfo;
 
         class FramesInfo

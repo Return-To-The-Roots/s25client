@@ -35,6 +35,7 @@
 #include "Random.h"
 #include "TradeGraph.h"
 #include "gameData/MapConsts.h"
+#include "SerializedGameData.h"
 #include "Log.h"
 #include "ogl/glArchivItem_Map.h"
 

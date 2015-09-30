@@ -18,7 +18,6 @@
 #define NOF_CATAPULTMAN_H_
 
 #include "nofBuildingWorker.h"
-#include "SerializedGameData.h"
 
 /// Arbeiter im Katapult
 class nofCatapultMan : public nofBuildingWorker
@@ -39,13 +38,9 @@ class nofCatapultMan : public nofBuildingWorker
 
                 PossibleTarget() : pos(0, 0), distance(0) {}
                 PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
-                PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt()) {}
+                PossibleTarget(SerializedGameData& sgd);
 
-                void Serialize_PossibleTarget(SerializedGameData& sgd) const
-                {
-                    sgd.PushMapPoint(pos);
-                    sgd.PushUnsignedInt(distance);
-                }
+                void Serialize_PossibleTarget(SerializedGameData& sgd) const;
 
         } target; /// das anvisierte Ziel
 

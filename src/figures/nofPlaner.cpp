@@ -28,7 +28,7 @@
 #include "Random.h"
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
-
+#include "SerializedGameData.h"
 #include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////

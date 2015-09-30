@@ -19,8 +19,8 @@
 // Header
 #include "defines.h"
 #include "PostMsg.h"
-
 #include "GameClient.h"
+#include "SerializedGameData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -27,7 +27,7 @@
 #include "buildings/nobUsual.h"
 #include "Random.h"
 #include "SoundManager.h"
-
+#include "SerializedGameData.h"
 #include "ingameWindows/iwTools.h"
 #include "Log.h"
 

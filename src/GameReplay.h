@@ -24,6 +24,7 @@
 #include "GameProtocol.h"
 #include "gameTypes/MapTypes.h"
 #include "Point.h"
+#include <boost/smart_ptr.hpp>
 
 class Savegame;
 
@@ -91,7 +92,7 @@ class Replay : public SavedFile
         unsigned map_length, map_zip_length;
         unsigned char* map_data;
         /// Savegame (für gespeichertes Spiel)
-        Savegame* savegame;
+        boost::shared_ptr<Savegame> savegame;
 
         /// End-GF
         unsigned lastGF_;
