@@ -26,6 +26,7 @@
 #include <list>
 #include <string>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "helpers/Deleter.h"
 
 class Window;
 class Desktop;
@@ -96,8 +97,8 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void Switch(void);
 
     private:
-        boost::interprocess::unique_ptr<Desktop> curDesktop;        ///< aktueller Desktop
-        boost::interprocess::unique_ptr<Desktop> nextdesktop;    ///< der nächste Desktop
+        boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     ///< aktueller Desktop
+        boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > nextdesktop;    ///< der nächste Desktop
         bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
         IgwList windows; ///< Fensterliste

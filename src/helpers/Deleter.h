@@ -20,16 +20,20 @@
 
 template<typename T>
 struct Deleter {
-    void operator()(T *p)
+    template<typename U>
+    void operator()(U *ptr)
     {
+        T* const p = static_cast<T*>(ptr);
         delete p;
     }
 };
 
 template<typename T>
 struct Deleter<T[]> {
-    void operator()(T *p)
+    template<typename U>
+    void operator()(U *ptr)
     {
+        T* const p = static_cast<T*>(ptr);
         delete[] p;
     }
 };
