@@ -307,11 +307,7 @@ void nofBuildingWorker::LostWork()
         case STATE_CATAPULT_BACKOFF:
         {
             // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
-            if(state != STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED && state != STATE_WAITFORWARESPACE)
-            {
-                em->RemoveEvent(current_ev);
-                current_ev = 0;
-            }
+            em->RemoveEvent(current_ev);
 
             // Bescheid sagen, dass Arbeit abgebrochen wurde
             WorkAborted();
