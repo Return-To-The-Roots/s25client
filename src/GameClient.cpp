@@ -902,8 +902,18 @@ inline void GameClient::OnNMSServerStart(const GameMessage_Server_Start& msg)
     framesinfo.nwf_length = msg.nwf_length;
 
     /// Beim Host muss das Spiel nicht nochmal gestartet werden, das hat der Server schon erledigt
-    if(!IsHost())
-        StartGame(msg.random_init);
+    if (!IsHost())
+    {
+        try
+        {
+            StartGame(msg.random_init);
+        }
+        catch (SerializedGameData::Error)
+        {
+            GAMEMANAGER.ShowMenu();
+            GAMECLIENT.ExitGame();
+        }
+    }
 
     // Nothing-Command für ersten Network-Frame senden
     SendNothingNC(0);
@@ -1725,7 +1735,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     replayinfo.filename = path;
 
     if(!replayinfo.replay.LoadHeader(path, true))
-        return 42;
+        return 2;
 
     mapinfo.savegame = replayinfo.replay.savegame;
 
@@ -1772,7 +1782,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             {
                 LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
                 Stop();
-                return 5;
+                return 4;
             }
 
             // Richtigen Pfad zur Map erstellen
@@ -1784,7 +1794,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             if(!map_f.Open(clientconfig.mapfilepath.c_str(), OFM_WRITE))
             {
                 LOG.lprintf("GameClient::StartReplay: ERROR: Couldn't open file \'%s\' for writing!\n", clientconfig.mapfilepath.c_str());
-                return 6;
+                Stop();
+                return 7;
             }
             map_f.WriteRawData(real_data, replayinfo.replay.map_length);
             map_f.Close();
@@ -1800,7 +1811,15 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     replayinfo.async = 0;
     replayinfo.end = false;
 
-    StartGame(replayinfo.replay.random_init);
+    try
+    {
+        StartGame(replayinfo.replay.random_init);
+    }
+    catch (SerializedGameData::Error)
+    {
+        Stop();
+        return 1;
+    }
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 

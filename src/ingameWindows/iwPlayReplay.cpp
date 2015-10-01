@@ -118,19 +118,18 @@ void iwPlayReplay::StartReplay()
     {
         GameWorldViewer* gwv;
         unsigned int error = GAMECLIENT.StartReplay( table->GetItemText(table->GetSelection(), 4), gwv);
-        std::string replay_errors[] =
-        {
+        boost::array<std::string, 6> replay_errors =
+        {{
             _("Error while playing replay!"),
             _("Error while opening file!"),
             _("Invalid Replay!"),
             _("Error: Replay is too old!"),
             _("Program version is too old to play that replay!"),
-            "",
             _("Temporary map file was not found!")
-        };
+        }};
 
         if(error)
-            WINDOWMANAGER.Show( new iwMsgbox(_("Error while playing replay!"), replay_errors[error], this, MSB_OK, MSB_EXCLAMATIONRED) );
+            WINDOWMANAGER.Show( new iwMsgbox(_("Error while playing replay!"), replay_errors[error-1], this, MSB_OK, MSB_EXCLAMATIONRED) );
         else
             WINDOWMANAGER.Switch(new dskGameLoader(gwv));
     }

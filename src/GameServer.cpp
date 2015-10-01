@@ -36,7 +36,7 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 
 #include "GameServerPlayer.h"
-
+#include "GameManager.h"
 #include "GameSavegame.h"
 #include "GameReplay.h"
 #include "ai/AIPlayer.h"
@@ -426,7 +426,11 @@ void GameServer::Run(void)
             if(countdown.countdown < 0)
             {
                 countdown.Clear();
-                StartGame();
+                if (!StartGame())
+                {
+                    GAMEMANAGER.ShowMenu();
+                    return;
+                }
             }
             else
             {
@@ -609,8 +613,15 @@ bool GameServer::StartGame()
 
     framesinfo.lasttime = VIDEODRIVER.GetTickCount();
 
-    // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
-    GAMECLIENT.StartGame(random_init);
+    try
+    {
+        // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
+        GAMECLIENT.StartGame(random_init);
+    }
+    catch (SerializedGameData::Error&)
+    {
+        return false;
+    }
 
     // read back gf_nr (if savegame)
     if(mapinfo.map_type == MAPTYPE_SAVEGAME)

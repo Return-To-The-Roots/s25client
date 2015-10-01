@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <list>
 #include <string>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class Window;
 class Desktop;
@@ -61,7 +62,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
         void Close(unsigned int id);
         /// merkt einen Desktop zum Wechsel vor.
-        void Switch(Desktop* desktop, void* data = NULL, bool mouse = false);
+        void Switch(Desktop* desktop, bool mouse = false);
         /// Verarbeitung des Drückens der Linken Maustaste.
         void Msg_LeftDown(MouseCoords mc);
         /// Verarbeitung des Loslassens der Linken Maustaste.
@@ -95,9 +96,8 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void Switch(void);
 
     private:
-        Desktop* curDesktop;        ///< aktueller Desktop
-        Desktop* nextdesktop;    ///< der nächste Desktop
-        void* nextdesktop_data;  ///< Daten für den nächsten Desktop, welche dann MSG_SWITCH übergeben werden
+        boost::interprocess::unique_ptr<Desktop> curDesktop;        ///< aktueller Desktop
+        boost::interprocess::unique_ptr<Desktop> nextdesktop;    ///< der nächste Desktop
         bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
         IgwList windows; ///< Fensterliste

@@ -47,7 +47,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  */
 WindowManager::WindowManager(void)
-    : curDesktop(NULL), nextdesktop(NULL), nextdesktop_data(NULL), disable_mouse(false),
+    : disable_mouse(false),
       mouseCoords(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
 {
 }
@@ -69,10 +69,8 @@ void WindowManager::CleanUp()
         delete (*it);
     windows.clear();
 
-    delete curDesktop;
-    curDesktop = NULL;
-    delete nextdesktop;
-    nextdesktop = NULL;
+    curDesktop.reset();
+    nextdesktop.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,7 +168,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
     if(curDesktop->GetActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (curDesktop->*msg)(ke);
+        (*curDesktop.*msg)(ke);
         curDesktop->RelayKeyboardMessage(msg, ke);
         return;
     }
@@ -190,7 +188,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
         if(!windows.back()->RelayKeyboardMessage(msg, ke))
         {
             // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
-            (curDesktop->*msg)(ke);
+            (*curDesktop.*msg)(ke);
             curDesktop->RelayKeyboardMessage(msg, ke);
         }
     }
@@ -206,7 +204,7 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
     if(curDesktop->GetActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (curDesktop->*msg)(mc);
+        (*curDesktop.*msg)(mc);
         curDesktop->RelayMouseMessage(msg, mc);
     }
     else if(!windows.empty())
@@ -287,10 +285,9 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
  *
  *  @author OLiver
  */
-void WindowManager::Switch(Desktop* desktop, void* data, bool mouse)
+void WindowManager::Switch(Desktop* desktop, bool mouse)
 {
-    nextdesktop = desktop;
-    nextdesktop_data = data;
+    nextdesktop.reset(desktop);
     disable_mouse = mouse;
 }
 
@@ -927,23 +924,16 @@ void WindowManager::Switch(void)
         for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
             delete (*it);
         windows.clear();
-
-        // Desktop löschen
-        delete curDesktop;
     }
 
     // Desktop auf Neuen umstellen
-    curDesktop = nextdesktop;
+    curDesktop.reset(nextdesktop.release());
 
     // ist der neue Desktop gültig?
     if(curDesktop)
     {
         // Desktop aktivieren
         curDesktop->SetActive(true);
-
-        // aufräumen
-        nextdesktop = NULL;
-        nextdesktop_data = NULL;
     }
 }
 

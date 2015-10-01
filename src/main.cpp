@@ -326,13 +326,12 @@ int main(int argc, char* argv[])
                     _("Invalid Replay!"),
                     _("Error: Replay is too old!"),
                     _("Program version is too old to play that replay!"),
-                    "",
                     _("Temporary map file was not found!")
                 };
 
                 if (error)
                 {
-                    printf("ERROR: %s\n", replay_errors[error].c_str());
+                    printf("ERROR: %s\n", replay_errors[error-1].c_str());
                 }
                 else
                 {
