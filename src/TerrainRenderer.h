@@ -59,19 +59,14 @@ class TerrainRenderer
             bool operator<(const PreparedRoad& b) const {return(type < b.type);}
         };
 
-        struct ColorPoint
-        {
-            PointF pos;
-            float color;
-            ColorPoint(): color(0){}
-        };
-
         struct Vertex
         {
-            ColorPoint pos; // Position vom jeweiligen Punkt
+            PointF pos; // Position vom jeweiligen Punkt
+            float color;
             boost::array<unsigned char, 2 > terrain; // Terrain der Dreiecke
-            ColorPoint border[2]; // Mittelpunkt für Ränder
-            Vertex(){ terrain[0] = 0; terrain[1] = 0; }
+            boost::array<PointF, 2> borderPos; // Mittelpunkt für Ränder
+            boost::array<float, 2>  borderColor;
+            Vertex():color(0){ terrain[0] = 0; terrain[1] = 0; }
         };
 
         struct Color
@@ -81,15 +76,8 @@ class TerrainRenderer
             float b;
         };
 
-        struct Triangle
-        {
-            boost::array<PointF, 3> pos;
-        };
-
-        struct ColorTriangle
-        {
-            boost::array<Color, 3> colors;
-        };
+        typedef boost::array<PointF, 3> Triangle;
+        typedef boost::array<Color, 3> ColorTriangle;
 
         struct Borders
         {
@@ -149,13 +137,13 @@ class TerrainRenderer
         void UpdateBorderTriangleTerrain(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
 
         /// liefert den Vertex-Farbwert an der Stelle X,Y
-        float GetColor(const MapPoint pt) { return GetVertex(pt).pos.color; }
+        float GetColor(const MapPoint pt) { return GetVertex(pt).color; }
         /// liefert den Rand-Vertex an der Stelle X,Y
-        PointF GetB(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).border[triangle].pos; }
+        PointF GetB(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
         /// Liefert BX,BY um einen Punkt herum, beachtet auch Kartenränder (entspricht GetTerrainX)
         PointF GetBAround(const MapPoint pt, const unsigned char triangle, const unsigned char dir);
         /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
-        float GetBColor(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).border[triangle].color; }
+        float GetBColor(const MapPoint pt, unsigned char triangle) { return GetVertex(pt).borderColor[triangle]; }
 
         /// Zeichnet die Wege
         void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, const PointI& offset);
@@ -179,7 +167,7 @@ class TerrainRenderer
         /// mit 0 <= x_out < width und 0 <= y_out < height
         MapPoint ConvertCoords(const PointI pt, Point<int>* offset = 0) const;
         /// liefert den XY-Vertex an der Stelle X,Y
-        PointF GetTerrain(const MapPoint pt) { return GetVertex(pt).pos.pos; }
+        PointF GetTerrain(const MapPoint pt) { return GetVertex(pt).pos; }
         /// liefert XY-Vertex drumherum, korrigiert Koordinaten nicht
         PointF GetTerrainAround(MapPoint pt, const unsigned dir);
 
