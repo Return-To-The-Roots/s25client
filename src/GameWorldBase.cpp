@@ -1212,14 +1212,22 @@ void GameWorldBase::RecalcShadow(const MapPoint pt)
     int shadow = 0x40;
 
     // Höhendifferenz zu den Punkten darum betrachten, auf der einen Seite entsprechend heller, wenn höher, sonst dunkler
-    shadow += (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 0).altitude));
-    shadow += (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 5).altitude));
-    shadow += (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 4).altitude));
+    int altitude = GetNode(pt).altitude;
+    int l  = altitude - GetNodeAround(pt, 0).altitude;
+    int bl = altitude - GetNodeAround(pt, 5).altitude;
+    int br = altitude - GetNodeAround(pt, 4).altitude;
+    int tl = altitude - GetNodeAround(pt, 1).altitude;
+    int tr = altitude - GetNodeAround(pt, 2).altitude;
+    int r  = altitude - GetNodeAround(pt, 3).altitude;
+
+    shadow += SHADOW_COEFFICIENT * l;
+    shadow += SHADOW_COEFFICIENT * bl;
+    shadow += SHADOW_COEFFICIENT * br;
 
     // und hier genau umgekehrt
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 1).altitude));
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 2).altitude));
-    shadow -= (SHADOW_COEFFICIENT * (GetNode(pt).altitude - GetNodeAround(pt, 3).altitude));
+    shadow -= SHADOW_COEFFICIENT * tl;
+    shadow -= SHADOW_COEFFICIENT * tr;
+    shadow -= SHADOW_COEFFICIENT * r;
 
     // Zu niedrig? Zu hoch? --> extreme Werte korrigieren
     if(shadow < 0x00)
