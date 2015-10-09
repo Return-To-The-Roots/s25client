@@ -1737,8 +1737,6 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     if(!replayinfo.replay.LoadHeader(path, true))
         return 2;
 
-    mapinfo.savegame = replayinfo.replay.savegame;
-
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
 
@@ -1767,6 +1765,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     mapinfo.Clear();
     mapinfo.map_type = replayinfo.replay.map_type;
     mapinfo.title = replayinfo.replay.map_name;
+    mapinfo.savegame = replayinfo.replay.savegame;
 
     switch(replayinfo.replay.map_type)
     {
