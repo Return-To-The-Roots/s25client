@@ -71,12 +71,13 @@ const unsigned STAT_TIME_COUNT = 4;
 const unsigned STAT_STEP_COUNT = 30;
 
 /// Konvertierungstabelle von RttR-Nation-Indizes in Original-S2-Nation-Indizes
-const boost::array<unsigned char, 4> NATION_RTTR_TO_S2 =
+const boost::array<unsigned char, NAT_COUNT> NATION_RTTR_TO_S2 =
 {{
     3,
     2,
     0,
-    1
+    1,
+    0 /* Babylonians get the roman figures where no others are used */
 }};
 /// Konvertierungstabelle von Rohstoff-Indizes von den Bergwerken --> Map
 const boost::array<unsigned char, 5> RESOURCES_MINE_TO_MAP = {{3, 0, 1, 2, 4}};

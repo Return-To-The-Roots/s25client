@@ -631,14 +631,15 @@ void Loader::fillCaches()
                             else if (nation == NAT_BABYLONIANS)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
-                                /* TODO:
+                                /* TODO: change this once we have own job pictures for babylonians
                                                                 //Offsets to new job imgs
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
                                                                 overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
                                 */
-                            }
+                            }else
+                                throw std::runtime_error("Wrong nation");
                         }
                     }
 
