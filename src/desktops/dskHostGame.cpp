@@ -160,11 +160,11 @@ dskHostGame::dskHostGame(bool single_player) :
     if(GAMECLIENT.GetMapType() == MAPTYPE_OLDMAP)
     {
         // Map laden
-        libsiedler2::ArchivInfo ai;
+        libsiedler2::ArchivInfo mapArchiv;
         // Karteninformationen laden
-        if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath().c_str(), ai) == 0)
+        if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv) == 0)
         {
-            glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai.get(0));
+            glArchivItem_Map* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, 560, 40, 220, 220, map);
 
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
@@ -225,9 +225,8 @@ void dskHostGame::Resize_(unsigned short width, unsigned short height)
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
     ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
     ctrlText* text = GetCtrl<ctrlText>(71);
-    assert(preview);
-    assert(text);
-    text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
+    if(preview && text)
+        text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -612,7 +611,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 22: // Addons
         {
-            iwAddons* w = new iwAddons(&ggs_, GAMECLIENT.IsHost() ? iwAddons::HOSTGAME : iwAddons::READONLY);
+            iwAddons* w = new iwAddons(&ggs_, GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() ? iwAddons::HOSTGAME : iwAddons::READONLY);
             w->SetParent(this);
             WINDOWMANAGER.Show(w);
         } break;
