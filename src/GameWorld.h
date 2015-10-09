@@ -1,4 +1,3 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -417,6 +416,16 @@ class GameWorldBase
 
         struct PotentialSeaAttacker
         {
+            /// Comparator that compares only the soldier pointer
+            struct CmpSoldier
+            {
+                nofPassiveSoldier* const search;
+                CmpSoldier(nofPassiveSoldier* const search): search(search){}
+                bool operator()(const PotentialSeaAttacker& other)
+                {
+                    return other.soldier == search;
+                }
+            };
             /// Soldat, der als Angreifer in Frage kommt
             nofPassiveSoldier* soldier;
             /// Hafen, den der Soldat zuerst ansteuern soll

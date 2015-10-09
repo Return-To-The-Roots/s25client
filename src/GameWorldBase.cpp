@@ -1845,23 +1845,33 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
             continue;
 
         std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = (*it)->GetAttackerBuildingsForSeaAttack(defender_harbors);
-        buildings.insert(buildings.begin(), tmp.begin(), tmp.end());
+        for(std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator itBld = tmp.begin(); itBld != tmp.end(); ++itBld)
+        {
+            // Check if the building was already inserted
+            std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator oldBldIt = std::find_if(buildings.begin(), buildings.end(), nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld->building));
+            if(oldBldIt == buildings.end())
+            {
+                // Not found -> Add
+                buildings.push_back(*itBld);
+            }else if(oldBldIt->distance > itBld->distance || (oldBldIt->distance == itBld->distance && oldBldIt->harbor->GetObjId() > itBld->harbor->GetObjId()) )
+            {
+                // New distance is smaller (with tie breaker for async prevention) -> update
+                *oldBldIt = *itBld;
+            }
+        }
     }
 
     // Die Soldaten aus allen Militärgebäuden sammeln
-    for(unsigned i = 0; i < buildings.size(); ++i)
+    for(std::vector<nobHarborBuilding::SeaAttackerBuilding>::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers = buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker);
-
-        // Überhaupt welche gefunden?
-        if(tmp_soldiers.empty())
-            continue;
+        std::vector<nofPassiveSoldier*> tmp_soldiers = it->building->GetSoldiersForAttack(it->harbor->GetPos(), player_attacker);
 
         // Soldaten hinzufügen
-        for(unsigned j = 0; j < tmp_soldiers.size(); ++j)
+        for(std::vector<nofPassiveSoldier*>::const_iterator itSoldier = tmp_soldiers.begin(); itSoldier != tmp_soldiers.end(); ++itSoldier)
         {
-            PotentialSeaAttacker pa = { tmp_soldiers[j], buildings[i].harbor, buildings[i].distance };
+            assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(*itSoldier)) == attackers.end());
+            PotentialSeaAttacker pa = { *itSoldier, it->harbor, it->distance };
             attackers.push_back(pa);
         }
     }

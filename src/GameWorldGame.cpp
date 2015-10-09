@@ -1145,9 +1145,6 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
         return;
 
-    // Verfügbare Soldaten herausfinden
-    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
-
     // Ist das angegriffenne ein normales Gebäude?
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
@@ -1159,6 +1156,9 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         if (static_cast<nobMilitary*>(attacked_building)->IsNewBuilt())
             return;
     }
+
+    // Verfügbare Soldaten herausfinden
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
 
     unsigned counter = 0;
     if(strong_soldiers)
