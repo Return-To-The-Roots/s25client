@@ -29,14 +29,14 @@ class nobHarborBuilding : public nobBaseWarehouse
 {
         struct ExpeditionInfo
         {
-            ExpeditionInfo() : boards(0), stones(0), active(false), builder(false) {}
+            ExpeditionInfo() : active(false), boards(0), stones(0), builder(false) {}
             ExpeditionInfo(SerializedGameData& sgd);
             void Serialize(SerializedGameData& sgd) const;
 
-            /// Anzahl an Brettern und Steinen, die bereits angesammelt wurden
-            unsigned boards, stones;
             /// Expedition in Vorbereitung?
             bool active;
+            /// Anzahl an Brettern und Steinen, die bereits angesammelt wurden
+            unsigned boards, stones;
             /// Bauarbeiter schon da?
             bool builder;
         } expedition;

@@ -1780,7 +1780,7 @@ void GameClientPlayer::StatisticStep()
 }
 
 GameClientPlayer::Pact::Pact(SerializedGameData& sgd)
-    : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel (sgd.PopBool()) { }
+    : accepted(sgd.PopBool()), duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), want_cancel (sgd.PopBool()) { }
 
 void GameClientPlayer::Pact::Serialize(SerializedGameData& sgd)
 {

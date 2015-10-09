@@ -51,9 +51,9 @@ static char THIS_FILE[] = __FILE__;
 
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
+    active(sgd.PopBool()),
     boards(sgd.PopUnsignedInt()),
     stones(sgd.PopUnsignedInt()),
-    active(sgd.PopBool()),
     builder(sgd.PopBool())
 {
 }
