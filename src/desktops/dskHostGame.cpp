@@ -56,6 +56,8 @@ static char THIS_FILE[] = __FILE__;
 dskHostGame::dskHostGame(bool single_player) :
     Desktop(LOADER.GetImageN("setup015", 0)), temppunkte_(0), hasCountdown_(false), isSinglePlayer_(single_player)
 {
+    const bool readonlySettings = !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame();
+
     // Kartenname
     AddText(0, 400, 5, GAMECLIENT.GetGameName().c_str(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
@@ -99,11 +101,11 @@ dskHostGame::dskHostGame(bool single_player) :
     AddTextButton(3, 400, 560, 180, 22, TC_RED1, _("Return"), NormalFont);
 
     // "Teams sperren"
-    AddCheckBox(20, 400, 460, 180, 26, TC_GREY, _("Lock teams:"), NormalFont, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
+    AddCheckBox(20, 400, 460, 180, 26, TC_GREY, _("Lock teams:"), NormalFont, readonlySettings);
     // "Gemeinsame Team-Sicht"
-    AddCheckBox(19, 600, 460, 180, 26, TC_GREY, _("Shared team view"), NormalFont, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
+    AddCheckBox(19, 600, 460, 180, 26, TC_GREY, _("Shared team view"), NormalFont, readonlySettings);
     // "Random Start Locations"
-    AddCheckBox(23, 600, 430, 180, 26, TC_GREY, _("Random start locations"), NormalFont, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
+    AddCheckBox(23, 600, 430, 180, 26, TC_GREY, _("Random start locations"), NormalFont, readonlySettings);
 
     // "Enhancements"
     AddText(21, 400, 499, _("Addons:"), COLOR_YELLOW, 0, NormalFont);
@@ -115,7 +117,7 @@ dskHostGame::dskHostGame(bool single_player) :
 
     // "Aufklärung"
     AddText(30, 400, 405, _("Exploration:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(40, 600, 400, 180, 20, TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
+    combo = AddComboBox(40, 600, 400, 180, 20, TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Off (all visible)"));
     combo->AddString(_("Classic (Settlers 2)"));
     combo->AddString(_("Fog of War"));
@@ -123,7 +125,7 @@ dskHostGame::dskHostGame(bool single_player) :
 
     // "Waren zu Beginn"
     AddText(31, 400, 375, _("Goods at start:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(41, 600, 370, 180, 20, TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
+    combo = AddComboBox(41, 600, 370, 180, 20, TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Very Low"));
     combo->AddString(_("Low"));
     combo->AddString(_("Normal"));
@@ -131,7 +133,7 @@ dskHostGame::dskHostGame(bool single_player) :
 
     // "Spielziel"
     AddText(32, 400, 345, _("Goals:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(42, 600, 340, 180, 20, TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame());
+    combo = AddComboBox(42, 600, 340, 180, 20, TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("None")); // Kein Spielziel
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
     combo->AddString(_("Total domination")); // Alleinherrschaft
