@@ -62,7 +62,7 @@ const AnimalConst ANIMALCONSTS[8] =
     {1850, 1900, 1898, 0, 8, 20}, // Hirsch
     {1910, 1960, 1958, 0, 8, 20}, // Reh
     {1970, 1976, 0, 0, 1, 50}, // Ente
-    {2060, 0, 2072, 2073, 2, 16} // Schaf
+    {2060, 0, 2072, 2073, 2, 40} // Schaf
 };
 
 const unsigned ANIMAL_MAX_ANIMATION_STEPS = 8;
