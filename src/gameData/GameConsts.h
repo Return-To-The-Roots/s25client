@@ -27,6 +27,8 @@
 #include "gameData/PlayerConsts.h"
 #include "gameData/AnimalConsts.h"
 
+#include <boost/array.hpp>
+
 struct RoadWindowInfo
 {
     bool flag;
@@ -69,18 +71,18 @@ const unsigned STAT_TIME_COUNT = 4;
 const unsigned STAT_STEP_COUNT = 30;
 
 /// Konvertierungstabelle von RttR-Nation-Indizes in Original-S2-Nation-Indizes
-const unsigned char NATION_RTTR_TO_S2[4] =
-{
+const boost::array<unsigned char, 4> NATION_RTTR_TO_S2 =
+{{
     3,
     2,
     0,
     1
-};
+}};
 /// Konvertierungstabelle von Rohstoff-Indizes von den Bergwerken --> Map
-const unsigned char RESOURCES_MINE_TO_MAP[5] = {3, 0, 1, 2, 4};
+const boost::array<unsigned char, 5> RESOURCES_MINE_TO_MAP = {{3, 0, 1, 2, 4}};
 
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
-const unsigned SPEED_GF_LENGTHS[6] = {80, 60, 50, 40, 30, 1};
+const boost::array<unsigned, 6> SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
 
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
@@ -92,14 +94,14 @@ inline GoodType ConvertShields(const GoodType& good)
 }
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const GoodType SHIELD_TYPES[NAT_COUNT] =
-{
+const boost::array<GoodType, NAT_COUNT> SHIELD_TYPES =
+{{
     GD_SHIELDAFRICANS,
     GD_SHIELDJAPANESE,
     GD_SHIELDROMANS,
     GD_SHIELDVIKINGS,
     GD_SHIELDJAPANESE
-};
+}};
 
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
@@ -141,9 +143,9 @@ const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;
 const unsigned OBJECTIVES_COUNT = 3;
 /// tournament modes
 const unsigned TOURNAMENT_MODES_COUNT = 5;
-const unsigned TOURNAMENT_MODES_DURATION[TOURNAMENT_MODES_COUNT] =
-{
+const boost::array<unsigned, TOURNAMENT_MODES_COUNT> TOURNAMENT_MODES_DURATION =
+{{
     30, 60, 90, 120, 240
-};
+}};
 
 #endif

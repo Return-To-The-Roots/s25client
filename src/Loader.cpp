@@ -630,9 +630,8 @@ void Loader::fillCaches()
                             }
                             else if (nation == NAT_BABYLONIANS)
                             {
-                                // replace babylonians by romans
-                                id += NATION_RTTR_TO_S2[NAT_ROMANS] * 6;
-                                /*
+                                id += NATION_RTTR_TO_S2[nation] * 6;
+                                /* TODO:
                                                                 //Offsets to new job imgs
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 

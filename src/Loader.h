@@ -32,9 +32,11 @@
 #include "gameData/AnimalConsts.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/JobTypes.h"
+#include "helpers/multiArray.h"
 #include "../libsiedler2/src/ArchivInfo.h"
 #include "../libsiedler2/src/ArchivItem_Text.h"
 #include "../libsiedler2/src/ArchivItem_Ini.h"
+#include <boost/array.hpp>
 #include <string>
 #include <vector>
 #include <map>
@@ -125,7 +127,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         std::map<TerrainType, libsiedler2::ArchivInfo*> terrainTexturesAnim;
 
         unsigned char lastgfx;
-        libsiedler2::ArchivInfo* nation_gfx[NAT_COUNT];
+        boost::array<libsiedler2::ArchivInfo*, NAT_COUNT> nation_gfx;
         libsiedler2::ArchivInfo* map_gfx;
         libsiedler2::ArchivInfo* tex_gfx;
 
@@ -138,19 +140,19 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 
         glSmartTexturePacker* stp;
 
-        glSmartBitmap animal_cache[8][6][ANIMAL_MAX_ANIMATION_STEPS + 1];
-        glSmartBitmap building_cache[NAT_COUNT][BUILDING_TYPES_COUNT][2];
-        glSmartBitmap flag_cache[NAT_COUNT][3][8];
-        glSmartBitmap building_flag_cache[8];
-        glSmartBitmap tree_cache[9][15];
-        glSmartBitmap bob_jobs_cache[NAT_COUNT][JOB_TYPES_COUNT + 1][6][8];
-        glSmartBitmap granite_cache[2][6];
-        glSmartBitmap grainfield_cache[2][4];
-        glSmartBitmap carrier_cache[WARE_TYPES_COUNT][6][8][2];
-        glSmartBitmap boundary_stone_cache[NAT_COUNT];
-        glSmartBitmap boat_cache[6][8];
-        glSmartBitmap donkey_cache[6][8];
-        glSmartBitmap gateway_cache[5];
+        helpers::MultiArray<glSmartBitmap, 8, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
+        helpers::MultiArray<glSmartBitmap, NAT_COUNT, BUILDING_TYPES_COUNT, 2> building_cache;
+        helpers::MultiArray<glSmartBitmap, NAT_COUNT, 3, 8> flag_cache;
+        helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
+        helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
+        helpers::MultiArray<glSmartBitmap, NAT_COUNT, JOB_TYPES_COUNT + 1, 6, 8> bob_jobs_cache;
+        helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
+        helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
+        helpers::MultiArray<glSmartBitmap, WARE_TYPES_COUNT, 6, 8, 2> carrier_cache;
+        helpers::MultiArray<glSmartBitmap, NAT_COUNT> boundary_stone_cache;
+        helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
+        helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
+        helpers::MultiArray<glSmartBitmap, 5> gateway_cache;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
