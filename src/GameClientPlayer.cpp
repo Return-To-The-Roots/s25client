@@ -2048,12 +2048,12 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
         std::vector<unsigned char> route;
 
         // the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
-        if ((*it).estimate >= best_distance)
+        if (it->estimate >= best_distance)
         {
             break;
         }
 
-        noShip* ship = (*it).ship;
+        noShip* ship = it->ship;
 
         MapPoint dest = gwg->GetCoastalPoint(hb->GetHarborPosID(), ship->GetSeaID());
 
