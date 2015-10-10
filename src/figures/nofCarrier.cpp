@@ -37,6 +37,9 @@
 #include "ogl/glSmartBitmap.h"
 #include "Log.h"
 
+#include <boost/assign/std/vector.hpp>
+#include <boost/array.hpp>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -53,48 +56,66 @@ const unsigned PRODUCTIVITY_GF = 6000;
 /// Ab wieviel Prozent Auslastung in Prozent eines Trägers ein Esel kommen soll
 const unsigned DONKEY_PRODUCTIVITY = 80;
 
-
-
 /// Abstand zur nächsten Animation (Wert ergibt sich aus NEXT_ANIMATION + rand(NEXT_ANIMATION_RANDOM) )
 const unsigned NEXT_ANIMATION = 200; // fest
 const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert wird
 
-
-/// Längen in Frames der Animationenen
-const unsigned ANIMATION_FRAME_LENGTHS[2][4] =
-{ {11, 10, 35, 20}, {9, 12, 12, 13} };
 /// Dauer in GF eines Frames
 const unsigned FRAME_GF = 3;
 
-/// Animations-Index (von map.lst)
-const unsigned short ANIMATION[2][4][35] =
+/// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
+typedef boost::array<std::vector<std::vector<unsigned short> >, 2> AnimationsType;
+
+AnimationsType fillAnimations()
 {
-    {
-        // dünn
-        {1745, 1746, 1747, 1748, 1749, 1750, 1751, 1748, 1748, 1747, 1746}, // Reifenspringen
-        // dünn
-        {1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752}, // Winken
-        // dünn
-        {
-            1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763, // Zeitung lesen
+    AnimationsType animations;
+    using namespace boost::assign; // Adds the vector += operator
+    std::vector<unsigned short> idxs;
+    // Small ones
+    // Hoola Hoop
+    idxs += 1745, 1746, 1747, 1748, 1749, 1750, 1751, 1748, 1748, 1747, 1746;
+    animations[0] += idxs;
+    // Wink
+    idxs.clear();
+    idxs += 1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752;
+    animations[0] += idxs;
+    // Read newspaper
+    idxs.clear();
+    idxs += 1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763,
             1763, 1765, 1763, 1762, 1765, 1763, 1764, 1764, 1763, 1763,
             1763, 1765, 1765, 1765, 1763, 1763, 1763, 1765, 1763, 1763,
-            1763, 1765, 1765, 1764, 1761
-        },
-        // dünn
-        {1752, 1770, 1771, 1772, 1773, 1772, 1773, 1772, 1773, 1772, 1773, 1771, 1771, 1773, 1771, 1771, 1771, 1771, 1770, 1752} // Gähnen
-    },
-    {
-        // dick
-        {1726, 1727, 1728, 1729, 1730, 1730, 1729, 1728, 1727}, // Niesen?
-        // dick
-        {1731, 1732, 1733, 1734, 1734, 1735, 1736, 1737, 1737, 1736, 1736, 1737}, // Kaugummi essen
-        // dick
-        {1738, 1739, 1740, 1739, 1738, 1739, 1740, 1739, 1741, 1742, 1743, 1744}, // Kaugummi-Blasen machen
-        // dick
-        {1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726}, // auf Hosentasche klopfen?!
-    }
-};
+            1763, 1765, 1765, 1764, 1761;
+    animations[0] += idxs;
+    // Yawn
+    idxs.clear();
+    idxs += 1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752;
+    animations[0] += idxs;
+    // Wink
+    idxs.clear();
+    idxs += 1752, 1770, 1771, 1772, 1773, 1772, 1773, 1772, 1773, 1772, 1773, 1771, 1771, 1773, 1771, 1771, 1771, 1771, 1770, 1752;
+    animations[0] += idxs;
+
+    // Fat ones
+    // Sneeze
+    idxs.clear();
+    idxs += 1726, 1727, 1728, 1729, 1730, 1730, 1729, 1728, 1727;
+    animations[1] += idxs;
+    // Chew bubblegum
+    idxs.clear();
+    idxs += 1731, 1732, 1733, 1734, 1734, 1735, 1736, 1737, 1737, 1736, 1736, 1737;
+    animations[1] += idxs;
+    // Blow bubblegum
+    idxs.clear();
+    idxs += 1738, 1739, 1740, 1739, 1738, 1739, 1740, 1739, 1741, 1742, 1743, 1744;
+    animations[1] += idxs;
+    // Touch pocket
+    idxs.clear();
+    idxs += 1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726;
+    animations[1] += idxs;
+    
+    return animations;
+}
+static const AnimationsType ANIMATIONS = fillAnimations();
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -103,7 +124,7 @@ const unsigned short ANIMATION[2][4][35] =
  *  @author OLiver
  */
 
-const Job JOB_TYPES[3] = { JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER };
+const boost::array<Job, 3> JOB_TYPES = { JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER };
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
                        unsigned char player,
@@ -232,7 +253,8 @@ void nofCarrier::Draw(int x, int y)
                 if(current_gf >= next_animation)
                 {
                     // Animationstype bestimmen
-                    unsigned animation_id = next_animation % 4;
+                    unsigned animation_id = next_animation % ANIMATIONS[fat ? 1 : 0].size();
+                    bool useNewyearsEgg = false;
 
 // <Silvesteregg>
                     // day of year, 0-365, accuracy about 1/4 day
@@ -241,13 +263,13 @@ void nofCarrier::Draw(int x, int y)
                     // last hours of last or first day of year
                     if ((doy > 364) || (doy < 1))
                     {
-                        animation_id = next_animation % 5;
+                        useNewyearsEgg = next_animation % (ANIMATIONS[fat ? 1 : 0].size() + 1) == ANIMATIONS[fat ? 1 : 0].size();
                     }
 // </Silvesteregg>
 
                     // Ist die Animation schon vorbei?
-                    if (((animation_id < 4) && (current_gf >= next_animation + ANIMATION_FRAME_LENGTHS[fat ? 1 : 0][animation_id]*FRAME_GF)) ||
-                            ((animation_id == 4) && (current_gf >= next_animation + 32 * 3)))
+                    if ((!useNewyearsEgg && (current_gf >= next_animation + ANIMATIONS[fat ? 1 : 0][animation_id].size()*FRAME_GF)) ||
+                            (useNewyearsEgg && (current_gf >= next_animation + 32 * 3)))
                     {
                         // Neuen nächsten Animationszeitpunkt bestimmen
                         SetNewAnimationMoment();
@@ -256,13 +278,13 @@ void nofCarrier::Draw(int x, int y)
                     {
                         animation = true;
 
-                        if (animation_id < 4)
+                        if (!useNewyearsEgg)
                         {
                             // Nein, dann Animation abspielen
-                            LOADER.GetImageN("rom_bobs", ANIMATION[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
+                            LOADER.GetImageN("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
                             ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
                         }
-                        else if (animation_id == 4)     // Silvesteregg
+                        else     // Silvesteregg
                         {
                             glArchivItem_Bitmap* bmp = LOADER.GetImageN("firework", (current_gf - next_animation) / 3 + 1);
 
@@ -286,7 +308,6 @@ void nofCarrier::Draw(int x, int y)
                 else
                     // Steht und wartet (ohne Ware)
 //                  LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,COLORS[gwg->GetPlayer(player).color]);
-
                     DrawShadow(x, y, 0, GetCurMoveDir());
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
