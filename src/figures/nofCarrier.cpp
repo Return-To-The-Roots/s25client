@@ -124,7 +124,7 @@ static const AnimationsType ANIMATIONS = fillAnimations();
  *  @author OLiver
  */
 
-const boost::array<Job, 3> JOB_TYPES = { JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER };
+const boost::array<Job, 3> JOB_TYPES = {{ JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER }};
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
                        unsigned char player,
