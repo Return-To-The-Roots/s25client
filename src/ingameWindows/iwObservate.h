@@ -20,7 +20,6 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "gameData/GameConsts.h"
 #include "GameObject.h"
 #include "GameWorld.h"
 

@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofGeologist.h"
 
-#include "gameData/GameConsts.h"
 #include "nodeObjs/noFlag.h"
 #include "Loader.h"
 #include "macros.h"

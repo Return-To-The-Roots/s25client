@@ -45,6 +45,9 @@
 #include "Debug.h"
 #include "fileFuncs.h"
 #include "ogl/glArchivItem_Map.h"
+
+#include "gameData/GameConsts.h"
+
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
 #include "GameCommands.h"

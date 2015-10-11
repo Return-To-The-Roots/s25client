@@ -23,10 +23,8 @@
 
 #include "defines.h"
 #include "gameTypes/MapTypes.h"
-#include "gameData/GameConsts.h"
+#include "gameTypes/BuildingTypes.h"
 #include "AIEventManager.h"
-
-
 
 #include <vector>
 

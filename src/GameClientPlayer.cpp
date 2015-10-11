@@ -23,9 +23,6 @@
 #include "GameClient.h"
 #include "Random.h"
 
-#include "gameData/GameConsts.h"
-#include "gameData/MilitaryConsts.h"
-
 #include "RoadSegment.h"
 #include "Ware.h"
 
@@ -38,6 +35,9 @@
 #include "nodeObjs/noShip.h"
 #include "buildings/nobHarborBuilding.h"
 #include "figures/nofTradeLeader.h"
+
+#include "gameData/MilitaryConsts.h"
+#include "gameData/ShieldConsts.h"
 
 #include "GameInterface.h"
 
@@ -1980,6 +1980,18 @@ bool GameClientPlayer::IsWareDependent(Ware* ware)
 
     return false;
 }
+
+void GameClientPlayer::IncreaseInventoryWare(const GoodType ware, const unsigned count)
+{
+    global_inventory.goods[ConvertShields(ware)] += count;
+}
+
+void GameClientPlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count)
+{
+    assert(global_inventory.goods[ConvertShields(ware)] >= count);
+    global_inventory.goods[ConvertShields(ware)] -= count;
+}
+
 
 /// Registriert ein Schiff beim Einwohnermeldeamt
 void GameClientPlayer::RegisterShip(noShip* ship)

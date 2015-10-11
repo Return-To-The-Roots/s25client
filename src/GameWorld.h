@@ -18,7 +18,6 @@
 #define OBJMANAGER_H_
 
 
-#include "gameData/GameConsts.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noNothing.h"
 #include "RoadSegment.h"

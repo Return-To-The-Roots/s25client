@@ -22,10 +22,10 @@
 
 #include "buildings/nobMilitary.h"
 #include "Loader.h"
-#include "gameData/GameConsts.h"
 #include "Random.h"
 #include "GameWorld.h"
 #include "nodeObjs/noFighting.h"
+#include "gameTypes/JobTypes.h"
 #include "SerializedGameData.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,4 +81,9 @@ void nofSoldier::AbrogateWorkplace()
         static_cast<nobMilitary*>(building)->SoldierLost(this);
         building = 0;
     }
+}
+
+unsigned char nofSoldier::GetRank() const
+{
+    return (job_ - JOB_PRIVATE);
 }

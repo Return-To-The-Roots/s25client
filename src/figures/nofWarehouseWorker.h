@@ -25,7 +25,6 @@
 #ifdef _MSC_VER
 enum GoodType;
 #else
-#include "gameData/GameConsts.h"
 #endif
 
 class Ware;

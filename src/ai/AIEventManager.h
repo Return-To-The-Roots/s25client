@@ -21,7 +21,7 @@
 
 #include "defines.h"
 #include "gameTypes/MapTypes.h"
-#include "gameData/GameConsts.h"
+#include "gameTypes/BuildingTypes.h"
 #include <queue>
 
 namespace AIEvent

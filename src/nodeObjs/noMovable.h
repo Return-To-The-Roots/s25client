@@ -19,7 +19,6 @@
 #define NO_MOVABLE_H_
 
 #include "noCoordBase.h"
-#include "gameData/GameConsts.h"
 #include "EventManager.h"
 #include "gameTypes/MapTypes.h"
 

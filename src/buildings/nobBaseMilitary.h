@@ -20,7 +20,6 @@
 
 #include "buildings/noBuilding.h"
 #include "gameData/BuildingConsts.h"
-#include "gameData/GameConsts.h"
 #include "EventManager.h"
 #include <boost/container/flat_set.hpp>
 

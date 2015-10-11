@@ -18,6 +18,7 @@
 #define NOF_TRADEDONKEY_H_
 
 #include "figures/noFigure.h"
+#include "gameTypes/GoodTypes.h"
 #include <deque>
 
 class nofTradeLeader;

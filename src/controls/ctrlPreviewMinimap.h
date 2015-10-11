@@ -20,7 +20,7 @@
 #include "ctrlMinimap.h"
 #include "Minimap.h"
 #include "gameTypes/MapTypes.h"
-#include "gameData/GameConsts.h"
+#include "gameData/PlayerConsts.h"
 #include "ogl/glArchivItem_Map.h"
 
 /// Übersichtskarte (MapPreview)

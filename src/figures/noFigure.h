@@ -29,7 +29,7 @@ class glArchivItem_Bob;
 #ifdef _MSC_VER
 enum Job;
 #else
-#include "gameData/GameConsts.h"
+#include "gameTypes/JobTypes.h"
 #endif
 
 enum FigureState

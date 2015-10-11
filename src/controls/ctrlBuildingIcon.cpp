@@ -20,7 +20,10 @@
 #include "defines.h"
 #include "ctrlBuildingIcon.h"
 #include "Loader.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/NationConsts.h"
 #include "files.h"
+#include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

@@ -41,6 +41,7 @@
 #include "figures/nofTradeLeader.h"
 #include "figures/nofTradeDonkey.h"
 #include "factories/JobFactory.h"
+#include "gameData/ShieldConsts.h"
 #include "Log.h"
 
 #include <algorithm>

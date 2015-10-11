@@ -20,12 +20,11 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "gameTypes/StatisticTypes.h"
 
 /// Fenster mit den Warenstatistiken.
 class iwMerchandiseStatistics : public IngameWindow
 {
-
-
     public:
         iwMerchandiseStatistics();
         ~iwMerchandiseStatistics();
@@ -54,8 +53,6 @@ class iwMerchandiseStatistics : public IngameWindow
         void Msg_PaintAfter();
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
         void Msg_ButtonClick(const unsigned int ctrl_id);
-
-
 };
 
 #endif // !iwMERCHANDISE_STATISTICS_H_INCLUDED

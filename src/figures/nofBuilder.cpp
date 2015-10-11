@@ -21,7 +21,6 @@
 
 #include "defines.h"
 #include "nofBuilder.h"
-#include "gameData/GameConsts.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"

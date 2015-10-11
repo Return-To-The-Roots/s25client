@@ -27,7 +27,6 @@ class Ware;
 #ifdef _MSC_VER
 enum Job;
 #else
-#include "gameData/GameConsts.h"
 #endif
 
 // Basisklasse für Gebäude und Flagge (alles, was als "Straßenknoten" dient

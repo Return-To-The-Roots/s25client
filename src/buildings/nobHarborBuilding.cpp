@@ -24,7 +24,6 @@
 #include "GameWorld.h"
 #include "Loader.h"
 #include "nodeObjs/noExtension.h"
-#include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
@@ -37,6 +36,9 @@
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
 #include "ogl/glSmartBitmap.h"
+#include "gameData/MilitaryConsts.h"
+#include "gameData/GameConsts.h"
+#include "gameData/ShieldConsts.h"
 #include "SerializedGameData.h"
 
 #include <set>

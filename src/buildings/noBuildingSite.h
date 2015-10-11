@@ -25,7 +25,6 @@
 #ifdef _MSC_VER
 enum BuildingType;
 #else
-#include "gameData/GameConsts.h"
 #endif
 
 class nofBuilder;

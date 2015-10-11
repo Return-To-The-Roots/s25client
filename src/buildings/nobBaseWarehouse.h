@@ -20,7 +20,6 @@
 #pragma once
 
 #include "nobBaseMilitary.h"
-#include "gameData/GameConsts.h"
 #include "EventManager.h"
 #include "figures/noFigure.h"
 #include <list>

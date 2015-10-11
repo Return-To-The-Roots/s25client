@@ -22,12 +22,13 @@
 
 #include "GameWorld.h"
 #include "GameClientPlayer.h"
-#include "gameData/GameConsts.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"
 #include "SerializedGameData.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
+#include "gameData/ShieldConsts.h"
+#include "gameData/GameConsts.h"
 #include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////

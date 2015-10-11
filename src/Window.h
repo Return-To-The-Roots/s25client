@@ -22,9 +22,10 @@
 #include "CollisionDetection.h"
 
 #include "Msgbox.h"
-#include "gameData/GameConsts.h"
-#include "colors.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/NationConsts.h"
 #include "Rect.h"
+#include "colors.h"
 #include <map>
 
 class WindowManager;

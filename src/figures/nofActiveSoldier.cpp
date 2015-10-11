@@ -23,7 +23,6 @@
 #include "nofActiveSoldier.h"
 #include "buildings/nobMilitary.h"
 #include "Loader.h"
-#include "gameData/GameConsts.h"
 #include "Random.h"
 #include "GameWorld.h"
 #include "nodeObjs/noFighting.h"

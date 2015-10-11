@@ -43,6 +43,7 @@
 
 #include "SerializedGameData.h"
 #include "gameData/JobConsts.h"
+#include "gameData/GameConsts.h"
 
 #include "Log.h"
 

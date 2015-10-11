@@ -19,7 +19,6 @@
 #define TRADE_GRAPH_H_
 
 #include "gameTypes/MapTypes.h"
-#include "gameData/GameConsts.h"
 #include "TradeGraphNode.h"
 #include <vector>
 

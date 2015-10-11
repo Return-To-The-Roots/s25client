@@ -3,8 +3,9 @@
 
 #include "GameCommand.h"
 #include "Serializer.h"
-#include "gameData/GameConsts.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 #include <cassert>

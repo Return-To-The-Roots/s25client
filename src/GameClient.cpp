@@ -39,6 +39,8 @@
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
 
+#include "gameData/GameConsts.h"
+
 #include "SerializedGameData.h"
 #include "LobbyClient.h"
 #include "Settings.h"

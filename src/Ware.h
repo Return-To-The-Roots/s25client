@@ -18,9 +18,9 @@
 #ifndef WARE_H_
 #define WARE_H_
 
-#include "gameData/GameConsts.h"
 #include "GameObject.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/GoodTypes.h"
 #include "nodeObjs/noRoadNode.h"
 
 class noBaseBuilding;

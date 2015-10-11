@@ -18,8 +18,8 @@
 #ifndef NO_ANIMAL_H_
 #define NO_ANIMAL_H_
 
-#include "gameData/GameConsts.h"
 #include "noMovable.h"
+#include "gameTypes/AnimalTypes.h"
 
 class nofHunter;
 

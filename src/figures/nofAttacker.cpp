@@ -27,7 +27,6 @@
 #include "buildings/nobMilitary.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "gameData/GameConsts.h"
 #include "Random.h"
 #include "GameWorld.h"
 #include "nodeObjs/noFighting.h"

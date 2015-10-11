@@ -18,21 +18,7 @@
 #ifndef AnimalConsts_h__
 #define AnimalConsts_h__
 
-/// Tierarten
-enum Species
-{
-    SPEC_POLARBEAR = 0,
-    SPEC_RABBITWHITE,
-    SPEC_RABBITGREY,
-    SPEC_FOX,
-    SPEC_STAG,
-    SPEC_DEER,
-    SPEC_DUCK,
-    SPEC_SHEEP,
-    SPEC_NOTHING
-};
-
-const unsigned SPEC_COUNT = SPEC_NOTHING;
+#include "gameTypes/AnimalTypes.h"
 
 /// Informationen über die  einzelnen Tierarten
 struct AnimalConst
@@ -53,7 +39,7 @@ struct AnimalConst
 
 // 0 bedeutet --> kein Bild!
 
-const AnimalConst ANIMALCONSTS[8] =
+const AnimalConst ANIMALCONSTS[SPEC_COUNT] =
 {
     {1600, 0, 1648, 1649, 8, 20}, // Polarbär
     {1700, 0, 1736, 1737, 6, 20}, // Hase hell

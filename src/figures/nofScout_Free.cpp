@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofScout_Free.h"
 
-#include "gameData/GameConsts.h"
 #include "nodeObjs/noFlag.h"
 #include "GameWorld.h"
 #include "Random.h"

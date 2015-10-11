@@ -257,8 +257,7 @@ void dskGameInterface::Msg_PaintAfter()
     if(tmd)
     {
         // Convert gf to seconds
-        unsigned sec = (GAMECLIENT.GetGGS().game_objective - OBJECTIVES_COUNT) * 60 -
-                       GAMECLIENT.GetGFNumber() * GAMECLIENT.GetGFLength() / 1000;
+        unsigned sec = (tmd - GAMECLIENT.GetGFNumber()) * GAMECLIENT.GetGFLength() / 1000;
         char str[512];
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }

@@ -15,22 +15,42 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#ifndef StatisticTypes_h__
+#define StatisticTypes_h__
 
-#include <string>
-
-/// Types of pacts
-enum PactType
+/// Verfügbare Statistikarten
+enum StatisticType
 {
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
+    STAT_COUNTRY = 0,
+    STAT_BUILDINGS,
+    STAT_INHABITANTS,
+    STAT_MERCHANDISE,
+    STAT_MILITARY,
+    STAT_GOLD,
+    STAT_PRODUCTIVITY,
+    STAT_VANQUISHED,
+    STAT_TOURNAMENT
 };
 
-/// Number of the various pacts
-const unsigned PACTS_COUNT = 2;
+/// Anzahl Statistikarten
+const unsigned STAT_TYPE_COUNT = 9;
 
-/// Names of the possible pacts
-extern const std::string PACT_NAMES[PACTS_COUNT];
+/// Anzahl Warenstatistikarten
+const unsigned STAT_MERCHANDISE_TYPE_COUNT = 14;
 
-#endif // PactTypes_h__
+/// Statistikzeiträume
+enum StatisticTime
+{
+    STAT_15M = 0,
+    STAT_1H,
+    STAT_4H,
+    STAT_16H
+};
+
+/// Anzahl Statistikzeiträume
+const unsigned STAT_TIME_COUNT = 4;
+
+/// Anzahl der Statistikschritte, die gespeichert werden
+const unsigned STAT_STEP_COUNT = 30;
+
+#endif // StatisticTypes_h__

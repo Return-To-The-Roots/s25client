@@ -59,9 +59,7 @@ class nofSoldier : public noFigure
     public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofSoldier(sgd); }
 
         /// Liefert Rang des Soldaten
-        unsigned char GetRank() const { return (job_ - JOB_PRIVATE); }
-
-
+        unsigned char GetRank() const;
 };
 
 /// Comparator to sort soldiers by rank (and ID for ties)

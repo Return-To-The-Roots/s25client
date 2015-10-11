@@ -30,6 +30,7 @@
 #include "GlobalGameSettings.h"
 #include "ai/AIEventManager.h"
 #include "factories/GameCommandFactory.h"
+#include "gameData/PlayerConsts.h"
 
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>

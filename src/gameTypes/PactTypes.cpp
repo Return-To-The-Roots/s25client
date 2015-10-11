@@ -14,37 +14,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwDIPLOMACY_H_INCLUDED
-#define iwDIPLOMACY_H_INCLUDED
 
-#include "IngameWindow.h"
+#include "defines.h"
 #include "gameTypes/PactTypes.h"
+#include <mygettext.h>
 
-/// Diplomatiefenster: Übersicht über alle Spieler im Spiel und Schmieden von Bündnissen
-class iwDiplomacy : public IngameWindow
+const std::string PACT_NAMES[PACTS_COUNT] =
 {
-    public:
-
-        iwDiplomacy();
-
-    private:
-
-        void Msg_PaintBefore();
-        void Msg_PaintAfter();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+    gettext_noop("Treaty of alliance"),
+    gettext_noop("Non-aggression pact")
 };
-
-/// Kleines Fenster, über das einem Spieler ein neues Bündnis angeboten werden kann
-class iwSuggestPact : public IngameWindow
-{
-        const PactType pt;
-        const unsigned char player;
-    public:
-        iwSuggestPact(const PactType pt, const unsigned char player);
-
-    public:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-};
-
-#endif // !iwBUILDORDER_H_INCLUDED

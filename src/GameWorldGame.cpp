@@ -55,6 +55,7 @@
 #include "GameInterface.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/TerrainData.h"
+#include "gameData/GameConsts.h"
 #include "helpers/containerUtils.h"
 
 #include <algorithm>

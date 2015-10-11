@@ -19,6 +19,7 @@
 #define NOF_WORKMAN_H_
 
 #include "nofBuildingWorker.h"
+#include "gameTypes/GoodTypes.h"
 
 /// Ein Handwerker ist jemand, der seine Waren nur im Gebäude herstellt und diese rausträgt
 /// Allen gemeinsam ist, dass sie einen festen Arbeitsablauf haben:

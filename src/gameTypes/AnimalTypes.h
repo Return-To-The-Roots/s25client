@@ -15,22 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#ifndef AnimalTypes_h__
+#define AnimalTypes_h__
 
-#include <string>
-
-/// Types of pacts
-enum PactType
+/// Tierarten
+enum Species
 {
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
+    SPEC_POLARBEAR = 0,
+    SPEC_RABBITWHITE,
+    SPEC_RABBITGREY,
+    SPEC_FOX,
+    SPEC_STAG,
+    SPEC_DEER,
+    SPEC_DUCK,
+    SPEC_SHEEP,
+    SPEC_NOTHING
 };
 
-/// Number of the various pacts
-const unsigned PACTS_COUNT = 2;
+const unsigned SPEC_COUNT = SPEC_NOTHING;
 
-/// Names of the possible pacts
-extern const std::string PACT_NAMES[PACTS_COUNT];
-
-#endif // PactTypes_h__
+#endif // AnimalTypes_h__

@@ -19,8 +19,9 @@
 #define GAMEPLAYERINFO_H_INCLUDED
 
 #include "GameProtocol.h"
-#include "Socket.h"
-#include "gameData/GameConsts.h"
+#include "gameData/NationConsts.h"
+#include "gameData/PlayerConsts.h"
+#include <Socket.h>
 
 class Serializer;
 

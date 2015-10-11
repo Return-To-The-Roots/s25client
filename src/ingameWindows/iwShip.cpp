@@ -30,8 +30,7 @@
 #include "figures/noFigure.h"
 #include "Ware.h"
 #include "gameData/JobConsts.h"
-
-
+#include "gameData/GameConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

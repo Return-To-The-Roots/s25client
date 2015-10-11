@@ -20,8 +20,9 @@
 
 #include "defines.h"
 #include <string>
-#include "gameData/GameConsts.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/MessageTypes.h"
+#include "gameTypes/PactTypes.h"
 #include "Loader.h"
 
 class SerializedGameData;

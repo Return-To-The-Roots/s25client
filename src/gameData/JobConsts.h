@@ -18,10 +18,9 @@
 #ifndef JOB_CONSTS_H_
 #define JOB_CONSTS_H_
 
-#include "gameData/GameConsts.h"
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
-
 
 extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;
 
@@ -37,11 +36,6 @@ struct JobConst
     /// Arbeitszeit in gf, Wartezeit (vor dem Arbeiten) in gf
     unsigned short work_length, wait1_length, wait2_length;
 };
-
-
-//0,5,12,8,6,7,20,13,16,17,15,10,3,14,24,11,9,18,4,23,22,26,30,31,32,33,34,35
-//};
-
 
 // Welcher Beruf welches Werkzeug braucht
 const JobConst JOB_CONSTS[JOB_TYPES_COUNT] =
@@ -99,7 +93,5 @@ const int WARE_POS_BOAT[12] =
 {
     11, -4, 11, 0, -7, -1, -8, -5, -7, -7, 6, -7
 };
-
-
 
 #endif

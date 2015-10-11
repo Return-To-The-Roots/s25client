@@ -27,6 +27,7 @@
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "gameData/ShieldConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -139,5 +140,5 @@ GoodType nofArmorer::ProduceWare()
     if(sword_shield)
         return GD_SWORD;
     else
-	return SHIELD_TYPES[GAMECLIENT.GetPlayer(player).nation];
+	    return SHIELD_TYPES[GAMECLIENT.GetPlayer(player).nation];
 }

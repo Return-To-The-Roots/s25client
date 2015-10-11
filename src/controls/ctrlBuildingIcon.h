@@ -20,7 +20,6 @@
 #pragma once
 
 #include "ctrlButton.h"
-#include "gameData/GameConsts.h"
 
 class ctrlBuildingIcon : public ctrlButton
 {

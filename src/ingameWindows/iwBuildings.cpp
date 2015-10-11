@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "iwBuildings.h"
 #include "Loader.h"
-#include "gameData/GameConsts.h"
 #include "GameClient.h"
 #include "WindowManager.h"
 #include "buildings/nobMilitary.h"

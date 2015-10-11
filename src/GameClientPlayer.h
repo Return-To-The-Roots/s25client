@@ -19,15 +19,15 @@
 #define GAMECLIENTPLAYER_H_
 
 #include "GamePlayerInfo.h"
-#include "gameData/GameConsts.h"
-#include <list>
-#include <queue>
-#include <algorithm>
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/StatisticTypes.h"
 #include "PostMsg.h"
 #include "Point.h"
 #include "GameMessage_GameCommand.h"
 #include "helpers/containerUtils.h"
+#include <list>
+#include <queue>
+#include <algorithm>
 
 class GameWorld;
 class noFlag;
@@ -305,8 +305,8 @@ class GameClientPlayer : public GamePlayerInfo
         bool IsWareDependent(Ware* ware);
 
         /// Fügt Waren zur Inventur hinzu
-        void IncreaseInventoryWare(const GoodType ware, const unsigned count) { global_inventory.goods[ConvertShields(ware)] += count; }
-        void DecreaseInventoryWare(const GoodType ware, const unsigned count) { assert(global_inventory.goods[ConvertShields(ware)] >= count); global_inventory.goods[ConvertShields(ware)] -= count; }
+        void IncreaseInventoryWare(const GoodType ware, const unsigned count);
+        void DecreaseInventoryWare(const GoodType ware, const unsigned count);
         void IncreaseInventoryJob(const Job job, const unsigned count) { global_inventory.people[job] += count; }
         void DecreaseInventoryJob(const Job job, const unsigned count) { assert(global_inventory.people[job] >= count); global_inventory.people[job] -= count; }
 

@@ -35,8 +35,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "ai/AIEventManager.h"
-
-
+#include "gameData/GameConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

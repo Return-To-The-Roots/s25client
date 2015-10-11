@@ -33,6 +33,7 @@
 #include "dskSinglePlayer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwAddons.h"
+#include "gameData/GameConsts.h"
 #include "Random.h"
 #include "Log.h"
 

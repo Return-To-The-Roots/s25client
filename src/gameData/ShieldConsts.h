@@ -15,22 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#ifndef ShieldConsts_h__
+#define ShieldConsts_h__
 
-#include <string>
-
-/// Types of pacts
-enum PactType
+/// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
+/// die Warensysteme usw
+inline GoodType ConvertShields(const GoodType& good)
 {
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
-};
+    return (good == GD_SHIELDVIKINGS ||
+        good == GD_SHIELDAFRICANS ||
+        good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
+}
 
-/// Number of the various pacts
-const unsigned PACTS_COUNT = 2;
+/// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
+const boost::array<GoodType, NAT_COUNT> SHIELD_TYPES =
+{{
+    GD_SHIELDAFRICANS,
+        GD_SHIELDJAPANESE,
+        GD_SHIELDROMANS,
+        GD_SHIELDVIKINGS,
+        GD_SHIELDJAPANESE
+}};
 
-/// Names of the possible pacts
-extern const std::string PACT_NAMES[PACTS_COUNT];
-
-#endif // PactTypes_h__
+#endif // ShieldConsts_h__
