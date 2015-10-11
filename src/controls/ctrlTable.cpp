@@ -238,6 +238,8 @@ void ctrlTable::SortRows(unsigned short column, bool* direction)
 {
     if(columns.empty())
         return;
+    if(rows.empty())
+        return;
     if(column >= columns.size())
         column = 0;
 
@@ -252,7 +254,7 @@ void ctrlTable::SortRows(unsigned short column, bool* direction)
     bool done;
     do{
         done = true;
-        for(unsigned short r = 0; r < rows.size() - 1; ++r)
+        for(unsigned r = 0; r < rows.size() - 1; ++r)
         {
             std::string a = rows[r].columns[sort_column];
             std::string b = rows[r+1].columns[sort_column];
