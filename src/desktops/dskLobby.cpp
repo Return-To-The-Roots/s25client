@@ -38,6 +38,7 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
 
+#include <Log.h>
 #include <boost/lexical_cast.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -203,40 +204,40 @@ void dskLobby::UpdatePlayerList(bool first)
 
     ctrlTable* playertable = GetCtrl<ctrlTable>(11);
 
-    if(LOBBYCLIENT.refreshplayerlist)
+    if(!LOBBYCLIENT.refreshplayerlist)
+        return;
+
+    LOBBYCLIENT.refreshplayerlist = false;
+
+    if ((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
     {
-        LOBBYCLIENT.refreshplayerlist = false;
+        LOADER.GetSoundN("sound", 114)->Play(255, false);
+    }
 
-        if ((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
+    unsigned int selection = playertable->GetSelection();
+    if(selection == 0xFFFF)
+        selection = 0;
+    unsigned short column = playertable->GetSortColumn();
+    if(column == 0xFFFF)
+        column = 0;
+    bool direction = playertable->GetSortDirection();
+    playertable->DeleteAllItems();
+
+    if(playerlist->getCount() > 0)
+    {
+        for(LobbyPlayerList::const_iterator it = playerlist->begin(); it != playerlist->end(); ++it)
         {
-            LOADER.GetSoundN("sound", 114)->Play(255, false);
-        }
-
-        unsigned int selection = playertable->GetSelection();
-        if(selection == 0xFFFF)
-            selection = 0;
-        unsigned short column = playertable->GetSortColumn();
-        if(column == 0xFFFF)
-            column = 0;
-        bool direction = playertable->GetSortDirection();
-        playertable->DeleteAllItems();
-
-        if(playerlist->getCount() > 0)
-        {
-            for(LobbyPlayerList::const_iterator it = playerlist->begin(); it != playerlist->end(); ++it)
+            if(it->getId() != 0xFFFFFFFF)
             {
-                if(it->getId() != 0xFFFFFFFF)
-                {
-                    std::string punkte = boost::lexical_cast<std::string>(it->getPunkte());
-                    playertable->AddRow(0, it->getName().c_str(), punkte.c_str(), it->getVersion().c_str());
-                }
+                std::string punkte = boost::lexical_cast<std::string>(it->getPunkte());
+                playertable->AddRow(0, it->getName().c_str(), punkte.c_str(), it->getVersion().c_str());
             }
-            if(first)
-                playertable->SortRows(0);
-            else
-                playertable->SortRows(column, &direction);
-            playertable->SetSelection(selection);
         }
+        if(first)
+            playertable->SortRows(0);
+        else
+            playertable->SortRows(column, &direction);
+        playertable->SetSelection(selection);
     }
 }
 
@@ -248,38 +249,45 @@ void dskLobby::UpdateServerList(bool first)
 
     ctrlTable* servertable = GetCtrl<ctrlTable>(10);
 
-    if(LOBBYCLIENT.refreshserverlist)
+    if(!LOBBYCLIENT.refreshserverlist)
+        return;
+
+    LOBBYCLIENT.refreshserverlist = false;
+
+    unsigned int selection = servertable->GetSelection();
+    if(selection == 0xFFFF)
+        selection = 0;
+    unsigned short column = servertable->GetSortColumn();
+    if(column == 0xFFFF)
+        column = 0;
+    bool direction = servertable->GetSortDirection();
+    servertable->DeleteAllItems();
+
+    if(serverlist->getCount() > 0)
     {
-        LOBBYCLIENT.refreshserverlist = false;
-
-        unsigned int selection = servertable->GetSelection();
-        if(selection == 0xFFFF)
-            selection = 0;
-        unsigned short column = servertable->GetSortColumn();
-        if(column == 0xFFFF)
-            column = 0;
-        bool direction = servertable->GetSortDirection();
-        servertable->DeleteAllItems();
-
-        if(serverlist->getCount() > 0)
+        std::set<unsigned> ids;
+        for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
         {
-            for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
+            if(it->getName().empty())
+                continue;
+
+            if(helpers::contains(ids, it->getId()))
             {
-                if(!it->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
-                {
-                    std::string id = boost::lexical_cast<std::string>(it->getId());
-                    std::string name = (it->hasPassword() ? "(pwd) " : "") + it->getName();
-                    std::string ping = boost::lexical_cast<std::string>(it->getPing());
-                    std::string player = boost::lexical_cast<std::string>(it->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(it->getMaxPlayers());
-                    servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
-                }
+                LOG.lprintf("Duplicate ID in serverlist detected: %u\n", it->getId());
+                continue;
             }
-            if(first)
-                servertable->SortRows(0);
-            else
-                servertable->SortRows(column, &direction);
-            servertable->SetSelection(selection);
+            ids.insert(it->getId());
+            std::string id = boost::lexical_cast<std::string>(it->getId());
+            std::string name = (it->hasPassword() ? "(pwd) " : "") + it->getName();
+            std::string ping = boost::lexical_cast<std::string>(it->getPing());
+            std::string player = boost::lexical_cast<std::string>(it->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(it->getMaxPlayers());
+                servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
         }
+        if(first)
+            servertable->SortRows(0);
+        else
+            servertable->SortRows(column, &direction);
+        servertable->SetSelection(selection);
     }
 }
 
