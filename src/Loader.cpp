@@ -154,7 +154,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     else
     {
         // no, only single file specified
-        if(!LoadFile(file.c_str(), GetPaletteN("pal5"), load_always ) )
+        if(!LoadFile(file, GetPaletteN("pal5"), load_always ) )
             return false;
 
         // ggf Splash anzeigen
@@ -415,7 +415,7 @@ bool Loader::SaveSettings()
     LOG.lprintf(_("Writing \"%s\": "), file.c_str());
     fflush(stdout);
 
-    if(libsiedler2::Write(file.c_str(), files_.find("config")->second) != 0)
+    if(libsiedler2::Write(file, *GetInfoN(CONFIG_NAME)) != 0)
         return false;
 
     using namespace boost::filesystem;
@@ -460,14 +460,14 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
             files[i] = 27 + i + (gfxset == 2) * NATIVE_NAT_COUNT;
     }
 
-    // dateien ggf nur einmal laden - qx: wozu? performance is hier echt egal -> fixing bug #1085693
-    if (!LoadFilesFromArray(files_count, files, true))
+    // Load files, but only once. If they are modified by overrides they will still be loaded again
+    if (!LoadFilesFromArray(files_count, files, false))
     {
         lastgfx = 0xFF;
         return false;
     }
 
-    if ((nations[4]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
+    if ((nations[4]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, false))
     {
         lastgfx = 0xFF;
         return false;
@@ -485,11 +485,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
     {
-        nation_gfx[nation] = &(this->files_[NATION_GFXSET_Z[lastgfx][nation]]);
+        nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
     }
 
-    map_gfx = &(this->files_[MAP_GFXSET_Z[lastgfx]]);
-    tex_gfx = &(this->files_[TEX_GFXSET[lastgfx]]);
+    map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
+    tex_gfx = GetInfoN(TEX_GFXSET[lastgfx]);
 
     return true;
 }
@@ -1283,12 +1283,23 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     boost::filesystem::path fileName = filePath.filename();
     std::string name = fileName.stem().string();
 
-    // bereits geladen und wir wollen kein nochmaliges laden
-    if(!load_always && files_[name].size() != 0)
+    FileEntry& entry = files_[name];
+    bool isLoaded = entry.archiv.size() != 0;
+    if(isLoaded && entry.hasOverrides && pfad == entry.originalPath)
+    {
+        // We are loading the original file which was already loaded but modified --> Clear it to reload
+        entry.archiv.clear();
+        isLoaded = false;
+    }
+    // If the file is already loaded and we don't want to force loading -> exit
+    if(isLoaded && !load_always)
         return true;
 
-    if(files_[name].size() == 0)
-        return LoadFile(pfad, palette, files_[name]);
+    if(!isLoaded){
+        entry.originalPath = pfad;
+        entry.hasOverrides = false;
+        return LoadFile(pfad, palette, entry.archiv);
+    }
 
     // haben wir eine override file? dann nicht-leere items überschreiben
     libsiedler2::ArchivInfo newEntries;
@@ -1297,7 +1308,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     LOG.lprintf(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
 
-    libsiedler2::ArchivInfo* existing = &files_[name];
+    libsiedler2::ArchivInfo* existing = GetInfoN(name);
     // *.bob archives have exactly 1 entry which is a 'folder' of the actual entries
     // An overwrite can be a (real) folder with those entries and we want to put them into that 'folder'
     // So we check if the new archiv is a folder or an archiv by checking if it contains only 1 BOB entry
@@ -1322,6 +1333,9 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
             existing->setC(i, *newEntries.get(i));
         }
     }
+
+    // Tell the system that we used overrides
+    entry.hasOverrides = true;
 
     return true;
 }
