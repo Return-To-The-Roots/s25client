@@ -34,7 +34,7 @@ const char* const EMPTY_STR = "";
 class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicies::WithLongevity>, public AudioDriverLoaderInterface
 {
     public:
-        static const unsigned Longevity = 30;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
 
         /// Konstruktor von @p DriverWrapper
         AudioDriverWrapper();

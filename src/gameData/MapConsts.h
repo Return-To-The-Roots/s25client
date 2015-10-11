@@ -20,10 +20,10 @@
 #pragma once
 
 /// Wie hoch und breit ist ein Dreieck?
-static const int TR_W = 53;
-static const int TR_H = 29;
+BOOST_CONSTEXPR_OR_CONST int TR_W = 53;
+BOOST_CONSTEXPR_OR_CONST int TR_H = 29;
 
 /// Faktor fr die Höhen
-const int HEIGHT_FACTOR = 5;
+BOOST_CONSTEXPR_OR_CONST int HEIGHT_FACTOR = 5;
 
 #endif // !MAPCONSTS_H_INCLUDED

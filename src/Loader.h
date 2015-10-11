@@ -58,7 +58,7 @@ const std::string CONFIG_NAME = "config";
 class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 {
     public:
-        static const unsigned Longevity = 19;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 19;
 
         /// Konstruktor von @p Loader.
         Loader(void);

@@ -33,7 +33,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
 {
     public:
 
-        static const unsigned Longevity = 30;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
 
         /// Konstruktor von @p DriverWrapper
         VideoDriverWrapper();

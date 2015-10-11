@@ -113,5 +113,8 @@ namespace boost{namespace filesystem{}}
 /// Shortcut for boost::filesystem
 namespace bfs = boost::filesystem;
 
+// Include to use e.g. boost macros like BOOST_CONSTEXPR
+#include <boost/config.hpp>
+
 #endif // defines_h__
 

@@ -83,7 +83,7 @@ namespace helpers{
             typedef typename T::iterator iterator;
             typedef BOOST_TYPEOF_TPL((declval<T>().erase(declval<iterator>()), Type2Type<void>())) result;
 
-            static CONSTEXPR bool value = boost::is_same<iterator, typename result::type>::value;
+            BOOST_STATIC_CONSTEXPR bool value = boost::is_same<iterator, typename result::type>::value;
         };
 
     } // namespace detail
@@ -92,7 +92,7 @@ namespace helpers{
     template<class T>
     struct EraseIterValidyImpl{
         // Default case for unspecialized containers (whose erase dos not return an iterator) is AllInvalidate to be safe
-        static CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::AllInvalidated; 
+        BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::AllInvalidated; 
     };
 
     /// Trait that returns the iterator validy (Enum member) after an erase call
@@ -101,7 +101,7 @@ namespace helpers{
     struct EraseIterValidy
     {
         // If erase returns an iterator, just take it -> Done
-        static CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::IterReturned; 
+        BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::IterReturned; 
     };
     /// If erase does not return an iterator fall back to
     template<class T>

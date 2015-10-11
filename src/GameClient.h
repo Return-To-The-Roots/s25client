@@ -50,7 +50,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
     bool AddGC(gc::GameCommand* gc);
 
     public:
-        static const unsigned Longevity = 5;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 5;
 
         enum ClientState
         {

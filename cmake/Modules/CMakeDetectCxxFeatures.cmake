@@ -6,21 +6,6 @@
 
 INCLUDE(CheckCXXSourceCompiles)
 
-UNSET(CXX_HAVE_CONSTEXPR CACHE)
-CHECK_CXX_SOURCE_COMPILES("
-  constexpr int foo(){ return 0; }
-
-  template<int v>
-  struct A{
-    static constexpr int value = v;
-  };
-
-  int main(void){
-    return A<foo()>::value;
-  }
-" CXX_HAVE_CONSTEXPR
-)
-
 UNSET(CXX_OVERRIDE_OK CACHE)
 CHECK_CXX_SOURCE_COMPILES("
 	class Base{

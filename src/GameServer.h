@@ -42,7 +42,7 @@ class AIBase;
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {
     public:
-        static const unsigned Longevity = 6;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
 
         GameServer(void);
         ~GameServer(void);

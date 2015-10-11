@@ -27,7 +27,7 @@
 namespace helpers{
     template<class T, class Pr, class Alloc>
     struct EraseIterValidyImpl<std::set<T, Pr, Alloc> >{
-        static CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid; 
+        BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid; 
     };
 } // namespace helpers
 

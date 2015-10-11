@@ -32,7 +32,7 @@
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
     public:
-        static const unsigned Longevity = 18;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 18;
 
         Settings(void);
 

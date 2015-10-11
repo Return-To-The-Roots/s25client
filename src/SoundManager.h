@@ -53,7 +53,7 @@ class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLonge
         unsigned ocean_play_id;
 
     public:
-        static const unsigned Longevity = 29;
+        BOOST_STATIC_CONSTEXPR unsigned Longevity = 29;
 
         SoundManager();
         ~SoundManager();
