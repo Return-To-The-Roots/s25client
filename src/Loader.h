@@ -116,9 +116,6 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         /// Returns the texture for the given terrain. For animated textures the given frame is returned
         glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
-        // should not use this!
-        const std::map<std::string, libsiedler2::ArchivInfo> &GetFiles(void) const { return files_; }
-
     private:
         std::map<std::string, libsiedler2::ArchivInfo> files_;
         /// Terraintextures (unanimated)

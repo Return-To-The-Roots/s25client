@@ -117,7 +117,7 @@ dskGameInterface::dskGameInterface()
     GLOBALVARS.ingame = true;
     gwv->SetGameInterface(this);
 
-    cbb.loadEdges( &LOADER.GetFiles().find("resource")->second );
+    cbb.loadEdges( LOADER.GetInfoN("resource") );
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(),
                     VIDEODRIVER.GetScreenHeight(), &borders);
 
