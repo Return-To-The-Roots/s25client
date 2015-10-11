@@ -236,44 +236,40 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  */
 void ctrlTable::SortRows(unsigned short column, bool* direction)
 {
-    if(direction)
-        sort_direction = *direction;
+    if(columns.empty())
+        return;
     if(column >= columns.size())
         column = 0;
-    if(column >= columns.size())
-        return;
 
-    for(unsigned short i = 0; i < rows.size(); ++i)
-    {
+    if(direction)
+        sort_direction = *direction;
+    else if(sort_column == column)
+        sort_direction = !sort_direction;
+    else
+        sort_direction = true;
+    sort_column = column;
+
+    bool done;
+    do{
+        done = true;
         for(unsigned short r = 0; r < rows.size() - 1; ++r)
         {
-            std::string a = rows.at(r).columns.at(column);
-            std::string b = rows.at(r + 1).columns.at(column);
+            std::string a = rows[r].columns[sort_column];
+            std::string b = rows[r+1].columns[sort_column];
 
+            // in kleinbuchstaben vergleichen
             std::transform(a.begin(), a.end(), a.begin(), tolower);
             std::transform(b.begin(), b.end(), b.begin(), tolower);
 
-            // in kleinbuchstaben vergleichen
-            if(sort_direction && sort_column == column)
+            if((sort_direction && Compare(a, b, columns[column].sortType) < 0) ||
+                (!sort_direction && Compare(a, b, columns[column].sortType) > 0))
             {
-                //if(a.compare(b) < 0)
-                if (Compare(a, b, columns[column].sortType) < 0)
-                    std::swap(rows.at(r), rows.at(r + 1));
-            }
-            else
-            {
-                //if(a.compare(b) > 0)
-                if (Compare(a, b, columns[column].sortType) > 0)
-                    std::swap(rows.at(r), rows.at(r + 1));
+                using std::swap;
+                swap(rows[r], rows[r+1]);
+                done = false;
             }
         }
-    }
-    if(sort_direction && sort_column == column)
-        sort_direction = false;
-    else
-        sort_direction = true;
-
-    sort_column = column;
+    }while(!done);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
