@@ -1098,7 +1098,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
     LOG.lprintf(_("Loading \"%s\": "), file.c_str());
     fflush(stdout);
 
-    if(libsiedler2::Load(file.c_str(), archiv, palette) != 0)
+    if(libsiedler2::Load(file, archiv, palette) != 0)
     {
         LOG.lprintf(_("failed\n"));
         return false;
@@ -1297,8 +1297,11 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     LOG.lprintf(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
 
-    libsiedler2::ArchivInfo* existing = &files_.find(name)->second;
-    if(fileName.extension() == ".bob")
+    libsiedler2::ArchivInfo* existing = &files_[name];
+    // *.bob archives have exactly 1 entry which is a 'folder' of the actual entries
+    // An overwrite can be a (real) folder with those entries and we want to put them into that 'folder'
+    // So we check if the new archiv is a folder or an archiv by checking if it contains only 1 BOB entry
+    if(fileName.extension() == ".bob" && !(newEntries.size() == 1 && newEntries.get(0)->getBobType() == libsiedler2::BOBTYPE_BOB))
     {
         existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));
         if(!existing)

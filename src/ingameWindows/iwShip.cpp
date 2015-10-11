@@ -269,7 +269,7 @@ void iwShip::DrawCargo()
             if (i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->Draw(x, y);
             else if(i == JOB_BOATCARRIER)
-                LOADER.LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, x, y, COLORS[gwv->GetPlayer(ship->GetPlayer()).color]);
+                LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, x, y, COLORS[gwv->GetPlayer(ship->GetPlayer()).color]);
             else
                 LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, x, y, COLORS[gwv->GetPlayer(ship->GetPlayer()).color]);
 
