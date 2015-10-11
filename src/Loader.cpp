@@ -42,6 +42,7 @@
 #include "../libsiedler2/src/prototypen.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/assign/std/vector.hpp>
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
@@ -88,18 +89,16 @@ Loader::~Loader(void)
  */
 bool Loader::LoadFilesAtStart(void)
 {
-    const unsigned int files_count = 7 + 1 + 2 + 2 + 21;
+    using namespace boost::assign; // Adds the vector += operator
+    std::vector<unsigned> files;
 
-    const unsigned int files[] =
-    {
-        5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
-        FILE_SPLASH_ID,        // Splashscreen: splash.bmp
-        11, 12,                // Menüdateien:  resource.dat, io.dat
-        102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
-        64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84 // Die ganzen Spielladescreens.
-    };
+    files += 5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
+            FILE_SPLASH_ID,        // Splashscreen: splash.bmp
+            11, 12,                // Menüdateien:  resource.dat, io.dat
+            102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
+            64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
 
-    if(!LoadFilesFromArray(files_count, files))
+    if(!LoadFilesFromArray(files.size(), &files.front()))
         return false;
 
     if(!LoadSounds())
@@ -207,31 +206,15 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
 bool Loader::LoadLsts(unsigned int dir)
 {
     // systemweite lsts laden
-    unsigned int files_count = 0;
-    unsigned int* files = NULL;
+    unsigned int files_count;
+    unsigned int files[2] = {dir, dir + 3};
 
     if(GetFilePath(FILE_PATHS[dir]) == GetFilePath(FILE_PATHS[dir + 3]))
-    {
         files_count = 1;
-        files = new unsigned int[1];
-        files[0] = dir;
-    }
     else
-    {
         files_count = 2;
-        files = new unsigned int[2];
-        files[0] = dir;
-        files[1] = dir + 3;
-    }
 
-    if(!LoadFilesFromArray(files_count, files) )
-    {
-        delete[] files;
-        return false;
-    }
-
-    delete[] files;
-    return true;
+    return LoadFilesFromArray(files_count, files);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -387,17 +370,7 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
  */
 bool Loader::LoadSettings()
 {
-    const unsigned int files_count = 1;
-
-    const unsigned int files[files_count] =
-    {
-        0   // config.ini
-    };
-
-    if(!LoadFilesFromArray(files_count, files))
-        return false;
-
-    return true;
+    return LoadFileOrDir(GetFilePath(FILE_PATHS[0]), 0, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -439,35 +412,31 @@ bool Loader::SaveSettings()
  */
 bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 {
-    assert(gfxset <= 2);
+    assert(gfxset <= LT_WINTERWORLD);
+    using namespace boost::assign; // Adds the vector += operator
+    std::vector<unsigned int> files;
 
-    const unsigned int files_count = NATIVE_NAT_COUNT + 5 + 6 + 4 + 1 + 1;
-
-    unsigned int files[files_count] =
-    {
-        0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, // ?afr_z.lst, ?jap_z.lst, ?rom_z.lst, ?vik_z.lst
-        26, 44, 45, 86, 92,                             // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
-        58, 59, 60, 61, 62, 63,                         // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
-        35, 36, 37, 38,                                 // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
-        23u + gfxset,                                    // map_?_z.lst
-        20u + gfxset                                     // tex?.lbm
-    };
+    files += 26, 44, 45, 86, 92,                             // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
+            58, 59, 60, 61, 62, 63,                          // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
+            35, 36, 37, 38,                                  // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
+            23u + gfxset,                                    // map_?_z.lst
+            20u + gfxset;                                    // tex?.lbm
 
     for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
     {
         // ggf. Völker-Grafiken laden
-        if(nations[i] || ((i == 2) && (nations[4])))
-            files[i] = 27 + i + (gfxset == 2) * NATIVE_NAT_COUNT;
+        if(nations[i] || (i == NAT_ROMANS && nations[NAT_BABYLONIANS]))
+            files += 27 + i + (gfxset == LT_WINTERWORLD) * NATIVE_NAT_COUNT;
     }
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
-    if (!LoadFilesFromArray(files_count, files, false))
+    if (!LoadFilesFromArray(files.size(), &files.front(), false))
     {
         lastgfx = 0xFF;
         return false;
     }
 
-    if ((nations[4]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, false))
+    if ((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, false))
     {
         lastgfx = 0xFF;
         return false;
@@ -480,8 +449,6 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     }
 
     lastgfx = gfxset;
-
-
 
     for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
     {
