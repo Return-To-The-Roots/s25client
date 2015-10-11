@@ -212,18 +212,17 @@ void dskLobby::UpdatePlayerList(bool first)
             LOADER.GetSoundN("sound", 114)->Play(255, false);
         }
 
+        unsigned int selection = playertable->GetSelection();
+        if(selection == 0xFFFF)
+            selection = 0;
+        unsigned short column = playertable->GetSortColumn();
+        if(column == 0xFFFF)
+            column = 0;
+        bool direction = playertable->GetSortDirection();
         playertable->DeleteAllItems();
 
         if(playerlist->getCount() > 0)
         {
-            unsigned int selection = playertable->GetSelection();
-            if(selection == 0xFFFF)
-                selection = 0;
-            unsigned short column = playertable->GetSortColumn();
-            if(column == 0xFFFF)
-                column = 0;
-            bool direction = !playertable->GetSortDirection();
-
             for(LobbyPlayerList::const_iterator it = playerlist->begin(); it != playerlist->end(); ++it)
             {
                 if(it->getId() != 0xFFFFFFFF)
@@ -253,18 +252,17 @@ void dskLobby::UpdateServerList(bool first)
     {
         LOBBYCLIENT.refreshserverlist = false;
 
+        unsigned int selection = servertable->GetSelection();
+        if(selection == 0xFFFF)
+            selection = 0;
+        unsigned short column = servertable->GetSortColumn();
+        if(column == 0xFFFF)
+            column = 0;
+        bool direction = servertable->GetSortDirection();
         servertable->DeleteAllItems();
 
         if(serverlist->getCount() > 0)
         {
-            unsigned int selection = servertable->GetSelection();
-            if(selection == 0xFFFF)
-                selection = 0;
-            unsigned short column = servertable->GetSortColumn();
-            if(column == 0xFFFF)
-                column = 0;
-            bool direction = !servertable->GetSortDirection();
-
             for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
             {
                 if(!it->getName().empty()) // && (serverlist->getElement(i)->getVersion() == std::string(GetWindowVersion())))
