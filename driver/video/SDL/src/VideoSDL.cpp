@@ -465,7 +465,7 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 
     for (unsigned int i = 0; modes[i]; ++i)
     {
-        VideoMode vm = { modes[i]->w, modes[i]->h };
+        VideoMode vm(modes[i]->w, modes[i]->h);
         if(!helpers::contains(video_modes, vm))
             video_modes.push_back(vm);
     }

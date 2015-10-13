@@ -567,11 +567,8 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) con
         return;
 
     // Standard-Modi hinzufügen
-    VideoMode vm800  = {  800, 600 };
-    VideoMode vm1024 = { 1024, 768 };
-
-    video_modes.push_back(vm800);
-    video_modes.push_back(vm1024);
+    video_modes.push_back(VideoMode(800, 600));
+    video_modes.push_back(VideoMode(1024, 768));
 
     videodriver->ListVideoModes(video_modes);
 }

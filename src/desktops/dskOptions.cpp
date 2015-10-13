@@ -41,6 +41,7 @@
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "helpers/mathFuncs.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -180,7 +181,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Auflösung"
     groupGrafik->AddText(  40,  80, 80, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
-    groupGrafik->AddComboBox(41, 280, 75, 120, 22, TC_GREY, NormalFont, 150);
+    groupGrafik->AddComboBox(41, 280, 75, 190, 22, TC_GREY, NormalFont, 150);
 
     // "Vollbild"
     groupGrafik->AddText(  46,  80, 130, _("Mode:"), COLOR_YELLOW, 0, NormalFont);
@@ -264,30 +265,26 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     // Grafik
     // {
 
-    // Videomodi auflisten
-    VIDEODRIVER.ListVideoModes(video_modes);
+    loadVideoModes();
 
     // Und zu der Combobox hinzufügen
-    for(unsigned i = 0; i < video_modes.size(); ++i)
+    ctrlComboBox& cbVideoModes = *groupGrafik->GetCtrl<ctrlComboBox>(41);
+    for(std::vector<VideoMode>::const_iterator it = video_modes.begin(); it != video_modes.end(); ++it)
     {
-        // >=800x600, alles andere macht keinen Sinn
-        if(video_modes[i].width >= 800 && video_modes[i].height >= 600)
-        {
-            char str[64];
-            sprintf(str, "%ux%u", video_modes[i].width, video_modes[i].height);
+        VideoMode ratio = getAspectRatio(*it);
+        std::stringstream str;
+        str << it->width << "x" << it->height;
+        // Make the length always the same as 'iiiixiiii' to align the ratio
+        int len = str.str().length();
+        for(int i = len; i < 4+1+4; i++)
+            str << " ";
+        str << " (" << ratio.width << ":" << ratio.height << ")";
 
-            groupGrafik->GetCtrl<ctrlComboBox>(41)->AddString(str);
+        cbVideoModes.AddString(str.str());
 
-            // Ist das die aktuelle Auflösung? Dann selektieren
-            if(video_modes[i].width == SETTINGS.video.fullscreen_width &&
-                    video_modes[i].height == SETTINGS.video.fullscreen_height)
-                groupGrafik->GetCtrl<ctrlComboBox>(41)->SetSelection(i);
-        }
-        else
-        {
-            video_modes.erase(video_modes.begin() + i);
-            --i;
-        }
+        // Ist das die aktuelle Auflösung? Dann selektieren
+        if(*it == VideoMode(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height))
+            cbVideoModes.SetSelection(cbVideoModes.GetCount() - 1);
     }
 
     // "Vollbild" setzen
@@ -677,4 +674,66 @@ void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResu
             WINDOWMANAGER.Switch(new dskMainMenu);
         } break;
     }
+}
+
+bool dskOptions::cmpVideoModes(const VideoMode& left, const VideoMode& right)
+{
+    if(left == right)
+        return false;
+    VideoMode leftRatio = getAspectRatio(left);
+    VideoMode rightRatio = getAspectRatio(right);
+    // Cmp ratios descending (so 16:9 is above 4:3 as wider ones are more commonly used)
+    if(leftRatio.width > rightRatio.width)
+        return true;
+    else if(leftRatio.width < rightRatio.width)
+        return false;
+    else if(leftRatio.height > rightRatio.height)
+        return true;
+    else if(leftRatio.height < rightRatio.height)
+        return false;
+    // Same ratios -> cmp width/height
+    if(left.width < right.width)
+        return true;
+    else if(left.width > right.width)
+        return false;
+    else
+        return left.height < right.height;
+}
+
+void dskOptions::loadVideoModes()
+{
+    // Get available modes
+    VIDEODRIVER.ListVideoModes(video_modes);
+    // Remove everything below 800x600
+    for(std::vector<VideoMode>::iterator it = video_modes.begin(); it != video_modes.end();)
+    {
+        if(it->width < 800 && it->height < 600)
+            it = video_modes.erase(it);
+        else
+            ++it;
+    }
+    // Sort by aspect ratio
+    std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
+}
+
+VideoMode dskOptions::getAspectRatio(const VideoMode& vm)
+{
+    // First some a bit off values where the aspect ratio is defined by convention
+    if(vm == VideoMode(1360, 1024))
+        return VideoMode(4, 3);
+    else if(vm == VideoMode(1360, 768))
+        return VideoMode(16, 9);
+    else if(vm == VideoMode(1366, 768))
+        return VideoMode(16, 9);
+
+    // Normally Aspect ration is simply width/height as integer numbers (e.g. 4:3)
+    int divisor = helpers::gcd(vm.width, vm.height);
+    VideoMode ratio(vm.width / divisor, vm.height / divisor);
+    // But there are some special cases:
+    if(ratio == VideoMode(8, 5))
+        return VideoMode(16, 10);
+    else if(ratio == VideoMode(5, 3))
+        return VideoMode(15, 9);
+    else
+        return ratio;
 }

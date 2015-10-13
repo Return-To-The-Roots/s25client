@@ -582,9 +582,7 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
             continue;
 
         // Es gibt die Auflösung noch nicht --> hinzufügen
-        VideoMode vm = { static_cast<unsigned short>(dm.dmPelsWidth),
-                         static_cast<unsigned short>(dm.dmPelsHeight)
-                       };
+        VideoMode vm(static_cast<unsigned short>(dm.dmPelsWidth), static_cast<unsigned short>(dm.dmPelsHeight));
         video_modes.push_back(vm);
     }
 }
