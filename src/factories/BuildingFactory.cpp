@@ -32,9 +32,6 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingTy
         break;
     case BLD_HARBORBUILDING:
         bld = new nobHarborBuilding(pt, player, nation);
-        // Bei Häfen zusätzlich der Wirtschaftsverwaltung Bescheid sagen
-        // Achtung: das kann NIOHT in den Konstruktor von nobHarborBuilding!
-        gwg->GetPlayer(player).AddHarbor(static_cast<nobHarborBuilding*>(bld));
         break;
     case BLD_BARRACKS:
     case BLD_GUARDHOUSE:
@@ -50,5 +47,12 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingTy
         break;
     }
     gwg->SetNO(bld, pt);
+    if(type == BLD_HARBORBUILDING)
+    {
+        // For harbors tell the economics about the new harbor
+        // Attention: Must be used after the harbours is added to the world (setNO) so it cannot be done in the ctor
+        gwg->GetPlayer(player).AddHarbor(static_cast<nobHarborBuilding*>(bld));
+    }
+
     return bld;
 }
