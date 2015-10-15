@@ -19,6 +19,7 @@
 #include "TradeGraph.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"
+#include <boost/array.hpp>
 
 TradeGraph::TradeGraph(const unsigned char player, const GameWorldGame* const gwg)
     : gwg(gwg), player(player), size(gwg->GetWidth() / TGN_SIZE, gwg->GetHeight() / TGN_SIZE)
@@ -214,7 +215,6 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
 
         // Knoten behandelt --> raus aus der todo Liste
         todo.erase(best_it);
-
     }
 
     return false;
@@ -226,28 +226,27 @@ void TradeGraph::FindMainPoint(const MapPoint tgn)
 {
     /// Calc size of this node rectangle
     MapCoord width, height;
-    if(tgn.x == gwg->GetWidth() / TGN_SIZE || gwg->GetWidth() % TGN_SIZE == 0)
+    if(tgn.x == gwg->GetWidth() / TGN_SIZE)
         width = gwg->GetWidth() % TGN_SIZE;
     else
         width = TGN_SIZE;
-    if(tgn.y == gwg->GetHeight() / TGN_SIZE || gwg->GetHeight() % TGN_SIZE == 0)
+    if(tgn.y == gwg->GetHeight() / TGN_SIZE)
         height = gwg->GetHeight() % TGN_SIZE;
     else
         height = TGN_SIZE;
 
     const unsigned POTENTIAL_MAIN_POINTS = 5;
 
-
     // We consider the following points as main points
-    MapPoint ps[POTENTIAL_MAIN_POINTS] =
-    {
+    boost::array<MapPoint, POTENTIAL_MAIN_POINTS> ps =
+    {{
         MapPoint(tgn.x* TGN_SIZE + width / 2, tgn.y* TGN_SIZE + height / 2),
 
         MapPoint(tgn.x* TGN_SIZE + width / 4, tgn.y* TGN_SIZE + height / 4),
         MapPoint(tgn.x* TGN_SIZE + width * 3 / 4, tgn.y* TGN_SIZE + height / 4),
         MapPoint(tgn.x* TGN_SIZE + width * 3 / 4, tgn.y* TGN_SIZE + height * 3 / 4),
         MapPoint(tgn.x* TGN_SIZE + width / 4, tgn.y* TGN_SIZE + height * 3 / 4)
-    };
+    }};
 
     bool good_points[POTENTIAL_MAIN_POINTS];
 
@@ -257,23 +256,21 @@ void TradeGraph::FindMainPoint(const MapPoint tgn)
         good_points[i] = gwg->IsNodeForFigures(p);
 
         // Valid point? Otherwise choose one around this one
-        if(!gwg->IsNodeForFigures(p))
+        if(good_points[i])
+            continue;
+        for(unsigned d = 0; d < 6; ++d)
         {
-            for(unsigned d = 0; d < 6; ++d)
+            MapPoint pt(gwg->GetNeighbour(p, d));
+            if(gwg->IsNodeForFigures(pt))
             {
-                MapPoint pt(gwg->GetNeighbour(p, d));
-                if(gwg->IsNodeForFigures(pt))
-                {
-                    ps[i] = pt;
-                    good_points[i] = true;
-                    break;
-                }
+                ps[i] = pt;
+                good_points[i] = true;
+                break;
             }
         }
     }
 
-    // Try to find paths to the other points if we reach at least 3/4 of the other points, choose
-    // this point at once, otherwise choose the point with most connections
+    // Try to find paths to the other points and choose the point with most connections
     unsigned best_connections = 0, best_id = 0;
     for(unsigned i = 0; i < POTENTIAL_MAIN_POINTS; ++i)
     {
@@ -287,12 +284,6 @@ void TradeGraph::FindMainPoint(const MapPoint tgn)
             if(next_dir != 0xff) ++connections;
         }
 
-        if(connections >= (POTENTIAL_MAIN_POINTS - 1) * 3 / 4)
-        {
-            best_id = i;
-            break;
-        }
-
         if(connections >= best_connections)
         {
             best_id = i;
@@ -301,11 +292,10 @@ void TradeGraph::FindMainPoint(const MapPoint tgn)
     }
 
     GetNode(tgn).main_pos = ps[best_id];
-
 }
 
 
-/// Updates one speciefic edge
+/// Updates one specific edge
 void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGraph* const tg)
 {
     if(tg)
@@ -323,7 +313,6 @@ void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGr
         GetNode(pos).dirs[dir] = GetNode(other).dirs[other_dir];
         return;
     }
-
 
     unsigned length;
     std::vector<unsigned char> route;
@@ -344,5 +333,4 @@ void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGr
 
     if(!hasOwner)
         GetNode(pos).dont_run_over_player_territory[dir] = true;
-
 }
