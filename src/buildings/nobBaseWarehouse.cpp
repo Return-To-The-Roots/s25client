@@ -381,12 +381,14 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                         --goods_.goods[GD_BOAT];
                     }
                     else
-                        --goods_.people[(*leave_house.begin())->GetJobType()];
+                        --goods_.people[fig->GetJobType()];
 
                     if(fig->GetGOT() == GOT_NOF_TRADEDONKEY)
                     {
                         // Trade donkey carrying wares?
-                        --goods_.goods[static_cast<nofTradeDonkey*>(fig)->GetCarriedWare()];
+                        GoodType carriedWare = static_cast<nofTradeDonkey*>(fig)->GetCarriedWare();
+                        if(carriedWare != GD_NOTHING)
+                            --goods_.goods[carriedWare];
                     }
                 }
 
