@@ -2458,12 +2458,11 @@ unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* wh, con
 
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
-        // Find a trade path from this warehouse to wh?
-        TradeRoute* tr;
-        gwg->CreateTradeRoute((*it)->GetPos(), wh->GetPos(), playerid, &tr);
+        // Find a trade path from this warehouse to wh? (Start from flag of wh)
+        TradeRoute tr = gwg->CreateTradeRoute(**it, *wh, playerid);
 
         // Found a path?
-        if(tr->GetNextDir() != 0xff)
+        if(tr.IsValid())
         {
             // Then consider this warehouse
             if(gt != GD_NOTHING)
@@ -2471,7 +2470,6 @@ unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* wh, con
             else if(job != JOB_NOTHING)
                 count += (*it)->GetAvailableFiguresForTrading(job);
         }
-        delete tr;
     }
 
     return count;
@@ -2515,11 +2513,10 @@ void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job 
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
         // Find a trade path from this warehouse to wh?
-        TradeRoute* tr;
-        gwg->CreateTradeRoute((*it)->GetFlag()->GetPos(), wh->GetFlag()->GetPos(), playerid, &tr);
+        TradeRoute tr = gwg->CreateTradeRoute(**it, *wh, playerid);
 
         // Found a path?
-        if(tr->IsValid())
+        if(tr.IsValid())
         {
             unsigned available = 0;
             // Then consider this warehouse
@@ -2531,11 +2528,8 @@ void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job 
             available = std::min(available, count);
             count -= available;
             if(available > 0) //we dont have anything to send .. so dont start a new traderoute from here!
-                (*it)->StartTradeCaravane(gt, job, available, *tr, wh);
-
-
+                (*it)->StartTradeCaravane(gt, job, available, tr, wh);
         }
-        delete tr;
 
         if(!count)
             return;

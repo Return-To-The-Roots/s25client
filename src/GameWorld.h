@@ -885,7 +885,7 @@ class GameWorldGame : public virtual GameWorldBase
         void GetHarborPointsWithinReach(const unsigned hp, std::vector<unsigned>& hps) const;
 
         /// Creates a Trade Route from one point to another
-        void CreateTradeRoute(const MapPoint start, MapPoint dest, const unsigned char player, TradeRoute** tr);
+        TradeRoute CreateTradeRoute(const nobBaseWarehouse& start, const nobBaseWarehouse& dest, const unsigned char player);
         /// Retrieves a trade graph
         TradeGraph* GetTradeGraph(const unsigned char player) const { return tgs[player]; }
 };
