@@ -2476,31 +2476,23 @@ unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* wh, con
 
 }
 
-struct WarehouseDistanceComperator
+struct WarehouseDistanceComparator
 {
     // Reference warehouse, to which we want to calc the distance
-    static nobBaseWarehouse* refWareHouse_;
+    const nobBaseWarehouse& refWareHouse_;
     /// GameWorld
-    static GameWorldGame* gwg_;
+    const GameWorldGame& gwg_;
 
-    /// Set Parameters
-    static void SetParameters(nobBaseWarehouse* refWareHouse, GameWorldGame* gwg)
+    WarehouseDistanceComparator(const nobBaseWarehouse& refWareHouse, const GameWorldGame& gwg): refWareHouse_(refWareHouse), gwg_(gwg)
+    {}
+
+    bool operator()(nobBaseWarehouse* const wh1, nobBaseWarehouse* const wh2)
     {
-        WarehouseDistanceComperator::refWareHouse_ = refWareHouse;
-        WarehouseDistanceComperator::gwg_ = gwg;
-    }
-
-
-    static bool Compare(nobBaseWarehouse* const wh1, nobBaseWarehouse* const wh2)
-    {
-        unsigned dist1 = gwg_->CalcDistance(wh1->GetPos(), refWareHouse_->GetPos());
-        unsigned dist2 = gwg_->CalcDistance(wh2->GetPos(), refWareHouse_->GetPos());
+        unsigned dist1 = gwg_.CalcDistance(wh1->GetPos(), refWareHouse_.GetPos());
+        unsigned dist2 = gwg_.CalcDistance(wh2->GetPos(), refWareHouse_.GetPos());
         return (dist1 < dist2 ) || (dist1 == dist2 && wh1->GetObjId() < wh2->GetObjId());
     }
 };
-
-nobBaseWarehouse* WarehouseDistanceComperator::refWareHouse_;
-GameWorldGame* WarehouseDistanceComperator::gwg_;
 
 /// Send wares to warehouse wh
 void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const
@@ -2508,8 +2500,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job 
     if(count < 1) //block trolling player who wants to send empty tradecaravan, sending packdonkeys is forbidden because it crashes the game
         return;
     std::list<nobBaseWarehouse*> whs(warehouses);
-    WarehouseDistanceComperator::SetParameters(wh, gwg);
-    whs.sort(WarehouseDistanceComperator::Compare);
+    whs.sort(WarehouseDistanceComparator(*wh, *gwg));
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
         // Find a trade path from this warehouse to wh?
