@@ -31,8 +31,10 @@ class iwMsgbox : public IngameWindow
         /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
         std::vector<std::string> strings;
 
+        Window* msgHandler_;
+
     public:
-        iwMsgbox(const std::string& title, const std::string& text, Window* parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
+        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
         ~iwMsgbox();
 
     private:

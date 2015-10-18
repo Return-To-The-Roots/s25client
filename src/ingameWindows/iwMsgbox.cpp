@@ -39,8 +39,8 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author OLiver
  */
-iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* parent, MsgboxButton button, unsigned short icon, unsigned int msgboxid)
-    : IngameWindow(CGI_MSGBOX, 0xFFFF, 0xFFFF, 420, 140, title, LOADER.GetImageN("resource", 41), true, true, parent), button(button), msgboxid(msgboxid)
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, unsigned short icon, unsigned int msgboxid)
+    : IngameWindow(CGI_MSGBOX, 0xFFFF, 0xFFFF, 420, 140, title, LOADER.GetImageN("resource", 41), true, true), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     AddImage(0, 42, 42, LOADER.GetImageN("io", icon));
     //ctrlMultiline *multiline = AddMultiline(1, 77, 34, 400, 90, TC_GREEN2, NormalFont);
@@ -100,8 +100,8 @@ const MsgboxResult RET_IDS[4][3] =
 
 void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    if(parent_)
-        parent_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - 2]);
+    if(msgHandler_)
+        msgHandler_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - 2]);
     Close();
 }
 
