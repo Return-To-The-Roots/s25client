@@ -60,7 +60,6 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
     /// Struct for storing loaded file entries
     struct FileEntry{
         libsiedler2::ArchivInfo archiv;
-        std::string originalPath;
         /// True if the archiv was modified by overrides
         bool hasOverrides;
         FileEntry(): hasOverrides(false){}
@@ -95,15 +94,15 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         inline bool LoadSounds();
 
     private:
-        bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL, bool load_always = true);
+        bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal);
         bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv);
         bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv);
         glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
         libsiedler2::ArchivInfo* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index);
 
-        bool LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool load_always = true);
+        bool LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal);
         bool LoadLsts(unsigned int dir);
-        bool LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always);
+        bool LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal);
 
         static bool SortFilesHelper(const std::string& lhs, const std::string& rhs);
         static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned int max = 0xFFFFFFFF);

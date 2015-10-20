@@ -98,7 +98,7 @@ bool Loader::LoadFilesAtStart(void)
             102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
             64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
 
-    if(!LoadFilesFromArray(files.size(), &files.front()))
+    if(!LoadFilesFromArray(files.size(), &files.front(), true))
         return false;
 
     if(!LoadSounds())
@@ -114,9 +114,10 @@ bool Loader::LoadFilesAtStart(void)
 /**
  *  @brief
  *
+ *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
  *  @author FloSoft
  */
-bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool load_always)
+bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal)
 {
     if(file.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + file);
@@ -145,7 +146,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 
         for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-            if(!LoadFile( i->c_str(), GetPaletteN("pal5"), load_always ) )
+            if(!LoadFile( i->c_str(), GetPaletteN("pal5"), isOriginal ) )
                 return false;
         }
         LOG.lprintf(_("finished in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
@@ -153,7 +154,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     else
     {
         // no, only single file specified
-        if(!LoadFile(file, GetPaletteN("pal5"), load_always ) )
+        if(!LoadFile(file, GetPaletteN("pal5"), isOriginal ) )
             return false;
 
         // ggf Splash anzeigen
@@ -172,11 +173,13 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 /**
  *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
  *
+ *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
+ *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  *
  *  @author FloSoft
  */
-bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool load_always)
+bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal)
 {
     // load the files or directorys
     for(unsigned int i = 0; i < files_count; ++i)
@@ -185,7 +188,7 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
             continue;
 
         std::string filePath = GetFilePath(FILE_PATHS[ files[i] ]);
-        if(!LoadFileOrDir(filePath, files[i], load_always))
+        if(!LoadFileOrDir(filePath, files[i], isOriginal))
         {
             LOG.lprintf(_("Failed to load %s\n"), filePath.c_str());
             return false;
@@ -214,7 +217,7 @@ bool Loader::LoadLsts(unsigned int dir)
     else
         files_count = 2;
 
-    return LoadFilesFromArray(files_count, files);
+    return LoadFilesFromArray(files_count, files, false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -268,7 +271,7 @@ bool Loader::LoadSounds(void)
     if(!boost::filesystem::exists(soundLSTPath))
     {
         // existiert nicht
-        if(!LoadFile(GetFilePath(FILE_PATHS[49])))
+        if(!LoadFile(GetFilePath(FILE_PATHS[49]), NULL, true))
             return false;
     }
 
@@ -282,7 +285,7 @@ bool Loader::LoadSounds(void)
         libsiedler2::ArchivInfo sng;
 
         LOG.lprintf(_("Loading \"%s\": "), it->c_str());
-        if(libsiedler2::loader::LoadSND(it->c_str(), sng) != 0 )
+        if(libsiedler2::loader::LoadSND(*it, sng) != 0 )
         {
             LOG.lprintf(_("failed\n"));
             return false;
@@ -430,13 +433,13 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     }
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
-    if (!LoadFilesFromArray(files.size(), &files.front(), false))
+    if (!LoadFilesFromArray(files.size(), &files.front(), true))
     {
         lastgfx = 0xFF;
         return false;
     }
 
-    if ((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, false))
+    if ((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
     {
         lastgfx = 0xFF;
         return false;
@@ -864,7 +867,7 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
     std::stringstream s;
     s << GetFilePath(FILE_PATHS[96]) << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
 
-    return LoadFileOrDir(s.str(), 96, true);
+    return LoadFileOrDir(s.str(), 96, false);
 }
 
 void Loader::ClearTerrainTextures()
@@ -1078,7 +1081,11 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  @brief
+ *  @brief Loads a file or directory into an archiv
+ *
+ *  @param filePath Path to file or directory
+ *  @param palette Palette to use for possible graphic files
+ *  @param to Archtive to write to
  *
  *  @author FloSoft
  */
@@ -1239,9 +1246,13 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
 /**
  *  @brief
  *
+ *  @param pfad Path to file or directory
+ *  @param palette Palette to use for possible graphic files
+ *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
+ *
  *  @author FloSoft
  */
-bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool load_always)
+bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal)
 {
     std::string lowerPath = pfad;
     std::transform( lowerPath.begin(), lowerPath.end(), lowerPath.begin(), tolower );
@@ -1252,19 +1263,18 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     FileEntry& entry = files_[name];
     bool isLoaded = entry.archiv.size() != 0;
-    if(isLoaded && entry.hasOverrides && pfad == entry.originalPath)
+    if(isLoaded && entry.hasOverrides && isOriginal)
     {
         // We are loading the original file which was already loaded but modified --> Clear it to reload
         entry.archiv.clear();
         isLoaded = false;
     }
-    // If the file is already loaded and we don't want to force loading -> exit
-    if(isLoaded && !load_always)
+    // If the file is already loaded and we are not loading a override -> exit
+    if(isLoaded && isOriginal)
         return true;
 
     if(!isLoaded){
-        entry.originalPath = pfad;
-        entry.hasOverrides = false;
+        entry.hasOverrides = !isOriginal;
         return LoadFile(pfad, palette, entry.archiv);
     }
 
