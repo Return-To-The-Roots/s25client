@@ -614,8 +614,6 @@ class GameMessage_Map_Info : public GameMessage
         std::string map_name;
         /// Kartentyp (alte Karte neue Karte, Savegame usw.)
         MapType mt;
-        /// Anzahl der Teile, in die der Mapblock zerteilt wurde
-        unsigned partcount;
         /// Größe der Zip-komprimierten Date
         unsigned ziplength;
         /// Größe der dekomprimierten Daten
@@ -625,14 +623,13 @@ class GameMessage_Map_Info : public GameMessage
 
     public:
         GameMessage_Map_Info(void) : GameMessage(NMS_MAP_INFO) { }
-        GameMessage_Map_Info(const std::string& map_name, const MapType mt, const unsigned partcount,
+        GameMessage_Map_Info(const std::string& map_name, const MapType mt,
                              const unsigned ziplength, const unsigned normal_length, const std::string& script)
-            : GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), partcount(partcount), ziplength(ziplength),
+            : GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), ziplength(ziplength),
               normal_length(normal_length), script(script)
         {
             PushString(map_name);
             PushUnsignedChar(static_cast<unsigned char>(mt));
-            PushUnsignedInt(partcount);
             PushUnsignedInt(ziplength);
             PushUnsignedInt(normal_length);
             PushString(script);
@@ -643,7 +640,6 @@ class GameMessage_Map_Info : public GameMessage
         {
             map_name = PopString();
             mt = MapType(PopUnsignedChar());
-            partcount = PopUnsignedInt();
             ziplength = PopUnsignedInt();
             normal_length = PopUnsignedInt();
             script = PopString();
@@ -656,21 +652,31 @@ class GameMessage_Map_Info : public GameMessage
 class GameMessage_Map_Data : public GameMessage
 {
     public:
+        /// Offset into map buffer
+        unsigned offset;
         /// Kartendaten
-        unsigned char* map_data;
+        const unsigned char* map_data;
 
     public:
         GameMessage_Map_Data(void) : GameMessage(NMS_MAP_DATA) { }
-        GameMessage_Map_Data(const unsigned char* const map_data, const unsigned length)
+        GameMessage_Map_Data(const unsigned offset, const unsigned char* const map_data, const unsigned length)
             : GameMessage(NMS_MAP_DATA, 0xFF)
         {
+            PushUnsignedInt(offset);
             PushRawData(map_data, length);
 
             LOG.write(">>> NMS_MAP_DATA\n");
         }
+
+        unsigned GetDataLength() const
+        {
+            return GetNetLength() - sizeof(offset);
+        }
+
         void Run(MessageInterface* callback)
         {
-            map_data = GetDataWritable() + (GetLength() - GetNetLength());
+            offset = PopUnsignedInt();
+            map_data = GetData() + (GetLength() - GetDataLength());
 
             LOG.write("<<< NMS_MAP_DATA\n");
             GetInterface(callback)->OnNMSMapData(*this);

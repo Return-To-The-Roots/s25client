@@ -289,9 +289,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         MessageQueue recv_queue, send_queue;
         Socket socket;
-        // Was soll das sein? oO
-        unsigned int temp_ul;
-        unsigned int temp_ui;
 
         ClientState state;
 

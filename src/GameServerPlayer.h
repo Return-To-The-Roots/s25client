@@ -68,9 +68,6 @@ class GameServerPlayer : public GamePlayerInfo
         std::list<GameMessage_GameCommand> gc_queue;
 
         unsigned int lastping;
-
-        unsigned int temp_ul;
-        unsigned int temp_ui;
 };
 
 

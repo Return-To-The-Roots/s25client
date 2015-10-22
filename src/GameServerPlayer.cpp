@@ -42,9 +42,7 @@ GameServerPlayer::GameServerPlayer(const unsigned playerid)
       pinging(false),
       send_queue(&GameMessage::create_game),
       recv_queue(&GameMessage::create_game),
-      lastping(0),
-      temp_ul(0),
-      temp_ui(0)
+      lastping(0)
 {
 }
 
@@ -55,9 +53,7 @@ GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer* ser)
       pinging(false),
       send_queue(&GameMessage::create_game),
       recv_queue(&GameMessage::create_game),
-      lastping(0),
-      temp_ul(0),
-      temp_ui(0)
+      lastping(0)
 {
 }
 
@@ -127,8 +123,6 @@ void GameServerPlayer::clear()
     send_queue.clear();
     recv_queue.clear();
     lastping = 0;
-    temp_ul = 0;
-    temp_ui = 0;
     so.Close();
 }
 
@@ -155,9 +149,6 @@ void GameServerPlayer::SwapPlayer(GameServerPlayer& two)
     std::swap(this->gc_queue, two.gc_queue);
 
     std::swap(this->lastping, two.lastping);
-
-    std::swap(this->temp_ul, two.temp_ul);
-    std::swap(this->temp_ui, two.temp_ui);
 }
 
 /// Spieler laggt

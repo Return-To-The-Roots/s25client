@@ -163,7 +163,6 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 MapInfo();
                 void Clear();
 
-                unsigned int partcount;
                 unsigned int ziplength;
                 unsigned int length;
                 unsigned int checksum;

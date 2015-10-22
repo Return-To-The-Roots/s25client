@@ -106,7 +106,6 @@ GameServer::MapInfo::MapInfo()
 
 void GameServer::MapInfo::Clear()
 {
-    partcount = 0;
     ziplength = 0;
     length = 0;
     checksum = 0;
@@ -291,8 +290,6 @@ bool GameServer::Start()
     mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)map_data, mapinfo.length);
 
     delete[] map_data;
-
-    mapinfo.partcount = mapinfo.ziplength / MAP_PART_SIZE +  ( (mapinfo.ziplength % MAP_PART_SIZE) ? 1 : 0);
 
     // Speicher für Spieler anlegen
     for(unsigned i = 0; i < serverconfig.playercount; ++i)
@@ -1355,20 +1352,19 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
     player->name = msg.playername;
 
     // Als Antwort Karteninformationen übertragen
-    player->temp_ul = 0;
-
-    player->send_queue.push(new GameMessage_Map_Info(mapinfo.name, mapinfo.map_type, mapinfo.partcount,
-                            mapinfo.ziplength, mapinfo.length, mapinfo.script));
+    player->send_queue.push(new GameMessage_Map_Info(mapinfo.name, mapinfo.map_type, mapinfo.ziplength, mapinfo.length, mapinfo.script));
 
     // Und Kartendaten
-    for(unsigned i = 0; i < mapinfo.partcount; ++i)
+    unsigned curPos = 0;
+    do
     {
-        unsigned data_size = ( (mapinfo.ziplength - player->temp_ul) > MAP_PART_SIZE )
-                             ? MAP_PART_SIZE : (mapinfo.ziplength - player->temp_ul);
+        unsigned dataSize = (mapinfo.ziplength - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (mapinfo.ziplength - curPos);
 
-        player->send_queue.push(new GameMessage_Map_Data(mapinfo.zipdata.get() + player->temp_ul, data_size));
-        player->temp_ul += data_size;
-    }
+        player->send_queue.push(new GameMessage_Map_Data(curPos, mapinfo.zipdata.get() + curPos, dataSize));
+        curPos += dataSize;
+    }while(curPos < mapinfo.ziplength);
+    
+    assert(curPos == mapinfo.ziplength);
 }
 
 

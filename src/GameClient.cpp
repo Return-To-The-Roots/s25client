@@ -875,6 +875,9 @@ void GameClient::OnNMSServerPassword(const GameMessage_Server_Password& msg)
     }
 
     send_queue.push(new GameMessage_Player_Name(SETTINGS.lobby.name));
+
+    if(ci)
+        ci->CI_NextConnectState(CS_QUERYMAPNAME);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1037,7 +1040,6 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     clientconfig.mapfilepath = GetFilePath(FILE_PATHS[48]) + clientconfig.mapfile;
 
     mapinfo.map_type = msg.mt;
-    mapinfo.partcount = msg.partcount;
     mapinfo.ziplength = msg.ziplength;
     mapinfo.length = msg.normal_length;
     
@@ -1059,9 +1061,6 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
         
         fclose(lua_f);
     }
-    
-    temp_ui = 0;
-    temp_ul = 0;
 
     mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength + 1]);
 }
@@ -1073,12 +1072,8 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
 {
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.GetNetLength());
 
-    unsigned char* data = msg.map_data;
-    memcpy(mapinfo.zipdata.get() + temp_ul, data, msg.GetNetLength());
-    temp_ul += msg.GetNetLength();
-
-    ++(temp_ui);
-    if(temp_ui >= mapinfo.partcount)
+    std::copy(msg.map_data, msg.map_data + msg.GetDataLength(), mapinfo.zipdata.get() + msg.offset);
+    if(msg.offset + msg.GetDataLength() == mapinfo.ziplength)
     {
         FILE* map_f = fopen(clientconfig.mapfilepath.c_str(), "wb");
 
@@ -1090,22 +1085,21 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
             return;
         }
 
-        char* map_data = new char[mapinfo.length + 1];
+        boost::scoped_array<char> mapData(new char[mapinfo.length + 1]);
 
         unsigned int length = mapinfo.length;
 
         int err = BZ_OK;
-        if( (err = BZ2_bzBuffToBuffDecompress(map_data, &length, (char*)mapinfo.zipdata.get(), mapinfo.ziplength, 0, 0)) != BZ_OK)
+        if( (err = BZ2_bzBuffToBuffDecompress(mapData.get(), &length, (char*)mapinfo.zipdata.get(), mapinfo.ziplength, 0, 0)) != BZ_OK)
         {
             LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
             Stop();
             return;
         }
-        if(fwrite(map_data, 1, mapinfo.length, map_f) != mapinfo.length)
+        if(fwrite(mapData.get(), 1, mapinfo.length, map_f) != mapinfo.length)
             LOG.lprintf("ERROR: fwrite failed\n");
 
-        mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)map_data, mapinfo.length);
-        delete[] map_data;
+        mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)mapData.get(), mapinfo.length);
 
         fclose(map_f);
 
