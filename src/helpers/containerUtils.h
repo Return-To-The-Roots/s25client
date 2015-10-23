@@ -108,6 +108,30 @@ namespace helpers{
                 container.erase(container.begin());
             }
         };
+
+        template<
+            class T,
+            class U, 
+            bool T_useFind = boost::is_convertible<U, typename T::value_type>::value && HasAnyMemberCalled_find<T>::value
+        >
+        struct FindImpl
+        {
+            static typename T::const_iterator
+            find(const T& container, const U& value)
+            {
+                return container.find(value);
+            }
+        };
+
+        template<class T, class U>
+        struct FindImpl<T, U, false>
+        {
+            static typename T::const_iterator
+            find(const T& container, const U& value)
+            {
+                return std::find(container.begin(), container.end(), value);
+            }
+        };
     } // namespace detail
 
 
@@ -149,10 +173,11 @@ namespace helpers{
     }
 
     /// Returns true if the container contains the given value
+    /// Uses the find member function if applicable otherwise uses the std::find method
     template<typename T, typename U>
     bool contains(const T& container, const U& value)
     {
-        return std::find(container.begin(), container.end(), value) != container.end();
+        return detail::FindImpl<T, U>::find(container, value) != container.end();
     }
 
 } // namespace helpers

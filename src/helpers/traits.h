@@ -23,6 +23,23 @@
 #include <boost/type_traits.hpp>
 #include <assert.h>
 
+// Based on code from https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
+#define CREATE_MEMBER_DETECTOR(X)                                                   \
+template<typename T> class HasAnyMemberCalled_##X {                                 \
+    struct Fallback { int X; };                                                     \
+    struct Derived : T, Fallback { };                                               \
+    \
+    template<typename U, U> struct Check;                                           \
+    \
+    typedef char ArrayOfOne[1];                                                     \
+    typedef char ArrayOfTwo[2];                                                     \
+    \
+    template<typename U> static ArrayOfOne & func(Check<int Fallback::*, &U::X> *); \
+    template<typename U> static ArrayOfTwo & func(...);                             \
+  public:                                                                           \
+    enum { value = sizeof(func<Derived>(0)) == 2 };                                 \
+};
+
 namespace helpers{
 
     /// Removes a pointer declaration from a type
@@ -44,6 +61,7 @@ namespace helpers{
     /// Checks if the given type as a member function called push_back
     BOOST_TTI_HAS_MEMBER_FUNCTION(push_back)
     BOOST_TTI_HAS_MEMBER_FUNCTION(pop_front)
+    CREATE_MEMBER_DETECTOR(find)
 
     struct EEraseIterValidy
     {
@@ -106,6 +124,17 @@ namespace helpers{
     /// If erase does not return an iterator fall back to
     template<class T>
     struct EraseIterValidy<T, false>: EraseIterValidyImpl<T>{};
+
+    template<class T, bool T_isConst = boost::is_const<T>::value>
+    struct GetIteratorType
+    {
+        typedef typename T::iterator type;
+    };
+    template<class T>
+    struct GetIteratorType<T, true>
+    {
+        typedef typename T::const_iterator type;
+    };
 }
 
 #endif // traits_h__
