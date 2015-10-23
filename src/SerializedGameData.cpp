@@ -382,7 +382,7 @@ void SerializedGameData::AddObject(GameObject* go)
 bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
 {
     assert(!isReading);
-    return writtenObjIds.find(obj_id) != writtenObjIds.end();
+    return helpers::contains(writtenObjIds, obj_id);
 }
 
 GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
