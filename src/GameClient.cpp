@@ -152,14 +152,13 @@ void GameClient::ReplayInfo::Clear()
  *  @author FloSoft
  */
 GameClient::GameClient(void)
-    : gw(NULL), em(NULL), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
+    : skiptogf(false), gw(NULL), em(NULL), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
       ci(NULL), human_ai(NULL), game_log(NULL)
 {
     clientconfig.Clear();
     framesinfo.Clear();
     randcheckinfo.Clear();
     postMessages.clear();
-	skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
