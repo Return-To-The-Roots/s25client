@@ -25,7 +25,6 @@
 #include "Settings.h"
 #include "GlobalVars.h"
 #include "ListDir.h"
-#include "GameWorld.h"
 #include "WindowManager.h"
 #include "SoundManager.h"
 #include "EventManager.h"
@@ -94,7 +93,7 @@ dskGameInterface::dskGameInterface()
     road.point = MapPoint(0, 0);
     road.start = MapPoint(0, 0);
 
-    SetScale(false);;
+    SetScale(false);
 
     int barx = (VIDEODRIVER.GetScreenWidth() - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44;
     int bary = VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4;

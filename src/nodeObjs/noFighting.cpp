@@ -24,7 +24,6 @@
 #include "figures/nofActiveSoldier.h"
 #include "Random.h"
 #include "EventManager.h"
-#include "GameWorld.h"
 #include "GameClient.h"
 #include "Loader.h"
 #include "noSkeleton.h"

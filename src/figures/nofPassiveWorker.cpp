@@ -19,8 +19,8 @@
 // Header
 #include "defines.h"
 #include "nofPassiveWorker.h"
+#include "GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "GameWorld.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -54,7 +54,6 @@ void nofPassiveWorker::GoalReached()
     nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
     assert(wh);
     wh->AddFigure(this);
-
 }
 
 void nofPassiveWorker::AbrogateWorkplace()

@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "noFlag.h"
 
-#include "GameWorld.h"
 #include "Loader.h"
 #include "macros.h"
 #include "figures/nofCarrier.h"

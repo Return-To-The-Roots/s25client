@@ -21,7 +21,6 @@
 #include "CatapultStone.h"
 
 #include "EventManager.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "Loader.h"
 #include "GameClient.h"

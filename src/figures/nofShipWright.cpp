@@ -4,7 +4,6 @@
 #include "nofShipWright.h"
 #include "buildings/nobShipYard.h"
 #include "nodeObjs/noShipBuildingSite.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "GameClient.h"

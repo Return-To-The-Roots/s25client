@@ -27,7 +27,6 @@
 #include "GameServer.h"
 #include "ai/AIPlayerJH.h"
 
-#include "GameWorld.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

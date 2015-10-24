@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofStonemason.h"
 
-#include "GameWorld.h"
 #include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "macros.h"

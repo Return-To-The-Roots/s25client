@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofScout_LookoutTower.h"
 
-#include "GameWorld.h"
 #include "gameData/MilitaryConsts.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"

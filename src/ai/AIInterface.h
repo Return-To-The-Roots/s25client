@@ -20,9 +20,9 @@
 
 //TODO: Cleanup includes!
 #include "defines.h"
-#include "GameWorld.h"
 #include "GameClientPlayer.h"
 #include "AIJHHelper.h"
+#include "GameWorldBase.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"

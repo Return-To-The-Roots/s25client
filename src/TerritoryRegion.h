@@ -18,9 +18,8 @@
 #ifndef TERRITORY_REGION_H_
 #define TERRITORY_REGION_H_
 
+#include "gameTypes/MapTypes.h"
 #include <vector>
-
-#include "GameWorld.h"
 
 /// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die für die Berechnung bei Militärgebäuden-
 /// aktionen (Neubau, Übernahme, Abriss) benötigt wird von RecalcTerritory

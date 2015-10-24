@@ -23,7 +23,6 @@
 #include "gameTypes/MapTypes.h"
 #include "GameClientPlayer.h"
 #include "AIJHHelper.h"
-#include "GameWorld.h"
 #include "AIEventManager.h"
 
 #include <queue>

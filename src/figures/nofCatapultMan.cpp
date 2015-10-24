@@ -19,7 +19,6 @@
 // Header
 #include "defines.h"
 #include "nofCatapultMan.h"
-#include "GameWorld.h"
 #include "Random.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"

@@ -21,7 +21,6 @@
 
 #include "defines.h"
 #include "nobHarborBuilding.h"
-#include "GameWorld.h"
 #include "Loader.h"
 #include "nodeObjs/noExtension.h"
 #include "GameClient.h"

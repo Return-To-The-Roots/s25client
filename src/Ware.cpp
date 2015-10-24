@@ -20,7 +20,7 @@
 #include "defines.h"
 #include "Ware.h"
 
-#include "GameWorld.h"
+#include "GameWorldGame.h"
 #include "GameClientPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"

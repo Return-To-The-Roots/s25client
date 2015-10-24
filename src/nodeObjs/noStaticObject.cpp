@@ -23,7 +23,6 @@
 #include "noExtension.h"
 
 #include "Loader.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 
 #include "ogl/glSmartBitmap.h"

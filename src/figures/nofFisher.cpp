@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofFisher.h"
 
-#include "GameWorld.h"
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"

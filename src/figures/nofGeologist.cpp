@@ -23,7 +23,6 @@
 #include "nodeObjs/noFlag.h"
 #include "Loader.h"
 #include "macros.h"
-#include "GameWorld.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "GameClient.h"

@@ -23,7 +23,6 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "noEnvObject.h"
 #include "noFire.h"

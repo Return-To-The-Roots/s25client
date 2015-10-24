@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "Node.h"
 
-#include "GameWorld.h"
 #include "nodeObjs/noRoadNode.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Random.h"

@@ -29,7 +29,6 @@
 #include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "GameWorld.h"
 #include "WindowManager.h"
 
 #include "nodeObjs/noFlag.h"

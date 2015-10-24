@@ -19,10 +19,9 @@
 // Header
 #include "defines.h"
 #include "nofWarehouseWorker.h"
-
+#include "GameWorldGame.h"
 #include "Loader.h"
 #include "Ware.h"
-#include "GameWorld.h"
 #include "GameClientPlayer.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"

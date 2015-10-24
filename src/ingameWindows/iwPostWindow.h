@@ -19,8 +19,9 @@
 #define WP_POSTOFFICE_H_
 
 #include "IngameWindow.h"
-#include "GameWorld.h"
 #include "PostMsg.h"
+
+class GameWorldViewer;
 
 class iwPostWindow : public IngameWindow
 {

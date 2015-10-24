@@ -22,7 +22,6 @@
 
 #include "defines.h"
 #include "nobBaseWarehouse.h"
-#include "GameWorld.h"
 #include "EventManager.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"

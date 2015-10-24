@@ -21,7 +21,6 @@
 
 #include "defines.h"
 #include "noBaseBuilding.h"
-#include "GameWorld.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "gameData/DoorConsts.h"

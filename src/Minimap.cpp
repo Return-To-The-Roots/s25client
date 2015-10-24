@@ -21,7 +21,6 @@
 #include "Minimap.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/MapConsts.h"
-#include "GameWorld.h"
 #include "GameClient.h"
 #include "gameData/TerrainData.h"
 #include "FOWObjects.h"

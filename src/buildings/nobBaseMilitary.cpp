@@ -21,8 +21,8 @@
 
 #include "defines.h"
 #include "nobBaseMilitary.h"
-#include "GameWorld.h"
 #include "Loader.h"
+#include "GameWorldGame.h"
 #include "nodeObjs/noFire.h"
 #include "EventManager.h"
 #include "figures/nofSoldier.h"

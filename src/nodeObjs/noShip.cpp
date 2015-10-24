@@ -26,7 +26,6 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "EventManager.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "buildings/nobHarborBuilding.h"
 #include "figures/noFigure.h"

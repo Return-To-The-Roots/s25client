@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "EventManager.h"
 
-#include "GameWorld.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"

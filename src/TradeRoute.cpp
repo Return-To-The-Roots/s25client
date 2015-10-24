@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h"
+#include "GameWorldGame.h"
 #include "TradeRoute.h"
 #include "TradeGraph.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 
 TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame* const gwg, const unsigned char player) :

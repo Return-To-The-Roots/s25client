@@ -21,7 +21,6 @@
 #include "nofHunter.h"
 
 #include "nodeObjs/noAnimal.h"
-#include "GameWorld.h"
 #include "Random.h"
 #include "buildings/nobUsual.h"
 #include "EventManager.h"

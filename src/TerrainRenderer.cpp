@@ -22,7 +22,6 @@
 
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/MapConsts.h"
-#include "GameWorld.h"
 #include "Settings.h"
 #include "GameClient.h"
 #include "MapGeometry.h"

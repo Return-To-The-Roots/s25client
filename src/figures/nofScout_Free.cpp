@@ -21,7 +21,6 @@
 #include "nofScout_Free.h"
 
 #include "nodeObjs/noFlag.h"
-#include "GameWorld.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "GameClient.h"

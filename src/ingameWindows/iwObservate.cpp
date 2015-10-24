@@ -20,12 +20,11 @@
 
 #include "defines.h"
 #include "iwObservate.h"
-
+#include "GameWorldViewer.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "GameWorld.h"
 #include "iwMsgbox.h"
 #include "desktops/dskGameInterface.h"
 #include "Settings.h"

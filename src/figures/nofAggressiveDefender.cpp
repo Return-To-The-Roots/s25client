@@ -27,7 +27,6 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
-#include "GameWorld.h"
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
 #include "MapGeometry.h"

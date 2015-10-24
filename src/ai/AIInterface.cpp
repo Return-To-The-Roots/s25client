@@ -23,7 +23,6 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noTree.h"
-#include "GameWorld.h"
 #include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////

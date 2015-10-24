@@ -27,7 +27,6 @@
 
 #include "SerializedGameData.h"
 #include "Random.h"
-#include "GameWorld.h"
 #include "GameClient.h"
 
 #include "Log.h"

@@ -28,7 +28,6 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "Log.h"
 
-#include "GameWorld.h"
 #include "ListDir.h"
 #include "fileFuncs.h"
 

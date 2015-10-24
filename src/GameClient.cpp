@@ -34,7 +34,6 @@
 #include "desktops/dskGameInterface.h"
 #include "Random.h"
 #include "GameServer.h"
-#include "GameWorld.h"
 #include "EventManager.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"

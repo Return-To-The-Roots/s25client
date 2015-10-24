@@ -21,7 +21,6 @@
 #include "buildings/noBuildingSite.h"
 
 #include "GameClient.h"
-#include "GameWorld.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/DoorConsts.h"
 #include "Ware.h"

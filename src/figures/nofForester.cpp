@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofForester.h"
 
-#include "GameWorld.h"
 #include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "macros.h"
@@ -29,7 +28,6 @@
 #include "Random.h"
 #include "nodeObjs/noTree.h"
 #include "SoundManager.h"
-#include "GameWorld.h"
 #include "GameInterface.h"
 #include "gameData/TerrainData.h"
 

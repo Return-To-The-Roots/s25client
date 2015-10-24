@@ -22,7 +22,6 @@
 
 #include "drivers/VideoDriverWrapper.h"
 #include "nodeObjs/noFlag.h"
-#include "GameWorld.h"
 #include "GameClientPlayer.h"
 
 #include "GameServer.h"

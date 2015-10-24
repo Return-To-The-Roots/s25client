@@ -21,7 +21,6 @@
 #include "nofFarmhand.h"
 
 #include "buildings/nobUsual.h"
-#include "GameWorld.h"
 #include "EventManager.h"
 #include "Random.h"
 #include "gameData/JobConsts.h"

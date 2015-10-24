@@ -2,7 +2,7 @@
 #include "defines.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
-#include "GameWorld.h"
+#include "GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"
@@ -19,7 +19,6 @@ nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
       start(sgd.PopMapPoint()),
       goal_(sgd.PopMapPoint()),
       fails(sgd.PopUnsignedChar())
-
 {
 }
 

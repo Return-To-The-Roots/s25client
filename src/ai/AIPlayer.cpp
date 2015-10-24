@@ -19,7 +19,6 @@
 #include "defines.h"
 #include "AIPlayer.h"
 #include "GameClientPlayer.h"
-#include "GameWorld.h"
 
 AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                    const GameClientPlayerList& players, const GlobalGameSettings& ggs,

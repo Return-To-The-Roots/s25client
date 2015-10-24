@@ -22,7 +22,6 @@
 
 #include "EventManager.h"
 #include "GameClient.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "Random.h"
 

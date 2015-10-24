@@ -21,7 +21,6 @@
 #include "GameCommands.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "GameWorld.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobBaseWarehouse.h"

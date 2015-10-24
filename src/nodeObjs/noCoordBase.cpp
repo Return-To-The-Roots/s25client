@@ -19,8 +19,8 @@
 // Header
 #include "defines.h"
 #include "noCoordBase.h"
+#include "GameWorldGame.h"
 #include "SerializedGameData.h"
-#include "GameWorld.h"
 
 void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {

@@ -23,7 +23,6 @@
 #include "nobMilitary.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "GameWorld.h"
 #include "helpers/PointDistance.h"
 #include "gameData/MilitaryConsts.h"
 #include "Ware.h"

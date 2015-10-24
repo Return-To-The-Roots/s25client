@@ -21,7 +21,6 @@
 
 #include "defines.h"
 #include "nobHQ.h"
-#include "GameWorld.h"
 #include "Loader.h"
 #include "nodeObjs/noExtension.h"
 #include "gameData/MilitaryConsts.h"

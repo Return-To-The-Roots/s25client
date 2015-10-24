@@ -24,7 +24,6 @@
 #include "Loader.h"
 #include "macros.h"
 #include "GameClient.h"
-#include "GameWorld.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"

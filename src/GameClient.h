@@ -23,10 +23,9 @@
 #include "GameMessageInterface.h"
 
 #include "GamePlayerList.h"
-
+#include "GameWorld.h"
 #include "EventManager.h"
 #include "GameReplay.h"
-#include "GameWorld.h"
 #include "GlobalGameSettings.h"
 #include "ai/AIEventManager.h"
 #include "factories/GameCommandFactory.h"
@@ -38,13 +37,12 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/smart_ptr.hpp>
 
-class Window;
-class GameClientPlayer;
-class WorldManager;
-class ClientInterface;
-class GameMessage;
 class AIBase;
+class ClientInterface;
+class GameClientPlayer;
+class GameMessage;
 class Savegame;
+class Window;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {

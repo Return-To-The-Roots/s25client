@@ -22,7 +22,6 @@
 #include "AIConstruction.h"
 
 #include "GameClientPlayer.h"
-#include "GameWorld.h"
 #include "GamePlayerList.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"

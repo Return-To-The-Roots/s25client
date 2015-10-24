@@ -21,10 +21,10 @@
 
 #include "IngameWindow.h"
 #include "GameObject.h"
-#include "GameWorld.h"
 
 class dskGameInterface;
-//class GameWorldViewer;
+class GameWorldView;
+class GameWorldViewer;
 
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwObservate : public IngameWindow

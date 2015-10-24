@@ -18,7 +18,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
-#include "GameWorld.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "nodeObjs/noEnvObject.h"

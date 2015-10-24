@@ -20,7 +20,6 @@
 #include "AIPlayerJH.h"
 
 #include "GameClientPlayer.h"
-#include "GameWorld.h"
 #include "GamePlayerList.h"
 
 #include "buildings/nobMilitary.h"

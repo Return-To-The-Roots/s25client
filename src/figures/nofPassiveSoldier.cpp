@@ -19,11 +19,10 @@
 // Header
 #include "defines.h"
 #include "nofPassiveSoldier.h"
-
+#include "GameWorldGame.h"
 #include "buildings/nobMilitary.h"
 #include "Loader.h"
 #include "Random.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"

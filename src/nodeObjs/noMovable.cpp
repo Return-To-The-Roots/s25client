@@ -21,7 +21,6 @@
 #include "noMovable.h"
 
 #include "GlobalGameSettings.h"
-#include "GameWorld.h"
 #include "Random.h"
 #include "GameClient.h"
 #include "EventManager.h"

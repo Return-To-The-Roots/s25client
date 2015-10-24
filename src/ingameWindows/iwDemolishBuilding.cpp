@@ -24,7 +24,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "GameWorld.h"
 #include "iwMsgbox.h"
 
 

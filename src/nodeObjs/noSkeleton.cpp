@@ -19,10 +19,9 @@
 // Header
 #include "defines.h"
 #include "noSkeleton.h"
-
+#include "GameWorldGame.h"
 #include "Loader.h"
 #include "macros.h"
-#include "GameWorld.h"
 #include "EventManager.h"
 #include "Random.h"
 #include "SerializedGameData.h"

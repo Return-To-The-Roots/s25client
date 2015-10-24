@@ -19,7 +19,6 @@
 // Header
 #include "defines.h"
 #include "GameClientPlayer.h"
-#include "GameWorld.h"
 #include "GameClient.h"
 #include "Random.h"
 

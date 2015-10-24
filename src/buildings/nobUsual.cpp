@@ -25,7 +25,6 @@
 #include "Ware.h"
 
 #include "GameClient.h"
-#include "GameWorld.h"
 #include "SerializedGameData.h"
 #include "Loader.h"
 

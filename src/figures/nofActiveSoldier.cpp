@@ -24,7 +24,6 @@
 #include "buildings/nobMilitary.h"
 #include "Loader.h"
 #include "Random.h"
-#include "GameWorld.h"
 #include "nodeObjs/noFighting.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"

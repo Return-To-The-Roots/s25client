@@ -21,6 +21,7 @@
 
 #include "defines.h"
 #include "iwPostWindow.h"
+#include "GameWorldViewer.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlTable.h"

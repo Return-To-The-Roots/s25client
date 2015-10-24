@@ -26,7 +26,6 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "EventManager.h"
-#include "GameWorld.h"
 #include "figures/nofHunter.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "SerializedGameData.h"

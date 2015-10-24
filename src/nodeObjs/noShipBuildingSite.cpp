@@ -22,7 +22,6 @@
 
 #include "Loader.h"
 #include "macros.h"
-#include "GameWorld.h"
 #include "EventManager.h"
 #include "Random.h"
 #include "SerializedGameData.h"

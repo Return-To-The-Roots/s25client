@@ -20,7 +20,6 @@
 #include "defines.h"
 #include "nofCarrier.h"
 
-#include "GameWorld.h"
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "GameClient.h"

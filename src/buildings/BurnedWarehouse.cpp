@@ -22,7 +22,6 @@
 
 #include "SerializedGameData.h"
 #include "EventManager.h"
-#include "GameWorld.h"
 #include "Random.h"
 #include "figures/noFigure.h"
 #include "ogl/glArchivItem_Map.h"

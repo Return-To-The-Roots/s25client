@@ -22,7 +22,6 @@
 #include <limits>
 #include <vector>
 #include "AIJHHelper.h"
-#include "GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "AIInterface.h"
 

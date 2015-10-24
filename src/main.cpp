@@ -50,8 +50,7 @@
 #include "Debug.h"
 
 #ifndef NDEBUG
-    #include "GameWorld.h"
-    #include "GameServer.h"
+        #include "GameServer.h"
     #include "ingameWindows/iwDirectIPCreate.h"
     #include "WindowManager.h"
     #include "desktops/dskGameLoader.h"

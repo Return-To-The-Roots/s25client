@@ -23,7 +23,6 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "EventManager.h"
-#include "GameWorld.h"
 #include "noDisappearingMapEnvObject.h"
 #include "noAnimal.h"
 #include "Random.h"

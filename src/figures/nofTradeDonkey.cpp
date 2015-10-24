@@ -7,7 +7,6 @@
 #include "nofTradeLeader.h"
 #include "GameClient.h"
 #include "gameData/JobConsts.h"
-#include "GameWorld.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 

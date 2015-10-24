@@ -21,7 +21,6 @@
 #include "defines.h"
 #include "figures/noFigure.h"
 
-#include "GameWorld.h"
 #include "Loader.h"
 #include "nodeObjs/noRoadNode.h"
 #include "EventManager.h"
