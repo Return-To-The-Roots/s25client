@@ -19,12 +19,10 @@
 // Header
 #include "defines.h"
 #include "noBuilding.h"
-
 #include "nodeObjs/noFire.h"
-
 #include "GameWorld.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
-
 #include "ogl/glSmartBitmap.h"
 
 ///////////////////////////////////////////////////////////////////////////////

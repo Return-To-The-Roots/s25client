@@ -55,13 +55,13 @@ bool GameCommandFactory<T_Handler>::UpgradeRoad(const MapPoint pt, const unsigne
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeDistribution(const std::vector<unsigned char>& data)
+bool GameCommandFactory<T_Handler>::ChangeDistribution(const Distributions& data)
 {
     return AddGC_Virt( new gc::ChangeDistribution(data) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeBuildOrder(const unsigned char order_type, const std::vector<unsigned char>& data)
+bool GameCommandFactory<T_Handler>::ChangeBuildOrder(const unsigned char order_type, const BuildOrders& data)
 {
     return AddGC_Virt( new gc::ChangeBuildOrder(order_type, data) );
 }
@@ -91,19 +91,19 @@ bool GameCommandFactory<T_Handler>::OrderNewSoldiers(const MapPoint pt)
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeTransport(const std::vector<unsigned char>& data)
+bool GameCommandFactory<T_Handler>::ChangeTransport(const TransportOrders& data)
 {
     return AddGC_Virt( new gc::ChangeTransport(data) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeMilitary(const std::vector<unsigned char>& data)
+bool GameCommandFactory<T_Handler>::ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
 {
     return AddGC_Virt( new gc::ChangeMilitary(data) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeTools(const std::vector<unsigned char>& data, signed char* order_delta/* = 0*/)
+bool GameCommandFactory<T_Handler>::ChangeTools(const ToolSettings& data, signed char* order_delta/* = NULL*/)
 {
     return AddGC_Virt( new gc::ChangeTools(data, order_delta) );
 }

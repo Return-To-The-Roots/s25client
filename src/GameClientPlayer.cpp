@@ -69,10 +69,7 @@ const unsigned char STD_TRANSPORT[35] =
  */
 GameClientPlayer::GameClientPlayer(const unsigned playerid):
 		GamePlayerInfo(playerid),
-		hqPos(MapPoint::Invalid()),
-		build_order(31),
-		militarySettings_(MILITARY_SETTINGS_COUNT),
-		toolsSettings_(12, 0)
+		hqPos(MapPoint::Invalid())
 {
     for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {
@@ -96,7 +93,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     }
 
     // Standardverteilung der Waren
-    std::vector<unsigned char>& visDistribution = GAMECLIENT.visual_settings.distribution; //-V807
+    Distributions& visDistribution = GAMECLIENT.visual_settings.distribution; //-V807
     visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
     visDistribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
     visDistribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
@@ -1342,7 +1339,7 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
     return 0xFFFFFFFF;
 }
 
-void GameClientPlayer::ConvertTransportData(const std::vector<unsigned char>& transport_data)
+void GameClientPlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
     // Im Replay visulle Einstellungen auf die wirklichen setzen
     if(GAMECLIENT.IsReplayModeOn())
@@ -1501,7 +1498,7 @@ void GameClientPlayer::RefreshDefenderList()
     defenders_pos = 0;
 }
 
-void GameClientPlayer::ChangeMilitarySettings(const std::vector<unsigned char>& military_settings)
+void GameClientPlayer::ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings)
 {
     // Im Replay visulle Einstellungen auf die wirklichen setzen
     if(GAMECLIENT.IsReplayModeOn())
@@ -1520,7 +1517,7 @@ void GameClientPlayer::ChangeMilitarySettings(const std::vector<unsigned char>& 
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GameClientPlayer::ChangeToolsSettings(const std::vector<unsigned char>& tools_settings)
+void GameClientPlayer::ChangeToolsSettings(const ToolSettings& tools_settings)
 {
     // Im Replay visulle Einstellungen auf die wirklichen setzen
     if(GAMECLIENT.IsReplayModeOn())
@@ -1530,7 +1527,7 @@ void GameClientPlayer::ChangeToolsSettings(const std::vector<unsigned char>& too
 }
 
 /// Setzt neue Verteilungseinstellungen
-void GameClientPlayer::ChangeDistribution(const std::vector<unsigned char>& distribution_settings)
+void GameClientPlayer::ChangeDistribution(const Distributions& distribution_settings)
 {
     // Im Replay visulle Einstellungen auf die wirklichen setzen
     if(GAMECLIENT.IsReplayModeOn())
@@ -1570,18 +1567,17 @@ void GameClientPlayer::ChangeDistribution(const std::vector<unsigned char>& dist
 }
 
 /// Setzt neue Baureihenfolge-Einstellungen
-void GameClientPlayer::ChangeBuildOrder(const unsigned char order_type, const std::vector<unsigned char>& oder_data)
+void GameClientPlayer::ChangeBuildOrder(const unsigned char order_type, const BuildOrders& order_data)
 {
     // Im Replay visulle Einstellungen auf die wirklichen setzen
     if(GAMECLIENT.IsReplayModeOn())
     {
         GAMECLIENT.visual_settings.order_type = order_type;
-        GAMECLIENT.visual_settings.build_order = oder_data;
+        GAMECLIENT.visual_settings.build_order = order_data;
     }
 
     this->orderType_ = order_type;
-    for(unsigned i = 0; i < oder_data.size(); ++i)
-        this->build_order[i] = oder_data[i];
+    this->build_order = order_data;
 }
 
 bool GameClientPlayer::ShouldSendDefender()

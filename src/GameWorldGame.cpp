@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
-#include "GameWorld.h"
+#include "GameWorldGame.h"
 
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -65,6 +65,11 @@ GameWorldGame::~GameWorldGame()
 {
     for(unsigned i = 0; i < tgs.size(); ++i)
         delete tgs[i];
+}
+
+std::list<nobBaseMilitary*>& GameWorldGame::GetMilitarySquare(const MapPoint pt)
+{
+    return military_squares[(pt.y / MILITARY_SQUARE_SIZE) * (width_ / MILITARY_SQUARE_SIZE + 1) + pt.x / MILITARY_SQUARE_SIZE];
 }
 
 void GameWorldGame::RecalcBQAroundPoint(const MapPoint pt)

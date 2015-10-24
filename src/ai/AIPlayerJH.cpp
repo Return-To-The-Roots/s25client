@@ -2431,8 +2431,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 void AIPlayerJH::InitDistribution()
 {	
         //set good distribution settings
-        std::vector<unsigned char> goodSettings;
-        goodSettings.resize(23);
+        Distributions goodSettings;
         goodSettings[0] = 10; //food granite
         goodSettings[1] = 10; //food coal
         goodSettings[2] = 10; //food iron
@@ -2741,8 +2740,7 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
 void AIPlayerJH::AdjustSettings()
 {
 	//update tool creation settings
-    std::vector<unsigned char> toolsettings;
-    toolsettings.resize(12);
+    ToolSettings toolsettings;
     const Goods& inventory = aii->GetInventory();
     toolsettings[2] = (inventory.goods[GD_SAW] + inventory.people[JOB_CARPENTER] < 2) ? 4 : inventory.goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
     toolsettings[3] = (inventory.goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
@@ -2759,8 +2757,7 @@ void AIPlayerJH::AdjustSettings()
     aii->ChangeTools(toolsettings);
 
     // Set military settings to some currently required values
-    std::vector<unsigned char> milSettings;
-    milSettings.resize(8);
+    boost::array<unsigned char, MILITARY_SETTINGS_COUNT> milSettings;
     milSettings[0] = 10;
     milSettings[1] = HasFrontierBuildings()?5:0; //if we have a front send strong soldiers first else weak first to make upgrading easier
     milSettings[2] = 4;

@@ -22,8 +22,9 @@
 
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobMilitary.h"
+#include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
-#include "GameWorld.h"
+#include "GameWorldBase.h"
 #include <stdexcept>
 
 ///////////////////////////////////////////////////////////////////////////////

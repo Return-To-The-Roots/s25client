@@ -30,7 +30,9 @@
 #include "GlobalGameSettings.h"
 #include "ai/AIEventManager.h"
 #include "factories/GameCommandFactory.h"
+#include "gameTypes/SettingsTypes.h"
 #include "gameData/PlayerConsts.h"
+#include "gameData/MilitaryConsts.h"
 
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -257,20 +259,17 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         struct VisualSettings
         {
             /// Verteilung
-            std::vector<unsigned char> distribution;
+            Distributions distribution;
             /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
             unsigned char order_type;
             /// Baureihenfolge
-            std::vector<unsigned char> build_order;
+            BuildOrders build_order;
             /// Transport-Reihenfolge
-            std::vector<unsigned char> transport_order;
+            TransportOrders transport_order;
             /// Militäreinstellungen (die vom Militärmenü)
-            std::vector<unsigned char> military_settings;
+            boost::array<unsigned char, MILITARY_SETTINGS_COUNT> military_settings;
             /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
-            std::vector<unsigned char> tools_settings;
-
-            VisualSettings() : distribution(23), build_order(31), transport_order(14), military_settings(MILITARY_SETTINGS_COUNT), tools_settings(12)
-            {}
+            ToolSettings tools_settings;
 
         } visual_settings, default_settings;
 		/// skip ahead how many gf?

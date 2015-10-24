@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
-#include "GameWorld.h"
+#include "GameWorldViewer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Map.h"
 #include "nodeObjs/noTree.h"

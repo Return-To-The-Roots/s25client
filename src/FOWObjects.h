@@ -62,12 +62,12 @@ class fowNothing : public FOWObject
 {
     public:
 
-        fowNothing();
-        fowNothing(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
-        void Draw(int x, int y) const;
+        fowNothing(){}
+        fowNothing(SerializedGameData& sgd){}
+        void Serialize(SerializedGameData& sgd) const{}
+        void Draw(int x, int y) const{}
         FOW_Type GetType() const { return FOW_NOTHING; }
-} const nothing;
+};
 
 
 

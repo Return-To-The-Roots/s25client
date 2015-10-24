@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
-#include "GameWorld.h"
+#include "GameWorldBase.h"
 #include "GameObject.h"
 #include "nodeObjs/noFlag.h"
 #include "FOWObjects.h"
@@ -34,6 +34,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "nodeObjs/noNothing.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "WindowManager.h"
@@ -55,7 +56,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : gi(NULL), width_(0), height_(0), lt(LT_GREENLAND)
+GameWorldBase::GameWorldBase() : gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -213,6 +214,8 @@ GameWorldBase::~GameWorldBase()
 {
     lua_close(lua);
     Unload();
+    delete noNodeObj;
+    delete noFowObj;
 }
 
 void GameWorldBase::Init()
@@ -287,22 +290,25 @@ void GameWorldBase::Unload()
     map_size = 0;
 }
 
+GameClientPlayer& GameWorldBase::GetPlayer(const unsigned int id) const
+{
+    return *players->getElement(id);
+}
+
 noBase* GameWorldBase::GetNO(const MapPoint pt)
 {
     if(GetNode(pt).obj)
         return GetNode(pt).obj;
     else
-        return &nothing;
+        return noNodeObj;
 }
-
-
 
 const noBase* GameWorldBase::GetNO(const MapPoint pt) const
 {
     if(GetNode(pt).obj)
         return GetNode(pt).obj;
     else
-        return &nothing;
+        return noNodeObj;
 }
 
 const FOWObject* GameWorldBase::GetFOWObject(const MapPoint pt, const unsigned spectator_player) const
@@ -310,7 +316,7 @@ const FOWObject* GameWorldBase::GetFOWObject(const MapPoint pt, const unsigned s
     if(GetNode(pt).fow[spectator_player].object)
         return GetNode(pt).fow[spectator_player].object;
     else
-        return &::nothing;
+        return noFowObj;
 }
 
 /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert

@@ -19,7 +19,7 @@
 // Header
 
 #include "defines.h"
-#include "GameWorld.h"
+#include "GameWorldView.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Map.h"
 #include "nodeObjs/noTree.h"
@@ -493,7 +493,7 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
 
     bool fow = !(vis == VIS_VISIBLE);
 
-    unsigned char* boundary_stones = fow ? gwv->GetNode(t).fow[gwv->GetYoungestFOWNodePlayer(MapPoint(t))].boundary_stones : gwv->GetNode(t).boundary_stones;
+    boost::array<unsigned char, 4>& boundary_stones = fow ? gwv->GetNode(t).fow[gwv->GetYoungestFOWNodePlayer(MapPoint(t))].boundary_stones : gwv->GetNode(t).boundary_stones;
     unsigned char owner = boundary_stones[0];
 
     if(owner)

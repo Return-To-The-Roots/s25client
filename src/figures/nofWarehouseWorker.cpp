@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "Ware.h"
 #include "GameWorld.h"
+#include "GameClientPlayer.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobBaseWarehouse.h"

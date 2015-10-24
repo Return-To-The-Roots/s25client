@@ -190,6 +190,8 @@ void LinExceptionHandler(int sig)
 }
 #endif
 
+#include "MapGeometry.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots

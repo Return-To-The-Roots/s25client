@@ -6,6 +6,7 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/PactTypes.h"
+#include "gameTypes/SettingsTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 #include <cassert>
@@ -162,12 +163,12 @@ namespace gc{
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = 23;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
-            std::vector<unsigned char> data;
+            Distributions data;
         protected:
-            ChangeDistribution(const std::vector<unsigned char>& data)
+            ChangeDistribution(const Distributions& data)
                 : GameCommand(CHANGEDISTRIBUTION), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeDistribution(Serializer* ser)
-                : GameCommand(CHANGEDISTRIBUTION), data(DATA_SIZE)
+                : GameCommand(CHANGEDISTRIBUTION)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
@@ -192,12 +193,12 @@ namespace gc{
             /// Ordnungs-Typ
             const unsigned char order_type;
             /// Daten der BuildOrder
-            std::vector<unsigned char> data;
+            boost::array<unsigned char, 31> data;
         protected:
-            ChangeBuildOrder(const unsigned char order_type, const std::vector<unsigned char>& data)
+            ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 31>& data)
                 : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeBuildOrder(Serializer* ser)
-                : GameCommand(CHANGEBUILDORDER), order_type(ser->PopUnsignedChar()), data(DATA_SIZE)
+                : GameCommand(CHANGEBUILDORDER), order_type(ser->PopUnsignedChar())
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
@@ -289,12 +290,12 @@ namespace gc{
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = 14;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
-            std::vector<unsigned char> data;
+            TransportOrders data;
         protected:
-            ChangeTransport(const std::vector<unsigned char>& data)
+            ChangeTransport(const TransportOrders& data)
                 : GameCommand(CHANGETRANSPORT), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeTransport(Serializer* ser)
-                : GameCommand(CHANGETRANSPORT), data(DATA_SIZE)
+                : GameCommand(CHANGETRANSPORT)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
@@ -317,12 +318,12 @@ namespace gc{
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = MILITARY_SETTINGS_COUNT;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
-            std::vector<unsigned char> data;
+             boost::array<unsigned char, MILITARY_SETTINGS_COUNT> data;
         protected:
-            ChangeMilitary(const std::vector<unsigned char>& data)
+            ChangeMilitary(const  boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
                 : GameCommand(CHANGEMILITARY), data(data) { assert(data.size() == DATA_SIZE); }
             ChangeMilitary(Serializer* ser)
-                : GameCommand(CHANGEMILITARY), data(DATA_SIZE)
+                : GameCommand(CHANGEMILITARY)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();
@@ -345,11 +346,11 @@ namespace gc{
             /// Größe der Distributionsdaten
             static const unsigned DATA_SIZE = 12;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
-            std::vector<unsigned char> data;
+            ToolSettings data;
 
             signed char orders[TOOL_COUNT];
         protected:
-            ChangeTools(const std::vector<unsigned char>& data, signed char* order_delta = 0)
+            ChangeTools(const ToolSettings& data, signed char* order_delta = 0)
                 : GameCommand(CHANGETOOLS), data(data)
             {
                 assert(data.size() == DATA_SIZE);
@@ -367,7 +368,7 @@ namespace gc{
             }
 
             ChangeTools(Serializer* ser)
-                : GameCommand(CHANGETOOLS), data(DATA_SIZE)
+                : GameCommand(CHANGETOOLS)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     data[i] = ser->PopUnsignedChar();

@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "TradeGraph.h"
 #include "GameWorld.h"
+#include "GamePlayerList.h"
 #include "SerializedGameData.h"
 #include <boost/array.hpp>
 

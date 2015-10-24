@@ -33,6 +33,8 @@
 #include "buildings/nobShipYard.h"
 #include "factories/GameCommandFactory.h"
 
+class nobHQ;
+
 class AIInterface: public GameCommandFactory<AIInterface>
 {
     public:

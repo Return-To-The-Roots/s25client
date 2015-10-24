@@ -24,6 +24,8 @@
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/PactTypes.h"
+#include "gameTypes/SettingsTypes.h"
+#include "gameData/MilitaryConsts.h"
 #include <vector>
 
 namespace gc { class GameCommand; }
@@ -43,8 +45,8 @@ public:
     bool DestroyRoad(const MapPoint pt, const unsigned char start_dir);
     bool UpgradeRoad(const MapPoint pt, const unsigned char start_dir);
     /// Sets new distribution of goods
-    bool ChangeDistribution(const std::vector<unsigned char>& data);
-    bool ChangeBuildOrder(const unsigned char order_type, const std::vector<unsigned char>& data);
+    bool ChangeDistribution(const Distributions& data);
+    bool ChangeBuildOrder(const unsigned char order_type, const BuildOrders& data);
     /// Sets a building site (new building)
     bool SetBuildingSite(const MapPoint pt, const BuildingType bt);
     /// Destroys a building on a spot
@@ -53,11 +55,11 @@ public:
     bool SendSoldiersHome(const MapPoint pt);
     /// order new soldiers
     bool OrderNewSoldiers(const MapPoint pt);
-    bool ChangeTransport(const std::vector<unsigned char>& data);
+    bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
-    bool ChangeMilitary(const std::vector<unsigned char>& data);
+    bool ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data);
     /// Sets new tool production settings
-    bool ChangeTools(const std::vector<unsigned char>& data, signed char* order_delta = 0);
+    bool ChangeTools(const ToolSettings& data, signed char* order_delta = NULL);
     /// Calls a geologist to a flag
     bool CallGeologist(const MapPoint pt);
     bool CallScout(const MapPoint pt);

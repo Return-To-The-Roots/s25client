@@ -26,12 +26,18 @@
 unsigned CalcRawDistance(const int x1, const int y1,
                          const int x2, const int y2)
 {
-    int dx = std::abs((2 * x1 + (y1 & 1)) - (2 * 2 + (y2 & 1)));
-    int dy = std::abs(2 * y1 - 2 * 2);
-    return (dy + std::max(0, dx - dy / 2)) / 2;
+    int dx = std::abs(((x1 - x2) * 2) + (y1 & 1) - (y2 & 1));
+    int dy = std::abs(y1 - y2) * 2;
 
-    //int dx = std::abs(int(x1)-int(x2)), dy = std::abs(int(y1)-int(y2));
-    //return dy + std::max(0,dx+((dy&1)-dy)/2);
+    if (dy > 8)
+        dy = (8 * 2) - dy;
+
+    if (dx > 7)
+        dx = (7  * 2) - dx;
+
+    dx -= dy / 2;
+
+    return((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
 Point<int> GetPointAround(const Point<int>& p, unsigned dir)

@@ -46,19 +46,6 @@ FOWObject::~FOWObject()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-// fowNothing
-
-
-fowNothing::fowNothing()
-{}
-fowNothing::fowNothing(SerializedGameData& sgd)
-{}
-void fowNothing::Serialize(SerializedGameData& sgd) const
-{}
-void fowNothing::Draw(int x, int y) const
-{}
-
-////////////////////////////////////////////////////////////////////////////////////
 // fowBuilding
 
 

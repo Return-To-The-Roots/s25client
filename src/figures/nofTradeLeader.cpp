@@ -5,6 +5,7 @@
 #include "GameWorld.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
+#include "GameClientPlayer.h"
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal)
     : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), start(start), goal_(goal), fails(0)

@@ -25,6 +25,8 @@
 #include "Random.h"
 #include "GameWorld.h"
 #include "SerializedGameData.h"
+#include "GameClientPlayer.h"
+#include "gameData/MilitaryConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines

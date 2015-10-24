@@ -24,6 +24,8 @@
 #include "PostMsg.h"
 #include "Point.h"
 #include "GameMessage_GameCommand.h"
+#include "gameTypes/SettingsTypes.h"
+#include "gameData/MilitaryConsts.h"
 #include "helpers/containerUtils.h"
 #include <list>
 #include <queue>
@@ -163,13 +165,13 @@ class GameClientPlayer : public GamePlayerInfo
         /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
         unsigned char orderType_;
         /// Baureihenfolge
-        std::vector <unsigned char> build_order;
+        BuildOrders build_order;
         /// Prioritäten der Waren im Transport
         unsigned char transport[WARE_TYPES_COUNT];
         /// Militäreinstellungen (die vom Militärmenü)
-        std::vector <unsigned char> militarySettings_;
+        boost::array<unsigned char, MILITARY_SETTINGS_COUNT> militarySettings_;
         /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
-        std::vector <unsigned char> toolsSettings_;
+        ToolSettings toolsSettings_;
         // qx:tools
         unsigned char tools_ordered[TOOL_COUNT];
         signed char tools_ordered_delta[TOOL_COUNT];
@@ -296,7 +298,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Berechnet die Verteilung einer (bestimmten) Ware
         void RecalcDistributionOfWare(const GoodType ware);
         /// Konvertiert die Daten vom wp_transport in "unser" Prioritäten-Format und setzt es
-        void ConvertTransportData(const std::vector<unsigned char>& transport_data);
+        void ConvertTransportData(const TransportOrders& transport_data);
 
         /// Ware zur globalen Warenliste hinzufügen und entfernen
         void RegisterWare(Ware* ware) { ware_list.push_back(ware); }
@@ -314,13 +316,13 @@ class GameClientPlayer : public GamePlayerInfo
         const Goods& GetInventory() const { return global_inventory; }
 
         /// Setzt neue Militäreinstellungen
-        void ChangeMilitarySettings(const std::vector<unsigned char>& military_settings);
+        void ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings);
         /// Setzt neue Werkzeugeinstellungen
-        void ChangeToolsSettings(const std::vector<unsigned char>& tools_settings);
+        void ChangeToolsSettings(const ToolSettings& tools_settings);
         /// Setzt neue Verteilungseinstellungen
-        void ChangeDistribution(const std::vector<unsigned char>& distribution_settings);
+        void ChangeDistribution(const Distributions& distribution_settings);
         /// Setzt neue Baureihenfolge-Einstellungen
-        void ChangeBuildOrder(const unsigned char order_type, const std::vector<unsigned char>& oder_data);
+        void ChangeBuildOrder(const unsigned char order_type, const BuildOrders& oder_data);
 
         /// Darf der andere Spieler von mir angegriffen werden?
         bool IsPlayerAttackable(const unsigned char player) const;

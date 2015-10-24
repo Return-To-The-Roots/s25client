@@ -25,8 +25,10 @@
 #include "Random.h"
 #include "GameWorld.h"
 #include "nodeObjs/noFighting.h"
-#include "gameTypes/JobTypes.h"
 #include "SerializedGameData.h"
+#include "GameClientPlayer.h"
+#include "gameTypes/JobTypes.h"
+#include "gameData/MilitaryConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
