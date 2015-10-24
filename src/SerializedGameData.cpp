@@ -381,12 +381,14 @@ void SerializedGameData::AddObject(GameObject* go)
 bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
 {
     assert(!isReading);
+    assert(obj_id < GameObject::GetObjIDCounter());
     return helpers::contains(writtenObjIds, obj_id);
 }
 
 GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
     assert(isReading);
+    assert(obj_id < GameObject::GetObjIDCounter());
     std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return NULL;

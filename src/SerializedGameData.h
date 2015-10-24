@@ -78,7 +78,14 @@ public:
 
     /// Objekt(referenzen) lesen
     template <typename T>
-    T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
+    T* PopObject(GO_Type got)
+    {
+        GameObject* obj = PopObject_(got);
+        T* result = dynamic_cast<T*>(obj);
+        if(obj && !result)
+            throw Error("Unexpected object type found. Data is corrupt!");
+        return result;
+    }
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();
