@@ -618,8 +618,9 @@ bool GameServer::StartGame()
         // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
         GAMECLIENT.StartGame(random_init);
     }
-    catch (SerializedGameData::Error&)
+    catch (SerializedGameData::Error& error)
     {
+        LOG.lprintf("Error when loading game: %s\n", error.what());
         return false;
     }
 

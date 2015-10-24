@@ -911,8 +911,9 @@ inline void GameClient::OnNMSServerStart(const GameMessage_Server_Start& msg)
         {
             StartGame(msg.random_init);
         }
-        catch (SerializedGameData::Error)
+        catch (SerializedGameData::Error& error)
         {
+            LOG.lprintf("Error when loading game: %s\n", error.what());
             GAMEMANAGER.ShowMenu();
             GAMECLIENT.ExitGame();
         }
@@ -1808,8 +1809,9 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     {
         StartGame(replayinfo.replay.random_init);
     }
-    catch (SerializedGameData::Error)
+    catch (SerializedGameData::Error& error)
     {
+        LOG.lprintf("Error when loading game: %s\n", error.what());
         Stop();
         return 1;
     }
