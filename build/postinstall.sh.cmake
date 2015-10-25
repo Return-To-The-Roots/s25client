@@ -209,6 +209,8 @@ case "$SYSTEM_NAME" in
 		cp -v ${SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
 		cp -v ${SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
 		mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
+		
+		chmod +x ${DESTDIR}s25client.app/Contents/MacOS/* || exit 1
 
 		# remove dirs if empty
 		rmdir ${DESTDIR}bin
