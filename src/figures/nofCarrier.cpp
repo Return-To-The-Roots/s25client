@@ -132,8 +132,7 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct),
       state(CARRS_FIGUREWORK), fat( ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) ? true : false) ),
       workplace(workplace), carried_ware(NULL), productivity_ev(0),
-      productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0),
-      shore_path(NULL)
+      productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
 {
 }
 
@@ -154,15 +153,14 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
       productivity(sgd.PopUnsignedInt()),
       worked_gf(sgd.PopUnsignedInt()),
       since_working_gf(sgd.PopUnsignedInt()),
-      next_animation(0),
-      shore_path(NULL)
+      next_animation(0)
 {
 
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
-        shore_path = new std::vector<unsigned char>(sgd.PopUnsignedInt());
-        for(unsigned i = 0; i < shore_path->size(); ++i)
-            shore_path->at(i) = sgd.PopUnsignedChar();
+        shore_path.resize(sgd.PopUnsignedInt());
+        for(std::vector<unsigned char>::iterator it = shore_path.begin(); it != shore_path.end(); ++it)
+            *it = sgd.PopUnsignedChar();
     }
 }
 
@@ -188,9 +186,9 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
 
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
-        sgd.PushUnsignedInt(shore_path->size());
-        for(unsigned i = 0; i < shore_path->size(); ++i)
-            sgd.PushUnsignedChar(shore_path->at(i));
+        sgd.PushUnsignedInt(shore_path.size());
+        for(std::vector<unsigned char>::const_iterator it = shore_path.begin(); it != shore_path.end(); ++it)
+            sgd.PushUnsignedChar(*it);
     }
 }
 
@@ -749,7 +747,6 @@ void nofCarrier::LostWork()
 {
     workplace = 0;
     em->RemoveEvent(productivity_ev);
-    productivity_ev = 0;
 
     if(state == CARRS_FIGUREWORK)
         GoHome();
@@ -760,7 +757,7 @@ void nofCarrier::LostWork()
         {
             carried_ware->WareLost(player);
             delete carried_ware;
-            carried_ware = 0;
+            carried_ware = NULL;
         }
 
         // Is this a boat carrier (i.e. he is on the water)
@@ -785,8 +782,7 @@ void nofCarrier::LostWork()
                     {
                         if(gwg->IsCoastalPoint(t2) && gwg->IsNodeForFigures(t2))
                         {
-                            shore_path = new std::vector<unsigned char>;
-                            if(gwg->FindShipPath(tmpPos, t2, shore_path, NULL))
+                            if(gwg->FindShipPath(tmpPos, t2, &shore_path, NULL))
                             {
                                 // Ok let's paddle to the coast
                                 rs_pos = 0;
@@ -1090,36 +1086,38 @@ void nofCarrier::CorrectSplitData_Derived()
     if(state == CARRS_CARRYWARE)
     {
         // Dann die Location von der Ware aktualisieren
-        if(!rs_dir) carried_ware->Carry(cur_rs->GetF2());
-        else carried_ware->Carry(cur_rs->GetF1());
+        if(!rs_dir)
+            carried_ware->Carry(cur_rs->GetF2());
+        else
+            carried_ware->Carry(cur_rs->GetF1());
     }
 }
 
-
 noRoadNode* nofCarrier::GetFirstFlag() const
-{ return workplace ? workplace->GetF1() : 0; }
+{
+    return workplace ? workplace->GetF1() : NULL;
+}
 noRoadNode* nofCarrier::GetSecondFlag() const
-{ return workplace ? workplace->GetF2() : 0; }
-
-
+{
+    return workplace ? workplace->GetF2() : NULL;
+}
 
 /// Boat carrier paddles to the coast after his road was destroyed
 void nofCarrier::WanderOnWater()
 {
     // Are we already there?
-    if(rs_pos == shore_path->size())
+    if(rs_pos == shore_path.size())
     {
         // Start normal wandering at the land
         state = CARRS_FIGUREWORK;
         StartWandering();
         Wander();
-        delete shore_path;
-        shore_path = NULL;
+        shore_path.clear();
     }
     else
     {
         // Continue paddling to the coast
-        StartWalking(shore_path->at(rs_pos));
+        StartWalking(shore_path[rs_pos]);
         ++rs_pos;
     }
 }

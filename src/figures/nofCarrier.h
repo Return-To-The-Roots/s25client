@@ -76,7 +76,7 @@ class nofCarrier : public noFigure
         /// Bestimmt GF der nächsten Trägeranimation
         unsigned next_animation;
         /// For boat carriers: path to the shore
-        std::vector<unsigned char> * shore_path;
+        std::vector<unsigned char> shore_path;
 
     private:
 
