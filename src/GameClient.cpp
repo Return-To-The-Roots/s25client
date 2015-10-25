@@ -52,6 +52,8 @@
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/glArchivItem_Map.h"
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 #include <errno.h>
 
@@ -1130,14 +1132,14 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
             case MAPTYPE_SAVEGAME:
             {
                 mapinfo.savegame.reset(new Savegame);
-                if(!mapinfo.savegame->Load(clientconfig.mapfilepath.c_str(), true, true))
+                if(!mapinfo.savegame->Load(clientconfig.mapfilepath, true, true))
                 {
                     Stop();
                     return;
                 }
 
                 players.clear();
-                for(unsigned i = 0; i < mapinfo.savegame->player_count; ++i)
+                for(unsigned i = 0; i < mapinfo.savegame->GetPlayerCount(); ++i)
                     players.push_back(GameClientPlayer(i));
 
                 mapinfo.title = mapinfo.savegame->map_name;
@@ -1654,6 +1656,27 @@ void GameClient::SendNothingNC(int checksum)
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, std::vector<gc::GameCommandPtr>()));
 }
 
+void GameClient::WritePlayerInfo(SavedFile& file)
+{
+    // Spieleranzahl
+    file.SetPlayerCount(players.getCount());
+
+    // Spielerdaten
+    for(unsigned i = 0; i < players.getCount(); ++i)
+    {
+        SavedFile::Player& player = file.GetPlayer(i);
+        player.ps = unsigned(players[i].ps);
+
+        if(players[i].ps != PS_LOCKED)
+        {
+            player.name = players[i].name;
+            player.nation = players[i].nation;
+            player.color = players[i].color;
+            player.team = players[i].team;
+        }
+    }
+}
+
 void GameClient::WriteReplayHeader(const unsigned random_init)
 {
     // Dateiname erzeugen
@@ -1668,32 +1691,13 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
     replayinfo.replay.nwf_length = framesinfo.nwf_length;
     // Random-Init
     replayinfo.replay.random_init = random_init;
-    // Spieleranzahl
-    replayinfo.replay.player_count = players.getCount();
 
-    // Spielerdaten
-    delete [] replayinfo.replay.players;
-    replayinfo.replay.players = new SavedFile::Player[players.getCount()];
-
-    // Spielerdaten
-    for(unsigned char i = 0; i < players.getCount(); ++i)
-    {
-        replayinfo.replay.players[i].ps = unsigned(players[i].ps);
-
-        if(players[i].ps != PS_LOCKED)
-        {
-            replayinfo.replay.players[i].name = players[i].name;
-            replayinfo.replay.players[i].nation = players[i].nation;
-            replayinfo.replay.players[i].color = players[i].color;
-            replayinfo.replay.players[i].team = players[i].team;
-        }
-    }
+    WritePlayerInfo(replayinfo.replay);
 
     // GGS-Daten
     replayinfo.replay.ggs = ggs;
 
     // Map
-
     replayinfo.replay.map_type = MapType(mapinfo.map_type);
 
     switch(replayinfo.replay.map_type)
@@ -1738,18 +1742,19 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     //players.resize(replayinfo.replay.players.getCount());
 
     // Spielerdaten
-    for(unsigned char i = 0; i < replayinfo.replay.player_count; ++i)
+    for(unsigned char i = 0; i < replayinfo.replay.GetPlayerCount(); ++i)
     {
         players.push_back(GameClientPlayer(i));
 
-        players[i].ps = PlayerState(replayinfo.replay.players[i].ps);
+        const SavedFile::Player& player = replayinfo.replay.GetPlayer(i);
+        players[i].ps = PlayerState(player.ps);
 
         if(players[i].ps != PS_LOCKED)
         {
-            players[i].name = replayinfo.replay.players[i].name;
-            players[i].nation = replayinfo.replay.players[i].nation;
-            players[i].color = replayinfo.replay.players[i].color;
-            players[i].team = Team(replayinfo.replay.players[i].team);
+            players[i].name = player.name;
+            players[i].nation = player.nation;
+            players[i].color = player.color;
+            players[i].team = Team(player.team);
         }
     }
 
@@ -1769,10 +1774,10 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
         case MAPTYPE_OLDMAP:
         {
             // Mapdaten auslesen und entpacken
-            unsigned char* real_data = new unsigned char[replayinfo.replay.map_length];
+            boost::interprocess::unique_ptr<char, Deleter<char[]> > real_data(new char[replayinfo.replay.map_length]);
 
             int err;
-            if( (err = BZ2_bzBuffToBuffDecompress((char*)real_data, &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data, replayinfo.replay.map_zip_length, 0, 0)) != BZ_OK)
+            if( (err = BZ2_bzBuffToBuffDecompress(real_data.get(), &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data, replayinfo.replay.map_zip_length, 0, 0)) != BZ_OK)
             {
                 LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
                 Stop();
@@ -1791,10 +1796,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
                 Stop();
                 return 7;
             }
-            map_f.WriteRawData(real_data, replayinfo.replay.map_length);
+            map_f.WriteRawData(real_data.get(), replayinfo.replay.map_length);
             map_f.Close();
-
-            delete[] real_data;
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -1961,30 +1964,13 @@ unsigned GameClient::WriteSaveHeader(const std::string& filename)
     save.save_time = TIME.CurrentTime();
     // Mapname
     save.map_name = this->mapinfo.title;
-    // Anzahl Spieler
-    save.player_count = players.getCount();
-    save.players = new SavedFile::Player[players.getCount()];
 
-    // Spielerdaten
-    for(unsigned char i = 0; i < players.getCount(); ++i)
-    {
-        save.players[i].ps = unsigned(players[i].ps);
-
-        if(players[i].ps != PS_LOCKED)
-        {
-            save.players[i].name = players[i].name;
-            save.players[i].nation = players[i].nation;
-            save.players[i].color = players[i].color;
-            save.players[i].team = players[i].team;
-        }
-    }
+    WritePlayerInfo(save);
 
     // GGS-Daten
     save.ggs = ggs;
 
     save.start_gf = framesinfo.nr;
-
-
 
     // Spiel serialisieren
     save.sgd.MakeSnapshot(*gw, *em);
@@ -1992,10 +1978,8 @@ unsigned GameClient::WriteSaveHeader(const std::string& filename)
     // Und alles speichern
     if(!save.Save(filename))
         return 1;
-
-
-    return 0;
-
+    else
+        return 0;
 }
 
 void GameClient::GetVisualSettings()

@@ -81,7 +81,7 @@ bool Savegame::Save(BinaryFile& file)
     file.WriteShortString(map_name);
 
     // Anzahl Spieler
-    file.WriteUnsignedChar(player_count);
+    file.WriteUnsignedChar(GetPlayerCount());
 
     // Größe der Spielerdaten (später ausfüllen)
     unsigned players_size = 0;
@@ -149,7 +149,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     file.ReadShortString(map_name);
 
     // Anzahl Spieler
-    player_count = file.ReadUnsignedChar();
+    SetPlayerCount(file.ReadUnsignedChar());
 
     // Spielerzeug
     if(load_players)
@@ -162,7 +162,6 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     else
     {
         // Überspringen
-        players = 0;
         unsigned player_size = file.ReadUnsignedInt();
         file.Seek(player_size, SEEK_CUR);
     }

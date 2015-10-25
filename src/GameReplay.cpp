@@ -57,8 +57,7 @@ void Replay::StopRecording()
     file.Close();
     pf_file.Close();
 
-    delete [] players;
-    players = 0;
+    SetPlayerCount(0);
     delete [] map_data;
     map_data = 0;
 }
@@ -93,7 +92,7 @@ bool Replay::WriteHeader(const std::string& filename)
     /// End-GF (erstmal nur 0, wird dann im Spiel immer geupdatet)
     file.WriteUnsignedInt(lastGF_);
     // Anzahl Spieler
-    file.WriteUnsignedChar(player_count);
+    file.WriteUnsignedChar(GetPlayerCount());
     // Spielerdaten
     WritePlayerData(file);
     // GGS
@@ -171,7 +170,7 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
     /// End-GF
     lastGF_ = file.ReadUnsignedInt();
     // Spieleranzahl
-    player_count = file.ReadUnsignedChar();
+    SetPlayerCount(file.ReadUnsignedChar());
 
     // Spielerdaten
     ReadPlayerData(file);
@@ -385,11 +384,11 @@ void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::
  *
  *  @author OLiver
  */
-void Replay::ReadGameCommand(unsigned short* length, unsigned char** data)
+std::vector<unsigned char> Replay::ReadGameCommand()
 {
-    *length = file.ReadUnsignedShort();
-    *data = new unsigned char[*length];
-    file.ReadRawData(*data, *length);
+    std::vector<unsigned char> result(file.ReadUnsignedShort());
+    file.ReadRawData(&result.front(), result.size());
+    return result;
 }
 
 bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor)

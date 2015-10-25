@@ -238,7 +238,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         /// Schreibt den Header der Replaydatei
         void WriteReplayHeader(const unsigned random_init);
-
+        void WritePlayerInfo(SavedFile& file);
 // Post-Sachen
     public:
 

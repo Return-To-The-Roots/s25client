@@ -29,49 +29,54 @@ class BinaryFile;
 /// Basisklasse für Replays und Savegames
 class SavedFile
 {
-    public:
-        SavedFile();
-        virtual ~SavedFile();
+public:
+    SavedFile();
+    virtual ~SavedFile();
 
-    protected:
-        /// Schreibt Signatur und Version der Datei
-        void WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
-        /// Überprüft Signatur und Version der Datei
-        bool ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
+protected:
+    /// Schreibt Signatur und Version der Datei
+    void WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
+    /// Überprüft Signatur und Version der Datei
+    bool ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
 
-        /// Schreibt Spielerdaten
-        void WritePlayerData(BinaryFile& file);
-        /// Liest Spielerdaten aus
-        void ReadPlayerData(BinaryFile& file);
+    /// Schreibt Spielerdaten
+    void WritePlayerData(BinaryFile& file);
+    /// Liest Spielerdaten aus
+    void ReadPlayerData(BinaryFile& file);
 
-        /// schreibt die GlobalGameSettings in die Datei.
-        void WriteGGS(BinaryFile& file);
-        /// liest die GlobalGameSettings aus der Datei.
-        void ReadGGS(BinaryFile& file);
+    /// schreibt die GlobalGameSettings in die Datei.
+    void WriteGGS(BinaryFile& file);
+    /// liest die GlobalGameSettings aus der Datei.
+    void ReadGGS(BinaryFile& file);
 
 
-    public:
-        /// Zeitpunkt der Aufnahme
-        unser_time_t save_time;
-        /// Mapname
-        std::string map_name;
-        /// Anzahl Spieler
-        unsigned char player_count;
+public:
+    /// Spieler
+    struct Player
+    {
+        /// PlayerState
+        unsigned ps;
+        /// (Damaliger) Name des Spielers
+        std::string name;
+        /// Volk, Farbe, Team
+        Nation nation;
+        unsigned char color, team;
+    };
 
-        /// Spieler
-        struct Player
-        {
-            /// PlayerState
-            unsigned ps;
-            /// (Damaliger) Name des Spielers
-            std::string name;
-            /// Volk, Farbe, Team
-            Nation nation;
-            unsigned char color, team;
-        }* players;
+    /// Zeitpunkt der Aufnahme
+    unser_time_t save_time;
+    /// Mapname
+    std::string map_name;
+    /// GGS
+    GlobalGameSettings ggs;
 
-        /// GGS
-        GlobalGameSettings ggs;
+    Player& GetPlayer(unsigned idx){ return players[idx]; }
+    const Player& GetPlayer(unsigned idx) const { return players[idx]; }
+    unsigned GetPlayerCount(){ return players.size(); }
+    void SetPlayerCount(unsigned size){ players.clear(); players.resize(size); }
+
+private:
+    std::vector<Player> players;
 };
 
 #endif // !GAMEFILES_H_INCLUDED

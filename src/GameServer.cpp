@@ -196,7 +196,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
                 return false;
 
             // Spieleranzahl
-            serverconfig.playercount = save.player_count;
+            serverconfig.playercount = save.GetPlayerCount();
 
 			map_title = serverconfig.mapname.substr(serverconfig.mapname.find_last_of("/\\"));
         } break;
@@ -231,12 +231,12 @@ bool GameServer::Start()
     mapinfo.length = ftell(map_f);
     fseek(map_f, 0, SEEK_SET);
 
-    char* map_data = new char[mapinfo.length + 1];
+    boost::interprocess::unique_ptr<char, Deleter<char[]> > map_data(new char[mapinfo.length + 1]);
     mapinfo.zipdata.reset(new unsigned char[mapinfo.length * 2 + 600]); // + 1prozent + 600 ;)
 
     mapinfo.ziplength = mapinfo.length * 2 + 600;
 
-    bool read_succeeded = ((unsigned int)libendian::le_read_c(map_data, mapinfo.length, map_f) == mapinfo.length);
+    bool read_succeeded = ((unsigned int)libendian::le_read_c(map_data.get(), mapinfo.length, map_f) == mapinfo.length);
     fclose(map_f);
 
     // read lua script - if any
@@ -281,15 +281,13 @@ bool GameServer::Start()
 
     // map mit bzip2 komprimieren
     int err = BZ_OK;
-    if( (err = BZ2_bzBuffToBuffCompress( (char*)mapinfo.zipdata.get(), (unsigned int*)&mapinfo.ziplength, map_data, mapinfo.length, 9, 0, 250)) != BZ_OK)
+    if( (err = BZ2_bzBuffToBuffCompress( (char*)mapinfo.zipdata.get(), (unsigned int*)&mapinfo.ziplength, map_data.get(), mapinfo.length, 9, 0, 250)) != BZ_OK)
     {
         LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n", err);
         return false;
     }
 
-    mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)map_data, mapinfo.length);
-
-    delete[] map_data;
+    mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)map_data.get(), mapinfo.length);
 
     // Speicher für Spieler anlegen
     for(unsigned i = 0; i < serverconfig.playercount; ++i)
@@ -326,17 +324,17 @@ bool GameServer::Start()
             for(unsigned char i = 0; i < serverconfig.playercount; ++i)
             {
                 // PlayerState
-                players[i].ps = PlayerState(save.players[i].ps);
+                players[i].ps = PlayerState(save.GetPlayer(i).ps);
 
                 if(players[i].ps != PS_LOCKED)
                 {
                     // (ehemaliger) Spielername
-                    players[i].origin_name = save.players[i].name;
+                    players[i].origin_name = save.GetPlayer(i).name;
 
                     // Volk, Team und Farbe
-                    players[i].nation = save.players[i].nation;
-                    players[i].color = save.players[i].color;
-                    players[i].team = Team(save.players[i].team);
+                    players[i].nation = save.GetPlayer(i).nation;
+                    players[i].color = save.GetPlayer(i).color;
+                    players[i].team = Team(save.GetPlayer(i).team);
 
                 }
 
@@ -355,18 +353,18 @@ bool GameServer::Start()
                 //warning: if you ever add new ai types - it is not enough that the server knows about the ai! when the host joins his server he will get ONMSPLAYERLIST which also doesnt include the aitype!
                 else if(players[i].ps == PS_KI)
                 {
-                    if(!strncmp(save.players[i].name.c_str(), "Computer", 7))
+                    if(!strncmp(save.GetPlayer(i).name.c_str(), "Computer", 7))
                     {
-                        LOG.lprintf("loading aijh: %s \n", save.players[i].name.c_str());
+                        LOG.lprintf("loading aijh: %s \n", save.GetPlayer(i).name.c_str());
                         players[i].aiInfo = AI::Info(AI::DEFAULT);
                         players[i].rating = 666;
                     }
                     else
                     {
-                        LOG.lprintf("loading default - dummy: %s \n", save.players[i].name.c_str());
+                        LOG.lprintf("loading default - dummy: %s \n", save.GetPlayer(i).name.c_str());
                         players[i].aiInfo = AI::Info(AI::DUMMY);
                     }
-                    players[i].name = save.players[i].name;
+                    players[i].name = save.GetPlayer(i).name;
                 }
             }
 

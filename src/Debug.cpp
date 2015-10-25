@@ -36,6 +36,8 @@
 #endif
 
 #include "../libutil/src/Log.h"
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 
 #ifdef _WIN32
@@ -291,14 +293,14 @@ bool DebugInfo::SendReplay()
 
         LOG.lprintf("- Replay length: %u\n", replay_len);
 
-        char* replay = new char[replay_len];
+        boost::interprocess::unique_ptr<char, Deleter<char[]> > replay(new char[replay_len]);
 
         f->Seek(0, SEEK_SET);
 
-        f->ReadRawData(replay, replay_len);
+        f->ReadRawData(replay.get(), replay_len);
 
         unsigned int compressed_len = replay_len * 2 + 600;
-        char* compressed = new char[compressed_len];
+        boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
 
         // send size of replay via socket
         if (!SendString("Replay"))
@@ -307,17 +309,13 @@ bool DebugInfo::SendReplay()
         }
 
         LOG.lprintf("- Compressing...\n");
-        if (BZ2_bzBuffToBuffCompress(compressed, (unsigned int*) &compressed_len, replay, replay_len, 9, 0, 250) == BZ_OK)
+        if (BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned int*) &compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
         {
             LOG.lprintf("- Sending...\n");
 
-            if (SendString(compressed, compressed_len))
+            if (SendString(compressed.get(), compressed_len))
             {
-                delete[] replay;
-                delete[] compressed;
-
                 LOG.lprintf("-> success\n");
-
                 return true;
             }
 
@@ -329,10 +327,6 @@ bool DebugInfo::SendReplay()
         }
 
         SendUnsigned(0);
-
-        delete[] replay;
-        delete[] compressed;
-
         return false;
     }
     else

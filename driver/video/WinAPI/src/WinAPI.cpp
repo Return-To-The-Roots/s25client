@@ -190,16 +190,16 @@ void VideoWinAPI::CleanUp(void)
     initialized = false;
 }
 
-LPWSTR AnsiToUtf8(LPWSTR& wTarget, LPCSTR tSource, int nLength = -1)
+std::wstring AnsiToUtf8(LPCSTR tSource, int nLength = -1)
 {
     int nConvertedLength = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, NULL, 0);
-    wTarget = new WCHAR[nConvertedLength];
-    int nResult = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, wTarget, nConvertedLength);
+    std::wstring wTarget;
+    if(!nConvertedLength)
+        return wTarget;
+    wTarget.resize(nConvertedLength);
+    int nResult = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, &wTarget[0], nConvertedLength);
     if(nResult != nConvertedLength)
-    {
-        delete[] wTarget;
-        return NULL;
-    }
+        wTarget.clear();
 
     return wTarget;
 }
@@ -224,8 +224,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     if(!initialized)
         return false;
 
-    LPWSTR wTitle;
-    AnsiToUtf8(wTitle, GetWindowTitle());
+    std::wstring wTitle = AnsiToUtf8(GetWindowTitle());
 
     WNDCLASSW  wc;
     wc.style            = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -237,7 +236,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     wc.hCursor          = NULL;
     wc.hbrBackground    = NULL;
     wc.lpszMenuName     = NULL;
-    wc.lpszClassName    = wTitle;
+    wc.lpszClassName    = wTitle.c_str();
 
     // Fensterklasse registrieren
     if (!RegisterClassW(&wc))
@@ -261,9 +260,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     }
 
     // Fenster erstellen
-    screen = CreateWindowExW(dwExStyle, wTitle, wTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, GetModuleHandle(NULL), NULL);
-
-    delete[] wTitle;
+    screen = CreateWindowExW(dwExStyle, wTitle.c_str(), wTitle.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, GetModuleHandle(NULL), NULL);
 
     if(screen == NULL)
         return false;
@@ -273,12 +270,10 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     std::stringstream title;
     title << GetWindowTitle() << " - v" << GetWindowVersion() << "-" << GetWindowRevisionShort();
 
-    AnsiToUtf8(wTitle, title.str().c_str());
+    wTitle = AnsiToUtf8(title.str().c_str());
 
-    SetWindowTextW(screen, wTitle);
-    SetWindowTextW(GetConsoleWindow(), wTitle);
-
-    delete[] wTitle;
+    SetWindowTextW(screen, wTitle.c_str());
+    SetWindowTextW(GetConsoleWindow(), wTitle.c_str());
 
     // Pixelformat zuweisen
     GLuint PixelFormat;

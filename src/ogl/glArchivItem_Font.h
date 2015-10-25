@@ -115,7 +115,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             GLfloat x, y, z;
         };
 
-        void DrawChar(const std::string& text, unsigned int& i, GL_T2F_V3F_Struct* tmp, short& cx, short& cy, float tw, float th, unsigned int& idx);
+        void DrawChar(const std::string& text, unsigned int& i, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th);
 
         /// liefert das Char-Info eines Zeichens
         inline const char_info& CharInfo(unsigned int c) const

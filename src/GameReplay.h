@@ -69,7 +69,7 @@ class Replay : public SavedFile
         ReplayCommand ReadRCType();
         /// Liest ein Chat-Command aus
         void ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str);
-        void ReadGameCommand(unsigned short* length, unsigned char** data);
+        std::vector<unsigned char> ReadGameCommand();
         bool ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor);
 
         /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)

@@ -174,59 +174,50 @@ unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigne
  */
 inline void glArchivItem_Font::DrawChar(const std::string& text,
                                         unsigned int& i,
-                                        GL_T2F_V3F_Struct* tmp,
+                                        std::vector<GL_T2F_V3F_Struct>& vertices,
                                         short& cx,
                                         short& cy, //-V669
                                         float tw,
-                                        float th,
-                                        unsigned int& idx)
+                                        float th)
 {
     unsigned int c = Utf8_to_Unicode(text, i);
     char_info ci = CharInfo(c);
 
     if(CharExist(ci))
     {
-
         float tx1 = (float)(ci.x) / tw;
         float tx2 = (float)(ci.x + ci.width) / tw;
         float ty1 = (float)(ci.y) / th;
         float ty2 = (float)(ci.y + dy) / th;
 
-        tmp[idx].tx = tx1;
-        tmp[idx].ty = ty1;
+        GL_T2F_V3F_Struct tmp;
+        tmp.tx = tx1;
+        tmp.ty = ty1;
+        tmp.x = cx;
+        tmp.y = cy;
+        tmp.z = 0.0f;
+        vertices.push_back(tmp);
 
-        tmp[idx].x = cx;
-        tmp[idx].y = cy;
-        tmp[idx].z = 0.0f;
+        tmp.tx = tx1;
+        tmp.ty = ty2;
+        tmp.x = cx;
+        tmp.y = (GLfloat)(cy + dy);
+        tmp.z = 0.0f;
+        vertices.push_back(tmp);
 
-        idx++;
+        tmp.tx = tx2;
+        tmp.ty = ty2;
+        tmp.x = (GLfloat)(cx + ci.width);
+        tmp.y = (GLfloat)(cy + dy);
+        tmp.z = 0.0f;
+        vertices.push_back(tmp);
 
-        tmp[idx].tx = tx1;
-        tmp[idx].ty = ty2;
-
-        tmp[idx].x = cx;
-        tmp[idx].y = (GLfloat)(cy + dy);
-        tmp[idx].z = 0.0f;
-
-        idx++;
-
-        tmp[idx].tx = tx2;
-        tmp[idx].ty = ty2;
-
-        tmp[idx].x = (GLfloat)(cx + ci.width);
-        tmp[idx].y = (GLfloat)(cy + dy);
-        tmp[idx].z = 0.0f;
-
-        idx++;
-
-        tmp[idx].tx = tx2;
-        tmp[idx].ty = ty1;
-
-        tmp[idx].x = (GLfloat)(cx + ci.width);
-        tmp[idx].y = cy;
-        tmp[idx].z = 0.0f;
-
-        idx++;
+        tmp.tx = tx2;
+        tmp.ty = ty1;
+        tmp.x = (GLfloat)(cx + ci.width);
+        tmp.y = cy;
+        tmp.z = 0.0f;
+        vertices.push_back(tmp);
 
         cx += ci.width;
     }
@@ -352,10 +343,10 @@ void glArchivItem_Font::Draw(short x,
         cx = x - line_width / 2;
     }
 
-    GL_T2F_V3F_Struct* tmp = new GL_T2F_V3F_Struct[(text_max + (enable_end ? end_length : 0)) * 4];
+    std::vector<GL_T2F_V3F_Struct> tmp;
+    tmp.reserve((text_max + (enable_end ? end_length : 0)) * 4);
     float tw = _font->GetTexWidth();
     float th = _font->GetTexHeight();
-    unsigned int idx = 0;
 
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
@@ -383,7 +374,7 @@ void glArchivItem_Font::Draw(short x,
                 cx = x;
         }
         else
-            DrawChar(text, i, tmp, cx, cy, tw, th, idx);
+            DrawChar(text, i, tmp, cx, cy, tw, th);
     }
 
     if(enable_end)
@@ -396,7 +387,7 @@ void glArchivItem_Font::Draw(short x,
                 cx = x;
             }
             else
-                DrawChar(end, i, tmp, cx, cy, tw, th, idx);
+                DrawChar(end, i, tmp, cx, cy, tw, th);
         }
     }
 
@@ -406,11 +397,9 @@ void glArchivItem_Font::Draw(short x,
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 
-    glInterleavedArrays(GL_T2F_V3F, 0, tmp);
+    glInterleavedArrays(GL_T2F_V3F, 0, &tmp.front());
     VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
-    glDrawArrays(GL_QUADS, 0, idx);
-
-    delete[] tmp;
+    glDrawArrays(GL_QUADS, 0, tmp.size());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

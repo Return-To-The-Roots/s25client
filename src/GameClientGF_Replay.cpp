@@ -60,13 +60,10 @@ void GameClient::ExecuteGameFrame_Replay()
             // Game Command?
             else if(rc == Replay::RC_GAME)
             {
-                unsigned char* data;
-                unsigned short length;
-
-                replayinfo.replay.ReadGameCommand(&length, &data);
+                std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
                 // Nächsten Zeitpunkt lesen
                 replayinfo.replay.ReadGF(&replayinfo.next_gf);
-                GameMessage_GameCommand msg(data, length);
+                GameMessage_GameCommand msg(&gcData.front(), gcData.size());
 
                 // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
                 ExecuteAllGCs(msg);
@@ -94,8 +91,6 @@ void GameClient::ExecuteGameFrame_Replay()
                 // resync random generator, so replay "can't" be async.
                 // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
                 //RANDOM.ReplaySet(msg.checksum);
-
-                delete[] data;
             }
         }
         else
