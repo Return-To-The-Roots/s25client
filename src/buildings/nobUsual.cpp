@@ -626,7 +626,7 @@ void nobUsual::TakeWare(Ware* ware)
  */
 void nobUsual::WorkerArrived()
 {
-    // Produktivität in 1000 gf ausrechnen
+    // Produktivität in 400 gf ausrechnen
     productivity_ev = em->AddEvent(this, 400, 1);
 }
 

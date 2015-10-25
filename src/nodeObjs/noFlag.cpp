@@ -353,7 +353,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
 unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
     // Waren zählen, die in diese Richtung transportiert werden müssen
-    unsigned short points = GetWaresCountForRoad(dir) << 1;
+    unsigned short points = GetWaresCountForRoad(dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     if(!routes[dir]->isOccupied())

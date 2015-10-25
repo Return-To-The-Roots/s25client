@@ -246,12 +246,12 @@ bool nofFarmhand::IsPointAvailable(const MapPoint pt)
     {
         // Gucken, ob ein Weg hinführt
         if(gwg->FindHumanPath(this->pos, pt, 20) != 0xFF)
-            return 1;
+            return true;
         else
-            return 0;
+            return false;
     }
     else
-        return 0;
+        return false;
 }
 
 void nofFarmhand::WalkToWorkpoint()

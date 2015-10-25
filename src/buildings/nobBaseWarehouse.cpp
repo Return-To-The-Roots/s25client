@@ -708,7 +708,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     if(!real_goods.goods[good])
     {
         LOG.lprintf("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n", static_cast<unsigned>(good));
-        return 0;
+        return NULL;
     }
 
     Ware* ware = new Ware(good, goal, this);

@@ -871,7 +871,7 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
             if ((ware != GD_BOARDS && ware != GD_STONES) || goal->GetBuildingType() == BLD_WOODCUTTER || goal->GetBuildingType() == BLD_SAWMILL)
                 return wh->OrderWare(ware, goal);
             else
-                return 0;
+                return NULL;
         }
     }	
     else //no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
@@ -897,7 +897,7 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
 			return bestWare;
 		}
 	}
-	return 0;
+	return NULL;
 }
 
 nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
@@ -918,16 +918,16 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
     else if(best[1])
         return best[1]->OrderDonkey(road, road->GetF2());
     else
-        return 0;
+        return NULL;
 }
 
 RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
 {
     // Bisher höchste Trägerproduktivität und die entsprechende Straße dazu
     unsigned best_productivity = 0;
-    RoadSegment* best_road = 0;
+    RoadSegment* best_road = NULL;
     // Beste Flagge dieser Straße
-    *goal = 0;
+    *goal = NULL;
 
     for(std::list<RoadSegment*>::iterator it = roads.begin(); it != roads.end(); ++it)
     {
@@ -1017,8 +1017,6 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
     if(ware->type == GD_COINS)
         return FindClientForCoin(ware);
 
-    noBaseBuilding* bb = 0;
-    unsigned best_points = 0;
     unsigned points;
 
     // Warentyp herausfinden
@@ -1045,13 +1043,13 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
             {
                 points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
 
-                cfw.push_back(ClientForWare(*it, points - (gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2), points));
+                unsigned distance = gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2;
+                cfw.push_back(ClientForWare(*it, points > distance ? points - distance : 0, points));
             }
         }
     }
 
-    for(std::list<BuildingType>::iterator it = distribution[gt_clients].client_buildings.begin();
-            it != distribution[gt_clients].client_buildings.end(); ++it)
+    for(std::list<BuildingType>::iterator it = distribution[gt_clients].client_buildings.begin(); it != distribution[gt_clients].client_buildings.end(); ++it)
     {
         // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
         if(*it == BLD_HEADQUARTERS)
@@ -1065,7 +1063,8 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                 {
                     points += distribution[gt].percent_buildings[BLD_HEADQUARTERS] * 30;
 
-                    cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2), points));
+                    unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
+                    cfw.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
                 }
             }
         }
@@ -1082,16 +1081,15 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                     if (!distribution[gt].goals.empty())
                     {
                         if ((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
-                        {
                             points += 300;
-                        }
                         else if (points >= 300)   // avoid overflows (async!)
-                        {
                             points -= 300;
-                        }
+                        else
+                            points = 0;
                     }
 
-                    cfw.push_back(ClientForWare(*i, points - (gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2), points));
+                    unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
+                    cfw.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
                 }
             }
         }
@@ -1101,6 +1099,8 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
     std::sort(cfw.begin(), cfw.end());
 
     noBaseBuilding* last_bb = NULL;
+    noBaseBuilding* bb = NULL;
+    unsigned best_points = 0;
     for (std::vector<ClientForWare>::iterator it = cfw.begin(); it != cfw.end(); ++it)
     {
         unsigned path_length;
@@ -1115,6 +1115,10 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
             continue;
 
         last_bb = it->bb;
+
+        // Just to be sure no underflow happens...
+        if(it->points < best_points + 1)
+            continue;
 
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
@@ -1154,7 +1158,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
 nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
 {
-    nobBaseMilitary* bb = 0;
+    nobBaseMilitary* bb = NULL;
     unsigned best_points = 0, points;
 
     // Militärgebäude durchgehen
@@ -1198,8 +1202,7 @@ void GameClientPlayer::AddBuildingSite(noBuildingSite* building_site)
     building_sites.push_back(building_site);
 }
 
-void GameClientPlayer::RemoveBuildingSite(noBuildingSite
-        * building_site)
+void GameClientPlayer::RemoveBuildingSite(noBuildingSite* building_site)
 {
     building_sites.remove(building_site);
 
@@ -2522,4 +2525,3 @@ void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job 
     }
 
 }
-
