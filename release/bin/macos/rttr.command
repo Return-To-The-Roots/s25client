@@ -12,6 +12,8 @@ if [ ! "$1" = "interminal" ] ; then
 	exit $?
 fi
 
+export DYLD_LIBRARY_PATH=$(pwd):$DYLD_LIBRARY_PATH
+
 chmod 0755 ../rttr.command ../share/s25rttr/RTTR/s25update ../bin/s25client ../share/s25rttr/RTTR/sound-convert >/dev/null 2>&1
 
 RTTR_TEST_FILEA="share/s25rttr/S2/DATA/CREDITS.LST"
