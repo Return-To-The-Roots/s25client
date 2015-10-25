@@ -24,7 +24,8 @@
 #include "GameClientPlayer.h"
 #include "AIJHHelper.h"
 #include "AIEventManager.h"
-
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <queue>
 #include <deque>
 #include <list>
@@ -319,7 +320,7 @@ class AIPlayerJH : public AIBase
 
     protected:
         /// The current job the AI is working on
-        AIJH::Job* currentJob;
+        boost::interprocess::unique_ptr<AIJH::Job, Deleter<AIJH::Job> > currentJob;
 
         /// Contains the jobs the AI should try to execute, for example build jobs
         /// std::deque<AIJH::Job*> aiJobs;
@@ -342,7 +343,7 @@ class AIPlayerJH : public AIBase
         const std::string& GetPlayerName() { return player.name; }
         unsigned char GetPlayerID() { return playerid; }
         AIConstruction* GetConstruction() { return construction; }
-        AIJH::Job* GetCurrentJob() { return currentJob; }
+        AIJH::Job* GetCurrentJob() { return currentJob.get(); }
     public:
         inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
 		unsigned GetJobNum() const;

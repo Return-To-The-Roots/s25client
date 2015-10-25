@@ -52,7 +52,6 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, c
 {
     construction = new AIConstruction(aii, this);
 	initgfcomplete=0;
-    currentJob = 0;
     InitNodes();
     InitResourceMaps();
     SaveResourceMapsToFile();
@@ -1060,8 +1059,7 @@ void AIPlayerJH::ExecuteAIJob()
 	while (eventManager.EventAvailable() && quota) //handle all new events - some will add new orders but they can all be handled instantly
 	{
 		quota--;
-		delete currentJob;
-		currentJob = new AIJH::EventJob(this,eventManager.GetEvent());
+		currentJob.reset(new AIJH::EventJob(this,eventManager.GetEvent()));
 		currentJob->ExecuteJob();
 	}
 	//how many construction & connect jobs the ai will attempt every gf, the ai gets new orders from events and every 200 gf
