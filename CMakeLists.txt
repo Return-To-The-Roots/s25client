@@ -213,6 +213,11 @@ IF (NOT CXX_HAVE_OVERRIDE)
 	ADD_DEFINITIONS(-Doverride=)
 ENDIF()
 
+INCLUDE(CheckIncludeFile)
+CHECK_INCLUDE_FILE(valgrind/memcheck.h HAVE_MEMCHECK_H)
+IF(HAVE_MEMCHECK_H)
+    ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
+ENDIF()
 
 ################################################################################
 

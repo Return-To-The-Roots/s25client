@@ -32,6 +32,9 @@
 
 #include <ctime>
 #include <algorithm>
+#if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
+#   include <valgrind/memcheck.h>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -283,7 +286,13 @@ unsigned int VideoDriverWrapper::GenerateTexture()
         return 0;
     }
 
-    glGenTextures(1, (GLuint*)&texture_list[texture_pos]);
+    GLuint newTexture = 0;
+    glGenTextures(1, &newTexture);
+#if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
+    VALGRIND_MAKE_MEM_DEFINED(&newTexture, sizeof(newTexture));
+#endif
+
+    texture_list[texture_pos] = newTexture;
 
     return texture_list[texture_pos++];
 }
