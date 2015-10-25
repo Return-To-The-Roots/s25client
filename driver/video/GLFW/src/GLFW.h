@@ -31,6 +31,8 @@ class VideoGLFW : public VideoDriver
         /// Destruktor von @p VideoGLFW.
         ~VideoGLFW(void);
 
+        const char* GetName(void) const;
+
         /// Treiberinitialisierungsfunktion.
         bool Initialize(void);
 
@@ -58,6 +60,8 @@ class VideoGLFW : public VideoDriver
         /// Funktion zum Holen einer Subfunktion.
         void* GetFunction(const char* function) const;
 
+        void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+
         /// Funktion zum Setzen der Mauskoordinaten.
         void SetMousePos(int x, int y);
 
@@ -71,7 +75,7 @@ class VideoGLFW : public VideoDriver
         KeyEvent GetModKeyState(void) const;
 
         /// Gibt Pointer auf ein Fenster zur?ck (device-dependent!), HWND unter Windows
-        void* GetWindowPointer() const;
+        void* GetMapPointer() const;
 
     private:
         /// Callbackfunktion des GL-Frameworks um Mausbewegungen abzufangen.

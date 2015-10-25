@@ -89,14 +89,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Zeiger auf die aktuelle Instanz.
- *
- *  @author FloSoft
- */
-static VideoSDL* pVideoSDL = NULL;
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Konstruktor von @p VideoSDL.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
@@ -104,9 +96,7 @@ static VideoSDL* pVideoSDL = NULL;
  *  @author FloSoft
  */
 VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
-{
-    pVideoSDL = this;
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -116,7 +106,7 @@ VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack)
  */
 VideoSDL::~VideoSDL(void)
 {
-    pVideoSDL = NULL;
+    CleanUp();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,6 +158,9 @@ bool VideoSDL::Initialize(void)
  */
 void VideoSDL::CleanUp(void)
 {
+    if(!initialized)
+        return;
+
     // Fenster vernichten
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 

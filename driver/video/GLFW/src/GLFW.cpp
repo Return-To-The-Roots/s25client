@@ -40,9 +40,14 @@ static char THIS_FILE[] = __FILE__;
  *
  *  @author FloSoft
  */
-DRIVERDLLAPI VideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoGLFW(CallBack);
+}
+
+DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+{
+    delete driver;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,14 +73,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Zeiger auf die aktuelle Instanz.
- *
- *  @author FloSoft
- */
-static VideoGLFW* pVideoGLFW = NULL;
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Konstruktor von @p VideoGLFW.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
@@ -83,9 +80,7 @@ static VideoGLFW* pVideoGLFW = NULL;
  *  @author FloSoft
  */
 VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), libGL(NULL)
-{
-    pVideoGLFW = this;
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -94,8 +89,11 @@ VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBac
  *  @author FloSoft
  */
 VideoGLFW::~VideoGLFW(void)
+{}
+
+const char* VideoGLFW::GetName(void) const
 {
-    pVideoGLFW = NULL;
+    return GetDriverName();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -315,6 +313,11 @@ void* VideoGLFW::GetFunction(const char* function) const
     if(libGL == NULL)
         return NULL;
     return dlsym(libGL, function);
+}
+
+void VideoGLFW::ListVideoModes(std::vector<VideoMode>& video_modes) const
+{
+    // TODO
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -549,4 +552,4 @@ KeyEvent VideoGLFW::GetModKeyState(void) const
     return ke;
 }
 
-void* VideoGLFW::GetWindowPointer() const { return NULL; }
+void* VideoGLFW::GetMapPointer() const { return NULL; }

@@ -39,6 +39,14 @@ static char THIS_FILE[] = __FILE__;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
+ *  Zeiger auf die aktuelle Instanz.
+ *
+ *  @author FloSoft
+ */
+static VideoWinAPI* pVideoWinAPI = NULL;
+
+///////////////////////////////////////////////////////////////////////////////
+/**
  *  Instanzierungsfunktion von @p VideoWinAPI.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
@@ -104,14 +112,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Zeiger auf die aktuelle Instanz.
- *
- *  @author FloSoft
- */
-static VideoWinAPI* pVideoWinAPI = NULL;
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Konstruktor von @p VideoWinAPI.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
@@ -120,10 +120,9 @@ static VideoWinAPI* pVideoWinAPI = NULL;
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0)
 {
-    pVideoWinAPI = this;
-
     memset(&dm_prev, 0, sizeof(DEVMODE));
     dm_prev.dmSize = sizeof(DEVMODE);
+    pVideoWinAPI = this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -708,7 +707,7 @@ void VideoWinAPI::OnWMKeyDown(unsigned int c, LPARAM lParam)
     }
 
     if(ke.kt != KT_INVALID)
-        pVideoWinAPI->CallBack->Msg_KeyDown(ke);
+        CallBack->Msg_KeyDown(ke);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
