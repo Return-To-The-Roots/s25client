@@ -35,12 +35,12 @@ enum Nation
 	NAT_INVALID = 0xFFFFFFFF
 };
 
-const std::string NationNames[NAT_COUNT] = { "Africans", "Japaneses", "Romans", "Vikings", "Babylonians" };
+const boost::array<std::string, NAT_COUNT> SUPPRESS_UNUSED NationNames = {{ std::string("Africans"), std::string("Japaneses"), std::string("Romans"), std::string("Vikings"), std::string("Babylonians") }};
 
 #define NATIVE_NAT_COUNT 4
 
 /// Konvertierungstabelle von RttR-Nation-Indizes in Original-S2-Nation-Indizes
-const boost::array<unsigned char, NAT_COUNT> NATION_RTTR_TO_S2 =
+const boost::array<unsigned char, NAT_COUNT> SUPPRESS_UNUSED NATION_RTTR_TO_S2 =
 {{
     3,
     2,

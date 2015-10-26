@@ -19,10 +19,10 @@
 #define GAMECONSTS_H_
 
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
-const boost::array<unsigned, 6> SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
+const boost::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
 
 /// Konvertierungstabelle von Rohstoff-Indizes von den Bergwerken --> Map
-const boost::array<unsigned char, 5> RESOURCES_MINE_TO_MAP = {{3, 0, 1, 2, 4}};
+const boost::array<unsigned char, 5> SUPPRESS_UNUSED RESOURCES_MINE_TO_MAP = {{3, 0, 1, 2, 4}};
 
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
@@ -37,7 +37,7 @@ const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;
 const unsigned OBJECTIVES_COUNT = 3;
 /// tournament modes
 const unsigned TOURNAMENT_MODES_COUNT = 5;
-const boost::array<unsigned, TOURNAMENT_MODES_COUNT> TOURNAMENT_MODES_DURATION =
+const boost::array<unsigned, TOURNAMENT_MODES_COUNT> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION =
 {{
     30, 60, 90, 120, 240
 }};

@@ -58,4 +58,12 @@
 #   define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) ) )
 #endif // !_WIN32 || !_MSC_VER
 
+// Macro that can be used to suppress unused warnings. Required e.g. for const boost::arrays defined in headers
+// Don't use this if not absolutely necessary!
+#ifdef __GNUC__
+#   define SUPPRESS_UNUSED __attribute__((unused))
+#else
+#   define SUPPRESS_UNUSED
+#endif
+
 #endif // !MACROS_H_INCLUDED
