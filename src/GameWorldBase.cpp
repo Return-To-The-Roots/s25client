@@ -1212,36 +1212,18 @@ void GameWorldBase::ChangeAltitude(const MapPoint pt, const unsigned char altitu
 
 void GameWorldBase::RecalcShadow(const MapPoint pt)
 {
-    const int SHADOW_COEFFICIENT = 6;
-
-    // Normale Ausleuchtung
-    int shadow = 0x40;
-
-    // Höhendifferenz zu den Punkten darum betrachten, auf der einen Seite entsprechend heller, wenn höher, sonst dunkler
     int altitude = GetNode(pt).altitude;
-    int l  = altitude - GetNodeAround(pt, 0).altitude;
-    int bl = altitude - GetNodeAround(pt, 5).altitude;
-    int br = altitude - GetNodeAround(pt, 4).altitude;
-    int tl = altitude - GetNodeAround(pt, 1).altitude;
-    int tr = altitude - GetNodeAround(pt, 2).altitude;
-    int r  = altitude - GetNodeAround(pt, 3).altitude;
+    int A = GetNodeAround(pt, 2).altitude - altitude;
+    int B = GetNode(GetNeighbour2(pt, 0)).altitude - altitude;
+    int C = GetNode(GetNeighbour(pt, 0)).altitude - altitude;
+    int D = GetNode(GetNeighbour2(pt, 7)).altitude - altitude;
 
-    shadow += SHADOW_COEFFICIENT * l;
-    shadow += SHADOW_COEFFICIENT * bl;
-    shadow += SHADOW_COEFFICIENT * br;
-
-    // und hier genau umgekehrt
-    shadow -= SHADOW_COEFFICIENT * tl;
-    shadow -= SHADOW_COEFFICIENT * tr;
-    shadow -= SHADOW_COEFFICIENT * r;
-
-    // Zu niedrig? Zu hoch? --> extreme Werte korrigieren
-    if(shadow < 0x00)
-        shadow = 0x00;
-    else if(shadow > 0x60)
-        shadow = 0x60;
-
-    GetNode(pt).shadow = static_cast<unsigned char>(shadow);
+    int shadingS2 = 64 + 9*A - 3*B - 6*C - 9*D;
+    if(shadingS2 > 128)
+        shadingS2 = 128;
+    else if(shadingS2 < 0)
+        shadingS2 = 0;
+    GetNode(pt).shadow = shadingS2;
 }
 
 Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const

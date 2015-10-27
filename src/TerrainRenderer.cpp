@@ -140,14 +140,22 @@ void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& 
 
 void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv)
 {
+    float shadow = static_cast<float>(gwv.GetNode(pt).shadow);
+    float clr = -1.f/(256.f*256.f) * shadow*shadow + 1.f/90.f * shadow + 0.38f;
     switch(gwv.GetVisibility(pt))
     {
-            // Unsichtbar -> schwarz
-        case VIS_INVISIBLE: GetVertex(pt).color = 0.0f; break;
-            // Fog of War -> abgedunkelt
-        case VIS_FOW: GetVertex(pt).color = float(gwv.GetNode(pt).shadow + 0x40) / float(0xFF) / 2; break;
-            // Normal sichtbar
-        case VIS_VISIBLE: GetVertex(pt).color = float(gwv.GetNode(pt).shadow  + 0x40) / float(0xFF); break;
+    case VIS_INVISIBLE:
+        // Unsichtbar -> schwarz
+        GetVertex(pt).color = 0.0f;
+        break;
+    case VIS_FOW:
+        // Fog of War -> abgedunkelt
+        GetVertex(pt).color = clr / 4.f;
+        break;
+    case VIS_VISIBLE:
+        // Normal sichtbar
+        GetVertex(pt).color = clr / 2.f;
+        break;
     }
 }
 
