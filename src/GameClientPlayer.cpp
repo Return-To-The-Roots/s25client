@@ -800,13 +800,17 @@ void GameClientPlayer::AddJobWanted(const Job job, noRoadNode* workplace)
 
 void GameClientPlayer::JobNotWanted(noRoadNode* workplace,bool all)
 {
-    for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
+    for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); )
     {
         if(it->workplace == workplace)
         {
             it = jobs_wanted.erase(it);
-			if(!all || it==jobs_wanted.end())
-				return;
+            if(!all)
+                return;
+        }
+        else
+        {
+            ++it;
         }
     }
 }
