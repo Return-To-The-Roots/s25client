@@ -263,7 +263,7 @@ void nobHarborBuilding::Draw(int x, int y)
     DrawBaseBuilding(x, y);
 
     // Hafenfeuer zeichnen // TODO auch für nicht-römer machen
-    if (nation == NAT_ROMANS || nation == NAT_JAPANESES || nation == NAT_BABYLONIANS)
+    if (nation == NAT_ROMANS || nation == NAT_JAPANESE || nation == NAT_BABYLONIANS)
     {
         LOADER.GetNationImageN(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y, 0, 0, 0, 0, 0, 0);
     }
