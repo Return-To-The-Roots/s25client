@@ -70,7 +70,7 @@ iwStatistics::iwStatistics()
         {
             case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
-            case NAT_JAPANESES: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
+            case NAT_JAPANESE: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;
             case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), GAMECLIENT.GetPlayer(i).name)->SetBorder(false);
                 break;

@@ -298,7 +298,7 @@ void iwShip::DrawCargo()
                 switch(GAMECLIENT.GetLocalPlayer().nation)
                 {
                     case NAT_AFRICANS: draw_id = GD_SHIELDAFRICANS; break;
-                    case NAT_JAPANESES: draw_id = GD_SHIELDJAPANESE; break;
+                    case NAT_JAPANESE: draw_id = GD_SHIELDJAPANESE; break;
                     case NAT_VIKINGS: draw_id = GD_SHIELDVIKINGS; break;
                     default: break;
                 }

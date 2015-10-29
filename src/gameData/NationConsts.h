@@ -27,7 +27,7 @@
 enum Nation
 {
 	NAT_AFRICANS = 0,
-	NAT_JAPANESES,
+	NAT_JAPANESE,
 	NAT_ROMANS,
 	NAT_VIKINGS,
 	NAT_BABYLONIANS,
@@ -35,7 +35,7 @@ enum Nation
 	NAT_INVALID = 0xFFFFFFFF
 };
 
-const boost::array<std::string, NAT_COUNT> SUPPRESS_UNUSED NationNames = {{ std::string("Africans"), std::string("Japaneses"), std::string("Romans"), std::string("Vikings"), std::string("Babylonians") }};
+const boost::array<std::string, NAT_COUNT> SUPPRESS_UNUSED NationNames = {{ std::string("Africans"), std::string("Japanese"), std::string("Romans"), std::string("Vikings"), std::string("Babylonians") }};
 
 #define NATIVE_NAT_COUNT 4
 
