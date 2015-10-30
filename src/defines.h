@@ -32,7 +32,7 @@
 #    define WIN32_LEAN_AND_MEAN
 #    ifdef _MSC_VER
 #        include <crtdbg.h>
-#        if !defined(snprintf) && _MSC_VER < 1800
+#        if !defined(snprintf) && _MSC_VER < 1900
 #            define snprintf _snprintf
 #        endif
 #        ifndef assert
