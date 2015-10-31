@@ -107,6 +107,10 @@ ENDIF()
 
 SET(TMP_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
 IF(TMP_BOOST_VERSION VERSION_LESS 1.56)
+	IF(MSVC AND MSVC_VERSION EQUAL 1800)
+		# See https://svn.boost.org/trac/boost/ticket/9332
+		MESSAGE(FATAL_ERROR "Boost 1.55 contains a bug so that it does not work with MSVC 2013. Use a newer boost version or a different Visual Studio")
+	ENDIF()
 	MESSAGE(STATUS "Boost version smaller than 1.56 detected. Using backport 1.55-1.56")
 	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.55-1.56")
 ENDIF()
