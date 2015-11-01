@@ -48,7 +48,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(0), builder(0), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
+    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(NULL), builder(NULL), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
     if(GetSize() == BQ_HOUSE || GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
@@ -82,7 +82,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
     : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player),
       state(STATE_BUILDING),
-      planer(0),
+      planer(NULL),
       boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards),
       stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones),
       used_boards(0),
@@ -187,18 +187,23 @@ void noBuildingSite::OrderConstructionMaterial()
         return;
 
     // Bretter
-    Ware* w;
     GameClientPlayer& owner = gwg->GetPlayer(player);
-    for(unsigned char i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][type_].boards; ++i)
+    for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][type_].boards; ++i)
     {
-        if( (w = owner.OrderWare(GD_BOARDS, this)) )
+        Ware* w = owner.OrderWare(GD_BOARDS, this);
+        if(w)
             ordered_boards.push_front(w);
+        else
+            break;
     }
     // Steine
-    for(unsigned char i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][type_].stones; ++i)
+    for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][type_].stones; ++i)
     {
-        if( (w = owner.OrderWare(GD_STONES, this)) )
-            ordered_stones.push_back(w);
+        Ware* w = owner.OrderWare(GD_STONES, this);
+        if(w)
+            ordered_stones.push_front(w);
+        else
+            break;
     }
 }
 
@@ -306,27 +311,38 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* start, const GoodTyp
     if(state == STATE_PLANING)
         return 0;
 
+    // We only need boards and stones.
+    if(goodtype != GD_BOARDS && goodtype != GD_STONES)
+        return 0;
+
+    const unsigned curBoards = ordered_boards.size() + boards + used_boards;
+    const unsigned curStones = ordered_stones.size() + stones + used_stones;
+    assert(curBoards <= BUILDING_COSTS[nation][this->type_].boards);
+    assert(curStones <= BUILDING_COSTS[nation][this->type_].stones);
+
     // Wenn wir schon genug Baumaterial haben, brauchen wir nichts mehr
-    if((BUILDING_COSTS[nation][this->type_].boards == ordered_boards.size() + boards + used_boards && goodtype == GD_BOARDS) ||
-            (BUILDING_COSTS[nation][this->type_].stones == ordered_stones.size() + stones + used_stones && goodtype == GD_STONES))
+    if((goodtype == GD_BOARDS && curBoards == BUILDING_COSTS[nation][this->type_].boards) ||
+            (goodtype == GD_STONES && curStones == BUILDING_COSTS[nation][this->type_].stones))
         return 0;
 
     // 10000 als Basis wählen, damit man auch noch was abziehen kann
-    unsigned points = 10000;
+    BOOST_CONSTEXPR_OR_CONST unsigned basePoints = 10000;
+    unsigned points = basePoints;
 
     // Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja möglichst
     // zuerst Gebäude fertiggestellt werden sollten)
-    points -= (BUILDING_COSTS[nation][type_].boards - ordered_boards.size() - boards - used_boards) * 20;
-    points -= (BUILDING_COSTS[nation][type_].stones - ordered_stones.size() - stones - used_stones) * 20;
-
+    points -= (BUILDING_COSTS[nation][type_].boards - curBoards) * 20;
+    points -= (BUILDING_COSTS[nation][type_].stones - curStones) * 20;
 
     // Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
-    points -= gwg->GetPlayer(player).GetBuidingSitePriority(this) * 30;
+    const unsigned buildingSitePrio = gwg->GetPlayer(player).GetBuidingSitePriority(this) * 30;
 
-    if (points > 10000) // "underflow" ;)
-    {
-        return(0);
-    }
+    if(points > buildingSitePrio)
+        points -= buildingSitePrio;
+    else
+        points = 0;
+
+    assert(points <= basePoints); // Underflow detection. Should never happen...
 
     return points;
 }
@@ -337,14 +353,18 @@ void noBuildingSite::AddWare(Ware* ware)
 
     if(ware->type == GD_BOARDS)
     {
+        assert(helpers::contains(ordered_boards, ware));
         ordered_boards.remove(ware);
         ++boards;
     }
     else if(ware->type == GD_STONES)
     {
+        assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
         ++stones;
     }
+    else
+        throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 
     // Inventur entsprechend verringern
     gwg->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
@@ -357,9 +377,15 @@ void noBuildingSite::WareLost(Ware* ware)
     assert(state == STATE_BUILDING);
 
     if(ware->type == GD_BOARDS)
+    {
+        assert(helpers::contains(ordered_boards, ware));
         ordered_boards.remove(ware);
+    }
     else if(ware->type == GD_STONES)
+    {
+        assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
+    }
     else
         throw std::logic_error("Wrong ware type lost " + helpers::toString(ware->type));
 
@@ -376,6 +402,8 @@ void noBuildingSite::TakeWare(Ware* ware)
         ordered_boards.push_back(ware);
     else if(ware->type == GD_STONES)
         ordered_stones.push_back(ware);
+    else
+        throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 }
 
 
