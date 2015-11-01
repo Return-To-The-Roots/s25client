@@ -613,7 +613,7 @@ void nobMilitary::TakeWare(Ware* ware)
 }
 
 
-void nobMilitary::AddWare(Ware* ware)
+void nobMilitary::AddWare(Ware*& ware)
 {
     // Ein Golstück mehr
     ++coins;
@@ -622,7 +622,7 @@ void nobMilitary::AddWare(Ware* ware)
 
     // Ware vernichten
     gwg->GetPlayer(player).RemoveWare(ware);
-    delete ware;
+    deletePtr(ware);
 
     // Evtl. Soldaten befördern
     PrepareUpgrading();

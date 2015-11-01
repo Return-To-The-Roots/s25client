@@ -82,7 +82,7 @@ class noBuildingSite : public noBaseBuilding
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         FOWObject* CreateFOWObject() const;
 
-        void AddWare(Ware* ware);
+        void AddWare(Ware*& ware);
         void GotWorker(Job job, noFigure* worker);
 
         /// Fordert Baumaterial an

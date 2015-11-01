@@ -136,7 +136,6 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             // wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
             if(settings.isEnabled(ADDON_REFUND_MATERIALS))
                 percent_index = settings.getSelection(ADDON_REFUND_MATERIALS);
-
             // wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
             else if(gwg->GetPlayer(player).hasEmergency() && settings.isEnabled(ADDON_REFUND_ON_EMERGENCY))
                 percent_index = 2;
@@ -156,7 +155,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 if( (!which && boards > 0) || (which && stones > 0))
                 {
                     // Ware erzeugen
-                    Ware* ware = new Ware(goods[which], 0, flag);
+                    Ware* ware = new Ware(goods[which], NULL, flag);
                     // Inventur anpassen
                     gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden

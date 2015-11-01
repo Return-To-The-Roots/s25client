@@ -122,7 +122,7 @@ public:
         /// Eine bestellte Ware konnte doch nicht kommen
         void WareLost(Ware* ware);
         /// Legt eine Ware im Lagerhaus ab
-        void AddWare(Ware* ware);
+        void AddWare(Ware*& ware);
         /// Eine Figur geht ins Lagerhaus
         void AddFigure(noFigure* figure, const bool increase_visual_counts);
         /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
@@ -176,7 +176,7 @@ public:
         int GetNeedForShip(unsigned ships_coming) const;
 
         /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-        void ReceiveGoodsFromShip(const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
+        void ReceiveGoodsFromShip(const std::list<noFigure*>& figures, std::list<Ware*>& wares);
 
         struct SeaAttackerBuilding
         {

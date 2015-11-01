@@ -78,7 +78,7 @@ protected:
         /// Event-Handler
         void HandleEvent(const unsigned int id);
         /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-        void AddWare(Ware* ware);
+        void AddWare(Ware*& ware);
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
         bool FreePlaceAtFlag();
         /// Eine bestellte Ware konnte doch nicht kommen

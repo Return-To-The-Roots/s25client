@@ -347,7 +347,7 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* start, const GoodTyp
     return points;
 }
 
-void noBuildingSite::AddWare(Ware* ware)
+void noBuildingSite::AddWare(Ware*& ware)
 {
     assert(state == STATE_BUILDING);
 
@@ -369,7 +369,7 @@ void noBuildingSite::AddWare(Ware* ware)
     // Inventur entsprechend verringern
     gwg->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
     gwg->GetPlayer(player).RemoveWare(ware);
-    delete ware;
+    deletePtr(ware);
 }
 
 void noBuildingSite::WareLost(Ware* ware)

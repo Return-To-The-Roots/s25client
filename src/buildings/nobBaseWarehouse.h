@@ -179,7 +179,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         void DontFetchNextWare() {fetch_double_protection = true;}
 
         /// Legt eine Ware im Lagerhaus ab
-        virtual void AddWare(Ware* ware);
+        virtual void AddWare(Ware*& ware);
         /// Eine Figur geht ins Lagerhaus
         virtual void AddFigure(noFigure* figure, const bool increase_visual_counts = true);
 

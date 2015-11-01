@@ -79,29 +79,28 @@ Ware::Ware(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj
     type(GoodType(sgd.PopUnsignedChar())),
     goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)),
     next_harbor(sgd.PopMapPoint())
-{   
-    //assert(obj_id != 1197877);
-}
+{}
 
 
 void Ware::RecalcRoute()
-{
-	
+{	
     // Nächste Richtung nehmen
     next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
 
     // Evtl gibts keinen Weg mehr? Dann wieder zurück ins Lagerhaus (wenns vorher überhaupt zu nem Ziel ging)
     if(next_dir == 0xFF && goal)
     {
-        // meinem Ziel Becheid sagen
+        // Tell goal about this
         goal->WareLost(this);
-		if(state==STATE_WAITFORSHIP)
+		if(state == STATE_WAITFORSHIP)
 		{
-			assert(location);
-			assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
-			state = STATE_WAITINWAREHOUSE;
-			static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);			
-		}
+            // Ware was waiting for a ship so send the ware into the harbor
+            assert(location);
+            assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+            state = STATE_WAITINWAREHOUSE;
+            goal = static_cast<nobHarborBuilding*>(location);
+            static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);
+        }
 		else
 		{
 			nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
@@ -117,26 +116,24 @@ void Ware::RecalcRoute()
 			else
 			{
 				// Es gibt auch kein Weg zu einem Lagerhaus, tja dann ist es wohl vorbei erstmal
-				goal = 0;
-
-				return;
+				goal = NULL;
 			}
 		}
     }
-
-
-    // If we waited in the harbor for the ship before and don't want to travel now
-    // -> inform the harbor so that it can remove us from its list
-    if(state == STATE_WAITFORSHIP && next_dir != SHIP_DIR)
+    else
     {
-        assert(location);
-        assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
-		state = STATE_WAITINWAREHOUSE;
-        static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);        
+        // If we waited in the harbor for the ship before and don't want to travel now
+        // -> inform the harbor so that it can remove us from its list
+        if(state == STATE_WAITFORSHIP && next_dir != SHIP_DIR)
+        {
+            assert(location);
+            assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+            state = STATE_WAITINWAREHOUSE;
+            static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);
+        }
+        //// Es wurde ein gültiger Weg gefunden! Dann muss aber noch dem nächsten Träger Bescheid gesagt werden
+        //location->routes[next_dir]->AddWareJob(location);
     }
-
-    //// Es wurde ein gültiger Weg gefunden! Dann muss aber noch dem nächsten Träger Bescheid gesagt werden
-    //location->routes[next_dir]->AddWareJob(location);
 }
 
 void Ware::GoalDestroyed()
@@ -149,14 +146,16 @@ void Ware::GoalDestroyed()
     else if(state == STATE_ONSHIP)
     {
         // Ziel zunächst auf NULL setzen, was dann vom Zielhafen erkannt wird,
-        // woraufhin dieser die Ware gleich in sein Inventar mit übernimmt		
+        // woraufhin dieser die Ware gleich in sein Inventar mit übernimmt
         goal = NULL;
     }
     // Oder wartet sie im Hafen noch auf ein Schiff
     else if(state == STATE_WAITFORSHIP)
     {
         // Dann dem Hafen Bescheid sagen
-        dynamic_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
+        assert(location);
+        assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+        static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
         GAMECLIENT.GetPlayer(location->GetPlayer()).RemoveWare(this);
         em->AddToKillList(this);
     }
