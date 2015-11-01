@@ -351,7 +351,7 @@ void nobUsual::HandleEvent(const unsigned int id)
  *
  *  @author OLiver
  */
-void nobUsual::AddWare(Ware* ware)
+void nobUsual::AddWare(Ware*& ware)
 
 {
     // Maximale Warenanzahlbestimmen (nur für assert unten)
@@ -376,7 +376,7 @@ void nobUsual::AddWare(Ware* ware)
 
     // Ware vernichten
     gwg->GetPlayer(player).RemoveWare(ware);
-    delete ware;
+    deletePtr(ware);
 
     // Arbeiter Bescheid sagen, dass es neue Waren gibt
     if(worker)

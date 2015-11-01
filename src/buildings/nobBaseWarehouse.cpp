@@ -399,7 +399,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 if(GetFlag()->GetWareCount() < 8)
                 {
                     // Dann Ware raustragen lassen
-                    Ware* ware = *waiting_wares.begin();
+                    Ware* ware = waiting_wares.front();
                     nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, 0);
                     gwg->AddFigure(worker, pos);
                     assert(goods_.goods[ConvertShields(ware->type)] > 0);
@@ -757,7 +757,7 @@ bool nobBaseWarehouse::FreePlaceAtFlag()
     }
 }
 
-void nobBaseWarehouse::AddWare(Ware* ware)
+void nobBaseWarehouse::AddWare(Ware*& ware)
 {
     // Ware nicht mehr abhängig
     RemoveDependentWare(ware);
@@ -770,7 +770,7 @@ void nobBaseWarehouse::AddWare(Ware* ware)
         type = ware->type;
 
     gwg->GetPlayer(player).RemoveWare(ware);
-    delete ware;
+    deletePtr(ware);
 
     ++real_goods.goods[type];
     ++goods_.goods[type];

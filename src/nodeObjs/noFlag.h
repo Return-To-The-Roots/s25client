@@ -44,7 +44,7 @@ class noFlag : public noRoadNode
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
         FOWObject* CreateFOWObject() const;
         /// Legt eine Ware an der Flagge ab.
-        void AddWare(Ware* ware);
+        void AddWare(Ware*& ware);
         /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
         unsigned GetWareCount() const;
         /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.

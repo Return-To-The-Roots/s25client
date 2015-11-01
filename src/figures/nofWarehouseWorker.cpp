@@ -103,12 +103,13 @@ void nofWarehouseWorker::Draw(int x, int y)
 
 void nofWarehouseWorker::GoalReached()
 {
+    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, 1));
     if(!task)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
         // ( dann ist goal = location )
-        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->goal != carried_ware->GetLocation())
+        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->goal != carried_ware->GetLocation() && carried_ware->goal != wh)
         {
             carried_ware->LieAtFlag(gwg->GetSpecObj<noRoadNode>(pos));
 
@@ -119,7 +120,7 @@ void nofWarehouseWorker::GoalReached()
             gwg->GetSpecObj<noFlag>(pos)->AddWare(carried_ware);
 
             // Ich trage keine Ware mehr
-            carried_ware = 0;
+            carried_ware = NULL;
         }
         else
             // ansonsten Ware wieder mit reinnehmen
@@ -136,8 +137,7 @@ void nofWarehouseWorker::GoalReached()
 
     // Wieder ins Schloss gehen
     StartWalking(1);
-    InitializeRoadWalking(gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, 1))->routes[4],
-                          0, false);
+    InitializeRoadWalking(wh->routes[4], 0, false);
 }
 
 void nofWarehouseWorker::Walked()
@@ -151,7 +151,13 @@ void nofWarehouseWorker::Walked()
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
             if(gwg->GetNO(pos)->GetType() == NOP_BUILDING)
-                gwg->GetSpecObj<nobBaseWarehouse>(pos)->AddWaitingWare(carried_ware);
+            {
+                nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
+                if(carried_ware->goal == carried_ware->GetLocation() || carried_ware->goal == wh)
+                    wh->AddWare(carried_ware);
+                else
+                    wh->AddWaitingWare(carried_ware);
+            }
             else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten

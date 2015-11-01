@@ -82,7 +82,7 @@ void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData&
 
 
 nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(0)
+    : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(NULL)
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);
@@ -329,14 +329,15 @@ void nobHarborBuilding::HandleEvent(const unsigned int id)
 {
     switch(id)
     {
-            // Waren-Bestell-Event
         case 10:
-        {
+            // Waren-Bestell-Event
             this->orderware_ev = NULL;
             // Mal wieder schauen, ob es Waren für unsere Expedition gibt
             OrderExpeditionWares();
-        } break;
-        default: HandleBaseEvent(id);
+            break;
+        default:
+            HandleBaseEvent(id);
+            break;
     }
 }
 
@@ -563,9 +564,7 @@ void nobHarborBuilding::OrderExpeditionWares()
     // Wenn immer noch nicht alles da ist, später noch einmal bestellen
     if(!orderware_ev)
         orderware_ev = em->AddEvent(this, 210, 10);
-
 }
-
 
 /// Eine bestellte Ware konnte doch nicht kommen
 void nobHarborBuilding::WareLost(Ware* ware)
@@ -575,8 +574,6 @@ void nobHarborBuilding::WareLost(Ware* ware)
         OrderExpeditionWares();
     RemoveDependentWare(ware);
 }
-
-
 
 /// Schiff ist angekommen
 void nobHarborBuilding::ShipArrived(noShip* ship)
@@ -698,7 +695,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 }
 
 /// Legt eine Ware im Lagerhaus ab
-void nobHarborBuilding::AddWare(Ware* ware)
+void nobHarborBuilding::AddWare(Ware*& ware)
 {
     if(ware->goal != this)
         ware->RecalcRoute();
@@ -724,7 +721,7 @@ void nobHarborBuilding::AddWare(Ware* ware)
             RemoveDependentWare(ware);
             // Dann zweigen wir die einfach mal für die Expedition ab
             gwg->GetPlayer(player).RemoveWare(ware);
-            delete ware;
+            deletePtr(ware);
 
             // Ggf. ist jetzt alles benötigte da
             CheckExpeditionReady();
@@ -733,7 +730,6 @@ void nobHarborBuilding::AddWare(Ware* ware)
     }
 
     nobBaseWarehouse::AddWare(ware);
-
 }
 
 /// Eine Figur geht ins Lagerhaus
@@ -1080,7 +1076,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
 }
 
 /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures, const std::list<Ware*>& wares)
+void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures, std::list<Ware*>& wares)
 {
     // Menschen zur Ausgehliste hinzufügen
     for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
@@ -1142,7 +1138,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
     }
 
     // Waren zur Warteliste hinzufügen
-    for(std::list<Ware*>::const_iterator it = wares.begin(); it != wares.end(); ++it)
+    for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
     {
         if((*it)->ShipJorneyEnded(this))
         {
@@ -1343,12 +1339,10 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
  */
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 {
-
     // Ist überhaupos eine Expedition im Gang und ein entsprechender Warentyp
     if(!expedition.active || !(type == GD_BOARDS || type == GD_STONES))
         return 0;
-
-
+    
     unsigned ordered_boards = 0, ordered_stones = 0;
     // Ermitteln, wiviele Bretter und Steine auf dem Weg zum Lagerhaus sind
 	for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
@@ -1384,24 +1378,12 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
     if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
         return;
 
+    assert(helpers::contains(wares_for_ships, ware));
     // Ware aus unserer Liste streichen
     wares_for_ships.remove(ware);
-    // Will die Ware jetzt vielleicht zu uns?
-    if(ware->goal == this)
-    {
-        // Dann hier gleich einliefern
-        AddWare(ware);
-        // and dont forget to reduce our visual count - addware will increase both and the ware waiting for a ship added to the visual count!
-        --goods_.goods[ConvertShields(ware->type)];
-
-    }
-    // Oder will sie wieder raus?
-    else
-    {
-        waiting_wares.push_back(ware);
-        AddLeavingEvent();
-    }
-
+    // Carry out. If it would want to go back to this building, then this will be handled by the carrier
+    waiting_wares.push_back(ware);
+    AddLeavingEvent();
 }
 
 
@@ -1410,7 +1392,7 @@ nofDefender* nobHarborBuilding::ProvideDefender(nofAttacker* const attacker)
 {
     // Versuchen, zunächst auf konventionelle Weise Angreifer zu bekoommen
     nofDefender* defender = nobBaseWarehouse::ProvideDefender(attacker);
-    // Wenn das nicht geklappos hat und noch Soldaten in der Warteschlange für den Seeangriff sind
+    // Wenn das nicht geklappt hat und noch Soldaten in der Warteschlange für den Seeangriff sind
     // zweigen wir einfach diese ab
     if(!defender && !soldiers_for_ships.empty())
     {
@@ -1460,17 +1442,5 @@ bool nobHarborBuilding::IsBeingDestroyedNow() const
 {
     // check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
     const std::list<nobHarborBuilding*> allHarbors = gwg->GetPlayer(player).GetHarbors();
-    if (!helpers::contains(allHarbors, this))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return !helpers::contains(allHarbors, this);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// EOF
-///////////////////////////////////////////////////////////////////////////////
-
