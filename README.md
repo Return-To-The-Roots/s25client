@@ -33,7 +33,7 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 ### Prerequisites:
 - cmake (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.cmake.org/download/)
-- boost (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- boost (i.e from http://www.boost.org/)
 - Visual Studio (at least 2010)
 - Git Client (i.e TortoiseGit)
 
