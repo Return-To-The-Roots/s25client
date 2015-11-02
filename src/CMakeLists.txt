@@ -46,7 +46,7 @@ AddDirectory(helpers)
 AddDirectory(ingameWindows)
 AddDirectory(nodeObjs)
 AddDirectory(ogl)
-
+AddDirectory(pathfinding)
 ################################################################################
 
 GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
