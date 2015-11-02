@@ -318,7 +318,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
                 continue;
 
             // Strecke von der potenziellen Zielfahne bis zum Lager
-            bool pathFound = aii->FindPathOnRoads(flags[i], targetFlag, &distance);
+            bool pathFound = aii->FindPathOnRoads(*flags[i], *targetFlag, &distance);
 
             // Gewählte Fahne hat leider auch kein Anschluß an ein Lager, zu schade!
             if (!pathFound)
@@ -327,7 +327,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
                     continue;
 
             // Sind wir mit der Fahne schon verbunden? Einmal reicht!
-            if (aii->FindPathOnRoads(flags[i], flag))
+            if (aii->FindPathOnRoads(*flags[i], *flag))
                 continue;
 
             // Ansonsten haben wir einen Pfad!
@@ -444,7 +444,7 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
 {
     noFlag* targetFlag = this->FindTargetStoreHouseFlag(flag->GetPos());
     if (targetFlag)
-        return aii->FindPathOnRoads(flag, targetFlag);
+        return aii->FindPathOnRoads(*flag, *targetFlag);
     else
         return false;
 }
@@ -773,10 +773,10 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
             unsigned int oldLength = 0;
 
             // Aktuelle Strecke zu der Flagge
-            bool pathAvailable = aii->FindPathOnRoads(flags[i], flag, &oldLength);
+            bool pathAvailable = aii->FindPathOnRoads(*flags[i], *flag, &oldLength);
             if(!pathAvailable && mainflag)
             {
-                pathAvailable = aii->FindPathOnRoads(flags[i], mainflag, &oldLength);
+                pathAvailable = aii->FindPathOnRoads(*flags[i], *mainflag, &oldLength);
                 if(pathAvailable)
                     oldLength += mainroad.size();
             }

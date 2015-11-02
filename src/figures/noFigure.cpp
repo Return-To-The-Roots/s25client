@@ -406,7 +406,8 @@ void noFigure::WalkToGoal()
         {
             MapPoint next_harbor;
             // Neuen Weg berechnen
-            unsigned char route = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal_, NULL, &next_harbor);
+            noRoadNode* roadNode = gwg->GetSpecObj<noRoadNode>(pos);
+            unsigned char route = roadNode ? gwg->FindHumanPathOnRoads(*roadNode, *goal_, NULL, &next_harbor) : 0xFF;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == 0xFF)
             {
@@ -684,7 +685,7 @@ void noFigure::GoHome(noRoadNode* goal)
             return;
         }
         else
-            this->goal_ = gwg->GetPlayer(player).FindWarehouse((rs_dir) ? cur_rs->GetF1() : cur_rs->GetF2(), FW::Condition_StoreFigure, 0, true, &job_, false);
+            this->goal_ = gwg->GetPlayer(player).FindWarehouse((rs_dir) ? *cur_rs->GetF1() : *cur_rs->GetF2(), FW::Condition_StoreFigure, 0, true, &job_, false);
     }
     else
         this->goal_ = goal;
@@ -816,7 +817,7 @@ void noFigure::Wander()
                     if(gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false) != 0xFF)
                     {
                         // gucken, ob ein Weg zu einem Warenhaus führt
-                        if(gwg->GetPlayer(player).FindWarehouse(*it, FW::Condition_StoreFigure, 0, true, &job_, false))
+                        if(gwg->GetPlayer(player).FindWarehouse(**it, FW::Condition_StoreFigure, 0, true, &job_, false))
                         {
                             // dann nehmen wir die doch glatt
                             best_way = way;
@@ -1046,9 +1047,9 @@ void noFigure::WanderToFlag()
     if(pos == flagPos_)
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
-
+        assert(gwg->GetSpecObj<noRoadNode>(pos));
         if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(
-                                      gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job_, false))
+                                      *gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job_, false))
         {
             // ja, dann können wir ja hingehen
             goal_ = wh;
@@ -1486,7 +1487,11 @@ MapPoint noFigure::ExamineRouteBeforeShipping(unsigned char& newDir)
 {
     MapPoint next_harbor;
     // Calc new route
-    newDir = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(pos), goal_, NULL, &next_harbor);
+    const noRoadNode* roadNode = gwg->GetSpecObj<noRoadNode>(pos);
+    if(!roadNode || !goal_)
+        newDir = 0xFF;
+    else
+        newDir = gwg->FindHumanPathOnRoads(*roadNode, *goal_, NULL, &next_harbor);
 
     if(newDir == 0xff)
         Abrogate();

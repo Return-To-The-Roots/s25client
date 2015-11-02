@@ -14,3 +14,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef RoadPathFinder_h__
+#define RoadPathFinder_h__
+
+#include "gameTypes/MapTypes.h"
+
+class GameWorldBase;
+class noRoadNode;
+class RoadSegment;
+
+class RoadPathFinder
+{
+    GameWorldBase& gwb_;
+public:
+    RoadPathFinder(GameWorldBase& gwb): gwb_(gwb) {}
+
+    bool FindPath(const noRoadNode& start, const noRoadNode& goal, 
+        const bool ware_mode, unsigned* length, 
+        unsigned char* first_dir, MapPoint* next_harbor, 
+        const RoadSegment* const forbidden, const bool record, const unsigned max);
+
+};
+
+#endif // RoadPathFinder_h__

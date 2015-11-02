@@ -150,7 +150,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
                                     unsigned* length = NULL) const;
 
         // Tries to find a route from start to target, returning length of that route if it exists
-        bool FindPathOnRoads(const noRoadNode* start, const noRoadNode* target, unsigned* length = NULL) const;
+        bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = NULL) const;
 
         // Checks if it is allowed to build catapults
         bool CanBuildCatapult() const { return player_.CanBuildCatapult(); }
@@ -162,7 +162,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsPlayerAttackable(playerID); }
 
 		/// player.FindWarehouse
-		nobBaseWarehouse* FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
+		nobBaseWarehouse* FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
 		
         /// Returns a list of military buildings around a given point and a given radius
 		sortedMilitaryBlds GetMilitaryBuildings(const MapPoint pt, unsigned radius) const { return gwb.LookForMilitaryBuildings(pt, radius); }

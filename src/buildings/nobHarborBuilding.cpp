@@ -1053,7 +1053,8 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
     // Evtl. muss die Ware gleich das Schiff nehmen ->
     // dann zum Schiffsreservoir hinzufügen
     MapPoint next_harbor;
-    if(gwg->FindHumanPathOnRoads(this, goal, NULL, &next_harbor) == SHIP_DIR)
+    assert(goal);
+    if(gwg->FindHumanPathOnRoads(*this, *goal, NULL, &next_harbor) == SHIP_DIR)
     {
         // Reduce figure count because figues don't go through the house leaving process
         // And therefore the visual count reducement

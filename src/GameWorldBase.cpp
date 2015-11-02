@@ -22,6 +22,7 @@
 #include "GameObject.h"
 #include "nodeObjs/noFlag.h"
 #include "FOWObjects.h"
+#include "pathfinding/RoadPathFinder.h"
 #include "RoadSegment.h"
 #include "nodeObjs/noTree.h"
 #include "buildings/noBaseBuilding.h"
@@ -56,7 +57,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
+GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -696,6 +697,12 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return buildings;
 }
 
+bool GameWorldBase::FindPathOnRoads(const noRoadNode& start, const noRoadNode& goal,
+                     const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint* next_harbor,
+                     const RoadSegment* const forbidden, const bool record/* = true*/, const unsigned max/* = 0xFFFFFFFF*/) const
+{
+    return roadPathFinder->FindPath(start, goal, ware_mode, length, first_dir, next_harbor, forbidden, record, max);
+}
 
 /// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
 void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route)

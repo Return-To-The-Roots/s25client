@@ -212,7 +212,8 @@ class GameClientPlayer : public GamePlayerInfo
         /// IsWarehouseGood erfüllt, als letzen Parameter erhält jene Funktion param
         /// - forbidden ist ein optionales Straßenstück, das nicht betreten werden darf,
         /// - to_wh muss auf true gesetzt werden, wenn es zum Lagerhaus geht, ansonsten auf false, in length wird die Wegeslänge zurückgegeben
-        nobBaseWarehouse* FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0);
+        nobBaseWarehouse* FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*),
+            const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0, bool record = true) const;
         /// Gibt dem Spieler bekannt, das eine neue Straße gebaut wurde
         void NewRoad(RoadSegment* const rs);
         /// Neue Straße hinzufügen

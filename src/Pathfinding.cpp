@@ -598,7 +598,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapPoint start,
 }
 
 /// Wegfindung für Menschen im Straßennetz
-unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode* const start,  const noRoadNode* const goal,  unsigned* length,  MapPoint* next_harbor,  const RoadSegment* const forbidden)
+unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* next_harbor, const RoadSegment* const forbidden)
 {
     unsigned char first_dir = 0xFF;
     if(FindPathOnRoads(start,  goal,  false,  length,  &first_dir,  next_harbor,  forbidden))
@@ -608,7 +608,7 @@ unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode* const start,
 }
 
 /// Wegfindung für Waren im Straßennetz
-unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode* const start,  const noRoadNode* const goal,  unsigned* length,  MapPoint* next_harbor,  unsigned max)
+unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* next_harbor, unsigned max)
 {
     unsigned char first_dir = 0xFF;
     if(FindPathOnRoads(start,  goal,  true,  length,  &first_dir,  next_harbor,  NULL,  true,  max))

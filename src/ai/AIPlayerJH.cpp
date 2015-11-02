@@ -289,14 +289,14 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 	
 	if (uub>=0 && storehouses.size()>1) //upgradebuilding exists and more than 1 warehouse -> find warehouse closest to the upgradebuilding - gather stuff there and deactivate gathering in the previous one
 	{		
-		std::list<nobMilitary*>::const_iterator ubldit=aii->GetMilitaryBuildings().begin();
-		std::advance(ubldit,uub);
+		std::list<nobMilitary*>::const_iterator upgradeBldIt=aii->GetMilitaryBuildings().begin();
+		std::advance(upgradeBldIt,uub);
 		//which warehouse is closest to the upgrade building? -> train troops there and block max ranks			
 		unsigned param_count = 0; //at least 0 soldiers
-		wh = aii->FindWarehouse((*ubldit), FW::Condition_Troops, 0, false, &param_count, false);
+		wh = aii->FindWarehouse(**upgradeBldIt, FW::Condition_Troops, 0, false, &param_count, false);
 		if(!wh)
 		{
-			wh = (*storehouses.begin());
+			wh = storehouses.front();
 		}
 	}
 	return wh;

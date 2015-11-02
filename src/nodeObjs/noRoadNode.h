@@ -69,7 +69,7 @@ class noRoadNode : public noCoordBase
 
         inline noRoadNode* GetNeighbour(const unsigned char dir) const {
             if(!routes[dir])
-                return 0;
+                return NULL;
             else if(routes[dir]->GetF1() == this) 
                 return routes[dir]->GetF2();
             else

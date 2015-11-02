@@ -482,7 +482,7 @@ void nobMilitary::RegulateTroops()
         }
 
         // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(owner.FindWarehouse(this, FW::NoCondition, 0, true, 0, false))
+        if(owner.FindWarehouse(*this, FW::NoCondition, 0, true, 0, false))
         {
             // Dann den Rest (einer muss immer noch drinbleiben!)
             // erst die schwachen Soldaten raus
@@ -546,7 +546,7 @@ void nobMilitary::SendSoldiersHome()
     if(diff < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
 	{
 		// Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(!gwg->GetPlayer(player).FindWarehouse(this, FW::NoCondition, 0, true, 0, false))
+        if(!gwg->GetPlayer(player).FindWarehouse(*this, FW::NoCondition, 0, true, 0, false))
             return;
         int mrank=-1;
         for(SortedTroops::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
@@ -1169,7 +1169,7 @@ void nobMilitary::SearchCoins()
     {
         // Lagerhaus mit Goldmünzen suchen
         FW::Param_Ware p = {GD_COINS, 1};
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(this, FW::Condition_Ware, 0, false, &p, false))
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_Ware, 0, false, &p, false))
         {
             // Wenns eins gibt, dort eine Goldmünze bestellen
             Ware* ware = wh->OrderWare(GD_COINS, this);
