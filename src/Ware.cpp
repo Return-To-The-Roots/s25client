@@ -56,9 +56,7 @@ Ware::~Ware()
 }
 
 void Ware::Destroy(void)
-{
-	
-}
+{}
 
 void Ware::Serialize_Ware(SerializedGameData& sgd) const
 {
@@ -83,7 +81,7 @@ Ware::Ware(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj
 
 
 void Ware::RecalcRoute()
-{	
+{
     // Nächste Richtung nehmen
     next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
 
@@ -92,8 +90,8 @@ void Ware::RecalcRoute()
     {
         // Tell goal about this
         goal->WareLost(this);
-		if(state == STATE_WAITFORSHIP)
-		{
+        if(state == STATE_WAITFORSHIP)
+        {
             // Ware was waiting for a ship so send the ware into the harbor
             assert(location);
             assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
@@ -101,24 +99,24 @@ void Ware::RecalcRoute()
             goal = static_cast<nobHarborBuilding*>(location);
             static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);
         }
-		else
-		{
-			nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
-			if(wh)
-			{
-				// Lagerhaus ist unser neues Ziel
-				goal = wh;
-				// Weg berechnen
-				next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
+        else
+        {
+            nobBaseWarehouse* wh = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+            if(wh)
+            {
+                // Lagerhaus ist unser neues Ziel
+                goal = wh;
+                // Weg berechnen
+                next_dir = gwg->FindPathForWareOnRoads(location, goal, NULL, &next_harbor);
 
-				wh->TakeWare(this);
-			}
-			else
-			{
-				// Es gibt auch kein Weg zu einem Lagerhaus, tja dann ist es wohl vorbei erstmal
-				goal = NULL;
-			}
-		}
+                wh->TakeWare(this);
+            }
+            else
+            {
+                // Es gibt auch kein Weg zu einem Lagerhaus, tja dann ist es wohl vorbei erstmal
+                goal = NULL;
+            }
+        }
     }
     else
     {
@@ -208,25 +206,25 @@ void Ware::GoalDestroyed()
         else if(state == STATE_CARRIED)
         {
             // if goal = current location -> too late to do anything our road will be removed and ware destroyed when the carrier starts walking about
-			// goal != current location -> find a warehouse for us (if we are entering a warehouse already set this as new goal (should only happen if its a harbor for shipping as the building wasnt our goal))
+            // goal != current location -> find a warehouse for us (if we are entering a warehouse already set this as new goal (should only happen if its a harbor for shipping as the building wasnt our goal))
 
             if(goal != location)
             {
-				if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ) //currently carried into a warehouse? -> add ware (pathfinding will not return this wh because of path lengths 0)
-				{
-					if(location->GetGOT()!=GOT_NOB_HARBORBUILDING)
-						LOG.lprintf("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or hq that was not it's goal! ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i \n",GetObjId(),type,location->GetPlayer(),GetLocation()->GetX(),GetLocation()->GetY(), goal->GetX(), goal->GetY());
-					goal = static_cast<noBaseBuilding*>(location);
-					goal->TakeWare(this);
-				}
-				else
-				{
-					goal = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
+                if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ) //currently carried into a warehouse? -> add ware (pathfinding will not return this wh because of path lengths 0)
+                {
+                    if(location->GetGOT()!=GOT_NOB_HARBORBUILDING)
+                        LOG.lprintf("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or hq that was not it's goal! ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i \n",GetObjId(),type,location->GetPlayer(),GetLocation()->GetX(),GetLocation()->GetY(), goal->GetX(), goal->GetY());
+                    goal = static_cast<noBaseBuilding*>(location);
+                    goal->TakeWare(this);
+                }
+                else
+                {
+                    goal = gwg->GetPlayer(location->GetPlayer()).FindWarehouse(location, FW::Condition_StoreWare, 0, true, &type, true);
 
-					if(goal)
-						// Lagerhaus ggf. Bescheid sagen
-						goal->TakeWare(this);
-				}
+                    if(goal)
+                        // Lagerhaus ggf. Bescheid sagen
+                        goal->TakeWare(this);
+                }
             }
         }
     }
@@ -321,58 +319,58 @@ void Ware::FindRouteToWarehouse()
 ///a lost ware got ordered
 unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
 {
-	unsigned tlength = 0xFFFFFFFF;
-	if (state!=STATE_WAITATFLAG) //todo: check all special cases for wares being carried right now and where possible allow them to be ordered
-		return 0xFFFFFFFF;
-	unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal,&tlength);
-	if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
-	{
-		//in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
-		if(possibledir==1 && newgoal->GetFlag()->GetX()==location->GetX() && newgoal->GetFlag()->GetY()==location->GetY())
-		{
-			for(unsigned i=0;i<6;i++)
-			{
-				if(i!=1 && location->routes[i])
-					{
-						possibledir=i;
-						break;
-					}
-			}
-			if(possibledir==1) //got no other route from the flag -> impossible
-				return 0xFFFFFFFF;					
-		}
-		//at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to bounce off of to get to the goal		
-		return tlength;		
-	}
-	else
-		return 0xFFFFFFFF;
+    unsigned tlength = 0xFFFFFFFF;
+    if (state!=STATE_WAITATFLAG) //todo: check all special cases for wares being carried right now and where possible allow them to be ordered
+        return 0xFFFFFFFF;
+    unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal,&tlength);
+    if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
+    {
+        //in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
+        if(possibledir==1 && newgoal->GetFlag()->GetX()==location->GetX() && newgoal->GetFlag()->GetY()==location->GetY())
+        {
+            for(unsigned i=0;i<6;i++)
+            {
+                if(i!=1 && location->routes[i])
+                    {
+                        possibledir=i;
+                        break;
+                    }
+            }
+            if(possibledir==1) //got no other route from the flag -> impossible
+                return 0xFFFFFFFF;
+        }
+        //at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to bounce off of to get to the goal
+        return tlength;
+    }
+    else
+        return 0xFFFFFFFF;
 }
 
 /// this assumes that the ware is at a flag (todo: handle carried wares) and that there is a valid path to the goal
 void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
 {
-	unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal);
-	if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
-	{
-		//in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
-		if(possibledir==1 && newgoal->GetFlag()->GetX()==location->GetX() && newgoal->GetFlag()->GetY()==location->GetY())
-		{
-			for(unsigned i=0;i<6;i++)
-			{
-				if(i!=1 && location->routes[i])
-					{
-						possibledir=i;
-						break;
-					}
-			}
-			if(possibledir==1) //got no other route from the flag -> impossible
-				return;					
-		}
-		//at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to bounce off of to get to the goal
-		next_dir=possibledir;	
-		goal=newgoal;	
-		location->routes[next_dir]->AddWareJob(location);	
-	}
+    unsigned char possibledir=gwg->FindPathForWareOnRoads(location, newgoal);
+    if(possibledir!=0xFF) //there is a valid path to the goal? -> ordered!
+    {
+        //in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
+        if(possibledir==1 && newgoal->GetFlag()->GetX()==location->GetX() && newgoal->GetFlag()->GetY()==location->GetY())
+        {
+            for(unsigned i=0;i<6;i++)
+            {
+                if(i!=1 && location->routes[i])
+                    {
+                        possibledir=i;
+                        break;
+                    }
+            }
+            if(possibledir==1) //got no other route from the flag -> impossible
+                return;
+        }
+        //at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to bounce off of to get to the goal
+        next_dir=possibledir;
+        goal=newgoal;
+        location->routes[next_dir]->AddWareJob(location);
+    }
 }
 
 bool Ware::FindRouteFromWarehouse()
