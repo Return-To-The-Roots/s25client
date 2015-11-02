@@ -143,10 +143,10 @@ void nofWarehouseWorker::GoalReached()
 void nofWarehouseWorker::Walked()
 {
     // Wieder im Schloss angekommen
-
     if(!task)
     {
-        // Bringe ich wieder ne Ware mit? Dann muss die mit zu den waiting_wares, da die Flagge evtl voll war
+        // If I still cary a ware than either the flag was full or I should not bring it there (goal=warehouse or goal destroyed -> goal=location)
+        // So re-add it to waiting wares or to inventory
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
