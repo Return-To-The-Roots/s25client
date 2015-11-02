@@ -160,33 +160,34 @@ void GameWorld::Scan(glArchivItem_Map* map)
             // FOW-Zeug initialisieren
             for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
             {
+                MapNode::FoWData& fow = node.fow[i];
                 switch(GAMECLIENT.GetGGS().exploration)
                 {
                     case GlobalGameSettings::EXP_DISABLED:
                     {
-                        node.fow[i].visibility = VIS_VISIBLE;
+                        fow.visibility = VIS_VISIBLE;
                     } break;
                     case GlobalGameSettings::EXP_CLASSIC:
                     {
-                        node.fow[i].visibility = VIS_INVISIBLE;
+                        fow.visibility = VIS_INVISIBLE;
                     } break;
                     case GlobalGameSettings::EXP_FOGOFWAR:
                     {
-                        node.fow[i].visibility = VIS_INVISIBLE;
+                        fow.visibility = VIS_INVISIBLE;
                     } break;
                     case GlobalGameSettings::EXP_FOGOFWARE_EXPLORED:
                     {
-                        node.fow[i].visibility = VIS_FOW;
+                        fow.visibility = VIS_FOW;
                     } break;
                 }
 
-                node.fow[i].last_update_time = 0;
-                node.fow[i].object = NULL;
-                node.fow[i].roads[0] = node.fow[i].roads[1] =
-                                           node.fow[i].roads[2] = 0;
-                node.fow[i].owner = 0;
+                fow.last_update_time = 0;
+                fow.object = NULL;
+                fow.roads[0] = fow.roads[1] =
+                                           fow.roads[2] = 0;
+                fow.owner = 0;
                 for(unsigned z = 0; z < 4; ++z)
-                    node.fow[i].boundary_stones[z] = 0;
+                    fow.boundary_stones[z] = 0;
             }
         }
     }

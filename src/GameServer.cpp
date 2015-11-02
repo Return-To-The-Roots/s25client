@@ -324,17 +324,18 @@ bool GameServer::Start()
             for(unsigned char i = 0; i < serverconfig.playercount; ++i)
             {
                 // PlayerState
-                players[i].ps = PlayerState(save.GetPlayer(i).ps);
+                const SavedFile::Player& savePlayer = save.GetPlayer(i);
+                players[i].ps = PlayerState(savePlayer.ps);
 
                 if(players[i].ps != PS_LOCKED)
                 {
                     // (ehemaliger) Spielername
-                    players[i].origin_name = save.GetPlayer(i).name;
+                    players[i].origin_name = savePlayer.name;
 
                     // Volk, Team und Farbe
-                    players[i].nation = save.GetPlayer(i).nation;
-                    players[i].color = save.GetPlayer(i).color;
-                    players[i].team = Team(save.GetPlayer(i).team);
+                    players[i].nation = savePlayer.nation;
+                    players[i].color = savePlayer.color;
+                    players[i].team = Team(savePlayer.team);
 
                 }
 
@@ -353,18 +354,18 @@ bool GameServer::Start()
                 //warning: if you ever add new ai types - it is not enough that the server knows about the ai! when the host joins his server he will get ONMSPLAYERLIST which also doesnt include the aitype!
                 else if(players[i].ps == PS_KI)
                 {
-                    if(!strncmp(save.GetPlayer(i).name.c_str(), "Computer", 7))
+                    if(!strncmp(savePlayer.name.c_str(), "Computer", 7))
                     {
-                        LOG.lprintf("loading aijh: %s \n", save.GetPlayer(i).name.c_str());
+                        LOG.lprintf("loading aijh: %s \n", savePlayer.name.c_str());
                         players[i].aiInfo = AI::Info(AI::DEFAULT);
                         players[i].rating = 666;
                     }
                     else
                     {
-                        LOG.lprintf("loading default - dummy: %s \n", save.GetPlayer(i).name.c_str());
+                        LOG.lprintf("loading default - dummy: %s \n", savePlayer.name.c_str());
                         players[i].aiInfo = AI::Info(AI::DUMMY);
                     }
-                    players[i].name = save.GetPlayer(i).name;
+                    players[i].name = savePlayer.name;
                 }
             }
 
