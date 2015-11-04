@@ -33,7 +33,7 @@ class ctrlComboBox : public Window
         void DeleteAllItems();
 
         void SetSelection(unsigned short selection);
-        unsigned short GetSelection() const { return selection_; };
+        unsigned short GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
         unsigned short GetCount() const { return GetCtrl<ctrlList>(0)->GetLineCount(); }
         const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
 
@@ -56,7 +56,6 @@ class ctrlComboBox : public Window
         glArchivItem_Font* font;
         unsigned short max_list_height;
         bool readonly;
-        unsigned short selection_;
         bool last_show;
 };
 

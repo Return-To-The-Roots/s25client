@@ -51,7 +51,7 @@ ctrlComboBox::ctrlComboBox(Window* parent,
                            unsigned short max_list_height,
                            bool readonly)
     : Window(x, y, id, parent, width, height),
-      tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), selection_(0), last_show(false)
+      tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), last_show(false)
 {
     ctrlList* liste = AddList(0, 0, height, width, 4, tc, font);
 
@@ -263,9 +263,9 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
     ctrlList* list = GetCtrl<ctrlList>(0);
 
     // ist in der Liste überhaupt was drin?
-    if(selection != this->selection_ && list->GetLineCount() > 0)
+    if(selection != GetSelection() && list->GetLineCount() > 0)
     {
-        this->selection_ = selection;
+        SetSelection(selection);
 
         // Nachricht an übergeordnetes Fenster verschicken
         parent_->Msg_ComboSelectItem(GetID(), selection);
@@ -305,7 +305,6 @@ void ctrlComboBox::DeleteAllItems()
  */
 void ctrlComboBox::SetSelection(unsigned short selection)
 {
-    this->selection_ = selection;
     GetCtrl<ctrlList>(0)->SetSelection(selection);
 }
 
