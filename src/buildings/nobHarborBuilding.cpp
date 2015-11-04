@@ -504,6 +504,7 @@ void nobHarborBuilding::OrderExpeditionWares()
     unsigned boards = 0, stones = 0;
     for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
     {
+        assert(*it);
         if (*it == 0) // qx: check for bug #1132707
         {
             std::cout << "Error: Iterator to 0-Ware" << std::endl;

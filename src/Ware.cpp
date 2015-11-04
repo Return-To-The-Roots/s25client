@@ -430,11 +430,15 @@ bool Ware::ShipJorneyEnded(nobHarborBuilding* hb)
     location = hb;
 
     if (!goal)
-    {
-        return(false);
-    }
+        return false;
 
-    assert(location);
+    assert(location);//goal check
+    if(location == goal)
+    {
+        // Arrived at harbour
+        goal = NULL;
+        return false;
+    }
     next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
 
 // TODO: SHIP_DIR? order ship etc.
@@ -442,10 +446,10 @@ bool Ware::ShipJorneyEnded(nobHarborBuilding* hb)
     {
         goal->WareLost(this);
         goal = NULL;
-        return(false);
+        return false;
     }
 
-    return(true);
+    return true;
 }
 
 /// Beginnt damit auf ein Schiff im Hafen zu warten

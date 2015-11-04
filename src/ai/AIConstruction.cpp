@@ -441,7 +441,7 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
 {
     noFlag* targetFlag = this->FindTargetStoreHouseFlag(flag->GetPos());
     if (targetFlag)
-        return aii->FindPathOnRoads(*flag, *targetFlag);
+        return (targetFlag == flag) || aii->FindPathOnRoads(*flag, *targetFlag);
     else
         return false;
 }
