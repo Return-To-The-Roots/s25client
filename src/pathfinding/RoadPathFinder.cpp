@@ -21,6 +21,7 @@
 #include "GameWorldBase.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noRoadNode.h"
+#include "Log.h"
 
 #include <queue>
 
@@ -80,8 +81,17 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     assert(&start && &goal);
     if(&start == &goal)
     {
-        assert(false); // Path where start==goal should never happen
-        return false;
+        // Path where start==goal should never happen
+        assert(false);
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.GetX()), unsigned(start.GetY()));
+        // But for now we assume it to be valid and return (kind of) correct values
+        if(length)
+            *length = 0;
+        if(first_dir)
+            *first_dir = 0xff;
+        if(next_harbor)
+            *next_harbor = start.GetPos();
+        return true;
     }
 
     // Aus Replay lesen?
@@ -90,7 +100,8 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
         unsigned char dir;
         if(GAMECLIENT.ReadPathfindingResult(&dir,  length,  next_harbor))
         {
-            if(first_dir) *first_dir = dir;
+            if(first_dir)
+                *first_dir = dir;
             return (dir != 0xff);
         }
     }
@@ -153,10 +164,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                 *first_dir = (unsigned char) last->dir_;
 
             if (next_harbor)
-            {
-                next_harbor->x = last->GetX();
-                next_harbor->y = last->GetY();
-            }
+                *next_harbor = last->GetPos();
 
             if (record)
             {

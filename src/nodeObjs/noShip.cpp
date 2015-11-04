@@ -995,18 +995,14 @@ void noShip::HandleState_SeaAttackReturn()
 void noShip::StartDrivingToHarborPlace()
 {
     MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
-
-    // Versuchen, Weg zu finden
-    if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
+    if(pos == coastalPos)
+        route_.clear();
+    else if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL)) // Versuchen, Weg zu finden
     {
-        if(pos == coastalPos)
-            route_.clear();
-        else
-        {
-            // todo
-            LOG.lprintf("Achtung: Bug im Spiel: noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n", player, state, pos.x, pos.y, coastalPos.x, coastalPos.y, goal_harbor_id, gwg->GetHarborPoint(goal_harbor_id).x, gwg->GetHarborPoint(goal_harbor_id).y);
-            return;
-        }
+        // todo
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n",
+            GAMECLIENT.GetGFNumber(), player, state, pos.x, pos.y, coastalPos.x, coastalPos.y, goal_harbor_id, gwg->GetHarborPoint(goal_harbor_id).x, gwg->GetHarborPoint(goal_harbor_id).y);
+        return;
     }
     curRouteIdx = 0;
 }

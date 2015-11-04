@@ -150,7 +150,7 @@ void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
         assert(current_ev->gf_length > 0);
         if(current_ev->gf_length == 0)
         {
-            LOG.lprintf("Achtung: Bug im Spiel: noMovable::CalcRelative: current_ev->gf_length = 0!\n");
+            LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n", GAMECLIENT.GetGFNumber());
             return;
         }
     }

@@ -260,7 +260,7 @@ void noFigure::StartWalking(const unsigned char newDir)
     assert(newDir <= 5);
     if(newDir > 5)
     {
-        LOG.lprintf("Achtung: Bug im Spiel entdeckt! noFigure::StartWalking: dir = %d\n", unsigned(newDir));
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GAMECLIENT.GetGFNumber(), unsigned(newDir));
         return;
     }
 
@@ -294,7 +294,7 @@ void noFigure::StartWalking(const unsigned char newDir)
     assert(dir <= 5);
     if(dir > 5)
     {
-        LOG.lprintf("Achtung: Bug im Spiel entdeckt! noFigure::StartWalking: dir = %d\n", unsigned(dir));
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GAMECLIENT.GetGFNumber(), unsigned(dir));
         return;
     }
 

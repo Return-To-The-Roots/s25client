@@ -336,7 +336,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
 
     /*  assert(best_ware);
         if(!best_ware)
-            LOG.lprintf("Achtung: Bug im Spiel: noFlag::SelectWare: best_ware = 0!\n");
+            LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFlag::SelectWare: best_ware = 0!\n", GAMECLIENT.GetGFNumber());
     */
     return best_ware;
 }
