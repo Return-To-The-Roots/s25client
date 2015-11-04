@@ -777,8 +777,9 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             {
                 case SC_SCREENSAVE:
                 case SC_MONITORPOWER:
-                case SC_KEYMENU: // F10-Fehler beheben -> will sonst Fenster verschieben, was das
-                    // das Zeichnen unterbindet
+                    return 0;
+                case SC_KEYMENU: // F10-Fehler beheben -> will sonst Fenster verschieben, was das Zeichnen unterbindet
+                    pVideoWinAPI->OnWMKeyDown(VK_F10, 0); // pretend we got a F10 stroke
                     return 0;
             }
         } break;
