@@ -221,7 +221,7 @@ FOWObject* noFlag::CreateFOWObject() const
  *
  *  @author OLiver
  */
-void noFlag::AddWare(Ware* ware)
+void noFlag::AddWare(Ware*& ware)
 {
     for(unsigned char i = 0; i < 8; ++i)
     {

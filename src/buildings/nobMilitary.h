@@ -136,7 +136,7 @@ class nobMilitary : public nobBaseMilitary
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
         void TakeWare(Ware* ware);
         /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-        void AddWare(Ware* ware);
+        void AddWare(Ware*& ware);
         /// Eine bestellte Ware konnte doch nicht kommen
         void WareLost(Ware* ware);
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde

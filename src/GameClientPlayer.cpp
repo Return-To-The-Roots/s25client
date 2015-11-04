@@ -1342,7 +1342,9 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
     }
 
     LOG.lprintf("GameClientPlayer::GetBuidingSitePriority: ERROR: BuildingSite or type of it not found in the list!\n");
-    return 0xFFFFFFFF;
+    assert(false);
+    // We may want to multiply this value so don't return the absolute max value
+    return std::numeric_limits<unsigned>::max() / 1000;
 }
 
 void GameClientPlayer::ConvertTransportData(const TransportOrders& transport_data)
