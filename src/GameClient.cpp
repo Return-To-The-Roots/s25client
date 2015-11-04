@@ -299,7 +299,11 @@ void GameClient::Stop()
     // (im Spiel wird das dann von ExitGame übernommen, da die Spielerdaten evtl noch für
     // Statistiken usw. benötigt werden
     if(state != CS_GAME)
+    {
+        if(human_ai)
+            deletePtr(human_ai);
         players.clear();
+    }
 
     state = CS_STOPPED;
 
