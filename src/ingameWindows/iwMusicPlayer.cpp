@@ -33,6 +33,7 @@
 #include "fileFuncs.h"
 #include "ListDir.h"
 #include "Settings.h"
+#include <boost/filesystem.hpp>
 
 #ifndef _WIN32
 #	include <unistd.h>
@@ -117,14 +118,12 @@ iwMusicPlayer::~iwMusicPlayer()
         try{
             if(!pl.SaveAs(GetFullPlaylistPath(str), true))
                 // Fehler, konnte nicht gespeichert werden
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
         }catch(std::exception&){}
-    }
 
-
-    // Entsprechenden Dateipfad speichern
-    if(selection != 0xFFFF)
+        // Entsprechenden Dateipfad speichern
         SETTINGS.sound.playlist = GetCtrl<ctrlComboBox>(2)->GetText(selection);
+    }
 
     // Werte in Musikplayer bringen
     if(changed)
@@ -435,10 +434,11 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     unsigned i = 0;
     for(std::list<std::string>::iterator it = segments.begin(); it != segments.end(); ++it, ++i)
     {
-        std::string entry = it->substr(it->find_last_of("/") + 1);
-        entry.erase(entry.length() - 4, 4);
-        GetCtrl<ctrlComboBox>(2)->AddString(entry);
-        if(entry == highlight_entry)
+        bfs::path playlistPath(*it);
+        // Reduce to pure filename
+        playlistPath = playlistPath.stem();
+        GetCtrl<ctrlComboBox>(2)->AddString(playlistPath.string());
+        if(playlistPath == highlight_entry)
             GetCtrl<ctrlComboBox>(2)->SetSelection(i);
     }
 }
