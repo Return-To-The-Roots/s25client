@@ -173,7 +173,7 @@ bool GameManager::Run()
 
     unsigned int current_time = VIDEODRIVER.GetTickCount();
 
-    unsigned long vsync_wanted = ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 30 : SETTINGS.video.vsync;
+    unsigned long vsync_wanted = ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 60 : SETTINGS.video.vsync;
 
     // SW-VSync (mit 4% Toleranz)
     if(vsync_wanted > 1)
