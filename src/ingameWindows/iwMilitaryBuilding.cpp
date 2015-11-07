@@ -120,14 +120,14 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         unsigned short leftXCoordinate = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2;
 
         // black background for hitpoints
-        DrawRectangle(leftXCoordinate , GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
+        DrawRectangle(leftXCoordinate, GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
 
         i = 0;
         for (std::multiset<const nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
             std::stringstream hitpointsText;
-            hitpointsText << (int)(*it)->GetHitpoints() << "/" << (int)HITPOINTS[building->nation][(*it)->GetRank()];
-            int x = leftXCoordinate + 12 + i * 22;
-            NormalFont->Draw(x , GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            hitpointsText << static_cast<int>((*it)->GetHitpoints()) << "/" << static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
+			unsigned short x = leftXCoordinate + 12 + i * 22;
+            NormalFont->Draw(x, GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
         }
     }
 }
