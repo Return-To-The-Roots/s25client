@@ -23,7 +23,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
-*  Addon adds shows the hitpoints of a soldier under his picture in military buildings. 
+*  Addon adds shows the hitpoints of a soldier above his picture in military buildings. 
 *
 *  @author Ribosom
 */

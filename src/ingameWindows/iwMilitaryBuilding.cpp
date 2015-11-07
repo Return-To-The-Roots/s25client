@@ -112,16 +112,21 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 
     // Soldaten zeichnen
     unsigned short i = 0;
-    for(std::multiset<nofSoldier*>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
+    for(std::multiset<nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
         LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
 
-    // Draw health under soldiers
+    // Draw health above soldiers
     if (GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_HITPOINTS)) { 
+		unsigned short leftXCoordinate = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2;
+
+		// black background for hitpoints
+		DrawRectangle(leftXCoordinate , GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
+
         i = 0;
-        for (std::multiset<nofSoldier*>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
+        for (std::multiset<nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
             char txt[64];
             sprintf(txt, "%u/%u", (*it)->GetHitpoints() , HITPOINTS[building->nation][(*it)->GetRank()]);
-            int x = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22;
+            int x = leftXCoordinate + 12 + i * 22;
             NormalFont->Draw(x , GetY() + 86, txt,glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
         }
     }
