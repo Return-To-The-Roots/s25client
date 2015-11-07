@@ -69,7 +69,7 @@ class nofSoldier : public noFigure
 template< bool T_SortAsc >
 struct ComparatorSoldiersByRank
 {
-    bool operator()(nofSoldier* left, nofSoldier* right) const
+    bool operator()(const nofSoldier* left, const nofSoldier* right) const
     {
         if(left->GetRank() == right->GetRank())
             return (T_SortAsc) ? left->GetObjId() < right->GetObjId() : left->GetObjId() > right->GetObjId();

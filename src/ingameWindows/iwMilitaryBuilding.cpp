@@ -95,7 +95,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     DrawRectangle(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    std::multiset<nofSoldier*, ComparatorSoldiersByRank<true>> soldiers;
+    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>> soldiers;
     for(SortedTroops::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
         soldiers.insert(*it);
 
@@ -112,22 +112,22 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 
     // Soldaten zeichnen
     unsigned short i = 0;
-    for(std::multiset<nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
+    for(std::multiset<const nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
         LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
 
     // Draw health above soldiers
     if (GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_HITPOINTS)) { 
-		unsigned short leftXCoordinate = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2;
+        unsigned short leftXCoordinate = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2;
 
-		// black background for hitpoints
-		DrawRectangle(leftXCoordinate , GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
+        // black background for hitpoints
+        DrawRectangle(leftXCoordinate , GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
 
         i = 0;
-        for (std::multiset<nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
-            char txt[64];
-            sprintf(txt, "%u/%u", (*it)->GetHitpoints() , HITPOINTS[building->nation][(*it)->GetRank()]);
+        for (std::multiset<const nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
+            std::stringstream hitpointsText;
+            hitpointsText << (int)(*it)->GetHitpoints() << "/" << (int)HITPOINTS[building->nation][(*it)->GetRank()];
             int x = leftXCoordinate + 12 + i * 22;
-            NormalFont->Draw(x , GetY() + 86, txt,glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            NormalFont->Draw(x , GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
         }
     }
 }
