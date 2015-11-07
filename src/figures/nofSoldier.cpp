@@ -88,3 +88,8 @@ unsigned char nofSoldier::GetRank() const
 {
     return (job_ - JOB_PRIVATE);
 }
+
+unsigned char nofSoldier::GetHitpoints() const
+{
+    return hitpoints;
+}
