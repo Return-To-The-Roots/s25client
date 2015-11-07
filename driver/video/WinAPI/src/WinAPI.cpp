@@ -193,15 +193,14 @@ void VideoWinAPI::CleanUp(void)
 std::wstring AnsiToUtf8(LPCSTR tSource, int nLength = -1)
 {
     int nConvertedLength = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, NULL, 0);
-    std::wstring wTarget;
     if(!nConvertedLength)
-        return wTarget;
-    wTarget.resize(nConvertedLength);
+        return std::wstring();
+    std::vector<wchar_t> wTarget(nConvertedLength);
     int nResult = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, &wTarget[0], nConvertedLength);
     if(nResult != nConvertedLength)
         wTarget.clear();
 
-    return wTarget;
+    return &wTarget[0];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
