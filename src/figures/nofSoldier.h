@@ -60,6 +60,8 @@ class nofSoldier : public noFigure
 
         /// Liefert Rang des Soldaten
         unsigned char GetRank() const;
+
+        unsigned char GetHitpoints() const;
 };
 
 /// Comparator to sort soldiers by rank (and ID for ties)

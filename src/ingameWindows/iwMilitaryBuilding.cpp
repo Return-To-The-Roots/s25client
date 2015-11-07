@@ -95,9 +95,9 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     DrawRectangle(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    std::multiset<unsigned> soldiers;
+    std::multiset<nofSoldier*, ComparatorSoldiersByRank<true>> soldiers;
     for(SortedTroops::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
-        soldiers.insert((*it)->GetRank());
+        soldiers.insert(*it);
 
     for(std::list<noFigure*>::iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)
     {
@@ -106,14 +106,25 @@ void iwMilitaryBuilding::Msg_PaintAfter()
                 (*it)->GetGOT() == GOT_NOF_DEFENDER ||
                 (*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
         {
-            soldiers.insert(static_cast<nofSoldier*>(*it)->GetRank());
+            soldiers.insert(static_cast<nofSoldier*>(*it));
         }
     }
 
     // Soldaten zeichnen
     unsigned short i = 0;
-    for(std::multiset<unsigned>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
-        LOADER.GetMapImageN(2321 + *it)->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
+    for(std::multiset<nofSoldier*>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
+        LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
+
+    // Draw health under soldiers
+    if (GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_HITPOINTS)) { 
+        i = 0;
+        for (std::multiset<nofSoldier*>::iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
+            char txt[64];
+            sprintf(txt, "%u/%u", (*it)->GetHitpoints() , HITPOINTS[building->nation][(*it)->GetRank()]);
+            int x = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22;
+            NormalFont->Draw(x , GetY() + 86, txt,glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+        }
+    }
 }
 
 

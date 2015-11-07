@@ -32,6 +32,7 @@
 // 008 Spikeone
 // 009 PoC
 // 00A Marcus
+// 00B Ribosom
 
 // Do not forget to add your Addon to GlobalGameSettings::reset @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -82,7 +83,9 @@ enum AddonId
 	ADDON_HALF_COST_MIL_EQUIP        = 0x00900007,
 	ADDON_MILITARY_CONTROL           = 0x00900008,
 
-    ADDON_SHIP_SPEED                 = 0x00A00000
+    ADDON_SHIP_SPEED                 = 0x00A00000,
+
+    ADDON_MILITARY_HITPOINTS         = 0x00B00000
 };
 
 enum AddonGroup

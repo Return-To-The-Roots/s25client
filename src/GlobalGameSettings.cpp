@@ -63,6 +63,8 @@
 #include "addons/AddonHalfCostMilEquip.h"
 #include "addons/AddonMilitaryControl.h"
 
+#include "addons/AddonMilitaryHitpoints.h"
+
 #include "Serializer.h"
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
@@ -161,6 +163,8 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonBattlefieldPromotion);
 		registerAddon(new AddonHalfCostMilEquip);
 		registerAddon(new AddonMilitaryControl);
+
+		registerAddon(new AddonMilitaryHitpoints);
     }
 }
 
