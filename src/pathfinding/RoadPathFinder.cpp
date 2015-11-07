@@ -30,34 +30,117 @@ template<
     class _Container = std::vector<_Ty>, 
     class _Pr = std::less<typename _Container::value_type>
 >
-class openlist_container : public std::priority_queue<_Ty,   _Container,  _Pr>
+class OpenListPrioQueue : public std::priority_queue<_Ty,   _Container,  _Pr>
 {
     typedef std::priority_queue<_Ty,   _Container,  _Pr> Parent;
 public:
-    openlist_container(): Parent()
+    typedef typename std::vector<_Ty>::iterator iterator;
+
+    OpenListPrioQueue(): Parent()
     {
         Parent::c.reserve(255);
     }
 
     void rearrange(const _Ty& target)
     {
-        typename std::vector<_Ty>::iterator it = std::find(Parent::c.begin(), Parent::c.end(), target);
+        iterator it = std::find(Parent::c.begin(), Parent::c.end(), target);
+        rearrange(it);
+    }
+
+    void rearrange(iterator it)
+    {
         std::push_heap(Parent::c.begin(), it + 1, Parent::comp);
+    }
+
+    iterator find(const _Ty& target)
+    {
+        return std::find(Parent::c.begin(), Parent::c.end(), target);
     }
 
     void clear()
     {
         Parent::c.clear();
     }
+
+    /// Removes and returns the first element
+    _Ty pop()
+    {
+        _Ty result = Parent::top();
+        Parent::pop();
+        return result;
+    }
 };
 
-// a 'second' current_visit for road pathfinding
-unsigned current_visit_on_roads = 0;
+template<class T>
+class OpenListVector
+{
+    std::vector<T> elements;
+public:
+    typedef typename std::vector<T>::iterator iterator;
+
+    OpenListVector()
+    {
+        elements.reserve(255);
+    }
+
+    T pop()
+    {
+        assert(!empty());
+        const int size = static_cast<int>(elements.size());
+        if (size == 1)
+        {
+            T best = elements.front();
+            elements.clear();
+            return best;
+        }
+        int bestIdx = 0;
+        unsigned bestEstimate = elements.front()->estimate;
+        for (int i = 1; i < size; i++)
+        {
+            // Note that this check does not consider nodes with the same value
+            // However this is a) correct (same estimate = same quality so no preference from the algorithm)
+            // and b) still fully deterministic as the entries are NOT sorted and the insertion-extraction-pattern
+            // is completely pre-determined by the graph-structur
+            const unsigned estimate = elements[i]->estimate;
+            if (estimate < bestEstimate)
+            {
+                bestEstimate = estimate;
+                bestIdx = i;
+            }
+        }
+        T best = elements[bestIdx];
+        elements[bestIdx] = elements[size - 1];
+        elements.resize(size - 1);
+        return best;
+    }
+
+    void clear()
+    {
+        elements.clear();
+    }
+
+    bool empty()
+    {
+        return elements.empty();
+    }
+
+    void push(T el)
+    {
+        elements.push_back(el);
+    }
+
+    size_t size() const
+    {
+        return elements.size();
+    }
+
+    void rearrange(const T& target) {}
+};
 
 /// Comparison operator for road nodes that returns true if lhs > rhs (descending order)
 struct RoadNodeComperatorGreater
 {
-    bool operator()(const noRoadNode* const lhs,  const noRoadNode* const rhs) const
+    bool operator()(const noRoadNode* const lhs, const noRoadNode* const rhs) const
     {
         if (lhs->estimate == rhs->estimate)
         {
@@ -70,7 +153,9 @@ struct RoadNodeComperatorGreater
     }
 };
 
-openlist_container<const noRoadNode*,  std::vector<const noRoadNode*>,  RoadNodeComperatorGreater> todo;
+typedef OpenListPrioQueue<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorGreater> QueueImpl;
+typedef OpenListVector<const noRoadNode*> VecImpl;
+VecImpl todo;
 
 /// Wegfinden ( A* ),  O(v lg v) --> Wegfindung auf Straßen
 bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, 
@@ -107,10 +192,10 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     }
 
     // increase current_visit_on_roads,  so we don't have to clear the visited-states at every run
-    current_visit_on_roads++;
+    currentVisit++;
 
     // if the counter reaches its maxium,  tidy up
-    if (current_visit_on_roads == std::numeric_limits<unsigned>::max())
+    if (currentVisit == std::numeric_limits<unsigned>::max())
     {
         int w = gwb_.GetWidth();
         int h = gwb_.GetHeight();
@@ -123,6 +208,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                     node->last_visit = 0;
             }
         }
+        currentVisit = 1;
     }
 
     // Anfangsknoten einfügen
@@ -130,7 +216,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
 
     start.targetDistance = gwb_.CalcDistance(start.GetPos(),  goal.GetPos());
     start.estimate = start.targetDistance;
-    start.last_visit = current_visit_on_roads;
+    start.last_visit = currentVisit;
     start.prev = NULL;
     start.cost = 0;
     start.dir_ = 0;
@@ -140,10 +226,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     while (!todo.empty())
     {
         // Knoten mit den geringsten Wegkosten auswählen
-        const noRoadNode* best = todo.top();
-
-        // Knoten behandelt --> raus aus der todo Liste
-        todo.pop();
+        const noRoadNode* best = todo.pop();
 
         // Ziel erreicht?
         if (best == &goal)
@@ -221,7 +304,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                 continue;
 
             // Was node already visited?
-            if (neighbour->last_visit == current_visit_on_roads)
+            if (neighbour->last_visit == currentVisit)
             {
                 // Dann nur ggf. Weg und Vorgänger korrigieren,  falls der Weg kürzer ist
                 if (cost < neighbour->cost)
@@ -235,7 +318,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
             }else
             {
                 // Not visited yet -> Add to list
-                neighbour->last_visit = current_visit_on_roads;
+                neighbour->last_visit = currentVisit;
                 neighbour->cost = cost;
                 neighbour->dir_ = i;
                 neighbour->prev = best;
@@ -262,7 +345,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
 
                 noRoadNode& dest = *scs[i].dest;
                 // Was node already visited?
-                if (dest.last_visit == current_visit_on_roads)
+                if (dest.last_visit == currentVisit)
                 {
                     // Dann nur ggf. Weg und Vorgänger korrigieren,  falls der Weg kürzer ist
                     if (cost < dest.cost)
@@ -276,7 +359,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                 }else
                 {
                     // Not visited yet -> Add to list
-                    dest.last_visit = current_visit_on_roads;
+                    dest.last_visit = currentVisit;
 
                     dest.dir_ = 100;
                     dest.prev = best;

@@ -27,8 +27,9 @@ class RoadSegment;
 class RoadPathFinder
 {
     GameWorldBase& gwb_;
+    unsigned currentVisit;
 public:
-    RoadPathFinder(GameWorldBase& gwb): gwb_(gwb) {}
+    RoadPathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0) {}
 
     bool FindPath(const noRoadNode& start, const noRoadNode& goal, 
         const bool ware_mode, unsigned* length, 
