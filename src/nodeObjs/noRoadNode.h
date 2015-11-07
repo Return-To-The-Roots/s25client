@@ -41,7 +41,6 @@ class noRoadNode : public noCoordBase
         RoadSegment* routes[6];
 
 // For Pathfinding
-        mutable unsigned coord_id;
         // cost from start
         mutable unsigned cost;
         // distance to target

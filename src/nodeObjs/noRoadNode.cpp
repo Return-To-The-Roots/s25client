@@ -40,7 +40,6 @@ noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsi
 {
     for(unsigned i = 0; i < 6; ++i)
         routes[i] = 0;
-    coord_id = gwg->MakeCoordID(pos);
     last_visit = 0;
 }
 
@@ -89,7 +88,6 @@ noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoord
         routes[i] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
 
-    coord_id = gwg->MakeCoordID(pos);
     last_visit = 0;
 }
 
