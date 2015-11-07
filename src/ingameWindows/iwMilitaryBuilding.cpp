@@ -126,7 +126,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         for (std::multiset<const nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
             std::stringstream hitpointsText;
             hitpointsText << static_cast<int>((*it)->GetHitpoints()) << "/" << static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
-			unsigned short x = leftXCoordinate + 12 + i * 22;
+            unsigned short x = leftXCoordinate + 12 + i * 22;
             NormalFont->Draw(x, GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
         }
     }
