@@ -95,7 +95,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     DrawRectangle(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>> soldiers;
+    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> > soldiers;
     for(SortedTroops::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
         soldiers.insert(*it);
 
