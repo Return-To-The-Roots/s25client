@@ -494,6 +494,7 @@ void nobHarborBuilding::StartExplorationExpedition()
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
+    assert(!IsBeingDestroyedNow()); // Wares should already be canceled!
     if (this->IsBeingDestroyedNow()) // don't order new stuff if we are about to be destroyed
         return;
 
