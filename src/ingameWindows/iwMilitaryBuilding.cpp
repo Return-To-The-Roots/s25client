@@ -112,7 +112,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 
     // Soldaten zeichnen
     unsigned short i = 0;
-    for(std::multiset<const nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
+    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
         LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
 
     // Draw health above soldiers
@@ -123,7 +123,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         DrawRectangle(leftXCoordinate, GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
 
         i = 0;
-        for (std::multiset<const nofSoldier*>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
+        for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
             std::stringstream hitpointsText;
             hitpointsText << static_cast<int>((*it)->GetHitpoints()) << "/" << static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
             unsigned short x = leftXCoordinate + 12 + i * 22;
