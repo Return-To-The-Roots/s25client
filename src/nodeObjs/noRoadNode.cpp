@@ -138,7 +138,7 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
 #endif
 
         RoadSegment* tmp = routes[dir];
-        routes[dir] = 0;
+        routes[dir] = NULL;
 
         tmp->Destroy();
         delete tmp;

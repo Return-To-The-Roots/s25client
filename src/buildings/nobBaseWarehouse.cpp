@@ -91,7 +91,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         (*it)->GoHome();
 	for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
-        (*it)->GoalDestroyed();
+        WareNotNeeded(*it);
 
     // ggf. Events abmelden
     em->RemoveEvent(recruiting_event);
@@ -573,7 +573,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             {
                 // Ware
 
-                Ware* ware = new Ware(GoodType(selectedId), 0, this);
+                Ware* ware = new Ware(GoodType(selectedId), NULL, this);
                 ware->goal = gwg->GetPlayer(player).FindClientForWare(ware);
 
                 // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
@@ -732,6 +732,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
 void nobBaseWarehouse::AddWaitingWare(Ware* ware)
 {
     waiting_wares.push_back(ware);
+    ware->LieInWarehouse();
     // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     AddLeavingEvent();
     // Die visuelle Warenanzahl wieder erhöhen
@@ -903,6 +904,7 @@ void nobBaseWarehouse::WareLost(Ware* ware)
 void nobBaseWarehouse::CancelWare(Ware* ware)
 {
     // Ware aus den Waiting-Wares entfernen
+    assert(helpers::contains(waiting_wares, ware));
     waiting_wares.remove(ware);
     // Anzahl davon wieder hochsetzen
     ++real_goods.goods[ConvertShields(ware->type)];

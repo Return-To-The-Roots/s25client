@@ -139,6 +139,8 @@ void Ware::GoalDestroyed()
     if(state == STATE_WAITINWAREHOUSE)
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
+        assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
+        goal = NULL; // just in case: avoid corruption although the ware itself might be lost (won't ever be carried again)
     }
     // Ist sie evtl. gerade mit dem Schiff unterwegs?
     else if(state == STATE_ONSHIP)
