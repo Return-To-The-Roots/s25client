@@ -507,6 +507,9 @@ void nobHarborBuilding::StartExplorationExpedition()
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
+    if (this->IsBeingDestroyedNow()) // don't order new stuff if we are about to be destroyed
+        return;
+
     if(!expedition.active) //expedition no longer active?
         return;
     // Waren in der Bestellungsliste mit beachten
