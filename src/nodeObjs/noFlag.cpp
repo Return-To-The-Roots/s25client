@@ -55,11 +55,11 @@ noFlag::noFlag(const MapPoint pos,
     : noRoadNode(NOP_FLAG, pos, player),
       ani_offset(rand() % 20000), flagtype(FT_NORMAL)
 {
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
         wares[i] = NULL;
 
     // BWUs nullen
-    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    for(unsigned i = 0; i < bwus.size(); ++i)
     {
         bwus[i].id = 0xFFFFFFFF;
         bwus[i].last_gf = 0;
@@ -78,7 +78,7 @@ noFlag::noFlag(const MapPoint pos,
     }
 
     // auf Wasseranteile prüfen
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < 6; ++i)
     {
         if(TerrainData::IsWater(gwg->GetTerrainAround(pos, i)))
             flagtype = FT_WATER;
@@ -95,11 +95,11 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned int obj_id)
     : noRoadNode(sgd, obj_id),
       ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
 {
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
         wares[i] = sgd.PopObject<Ware>(GOT_WARE);
 
     // BWUs laden
-    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    for(unsigned i = 0; i < bwus.size(); ++i)
     {
         bwus[i].id = sgd.PopUnsignedInt();
         bwus[i].last_gf = sgd.PopUnsignedInt();
@@ -115,7 +115,7 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned int obj_id)
 noFlag::~noFlag()
 {
     // Waren vernichten
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
         delete wares[i];
 }
 
@@ -131,7 +131,7 @@ void noFlag::Destroy_noFlag()
     gwg->SetNO(0, pos);
 
     // Waren vernichten
-    for(unsigned i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
     {
         if(wares[i])
         {
@@ -159,11 +159,11 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
     Serialize_noRoadNode(sgd);
 
     sgd.PushUnsignedChar(static_cast<unsigned char>(flagtype));
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
         sgd.PushObject(wares[i], true);
 
     // BWUs speichern
-    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    for(unsigned i = 0; i < bwus.size(); ++i)
     {
         sgd.PushUnsignedInt(bwus[i].id);
         sgd.PushUnsignedInt(bwus[i].last_gf);
@@ -223,19 +223,18 @@ FOWObject* noFlag::CreateFOWObject() const
  */
 void noFlag::AddWare(Ware*& ware)
 {
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
     {
-        if(!wares[i])
-        {
-            wares[i] = ware;
+        if(wares[i])
+            continue;
 
-            // Träger Bescheid sagen
-            if(ware->GetNextDir() != 0xFF)
-                routes[ware->GetNextDir()]->AddWareJob(this);
-
-            return;
-        }
+        wares[i] = ware;
+        // Träger Bescheid sagen
+        if(ware->GetNextDir() != 0xFF)
+            routes[ware->GetNextDir()]->AddWareJob(this);
+        return;
     }
+    assert(false); // No place found???
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -247,7 +246,7 @@ void noFlag::AddWare(Ware*& ware)
 unsigned noFlag::GetWareCount() const
 {
     unsigned count = 0;
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
         if(wares[i])
             ++count;
 
@@ -272,25 +271,24 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     unsigned best_ware_index = 0xFF;
 
     // Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
     {
-        if(wares[i])
+        if(!wares[i])
+            continue;
+        if(wares[i]->GetNextDir() == dir)
         {
-            if(wares[i]->GetNextDir() == dir)
+            if(best_ware)
             {
-                if(best_ware)
-                {
-                    if(gwg->GetPlayer(player).transport[wares[i]->type] < gwg->GetPlayer(player).transport[best_ware->type])
-                    {
-                        best_ware = wares[i];
-                        best_ware_index = i;
-                    }
-                }
-                else
+                if(gwg->GetPlayer(player).transport[wares[i]->type] < gwg->GetPlayer(player).transport[best_ware->type])
                 {
                     best_ware = wares[i];
                     best_ware_index = i;
                 }
+            }
+            else
+            {
+                best_ware = wares[i];
+                best_ware_index = i;
             }
         }
     }
@@ -306,7 +304,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     {
         // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
-        for(unsigned char i = 0; i < 6; ++i)
+        for(unsigned i = 0; i < 6; ++i)
         {
             if(routes[i])
             {
@@ -343,6 +341,18 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     return best_ware;
 }
 
+unsigned short noFlag::GetWaresCountForRoad(const unsigned char dir) const
+{
+    unsigned short ret = 0;
+
+    for(unsigned i=0; i < wares.size(); i++)
+    {
+        if (wares[i] && (wares[i]->GetNextDir() == dir))
+            ret++;
+    }
+    return ret;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte
@@ -353,7 +363,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
 unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
     // Waren zählen, die in diese Richtung transportiert werden müssen
-    unsigned short points = GetWaresCountForRoad(dir) * 2;
+    unsigned short points = (dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     if(!routes[dir]->isOccupied())
@@ -402,14 +412,14 @@ void noFlag::Upgrade()
 void noFlag::Capture(const unsigned char new_owner)
 {
     // Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < 6; ++i)
     {
         if(i != 1)
             DestroyRoad(i);
     }
 
     // Waren vernichten
-    for(unsigned char i = 0; i < 8; ++i)
+    for(unsigned i = 0; i < wares.size(); ++i)
     {
         if(wares[i])
         {
@@ -434,7 +444,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
     const unsigned int MAX_BWU_INTERVAL = 2000;
 
     // BWU-ID erstmal suchen
-    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    for(unsigned i = 0; i < bwus.size(); ++i)
     {
         if(bwus[i].id == bwu_id)
         {
@@ -460,7 +470,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 void noFlag::ImpossibleForBWU(const unsigned bwu_id)
 {
     // Evtl gibts BWU schon --> Dann einfach GF-Zahl aktualisieren
-    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    for(unsigned i = 0; i < bwus.size(); ++i)
     {
         if(bwus[i].id == bwu_id)
         {
@@ -473,7 +483,7 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
     unsigned oldest_gf = 0xFFFFFFFF;
     unsigned oldest_account_id = 0;
 
-    for(unsigned char i = 0; i < MAX_BWU; ++i)
+    for(unsigned i = 0; i < bwus.size(); ++i)
     {
         if(bwus[i].last_gf < oldest_gf)
         {

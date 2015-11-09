@@ -20,7 +20,7 @@
 #include "noRoadNode.h"
 #include "RoadSegment.h"
 #include "gameTypes/MapTypes.h"
-#include "Ware.h"
+#include <boost/array.hpp>
 
 class noFlag : public noRoadNode
 {
@@ -35,7 +35,7 @@ class noFlag : public noRoadNode
         inline GO_Type GetGOT() const { return GOT_FLAG; }
         inline FlagType GetFlagType() const { return flagtype; }
         /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
-        inline bool IsSpaceForWare() const { return (GetWareCount() < 8); }
+        inline bool IsSpaceForWare() const { return GetWareCount() < wares.size(); }
 
         void Draw(int x, int y);
 
@@ -50,29 +50,7 @@ class noFlag : public noRoadNode
         /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
         Ware* SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier);
         /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
-        inline unsigned short GetWaresCountForRoad(const unsigned char dir) const
-        {
-            unsigned short ret = 0;
-
-            if (wares[0] && (wares[0]->GetNextDir() == dir))
-                ret++;
-            if (wares[1] && (wares[1]->GetNextDir() == dir))
-                ret++;
-            if (wares[2] && (wares[2]->GetNextDir() == dir))
-                ret++;
-            if (wares[3] && (wares[3]->GetNextDir() == dir))
-                ret++;
-            if (wares[4] && (wares[4]->GetNextDir() == dir))
-                ret++;
-            if (wares[5] && (wares[5]->GetNextDir() == dir))
-                ret++;
-            if (wares[6] && (wares[6]->GetNextDir() == dir))
-                ret++;
-            if (wares[7] && (wares[7]->GetNextDir() == dir))
-                ret++;
-
-            return(ret);
-        }
+        unsigned short GetWaresCountForRoad(const unsigned char dir) const;
         /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
         unsigned short GetPunishmentPoints(const unsigned char dir) const;
         /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
@@ -95,7 +73,7 @@ class noFlag : public noRoadNode
         FlagType flagtype;
 
         /// Die Waren, die an dieser Flagge liegen
-        Ware* wares[8];
+        boost::array<Ware*, 8> wares;
 
         /// Wieviele BWU-Teile es maximal geben soll, also wieviele abgebrannte Lagerhausgruppen
         /// gleichzeitig die Flagge als nicht begehbar deklarieren können.
@@ -106,7 +84,8 @@ class noFlag : public noRoadNode
         {
             unsigned int id;        ///< ID der Gruppe
             unsigned int last_gf;   ///< letzter TÜV, ob man auch nicht hinkommt, in GF
-        } bwus[MAX_BWU];
+        };
+        boost::array<BurnedWarehouseUnit, MAX_BWU> bwus;
 };
 
 #endif // !NO_FLAG_H_INCLUDED
