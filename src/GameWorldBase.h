@@ -36,6 +36,7 @@ class nobBaseMilitary;
 class noNothing;
 class fowNothing;
 class nofPassiveSoldier;
+class nobHarborBuilding;
 class GameWorldBase;
 struct lua_State;
 
@@ -355,6 +356,8 @@ public:
         nobHarborBuilding* harbor;
         /// Entfernung Hafen-Hafen (entscheidende)
         unsigned distance;
+
+        PotentialSeaAttacker(nofPassiveSoldier* soldier, nobHarborBuilding* harbor, unsigned distance): soldier(soldier), harbor(harbor), distance(distance){}
 
         /// Komperator zum Sortieren
         bool operator<(const PotentialSeaAttacker& pa) const;

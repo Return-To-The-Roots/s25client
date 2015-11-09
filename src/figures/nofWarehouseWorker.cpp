@@ -111,7 +111,7 @@ void nofWarehouseWorker::GoalReached()
         // ( dann ist goal = location )
         if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->goal != carried_ware->GetLocation() && carried_ware->goal != wh)
         {
-            carried_ware->LieAtFlag(gwg->GetSpecObj<noRoadNode>(pos));
+            carried_ware->WaitAtFlag(gwg->GetSpecObj<noFlag>(pos));
 
             // Ware soll ihren weiteren Weg berechnen
             carried_ware->RecalcRoute();

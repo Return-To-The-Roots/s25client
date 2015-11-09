@@ -232,6 +232,27 @@ void Ware::GoalDestroyed()
     }
 }
 
+void Ware::WaitAtFlag(noFlag* flag)
+{
+    assert(flag);
+    state = STATE_WAITATFLAG;
+    location = flag;
+}
+
+void Ware::WaitInWarehouse(nobBaseWarehouse* wh)
+{
+    assert(wh);
+    state = STATE_WAITINWAREHOUSE;
+    location = wh;
+}
+
+void Ware::Carry(noRoadNode* nextGoal)
+{
+    assert(nextGoal);
+    state = STATE_CARRIED;
+    location = nextGoal;
+}
+
 /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
 void Ware::NotifyGoalAboutLostWare()
 {

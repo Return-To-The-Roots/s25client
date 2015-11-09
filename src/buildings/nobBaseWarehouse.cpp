@@ -732,7 +732,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
 void nobBaseWarehouse::AddWaitingWare(Ware* ware)
 {
     waiting_wares.push_back(ware);
-    ware->LieInWarehouse();
+    ware->WaitInWarehouse(this);
     // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     AddLeavingEvent();
     // Die visuelle Warenanzahl wieder erhöhen

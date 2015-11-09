@@ -1368,7 +1368,7 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
     wares_for_ships.remove(ware);
     // Carry out. If it would want to go back to this building, then this will be handled by the carrier
     waiting_wares.push_back(ware);
-    ware->LieInWarehouse();
+    ware->IsWaitingInWarehouse();
     AddLeavingEvent();
 }
 

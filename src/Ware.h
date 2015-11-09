@@ -26,7 +26,7 @@
 class noBaseBuilding;
 class GameWorld;
 class nobHarborBuilding;
-
+class nobBaseWarehouse;
 
 // Die Klasse Ware kennzeichnet eine Ware, die von einem Träger transportiert wird bzw gerade an einer Flagge liegt
 class Ware : public GameObject
@@ -79,17 +79,18 @@ class Ware : public GameObject
 		void SetNextDir(unsigned char newnextdir) {next_dir=newnextdir;}
         /// Wird aufgerufen, wenn es das Ziel der Ware nicht mehr gibt und sie wieder "nach Hause" getragen werden muss
         void GoalDestroyed();
-        /// Verändert den Status der Ware
-        void LieAtFlag(noRoadNode* flag) { state = STATE_WAITATFLAG; location = flag; }
-        void Carry(noRoadNode* next_flag) { state = STATE_CARRIED; location = next_flag;  }
+        /// Changes the state of the ware
+        void WaitAtFlag(noFlag* flag);
+        void WaitInWarehouse(nobBaseWarehouse* wh);
+        void Carry(noRoadNode* nextGoal);
         /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
         void NotifyGoalAboutLostWare();
         /// Wenn die Ware vernichtet werden muss
         void WareLost(const unsigned char player);
         /// Gibt Status der Ware zurück
-        bool LieAtFlag() const { return (state == STATE_WAITATFLAG); }
-        bool LieInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
-        bool LieInHarborBuilding() const { return (state == STATE_WAITFORSHIP); }
+        bool IsWaitingAtFlag() const { return (state == STATE_WAITATFLAG); }
+        bool IsWaitingInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
+        bool IsWaitingForShip() const { return (state == STATE_WAITFORSHIP); }
         /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
         void RemoveWareJobForCurrentDir(const unsigned char last_next_dir);
         /// Überprüft, ob es noch ein Weg zum Ziel gibt für Waren, die noch im Lagerhaus liegen
@@ -155,7 +156,7 @@ class Ware : public GameObject
                 case GD_WATEREMPTY: return("GD_WATEREMPTY");
                 case GD_WOOD: return("GD_WOOD");
             }
-
+            assert(false);
             return("unknown");
         }
 };
