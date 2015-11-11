@@ -24,6 +24,7 @@
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainData.h"
+#include "pathfinding/RoadPathFinder.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -216,7 +217,10 @@ bool AIInterface::CalcBQSumDifference(const MapPoint pt, const MapPoint t)
 
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
-    return gwb.FindPathOnRoads(start, target, false, length, NULL, NULL, NULL, false);
+    if(length)
+        return gwb.GetRoadPathFinder().FindPath(start, target, false, false, std::numeric_limits<unsigned>::max(), NULL, length);
+    else
+        return gwb.GetRoadPathFinder().PathExists(start, target, false, false);
 }
 
 const nobHQ* AIInterface::GetHeadquarter() const

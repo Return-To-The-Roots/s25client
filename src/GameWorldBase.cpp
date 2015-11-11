@@ -697,13 +697,6 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return buildings;
 }
 
-bool GameWorldBase::FindPathOnRoads(const noRoadNode& start, const noRoadNode& goal,
-                     const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint* next_harbor,
-                     const RoadSegment* const forbidden, const bool record/* = true*/, const unsigned max/* = 0xFFFFFFFF*/) const
-{
-    return roadPathFinder->FindPath(start, goal, ware_mode, length, first_dir, next_harbor, forbidden, record, max);
-}
-
 /// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
 void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route)
 {

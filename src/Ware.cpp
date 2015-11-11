@@ -86,10 +86,10 @@ void Ware::RecalcRoute()
     if(location && goal)
         next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
     else
-        next_dir = 0xFF;
+        next_dir = INVALID_DIR;
 
     // Evtl gibts keinen Weg mehr? Dann wieder zurück ins Lagerhaus (wenns vorher überhaupt zu nem Ziel ging)
-    if(next_dir == 0xFF && goal)
+    if(next_dir == INVALID_DIR && goal)
     {
         // Tell goal about this
         goal->WareLost(this);
@@ -184,7 +184,7 @@ void Ware::GoalDestroyed()
             else //at the goal (which was just destroyed) and get carried out right now? -> we are about to get destroyed...
             {
                 goal = NULL;
-                next_dir = 0xFF;
+                next_dir = INVALID_DIR;
             }
         }
         // Wenn sie an einer Flagge liegt, muss der Weg neu berechnet werden und dem Träger Bescheid gesagt werden

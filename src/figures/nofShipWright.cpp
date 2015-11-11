@@ -1,5 +1,20 @@
-///////////////////////////////////////////////////////////////////////////////
-// Header
+// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+//
+// This file is part of Return To The Roots.
+//
+// Return To The Roots is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Return To The Roots is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
 #include "defines.h"
 #include "nofShipWright.h"
 #include "buildings/nobShipYard.h"
@@ -8,6 +23,7 @@
 #include "SoundManager.h"
 #include "GameClient.h"
 #include "Random.h"
+#include "gameData/GameConsts.h"
 
 nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_SHIPWRIGHT, pos, player, workplace), dest(MapPoint::Invalid())
@@ -60,10 +76,10 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                             if(obj->GetGOT() == GOT_SHIPBUILDINGSITE)
                             {
                                 // Platz noch nicht reserviert und gehört das Schiff auch mir?
-                                unsigned char first_dir = 0xFF;
+                                unsigned char first_dir = INVALID_DIR;
                                 if(!gwg->GetNode(pos).reserved &&
                                         static_cast<noShipBuildingSite*>(obj)->GetPlayer() == player &&
-                                        (first_dir = gwg->FindHumanPath(flagPos, t2, SHIPWRIGHT_WALKING_DISTANCE)) != 0xFF)
+                                        (first_dir = gwg->FindHumanPath(flagPos, t2, SHIPWRIGHT_WALKING_DISTANCE)) != INVALID_DIR)
                                 {
                                     available_points.push_back(ShipPoint(t2, first_dir));
                                 }

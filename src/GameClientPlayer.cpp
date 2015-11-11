@@ -42,6 +42,7 @@
 
 #include "SerializedGameData.h"
 #include "GameMessages.h"
+#include "pathfinding/RoadPathFinder.h"
 
 #include <stdint.h>
 #include <limits>
@@ -482,7 +483,7 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, bool 
 		if(gwg->CalcDistance(start.GetPos(),(*w)->GetPos()) > best_length)
 			continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
-        if(gwg->FindPathOnRoads(to_wh ? start : **w, to_wh ? **w : start, use_boat_roads, &tlength, NULL, NULL, forbidden, record, best_length))
+        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : **w, to_wh ? **w : start, record, use_boat_roads, best_length, forbidden, &tlength))
         {
             if(tlength < best_length || !best)
             {
@@ -662,7 +663,7 @@ bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
-    if(best[0] && (length[0] < length[1]))
+    if(best[0] && (!best[1] || length[0] < length[1]))
         best[0]->OrderCarrier(rs->GetF1(), rs);
     else if(best[1])
         best[1]->OrderCarrier(rs->GetF2(), rs);
@@ -915,7 +916,7 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
-    if(best[0] && (length[0] < length[1]))
+    if(best[0] && (!best[1] || length[0] < length[1]))
         return best[0]->OrderDonkey(road, road->GetF1());
     else if(best[1])
         return best[1]->OrderDonkey(road, road->GetF2());

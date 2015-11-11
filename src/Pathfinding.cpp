@@ -27,6 +27,8 @@
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 #include "gameData/TerrainData.h"
+#include "gameData/GameConsts.h"
+#include "pathfinding/RoadPathFinder.h"
 
 #include <set>
 #include <vector>
@@ -586,7 +588,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapPoint start,
             return dir;
     }
 
-    unsigned char first_dir = 0xFF;
+    unsigned char first_dir = INVALID_DIR;
     FindFreePath(start,  dest,  random_route,  max_route,  NULL,  length,  &first_dir,  IsPointOK_HumanPath, 
                  IsPointToDestOK_HumanPath,  NULL,  record);
 
@@ -598,20 +600,20 @@ unsigned char GameWorldBase::FindHumanPath(const MapPoint start,
 }
 
 /// Wegfindung für Menschen im Straßennetz
-unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* next_harbor, const RoadSegment* const forbidden)
+unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* firstPt, const RoadSegment* const forbidden)
 {
-    unsigned char first_dir = 0xFF;
-    if(FindPathOnRoads(start,  goal,  false,  length,  &first_dir,  next_harbor,  forbidden))
+    unsigned char first_dir = INVALID_DIR;
+    if(GetRoadPathFinder().FindPath(start, goal, true, false, std::numeric_limits<unsigned>::max(), forbidden, length, &first_dir, firstPt))
         return first_dir;
     else
         return 0xFF;
 }
 
 /// Wegfindung für Waren im Straßennetz
-unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* next_harbor, unsigned max)
+unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* firstPt, unsigned max)
 {
-    unsigned char first_dir = 0xFF;
-    if(FindPathOnRoads(start,  goal,  true,  length,  &first_dir,  next_harbor,  NULL,  true,  max))
+    unsigned char first_dir = INVALID_DIR;
+    if(GetRoadPathFinder().FindPath(start, goal, true, true, max, NULL, length, &first_dir, firstPt))
         return first_dir;
     else
         return 0xFF;
@@ -696,7 +698,7 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
     if(!IsNodeForFigures(dest) && !is_warehouse_at_goal )
         return 0xff;
 
-    unsigned char first_dir = 0xFF;
+    unsigned char first_dir = INVALID_DIR;
     FindFreePath(start,  dest,  random_route,  max_route,  route,  length,  &first_dir,  IsPointOK_TradePath, 
                  IsPointToDestOK_TradePath,  &player,  record);
 

@@ -22,6 +22,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noRoadNode.h"
 #include "Log.h"
+#include "gameData/GameConsts.h"
 
 #include <queue>
 
@@ -30,9 +31,9 @@ template<
     class _Container = std::vector<_Ty>, 
     class _Pr = std::less<typename _Container::value_type>
 >
-class OpenListPrioQueue : public std::priority_queue<_Ty,   _Container,  _Pr>
+class OpenListPrioQueue : public std::priority_queue<_Ty,  _Container, _Pr>
 {
-    typedef std::priority_queue<_Ty,   _Container,  _Pr> Parent;
+    typedef std::priority_queue<_Ty,  _Container, _Pr> Parent;
 public:
     typedef typename std::vector<_Ty>::iterator iterator;
 
@@ -144,7 +145,7 @@ struct RoadNodeComperatorGreater
     {
         if (lhs->estimate == rhs->estimate)
         {
-            // Wenn die Wegkosten gleich sind,  vergleichen wir die Koordinaten,  da wir für std::set eine streng
+            // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
             // monoton steigende Folge brauchen
             return (lhs->GetObjId() > rhs->GetObjId());
         }
@@ -157,11 +158,95 @@ typedef OpenListPrioQueue<const noRoadNode*, std::vector<const noRoadNode*>, Roa
 typedef OpenListVector<const noRoadNode*> VecImpl;
 VecImpl todo;
 
-/// Wegfinden ( A* ),  O(v lg v) --> Wegfindung auf Straßen
-bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, 
-                                    const bool ware_mode, unsigned* length, 
-                                    unsigned char* first_dir, MapPoint* next_harbor, 
-                                    const RoadSegment* const forbidden, const bool record, const unsigned max)
+// Namespace with all functors usable as additional cost functors
+namespace AdditonalCosts{
+    struct None
+    {
+        unsigned operator()(const noRoadNode& curNode, const unsigned char nextDir) const
+        {
+            return 0;
+        }
+    };
+
+    struct Carrier
+    {
+        unsigned operator()(const noRoadNode& curNode, const unsigned char nextDir) const
+        {
+            // Im Warenmodus müssen wir Strafpunkte für überlastete Träger hinzuaddieren, 
+            // damit der Algorithmus auch Ausweichrouten auswählt
+            return curNode.GetPunishmentPoints(nextDir);
+        }
+    };
+}
+
+// Namespace with all functors usable as segment constraint functors
+namespace SegmentConstraints{
+    struct None
+    {
+        bool operator()(const RoadSegment& segment) const
+        {
+            return true;
+        }
+    };
+
+    /// Disallows a specific road segment
+    struct AvoidSegment
+    {
+        const RoadSegment* const forbiddenSeg_;
+        AvoidSegment(const RoadSegment* const forbiddenSeg): forbiddenSeg_(forbiddenSeg)
+        {}
+
+        bool operator()(const RoadSegment& segment) const
+        {
+            return forbiddenSeg_ != &segment;
+        }
+    };
+
+    /// Disallows a specific road type
+    template<RoadSegment::RoadType T_roadType>
+    struct AvoidRoadType
+    {
+        bool operator()(const RoadSegment& segment) const
+        {
+            return segment.GetRoadType() != T_roadType;
+        }
+    };
+
+    /// Combines 2 functors by returning true only if both of them return true
+    /// Can be chained
+    template<class T_Func1, class T_Func2>
+    struct And: private T_Func1, private T_Func2
+    {
+        typedef T_Func1 Func1;
+        typedef T_Func2 Func2;
+
+        And(): Func1(), Func2()
+        {}
+
+        template<typename T>
+        And(const T& p1): Func1(p1), Func2()
+        {}
+
+        template<typename T, typename U>
+        And(const T& p1, const U& p2): Func1(p1), Func2(p2)
+        {}
+
+        And(const Func2& f2): Func1(), Func2(f2)
+        {}
+
+        bool operator()(const RoadSegment& segment) const
+        {
+            return Func1::operator()(segment) || Func2::operator()(segment);
+        }
+    };
+}
+
+/// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Straßen
+template<class T_AdditionalCosts, class T_SegmentConstraints>
+bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal,
+                              const bool record, const unsigned max,
+                              const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
+                              unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
     assert(&start && &goal);
     if(&start == &goal)
@@ -172,10 +257,10 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
         // But for now we assume it to be valid and return (kind of) correct values
         if(length)
             *length = 0;
-        if(first_dir)
-            *first_dir = 0xff;
-        if(next_harbor)
-            *next_harbor = start.GetPos();
+        if(firstDir)
+            *firstDir = 0xff;
+        if(firstNodePos)
+            *firstNodePos = start.GetPos();
         return true;
     }
 
@@ -183,18 +268,18 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     if(record && GAMECLIENT.ArePathfindingResultsAvailable())
     {
         unsigned char dir;
-        if(GAMECLIENT.ReadPathfindingResult(&dir,  length,  next_harbor))
+        if(GAMECLIENT.ReadPathfindingResult(&dir, length, firstNodePos))
         {
-            if(first_dir)
-                *first_dir = dir;
+            if(firstDir)
+                *firstDir = dir;
             return (dir != 0xff);
         }
     }
 
-    // increase current_visit_on_roads,  so we don't have to clear the visited-states at every run
+    // increase current_visit_on_roads, so we don't have to clear the visited-states at every run
     currentVisit++;
 
-    // if the counter reaches its maxium,  tidy up
+    // if the counter reaches its maxium, tidy up
     if (currentVisit == std::numeric_limits<unsigned>::max())
     {
         int w = gwb_.GetWidth();
@@ -214,7 +299,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     // Anfangsknoten einfügen
     todo.clear();
 
-    start.targetDistance = gwb_.CalcDistance(start.GetPos(),  goal.GetPos());
+    start.targetDistance = gwb_.CalcDistance(start.GetPos(), goal.GetPos());
     start.estimate = start.targetDistance;
     start.last_visit = currentVisit;
     start.prev = NULL;
@@ -226,32 +311,31 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     while (!todo.empty())
     {
         // Knoten mit den geringsten Wegkosten auswählen
-        const noRoadNode* best = todo.pop();
+        const noRoadNode& best = *todo.pop();
 
         // Ziel erreicht?
-        if (best == &goal)
+        if (&best == &goal)
         {
-            // Jeweils die einzelnen Angaben zurückgeben,  falls gewünscht (Pointer übergeben)
+            // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
             if (length)
-                *length = best->cost;
+                *length = best.cost;
 
             // Backtrace to get the last node that is not the start node (has a prev node) --> Next node from start on path
-            const noRoadNode* last = best;
-            while(best->prev)
+            const noRoadNode* firstNode = &best;
+            while(firstNode->prev != &start)
             {
-                last = best;
-                best = best->prev;
+                firstNode = firstNode->prev;
             }
 
-            if (first_dir)
-                *first_dir = (unsigned char) last->dir_;
+            if (firstDir)
+                *firstDir = (unsigned char) firstNode->dir_;
 
-            if (next_harbor)
-                *next_harbor = last->GetPos();
+            if (firstNodePos)
+                *firstNodePos = firstNode->GetPos();
 
             if (record)
             {
-                GAMECLIENT.AddPathfindingResult((unsigned char) last->dir_,  length,  next_harbor);
+                GAMECLIENT.AddPathfindingResult((unsigned char) firstNode->dir_, length, firstNodePos);
             }
 
             // Done, path found
@@ -262,19 +346,15 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
         for (unsigned i = 0; i < 6; ++i)
         {
             // Gibt es auch einen solchen Weg bzw. Nachbarflagge?
-            noRoadNode* neighbour = best->GetNeighbour(i);
+            noRoadNode* neighbour = best.GetNeighbour(i);
 
-            // Wenn nicht,  brauchen wir mit dieser Richtung gar nicht weiter zu machen
+            // Wenn nicht, brauchen wir mit dieser Richtung gar nicht weiter zu machen
             if (!neighbour)
                 continue;
 
             // this eliminates 1/6 of all nodes and avoids cost calculation and further checks, 
             // therefore - and because the profiler says so - it is more efficient that way
-            if (neighbour == best->prev)
-                continue;
-
-            // evtl verboten?
-            if (best->routes[i] == forbidden)
+            if (neighbour == best.prev)
                 continue;
 
             // No pathes over buildings
@@ -286,19 +366,13 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                     continue;
             }
 
-            // Neuer Weg für diesen neuen Knoten berechnen
-            unsigned cost = best->cost + best->routes[i]->GetLength();
-
-            // Im Warenmodus müssen wir Strafpunkte für überlastete Träger hinzuaddieren, 
-            // damit der Algorithmus auch Ausweichrouten auswählt
-            if (ware_mode)
-            {
-                cost += best->GetPunishmentPoints(i);
-            }
-            else if (best->routes[i]->GetRoadType() == RoadSegment::RT_BOAT)    // evtl Wasserstraße?
-            {
+            // evtl verboten?
+            if(!isSegmentAllowed(*best.routes[i]))
                 continue;
-            }
+
+            // Neuer Weg für diesen neuen Knoten berechnen
+            unsigned cost = best.cost + best.routes[i]->GetLength();
+            cost += addCosts(best, i);
 
             if (cost > max)
                 continue;
@@ -306,11 +380,11 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
             // Was node already visited?
             if (neighbour->last_visit == currentVisit)
             {
-                // Dann nur ggf. Weg und Vorgänger korrigieren,  falls der Weg kürzer ist
+                // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
                 if (cost < neighbour->cost)
                 {
                     neighbour->cost = cost;
-                    neighbour->prev = best;
+                    neighbour->prev = &best;
                     neighbour->estimate = neighbour->targetDistance + cost;
                     todo.rearrange(neighbour);
                     neighbour->dir_ = i;
@@ -321,9 +395,9 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                 neighbour->last_visit = currentVisit;
                 neighbour->cost = cost;
                 neighbour->dir_ = i;
-                neighbour->prev = best;
+                neighbour->prev = &best;
 
-                neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(),  goal.GetPos());
+                neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goal.GetPos());
                 neighbour->estimate = neighbour->targetDistance + cost;
 
                 todo.push(neighbour);
@@ -331,14 +405,14 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
         }
 
         // Stehen wir hier auf einem Hafenplatz
-        if (best->GetGOT() == GOT_NOB_HARBORBUILDING)
+        if (best.GetGOT() == GOT_NOB_HARBORBUILDING)
         {
-            std::vector<nobHarborBuilding::ShipConnection> scs = static_cast<const nobHarborBuilding*>(best)->GetShipConnections();
+            std::vector<nobHarborBuilding::ShipConnection> scs = static_cast<const nobHarborBuilding&>(best).GetShipConnections();
 
             for (unsigned i = 0; i < scs.size(); ++i)
             {
                 // Neuer Weg für diesen neuen Knoten berechnen
-                unsigned cost = best->cost + scs[i].way_costs;
+                unsigned cost = best.cost + scs[i].way_costs;
 
                 if (cost > max)
                     continue;
@@ -347,12 +421,12 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                 // Was node already visited?
                 if (dest.last_visit == currentVisit)
                 {
-                    // Dann nur ggf. Weg und Vorgänger korrigieren,  falls der Weg kürzer ist
+                    // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
                     if (cost < dest.cost)
                     {
-                        dest.dir_ = 100;
+                        dest.dir_ = SHIP_DIR;
                         dest.cost = cost;
-                        dest.prev = best;
+                        dest.prev = &best;
                         dest.estimate = dest.targetDistance + cost;
                         todo.rearrange(&dest);
                     }
@@ -361,11 +435,11 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                     // Not visited yet -> Add to list
                     dest.last_visit = currentVisit;
 
-                    dest.dir_ = 100;
-                    dest.prev = best;
+                    dest.dir_ = SHIP_DIR;
+                    dest.prev = &best;
                     dest.cost = cost;
 
-                    dest.targetDistance = gwb_.CalcDistance(dest.GetPos(),  goal.GetPos());
+                    dest.targetDistance = gwb_.CalcDistance(dest.GetPos(), goal.GetPos());
                     dest.estimate = dest.targetDistance + cost;
 
                     todo.push(&dest);
@@ -376,6 +450,70 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
 
     // Liste leer und kein Ziel erreicht --> kein Weg
     if(record)
-        GAMECLIENT.AddPathfindingResult(0xff,  length,  next_harbor);
+        GAMECLIENT.AddPathfindingResult(0xff, length, firstNodePos);
     return false;
+}
+
+bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, 
+              const bool record, const bool wareMode, const unsigned max, const RoadSegment* const forbidden,
+              unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
+{
+    if(!length && !firstDir && !firstNodePos)
+    {
+        // If none of them is set use the \ref PathExist function!
+        assert(false);
+        return PathExists(start, goal, record, wareMode, max, forbidden);
+    }
+
+    if(wareMode)
+    {
+        if(forbidden)
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::Carrier(), SegmentConstraints::AvoidSegment(forbidden),
+                                length, firstDir, firstNodePos);
+        else
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::Carrier(), SegmentConstraints::None(),
+                                length, firstDir, firstNodePos);
+    }else
+    {
+        if(forbidden)
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::None(),
+                                SegmentConstraints::And<
+                                    SegmentConstraints::AvoidSegment,
+                                    SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>
+                                >(forbidden),
+                                length, firstDir, firstNodePos);
+        else
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>(),
+                                length, firstDir, firstNodePos);
+    }
+}
+
+bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
+                                const bool record, const bool allowWaterRoads, const unsigned max, const RoadSegment* const forbidden)
+{
+    if(allowWaterRoads)
+    {
+        if(forbidden)
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
+        else
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::None(), SegmentConstraints::None());
+    }else
+    {
+        if(forbidden)
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::None(),
+                                SegmentConstraints::And<
+                                    SegmentConstraints::AvoidSegment,
+                                    SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>
+                                >(forbidden));
+        else
+            return FindPathImpl(start, goal, record, max,
+                                AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>());
+    }
 }

@@ -236,17 +236,17 @@ public:
     bool CheckFreeRoute(const MapPoint start, const std::vector<unsigned char>& route,
         const unsigned pos, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,
         MapPoint* dest, const void* const param = NULL) const;
-    /// Wegfindung auf Straßen - Basisroutine
+    /* Wegfindung auf Straßen - Basisroutine
     bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& goal,
         const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint* next_harbor,
-        const RoadSegment* const forbidden, const bool record = true, const unsigned max = 0xFFFFFFFF) const;
+        const RoadSegment* const forbidden, const bool record = true, const unsigned max = 0xFFFFFFFF) const;*/
     /// Findet einen Weg für Figuren
     unsigned char FindHumanPath(const MapPoint start,
         const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL, const bool record = true) const;
     /// Wegfindung für Schiffe auf dem Wasser
     bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char> * route, unsigned* length, const unsigned max_length = 200,
         CrossBorders* cb = NULL);
-
+    RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
 
     /// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
     void RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route);

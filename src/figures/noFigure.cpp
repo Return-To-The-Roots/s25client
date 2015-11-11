@@ -1489,7 +1489,7 @@ MapPoint noFigure::ExamineRouteBeforeShipping(unsigned char& newDir)
     // Calc new route
     const noRoadNode* roadNode = gwg->GetSpecObj<noRoadNode>(pos);
     if(!roadNode || !goal_)
-        newDir = 0xFF;
+        newDir = INVALID_DIR;
     else
         newDir = gwg->FindHumanPathOnRoads(*roadNode, *goal_, NULL, &next_harbor);
 
