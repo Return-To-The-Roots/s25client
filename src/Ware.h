@@ -21,12 +21,13 @@
 #include "GameObject.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/GoodTypes.h"
-#include "nodeObjs/noRoadNode.h"
 
 class noBaseBuilding;
 class GameWorld;
 class nobHarborBuilding;
 class nobBaseWarehouse;
+class noRoadNode;
+class noFlag;
 
 // Die Klasse Ware kennzeichnet eine Ware, die von einem Träger transportiert wird bzw gerade an einer Flagge liegt
 class Ware : public GameObject
@@ -113,7 +114,7 @@ class Ware : public GameObject
         /// Beginnt damit auf ein Schiff im Hafen zu warten
         void WaitForShip(nobHarborBuilding* hb);
 
-        std::string ToString() const {std::stringstream s; s << "Ware(" << GetObjId() << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY(); return s.str();}
+        std::string ToString() const;
 
         static std::string GoodType2String(GoodType value)
         {

@@ -87,7 +87,7 @@ class noRoadNode : public noCoordBase
         virtual void AddWare(Ware*& ware) = 0;
 
         /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen
-        virtual unsigned short GetPunishmentPoints(const unsigned char dir) const { return 0; }
+        virtual unsigned GetPunishmentPoints(const unsigned char dir) const { return 0; }
 
 };
 

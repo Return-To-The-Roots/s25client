@@ -19,11 +19,11 @@
 #define NO_BASEBUILDING_H_
 
 #include "nodeObjs/noRoadNode.h"
-#include "nodeObjs/noFlag.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/BuildingConsts.h"
 
 class glArchivItem_Bitmap;
+class noFlag;
 
 class noBaseBuilding : public noRoadNode
 {

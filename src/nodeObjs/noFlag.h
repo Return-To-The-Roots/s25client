@@ -18,7 +18,6 @@
 #define NO_FLAG_H_INCLUDED
 
 #include "noRoadNode.h"
-#include "RoadSegment.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
 
@@ -50,9 +49,9 @@ class noFlag : public noRoadNode
         /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
         Ware* SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier);
         /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
-        unsigned short GetWaresCountForRoad(const unsigned char dir) const;
+        unsigned GetWaresCountForRoad(const unsigned char dir) const;
         /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
-        unsigned short GetPunishmentPoints(const unsigned char dir) const;
+        unsigned GetPunishmentPoints(const unsigned char dir) const;
         /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
         void DestroyAttachedBuilding();
         /// Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.

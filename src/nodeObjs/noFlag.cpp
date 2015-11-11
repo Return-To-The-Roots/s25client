@@ -341,9 +341,9 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     return best_ware;
 }
 
-unsigned short noFlag::GetWaresCountForRoad(const unsigned char dir) const
+unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
 {
-    unsigned short ret = 0;
+    unsigned ret = 0;
 
     for(unsigned i=0; i < wares.size(); i++)
     {
@@ -360,16 +360,16 @@ unsigned short noFlag::GetWaresCountForRoad(const unsigned char dir) const
  *
  *  @author OLiver
  */
-unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
+unsigned noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
     // Waren zählen, die in diese Richtung transportiert werden müssen
-    unsigned short points = GetWaresCountForRoad(dir) * 2;
+    unsigned points = GetWaresCountForRoad(dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     if(!routes[dir]->isOccupied())
         points += 500;
 	else if (routes[dir]->hasCarrier(0) && routes[dir]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
-		points +=50;
+		points += 50;
 
     return points;
 }

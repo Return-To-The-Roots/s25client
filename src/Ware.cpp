@@ -441,3 +441,10 @@ void Ware::WaitForShip(nobHarborBuilding* hb)
     state = STATE_WAITFORSHIP;
     location = hb;
 }
+
+std::string Ware::ToString() const
+{
+    std::stringstream s;
+    s << "Ware(" << GetObjId() << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY();
+    return s.str();
+}
