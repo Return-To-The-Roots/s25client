@@ -363,12 +363,12 @@ unsigned short noFlag::GetWaresCountForRoad(const unsigned char dir) const
 unsigned short noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
     // Waren zählen, die in diese Richtung transportiert werden müssen
-    unsigned short points = (dir) * 2;
+    unsigned short points = GetWaresCountForRoad(dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     if(!routes[dir]->isOccupied())
         points += 500;
-	else if (routes[dir]->hasCarrier(0) && !routes[dir]->getCarrier(0)->GetCarrierState() && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+	else if (routes[dir]->hasCarrier(0) && routes[dir]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
 		points +=50;
 
     return points;
