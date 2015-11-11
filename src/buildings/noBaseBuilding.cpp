@@ -164,7 +164,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                     ware->RecalcRoute();
                     // Ware ablegen
                     flag->AddWare(ware);
-                    ware->LieAtFlag(flag);
+                    ware->WaitAtFlag(flag);
 
                     if(!which)
                         --boards;
@@ -251,7 +251,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         return;
     }
 
-    if(ware->LieInWarehouse())
+    if(ware->IsWaitingInWarehouse())
     {
         // Bestellung im Lagerhaus stornieren
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);

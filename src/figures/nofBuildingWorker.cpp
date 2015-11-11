@@ -196,7 +196,7 @@ void nofBuildingWorker::WorkingReady()
             real_ware->RecalcRoute();
             // Ware ablegen
             flag->AddWare(real_ware);
-            real_ware->LieAtFlag(flag);
+            real_ware->WaitAtFlag(flag);
             // Warenstatistik erhöhen
             GAMECLIENT.GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr

@@ -139,6 +139,8 @@ void Ware::GoalDestroyed()
     if(state == STATE_WAITINWAREHOUSE)
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
+        assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
+        goal = NULL; // just in case: avoid corruption although the ware itself might be lost (won't ever be carried again)
     }
     // Ist sie evtl. gerade mit dem Schiff unterwegs?
     else if(state == STATE_ONSHIP)
@@ -228,6 +230,27 @@ void Ware::GoalDestroyed()
             }
         }
     }
+}
+
+void Ware::WaitAtFlag(noFlag* flag)
+{
+    assert(flag);
+    state = STATE_WAITATFLAG;
+    location = flag;
+}
+
+void Ware::WaitInWarehouse(nobBaseWarehouse* wh)
+{
+    assert(wh);
+    state = STATE_WAITINWAREHOUSE;
+    location = wh;
+}
+
+void Ware::Carry(noRoadNode* nextGoal)
+{
+    assert(nextGoal);
+    state = STATE_CARRIED;
+    location = nextGoal;
 }
 
 /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann

@@ -56,8 +56,7 @@ nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
     boards(sgd.PopUnsignedInt()),
     stones(sgd.PopUnsignedInt()),
     builder(sgd.PopBool())
-{
-}
+{}
 
 void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData& sgd) const
 {
@@ -78,8 +77,6 @@ void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData&
     sgd.PushBool(active);
     sgd.PushUnsignedInt(scouts);
 }
-
-
 
 nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(NULL)
@@ -174,8 +171,6 @@ void nobHarborBuilding::Destroy()
     }
     soldiers_for_ships.clear();
 
-
-
     Destroy_nobBaseWarehouse();
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
@@ -207,9 +202,6 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
         sgd.PushMapPoint(it->dest);
         sgd.PushObject(it->attacker, true);
     }
-
-
-
 }
 
 nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj_id)
@@ -243,7 +235,6 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
         ffs.attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
         soldiers_for_ships.push_back(ffs);
     }
-
 }
 
 // Relative Position des Bauarbeiters
@@ -323,7 +314,6 @@ void nobHarborBuilding::Draw(int x, int y)
 
     }
 }
-
 
 void nobHarborBuilding::HandleEvent(const unsigned int id)
 {
@@ -426,7 +416,6 @@ void nobHarborBuilding::StartExpedition()
     // Ggf. ist jetzt alles benötigte schon da
     // Dann Schiff rufen
     CheckExpeditionReady();
-
 }
 
 /// Startet eine Erkundungs-Expedition oder stoppos sie, wenn bereits eine stattfindet
@@ -500,13 +489,12 @@ void nobHarborBuilding::StartExplorationExpedition()
 
 
     CheckExplorationExpeditionReady();
-
 }
-
 
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
+    assert(!IsBeingDestroyedNow()); // Wares should already be canceled!
     if (this->IsBeingDestroyedNow()) // don't order new stuff if we are about to be destroyed
         return;
 
@@ -1145,12 +1133,9 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
     {
         if((*it)->ShipJorneyEnded(this))
         {
-            // Oposische Warenwerte entsprechend erhöhen
-            ++goods_.goods[ConvertShields((*it)->type)];
-
             // Ware will die weitere Reise antreten, also muss sie zur Liste der rausgetragenen Waren
             // hinzugefügt werden
-            waiting_wares.push_back(*it);
+            AddWaitingWare(*it);
         }
         else
         {
@@ -1181,9 +1166,6 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
             }
         }
     }
-
-    // Ggf. neues Rausgeh-Event anmelden, was notwendig ist, wenn z.B. nur Waren zur Liste hinzugefügt wurden
-    AddLeavingEvent();
 }
 
 /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
@@ -1386,6 +1368,7 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
     wares_for_ships.remove(ware);
     // Carry out. If it would want to go back to this building, then this will be handled by the carrier
     waiting_wares.push_back(ware);
+    ware->IsWaitingInWarehouse();
     AddLeavingEvent();
 }
 

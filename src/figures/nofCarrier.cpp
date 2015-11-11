@@ -518,7 +518,7 @@ void nofCarrier::Walked()
                     // Ist an der Flagge noch genügend Platz (wenn wir wieder eine Ware mitnehmen, kann sie auch voll sein)
                     if(this_flag->IsSpaceForWare())
                     {
-                        carried_ware->LieAtFlag(this_flag);
+                        carried_ware->WaitAtFlag(this_flag);
 
                         // Ware soll ihren weiteren Weg berechnen
                         if (!calculated)
@@ -543,7 +543,7 @@ void nofCarrier::Walked()
                         FetchWare(true);
 
                         // alte Ware ablegen
-                        tmp_ware->LieAtFlag(this_flag);
+                        tmp_ware->WaitAtFlag(this_flag);
 
                         if (!calculated)
                         {

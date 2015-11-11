@@ -549,7 +549,7 @@ void GameClientPlayer::RoadDestroyed()
     // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine Straße fehlt
     for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); )
     {
-        if((*it)->LieAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
+        if((*it)->IsWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
         {
 			unsigned char last_next_dir = (*it)->GetNextDir();
 			(*it)->RecalcRoute();			
@@ -597,7 +597,7 @@ void GameClientPlayer::RoadDestroyed()
 			if((*it)->GetNextDir()!=last_next_dir)
 				(*it)->RemoveWareJobForCurrentDir(last_next_dir);
 		}
-        else if((*it)->LieInWarehouse())
+        else if((*it)->IsWaitingInWarehouse())
         {
             if(!(*it)->FindRouteFromWarehouse())
             {
@@ -612,7 +612,7 @@ void GameClientPlayer::RoadDestroyed()
                 continue;
             }
         }
-        else if((*it)->LieInHarborBuilding())
+        else if((*it)->IsWaitingForShip())
         {
             // Weg neu berechnen
             (*it)->RecalcRoute();

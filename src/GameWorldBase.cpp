@@ -1859,7 +1859,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
         for(std::vector<nofPassiveSoldier*>::const_iterator itSoldier = tmp_soldiers.begin(); itSoldier != tmp_soldiers.end(); ++itSoldier)
         {
             assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(*itSoldier)) == attackers.end());
-            PotentialSeaAttacker pa = { *itSoldier, it->harbor, it->distance };
+            PotentialSeaAttacker pa(*itSoldier, it->harbor, it->distance);
             attackers.push_back(pa);
         }
     }
