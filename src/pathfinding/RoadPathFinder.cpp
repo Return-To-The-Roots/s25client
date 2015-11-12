@@ -458,12 +458,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
               const bool record, const bool wareMode, const unsigned max, const RoadSegment* const forbidden,
               unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
-    if(!length && !firstDir && !firstNodePos)
-    {
-        // If none of them is set use the \ref PathExist function!
-        assert(false);
-        return PathExists(start, goal, record, wareMode, max, forbidden);
-    }
+    assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!
 
     if(wareMode)
     {
