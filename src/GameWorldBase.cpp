@@ -224,7 +224,6 @@ void GameWorldBase::Init()
 
     // Map-Knoten erzeugen
     nodes.resize(map_size);
-    handled_nodes.resize(map_size);
     military_squares.resize((width_ / MILITARY_SQUARE_SIZE + 1) * (height_ / MILITARY_SQUARE_SIZE + 1));
 }
 
@@ -284,7 +283,6 @@ void GameWorldBase::Unload()
     catapult_stones.clear();
 
     nodes.clear();
-    handled_nodes.clear();
     military_squares.clear();
 
     map_size = 0;

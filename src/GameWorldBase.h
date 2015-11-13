@@ -55,8 +55,6 @@ protected:
     /// Landschafts-Typ
     LandscapeType lt;
 
-    std::vector<unsigned short> handled_nodes;  /// Array von abgeklapperten Knoten und deren Punktzahlen
-
     /// Eigenschaften von einem Punkt auf der Map
     std::vector<MapNode> nodes;
 
