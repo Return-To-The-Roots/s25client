@@ -23,6 +23,7 @@
 #include "nodeObjs/noFlag.h"
 #include "FOWObjects.h"
 #include "pathfinding/RoadPathFinder.h"
+#include "pathfinding/FreePathFinder.h"
 #include "RoadSegment.h"
 #include "nodeObjs/noTree.h"
 #include "buildings/noBaseBuilding.h"
@@ -57,7 +58,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
+GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();

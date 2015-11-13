@@ -25,6 +25,7 @@
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainData.h"
 #include "pathfinding/RoadPathFinder.h"
+#include "pathfinding/FreePathFinder.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -195,7 +196,7 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
         unsigned* length) const
 {
     bool boat = false;
-    return gwb.FindFreePathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
+    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
 }
 
 /// player.FindWarehouse

@@ -21,6 +21,7 @@
 
 #include "defines.h"
 #include "nobHarborBuilding.h"
+#include "pathfinding/FreePathFinder.h"
 #include "Loader.h"
 #include "nodeObjs/noExtension.h"
 #include "GameClient.h"
@@ -1229,7 +1230,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindFreePath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        if(!gwg->GetFreePathFinder().FindPath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
             continue;
         //neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this , 0};

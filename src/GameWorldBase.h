@@ -31,6 +31,7 @@
 #include <list>
 
 class RoadPathFinder;
+class FreePathFinder;
 class GameInterface;
 class CatapultStone;
 class noBuildingSite;
@@ -44,12 +45,11 @@ class nobHarborBuilding;
 class GameWorldBase;
 struct lua_State;
 
-typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
-
 /// Grundlegende Klasse, die die Gamewelt darstellt, enthält nur deren Daten
 class GameWorldBase
 {
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
+    boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
 protected:
 
     /// Interface zum GUI
@@ -132,7 +132,6 @@ public:
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Point<int> pt) const;
     // Erzeugt eindeutige ID aus gegebenen X und Y-Werten
-    unsigned MakeCoordID(const MapPoint pt) const { return GetIdx(pt); }
 
     // Returns the linear index for a map point
     unsigned GetIdx(const MapPoint pt) const
@@ -222,20 +221,6 @@ public:
         bool left, top, right, bottom;
     };
 
-
-    /// Wegfindung in freiem Terrain - Basisroutine
-    bool FindFreePath(const MapPoint start,
-        const MapPoint dest, const bool random_route,
-        const unsigned max_route, std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const;
-    bool FindFreePathAlternatingConditions(const MapPoint start,
-        const MapPoint dest, const bool random_route,
-        const unsigned max_route, std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const;
-    /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
-    bool CheckFreeRoute(const MapPoint start, const std::vector<unsigned char>& route,
-        const unsigned pos, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,
-        MapPoint* dest, const void* const param = NULL) const;
     /* Wegfindung auf Straßen - Basisroutine
     bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& goal,
         const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint* next_harbor,
@@ -247,6 +232,7 @@ public:
     bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char> * route, unsigned* length, const unsigned max_length = 200,
         CrossBorders* cb = NULL);
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
+    FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
     /// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
     void RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route);
