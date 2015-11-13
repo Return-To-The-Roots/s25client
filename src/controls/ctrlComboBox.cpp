@@ -263,10 +263,8 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned
     ctrlList* list = GetCtrl<ctrlList>(0);
 
     // ist in der Liste überhaupt was drin?
-    if(selection != GetSelection() && list->GetLineCount() > 0)
+    if(selection != selectionOnListOpen && list->GetLineCount() > 0)
     {
-        SetSelection(selection);
-
         // Nachricht an übergeordnetes Fenster verschicken
         parent_->Msg_ComboSelectItem(GetID(), selection);
     }
@@ -305,6 +303,8 @@ void ctrlComboBox::DeleteAllItems()
  */
 void ctrlComboBox::SetSelection(unsigned short selection)
 {
+    // Avoid sending the change method when this is invoked intentionally
+    selectionOnListOpen = selection;
     GetCtrl<ctrlList>(0)->SetSelection(selection);
 }
 
@@ -359,8 +359,8 @@ void ctrlComboBox::ShowList(bool show)
     if(show)
     {
         Rect list_region (liste->GetX(), liste->GetY(), width_, liste->GetHeight());
-
         parent_->LockRegion(this, list_region);
+        selectionOnListOpen = GetSelection();
     }
     else
     {
