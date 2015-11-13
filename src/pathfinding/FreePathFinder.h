@@ -29,8 +29,10 @@ class FreePathFinder
 {
     GameWorldBase& gwb_;
     unsigned currentVisit;
+    unsigned width_, height_;
 public:
     FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0) {}
+    void Init(const unsigned mapWidth, const unsigned mapHeight);
 
     /// Wegfindung in freiem Terrain - Basisroutine
     bool FindPath(const MapPoint start, const MapPoint dest,
@@ -48,6 +50,9 @@ public:
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     bool CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos,
         FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, MapPoint* dest, const void* const param = NULL) const;
+
+private:
+    void IncreaseCurrentVisit();
 };
 
 #endif // FreePathFinder_h__

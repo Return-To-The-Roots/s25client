@@ -24,38 +24,32 @@
 /// Konstante für einen ungültigen Vorgänerknoten
 const unsigned INVALID_PREV = 0xFFFFFFFF;
 
+//////////////////////////////////////////////////////////////////////////
+/// Helpers
+//////////////////////////////////////////////////////////////////////////
+
 /// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x, y im set mit rumgeschleppt
 /// werden müsen
 struct PathfindingPoint
 {
 public:
-    /// Die beiden Koordinaten des Punktes
-    MapPoint pt;
-    unsigned id, distance;
+    const unsigned id_, distance_;
+    unsigned estimate_;
 
-public:
     /// Konstruktoren
-    PathfindingPoint(const MapPoint s, const unsigned sid): pt(s)
-    {
-        id = sid;
-        distance = gwb->CalcDistance(s, dst);
-    }
-
-    /// Koordinaten des Ziels beim jeweils aktuellen Pathfinding, die wir zur Bewertung der Punkte benötigen
-    static MapPoint dst;
-    /// Pointer auf GameWorld, die wir brauchen, um die IDs zu berechnen bzw. die Kartengröße zu bekommen
-    static const GameWorldBase* gwb;
-    /// Diese statischen Variablen zu Beginn des Pathfindings festlegen
-    static void Init(const MapPoint destPt, const GameWorldBase* gameWorld)
-    {
-        PathfindingPoint::dst = destPt;
-        PathfindingPoint::gwb = gameWorld;
-    }
+    PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay): id_(id), distance_(distance), estimate_(curWay + distance_)
+    {}
 
     /// Operator für den Vergleich
-    bool operator<(const PathfindingPoint& two) const;
+    bool operator<(const PathfindingPoint& rhs) const
+    {
+        // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng monoton steigende Folge brauchen
+        if(estimate_ == rhs.estimate_)
+            return (id_ < rhs.id_);
+        else
+            return (estimate_ < rhs.estimate_);
+    }
 };
-
 
 /// Klass für einen Knoten mit dazugehörigen Informationen
 /// Wir speichern einfach die gesamte Map und sparen uns so das dauernde Allokieren und Freigeben von Speicher
@@ -78,34 +72,44 @@ struct NewNode
     /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
     unsigned lastVisited;
     unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
+    MapPoint mapPt;
 };
 
-const unsigned maxMapSize = 1024;
-/// Die Knoten der Map gespeichert, größtmöglichste Kartengröße nehmen
-NewNode pf_nodes[maxMapSize* maxMapSize];
-unsigned currentVisit = 0;
-//unsigned currentVisitEven = 0; //used for road pathfinding (for now only the ai gets the comfort version)
+//////////////////////////////////////////////////////////////////////////
+/// FreePathFinder implementation
+//////////////////////////////////////////////////////////////////////////
 
+/// MapNodes
+typedef std::vector<NewNode> MapNodes;
+MapNodes pf_nodes;
 
-bool PathfindingPoint::operator<(const PathfindingPoint& two) const
+void FreePathFinder::Init(const unsigned mapWidth, const unsigned mapHeight)
 {
-    // Weglängen schätzen für beide Punkte, indem man den bisherigen Weg mit der Luftlinie vom aktullen
-    // Punkt zum Ziel addiert und auf diese Weise den kleinsten Weg auswählt
-    unsigned way1 = pf_nodes[id].way + distance;
-    unsigned way2 = pf_nodes[two.id].way + two.distance;
-
-    // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
-    // monoton steigende Folge brauchen
-    if(way1 == way2)
-        return (id < two.id);
-    else
-        return (way1 < way2);
+    width_ = mapWidth;
+    height_ = mapHeight;
+    // Reset nodes
+    pf_nodes.clear();
+    pf_nodes.resize(width_ * height_);
+    for(unsigned y = 0; y < height_; ++y)
+        for(unsigned x = 0; x < width_; ++x)
+            pf_nodes[gwb_.GetIdx(MapPoint(x, y))].mapPt = MapPoint(x, y);
 }
 
+void FreePathFinder::IncreaseCurrentVisit()
+{
+    currentVisit++;
 
-/// Definitionen siehe oben
-MapPoint PathfindingPoint::dst = MapPoint();
-const GameWorldBase* PathfindingPoint::gwb = NULL;
+    // if the counter reaches its maxium, tidy up
+    if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
+    {
+        for (MapNodes::iterator it = pf_nodes.begin(); it != pf_nodes.end(); ++it)
+        {
+            it->lastVisited = 0;
+            it->lastVisitedEven = 0;
+        }
+        currentVisit = 1;
+    }
+}
 
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
@@ -115,34 +119,23 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                               const bool record)
 {
     // increase currentVisit, so we don't have to clear the visited-states at every run
-    currentVisit++;
-
-    // if the counter reaches its maxium, tidy up
-    if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
-    {
-        for (unsigned i = 0; i < (maxMapSize * maxMapSize); ++i)
-        {
-            pf_nodes[i].lastVisited = 0;
-            pf_nodes[i].lastVisitedEven = 0;
-        }
-        currentVisit = 1;
-    }
+    IncreaseCurrentVisit();
 
     std::set<PathfindingPoint> todo;
-    PathfindingPoint::Init(dest, &this->gwb_);
+    const unsigned destId = gwb_.GetIdx(dest);
 
     // Anfangsknoten einfügen
     unsigned start_id = gwb_.GetIdx(start);
-    std::pair< std::set<PathfindingPoint>::iterator, bool > ret = todo.insert(PathfindingPoint(start, start_id));
     // Und mit entsprechenden Werten füllen
-    pf_nodes[start_id].it_p = ret.first;
+    pf_nodes[start_id].it_p = todo.insert(PathfindingPoint(start_id, gwb_.CalcDistance(start, dest), 0)).first;
     pf_nodes[start_id].prev = INVALID_PREV;
     pf_nodes[start_id].lastVisited = currentVisit;
     pf_nodes[start_id].way = 0;
     pf_nodes[start_id].dir = 0;
 
-    // TODO confirm random
-    unsigned rand = (gwb_.GetIdx(start)) * GAMECLIENT.GetGFNumber() % 6; //RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+    // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
+    // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+    const unsigned startDir = random_route ? (gwb_.GetIdx(start)) * GAMECLIENT.GetGFNumber() % 6 : 0; 
 
     while(!todo.empty())
     {
@@ -155,14 +148,14 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
         // ID des besten Punktes ausrechnen
 
-        unsigned best_id = best.id;
+        unsigned best_id = best.id_;
 
         // Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
         // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
         pf_nodes[best_id].it_p = todo.end();
 
         // Ziel schon erreicht? Allerdings Null-Weg, wenn Start=Ende ist, verbieten
-        if(dest == best.pt && pf_nodes[best_id].way)
+        if(destId == best_id && pf_nodes[best_id].way)
         {
             // Ziel erreicht!
             // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
@@ -188,16 +181,13 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
         if(pf_nodes[best_id].way == max_route)
             continue;
 
-        // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
-        unsigned start = random_route ? rand : 0;
-
         // Knoten in alle 6 Richtungen bilden
-        for(unsigned z = start + 3; z < start + 9; ++z)
+        for(unsigned z = startDir + 3; z < startDir + 9; ++z)
         {
             unsigned i = z % 6;
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint na = gwb_.GetNeighbour(best.pt, i);
+            MapPoint na = gwb_.GetNeighbour(pf_nodes[best_id].mapPt, i);
 
             // ID des umliegenden Knotens bilden
             unsigned xaid = gwb_.GetIdx(na);
@@ -210,9 +200,10 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                 {
                     pf_nodes[xaid].way  = pf_nodes[best_id].way + 1;
                     pf_nodes[xaid].prev = best_id;
+                    PathfindingPoint neighborPt = *pf_nodes[xaid].it_p;
+                    neighborPt.estimate_ = neighborPt.distance_ + pf_nodes[xaid].way;
                     todo.erase(pf_nodes[xaid].it_p);
-                    ret = todo.insert(PathfindingPoint(na, xaid));
-                    pf_nodes[xaid].it_p = ret.first;
+                    pf_nodes[xaid].it_p = todo.insert(neighborPt).first;
                     pf_nodes[xaid].dir = i;
                 }
                 // Wir wollen nicht denselben Knoten noch einmal einfügen, daher Abbruch
@@ -240,8 +231,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
             pf_nodes[xaid].dir = i;
             pf_nodes[xaid].prev = best_id;
 
-            ret = todo.insert(PathfindingPoint(na, xaid));
-            pf_nodes[xaid].it_p = ret.first;
+            pf_nodes[xaid].it_p = todo.insert(PathfindingPoint(xaid, gwb_.CalcDistance(na, dest), pf_nodes[xaid].way)).first;
         }
     }
 
@@ -257,29 +247,17 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                                                    const bool record)
 {
     // increase currentVisit, so we don't have to clear the visited-states at every run
-    currentVisit++;
-    //currentVisitEven++;
-
-    // if the counter reaches its maxium, tidy up
-    if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
-    {
-        for (unsigned i = 0; i < (maxMapSize * maxMapSize); ++i)
-        {
-            pf_nodes[i].lastVisited = 0;
-            pf_nodes[i].lastVisitedEven = 0;
-        }
-        currentVisit = 1;
-        //currentVisitEven = 1;
-    }
+    IncreaseCurrentVisit();
 
     std::list<PathfindingPoint> todo;
+    const unsigned destId = gwb_.GetIdx(dest);
+
     bool prevstepEven=true; //flips between even and odd 
     unsigned stepsTilSwitch=1;
-    PathfindingPoint::Init(dest, &gwb_);
 
     // Anfangsknoten einfügen
     unsigned start_id = gwb_.GetIdx(start);
-    todo.push_back(PathfindingPoint(start, start_id));
+    todo.push_back(PathfindingPoint(start_id, gwb_.CalcDistance(start, dest), 0));
     // Und mit entsprechenden Werten füllen
     //pf_nodes[start_id].it_p = ret.first;
     pf_nodes[start_id].prevEven = INVALID_PREV;
@@ -287,8 +265,10 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     pf_nodes[start_id].wayEven = 0;
     pf_nodes[start_id].dirEven = 0;
     //LOG.lprintf("pf: from %i, %i to %i, %i \n", x_start, y_start, x_dest, y_dest);
-    // TODO confirm random
-    unsigned rand = gwb_.GetIdx(start) * GAMECLIENT.GetGFNumber() % 6; //RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+
+    // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
+    // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+    const unsigned startDir = random_route ? (gwb_.GetIdx(start)) * GAMECLIENT.GetGFNumber() % 6 : 0; 
 
     while(!todo.empty())
     {		
@@ -311,14 +291,14 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
         // ID des besten Punktes ausrechnen
 
-        unsigned best_id = best.id;
+        unsigned best_id = best.id_;
         //LOG.lprintf(" now %i, %i id: %i \n", best.x, best.y, best_id);
         // Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
         // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
         //pf_nodes[best_id].it_p = todo.end();
 
         // Ziel schon erreicht? Allerdings Null-Weg, wenn Start=Ende ist, verbieten
-        if(dest == best.pt && ((prevstepEven && pf_nodes[best_id].wayEven) || (!prevstepEven && pf_nodes[best_id].way)))
+        if(destId == best_id && ((prevstepEven && pf_nodes[best_id].wayEven) || (!prevstepEven && pf_nodes[best_id].way)))
         {
             // Ziel erreicht!
             // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
@@ -345,8 +325,6 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         if((prevstepEven && pf_nodes[best_id].wayEven)==max_route || (!prevstepEven && pf_nodes[best_id].way == max_route))
             continue;
 
-        // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
-        unsigned startDir = random_route ? rand : 0;
         //LOG.lprintf("pf get neighbor nodes %i, %i id: %i \n", best.x, best.y, best_id);
         // Knoten in alle 6 Richtungen bilden
         for(unsigned z = startDir + 3; z < startDir + 9; ++z)
@@ -354,7 +332,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             unsigned i = z % 6;
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint na = gwb_.GetNeighbour(best.pt, i);
+            MapPoint na = gwb_.GetNeighbour(pf_nodes[best_id].mapPt, i);
 
             // ID des umliegenden Knotens bilden
             unsigned xaid = gwb_.GetIdx(na);
@@ -378,7 +356,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                 {
                     if (!IsNodeOKAlternate(gwb_, na, i, param))
                         continue;
-                    MapPoint p = best.pt;
+                    MapPoint p = pf_nodes[best_id].mapPt;
 
                     std::vector<MapPoint>evenlocationsonroute;
                     bool alternate=prevstepEven;
@@ -404,11 +382,11 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         }
                     }
                     //LOG.lprintf("\n");
+                    if(tooclose)
+                        continue;
                     if(gwb_.CalcDistance(na, start)<2)
                         continue;
                     if(gwb_.CalcDistance(na, dest)<2)
-                        continue;
-                    if(tooclose)
                         continue;
                 }
             }
@@ -421,12 +399,23 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             }
 
             // Alles in Ordnung, Knoten kann gebildet werden
-            prevstepEven? pf_nodes[xaid].lastVisited = currentVisit			: pf_nodes[xaid].lastVisitedEven = currentVisit;
-            prevstepEven? pf_nodes[xaid].way = pf_nodes[best_id].wayEven + 1: pf_nodes[xaid].wayEven = pf_nodes[best_id].way + 1;
-            prevstepEven? pf_nodes[xaid].dir = i							: pf_nodes[xaid].dirEven = i;
-            prevstepEven? pf_nodes[xaid].prev = best_id						: pf_nodes[xaid].prevEven = best_id	;
+            unsigned way;
+            if(prevstepEven)
+            {
+                pf_nodes[xaid].lastVisited = currentVisit;
+                way = pf_nodes[xaid].way = pf_nodes[best_id].wayEven + 1;
+                pf_nodes[xaid].dir = i;
+                pf_nodes[xaid].prev = best_id;
+            }
+            else
+            {
+                pf_nodes[xaid].lastVisitedEven = currentVisit;
+                way = pf_nodes[xaid].wayEven = pf_nodes[best_id].way + 1;
+                pf_nodes[xaid].dirEven = i;
+                pf_nodes[xaid].prevEven = best_id;
+            }
 
-            todo.push_back(PathfindingPoint(na, xaid));
+            todo.push_back(PathfindingPoint(xaid, gwb_.CalcDistance(na, dest), way));
             //pf_nodes[xaid].it_p = ret.first;
         }
     }

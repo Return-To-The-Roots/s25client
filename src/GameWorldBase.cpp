@@ -227,6 +227,7 @@ void GameWorldBase::Init()
     // Map-Knoten erzeugen
     nodes.resize(numNodes);
     military_squares.resize((width_ / MILITARY_SQUARE_SIZE + 1) * (height_ / MILITARY_SQUARE_SIZE + 1));
+    freePathFinder->Init(width_, height_);
 }
 
 void GameWorldBase::Unload()
