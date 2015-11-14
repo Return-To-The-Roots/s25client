@@ -165,10 +165,10 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
 {
     std::vector<const noFlag*> flags;
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
-        for(unsigned i = Direction::SOUTHEAST; i < Direction::SOUTHEAST + Direction::COUNT; ++i)
+        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
         {
             for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
@@ -203,10 +203,10 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
     }
     */
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::NORTH), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::NORTH), ++r)
+    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
+        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
         {
             for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
             {
@@ -246,9 +246,9 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
     //const unsigned short maxSearchRadius = 10;
 
 	//flag of a military building? -> check if we really want to connect this right now
-	if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHEAST)))
+	if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
 	{
-		MapPoint m = aii->GetNeighbour(flag->GetPos(), Direction::NORTHEAST);
+		MapPoint m = aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
 		unsigned listpos=0;
 		for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();++it)
 		{
@@ -289,7 +289,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
         tmpRoute.clear();
         unsigned int length;
 		// the flag should not be at a military building!		
-		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flags[i]->GetPos(), Direction::NORTHEAST)))
+		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flags[i]->GetPos(), Direction::NORTHWEST)))
 			continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
         bool pathFound = aii->FindFreePathForNewRoad(flag->GetPos(), flags[i]->GetPos(), &tmpRoute, &length);
@@ -762,7 +762,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
         route.clear();
         unsigned int newLength;
 		// the flag should not be at a military building!		
-		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flags[i]->GetPos(), Direction::NORTHEAST)))
+		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flags[i]->GetPos(), Direction::NORTHWEST)))
 			continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
         bool pathFound = aii->FindFreePathForNewRoad(flag->GetPos(), flags[i]->GetPos(), &route, &newLength);

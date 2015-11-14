@@ -32,6 +32,7 @@
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobShipYard.h"
 #include "factories/GameCommandFactory.h"
+#include "gameTypes/Direction.h"
 
 class nobHQ;
 
@@ -204,10 +205,10 @@ class AIInterface: public GameCommandFactory<AIInterface>
         unsigned GetShipID(const noShip* ship) const { return player_.GetShipID(ship); }
 
         /// Tests whether there is a possibility to start a expedtion in a given direction from a given position, assuming a given starting harbor
-        bool IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, Direction direction) const;
+        bool IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const;
 
         /// Tests whether there is a possibility to start a expedtion in a given direction from a given position, assuming a given starting harbor
-        bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, Direction direction) const;
+        bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const;
 
         void ToggleCoins(const nobMilitary* building) { ToggleCoins(building->GetPos()); }
         using GC_Factory::ToggleCoins;
@@ -227,7 +228,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         void FoundColony(const noShip* ship) { FoundColony(player_.GetShipID(ship)); }
         using GC_Factory::FoundColony;
 
-        void TravelToNextSpot(Direction direction, const noShip* ship) { TravelToNextSpot(direction, player_.GetShipID(ship)); }
+        void TravelToNextSpot(ShipDirection direction, const noShip* ship) { TravelToNextSpot(direction, player_.GetShipID(ship)); }
         using GC_Factory::TravelToNextSpot;
 
         void CancelExpedition(const noShip* ship) { CancelExpedition(player_.GetShipID(ship)); }

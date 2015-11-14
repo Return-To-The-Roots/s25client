@@ -246,12 +246,12 @@ const nobHQ* AIInterface::GetHeadquarter() const
     return gwb.GetSpecObj<nobHQ>(player_.hqPos);
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, Direction direction) const
+bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const
 {
     return gwb.GetNextFreeHarborPoint(pt, originHarbor->GetHarborPosID(), direction.toUInt(), playerID_) > 0;
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, Direction direction) const
+bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const
 {
     return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID_) > 0;
 }

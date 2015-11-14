@@ -22,7 +22,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/Direction.h"
+#include "gameTypes/ShipDirection.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameData/MilitaryConsts.h"
@@ -91,7 +91,7 @@ public:
     /// Lets a ship found a colony
     bool FoundColony(unsigned int shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
-    bool TravelToNextSpot(Direction direction, unsigned int shipID);
+    bool TravelToNextSpot(ShipDirection direction, unsigned int shipID);
     /// Cancels an expedition
     bool CancelExpedition(unsigned int shipID);
     bool StartExplorationExpedition(const MapPoint pt);

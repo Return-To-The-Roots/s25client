@@ -150,7 +150,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         else if(ctrl_id == 11)
             GAMECLIENT.CancelExpedition(ship_id);
         else
-            GAMECLIENT.TravelToNextSpot(Direction(ctrl_id - 12), ship_id);
+            GAMECLIENT.TravelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
         Close();
     }
 

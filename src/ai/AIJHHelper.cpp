@@ -292,7 +292,7 @@ void AIJH::BuildJob::BuildMainRoad()
         status = AIJH::JOB_FAILED;
         return;
     }
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
+    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHEAST));
     // Gucken noch nicht ans Wegnetz angeschlossen
     AIConstruction& aiConstruction = *aijh->GetConstruction();
     if (!aiConstruction.IsConnectedToRoadSystem(houseFlag))
@@ -390,7 +390,7 @@ void AIJH::BuildJob::BuildMainRoad()
 
 void AIJH::BuildJob::TryToBuildSecondaryRoad()
 {
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHWEST));
+    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHEAST));
 
     if (!houseFlag)
     {
@@ -549,7 +549,7 @@ void AIJH::ConnectJob::ExecuteJob()
     }
 
 	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
-	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHEAST)))
+	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
 	{
 		for(unsigned i=2;i<7;i++)
 		{

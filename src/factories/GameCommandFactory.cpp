@@ -229,27 +229,27 @@ bool GameCommandFactory<T_Handler>::FoundColony(unsigned int shipID)
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::TravelToNextSpot(Direction direction, unsigned int shipID)
+bool GameCommandFactory<T_Handler>::TravelToNextSpot(ShipDirection direction, unsigned int shipID)
 {
     gc::ExpeditionCommand::Action action;
-    switch (Direction::Type(direction))
+    switch (ShipDirection::Type(direction))
     {
-    case Direction::NORTH:
+    case ShipDirection::NORTH:
         action = gc::ExpeditionCommand::NORTH;
         break;
-    case Direction::NORTHEAST:
+    case ShipDirection::NORTHEAST:
         action = gc::ExpeditionCommand::NORTHEAST;
         break;
-    case Direction::SOUTHEAST:
+    case ShipDirection::SOUTHEAST:
         action = gc::ExpeditionCommand::SOUTHEAST;
         break;
-    case Direction::SOUTH:
+    case ShipDirection::SOUTH:
         action = gc::ExpeditionCommand::SOUTH;
         break;
-    case Direction::SOUTHWEST:
+    case ShipDirection::SOUTHWEST:
         action = gc::ExpeditionCommand::SOUTHWEST;
         break;
-    case Direction::NORTHWEST:
+    case ShipDirection::NORTHWEST:
         action = gc::ExpeditionCommand::NORTHWEST;
         break;
     default:

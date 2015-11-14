@@ -15,34 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Direction_h__
-#define Direction_h__
+
+#ifndef ShipDirection_h__
+#define ShipDirection_h__
 
 /// "Enum" to represent one of the 6 directions from each node
-struct Direction
+struct ShipDirection
 {
     enum Type
     {
-        WEST,      // 0
-        NORTHWEST, // 1
-        NORTHEAST, // 2
-        EAST,      // 3
-        SOUTHEAST, // 4
-        SOUTHWEST  // 5
+        NORTH,      // 0
+        NORTHEAST,  // 1
+        SOUTHEAST,  // 2
+        SOUTH,      // 3
+        SOUTHWEST,  // 4
+        NORTHWEST   // 5
     };
-    static const int COUNT = SOUTHWEST + 1;
+    static const int COUNT = NORTHWEST + 1;
 
     Type t_;
-    Direction(Type t) : t_(t) { assert(t_ >= WEST && t_ < COUNT); }
+    ShipDirection(Type t) : t_(t) { assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt safely to a Direction
-    explicit Direction(unsigned t): t_(Type(t % COUNT)){ assert(t_ >= WEST && t_ < COUNT); }
+    explicit ShipDirection(unsigned t): t_(Type(t % COUNT)){ assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
-    static Direction fromInt(unsigned t){ return Type(t); }
-    static Direction fromInt(int t){ return Type(t); }
+    static ShipDirection fromInt(unsigned t){ return Type(t); }
+    static ShipDirection fromInt(int t){ return Type(t); }
     operator Type() const { return t_; }
     /// Returns the Direction as an UInt (for legacy code)
     unsigned toUInt(){ return t_; }
-    Direction operator+(unsigned i) const { return Direction(t_ + i); }
+    ShipDirection operator+(unsigned i) const { return ShipDirection(t_ + i); }
     // TODO: Add iterator to iterate over all values from a given value
 private:
     //prevent automatic conversion for any other built-in types such as bool, int, etc
@@ -50,4 +51,4 @@ private:
     operator T() const;
 };
 
-#endif // Direction_h__
+#endif // ShipDirection_h__
