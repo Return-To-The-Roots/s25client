@@ -110,12 +110,14 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 void nobHarborBuilding::Destroy()
 {
     em->RemoveEvent(orderware_ev);
-    players->getElement(player)->HarborDestroyed(this);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GameClientPlayer& owner = gwg->GetPlayer(player);
     owner.RemoveWarehouse(this);
     owner.RemoveHarbor(this);
+
+    // Den Schiffen Bescheid sagen
+    players->getElement(player)->HarborDestroyed(this);
 
     // Baumaterialien in der Inventur verbuchen
     if(expedition.active)
@@ -561,7 +563,7 @@ void nobHarborBuilding::OrderExpeditionWares()
 void nobHarborBuilding::WareLost(Ware* ware)
 {
     // ggf. neue Waren für Expedition bestellen
-    if(expedition.active && (ware->type == GD_BOARDS || ware->type == GD_STONES))
+    if(expedition.active && (ware->type == GD_BOARDS || ware->type == GD_STONES) && !IsBeingDestroyedNow())
         OrderExpeditionWares();
     RemoveDependentWare(ware);
 }
