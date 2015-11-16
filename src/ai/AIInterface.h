@@ -82,6 +82,26 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Transforms coordinates of a point into a neighbour point in given direction
         inline MapPoint GetNeighbour(const MapPoint pt, Direction direction) const { return gwb.GetNeighbour(pt, direction.toUInt()); }
 
+        /// Returns all points in a radius around pt (excluding pt) that satisfy a given condition. 
+        /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
+        /// Number of results is constrained to maxResults (if > 0)
+        template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+        std::vector<typename T_TransformPt::result_type>
+        GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const
+        {
+            return gwb.GetPointsInRadius<T_maxResults>(pt, radius, transformPt, isValid);
+        }
+        template<class T_TransformPt>
+        std::vector<typename T_TransformPt::result_type>
+        GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt) const
+        {
+            return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
+        }
+        std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
+        {
+            return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
+        }
+
         /// Get Distance between to points (wraps around at end of world)
         unsigned GetDistance(MapPoint p1, MapPoint p2) const { return gwb.CalcDistance(p1, p2); }
 

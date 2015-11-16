@@ -25,7 +25,10 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/GO_Type.h"
+#include "gameTypes/Direction.h"
 #include "helpers/Deleter.h"
+#include "Identity.h"
+#include "ReturnConst.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 #include <list>
@@ -117,13 +120,32 @@ public:
     /// Gibt Punkt um diesen Punkt (Y-Koordinate)  direkt zurück in einer Richtung von 0-5
     MapCoord GetYA(const MapCoord x, const MapCoord y, unsigned dir) const;
     /// Returns neighbouring point in one direction (0-5)
-    MapPoint GetNeighbour(const MapPoint, unsigned dir) const;
+    MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
+    MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const { return GetNeighbour(pt, Direction::fromInt(dir)); }
     /// Returns neighbouring point (2nd layer: dir 0-11)
     MapPoint GetNeighbour2(const MapPoint, unsigned dir) const;
     /// Berechnet die Differenz zweier Koordinaten von x1 zu x2, wenn man berücksichtigt, dass man über den
     /// Rand weitergehen kann
     MapCoord CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const;
     MapCoord CalcDistanceAroundBorderY(const MapCoord y1, const MapCoord y2) const;
+    
+    /// Returns all points in a radius around pt (excluding pt) that satisfy a given condition. 
+    /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
+    /// Number of results is constrained to maxResults (if > 0)
+    /// Overloads are used due to missing template default args until C++11
+    template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+    inline std::vector<typename T_TransformPt::result_type>
+    GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const;
+    template<class T_TransformPt>
+    std::vector<typename T_TransformPt::result_type>
+        GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt) const
+    {
+        return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
+    }
+    std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
+    {
+        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
+    }
 
     /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
@@ -373,5 +395,41 @@ public:
     void LUA_EventGF(unsigned number);
     void LUA_EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 };
+
+
+//////////////////////////////////////////////////////////////////////////
+/// Implementation
+//////////////////////////////////////////////////////////////////////////
+
+template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+std::vector<typename T_TransformPt::result_type>
+GameWorldBase::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const
+{
+    typedef typename T_TransformPt::result_type Element;
+    std::vector<Element> result;
+    MapPoint curStartPt = pt;
+    for(unsigned r = 1; r <= radius; ++r)
+    {
+        // Go one level/hull to the left
+        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
+        // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
+        MapPoint curPt = curStartPt;
+        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
+        {
+            for(unsigned step = 0; step < r; ++step)
+            {
+                Element el = transformPt(curPt, r);
+                if(isValid(el))
+                {
+                    result.push_back(el);
+                    if(T_maxResults && result.size() >= T_maxResults)
+                        return result;
+                }
+                curPt = GetNeighbour(curPt, Direction(i).toUInt());
+            }
+        }
+    }
+    return result;
+}
 
 #endif // GameWorldBase_h__

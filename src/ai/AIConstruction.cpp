@@ -161,30 +161,32 @@ bool AIConstruction::CanStillConstructHere(const MapPoint pt)
 	return true;
 }
 
-std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius, MapPoint real, unsigned short real_radius)
-{
-    std::vector<const noFlag*> flags;
+struct Point2Flag{
+    typedef const noFlag* result_type;
+    const AIInterface& aii_;
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
+    Point2Flag(const AIInterface& aii): aii_(aii){}
+
+    result_type operator()(const MapPoint pt, unsigned r) const
     {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                if(aii->GetDistance(t2, real) <= real_radius && aii->GetSpecObj<noFlag>(t2))
-                {
-                    flags.push_back(aii->GetSpecObj<noFlag>(t2));
-                }
-            }
-        }
+        return aii_.GetSpecObj<noFlag>(pt);
     }
-    return flags;
-}
+};
+
+struct IsValidFlag{
+    const unsigned playerId_;
+    
+    IsValidFlag(const unsigned playerId): playerId_(playerId){}
+
+    bool operator()(const noFlag* const flag)
+    {
+        return flag && flag->GetPlayer() == playerId_;
+    }
+};
 
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
-    std::vector<const noFlag*> flags;
+    std::vector<const noFlag*> flags = aii->GetPointsInRadius<30>(pt, radius, Point2Flag(*aii), IsValidFlag(playerID));
 
     // TODO Performance Killer!
     /*
@@ -202,26 +204,6 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         }
     }
     */
-
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                const noFlag* flag = aii->GetSpecObj<noFlag>(t2);
-                if(flag && flag->GetPlayer() == playerID)
-                {
-                    flags.push_back(flag);
-                    if (flags.size() > 30)
-                    {
-                        return flags;
-                    }
-                }
-            }
-        }
-    }
     return flags;
 }
 

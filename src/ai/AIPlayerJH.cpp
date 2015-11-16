@@ -476,28 +476,19 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
 
 void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
 {
+    std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, radius);
     std::queue<MapPoint> toCheck;
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
+    for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
+        const unsigned idx = aii->GetIdx(*it);
+        const noFlag* flag = aii->GetSpecObj<noFlag>(*it);
+        if (flag && flag->GetPlayer() == playerid)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                unsigned i = aii->GetIdx(t2);
-                nodes[i].reachable = false;
-                const noFlag* myFlag = 0;
-                if (( myFlag = aii->GetSpecObj<noFlag>(t2)))
-                {
-                    if (myFlag->GetPlayer() == playerid)
-                    {
-                        nodes[i].reachable = true;
-                        toCheck.push(t2);
-                    }
-                }
-            }
-        }
+            nodes[idx].reachable = true;
+            toCheck.push(*it);
+        }else
+            nodes[idx].reachable = false;
     }
     IterativeReachableNodeChecker(toCheck);
 }
@@ -617,45 +608,47 @@ void AIPlayerJH::RecalcResource(AIJH::Resource res)
     }
 }
 
+struct MapPoint2Idx
+{
+    typedef unsigned result_type;
+    const AIInterface& aii_;
+
+    MapPoint2Idx(const AIInterface& aii): aii_(aii){}
+    result_type operator()(const MapPoint pt, unsigned r)
+    {
+        return aii_.GetIdx(pt);
+    }
+};
+
+struct MapPoint2IdxWithRadius
+{
+    typedef std::pair<unsigned, unsigned> result_type;
+    const AIInterface& aii_;
+
+    MapPoint2IdxWithRadius(const AIInterface& aii): aii_(aii){}
+    result_type operator()(const MapPoint pt, unsigned r)
+    {
+        return std::make_pair(aii_.GetIdx(pt), r);
+    }
+};
+
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 {
     // Radius in dem Bausplatz für Felder blockiert wird
     const unsigned radius = 3;
 
     nodes[aii->GetIdx(pt)].farmed = set;
-
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                unsigned i = aii->GetIdx(t2);
-                nodes[i].farmed = set;
-            }
-        }
-    }
+    std::vector<unsigned> ptIdxs = aii->GetPointsInRadius(pt, radius, MapPoint2Idx(*aii));
+    for(std::vector<unsigned>::const_iterator it = ptIdxs.begin(); it != ptIdxs.end(); ++it)
+        nodes[*it].farmed = set;
 }
 
 void AIPlayerJH::ChangeResourceMap(const MapPoint pt, unsigned radius, std::vector<int> &resMap, int value)
 {
     resMap[aii->GetIdx(pt)] += value * radius;
-
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                unsigned i = aii->GetIdx(t2);
-                resMap[i] += value * (radius - r);
-            }
-        }
-    }
-
-
+    std::vector< std::pair<unsigned, unsigned> > ptIdxs = aii->GetPointsInRadius(pt, radius, MapPoint2IdxWithRadius(*aii));
+    for(std::vector< std::pair<unsigned, unsigned> >::const_iterator it = ptIdxs.begin(); it != ptIdxs.end(); ++it)
+        resMap[it->first] += value * (radius - it->second);
 }
 
 bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
@@ -665,33 +658,27 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshol
 
     if (pt.x >= width || pt.y >= height)
     {
-        pt.x = aii->GetHeadquarter()->GetX();
-        pt.y = aii->GetHeadquarter()->GetY();
+        pt = aii->GetHeadquarter()->GetPos();
     }
 
     // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
+    std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, radius);
+    for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
+        const unsigned idx = aii->GetIdx(*it);
+        if (resourceMaps[res][idx] >= threshold)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
+            if ((inTerritory && !aii->IsOwnTerritory(*it)) || nodes[idx].farmed)
+                continue;
+            const BuildingQuality bq = aii->GetBuildingQuality(*it);
+            if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
+                || (bq == size)) // auch Bergwerke
             {
-                unsigned i = aii->GetIdx(t2);
-                if (resourceMaps[res][i] >= threshold)
-                {
-                    if ((inTerritory && !aii->IsOwnTerritory(t2)) || nodes[i].farmed)
-                        continue;
-                    if ( (aii->GetBuildingQuality(t2) >= size && aii->GetBuildingQuality(t2) < BQ_MINE) // normales Gebäude
-                            || (aii->GetBuildingQuality(t2) == size)) // auch Bergwerke
-                    {
-                        pt = t2;
-                        return true;
-                    }
-                }
+                pt = *it;
+                return true;
             }
         }
     }
@@ -714,8 +701,7 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
     // if no useful startpos is given, use headquarter
     if (pt.x >= aii->GetMapWidth() || pt.y >= aii->GetMapHeight())
     {
-        pt.x = aii->GetHeadquarter()->GetX();
-        pt.y = aii->GetHeadquarter()->GetY();
+        pt = aii->GetHeadquarter()->GetPos();
     }
 
     // insert start position as first node to test
@@ -769,22 +755,20 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
 
     // decide the state of the search
 
-    // no more nodes to test, not reached minimum
     if (search->toTest->empty() && search->resultValue < search->minimum)
     {
+        // no more nodes to test, not reached minimum
         return SEARCH_FAILED;
     }
-
-    // reached minimal satifiying value or best value, if needed
     else if ( (search->resultValue >= search->minimum && !best)
               || (search->resultValue >= search->minimum && search->toTest->empty()))
     {
+        // reached minimal satifiying value or best value, if needed
         return SEARCH_SUCCESSFUL;
     }
-
-    // more to search...
     else
     {
+        // more to search...
         return SEARCH_IN_PROGRESS;
     }
 }
@@ -803,8 +787,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
     //outside of map bounds? -> search around our main storehouse!
     if (pt.x >= width || pt.y >= height)
     {
-        pt.x = aii->GetStorehouses().front()->GetX();
-        pt.y = aii->GetStorehouses().front()->GetY();
+        pt = aii->GetStorehouses().front()->GetPos();
     }
 
     // TODO was besseres wär schön ;)
@@ -817,9 +800,9 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
     for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
+        for(unsigned curDir = 2; curDir < 8; ++curDir)
         {
-            for(MapCoord r2 = 0; r2 < r; ++r2)
+            for(MapCoord step = 0; step < r; ++step)
             {
                 unsigned n = aii->GetIdx(t2);
                 if(fixed)
@@ -827,7 +810,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                 else
                 {
                     //only do a complete calculation for the first point or when moving outward and the last value is unknown
-                    if((r < 2 || !lastcirclevaluecalculated) && r2 < 1 && i < 3 && resourceMaps[res][n])
+                    if((r < 2 || !lastcirclevaluecalculated) && step < 1 && curDir < 3 && resourceMaps[res][n])
                     {
                         temp = aii->CalcResourceValue(t2, res);
                         circlestartvalue = temp;
@@ -839,7 +822,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         //was there ever anything? if not skip it!
                         if(!resourceMaps[res][n])
                         {
-                            if(r2 < 1 && i < 3)
+                            if(step < 1 && curDir < 3)
                                 lastcirclevaluecalculated = false;
                             lastvaluecalculated = false;
                             temp = resourceMaps[res][n];
@@ -848,7 +831,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         {
                             //temp=aii->CalcResourceValue(t2,res);
                             //circle not yet started? -> last direction was outward (left=0)
-                            if(r2 < 1 && i < 3)
+                            if(step < 1 && curDir < 3)
                             {
                                 temp = aii->CalcResourceValue(t2, res, 0, circlestartvalue);
                                 circlestartvalue = temp;
@@ -857,10 +840,10 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                             {
                                 if(lastvaluecalculated)
                                 {
-                                    if(r2 > 0) //we moved direction i%6
-                                        temp = aii->CalcResourceValue(t2, res, i % 6, temp);
+                                    if(step > 0) //we moved direction i%6
+                                        temp = aii->CalcResourceValue(t2, res, curDir % 6, temp);
                                     else //last step was the previous direction
-                                        temp = aii->CalcResourceValue(t2, res, (i - 1) % 6, temp);
+                                        temp = aii->CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
                                 }
                                 else
                                 {
@@ -891,7 +874,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                 {
                     if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(t2)) || nodes[n].farmed)
                     {
-                        t2 = aii->GetNeighbour(t2, Direction(i));
+                        t2 = aii->GetNeighbour(t2, Direction(curDir));
                         continue;
                     }
                     //special case fish -> check for other fishery buildings
@@ -899,14 +882,14 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                     {
                         if(BuildingNearby(t2, BLD_FISHERY, 6))
                         {
-                            t2 = aii->GetNeighbour(t2, Direction(i));
+                            t2 = aii->GetNeighbour(t2, Direction(curDir));
                             continue;
                         }
                     }
                     //dont build next to harborspots
                     if(HarborPosClose(t2, 3, true))
                     {
-                        t2 = aii->GetNeighbour(t2, Direction(i));
+                        t2 = aii->GetNeighbour(t2, Direction(curDir));
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(t2);
@@ -918,7 +901,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         //TODO: calculate "perfect" rating and instantly return if we got that already
                     }
                 }
-                t2 = aii->GetNeighbour(t2, Direction(i));
+                t2 = aii->GetNeighbour(t2, Direction(curDir));
             }
         }
     }
@@ -956,33 +939,29 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
     for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
+        for(unsigned curDir = 2; curDir < 8; ++curDir)
         {
-            for(MapCoord r2 = 0; r2 < r; ++r2)
+            for(MapCoord step = 0; step < r; ++step)
             {
                 unsigned n = aii->GetIdx(t2);
-                //only do a complete calculation for the first point!
-                if(r < 2 && r2 < 1 && i < 3)
+                if(r == 1 && step == 0 && curDir == 2)
                 {
+                    //only do a complete calculation for the first point!
                     temp = aii->CalcResourceValue(t2, res);
+                    circlestartvalue = temp;
+                }
+                else if(step == 0 && curDir == 2)
+                {
+                    //circle not yet started? -> last direction was outward (left=0)
+                    temp = aii->CalcResourceValue(t2, res, 0, circlestartvalue);
                     circlestartvalue = temp;
                 }
                 else
                 {
-                    //temp=aii->CalcResourceValue(t2,res);
-                    //circle not yet started? -> last direction was outward (left=0)
-                    if(r2 < 1 && i < 3)
-                    {
-                        temp = aii->CalcResourceValue(t2, res, 0, circlestartvalue);
-                        circlestartvalue = temp;
-                    }
-                    else
-                    {
-                        if(r2 > 0) //we moved direction i%6
-                            temp = aii->CalcResourceValue(t2, res, i % 6, temp);
-                        else //last step was the previous direction
-                            temp = aii->CalcResourceValue(t2, res, (i - 1) % 6, temp);
-                    }
+                    if(step > 0) //we moved direction i%6
+                        temp = aii->CalcResourceValue(t2, res, curDir % 6, temp);
+                    else //last step was the previous direction
+                        temp = aii->CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
                 }
                 //copy the value to the resource map (map is only used in the ai debug mode)
                 resourceMaps[res][n] = temp;
@@ -990,12 +969,12 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                 {
                     if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(t2)) || nodes[n].farmed)
                     {
-                        t2 = aii->GetNeighbour(t2, Direction(i));
+                        t2 = aii->GetNeighbour(t2, Direction(curDir));
                         continue;
                     }
                     if(HarborPosClose(t2, 3, true))
                     {
-                        t2 = aii->GetNeighbour(t2, Direction(i));
+                        t2 = aii->GetNeighbour(t2, Direction(curDir));
                         continue;
                     }
                     BuildingQuality bq = aii->GetBuildingQuality(t2);
@@ -1009,7 +988,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                         //TODO: calculate "perfect" rating and instantly return if we got that already
                     }
                 }
-                t2 = aii->GetNeighbour(t2, Direction(i));
+                t2 = aii->GetNeighbour(t2, Direction(curDir));
             }
         }
     }
@@ -1275,30 +1254,24 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
     if (radius == -1)
         radius = 30;
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
+    std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, radius);
+    for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                unsigned i = aii->GetIdx(t2);
+        unsigned idx = aii->GetIdx(*it);
 
-                if (!nodes[i].reachable || !aii->IsOwnTerritory(t2) || nodes[i].farmed)
-                    continue;
-                if(HarborPosClose(t2, 3, true))
-                {
-                    if(size != BQ_HARBOR)
-                        continue;
-                }
-                BuildingQuality bq = aii->GetBuildingQuality(t2);
-                if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
-                        || (bq == size))    // auch Bergwerke
-                {
-                    pt = t2;
-                    return true;
-                }
-            }
+        if (!nodes[idx].reachable || nodes[idx].farmed || !aii->IsOwnTerritory(*it))
+            continue;
+        if(HarborPosClose(*it, 3, true))
+        {
+            if(size != BQ_HARBOR)
+                continue;
+        }
+        BuildingQuality bq = aii->GetBuildingQuality(*it);
+        if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
+                || (bq == size))    // auch Bergwerke
+        {
+            pt = *it;
+            return true;
         }
     }
 
@@ -1310,36 +1283,24 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIJH::Resource res, int radius)
     unsigned short width = aii->GetMapWidth();
     unsigned short height = aii->GetMapHeight();
 
-
     // TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann außerhalb der karte liegen würde ... könnte trotzdem crashen wenn wir kein hq mehr haben ... mehr checks!
     if (pt.x >= width || pt.y >= height)
     {
         pt = aii->GetStorehouses().front()->GetPos();
     }
 
-
+    std::vector<unsigned> idxs = aii->GetPointsInRadius(pt, radius, MapPoint2Idx(*aii));
+    const unsigned all = idxs.size();
+    assert(all > 0);
 
     unsigned good = 0;
-    unsigned all = 0;
-
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
+    for(std::vector<unsigned>::const_iterator it = idxs.begin(); it != idxs.end(); ++it)
     {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                unsigned i = aii->GetIdx(t2);
-
-                if (nodes[i].res == res)
-                    good++;
-
-                all++;
-            }
-        }
+        if (nodes[*it].res == res)
+            good++;
     }
 
-    return (all != 0) ? (good * 100) / all : 0;
+    return (good * 100) / all;
 }
 
 void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
@@ -1430,37 +1391,17 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
         case BLD_HARBORBUILDING:
         {
             //destroy all other buildings around the harborspot in range 2 so we can rebuild the harbor ...
-            pt = aii->GetNeighbour(pt, Direction::WEST);
-            for(int i = 2; i < 8; i++) //range 1
+            std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, 2);
+            for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
             {
-                const noBaseBuilding* bb;
-                const noBuildingSite* bs;
-                if((bb = aii->GetSpecObj<noBaseBuilding>(pt)))
+                const noBaseBuilding* const bb = aii->GetSpecObj<noBaseBuilding>(*it);
+                if(bb)
+                    aii->DestroyBuilding(*it);
+                else
                 {
-                    aii->DestroyBuilding(pt);
-                }
-                if((bs = aii->GetSpecObj<noBuildingSite>(pt)))
-                {
-                    aii->DestroyFlag(gwb.GetNeighbour(pt, 4));
-                }
-                pt = aii->GetNeighbour(pt, Direction(i));
-            }
-            pt = aii->GetNeighbour(pt, Direction::WEST);
-            for(int i = 2; i < 8; i++) //range 2
-            {
-                for(int r = 0; r < 2; r++)
-                {
-                    const noBaseBuilding* bb;
-                    const noBuildingSite* bs;
-                    if((bb = aii->GetSpecObj<noBaseBuilding>(pt)))
-                    {
-                        aii->DestroyBuilding(pt);
-                    }
-                    if((bs = aii->GetSpecObj<noBuildingSite>(pt)))
-                    {
-                        aii->DestroyFlag(gwb.GetNeighbour(pt, 4));
-                    }
-                    pt = aii->GetNeighbour(pt, Direction(i));
+                    const noBuildingSite* const bs = aii->GetSpecObj<noBuildingSite>(*it);
+                    if(bs)
+                        aii->DestroyFlag(aii->GetNeighbour(*it, Direction::SOUTHEAST));
                 }
             }
             break;

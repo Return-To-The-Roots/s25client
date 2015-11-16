@@ -1029,33 +1029,33 @@ MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) 
     return GetNeighbour(MapPoint(x, y), dir).y;
 }
 
-MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, unsigned dir) const
+MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) const
 {
     MapPoint res;
     
     switch (dir)
     {
-    case 0:
+    case Direction::WEST:
         res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
         res.y = pt.y;
         break;
-    case 1:
+    case Direction::NORTHWEST:
         res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
         res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
         break;
-    case 2:
+    case Direction::NORTHEAST:
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
         res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
         break;
-    case 3:
+    case Direction::EAST:
         res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
         res.y = pt.y;
         break;
-    case 4:
+    case Direction::SOUTHEAST:
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
         res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
         break;
-    case 5:
+    case Direction::SOUTHWEST:
         res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
         res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
         break;

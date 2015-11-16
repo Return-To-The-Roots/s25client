@@ -50,8 +50,6 @@ class AIConstruction
 
         /// Finds flags in the area around pt
         std::vector<const noFlag*> FindFlags(const MapPoint pt, unsigned short radius);
-
-        std::vector<const noFlag*> FindFlags(const MapPoint pt, unsigned short radius, MapPoint real, unsigned short real_radius);
 		
 		/// returns true if the military building should be connected to the roadsystem
 		bool MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos);
