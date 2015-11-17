@@ -762,134 +762,132 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 void noFigure::Wander()
 {
     // Sind wir noch auf der Suche nach einer Flagge?
-    if(wander_way != 0xFFFF)
+    if(wander_way == 0xFFFF)
+    {
+        // Wir laufen schon zur Flagge
+        WanderToFlag();
+        return;
+    }
+
+    // Ist es mal wieder an der Zeit, eine Flagge zu suchen?
+    if(!wander_way)
     {
         // Soldaten sind härter im Nehmen
-        bool is_soldier = (job_ >= JOB_PRIVATE && job_ <= JOB_GENERAL);
-        unsigned short wander_radius = is_soldier ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
-        // Ist es mal wieder an der Zeit, eine Flagge zu suchen?
-        if(!wander_way)
+        const bool is_soldier = (job_ >= JOB_PRIVATE && job_ <= JOB_GENERAL);
+        const unsigned short wander_radius = is_soldier ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
+
+        // Umgebung abscannen, nicht über den Rand gehen
+        unsigned short x1 = (pos.x > wander_radius) ? (pos.x - wander_radius) : 0;
+        unsigned short y1 = (pos.y > wander_radius) ? (pos.y - wander_radius) : 0;
+        unsigned short x2 = (pos.x + wander_radius < gwg->GetWidth()) ? (pos.x + wander_radius) : (gwg->GetWidth() - 1);
+        unsigned short y2 = (pos.y + wander_radius < gwg->GetHeight()) ? (pos.y + wander_radius) : (gwg->GetHeight() - 1);
+
+        // Flaggen sammeln und dann zufällig eine auswählen
+        std::vector<noFlag*> flags;
+
+        for(MapPoint p(0, y1); p.y <= y2; ++p.y)
         {
-            // Umgebung abscannen, nicht über den Rand gehen
-            unsigned short x1 = (pos.x > wander_radius) ? (pos.x - wander_radius) : 0;
-            unsigned short y1 = (pos.y > wander_radius) ? (pos.y - wander_radius) : 0;
-            unsigned short x2 = (pos.x + wander_radius < gwg->GetWidth()) ? (pos.x + wander_radius) : (gwg->GetWidth() - 1);
-            unsigned short y2 = (pos.y + wander_radius < gwg->GetHeight()) ? (pos.y + wander_radius) : (gwg->GetHeight() - 1);
-
-            // Flaggen sammeln und dann zufällig eine auswählen
-            std::vector<noFlag*> flags;
-
-            for(MapPoint p(0, y1); p.y <= y2; ++p.y)
+            for(p.x = x1; p.x <= x2; ++p.x)
             {
-                for(p.x = x1; p.x <= x2; ++p.x)
+                if(gwg->GetNO(p)->GetType() == NOP_FLAG)
                 {
-                    if(gwg->GetNO(p)->GetType() == NOP_FLAG)
-                    {
-                        if(gwg->GetSpecObj<noFlag>(p)->GetPlayer() == player)
-                            flags.push_back(gwg->GetSpecObj<noFlag>(p));
-                    }
+                    if(gwg->GetSpecObj<noFlag>(p)->GetPlayer() == player)
+                        flags.push_back(gwg->GetSpecObj<noFlag>(p));
                 }
-            }
-
-
-            unsigned best_way = 0xFFFFFFFF;
-            noFlag* best_flag = 0;
-
-            for(std::vector<noFlag*>::iterator it = flags.begin(); it != flags.end(); ++it)
-            {
-                // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
-                if(burned_wh_id != 0xFFFFFFFF)
-                {
-                    // Dann evtl gucken, ob anderen Mitglieder schon gesagt haben, dass die Flagge nicht zugänglich ist
-                    if((*it)->IsImpossibleForBWU(burned_wh_id))
-                    {
-                        //printf("flagge gesiebt\n");
-                        // Dann können wir die Flagge überspringen
-                        continue;
-                    }
-                }
-
-                // würde die die bisher beste an Weg unterbieten?
-                unsigned way = gwg->CalcDistance(pos, (*it)->GetPos());
-                if(way < best_way)
-                {
-                    // Gibts nen Weg zu dieser Flagge?
-                    if(gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false) != 0xFF)
-                    {
-                        // gucken, ob ein Weg zu einem Warenhaus führt
-                        if(gwg->GetPlayer(player).FindWarehouse(**it, FW::Condition_StoreFigure, 0, true, &job_, false))
-                        {
-                            // dann nehmen wir die doch glatt
-                            best_way = way;
-                            best_flag = *it;
-                        }
-                    }
-                    else if(burned_wh_id != 0xFFFFFFFF)
-                    {
-                        // Flagge nicht möglich zugänglich bei einem Flüchting aus einem abgebrannten Lagerhaus?
-                        // --> der ganzen Gruppe Bescheid sagen, damit die nicht auch alle sinnlos einen Weg zu
-                        // dieser Flagge suchen
-                        (*it)->ImpossibleForBWU(burned_wh_id);
-                    }
-                }
-            }
-
-            if(best_flag)
-            {
-                // bestmögliche schließlich nehmen
-                wander_way = 0xFFFF;
-                flagPos_ = best_flag->GetPos();
-                flag_obj_id = best_flag->GetObjId();
-                WanderToFlag();
-                return;
-            }
-
-            // Wurde keine Flagge gefunden?
-
-            // Haben wir noch Versuche?
-            if(--wander_tryings > 0)
-            {
-                // von vorne beginnen wieder mit Rumirren
-                wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
-            }
-            else
-            {
-                // Genug rumgeirrt, wir finden halt einfach nichts --> Sterben
-                Die();
-                return;
             }
         }
 
-        // weiter umherirren, einfach in eine zufällige Richtung
-        // Müssen dabei natürlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
-        unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
-        for(unsigned char d = 0; d < 6; ++d)
+        unsigned best_way = 0xFFFFFFFF;
+        noFlag* best_flag = 0;
+
+        for(std::vector<noFlag*>::iterator it = flags.begin(); it != flags.end(); ++it)
         {
-            unsigned char dir = (d + doffset) % 6;
-
-            // Nicht über den Rand gehen!
-            if(pos.x == 0 && (dir == 0 || dir == 1 || dir == 5)) continue;
-            if(pos.y == 0 && (dir == 1 || dir == 2)) continue;
-            if(pos.x == gwg->GetWidth() - 1 && (dir == 2 || dir == 3 || dir == 4)) continue;
-            if(pos.y == gwg->GetHeight() - 1 && (dir == 4 || dir == 5)) continue;
-
-            if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir))
-                    && gwg->IsNodeToNodeForFigure(pos, dir))
+            // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
+            if(burned_wh_id != 0xFFFFFFFF)
             {
-                StartWalking(dir);
-                --wander_way;
-                return;
+                // Dann evtl gucken, ob anderen Mitglieder schon gesagt haben, dass die Flagge nicht zugänglich ist
+                if((*it)->IsImpossibleForBWU(burned_wh_id))
+                {
+                    //printf("flagge gesiebt\n");
+                    // Dann können wir die Flagge überspringen
+                    continue;
+                }
+            }
+
+            // würde die die bisher beste an Weg unterbieten?
+            unsigned way = gwg->CalcDistance(pos, (*it)->GetPos());
+            if(way < best_way)
+            {
+                // Are we at that flag or is there a path to it?
+                if(way == 0 || gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false) != 0xFF)
+                {
+                    // gucken, ob ein Weg zu einem Warenhaus führt
+                    if(gwg->GetPlayer(player).FindWarehouse(**it, FW::Condition_StoreFigure, 0, true, &job_, false))
+                    {
+                        // dann nehmen wir die doch glatt
+                        best_way = way;
+                        best_flag = *it;
+                    }
+                }
+                else if(burned_wh_id != 0xFFFFFFFF)
+                {
+                    // Flagge nicht möglich zugänglich bei einem Flüchting aus einem abgebrannten Lagerhaus?
+                    // --> der ganzen Gruppe Bescheid sagen, damit die nicht auch alle sinnlos einen Weg zu
+                    // dieser Flagge suchen
+                    (*it)->ImpossibleForBWU(burned_wh_id);
+                }
             }
         }
 
-        // Wir sind eingesperrt! Kein Weg mehr gefunden --> Sterben
-        Die();
+        if(best_flag)
+        {
+            // bestmögliche schließlich nehmen
+            wander_way = 0xFFFF;
+            flagPos_ = best_flag->GetPos();
+            flag_obj_id = best_flag->GetObjId();
+            WanderToFlag();
+            return;
+        }
+
+        // Wurde keine Flagge gefunden?
+
+        // Haben wir noch Versuche?
+        if(--wander_tryings > 0)
+        {
+            // von vorne beginnen wieder mit Rumirren
+            wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
+        }
+        else
+        {
+            // Genug rumgeirrt, wir finden halt einfach nichts --> Sterben
+            Die();
+            return;
+        }
     }
-    // Wir laufen schon zur Flagge
-    else
+
+    // weiter umherirren, einfach in eine zufällige Richtung
+    // Müssen dabei natürlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
+    unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+    for(unsigned char d = 0; d < 6; ++d)
     {
-        WanderToFlag();
+        unsigned char dir = (d + doffset) % 6;
+
+        // Nicht über den Rand gehen!
+        if(pos.x == 0 && (dir == 0 || dir == 1 || dir == 5)) continue;
+        if(pos.y == 0 && (dir == 1 || dir == 2)) continue;
+        if(pos.x == gwg->GetWidth() - 1 && (dir == 2 || dir == 3 || dir == 4)) continue;
+        if(pos.y == gwg->GetHeight() - 1 && (dir == 4 || dir == 5)) continue;
+
+        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && gwg->IsNodeToNodeForFigure(pos, dir))
+        {
+            StartWalking(dir);
+            --wander_way;
+            return;
+        }
     }
+
+    // Wir sind eingesperrt! Kein Weg mehr gefunden --> Sterben
+    Die();
 }
 
 void noFigure::WanderFailedTrade()
