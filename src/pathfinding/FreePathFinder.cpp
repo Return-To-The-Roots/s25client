@@ -118,6 +118,8 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                               FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
                               const bool record)
 {
+    assert(start != dest); // Why would you call pathfinding for this?
+
     // increase currentVisit, so we don't have to clear the visited-states at every run
     IncreaseCurrentVisit();
 
@@ -241,6 +243,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                                                    FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
                                                    const bool record)
 {
+    assert(start != dest); // Why would you call pathfinding for this?
+
     // increase currentVisit, so we don't have to clear the visited-states at every run
     IncreaseCurrentVisit();
 
