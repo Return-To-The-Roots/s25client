@@ -101,8 +101,6 @@ class nobHarborBuilding : public nobBaseWarehouse
         /// Stellt Verteidiger zur Verfügung
         virtual nofDefender* ProvideDefender(nofAttacker* const attacker);
 
-        unsigned ordered_ships;
-
         friend class SerializedGameData;
         friend class BuildingFactory;
         nobHarborBuilding(const MapPoint pt, const unsigned char player, const Nation nation);
