@@ -1217,6 +1217,7 @@ void GameClientPlayer::AddBuildingSite(noBuildingSite* building_site)
 
 void GameClientPlayer::RemoveBuildingSite(noBuildingSite* building_site)
 {
+    assert(helpers::contains(building_sites, building_site));
     building_sites.remove(building_site);
 
     if(building_site->GetBuildingType() == BLD_HARBORBUILDING)
@@ -1231,6 +1232,7 @@ void GameClientPlayer::AddUsualBuilding(nobUsual* building)
 
 void GameClientPlayer::RemoveUsualBuilding(nobUsual* building)
 {
+    assert(helpers::contains(buildings[building->GetBuildingType() - 10], building));
     buildings[building->GetBuildingType() - 10].remove(building);
     ChangeStatisticValue(STAT_BUILDINGS, -1);
 }
@@ -1243,6 +1245,7 @@ void GameClientPlayer::AddMilitaryBuilding(nobMilitary* building)
 
 void GameClientPlayer::RemoveMilitaryBuilding(nobMilitary* building)
 {
+    assert(helpers::contains(military_buildings, building));
     military_buildings.remove(building);
     ChangeStatisticValue(STAT_BUILDINGS, -1);
     TestDefeat();
@@ -2452,11 +2455,11 @@ bool GameClientPlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 }
 
 /// For debug only
-bool GameClientPlayer::CheckDependentFigure(noFigure* fig)
+bool GameClientPlayer::IsDependentFigure(noFigure* fig)
 {
     for(std::list<nobBaseWarehouse*>::iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
-        if((*it)->CheckDependentFigure(fig))
+        if((*it)->IsDependentFigure(fig))
             return true;
     }
     return false;

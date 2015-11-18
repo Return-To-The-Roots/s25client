@@ -418,10 +418,10 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 {
     //is it a valid flag?
-    assert((flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY()) || (flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY()));
-    if(flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY())
+    assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
+    if(flag->GetPos() == f1->GetPos())
         return gwg->GetSpecObj<noFlag>(f2->GetPos());
-    if(flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY())
+    if(flag->GetPos() == f2->GetPos())
         return gwg->GetSpecObj<noFlag>(f1->GetPos());
     //shouldnt get here or at least catch the assertion fail
     return NULL;
@@ -435,10 +435,10 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 unsigned char RoadSegment::GetOtherFlagDir(const noFlag* flag)
 {
     //is it a valid flag?
-    assert((flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY()) || (flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY()));
-    if(flag->GetX() == f1->GetX() && flag->GetY() == f1->GetY())
+    assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
+    if(flag->GetPos() == f1->GetPos())
         return route[route.size() - 1];
-    if(flag->GetX() == f2->GetX() && flag->GetY() == f2->GetY())
+    if(flag->GetPos() == f2->GetPos())
         return (route[0] + 3) % 6;;
     //shouldnt get here or at least catch the assertion fail
     return 255;

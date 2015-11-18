@@ -101,7 +101,7 @@ void noFigure::Destroy_noFigure()
     assert(HasNoGoal());
     Destroy_noMovable();
 
-    assert(!players->getElement(player)->CheckDependentFigure(this));
+    assert(!players->getElement(player)->IsDependentFigure(this));
 }
 
 void noFigure::Serialize_noFigure(SerializedGameData& sgd) const

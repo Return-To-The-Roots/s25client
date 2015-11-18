@@ -369,8 +369,9 @@ void nobUsual::AddWare(Ware*& ware)
         if(ware->type == USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i])
         {
             ++wares[i];
-            //assert(wares[i] <= wares_count);
+            assert(helpers::contains(ordered_wares[i], ware));
             ordered_wares[i].remove(ware);
+            break;
         }
     }
 
@@ -410,7 +411,11 @@ void nobUsual::WareLost(Ware* ware)
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
     {
         if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i] == ware->type)
+        {
+            assert(helpers::contains(ordered_wares[i], ware));
             ordered_wares[i].remove(ware);
+            break;
+        }
     }
 }
 

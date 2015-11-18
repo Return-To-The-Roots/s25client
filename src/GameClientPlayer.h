@@ -225,13 +225,13 @@ class GameClientPlayer : public GamePlayerInfo
         /// Warenhaus zur Warenhausliste hinzufügen
         void AddWarehouse(nobBaseWarehouse* wh) { warehouses.push_back(wh); }
         /// Warenhaus aus Warenhausliste entfernen
-        void RemoveWarehouse(nobBaseWarehouse* wh) { warehouses.remove(wh); TestDefeat(); }
+        void RemoveWarehouse(nobBaseWarehouse* wh) { assert(helpers::contains(warehouses, wh)); warehouses.remove(wh); TestDefeat(); }
         /// Hafen zur Warenhausliste hinzufügen
         void AddHarbor(nobHarborBuilding* hb);
         /// Hafen aus Warenhausliste entfernen
-        void RemoveHarbor(nobHarborBuilding* hb) { harbors.remove(hb); }
+        void RemoveHarbor(nobHarborBuilding* hb) { assert(helpers::contains(harbors, hb)); harbors.remove(hb); }
         /// (Unbesetzte) Straße aus der Liste entfernen
-        void DeleteRoad(RoadSegment* rs) { roads.remove(rs); }
+        void DeleteRoad(RoadSegment* rs) { assert(helpers::contains(roads, rs)); roads.remove(rs); }
 
         /// Für alle unbesetzen Straßen Weg neu berechnen
         void FindWarehouseForAllRoads();
@@ -303,7 +303,7 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Ware zur globalen Warenliste hinzufügen und entfernen
         void RegisterWare(Ware* ware) { ware_list.push_back(ware); }
-        void RemoveWare(Ware* ware) { ware_list.remove(ware); }
+        void RemoveWare(Ware* ware) { assert(IsWareRegistred(ware)); ware_list.remove(ware); }
         bool IsWareRegistred(Ware* ware) { return (helpers::contains(ware_list, ware)); }
         bool IsWareDependent(Ware* ware);
 
@@ -350,7 +350,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Registriert einen Geologen bzw. einen Späher an einer bestimmten Flagge, damit diese informiert werden,
         /// wenn die Flagge abgerissen wird
         void RegisterFlagWorker(nofFlagWorker* flagworker) { flagworkers.push_back(flagworker); }
-        void RemoveFlagWorker(nofFlagWorker* flagworker) { flagworkers.remove(flagworker); }
+        void RemoveFlagWorker(nofFlagWorker* flagworker) { assert(helpers::contains(flagworkers, flagworker)); flagworkers.remove(flagworker); }
         /// Wird aufgerufen, wenn eine Flagge abgerissen wurde, damit das den Flaggen-Arbeitern gesagt werden kann
         void FlagDestroyed(noFlag* flag);
 
@@ -480,7 +480,7 @@ class GameClientPlayer : public GamePlayerInfo
         bool CanBuildCatapult() const;
 
         /// For debug only
-        bool CheckDependentFigure(noFigure* fig);
+        bool IsDependentFigure(noFigure* fig);
 
 };
 

@@ -992,6 +992,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
 void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen
+    assert(helpers::contains(troops_on_mission, static_cast<nofActiveSoldier*>(soldier)));
     troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
 }
 
@@ -1079,13 +1080,13 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         {
             static_cast<nofAggressiveDefender*>(*it)->NeedForHomeDefence();
             // Aus Missionsliste raushauen
+            assert(helpers::contains(troops_on_mission, static_cast<nofAggressiveDefender*>(*it)));
             troops_on_mission.remove(static_cast<nofAggressiveDefender*>(*it));
 
             nofDefender* soldier = new nofDefender(pos, player, this, static_cast<nofAggressiveDefender*>(*it)->GetRank(), attacker);
             (*it)->Destroy();
             delete *it;
             leave_house.erase(it);
-            //leave_house.erase(&it);
             return soldier;
         }
         else if((*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
@@ -1095,7 +1096,6 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
             (*it)->Destroy();
             delete *it;
             leave_house.erase(it);
-            //leave_house.erase(&it);
             return soldier;
         }
     }
@@ -1495,15 +1495,9 @@ void nobBaseWarehouse::CheckOuthousing(unsigned char category, unsigned job_ware
 }
 
 /// For debug only
-bool nobBaseWarehouse::CheckDependentFigure(noFigure* fig)
+bool nobBaseWarehouse::IsDependentFigure(noFigure* fig)
 {
-    for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
-    {
-        if(*it == fig)
-            return true;
-    }
-
-    return false;
+    return helpers::contains(dependent_figures, fig);
 }
 
 /// Available goods of a speciefic type that can be used for trading

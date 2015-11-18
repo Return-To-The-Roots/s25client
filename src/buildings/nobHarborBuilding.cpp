@@ -182,6 +182,7 @@ void nobHarborBuilding::Destroy()
     gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
+    assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
     gwg->GetMilitarySquare(pos).remove(this);
 }
 
@@ -1161,6 +1162,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
 void nobHarborBuilding::CancelWareForShip(Ware* ware)
 {
     // Ware aus der Liste entfernen
+    assert(helpers::contains(wares_for_ships, ware));
     wares_for_ships.remove(ware);
     // Ware zur Inventur hinzufügen
     // Anzahl davon wieder hochsetzen

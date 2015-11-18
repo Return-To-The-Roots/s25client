@@ -133,6 +133,7 @@ void nobMilitary::Destroy_nobMilitary()
 
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
+    assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
     gwg->GetMilitarySquare(pos).remove(this);
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
@@ -618,6 +619,7 @@ void nobMilitary::AddWare(Ware*& ware)
     // Ein Golstück mehr
     ++coins;
     // aus der Bestellliste raushaun
+    assert(helpers::contains(ordered_coins, ware));
     ordered_coins.remove(ware);
 
     // Ware vernichten
@@ -631,6 +633,7 @@ void nobMilitary::AddWare(Ware*& ware)
 void nobMilitary::WareLost(Ware* ware)
 {
     // Ein Goldstück konnte nicht kommen --> aus der Bestellliste entfernen
+    assert(helpers::contains(ordered_coins, ware));
     ordered_coins.remove(ware);
 }
 
@@ -717,6 +720,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
 void nobMilitary::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen und ggf. neue Soldaten rufen
+    assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)) || helpers::contains(troops_on_mission, static_cast<nofActiveSoldier*>(soldier)));
     ordered_troops.erase(static_cast<nofPassiveSoldier*>(soldier));
     troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
     RegulateTroops();
@@ -1272,10 +1276,11 @@ bool nobMilitary::IsDemolitionAllowed() const
 
 void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
 {
+    assert(IsAggressor(soldier) || helpers::contains(far_away_capturers, soldier));
     aggressors.remove(soldier);
     far_away_capturers.remove(soldier);
 
-    if (aggressors.size() == 0)
+    if (aggressors.empty())
         RegulateTroops();
 }
 
@@ -1283,6 +1288,7 @@ void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
 /// A far-away capturer arrived at the building/flag and starts the capturing
 void nobMilitary::FarAwayAttackerReachedGoal(nofAttacker* attacker)
 {
+    assert(helpers::contains(far_away_capturers, attacker));
     far_away_capturers.remove(attacker);
     aggressors.push_back(attacker);
     capturing_soldiers++;

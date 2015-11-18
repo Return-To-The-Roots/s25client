@@ -222,6 +222,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
 
 void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)
 {
+    assert(helpers::contains(GetNode(pt).figures, fig));
     GetNode(pt).figures.remove(fig);
 }
 
@@ -433,7 +434,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     GetSpecObj<noFlag>(start)->routes[route.front()] = rs;
     GetSpecObj<noFlag>(end)->routes[(route.back() + 3) % 6] = rs;
 
-    // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Näcige macht
+    // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
     GetPlayer(playerid).NewRoad(rs);
     // notify ai about the new road
     GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, start, route[0]), playerid);
@@ -1985,8 +1986,9 @@ bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_s
 
 
 /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
-void GameWorldGame::GetHarborPointsWithinReach(const unsigned hp, std::vector<unsigned>& hps) const
+std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned hp) const
 {
+    std::vector<unsigned> hps;
     for(unsigned i = 1; i < harbor_pos.size(); ++i)
     {
         if(i == hp)
@@ -1997,6 +1999,7 @@ void GameWorldGame::GetHarborPointsWithinReach(const unsigned hp, std::vector<un
 
         hps.push_back(i);
     }
+    return hps;
 }
 
 bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char type) const

@@ -399,12 +399,17 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 }
 
 
-bool nobBaseMilitary::Test(nofAttacker* attacker)
+bool nobBaseMilitary::IsAggressor(nofAttacker* attacker)
 {
     return helpers::contains(aggressors, attacker);
 }
 
-bool nobBaseMilitary::TestOnMission(nofActiveSoldier* soldier)
+bool nobBaseMilitary::IsAggressiveDefender(nofAggressiveDefender* soldier)
+{
+    return helpers::contains(aggressive_defenders, soldier);
+}
+
+bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier)
 {
     return helpers::contains(troops_on_mission, soldier);
 }
@@ -420,15 +425,16 @@ void nobBaseMilitary::CancelJobs()
         // sollen zum Kampf
         if((*it)->DoJobWorks() && (*it)->GetGOT() != GOT_NOF_DEFENDER)
         {
-            nofActiveSoldier* as = dynamic_cast<nofActiveSoldier*>(*it);
-            assert(as);
+            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
+            assert(soldier);
 
             // Nicht mehr auf Mission
-            troops_on_mission.remove(as);
+            assert(IsOnMission(soldier));
+            troops_on_mission.remove(soldier);
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
-            as->InformTargetsAboutCancelling();
+            soldier->InformTargetsAboutCancelling();
             // Wieder in das Haus verfrachten
-            this->AddActiveSoldier(as);
+            this->AddActiveSoldier(soldier);
             it = leave_house.erase(it);
         }else
             ++it;
