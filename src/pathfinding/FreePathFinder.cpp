@@ -19,6 +19,7 @@
 #include "pathfinding/FreePathFinder.h"
 #include "GameWorldBase.h"
 #include "GameClient.h"
+#include "Log.h"
 #include <set>
 
 /// Konstante für einen ungültigen Vorgänerknoten
@@ -114,11 +115,24 @@ void FreePathFinder::IncreaseCurrentVisit()
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                               const bool randomRoute, const unsigned maxLength,
-                              std::vector<unsigned char>* route, unsigned* length, unsigned char* first_dir,
+                              std::vector<unsigned char>* route, unsigned* length, unsigned char* firstDir,
                               FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
                               const bool record)
 {
-    assert(start != dest); // Why would you call pathfinding for this?
+    if(start == dest)
+    {
+        // Path where start==goal should never happen
+        assert(false);
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.x), unsigned(start.y));
+        // But for now we assume it to be valid and return (kind of) correct values
+        if(route)
+            route->clear();
+        if(length)
+            *length = 0;
+        if(firstDir)
+            *firstDir = 0xff;
+        return true;
+    }
 
     // increase currentVisit, so we don't have to clear the visited-states at every run
     IncreaseCurrentVisit();
@@ -145,29 +159,29 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
         // Knoten behandelt --> raus aus der todo Liste
         todo.erase(todo.begin());
 
-        unsigned best_id = best.id_;
+        unsigned bestId = best.id_;
 
         // Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
         // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
-        nodes[best_id].it_p = todo.end();
+        nodes[bestId].it_p = todo.end();
 
-        // Ziel schon erreicht? Allerdings Null-Weg, wenn Start = Ende ist, verbieten
-        if(destId == best_id && nodes[best_id].way)
+        // Ziel schon erreicht?
+        if(destId == bestId)
         {
             // Ziel erreicht!
             // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
             if(length)
-                *length = nodes[best_id].way;
+                *length = nodes[bestId].way;
             if(route)
-                route->resize(nodes[best_id].way);
+                route->resize(nodes[bestId].way);
 
             // Route rekonstruieren und ggf. die erste Richtung speichern, falls gewünscht
-            for(unsigned z = nodes[best_id].way - 1; best_id != startId; --z, best_id = nodes[best_id].prev)
+            for(unsigned z = nodes[bestId].way - 1; bestId != startId; --z, bestId = nodes[bestId].prev)
             {
                 if(route)
-                    (*route)[z] = nodes[best_id].dir;
-                if(first_dir && z == 0)
-                    *first_dir = nodes[best_id].dir;
+                    (*route)[z] = nodes[bestId].dir;
+                if(firstDir && z == 0)
+                    *firstDir = nodes[bestId].dir;
             }
 
             // Fertig, es wurde ein Pfad gefunden
@@ -175,33 +189,37 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
         }
 
         // Maximaler Weg schon erreicht? In dem Fall brauchen wir keine weiteren Knoten von diesem aus bilden
-        if(nodes[best_id].way == maxLength)
+        if(nodes[bestId].way == maxLength)
             continue;
 
         // Knoten in alle 6 Richtungen bilden
-        for(unsigned z = startDir + 3; z < startDir + 9; ++z)
+        for(unsigned z = startDir; z < startDir + 6; ++z)
         {
-            unsigned i = z % 6;
+            unsigned dir = z % 6;
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[best_id].mapPt, i);
+            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);
 
             // ID des umliegenden Knotens bilden
             unsigned nbId = gwb_.GetIdx(neighbourPos);
+
+            // Don't try to go back where we came from (would also bail out in the conditions below)
+            if(nodes[bestId].prev == nbId)
+                continue;
 
             // Knoten schon auf dem Feld gebildet?
             if (nodes[nbId].lastVisited == currentVisit)
             {
                 // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
-                if(nodes[nbId].it_p != todo.end() && nodes[best_id].way + 1 < nodes[nbId].way)
+                if(nodes[nbId].it_p != todo.end() && nodes[bestId].way + 1 < nodes[nbId].way)
                 {
-                    nodes[nbId].way  = nodes[best_id].way + 1;
-                    nodes[nbId].prev = best_id;
+                    nodes[nbId].way  = nodes[bestId].way + 1;
+                    nodes[nbId].prev = bestId;
                     PathfindingPoint neighborPt = *nodes[nbId].it_p;
                     neighborPt.estimate_ = neighborPt.distance_ + nodes[nbId].way;
                     todo.erase(nodes[nbId].it_p);
                     nodes[nbId].it_p = todo.insert(neighborPt).first;
-                    nodes[nbId].dir = i;
+                    nodes[nbId].dir = dir;
                 }
                 // Wir wollen nicht denselben Knoten noch einmal einfügen, daher Abbruch
                 continue;
@@ -211,22 +229,22 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
             // Bedingungen, wenn es nicht das Ziel ist
             if(nbId != destId && IsNodeOK)
             {
-                if(!IsNodeOK(gwb_, neighbourPos, i, param))
+                if(!IsNodeOK(gwb_, neighbourPos, dir, param))
                     continue;
             }
 
             // Zusätzliche Bedingungen, auch die das letzte Stück zum Ziel betreffen
             if(IsNodeToDestOk)
             {
-                if(!IsNodeToDestOk(gwb_, neighbourPos, i, param))
+                if(!IsNodeToDestOk(gwb_, neighbourPos, dir, param))
                     continue;
             }
 
             // Alles in Ordnung, Knoten kann gebildet werden
             nodes[nbId].lastVisited = currentVisit;
-            nodes[nbId].way = nodes[best_id].way + 1;
-            nodes[nbId].dir = i;
-            nodes[nbId].prev = best_id;
+            nodes[nbId].way = nodes[bestId].way + 1;
+            nodes[nbId].dir = dir;
+            nodes[nbId].prev = bestId;
 
             nodes[nbId].it_p = todo.insert(PathfindingPoint(nbId, gwb_.CalcDistance(neighbourPos, dest), nodes[nbId].way)).first;
         }
@@ -239,11 +257,24 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
 bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
                                                    const bool randomRoute, const unsigned maxLength,
-                                                   std::vector<unsigned char>* route, unsigned* length, unsigned char* first_dir,
+                                                   std::vector<unsigned char>* route, unsigned* length, unsigned char* firstDir,
                                                    FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
                                                    const bool record)
 {
-    assert(start != dest); // Why would you call pathfinding for this?
+    if(start == dest)
+    {
+        // Path where start==goal should never happen
+        assert(false);
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.x), unsigned(start.y));
+        // But for now we assume it to be valid and return (kind of) correct values
+        if(route)
+            route->clear();
+        if(length)
+            *length = 0;
+        if(firstDir)
+            *firstDir = 0xff;
+        return true;
+    }
 
     // increase currentVisit, so we don't have to clear the visited-states at every run
     IncreaseCurrentVisit();
@@ -296,8 +327,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
         //pf_nodes[best_id].it_p = todo.end();
 
-        // Ziel schon erreicht ? Allerdings Null-Weg, wenn Start = Ende ist, verbieten
-        if(destId == bestId && ((prevStepEven && nodes[bestId].wayEven) || (!prevStepEven && nodes[bestId].way)))
+        // Ziel schon erreicht?
+        if(destId == bestId)
         {
             // Ziel erreicht!
             // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
@@ -313,8 +344,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             {
                 if(route)
                     (*route)[z] = alternate ? nodes[bestId].dirEven : nodes[bestId].dir;
-                if(first_dir && z == 0)
-                    *first_dir = nodes[bestId].dirEven;
+                if(firstDir && z == 0)
+                    *firstDir = nodes[bestId].dirEven;
 
                 bestId = alternate ? nodes[bestId].prevEven : nodes[bestId].prev;
                 alternate = !alternate;
