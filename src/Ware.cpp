@@ -207,11 +207,9 @@ void Ware::GoalDestroyed()
         }
         else if(state == STATE_CARRIED)
         {
-            // if goal = current location -> too late to do anything our road will be removed and ware destroyed when the carrier starts walking about
-            // goal != current location -> find a warehouse for us (if we are entering a warehouse already set this as new goal (should only happen if its a harbor for shipping as the building wasnt our goal))
-
             if(goal != location)
             {
+                // find a warehouse for us (if we are entering a warehouse already set this as new goal (should only happen if its a harbor for shipping as the building wasnt our goal))
                 if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ) //currently carried into a warehouse? -> add ware (pathfinding will not return this wh because of path lengths 0)
                 {
                     if(location->GetGOT()!=GOT_NOB_HARBORBUILDING)
@@ -227,6 +225,10 @@ void Ware::GoalDestroyed()
                         // Lagerhaus ggf. Bescheid sagen
                         goal->TakeWare(this);
                 }
+            }else
+            {
+                // too late to do anything our road will be removed and ware destroyed when the carrier starts walking about
+                goal = NULL;
             }
         }
     }

@@ -261,7 +261,6 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         GAMECLIENT.GetPlayer(player).RemoveWare(ware);
         delete ware;
     }
-
     else
         ware->GoalDestroyed();
 }

@@ -117,9 +117,9 @@ void noBuildingSite::Destroy_noBuildingSite()
 
     // Bestellte Waren Bescheid sagen
     for(std::list<Ware*>::iterator it = ordered_boards.begin(); it != ordered_boards.end(); ++it)
-        WareNotNeeded((*it));
+        WareNotNeeded(*it);
     for(std::list<Ware*>::iterator it = ordered_stones.begin(); it != ordered_stones.end(); ++it)
-        WareNotNeeded((*it));
+        WareNotNeeded(*it);
 
     ordered_boards.clear();
     ordered_stones.clear();
