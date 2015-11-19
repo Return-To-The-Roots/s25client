@@ -754,8 +754,14 @@ bool nobBaseWarehouse::FreePlaceAtFlag()
 
 void nobBaseWarehouse::AddWare(Ware*& ware)
 {
-    // Ware nicht mehr abhängig
-    RemoveDependentWare(ware);
+    // Ware not dependent anymore (only if we had a goal)
+    if(ware->goal)
+    {
+        assert(ware->goal == this); // The goal should be here
+        RemoveDependentWare(ware);
+    }
+    else
+        assert(!IsWareDependent(ware));
 
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
     GoodType type;

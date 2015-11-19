@@ -692,15 +692,29 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 /// Legt eine Ware im Lagerhaus ab
 void nobHarborBuilding::AddWare(Ware*& ware)
 {
-    if(ware->goal != this)
+    if(ware->goal && ware->goal != this)
+    {
+        // This is not the goal but we have one -> Get new route
         ware->RecalcRoute();
 
-    // Will diese Ware mit dem Schiff irgendwo hin fahren?
-    if(ware->GetNextDir() == SHIP_DIR)
-    {
-        // Dann fügen wir die mal bei uns hinzu
-        AddWareForShip(ware);
-        return;
+        // Will diese Ware mit dem Schiff irgendwo hin fahren?
+        if(ware->GetNextDir() == SHIP_DIR)
+        {
+            // Dann fügen wir die mal bei uns hinzu
+            AddWareForShip(ware);
+            return;
+        }else if(ware->GetNextDir() != INVALID_DIR)
+        {
+            // Travel on roads -> Carry out
+            assert(ware->goal != this);
+            AddWaitingWare(ware);
+            return;
+        }else
+        {
+            // Pathfinding failed -> Ware would want to go here
+            assert(ware->goal == this);
+            // Regular handling below
+        }
     }
 
     // Brauchen wir die Ware?
@@ -713,7 +727,8 @@ void nobHarborBuilding::AddWare(Ware*& ware)
             else ++expedition.stones;
 
             // Ware nicht mehr abhängig
-            RemoveDependentWare(ware);
+            if(ware->goal)
+                RemoveDependentWare(ware);
             // Dann zweigen wir die einfach mal für die Expedition ab
             gwg->GetPlayer(player).RemoveWare(ware);
             deletePtr(ware);
@@ -867,18 +882,17 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
 /// Gibt eine Liste mit möglichen Verbindungen zurück
 std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnections() const
 {
-    // Should not be called when we are beeing destroyed, but keep the runtime checks for now (TODO: remove runtime checks)
-    assert(gwg->GetGOT(pos) == GOT_NOB_HARBORBUILDING);
-    assert(!IsBeingDestroyedNow());
-
     std::vector<ShipConnection> connections;
-    // Is there any harbor building at all? (could be destroyed)?
-    if(gwg->GetGOT(this->pos) != GOT_NOB_HARBORBUILDING)
-        // Then good-bye
+
+    // Is the harbor being destroyed right now? Could happen due to pathfinding for wares that get notified about this buildings destruction
+    if (IsBeingDestroyedNow())
         return connections;
 
-    // Is the harbor being destroyed right now?
-    if (IsBeingDestroyedNow())
+    // Should already be handled by the above check, but keep the runtime check for now (TODO: remove runtime check)
+    assert(gwg->GetGOT(pos) == GOT_NOB_HARBORBUILDING);
+
+    // Is there any harbor building at all? (could be destroyed)?
+    if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
@@ -1118,40 +1132,8 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
     // Waren zur Warteliste hinzufügen
     for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
     {
-        if((*it)->ShipJorneyEnded(this))
-        {
-            // Ware will die weitere Reise antreten, also muss sie zur Liste der rausgetragenen Waren
-            // hinzugefügt werden
-            AddWaitingWare(*it);
-        }
-        else
-        {
-            // add to harbor inventory unless ...
-            // required for an expedition?
-            if(expedition.active)
-            {
-                //board or stones and still required for the expedition?
-                if(((*it)->type == GD_BOARDS && expedition.boards < BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards)  || ((*it)->type == GD_STONES && expedition.stones < BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones))
-                {
-                    // use it for expedition and reduce count
-                    if((*it)->type == GD_BOARDS) ++expedition.boards;
-                    else ++expedition.stones;
-                    RemoveDependentWare(*it);
-                    gwg->GetPlayer(player).RemoveWare((*it));
-                    //remove item
-                    delete *it;
-                    CheckExpeditionReady();
-                }
-                else
-                {
-                    nobBaseWarehouse::AddWare(*it);
-                }
-            }
-            else
-            {
-                nobBaseWarehouse::AddWare(*it);
-            }
-        }
+        (*it)->ShipJorneyEnded(this);
+        AddWare(*it);
     }
     wares.clear();
 }
@@ -1359,7 +1341,7 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
     wares_for_ships.remove(ware);
     // Carry out. If it would want to go back to this building, then this will be handled by the carrier
     waiting_wares.push_back(ware);
-    ware->IsWaitingInWarehouse();
+    ware->WaitInWarehouse(this);
     AddLeavingEvent();
 }
 
@@ -1418,6 +1400,5 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
 bool nobHarborBuilding::IsBeingDestroyedNow() const
 {
     // check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
-    const std::list<nobHarborBuilding*> allHarbors = gwg->GetPlayer(player).GetHarbors();
-    return !helpers::contains(allHarbors, this);
+    return !helpers::contains(gwg->GetPlayer(player).GetHarbors(), this);
 }

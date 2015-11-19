@@ -108,9 +108,7 @@ class Ware : public GameObject
         /// Informiert Ware, dass eine Schiffsreise beginnt
         void StartShipJourney();
         /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
-        /// Gibt true zurück, wenn die Ware rausgetragen will oder false, wenn sie kein Ziel mehr hat und ins Hafengebäude
-        /// eingelagert werden will
-        bool ShipJorneyEnded(nobHarborBuilding* hb);
+        void ShipJorneyEnded(nobHarborBuilding* hb);
         /// Beginnt damit auf ein Schiff im Hafen zu warten
         void WaitForShip(nobHarborBuilding* hb);
 

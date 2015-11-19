@@ -114,7 +114,7 @@ void Ware::RecalcRoute()
                 // Lagerhaus ist unser neues Ziel
                 goal = wh;
                 // Weg berechnen
-                next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
+                next_dir = (location == goal) ? 0xFF : gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
 
                 wh->TakeWare(this);
             }
@@ -412,6 +412,8 @@ bool Ware::FindRouteFromWarehouse()
     assert(location);
     if(!goal)
         return false;
+    if(location == goal)
+        return true; // We are at our goal. All ok
     return (gwg->FindPathForWareOnRoads(*location, *goal) != 0xFF);
 }
 
@@ -423,33 +425,11 @@ void Ware::StartShipJourney()
 }
 
 /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
-bool Ware::ShipJorneyEnded(nobHarborBuilding* hb)
+void Ware::ShipJorneyEnded(nobHarborBuilding* hb)
 {
-
+    assert(hb);
     state = STATE_WAITINWAREHOUSE;
     location = hb;
-
-    if (!goal)
-        return false;
-
-    assert(location);//goal check
-    if(location == goal)
-    {
-        // Arrived at harbour
-        goal = NULL;
-        return false;
-    }
-    next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
-
-// TODO: SHIP_DIR? order ship etc.
-    if ((next_dir == 0xFF) || (next_dir == SHIP_DIR))
-    {
-        goal->WareLost(this);
-        goal = NULL;
-        return false;
-    }
-
-    return true;
 }
 
 /// Beginnt damit auf ein Schiff im Hafen zu warten
