@@ -198,11 +198,9 @@ public:
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
     bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist
-    void AddHarborBuildingSiteFromSea(noBuildingSite* building_site)
-    { this->harbor_building_sites_from_sea.push_back(building_site); }
-    /// Entfernt diese wieder
-    void RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site)
-    { this->harbor_building_sites_from_sea.remove(building_site); }
+    void AddHarborBuildingSiteFromSea(noBuildingSite* building_site) { harbor_building_sites_from_sea.push_back(building_site); }
+    /// Removes it. It is allowed to be called with a regular harbor building site (no-op in that case)
+    void RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site);
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const;
     /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind

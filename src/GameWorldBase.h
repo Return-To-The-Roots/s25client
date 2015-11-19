@@ -21,6 +21,7 @@
 #include "TerrainRenderer.h"
 #include "buildings/nobBaseMilitary.h"
 #include "gameTypes/MapNode.h"
+#include "gameTypes/HarborPos.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/GO_Type.h"
@@ -73,34 +74,6 @@ protected:
     std::vector<Sea> seas;
 
     /// Alle Hafenpositionen
-    struct HarborPos
-    {
-        MapPoint pos;
-
-        struct CoastalPoint
-        {
-            unsigned short sea_id;
-        } cps[6];
-
-        struct Neighbor
-        {
-            unsigned id;
-            unsigned distance;
-
-            Neighbor() {}
-            Neighbor(const unsigned id, const unsigned distance)
-                : id(id), distance(distance) {}
-
-            bool operator<(const Neighbor& two) const
-            { return (distance < two.distance) || (distance == two.distance && id < two.id); }
-        };
-
-        std::vector<Neighbor> neighbors[6];
-
-        HarborPos(){}
-        HarborPos(const MapPoint pt): pos(pt){}
-    };
-
     std::vector< HarborPos > harbor_pos;
 
     /// Baustellen von Häfen, die vom Schiff aus errichtet wurden
@@ -111,14 +84,10 @@ protected:
     fowNothing* noFowObj;
 
 public:
-    unsigned int map_size;
-
     std::list<CatapultStone*> catapult_stones; /// Liste von allen umherfliegenden Katapultsteinen.
 
     /// Liste von Militärgebäuden (auch HQ und Haufengebäude, daher normale Gebäude) pro "Militärquadrat"
     std::vector< std::list<nobBaseMilitary*> > military_squares;
-
-public:
 
     GameWorldBase();
     virtual ~GameWorldBase();
