@@ -114,7 +114,6 @@ void nobHarborBuilding::Destroy()
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GameClientPlayer& owner = gwg->GetPlayer(player);
-    owner.RemoveWarehouse(this);
     owner.RemoveHarbor(this);
     owner.HarborDestroyed(this);
 
