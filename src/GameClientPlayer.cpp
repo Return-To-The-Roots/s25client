@@ -479,6 +479,14 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, bool 
         if(!IsWarehouseGood(*w, param))
             continue;
 
+        if(start.GetPos() == (*w)->GetPos())
+        {
+            // We are already there -> Take it
+            if(length)
+                *length = 0;
+            return *w;
+        }
+
 		//now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
 		if(gwg->CalcDistance(start.GetPos(),(*w)->GetPos()) > best_length)
 			continue;
@@ -608,6 +616,8 @@ void GameClientPlayer::RoadDestroyed()
                 ware->NotifyGoalAboutLostWare();
                 // Ware aus der Liste raus
                 it = ware_list.erase(it);
+                // And trash it
+                deletePtr(ware);
                 continue;
             }
         }
