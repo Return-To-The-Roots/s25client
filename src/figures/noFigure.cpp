@@ -1225,8 +1225,8 @@ void noFigure::CalcVisibilities(const MapPoint pt)
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
 void noFigure::StartShipJourney()
 {
-    // remove us from where we are, so nobody will ever draw us :)
-    gwg->RemoveFigure(this, this->pos);
+    // We should not be in the world, as we start the journey from a harbor -> We are in that harbor
+    assert(!helpers::contains(gwg->GetFigures(pos), this));
 
     pos = MapPoint::Invalid();
     on_ship = true;

@@ -872,7 +872,9 @@ void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_co
         }
     }
 
-    RemoveDependentFigure(figure);
+    // Check if we were actually waiting for this figure or if it was just added (e.g. builder that constructed it) to not confuse implementations of Remove...
+    if(IsDependentFigure(figure))
+        RemoveDependentFigure(figure);
     em->AddToKillList(figure);
 
     CheckJobsForNewFigure(figure->GetJobType());

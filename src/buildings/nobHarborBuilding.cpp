@@ -679,7 +679,6 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                     (*it)->StartShipJourney();
                     --goods_.goods[ConvertShields((*it)->type)];
                     it = wares_for_ships.erase(it);
-
                 }
                 else
                     ++it;
@@ -869,6 +868,10 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
 /// Gibt eine Liste mit möglichen Verbindungen zurück
 std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnections() const
 {
+    // Should not be called when we are beeing destroyed, but keep the runtime checks for now (TODO: remove runtime checks)
+    assert(gwg->GetGOT(pos) == GOT_NOB_HARBORBUILDING);
+    assert(!IsBeingDestroyedNow());
+
     std::vector<ShipConnection> connections;
     // Is there any harbor building at all? (could be destroyed)?
     if(gwg->GetGOT(this->pos) != GOT_NOB_HARBORBUILDING)
@@ -902,6 +905,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
 /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
 void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
 {
+    assert(!helpers::contains(gwg->GetFigures(fig->GetPos()), fig)); // Figure is in the harbor, so it cannot be outside
     FigureForShip ffs = { fig, dest };
     figures_for_ships.push_back(ffs);
     OrderShip();
@@ -1018,15 +1022,10 @@ void nobHarborBuilding::OrderShip()
     unsigned needed = GetNeededShipsCount();
     unsigned ordered = players->getElement(player)->GetShipsToHarbor(this);
 
-    if (ordered < needed)
+    // Order (possibly) remaining ships
+    for(;ordered < needed; ++ordered)
     {
-        // need to order more ships
-        needed -= ordered;
-
-        while (needed && players->getElement(player)->OrderShip(this))
-        {
-            needed--;
-        }
+        players->getElement(player)->OrderShip(this);
     }
 }
 
