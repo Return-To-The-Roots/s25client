@@ -97,7 +97,10 @@ void Ware::RecalcRoute()
             assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
             state = STATE_WAITINWAREHOUSE;
             goal = static_cast<nobHarborBuilding*>(location);
-            static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);
+            // Tell the wh that we are coming
+            static_cast<nobHarborBuilding*>(goal)->TakeWare(this);
+            // ... but not going by ship
+            static_cast<nobHarborBuilding*>(goal)->WareDontWantToTravelByShip(this);
         }
         else
         {
