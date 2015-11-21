@@ -1485,21 +1485,17 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, RANDOM.GetCurrentRandomValue());
         if(replay_mode)
         {
-
-            // Diesen Zeitpunkt merken
-            framesinfo.lasttime += framesinfo.gf_length;
             // Nächster Game-Frame erreicht
             ++framesinfo.nr;
 
             ExecuteGameFrame_Replay();
 
             // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frame_time = currenttime - framesinfo.lasttime;
+            framesinfo.frame_time = std::min(currenttime - framesinfo.lasttime, GetGFLength() - 1);
 
             // Diesen Zeitpunkt merken
             framesinfo.lasttime = currenttime;
         }
-
         // Ist jetzt auch ein NWF dran?
         else if(framesinfo.nr % framesinfo.nwf_length == 0)
         {
