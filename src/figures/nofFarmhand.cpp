@@ -191,21 +191,21 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
 
                 if(GAMECLIENT.GetPlayerID() == this->player)
                 {
-                    if (!OutOfRessourcesMsgSent)
+                    if (!outOfRessourcesMsgSent)
                     {
                         switch(job_)
                         {
                             case JOB_STONEMASON:
                                 GAMECLIENT.SendPostMessage(
                                     new ImagePostMsgWithLocation(_("No more stones in range"), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
-                                OutOfRessourcesMsgSent = true;
+                                outOfRessourcesMsgSent = true;
                                 // Produktivitätsanzeige auf 0 setzen
                                 workplace->SetProductivityToZero();
                                 break;
                             case JOB_FISHER:
                                 GAMECLIENT.SendPostMessage(
                                     new ImagePostMsgWithLocation(_("No more fishes in range"), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
-                                OutOfRessourcesMsgSent = true;
+                                outOfRessourcesMsgSent = true;
                                 // Produktivitätsanzeige auf 0 setzen
                                 workplace->SetProductivityToZero();
                                 break;

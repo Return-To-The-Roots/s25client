@@ -199,42 +199,36 @@ noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id) :
 {
 }
 
-short noBaseBuilding::GetDoorPointX()
+int noBaseBuilding::GetDoorPointX()
 {
-    // Door-Points ausrechnen (Punkte, bis wohin die Menschen gehen, wenn sie ins
-    // Gebäude gehen, woa ußerdem der Bauarbeiter baut und wo die Waren liegen
-
-    // Door-Point noch nicht ausgerechnet?
+    // Did we calculate the door point yet?
     if(door_point_x == 1000000)
     {
-        int x1 = static_cast<int>(gwg->GetTerrainX(pos));
-        int y1 = static_cast<int>(gwg->GetTerrainY(pos));
-        int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, 4)));
-        int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, 4)));
+        // The door is on the line between the building and flag point. The position of the line is set by the y-offset
+        // this is why we need the x-offset here according to the equation x = m*y + n
+        // with n=0 (as door point is relative to building pos) and m = dx/dy
+        const Point<int> bldPos  = Point<int>(gwg->GetTerrain(pos));
+        const Point<int> flagPos = Point<int>(gwg->GetTerrain(gwg->GetNeighbour(pos, 4)));
+        Point<int> diff = flagPos - bldPos;
 
-        // Gehen wir über einen Kartenrand (horizontale Richung?)
-        if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
-        {
-            if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
-                x1 -= gwg->GetWidth() * TR_W;
-            else
-                x1 += gwg->GetWidth() * TR_W;
-        }
-        // Und dasselbe für vertikale Richtung
-        if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
-        {
-            if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
-                y1 -= gwg->GetHeight() * TR_H;
-            else
-                y1 += gwg->GetHeight() * TR_H;
-        }
+        // We could have crossed the map border which results in unreasonable diffs
+        // clamp the diff to [-w/2,w/2],[-h/2, h/2] (maximum diffs)
+        const int mapWidth  = gwg->GetWidth()  * TR_W;
+        const int mapHeight = gwg->GetHeight() * TR_H;
 
+        if(diff.x < -mapWidth/2)
+            diff.x += mapWidth;
+        else if(diff.x > mapWidth/2)
+            diff.x -= mapWidth;
+        if(diff.y < -mapHeight/2)
+            diff.y += mapHeight;
+        else if(diff.y > mapHeight/2)
+            diff.y -= mapHeight;
 
-
-        door_point_x = (DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type_] * (x1 - x2)) / (y1 - y2);
+        door_point_x = (door_point_y * diff.x) / diff.y;
     }
 
-    return (short)(door_point_x & 0xFFFF);
+    return door_point_x;
 }
 
 noFlag* noBaseBuilding::GetFlag() const
@@ -247,6 +241,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
 {
     if (!ware)
     {
+        assert(false);
         std::cerr << "Warning: Trying to remove non-existing ware. Please report this replay to https://bugs.launchpad.net/s25rttr/!" << std::endl;
         return;
     }

@@ -286,7 +286,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
 }
 
 
-bool nofGeologist::IsNodeGood(const MapPoint pt)
+bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
@@ -297,65 +297,41 @@ bool nofGeologist::IsNodeGood(const MapPoint pt)
     return true;
 }
 
+struct GetMapPointWithRadius
+{
+    typedef std::pair<MapPoint, unsigned> result_type;
+
+    result_type operator()(const MapPoint pt, unsigned r)
+    {
+        return std::make_pair(pt, r);
+    }
+};
+
 void nofGeologist::LookForNewNodes()
 {
-    unsigned short max_radius = 15;
+    std::vector<GetMapPointWithRadius::result_type> pts = gwg->GetPointsInRadius(flag->GetPos(), 15, GetMapPointWithRadius());
+    unsigned curMaxRadius = 15;
     bool found = false;
-
-    for(unsigned short r = 1; r < max_radius; ++r)
+    for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        MapPoint test(flag->GetPos());
-
-        // r Punkte rüber
-        test.x -= r;
-
-        // r schräg runter bzw hoch
-        for(unsigned short i = 0; i < r; ++i)
+        if(it->second > curMaxRadius)
+            break;
+        if(IsValidTargetNode(it->first))
         {
-            TestNode(MapPoint(test.x, test.y + i)); // unten
-            if(i) TestNode(MapPoint(test.x, test.y - i)); // oben
-
-            test.x += (test.y & 1);
+            available_nodes.push_back(it->first);
+            if(!found)
+            {
+                found = true;
+                // if we found a valid node, look only in other nodes within 2 more "circles"
+                curMaxRadius = std::min(10u, it->second + 2);
+            }
         }
-
-        // Die obere bzw untere Reihe
-        for(unsigned short i = 0; i < r + 1; ++i, ++test.x)
-        {
-            TestNode(MapPoint(test.x, test.y + r)); // unten
-            TestNode(MapPoint(test.x, test.y - r)); // oben
-        }
-
-        test.x = flag->GetX() + r;
-
-        // auf der anderen Seite wieder schräg hoch/runter
-        for(unsigned short i = 0; i < r; ++i)
-        {
-            TestNode(MapPoint(test.x, test.y + i)); // unten
-            if(i) TestNode(MapPoint(test.x, test.y - i)); // oben
-
-            test.x -= !(test.y & 1);
-        }
-
-        // Wenn es in diesem Umkreis welche gibt, dann nur noch 2 Kreise zusätzlich weitergehen
-        if(!found && !available_nodes.empty())
-        {
-            max_radius = std::min(10, r + 3);
-            found = true;
-        }
-
     }
 }
 
-void nofGeologist::TestNode(const MapPoint pt)
+bool nofGeologist::IsValidTargetNode(const MapPoint pt) const
 {
-    // Prüfen, ob er überhaupt auf der Karte liegt und nicht irgendwo im Nirvana
-    if(pt.x < gwg->GetWidth() && pt.y < gwg->GetHeight())
-    {
-        if(IsNodeGood(pt) && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF && !gwg->GetNode(pt).reserved)
-        {
-            available_nodes.push_back(pt);
-        }
-    }
+    return (IsNodeGood(pt) && !gwg->GetNode(pt).reserved && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF);
 }
 
 unsigned char nofGeologist::GetNextNode()

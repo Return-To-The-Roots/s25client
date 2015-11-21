@@ -101,11 +101,11 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
         int x = GAMECLIENT.Interpolate(start_x, dest_x, event);
         int y = GAMECLIENT.Interpolate(start_y, dest_y, event);
 
-        int whole = int(std::sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y))));
-        int s = GAMECLIENT.Interpolate(whole , event);
+        double whole = std::sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y)));
+        int s = GAMECLIENT.Interpolate(static_cast<int>(whole), event);
 
 
-        double dx = double(s) / double(whole)  - 0.5;
+        double dx = double(s) / whole  - 0.5;
 
         // Y-Verschiebung ausrechnen, damit die Nullpunkte beim Start- und Endpunkt liegen
         double y_diff = 0.5 * 0.5;

@@ -46,7 +46,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), OutOfRessourcesMsgSent(false)
+    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
 {
 }
 
@@ -64,7 +64,7 @@ void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) con
         sgd.PushUnsignedInt(since_not_working);
         sgd.PushBool(was_sounding);
     }
-    sgd.PushBool(OutOfRessourcesMsgSent);
+    sgd.PushBool(outOfRessourcesMsgSent);
 }
 
 nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
@@ -86,7 +86,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         since_not_working = 0xFFFFFFFF;
         was_sounding = false;
     }
-    OutOfRessourcesMsgSent = sgd.PopBool();
+    outOfRessourcesMsgSent = sgd.PopBool();
 }
 
 
@@ -348,6 +348,18 @@ void nofBuildingWorker::LostWork()
     workplace = 0;
 }
 
+struct NodeHasResource
+{
+    const GameWorldGame& gwg;
+    const unsigned char res;
+    NodeHasResource(const GameWorldGame& gwg, const unsigned char res):gwg(gwg), res(res){}
+
+    bool operator()(const MapPoint pt)
+    {
+        return gwg.IsResourcesOnNode(pt, res);
+    }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
@@ -368,25 +380,17 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     bool found = false;
 
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
-    if(GetResourcesOfNode(pos, type))
+    if(gwg->IsResourcesOnNode(pos, type))
     {
         mP = pos;
         found = true;
-    }
-
-    for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; !found && r <= MINER_RADIUS; tx = gwg->GetXA(tx, pos.y, 0), ++r)
+    }else
     {
-        MapPoint t2(tx, pos.y);
-        for(unsigned int i = 2; !found && i < 8; ++i)
+        std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type));
+        if(!pts.empty())
         {
-            for(MapCoord r2 = 0; !found && r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
-            {
-                if(GetResourcesOfNode(t2, type))
-                {
-                    mP = t2;
-                    found = true;
-                }
-            }
+            mP = pts.front();
+            found = true;
         }
     }
 
@@ -399,8 +403,8 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         return true;
     }
 
-    // Hoffe das passt auch, Post verschicken, keine Rohstoffe mehr da
-    if (!OutOfRessourcesMsgSent)
+    // Post verschicken, keine Rohstoffe mehr da
+    if (!outOfRessourcesMsgSent)
     {
         if(GAMECLIENT.GetPlayerID() == this->player)
         {
@@ -414,7 +418,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
             );
         }
 
-        OutOfRessourcesMsgSent = true;
+        outOfRessourcesMsgSent = true;
         // Produktivitätsanzeige auf 0 setzen
         workplace->SetProductivityToZero();
 
@@ -422,24 +426,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
     }
 
-    // Hoffe das passt...
     return false;
-}
-
-bool nofBuildingWorker::GetResourcesOfNode(const MapPoint pt, const unsigned char type)
-{
-    // Evtl über die Grenzen gelesen?
-    if(pt.x >= gwg->GetWidth() || pt.y >= gwg->GetHeight())
-        return false;
-
-    unsigned char resources = gwg->GetNode(pt).resources;
-
-    // wasser?
-    if(type == 4)
-        return (resources > 0x20 && resources < 0x28);
-
-    // Gibts Ressourcen von dem Typ an diesem Punkt?
-    return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
 }
 
 void nofBuildingWorker::StartNotWorking()
@@ -461,7 +448,7 @@ void nofBuildingWorker::StopNotWorking()
 
 unsigned short nofBuildingWorker::CalcProductivity()
 {
-    if (OutOfRessourcesMsgSent)
+    if (outOfRessourcesMsgSent)
         return 0;
     // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
     if(since_not_working != 0xFFFFFFFF)

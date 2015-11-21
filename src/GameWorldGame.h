@@ -206,6 +206,9 @@ public:
     /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
     void GetHarborPointsWithinReach(const unsigned hp, std::vector<unsigned>& hps) const;
 
+    /// Returns true, if the given (map)-resource is available at that node
+    bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
+
     /// Creates a Trade Route from one point to another
     TradeRoute CreateTradeRoute(const nobBaseWarehouse& start, const nobBaseWarehouse& dest, const unsigned char player);
     /// Retrieves a trade graph

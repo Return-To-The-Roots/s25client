@@ -164,7 +164,7 @@ class noFigure : public noMovable
         /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
         void DrawWalking(int x, int y);
         /// Interpoliert die Positon zwischen zwei Knotenpunkten
-        bool CalcFigurRelative(int& x, int& y);
+        Point<int> CalcFigurRelative() const;
         /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
         void StartWalking(const unsigned char dir);
         /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)

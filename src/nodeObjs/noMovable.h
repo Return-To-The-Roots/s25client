@@ -66,9 +66,9 @@ class noMovable : public noCoordBase
         // Starten zu Laufen, Event anmelden
         void StartMoving(const unsigned char dir, unsigned gf_length);
         // Interpoliert die Positon zwischen zwei Knotenpunkten
-        void CalcRelative(int& x, int& y, int x1 = 0, int y1 = 0, int x2 = 0, int y2 = 0);
+        Point<int> CalcRelative(const Point<int>& curPt, const Point<int>& nextPt) const;
         /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-        void CalcWalkingRelative(int& x, int& y);
+        Point<int> CalcWalkingRelative() const;
         // Steht er in der zwischen 2 Wegpunkten?
         bool IsStandingBetweenNodes() const { return (pause_walked_gf > 0) ? true : false; }
         /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)

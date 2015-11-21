@@ -1987,6 +1987,21 @@ void GameWorldGame::GetHarborPointsWithinReach(const unsigned hp, std::vector<un
     }
 }
 
+bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char type) const
+{
+    assert(pt.x < GetWidth());
+    assert(pt.y < GetHeight());
+
+    unsigned char resources = GetNode(pt).resources;
+
+    // wasser?
+    if(type == 4)
+        return (resources > 0x20 && resources < 0x28);
+
+    // Gibts Ressourcen von dem Typ an diesem Punkt?
+    return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
+}
+
 /// Create Trade graphs
 void GameWorldGame::CreateTradeGraphs()
 {

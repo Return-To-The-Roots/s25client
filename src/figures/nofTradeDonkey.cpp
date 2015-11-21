@@ -128,19 +128,19 @@ void nofTradeDonkey::Draw(int x, int y)
         // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
         unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
-        CalcFigurRelative(x, y);
+        Point<int> realPos = Point<int>(x, y) + CalcFigurRelative();
 
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y);
+        LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y);
         // Schatten des Esels
-        LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
         if(gt != GD_NOTHING)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
+            LOADER.GetMapImageN(2350 + gt)->Draw(realPos.x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], realPos.y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
         }
     }
     else

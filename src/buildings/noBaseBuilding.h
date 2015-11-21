@@ -79,8 +79,10 @@ class noBaseBuilding : public noRoadNode
         /// Ermittelt die Flagge, die vor dem Gebäude steht
         noFlag* GetFlag() const;
 
-        short GetDoorPointX();
-        short GetDoorPointY() const { return (door_point_y & 0xFFFF); }
+        /// Return the offset of the door, which is also where people disappear into the building, the builder is building and the wares are lying
+        Point<int> GetDoorPoint(){ return Point<int>(GetDoorPointX(), GetDoorPointY()); }
+        int GetDoorPointX();
+        int GetDoorPointY() const { return door_point_y; }
 
         /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
         virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/

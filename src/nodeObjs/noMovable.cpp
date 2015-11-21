@@ -143,7 +143,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
     }
 }
 
-void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
+Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& nextPt) const
 {
     if(current_ev)
     {
@@ -151,7 +151,7 @@ void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
         if(current_ev->gf_length == 0)
         {
             LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n", GAMECLIENT.GetGFNumber());
-            return;
+            return Point<int>(0, 0);
         }
     }
 
@@ -159,55 +159,66 @@ void noMovable::CalcRelative(int& x, int& y, int x1, int y1, int x2, int y2)
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     unsigned gf_diff = current_ev ? (GAMECLIENT.GetGFNumber() - current_ev->gf) : pause_walked_gf;
-    unsigned gf_length = current_ev ? current_ev->gf_length : pause_event_length;
+    unsigned evLength = current_ev ? current_ev->gf_length : pause_event_length;
     unsigned frame_time = current_ev ? GAMECLIENT.GetFrameTime() : 0;
+
+    // Convert to real world time
+    const unsigned gfLength = GAMECLIENT.GetGFLength();
+    // Time since the start of the event
+    unsigned curTimePassed = gf_diff * gfLength + frame_time;
+    // Duration of the event
+    unsigned duration = evLength * gfLength;
+
+    // We are in that event
+    assert(curTimePassed <= duration);
+    // We need to convert to int
+    assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
+    assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
 
     if(curMoveDir != 1 && curMoveDir != 2)
     {
-        x   -= (((x1 - x2) * int((gf_diff) * GAMECLIENT.GetGFLength() + frame_time)) / int(gf_length * GAMECLIENT.GetGFLength()));
-        y   -= (((y1 - y2) * int((gf_diff) * GAMECLIENT.GetGFLength() + frame_time)) / int(gf_length * GAMECLIENT.GetGFLength()));
+        return ((nextPt - curPt) * static_cast<int>(curTimePassed)) / static_cast<int>(duration);
     }
     else
     {
-        x   -= (((x1 - x2) * (int(gf_length * GAMECLIENT.GetGFLength()) - int((gf_diff) * GAMECLIENT.GetGFLength() + frame_time))) / int(gf_length * GAMECLIENT.GetGFLength()));
-        y   -= (((y1 - y2) * (int(gf_length * GAMECLIENT.GetGFLength()) - int((gf_diff) * GAMECLIENT.GetGFLength() + frame_time))) / int(gf_length * GAMECLIENT.GetGFLength()));
+        return ((nextPt - curPt) * static_cast<int>(duration - curTimePassed)) / static_cast<int>(duration);
     }
 }
 
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-void noMovable::CalcWalkingRelative(int& x, int& y)
+Point<int> noMovable::CalcWalkingRelative() const
 {
-    int x1 = static_cast<int>(gwg->GetTerrainX(this->pos));
-    int y1 = static_cast<int>(gwg->GetTerrainY(this->pos));
-    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(this->pos, curMoveDir)));
-    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(this->pos, curMoveDir)));
+    Point<int> curPt  = Point<int>(gwg->GetTerrain(pos));
+    Point<int> nextPt = Point<int>(gwg->GetTerrain(gwg->GetNeighbour(pos, curMoveDir)));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
-    if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
+    const int mapWidth = gwg->GetWidth() * TR_W;
+    if(std::abs(curPt.x - nextPt.x) >= mapWidth / 2)
     {
-        if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
-            x1 -= gwg->GetWidth() * TR_W;
+        // So we need to get closer to nextPt
+        if(curPt.x > nextPt.x)
+            curPt.x -= mapWidth;
         else
-            x1 += gwg->GetWidth() * TR_W;
+            curPt.x += mapWidth;
     }
     // Und dasselbe für vertikale Richtung
-    if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
+    const int mapHeight = gwg->GetHeight() * TR_H;
+    if(std::abs(curPt.y - nextPt.y) >= mapHeight / 2)
     {
-        if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
-            y1 -= gwg->GetHeight() * TR_H;
+        if(curPt.y > nextPt.y)
+            curPt.y -= mapHeight;
         else
-            y1 += gwg->GetHeight() * TR_H;
+            curPt.y += mapHeight;
     }
-
 
     // Wenn sie runterlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
     if(curMoveDir == 1 || curMoveDir == 2)
     {
-        std::swap(x1, x2);
-        std::swap(y1, y2);
+        using std::swap;
+        swap(curPt, nextPt);
     }
 
-    CalcRelative(x, y, x1, y1, x2, y2);
+    return CalcRelative(curPt, nextPt);
 }
 
 

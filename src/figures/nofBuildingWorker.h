@@ -113,11 +113,8 @@ class nofBuildingWorker : public noFigure
 
     protected:
         /// nur für Bergarbeiter!
-        /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut ggf eins
-        /// ab, wenn dig = true ist
+        /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut eins ab
         bool GetResources(unsigned char type);
-        /// Macht das gleiche wie GetResources nur direkt für einen Punkt
-        bool GetResourcesOfNode(const MapPoint pt, const unsigned char type);
 
     public:
         State GetState() { return state; }
@@ -148,7 +145,7 @@ class nofBuildingWorker : public noFigure
         void ProductionStopped();
 
     protected:
-        bool OutOfRessourcesMsgSent;
+        bool outOfRessourcesMsgSent;
 };
 
 #endif
