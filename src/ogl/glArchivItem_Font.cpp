@@ -391,6 +391,9 @@ void glArchivItem_Font::Draw(short x,
         }
     }
 
+    if(tmp.empty())
+        return;
+
     if (SETTINGS.video.vbo)
     {
         // unbind VBO
