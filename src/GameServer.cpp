@@ -119,7 +119,7 @@ GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
     serverconfig.Clear();
     mapinfo.Clear();
     countdown.Clear();
-	skiptogf=0;
+    skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -502,13 +502,13 @@ void GameServer::Stop(void)
 
     // laden dicht machen
     serversocket.Close();
-	// clear jump target
-	skiptogf=0;
+    // clear jump target
+    skiptogf=0;
 
     lanAnnouncer.Stop();
 
     if(status != SS_STOPPED)
-        LOG.lprintf("server state changed to stop\n");	
+        LOG.lprintf("server state changed to stop\n");    
 
     // status
     status = SS_STOPPED;
@@ -957,7 +957,7 @@ void GameServer::ClientWatchDog()
     unsigned int currentTime = VIDEODRIVER.GetTickCount();
 
     // prüfen ob GF vergangen
-	if(currentTime - framesinfo.lastTime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
+    if(currentTime - framesinfo.lastTime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
     {
         ++framesinfo.gf_nr;
         bool isNWF = framesinfo.gf_nr % framesinfo.nwf_length==0;
@@ -1672,10 +1672,10 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
 void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
-	LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
+    LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
     // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
     if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
-        return;	
+        return;    
     players[old_id].ps = PS_KI;
     players[new_id].ps = PS_OCCUPIED;
     using std::swap;
@@ -1687,7 +1687,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 
     ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id);
 
-	//swap the gamecommand que
+    //swap the gamecommand que
     swap(players[old_id].gc_queue, players[new_id].gc_queue);
 }
 
@@ -1696,7 +1696,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 bool GameServer::TogglePause()
 {
     framesinfo.isPaused = !framesinfo.isPaused;
-	SendToAll(GameMessage_Pause(framesinfo.isPaused, framesinfo.gf_nr + framesinfo.nwf_length));
+    SendToAll(GameMessage_Pause(framesinfo.isPaused, framesinfo.gf_nr + framesinfo.nwf_length));
 
     return framesinfo.isPaused;
 }

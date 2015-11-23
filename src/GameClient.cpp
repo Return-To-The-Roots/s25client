@@ -302,8 +302,8 @@ void GameClient::Stop()
 
     socket.Close();
 
-	// clear jump target
-	skiptogf=0;
+    // clear jump target
+    skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1204,30 +1204,30 @@ void GameClient::IncreaseSpeed()
 
 void GameClient::IncreaseReplaySpeed()
 {
-	if (replay_mode)
-	{
-		if (framesinfo.gf_length > 10)
-		{
-			framesinfo.gf_length -= 10;
-		} else if (framesinfo.gf_length == 10)
-		{
-			framesinfo.gf_length = 1;
-		}
-	}
+    if (replay_mode)
+    {
+        if (framesinfo.gf_length > 10)
+        {
+            framesinfo.gf_length -= 10;
+        } else if (framesinfo.gf_length == 10)
+        {
+            framesinfo.gf_length = 1;
+        }
+    }
 }
 
 void GameClient::DecreaseReplaySpeed()
 {
-	if (replay_mode)
-	{
-		if (framesinfo.gf_length == 1)
-		{
-			framesinfo.gf_length = 10;
-		} else if (framesinfo.gf_length < 1000)
-		{
-			framesinfo.gf_length += 10;
-		}
-	}
+    if (replay_mode)
+    {
+        if (framesinfo.gf_length == 1)
+        {
+            framesinfo.gf_length = 10;
+        } else if (framesinfo.gf_length < 1000)
+        {
+            framesinfo.gf_length += 10;
+        }
+    }
 }
 
 
@@ -1260,13 +1260,13 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 void GameClient::OnNMSPause(const GameMessage_Pause& msg)
 {
     //framesinfo.pause =  msg.paused;
-	if(msg.paused)
-		framesinfo.pause_gf = msg.nr;
-	else
-	{
-	    framesinfo.isPaused =  false;
-		framesinfo.pause_gf = 0;
-	}
+    if(msg.paused)
+        framesinfo.pause_gf = msg.nr;
+    else
+    {
+        framesinfo.isPaused =  false;
+        framesinfo.pause_gf = 0;
+    }
 
     LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
 
@@ -1427,11 +1427,11 @@ void GameClient::StatisticStep()
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
     unsigned int currentTime = VIDEODRIVER.GetTickCount();
-	if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && framesinfo.gf_nr == framesinfo.pause_gf)
-	{
-		framesinfo.pause_gf = 0;
-		framesinfo.isPaused = true;
-	}
+    if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && framesinfo.gf_nr == framesinfo.pause_gf)
+    {
+        framesinfo.pause_gf = 0;
+        framesinfo.isPaused = true;
+    }
 
     if(framesinfo.isPaused)
     {
@@ -1774,7 +1774,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-	state = CS_GAME; // zu gamestate wechseln
+    state = CS_GAME; // zu gamestate wechseln
     RealStart();
 
     gwv = gw;
@@ -1848,25 +1848,25 @@ void GameClient::SkipGF(unsigned int gf)
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
     // Spiel entpausieren
-	if(replay_mode)
-		SetReplayPause(false);
-	if(!replay_mode)
-	{
-		//unpause before skipping
-		if(GAMESERVER.IsPaused())
-		{
-			GAMESERVER.TogglePause();
-			//return;
-		}
-		GAMESERVER.skiptogf=gf;
-		skiptogf=gf;
-		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.gf_nr, gf);
-		return;
-	}
-	
+    if(replay_mode)
+        SetReplayPause(false);
+    if(!replay_mode)
+    {
+        //unpause before skipping
+        if(GAMESERVER.IsPaused())
+        {
+            GAMESERVER.TogglePause();
+            //return;
+        }
+        GAMESERVER.skiptogf=gf;
+        skiptogf=gf;
+        LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.gf_nr, gf);
+        return;
+    }
+    
 
     // GFs überspringen
-	for(unsigned int i = framesinfo.gf_nr; i < gf;++i)
+    for(unsigned int i = framesinfo.gf_nr; i < gf;++i)
     {
         if(i % 1000 == 0)
         {
@@ -1882,21 +1882,21 @@ void GameClient::SkipGF(unsigned int gf)
             gw->Draw(GetPlayerID(), &water_percent, false, MapPoint(0, 0), road);
 
             // text oben noch hinschreiben
-            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );			
+            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );            
             LargeFont->Draw(VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }
         ExecuteGameFrame(true);
-		//LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);		
+        //LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);        
     }
-	
+    
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat 
     unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
-	char text[256];
-	snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
-	ci->CI_Chat(playerId_, CD_SYSTEM, text); 
-	SetReplayPause(true);
+    char text[256];
+    snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
+    ci->CI_Chat(playerId_, CD_SYSTEM, text); 
+    SetReplayPause(true);
 
 }
 
