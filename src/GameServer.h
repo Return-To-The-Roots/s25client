@@ -116,6 +116,8 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
 
+        void ExecuteNWF(const unsigned currentTime);
+
     private:
         enum ServerState
         {

@@ -128,8 +128,8 @@ void GameServerPlayer::clear()
 
 unsigned GameServerPlayer::GetTimeOut() const
 {
-    // Nach 34 Sekunden kicken (34 damit ab 30 erst die Meldung kommt, sonst kommt sie andauernd)
-    const int timeout = 34 - int(TIME.CurrentTime() - last_command_timeout) / 1000;
+    // Nach 35 Sekunden kicken
+    const int timeout = 35 - int(TIME.CurrentTime() - last_command_timeout) / 1000;
     return (timeout >= 0 ? timeout : 0);
 }
 

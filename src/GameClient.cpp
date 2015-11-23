@@ -949,10 +949,10 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
     // Liste mit Namen und Checksummen erzeugen
     std::stringstream checksum_list;
     checksum_list << 23;
-    for(unsigned int i = 0; i < players.getCount(); ++i)
+    for(unsigned int i = 0; i < msg.checksums.size(); ++i)
     {
-        checksum_list << players.getElement(i)->name << ": " << msg.checksums.at(i);
-        if(i != players.getCount() - 1)
+        checksum_list << players.getElement(i)->name << ": " << msg.checksums[i];
+        if(i + 1 < msg.checksums.size())
             checksum_list << ", ";
     }
 
@@ -1319,7 +1319,7 @@ bool GameClient::IsPlayerLagging()
     {
         if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
         {
-            if(players[i].gc_queue.size() == 0)
+            if(players[i].gc_queue.empty())
             {
                 players[i].is_lagging = true;
                 is_lagging = true;
@@ -1430,7 +1430,7 @@ void GameClient::StatisticStep()
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
-    unsigned int currenttime = VIDEODRIVER.GetTickCount();
+    unsigned int currentTime = VIDEODRIVER.GetTickCount();
 	if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && framesinfo.gf_nr == framesinfo.pause_gf)
 	{
 		framesinfo.pause_gf = 0;
@@ -1445,7 +1445,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 
     // Wurde der nächsten Game-Frame zeitlich erreicht (bzw. wenn nur Frames übersprungen werden sollen,
     // brauchen wir nicht zu warten)?
-    if(skipping || skiptogf > framesinfo.gf_nr || (currenttime - framesinfo.lastTime) > framesinfo.gf_length)
+    if(skipping || skiptogf > framesinfo.gf_nr || (currentTime - framesinfo.lastTime) > framesinfo.gf_length)
     {
         //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, RANDOM.GetCurrentRandomValue());
         if(replay_mode)
@@ -1456,10 +1456,10 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             ExecuteGameFrame_Replay();
 
             // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frameTime = std::min(currenttime - framesinfo.lastTime, GetGFLength() - 1);
+            framesinfo.frameTime = std::min(currentTime - framesinfo.lastTime, GetGFLength() - 1);
 
             // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currenttime;
+            framesinfo.lastTime = currentTime;
         }
         // Ist jetzt auch ein NWF dran?
         else if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
@@ -1474,28 +1474,21 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 // Kein Lag, normal weitermachen
 
                 // Diesen Zeitpunkt merken
-                framesinfo.lastTime = currenttime;
+                framesinfo.lastTime = currentTime;
                 // Nächster Game-Frame erreicht
                 ++framesinfo.gf_nr;
 
                 ExecuteGameFrame_Game();
 
                 // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-                framesinfo.frameTime = currenttime - framesinfo.lastTime;
+                framesinfo.frameTime = currentTime - framesinfo.lastTime;
 
             } // if(!is_lagging)
 
             if(framesinfo.gf_length_new != framesinfo.gf_length)
             {
-                framesinfo.gf_length = framesinfo.gf_length_new;
-
-                //int oldgfl = framesinfo.gf_length;
                 int oldnwf = framesinfo.nwf_length;
-
-                if(framesinfo.gf_length == 1)
-                    framesinfo.nwf_length = 50;
-                else
-                    framesinfo.nwf_length = 250 / framesinfo.gf_length;
+                framesinfo.ApplyNewGFLength();
 
                 framesinfo.gfNrServer = framesinfo.gfNrServer - oldnwf + framesinfo.nwf_length;
 
@@ -1508,7 +1501,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             // Nächster GameFrame zwischen framesinfos
 
             // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currenttime;
+            framesinfo.lastTime = currentTime;
             // Nächster Game-Frame erreicht
             ++framesinfo.gf_nr;
 
@@ -1516,7 +1509,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             NextGF();
 
             // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frameTime = currenttime - framesinfo.lastTime;
+            framesinfo.frameTime = currentTime - framesinfo.lastTime;
         }
 
         // Auto-Speichern ggf.
@@ -1554,7 +1547,8 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     else
     {
         // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-        framesinfo.frameTime = currenttime - framesinfo.lastTime;
+        framesinfo.frameTime = currentTime - framesinfo.lastTime;
+        assert(framesinfo.frameTime < framesinfo.gf_length);
     }
 }
 

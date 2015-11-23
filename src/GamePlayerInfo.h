@@ -111,9 +111,6 @@ class GamePlayerInfo
         unsigned ping;
         unsigned int rating;
 
-        int checksum;
-        unsigned obj_cnt;
-        unsigned obj_id_cnt;
         bool ready;
 };
 

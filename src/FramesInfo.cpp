@@ -34,6 +34,15 @@ void FramesInfo::Clear()
     isPaused = false;
 }
 
+void FramesInfo::ApplyNewGFLength()
+{
+    gf_length = gf_length_new;
+    if(gf_length == 1)
+        nwf_length = 50;
+    else
+        nwf_length = 250 / gf_length;
+}
+
 FramesInfoClient::FramesInfoClient()
 {
     Clear();

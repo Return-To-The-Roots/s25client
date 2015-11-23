@@ -24,6 +24,8 @@ struct FramesInfo
 public:
     FramesInfo();
     void Clear();
+    /// Changes the GF length to GFLengthNEw and adapts the NWF length accordingly
+    void ApplyNewGFLength();
 
     /// Current GameFrame (GF) (from start of the game)
     unsigned gf_nr;

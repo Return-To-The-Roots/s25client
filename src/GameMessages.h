@@ -298,7 +298,7 @@ class GameMessage_Server_Async : public GameMessage
 
             PushUnsignedInt(unsigned(checksums.size()));
             for(unsigned int i = 0; i < checksums.size(); ++i)
-                PushSignedInt(checksums.at(i));
+                PushSignedInt(checksums[i]);
         }
         void Run(MessageInterface* callback)
         {
