@@ -1259,10 +1259,11 @@ unsigned short GameWorldBase::IsCoastalPoint(const MapPoint pt) const
     // Um den Punkt herum muss ein gültiger Meeres Punkt sein
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(unsigned short sea_id = GetNodeAround(pt, i).sea_id)
+        unsigned short sea_id = GetNodeAround(pt, i).sea_id;
+        if(sea_id)
         {
             // Dieses Meer schiffbar (todo: andere Kritierien wie Hafenplätze etc.)?
-            if(seas[GetNodeAround(pt, i).sea_id].nodes_count > 20)
+            if(seas[sea_id].nodes_count > 20)
                 return sea_id;
         }
     }
