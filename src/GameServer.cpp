@@ -70,23 +70,8 @@ static char THIS_FILE[] = __FILE__;
 
 
 
-GameServer::FramesInfo::FramesInfo()
-{
-    Clear();
-}
 
-void GameServer::FramesInfo::Clear()
-{
-    nr = 0;
-    nwf_length = 0;
-    gf_nr = 0;
-    gf_length = 0;
-    gf_length_new = 0;
-    lasttime = 0;
-    lastmsgtime = 0;
-    pausetime = 0;
-    pause = false;
-}
+
 GameServer::ServerConfig::ServerConfig()
 {
     Clear();
@@ -654,7 +639,7 @@ bool GameServer::StartGame()
     SendToAll(start_msg);
     LOG.write("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n", random_init);
 
-    framesinfo.lasttime = VIDEODRIVER.GetTickCount();
+    framesinfo.lastTime = VIDEODRIVER.GetTickCount();
 
     try
     {
@@ -979,10 +964,10 @@ void GameServer::ClientWatchDog()
     {
         unsigned int currenttime = VIDEODRIVER.GetTickCount();
 
-        if(!framesinfo.pause)
+        if(!framesinfo.isPaused)
         {
             // network frame durchführen
-			if(currenttime - framesinfo.lasttime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
+			if(currenttime - framesinfo.lastTime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
             {
 				//if(skiptogf > framesinfo.gf_nr)
 					//LOG.lprintf("skipping to gf %i \n",skiptogf);
@@ -1018,7 +1003,7 @@ void GameServer::ClientWatchDog()
                     if(lagging_player == 0xFF)
                     {
                         // Diesen Zeitpunkt merken
-                        framesinfo.lasttime = currenttime - ( currenttime - framesinfo.lasttime - framesinfo.gf_length);
+                        framesinfo.lastTime = currenttime - ( currenttime - framesinfo.lastTime - framesinfo.gf_length);
 
                         // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
                         // TODO: Better solution without using the GameCommands include?
@@ -1073,7 +1058,7 @@ void GameServer::ClientWatchDog()
     	                                    (player->obj_id_cnt != firstHumanPlayer->obj_id_cnt))
     	                                )
                                 {
-                                    LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.nr, player->checksum, firstHumanPlayer->checksum,
+                                    LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.gf_nr, player->checksum, firstHumanPlayer->checksum,
                                                 player->obj_cnt, firstHumanPlayer->obj_cnt, player->obj_id_cnt, firstHumanPlayer->obj_id_cnt);
 
                                     // Checksummenliste erzeugen
@@ -1130,17 +1115,17 @@ void GameServer::ClientWatchDog()
                             else
                                 framesinfo.nwf_length = 250 / framesinfo.gf_length;
 
-                            LOG.lprintf("Server %d/%d: Speed changed from %d to %d\n", framesinfo.gf_nr, framesinfo.nr, oldnwf, framesinfo.nwf_length);
+                            LOG.lprintf("Server %d/%d: Speed changed from %d to %d\n", framesinfo.gf_nr, framesinfo.gf_nr, oldnwf, framesinfo.nwf_length);
                             //LOG.lprintf("Server: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.gf_nr);
                         }
 
                         SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, framesinfo.gf_length));
                         // Framecounter erhöhen
-                        ++framesinfo.nr;
+                        ++framesinfo.gf_nr;
                     }
                     else
                     {
-                        if((currenttime - framesinfo.lasttime) > framesinfo.nwf_length * framesinfo.gf_length)
+                        if((currenttime - framesinfo.lastTime) > framesinfo.nwf_length * framesinfo.gf_length)
                         {
                             //// ein spieler laggt, spiel pausieren
                             GameServerPlayer* player = &players[lagging_player];
@@ -1157,7 +1142,7 @@ void GameServer::ClientWatchDog()
                 else
                 {
                     // Diesen Zeitpunkt merken
-                    framesinfo.lasttime = currenttime;
+                    framesinfo.lastTime = currenttime;
                 }
             }
         }
@@ -1552,7 +1537,7 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
     player->gc_queue.push_back(msg);
 
     //// Command schließlich an alle Clients weiterleiten, aber nicht in der Pause und nicht, wenn derjenige Spieler besiegt wurde!
-    if(!this->framesinfo.pause && !players[msg.player].isDefeated())
+    if(!this->framesinfo.isPaused && !players[msg.player].isDefeated())
         SendToAll(msg);
     else
         SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
@@ -1723,10 +1708,10 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 
 bool GameServer::TogglePause()
 {
-    framesinfo.pause = !framesinfo.pause;
-	SendToAll(GameMessage_Pause(framesinfo.pause, framesinfo.gf_nr + framesinfo.nwf_length));
+    framesinfo.isPaused = !framesinfo.isPaused;
+	SendToAll(GameMessage_Pause(framesinfo.isPaused, framesinfo.gf_nr + framesinfo.nwf_length));
 
-    return framesinfo.pause;
+    return framesinfo.isPaused;
 }
 
 

@@ -29,7 +29,7 @@
 #include "GamePlayerList.h"
 
 #include "ai/AIEventManager.h"
-
+#include "FramesInfo.h"
 #include "helpers/Deleter.h"
 #include <LANDiscoveryService.h>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -61,7 +61,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void CancelCountdown(void);
 
         bool TogglePause();
-		bool IsPaused(){return framesinfo.pause;}
+		bool IsPaused(){return framesinfo.isPaused;}
 
         void TogglePlayerNation(unsigned char client);
         void TogglePlayerTeam(unsigned char client);
@@ -124,28 +124,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
             SS_GAME
         } status;
 
-        class FramesInfo
-        {
-            public:
-
-                FramesInfo();
-                void Clear();
-
-                /// Aktueller nwf
-                unsigned int nr;
-                /// Länge der Network-Frames in ms (gf-Länge * nwf_length des Clients)
-                unsigned int nwf_length;
-                /// Aktueller GF
-                unsigned gf_nr;
-                /// GF-Länge in ms
-                unsigned gf_length;
-                unsigned gf_length_new;
-
-                unsigned int lasttime;
-                unsigned int lastmsgtime;
-                unsigned int pausetime;
-                bool pause;
-        } framesinfo;
+        FramesInfo framesinfo;
 
         class ServerConfig
         {

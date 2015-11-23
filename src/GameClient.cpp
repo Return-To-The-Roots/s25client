@@ -106,26 +106,6 @@ void GameClient::MapInfo::Clear()
  *
  *  @author
  */
-void GameClient::FramesInfo::Clear()
-{
-    nr = 0;
-    gf_length = 0;
-    gf_length_new = 0;
-    nwf_length = 0;
-    frame_time = 0;
-    lasttime = 0;
-    lastmsgtime = 0;
-    pausetime = 0;
-    pause = false;
-	pause_gf = 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author
- */
 void GameClient::RandCheckInfo::Clear()
 {
     rand = 0;
@@ -341,8 +321,8 @@ void GameClient::StartGame(const unsigned int random_init)
 
     // framesinfo vorinitialisieren
     // bei gespeicherten Spielen mit einem bestimmten GF natürlich beginnen!
-    framesinfo.nr = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
-    framesinfo.pause = true;
+    framesinfo.gf_nr = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
+    framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
     framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
@@ -405,8 +385,7 @@ void GameClient::StartGame(const unsigned int random_init)
     }
 
     // Zeit setzen
-    framesinfo.lasttime = VIDEODRIVER.GetTickCount();
-    framesinfo.lastmsgtime = framesinfo.lasttime;
+    framesinfo.lastTime = VIDEODRIVER.GetTickCount();
 
     if(!replay_mode)
     {
@@ -434,10 +413,7 @@ void GameClient::StartGame(const unsigned int random_init)
  */
 void GameClient::RealStart()
 {
-//  framesinfo.pause = false;
-    framesinfo.pause = replay_mode;
-
-	//framesinfo.pause = true;
+    framesinfo.isPaused = replay_mode;
 
     /// Wenn Replay, evtl erstes Command vom Start-Frame auslesen, was sonst ignoriert werden würde
     if(replay_mode)
@@ -940,7 +916,7 @@ void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
     {
         if(state == CS_GAME)
             /// Mit im Replay aufzeichnen
-            replayinfo.replay.AddChatCommand(framesinfo.nr, msg.player, msg.destination, msg.text);
+            replayinfo.replay.AddChatCommand(framesinfo.gf_nr, msg.player, msg.destination, msg.text);
 
         GameClientPlayer& player = GetPlayer(msg.player);
 
@@ -1262,7 +1238,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 {
     framesinfo.gf_length_new = msg.gf_length;
 
-    framesinfo.nr_srv = msg.nr + framesinfo.nwf_length;
+    framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
 
     if(msg.first)
     {
@@ -1288,11 +1264,9 @@ void GameClient::OnNMSPause(const GameMessage_Pause& msg)
 		framesinfo.pause_gf = msg.nr;
 	else
 	{
-	    framesinfo.pause =  false;
+	    framesinfo.isPaused =  false;
 		framesinfo.pause_gf = 0;
 	}
-
-    framesinfo.lastmsgtime = VIDEODRIVER.GetTickCount();
 
     LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
 
@@ -1362,7 +1336,7 @@ bool GameClient::IsPlayerLagging()
 void GameClient::StatisticStep()
 {
     // Soll alle 750 GFs (30 Sekunden auf 'Schnell') aufgerufen werden
-    if ((framesinfo.nr - 1) % 750 == 0)
+    if ((framesinfo.gf_nr - 1) % 750 == 0)
     {
         for (unsigned int i = 0; i < players.getCount(); ++i)
         {
@@ -1457,47 +1431,38 @@ void GameClient::StatisticStep()
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
     unsigned int currenttime = VIDEODRIVER.GetTickCount();
-	if(!framesinfo.pause && framesinfo.pause_gf != 0 && framesinfo.nr == framesinfo.pause_gf)
+	if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && framesinfo.gf_nr == framesinfo.pause_gf)
 	{
 		framesinfo.pause_gf = 0;
-		framesinfo.pause = true;
+		framesinfo.isPaused = true;
 	}
 
-    if(framesinfo.pause)
+    if(framesinfo.isPaused)
     {
-        if(!replay_mode && ((currenttime - framesinfo.lastmsgtime) > 10000) )
-        {
-            //if(ci && GLOBALVARS.ingame)
-            //  ci->CI_GamePaused();
-
-            framesinfo.lastmsgtime = currenttime;
-        }
-
         // pause machen ;)
-
         return;
     }
 
     // Wurde der nächsten Game-Frame zeitlich erreicht (bzw. wenn nur Frames übersprungen werden sollen,
     // brauchen wir nicht zu warten)?
-    if(skipping || skiptogf > framesinfo.nr || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
+    if(skipping || skiptogf > framesinfo.gf_nr || (currenttime - framesinfo.lastTime) > framesinfo.gf_length)
     {
         //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, RANDOM.GetCurrentRandomValue());
         if(replay_mode)
         {
             // Nächster Game-Frame erreicht
-            ++framesinfo.nr;
+            ++framesinfo.gf_nr;
 
             ExecuteGameFrame_Replay();
 
             // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frame_time = std::min(currenttime - framesinfo.lasttime, GetGFLength() - 1);
+            framesinfo.frameTime = std::min(currenttime - framesinfo.lastTime, GetGFLength() - 1);
 
             // Diesen Zeitpunkt merken
-            framesinfo.lasttime = currenttime;
+            framesinfo.lastTime = currenttime;
         }
         // Ist jetzt auch ein NWF dran?
-        else if(framesinfo.nr % framesinfo.nwf_length == 0)
+        else if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
         {
             // entsprechenden NC für diesen NWF ausführen
             // Beim Replay geht das etwas anderes, da werden die NFCs aus der Datei gelesen
@@ -1509,14 +1474,14 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 // Kein Lag, normal weitermachen
 
                 // Diesen Zeitpunkt merken
-                framesinfo.lasttime = currenttime;
+                framesinfo.lastTime = currenttime;
                 // Nächster Game-Frame erreicht
-                ++framesinfo.nr;
+                ++framesinfo.gf_nr;
 
                 ExecuteGameFrame_Game();
 
                 // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-                framesinfo.frame_time = currenttime - framesinfo.lasttime;
+                framesinfo.frameTime = currenttime - framesinfo.lastTime;
 
             } // if(!is_lagging)
 
@@ -1532,26 +1497,26 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 else
                     framesinfo.nwf_length = 250 / framesinfo.gf_length;
 
-                framesinfo.nr_srv = framesinfo.nr_srv - oldnwf + framesinfo.nwf_length;
+                framesinfo.gfNrServer = framesinfo.gfNrServer - oldnwf + framesinfo.nwf_length;
 
-                LOG.lprintf("Client: %d/%d: Speed changed from %d to %d\n", framesinfo.nr_srv, framesinfo.nr, oldnwf, framesinfo.nwf_length);
+                LOG.lprintf("Client: %d/%d: Speed changed from %d to %d\n", framesinfo.gfNrServer, framesinfo.gf_nr, oldnwf, framesinfo.nwf_length);
                 //LOG.lprintf("Client: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.nr_srv);
             }
         } // if(framesinfo.nr % framesinfo.nwf_length == 0)
-        else if (framesinfo.nr < framesinfo.nr_srv)
+        else if (framesinfo.gf_nr < framesinfo.gfNrServer)
         {
             // Nächster GameFrame zwischen framesinfos
 
             // Diesen Zeitpunkt merken
-            framesinfo.lasttime = currenttime;
+            framesinfo.lastTime = currenttime;
             // Nächster Game-Frame erreicht
-            ++framesinfo.nr;
+            ++framesinfo.gf_nr;
 
             // Frame ausführen
             NextGF();
 
             // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frame_time = currenttime - framesinfo.lasttime;
+            framesinfo.frameTime = currenttime - framesinfo.lastTime;
         }
 
         // Auto-Speichern ggf.
@@ -1560,7 +1525,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         if(SETTINGS.interface.autosave_interval && !replay_mode)
         {
             // Alle .... GF
-            if(framesinfo.nr % SETTINGS.interface.autosave_interval == 0)
+            if(framesinfo.gf_nr % SETTINGS.interface.autosave_interval == 0)
             {
                 std::string tmp = GetFilePath(FILE_PATHS[85]);
 
@@ -1583,13 +1548,13 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 
         // GF-Ende im Replay aktualisieren
         if(!replay_mode)
-            replayinfo.replay.UpdateLastGF(framesinfo.nr);
+            replayinfo.replay.UpdateLastGF(framesinfo.gf_nr);
 
     } // if(skipping || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
     else
     {
         // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-        framesinfo.frame_time = currenttime - framesinfo.lasttime;
+        framesinfo.frameTime = currenttime - framesinfo.lastTime;
     }
 }
 
@@ -1615,7 +1580,7 @@ void GameClient::NextGF()
     
     if (human_ai)
     {
-        human_ai->RunGF(framesinfo.nr, (framesinfo.nr % framesinfo.nwf_length == 0));
+        human_ai->RunGF(framesinfo.gf_nr, (framesinfo.gf_nr % framesinfo.nwf_length == 0));
 
         const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
 
@@ -1624,7 +1589,7 @@ void GameClient::NextGF()
         human_ai->FetchGameCommands();
     }
     
-    gw->LUA_EventGF(framesinfo.nr);
+    gw->LUA_EventGF(framesinfo.gf_nr);
 }
 
 
@@ -1844,20 +1809,20 @@ unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsi
     const unsigned unit = 630/*ms*/ * factor_numerator / factor_denumerator;
     // Good approximation of current time in ms
     // (Accuracy of a possibly expensive VideoDriverWrapper::GetTicks() isn't needed here):
-    const unsigned currenttime = framesinfo.lasttime + framesinfo.frame_time;
+    const unsigned currenttime = framesinfo.lastTime + framesinfo.frameTime;
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
 unsigned GameClient::Interpolate(unsigned max_val, EventManager::EventPointer ev)
 {
     assert( ev );
-    return min<unsigned int>(((max_val * ((framesinfo.nr - ev->gf) * framesinfo.gf_length + framesinfo.frame_time)) / (ev->gf_length * framesinfo.gf_length)), max_val - 1);
+    return min<unsigned int>(((max_val * ((framesinfo.gf_nr - ev->gf) * framesinfo.gf_length + framesinfo.frameTime)) / (ev->gf_length * framesinfo.gf_length)), max_val - 1);
 }
 
 int GameClient::Interpolate(int x1, int x2, EventManager::EventPointer ev)
 {
     assert( ev );
-    return (x1 + ( (x2 - x1) * ((int(framesinfo.nr) - int(ev->gf)) * int(framesinfo.gf_length) + int(framesinfo.frame_time))) / int(ev->gf_length * framesinfo.gf_length));
+    return (x1 + ( (x2 - x1) * ((int(framesinfo.gf_nr) - int(ev->gf)) * int(framesinfo.gf_length) + int(framesinfo.frameTime))) / int(ev->gf_length * framesinfo.gf_length));
 }
 
 void GameClient::ServerLost()
@@ -1888,7 +1853,7 @@ void GameClient::ServerLost()
  */
 void GameClient::SkipGF(unsigned int gf)
 {
-    if(gf <= framesinfo.nr)
+    if(gf <= framesinfo.gf_nr)
         return;
 
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
@@ -1906,13 +1871,13 @@ void GameClient::SkipGF(unsigned int gf)
 		}
 		GAMESERVER.skiptogf=gf;
 		skiptogf=gf;
-		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.nr, gf);
+		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.gf_nr, gf);
 		return;
 	}
 	
 
     // GFs überspringen
-	for(unsigned int i = framesinfo.nr; i < gf;++i)
+	for(unsigned int i = framesinfo.gf_nr; i < gf;++i)
     {
         if(i % 1000 == 0)
         {
@@ -1969,7 +1934,7 @@ unsigned GameClient::WriteSaveHeader(const std::string& filename)
     // GGS-Daten
     save.ggs = ggs;
 
-    save.start_gf = framesinfo.nr;
+    save.start_gf = framesinfo.gf_nr;
 
     // Spiel serialisieren
     save.sgd.MakeSnapshot(*gw, *em);
@@ -2062,8 +2027,8 @@ void GameClient::SetReplayPause(bool pause)
 {
     if(replay_mode)
     {
-        framesinfo.pause = pause;
-        framesinfo.frame_time = 0;
+        framesinfo.isPaused = pause;
+        framesinfo.frameTime = 0;
     }
 }
 
@@ -2071,7 +2036,7 @@ void GameClient::SetReplayPause(bool pause)
 bool GameClient::AddGC(gc::GameCommand* gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.pause || GetLocalPlayer().isDefeated())
+    if(framesinfo.isPaused || GetLocalPlayer().isDefeated())
         return false;
 
     gameCommands_.push_back(gc);

@@ -36,7 +36,7 @@ void GameClient::ExecuteGameFrame_Replay()
     while(true)
     {
         // Schon an der Zeit?
-        if(replayinfo.next_gf == framesinfo.nr)
+        if(replayinfo.next_gf == framesinfo.gf_nr)
         {
             // RC-Type auslesen
             Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
@@ -75,14 +75,14 @@ void GameClient::ExecuteGameFrame_Replay()
                     {
                         // Meldung mit GF erzeugen
                         char text[256];
-                        sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.nr);
+                        sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.gf_nr);
 
                         // Messenger im Game (prints to console too)
                         if(ci && GLOBALVARS.ingame)
                             ci->CI_ReplayAsync(text);
 
                         // pausieren
-                        framesinfo.pause = true;
+                        framesinfo.isPaused = true;
                     }
 
                     replayinfo.async++;
@@ -104,13 +104,13 @@ void GameClient::ExecuteGameFrame_Replay()
     NextGF();
 
     // Replay zu Ende?
-    if(framesinfo.nr == replayinfo.replay.lastGF_)
+    if(framesinfo.gf_nr == replayinfo.replay.lastGF_)
     {
         // Replay zu Ende
 
         // Meldung erzeugen
         char text[256];
-        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.nr, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.gf_nr, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
 
         // Messenger im Game
         if(ci && GLOBALVARS.ingame)
@@ -128,6 +128,6 @@ void GameClient::ExecuteGameFrame_Replay()
         replayinfo.end = true;
 
         // pausieren
-        framesinfo.pause = true;
+        framesinfo.isPaused = true;
     }
 }

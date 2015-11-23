@@ -32,6 +32,7 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameData/PlayerConsts.h"
 #include "gameData/MilitaryConsts.h"
+#include "FramesInfo.h"
 
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -103,10 +104,10 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void ExitGame();
 
         ClientState GetState() const { return state; }
-        inline unsigned int GetGFNumber() const { return framesinfo.nr; }
+        inline unsigned int GetGFNumber() const { return framesinfo.gf_nr; }
         inline unsigned int GetGFLength() const { return framesinfo.gf_length; }
         inline unsigned int GetNWFLength() const { return framesinfo.nwf_length; }
-        inline unsigned int GetFrameTime() const { return framesinfo.frame_time; }
+        inline unsigned int GetFrameTime() const { return framesinfo.frameTime; }
         unsigned int GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset);
         unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
         int Interpolate(int x1, int x2, EventManager::EventPointer ev);
@@ -127,7 +128,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void IncreaseReplaySpeed();
         void DecreaseReplaySpeed();
         void SetReplayPause(bool pause);
-        void ToggleReplayPause() { SetReplayPause(!framesinfo.pause); }
+        void ToggleReplayPause() { SetReplayPause(!framesinfo.isPaused); }
         /// Schaltet FoW im Replaymodus ein/aus
         void ToggleReplayFOW() { replayinfo.all_visible = !replayinfo.all_visible; }
         /// Prüft, ob FoW im Replaymodus ausgeschalten ist
@@ -157,7 +158,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Laggt ein bestimmter Spieler gerade?
         bool IsLagging(const unsigned int id) { return GetPlayer(id).is_lagging; }
         /// Spiel pausiert?
-        bool IsPaused() const { return framesinfo.pause; }
+        bool IsPaused() const { return framesinfo.isPaused; }
         /// Schreibt Header der Save-Datei
         unsigned WriteSaveHeader(const std::string& filename);
         /// Visuelle Einstellungen aus den richtigen ableiten
@@ -321,31 +322,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 boost::shared_ptr<Savegame> savegame;
         } mapinfo;
 
-        class FramesInfo
-        {
-            public:
-                FramesInfo() { Clear(); }
-                void Clear();
-
-                /// Aktueller GameFrame (der wievielte seit Beginn)
-                unsigned nr;
-                unsigned nr_srv;
-                /// Länge der GameFrames in ms (= Geschwindigkeit des Spiels)
-                unsigned gf_length;
-                unsigned gf_length_new;
-                /// Länge der Network-Frames in gf(!)
-                unsigned nwf_length;
-
-                /// Zeit in ms seit dem letzten Frame
-                unsigned frame_time;
-
-                unsigned lasttime;
-                unsigned lastmsgtime;
-                unsigned pausetime;
-
-                bool pause;
-				unsigned pause_gf;
-        } framesinfo;
+        FramesInfoClient framesinfo;
 
         class RandCheckInfo
         {

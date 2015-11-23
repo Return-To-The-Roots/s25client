@@ -44,7 +44,7 @@ void GameClient::ExecuteGameFrame_Game()
             {
                 // Aktuelle Checksumme reinschreiben
                 GameMessage_GameCommand tmp(msg.player, checksum, msg.gcs);
-                replayinfo.replay.AddGameCommand(framesinfo.nr, tmp.GetLength(), tmp.GetData());
+                replayinfo.replay.AddGameCommand(framesinfo.gf_nr, tmp.GetLength(), tmp.GetData());
             }
 
             // Das ganze Zeug soll die andere Funktion ausführen
