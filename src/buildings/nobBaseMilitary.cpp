@@ -428,9 +428,6 @@ void nobBaseMilitary::CancelJobs()
             nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
             assert(soldier);
 
-            // Nicht mehr auf Mission
-            assert(IsOnMission(soldier));
-            troops_on_mission.remove(soldier);
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
             soldier->InformTargetsAboutCancelling();
             // Wieder in das Haus verfrachten
