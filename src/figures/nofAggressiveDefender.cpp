@@ -147,7 +147,7 @@ void nofAggressiveDefender::WonFighting()
 	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
-    attacker = NULL;
+    attacker  = NULL;
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
@@ -313,7 +313,7 @@ void nofAggressiveDefender::NeedForHomeDefence()
 
     // Ziel Bescheid sagen
     CancelAtAttackedBld();
-}
+    }
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
 void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
@@ -322,7 +322,7 @@ void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
     attacker = NULL;
     // Ziel Bescheid sagen
     CancelAtAttackedBld();
-}
+    }
 
 
 /// The derived classes regain control after a fight of nofActiveSoldier

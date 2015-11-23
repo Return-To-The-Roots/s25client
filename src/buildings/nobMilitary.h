@@ -39,7 +39,7 @@ class nobMilitary : public nobBaseMilitary
         /// Anzahl der Goldmünzen im Gebäude
         unsigned char coins;
         /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
-        bool disable_coins, disable_coins_virtual;
+        bool coinsDisabled, coinsDisabledVirtual;
         /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
         unsigned char frontier_distance;
         /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
@@ -164,38 +164,36 @@ class nobMilitary : public nobBaseMilitary
         /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         std::vector<nofPassiveSoldier*> GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
         /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        unsigned GetSoldiersStrengthForAttack(const MapPoint dest,
-                                              const unsigned char player_attacker, unsigned& soldiers_count) const;
+        unsigned GetSoldiersStrengthForAttack(const MapPoint dest, const unsigned char player_attacker, unsigned& soldiers_count) const;
         /// Gibt die Stärke eines Militärgebäudes zurück
         unsigned GetSoldiersStrength() const;
 
         /// Gebäude wird vom Gegner eingenommen, player ist die neue Spieler-ID
         void Capture(const unsigned char new_owner);
         /// Das Gebäude wurde bereits eingenommen, hier wird geprüft, ob noch weitere Soldaten für die Besetzung
-        /// notwendig sind, wenn ja wird ein neuer Soldat gerufen, wenn nein, werden alle restlichen nach Hause
-        /// geschickt
-        void NeedOccupyingTroops(const unsigned char new_owner);
+        /// notwendig sind, wenn ja wird ein neuer Soldat gerufen, wenn nein, werden alle restlichen nach Hause geschickt
+        void NeedOccupyingTroops();
         /// Sagt dem Gebäude schonmal, dass es eingenommen wird, wenn er erste Eroberer gerade in das Gebäude reinläuft
         /// (also noch bevor er drinnen ist!) - damit da nicht zusätzliche Soldaten reinlaufen
-        void PrepareCapturing() { capturing = true; ++capturing_soldiers; }
+        void PrepareCapturing() { assert(!IsCaptured()); capturing = true; ++capturing_soldiers; }
 
         /// Wird das Gebäude gerade eingenommen?
         bool IsCaptured() const { return capturing; }
         /// Gebäude wird nicht mehr eingenommen (falls anderer Soldat zuvor reingekommen ist beim Einnehmen)
-        void StopCapturing() { capturing = false; }
+        void StopCapturing() { assert(capturing_soldiers==0); capturing = false; }
         /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
-        void CapturingSoldierArrived() { --capturing_soldiers; }
+        void CapturingSoldierArrived();
         /// A far-away capturer arrived at the building/flag and starts the capturing
         void FarAwayAttackerReachedGoal(nofAttacker* attacker);
 
         /// Stoppt/Erlaubt Goldzufuhr (visuell)
-        void ToggleCoinsVirtual() { disable_coins_virtual = !disable_coins_virtual; }
+        void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }
         /// Stoppt/Erlaubt Goldzufuhr (real)
         void ToggleCoins();
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (visuell)
-        bool IsGoldDisabledVirtual() const { return disable_coins_virtual; }
+        bool IsGoldDisabledVirtual() const { return coinsDisabledVirtual; }
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)
-        bool IsGoldDisabled() const { return disable_coins; }
+        bool IsGoldDisabled() const { return coinsDisabled; }
 		/// is there a max rank soldier in the building?
 		unsigned HasMaxRankSoldier() const;
 

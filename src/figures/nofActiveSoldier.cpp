@@ -117,7 +117,7 @@ void nofActiveSoldier::WalkingHome()
         StartWalking(1);
         return;
     }
-    // or are have we come into the building?
+    // or are we at the building?
     if(GetPos() == building->GetPos())
     {
         // We're there!

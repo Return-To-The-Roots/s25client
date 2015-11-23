@@ -57,8 +57,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), disable_coins(false),
-      disable_coins_virtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false), captured_not_built(false)
+    : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), coinsDisabled(false),
+      coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false), captured_not_built(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetPlayer(player).AddMilitaryBuilding(this);
@@ -83,8 +83,8 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
     // Ansonsten neue Goldmünzen anfordern
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
     {
-        disable_coins = true;
-        disable_coins_virtual = true;
+        coinsDisabled = true;
+        coinsDisabledVirtual = true;
     }
     else
         SearchCoins();
@@ -165,8 +165,8 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(bitfield);
 
     sgd.PushUnsignedChar(coins);
-    sgd.PushBool(disable_coins);
-    sgd.PushBool(disable_coins_virtual);
+    sgd.PushBool(coinsDisabled);
+    sgd.PushBool(coinsDisabledVirtual);
     sgd.PushUnsignedChar(frontier_distance);
     sgd.PushUnsignedChar(size);
     sgd.PushBool(capturing);
@@ -192,8 +192,8 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
     captured_not_built = !(bitfield & (1 << 1));
 
     coins = sgd.PopUnsignedChar();
-    disable_coins = sgd.PopBool();
-    disable_coins_virtual = sgd.PopBool();
+    coinsDisabled = sgd.PopBool();
+    coinsDisabledVirtual = sgd.PopBool();
     frontier_distance = sgd.PopUnsignedChar();
     size = sgd.PopUnsignedChar();
     capturing = sgd.PopBool();
@@ -242,7 +242,7 @@ void nobMilitary::Draw(int x, int y)
         bitmap->Draw(x + BORDER_FLAGS[nation][size][0], y + BORDER_FLAGS[nation][size][1], 0, 0, 0, 0, 0, 0);
 
     // Wenn Goldzufuhr gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
-    if(disable_coins_virtual)
+    if(coinsDisabledVirtual)
         LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
 
 
@@ -440,7 +440,7 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 void nobMilitary::RegulateTroops()
 {
     // Wenn das Gebäude eingenommen wird, erstmal keine neuen Truppen und warten, wieviele noch reinkommen
-    if(capturing)
+    if(IsCaptured())
         return;
 
     // Already regulate its troops => Don't call this method again
@@ -672,12 +672,21 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
     // neuen Soldaten einhängen
     AddPassiveSoldier(passive_soldier);
 
-    // Soldat ist wie tot, d.h. er muss aus allen Missionslisten etc. wieder rausgenommen werden
-    SoldierLost(soldier);
-
     // alten Soldaten später vernichten
     soldier->ResetHome();
     em->AddToKillList(soldier);
+
+    if(!IsCaptured())
+    {
+        assert(helpers::contains(troops_on_mission, soldier));
+        troops_on_mission.remove(soldier); // Returned home
+        RegulateTroops();
+    }else
+    {
+        nofAttacker* attacker = dynamic_cast<nofAttacker*>(soldier);
+        assert(attacker);
+        UnlinkAggressor(attacker);
+    }
 }
 
 void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
@@ -720,9 +729,17 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
 void nobMilitary::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen und ggf. neue Soldaten rufen
-    assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)) || helpers::contains(troops_on_mission, static_cast<nofActiveSoldier*>(soldier)));
-    ordered_troops.erase(static_cast<nofPassiveSoldier*>(soldier));
-    troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
+    if(soldier->GetGOT() == GOT_NOF_PASSIVESOLDIER)
+    {
+        assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)));
+        ordered_troops.erase(static_cast<nofPassiveSoldier*>(soldier));
+    }else
+    {
+        nofActiveSoldier* actSoldier = dynamic_cast<nofActiveSoldier*>(soldier);
+        assert(actSoldier);
+        assert(helpers::contains(troops_on_mission, actSoldier));
+        troops_on_mission.remove(actSoldier);
+    }
     RegulateTroops();
 }
 
@@ -893,7 +910,6 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
             return NULL;
     }
 
-
     nofPassiveSoldier* soldier = ChooseSoldier();
 
     // neuen Verteidiger erzeugen
@@ -911,6 +927,8 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 
 void nobMilitary::Capture(const unsigned char new_owner)
 {
+    assert(IsCaptured());
+
     captured_not_built = true;
 
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
@@ -981,11 +999,22 @@ void nobMilitary::Capture(const unsigned char new_owner)
         }
     }
 
-    // Gebäude wird nun eingenommen
-    capturing = true;
+    // Send all allied aggressors home (we own the building now!)
+    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end();)
+    {
+        nofAttacker* attacker = *it;
+        // dont remove attackers owned by players not allied with the new owner!
+        unsigned char attPlayer = attacker->GetPlayer();
+        if(attPlayer != player && !gwg->GetPlayer(attPlayer).IsPlayerAttackable(player))
+        {
+            it = aggressors.erase(it);
+            attacker->CapturedBuildingFull();
+        }else
+            ++it;
+    }
 
     // Soldat, der zum Erobern reinläuft, ist nun drinne --> Anzahl der erobernden Soldaten entsprechend verringern
-    assert(capturing_soldiers);
+    assert(capturing_soldiers > 0);
     --capturing_soldiers;
 
     // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
@@ -1005,41 +1034,38 @@ void nobMilitary::Capture(const unsigned char new_owner)
     // AIEvent senden an gewinner&verlierer
     GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type_), player);
     GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), old_player);
-
 }
 
-void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
+void nobMilitary::NeedOccupyingTroops()
 {
-    // Brauchen wir noch Soldaten (ein Soldat kommt ja noch rein), keine Soldaten von anderen Spielern
-    // wählen (z.B. "Kollektivangriffen"), manchmal ist es egal, wer reinkommt (new_owner == 0xFF)
+    assert(IsCaptured()); // Only valid during capturing
+    assert(ordered_troops.size() == 0); // Cannot order when capturing is not yet completed
+    // Check if we need more soldiers from the attacking soldiers
+    // Choose the closes ones first to avoid having them walk a long way
 
-    // Soldaten wählen, der am nächsten an der Flagge steht, damit nicht welche von ganze hinten ewige Zeit vor
-    // latschen müssen
-    nofAttacker* best_attacker = 0;
+    nofAttacker* best_attacker = NULL;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
 
     unsigned needed_soldiers = unsigned(CalcTroopsCount());
+    unsigned currentSoldiers = troops.size() + capturing_soldiers + troops_on_mission.size();
 
-    if(needed_soldiers > troops.size() + capturing_soldiers + troops_on_mission.size() + ordered_troops.size())
+    if(needed_soldiers > currentSoldiers)
     {
         // Soldaten absuchen
         for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
         {
-            // Steht der Soldat überhaupos um das Gebäude rum?
-            if((*it)->IsAttackerReady() && ((*it)->GetPlayer() == new_owner || new_owner == 0xFF))
+            // Is the soldier standing around and owned by the player?
+            if(!(*it)->IsAttackerReady() || (*it)->GetPlayer() != player)
+                continue;
+            // Näher als der bisher beste?
+            if((*it)->GetRadius() >= best_radius)
+                continue;
+            // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg versperren)?
+            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 10, false) != 0xFF)
             {
-                // Näher als der bisher beste?
-                if((*it)->GetRadius() < best_radius)
-                {
-                    // Und kommt er überhaupos zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
-                    // vor ihm ihn den Weg versperren)?
-                    if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 10, false) != 0xFF)
-                    {
-                        // Dann is das der bisher beste
-                        best_attacker = *it;
-                        best_radius = best_attacker->GetRadius();
-                    }
-                }
+                // Dann is das der bisher beste
+                best_attacker = *it;
+                best_radius = best_attacker->GetRadius();
             }
         }
 
@@ -1053,15 +1079,12 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
             return;
         }
 
-        // keine Soldaten mehr gefunden, der Rest (der noch nicht da ist) kann wieder nach Hause gehen
-        for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); )
+        // If necessary look for further soldiers who are not standing around the building
+        for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end() && needed_soldiers > currentSoldiers + far_away_capturers.size(); )
         {
             nofAttacker* attacker = *it;
 
-            // If necessary look for further soldiers who are not standing around the building
-            if(needed_soldiers > troops.size() + capturing_soldiers +
-                    troops_on_mission.size() + ordered_troops.size() + far_away_capturers.size()
-                    && attacker->GetPlayer() == player)
+            if(attacker->GetPlayer() == player)
             {
                 // Ask attacker if this is possible
                 if(attacker->TryToStartFarAwayCapturing(this))
@@ -1071,56 +1094,36 @@ void nobMilitary::NeedOccupyingTroops(const unsigned char new_owner)
                     continue;
                 }
             }
-
-			//LOG.lprintf("no more capture troops detected: rest can go home (target was: %i,%i) ",x,y);
-            // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
-            if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT && !gwg->GetPlayer(attacker->GetPlayer()).IsPlayerAttackable(player))
-            {
-                // Attention: Get new it first as attacker can be deleted in CapturedBuildingFull
-                it = aggressors.erase(it);
-                attacker->CapturedBuildingFull();
-            }else
-                ++it;
+            ++it;
         }
-
-        // Einnahme beendet
-        capturing = false;
     }
-    else
+
+    // At this point agressors contains only soldiers, that cannot capture the building (from other player or without a path to flag),
+    // the one(s) that is currently walking to capture the building and possibly some more from other (non-allied) players
+    // So send those home, who cannot capture the building
+    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end();)
     {
-        // keine Soldaten mehr benötigt, der Rest kann wieder nach Hause gehen
-		//LOG.lprintf("building full: remaining attackers can go home (target was: %i,%i) \n ",x,y);t;
-        for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end();)
+        nofAttacker* attacker = *it;
+        // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
+		//also: dont remove attackers owned by players not allied with the new owner!
+		if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT && !gwg->GetPlayer(attacker->GetPlayer()).IsPlayerAttackable(player))
         {
-            nofAttacker* attacker = *it;
-            // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
-			//also: dont remove attackers owned by players not allied with the new owner!
-			if(attacker->GetState() != nofActiveSoldier::STATE_ATTACKING_CAPTURINGNEXT && !gwg->GetPlayer(attacker->GetPlayer()).IsPlayerAttackable(player))
-            {
-			    // Attention: Get new it first as attacker can be deleted in CapturedBuildingFull
-			    it = aggressors.erase(it);
-                attacker->CapturedBuildingFull();
-            }else
-                ++it;
-        }
-
-        // Einnahme beendet
-        capturing = false;
-
-        // Nun die Besetzung prüfen
-        RegulateTroops();
+			it = aggressors.erase(it);
+            attacker->CapturedBuildingFull();
+        }else
+            ++it;
     }
 }
 
 void nobMilitary::ToggleCoins()
 {
     // Umstellen
-    disable_coins = !disable_coins;
+    coinsDisabled = !coinsDisabled;
     // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
     if(GAMECLIENT.GetPlayerID() != player || GAMECLIENT.IsReplayModeOn())
-        disable_coins_virtual = !disable_coins_virtual;
+        coinsDisabledVirtual = !coinsDisabledVirtual;
 
-    if(!disable_coins)
+    if(!coinsDisabled)
         SearchCoins(); // Order coins if we just enabled it
     else
     {
@@ -1162,7 +1165,7 @@ unsigned nobMilitary::CalcCoinsPoints()
 bool nobMilitary::WantCoins()
 {
     // Wenn die Goldzufuhr gestoppos wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
-    return (!disable_coins && coins + ordered_coins.size() != GOLD_COUNT[nation][size] && !new_built);
+    return (!coinsDisabled && coins + ordered_coins.size() != GOLD_COUNT[nation][size] && !new_built);
 }
 
 void nobMilitary::SearchCoins()
@@ -1179,6 +1182,7 @@ void nobMilitary::SearchCoins()
 
             if(!ware)
             {
+                assert(false);
                 // Ware dürfte nicht 0 werden, da ja ein Lagerhaus MIT GOLDMÜNZEN bereits gesucht wird
                 LOG.lprintf("nobMilitary::SearchCoins: WARNING: ware = 0. Bug alarm!\n");
                 return;
@@ -1284,6 +1288,23 @@ void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
         RegulateTroops();
 }
 
+void nobMilitary::CapturingSoldierArrived()
+{
+    assert(IsCaptured());
+    assert(capturing_soldiers > 0);
+    --capturing_soldiers;
+    if(capturing_soldiers == 0)
+    {
+        // Search again
+        NeedOccupyingTroops();
+        if(capturing_soldiers > 0)
+            return; // Found more
+        // Einnahme beendet
+        StopCapturing();
+        // Nun die Besetzung prüfen
+        RegulateTroops();
+    }
+}
 
 /// A far-away capturer arrived at the building/flag and starts the capturing
 void nobMilitary::FarAwayAttackerReachedGoal(nofAttacker* attacker)
@@ -1291,7 +1312,11 @@ void nobMilitary::FarAwayAttackerReachedGoal(nofAttacker* attacker)
     assert(helpers::contains(far_away_capturers, attacker));
     far_away_capturers.remove(attacker);
     aggressors.push_back(attacker);
-    capturing_soldiers++;
+    // If we are still capturing just add this soldier to the count
+    if(IsCaptured())
+        capturing_soldiers++;
+    else
+        PrepareCapturing(); // Else restart capturing
 }
 
 

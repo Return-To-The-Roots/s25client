@@ -44,12 +44,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
 /// Dieses Konstante gibt an, wie lange, nachdem er anfängt da zu stehen, er blockt
 const unsigned BLOCK_OFFSET = 10;
-
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
@@ -78,10 +76,8 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
     attacked_goal->LinkAggressor(this);
 }
 
-
 nofAttacker::~nofAttacker()
 {
-
     //unsigned char oplayer = (player == 0) ? 1 : 0;
     //assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));
 }
@@ -94,7 +90,6 @@ void nofAttacker::Destroy_nofAttacker()
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
     assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));*/
 }
-
 
 void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
 {
@@ -134,13 +129,12 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     else
     {
         attacked_goal = NULL;
-        should_haunted = 0;
+        should_haunted = false;
         radius = 0;
         ship_obj_id = 0;
     }
 
 }
-
 
 void nofAttacker::Walked()
 {
@@ -186,7 +180,6 @@ void nofAttacker::Walked()
                     }
                 }
             }
-
 
             if(pos == goalFlagPos)
             {
@@ -249,8 +242,7 @@ void nofAttacker::Walked()
             else
             {
                 // Ist das Gebäude ein "normales Militärgebäude", das wir da erobert haben?
-                if(attacked_goal->GetBuildingType() >= BLD_BARRACKS &&
-                        attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+                if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
                 {
                     // Meinem Heimatgebäude Bescheid sagen, dass ich nicht mehr komme (falls es noch eins gibt)
                     if(building)
@@ -267,7 +259,8 @@ void nofAttacker::Walked()
                     newHome->AddActiveSoldier(this);
                     gwg->RemoveFigure(this, pos);
                     // ggf. weitere Soldaten rufen, damit das Gebäude voll wird
-                    static_cast<nobMilitary*>(newHome)->NeedOccupyingTroops(player);
+                    assert(newHome->GetPlayer() == player);
+                    static_cast<nobMilitary*>(newHome)->NeedOccupyingTroops();
                 }
                 // oder ein Hauptquartier oder Hafen?
                 else
@@ -276,11 +269,9 @@ void nofAttacker::Walked()
                     if(GAMECLIENT.GetPlayerID() == attacked_goal->GetPlayer())
                     {
                         if(attacked_goal->GetGOT() == GOT_NOB_HQ)
-                            GAMECLIENT.SendPostMessage(new
-                                                               ImagePostMsgWithLocation(_("Our headquarters was destroyed!"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
+                            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Our headquarters was destroyed!"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
                         else
-                            GAMECLIENT.SendPostMessage(new
-                                                               ImagePostMsgWithLocation(_("This harbor building was destroyed"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
+                            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("This harbor building was destroyed"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
                     }
 
                     // abreißen
@@ -364,7 +355,6 @@ void nofAttacker::Walked()
     }
 }
 
-
 /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
 void nofAttacker::HomeDestroyed()
 {
@@ -390,8 +380,8 @@ void nofAttacker::HomeDestroyed()
 
             // und evtl einen Nachrücker für diesen Platz suchen
             curGoal->SendSuccessor(pos, radius, GetCurMoveDir());
+            attacked_goal = NULL;
         } break;
-
         default:
         {
             //  Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
@@ -399,7 +389,6 @@ void nofAttacker::HomeDestroyed()
             building = NULL;
         } break;
     }
-
 }
 
 void nofAttacker::HomeDestroyedAtBegin()
@@ -437,7 +426,6 @@ void nofAttacker::WonFighting()
         state = STATE_FIGUREWORK;
         StartWandering();
         Wander();
-
         return;
     }
 
@@ -446,10 +434,8 @@ void nofAttacker::WonFighting()
     {
         // Nach Hause gehen
         ReturnHomeMissionAttacking();
-
         return;
     }
-    
     ContinueAtFlag();
 }
 
@@ -555,7 +541,6 @@ void nofAttacker::MissAttackingWalk()
         return;
     }*/
 
-
     // Eine Position rund um das Militärgebäude suchen
     MapPoint goal = attacked_goal->FindAnAttackerPlace(radius, this);
 
@@ -582,8 +567,6 @@ void nofAttacker::MissAttackingWalk()
     // Haben wir noch keinen Feind?
     // Könnte mir noch ein neuer Verteidiger entgegenlaufen?
     TryToOrderAggressiveDefender();
-
-
 
     // Ansonsten Weg zum Ziel suchen
     unsigned char dir = gwg->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
@@ -625,8 +608,6 @@ void nofAttacker::ReachedDestination()
         {
             // Verteidiger gefunden --> hinstellen und auf ihn warten
             SwitchStateAttackingWaitingForDefender();
-
-
         }
         else
         {
@@ -722,7 +703,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
 
 void nofAttacker::AttackedGoalDestroyed()
 {
-    attacked_goal = 0;
+    attacked_goal = NULL;
 
     bool was_waiting_for_defender = (state == STATE_ATTACKING_WAITINGFORDEFENDER);
 
@@ -736,7 +717,6 @@ void nofAttacker::AttackedGoalDestroyed()
     {
         // Block-Event ggf abmelden
         em->RemoveEvent(blocking_event);
-        blocking_event = 0;
         gwg->RoadNodeAvailable(pos);
     }
 }
@@ -768,10 +748,8 @@ bool nofAttacker::AttackFlag(nofDefender* defender)
             // evtl. Nachrücker senden
             attacked_goal->SendSuccessor(pos, radius, old_dir);
         }
-
         return true;
     }
-
     return false;
 }
 void nofAttacker::AttackFlag()
@@ -780,7 +758,6 @@ void nofAttacker::AttackFlag()
     state = STATE_ATTACKING_WALKINGTOGOAL;
     MissAttackingWalk();
 }
-
 
 void nofAttacker::CaptureBuilding()
 {
@@ -797,7 +774,6 @@ void nofAttacker::CapturingWalking()
     {
         // Nach Hause gehen
         ReturnHomeMissionAttacking();
-
         return;
     }
     assert(dynamic_cast<nobMilitary*>(attacked_goal));
@@ -832,7 +808,8 @@ void nofAttacker::CapturingWalking()
         // ins Gebäude laufen
         StartWalking(1);
         // nächsten Angreifer ggf. rufen, der auch reingehen soll
-        static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops(player);
+        assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
+        static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
     }
     else
     {
@@ -845,6 +822,7 @@ void nofAttacker::CapturingWalking()
                 nobMilitary* attackedBld = static_cast<nobMilitary*>(attacked_goal);
                 RemoveFromAttackedGoal();
                 // Evtl. neue Besatzer rufen
+                assert(attackedBld->GetPlayer() == player);
                 attackedBld->NeedOccupyingTroops(0xFF);
             }
 
@@ -867,7 +845,8 @@ void nofAttacker::CapturingWalking()
             // auweia, es wurde kein Weg mehr gefunden
 
             // Evtl. neue Besatzer rufen
-            static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops(0xFF);
+            assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
+            static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
             // Nach Hause gehen
             ReturnHomeMissionAttacking();
         }
@@ -878,6 +857,9 @@ void nofAttacker::CapturingWalking()
 
 void nofAttacker::CapturedBuildingFull()
 {
+    // No need to notify the goal
+    attacked_goal = NULL;
+
     switch(state)
     {
         default:
@@ -901,7 +883,7 @@ void nofAttacker::CapturedBuildingFull()
             // Bei allem anderen läuft man oder kämpft --> auf 0 setzen und wenn man fertig
             // mit der jetzigen Aktion ist, entsprechend handeln (nicht die Einnehmer darüber benachrichten, sonst
             // gehen die nicht rein)
-            attacked_goal = 0;
+            attacked_goal = NULL;
         } break;
     }
 }
@@ -919,7 +901,6 @@ void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_ra
 
     // Und schonmal loslaufen, da wir ja noch stehen
     MissAttackingWalk();
-
 
     // Neuen Radius speichern
     radius = new_radius;
@@ -963,7 +944,7 @@ void nofAttacker::HandleDerivedEvent(const unsigned int id)
     {
         // Figuren stoppen
         gwg->StopOnRoads(pos);
-        blocking_event = 0;
+        blocking_event = NULL;
     }
 }
 
@@ -991,10 +972,10 @@ void nofAttacker::InformTargetsAboutCancelling()
 }
 
 void nofAttacker::RemoveFromAttackedGoal()
-{
-    attacked_goal->UnlinkAggressor(this);
+    {
+        attacked_goal->UnlinkAggressor(this);
     attacked_goal = NULL;
-}
+    }
 
 /// Startet den Angriff am Landungspunkt vom Schiff
 void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id)
@@ -1068,7 +1049,6 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
 
         // Schiff Bescheid sagen
         CancelAtShip();
-
         return;
     }
 
