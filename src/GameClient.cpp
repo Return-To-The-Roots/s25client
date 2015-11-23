@@ -1292,7 +1292,7 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
     // stückeln...
     std::list<RandomEntry>* async_log = RANDOM.GetAsyncLog();
 
-    std::list<RandomEntry> part;
+    std::vector<RandomEntry> part;
 
     for (std::list<RandomEntry>::iterator it = async_log->begin(); it != async_log->end(); ++it)
     {
@@ -1300,14 +1300,12 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
 
         if (part.size() == 10)
         {
-            send_queue.push(new GameMessage_SendAsyncLog(&part, false));
+            send_queue.push(new GameMessage_SendAsyncLog(part, false));
             part.clear();
         }
     }
 
-    send_queue.push(new GameMessage_SendAsyncLog(&part, true));
-
-    part.clear();
+    send_queue.push(new GameMessage_SendAsyncLog(part, true));
 }
 
 /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag

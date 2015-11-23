@@ -850,17 +850,17 @@ class GameMessage_GetAsyncLog : public GameMessage
 /// eingehende SendAsyncLog-Nachricht
 class GameMessage_SendAsyncLog : public GameMessage
 {
-        std::list<RandomEntry> recved_log;
+        std::vector<RandomEntry> recved_log;
 
     public:
         GameMessage_SendAsyncLog() : GameMessage(NMS_SEND_ASYNC_LOG) {}
 
-        GameMessage_SendAsyncLog(std::list<RandomEntry>* async_log, bool last) : GameMessage(NMS_SEND_ASYNC_LOG, 0xFF)
+        GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last) : GameMessage(NMS_SEND_ASYNC_LOG, 0xFF)
         {
             PushBool(last);
-            PushUnsignedInt(async_log->size());
+            PushUnsignedInt(async_log.size());
 
-            for(std::list<RandomEntry>::iterator it = async_log->begin(); it != async_log->end(); ++it)
+            for(std::vector<RandomEntry>::const_iterator it = async_log.begin(); it != async_log.end(); ++it)
             {
                 PushUnsignedInt(it->counter);
                 PushSignedInt(it->max);
@@ -899,7 +899,7 @@ class GameMessage_SendAsyncLog : public GameMessage
                 recved_log.push_back(RandomEntry(counter, max, value, src_name, src_line, obj_id));
             }
 
-            GetInterface(callback)->OnNMSSendAsyncLog(*this, &recved_log, last);
+            GetInterface(callback)->OnNMSSendAsyncLog(*this, recved_log, last);
         }
 };
 

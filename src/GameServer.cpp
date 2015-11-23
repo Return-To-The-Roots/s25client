@@ -1534,14 +1534,11 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
         SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
 }
 
-void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* in, bool last)
+void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& in, bool last)
 {
     if (msg.player == async_player1)
     {
-        for (std::list<RandomEntry>::iterator it = in->begin(); it != in->end(); ++it)
-        {
-            async_player1_log.push_back(*it);
-        }
+        async_player1_log.insert(async_player1_log.end(), in.begin(), in.end());
 
         if (last)
         {
@@ -1551,10 +1548,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
     }
     else if (msg.player == async_player2)
     {
-        for (std::list<RandomEntry>::iterator it = in->begin(); it != in->end(); ++it)
-        {
-            async_player2_log.push_back(*it);
-        }
+        async_player2_log.insert(async_player2_log.end(), in.begin(), in.end());
 
         if (last)
         {
@@ -1577,8 +1571,8 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::lis
 
     LOG.lprintf("Async logs received completely.\n");
 
-    std::list<RandomEntry>::iterator it1 = async_player1_log.begin();
-    std::list<RandomEntry>::iterator it2 = async_player2_log.begin();
+    std::vector<RandomEntry>::const_iterator it1 = async_player1_log.begin();
+    std::vector<RandomEntry>::const_iterator it2 = async_player2_log.begin();
 
     // compare counters, adjust them so we're comparing the same counter numbers
     if (it1->counter > it2->counter)

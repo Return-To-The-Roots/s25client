@@ -39,8 +39,8 @@ class DebugInfo : Socket
         bool SendStackTrace();
 #endif
         bool SendReplay();
-        bool SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
-                          std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical);
+        bool SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
+                          const std::vector<RandomEntry> &a, const std::vector<RandomEntry> &b, unsigned identical);
 };
 
 #endif

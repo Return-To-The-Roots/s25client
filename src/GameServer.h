@@ -115,7 +115,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void OnNMSGameCommand(const GameMessage_GameCommand& msg);
         void OnNMSServerSpeed(const GameMessage_Server_Speed& msg);
 
-        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
+        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last);
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();
@@ -187,7 +187,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         /// AsyncLogs of two async players
         int async_player1, async_player2;
         bool async_player1_done, async_player2_done;
-        std::list<RandomEntry> async_player1_log, async_player2_log;
+        std::vector<RandomEntry> async_player1_log, async_player2_log;
 
         LANDiscoveryService lanAnnouncer;
 

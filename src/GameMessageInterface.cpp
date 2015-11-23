@@ -60,5 +60,5 @@ void GameMessageInterface::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
 void GameMessageInterface::OnNMSGGSChange(const GameMessage_GGSChange& msg) {}
 
 void GameMessageInterface::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg) {}
-void GameMessageInterface::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last) {}
+void GameMessageInterface::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last) {}
 
