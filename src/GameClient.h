@@ -178,7 +178,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
         void ExecuteGameFrame(const bool skipping = false);
         void ExecuteGameFrame_Replay();
-        void ExecuteGameFrame_Game();
+        void ExecuteNWF();
         /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
         /// dabei ist, füllt er die übergebenen IDs entsprechend aus
         void ExecuteAllGCs(const GameMessage_GameCommand& gcs);
@@ -189,6 +189,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         /// Führt notwendige Dinge für nächsten GF aus
         void NextGF();
+        /// Checks if its time for autosaving (if enabled) and does it
+        void HandleAutosave();
 
         /// Führt für alle Spieler einen Statistikschritt aus, wenn die Zeit es verlangt
         void StatisticStep();

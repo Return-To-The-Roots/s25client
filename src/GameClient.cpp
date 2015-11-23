@@ -1336,93 +1336,89 @@ bool GameClient::IsPlayerLagging()
 void GameClient::StatisticStep()
 {
     // Soll alle 750 GFs (30 Sekunden auf 'Schnell') aufgerufen werden
-    if ((framesinfo.gf_nr - 1) % 750 == 0)
+    if ((framesinfo.gf_nr - 1) % 750 > 0)
+        return;
+
+    for (unsigned int i = 0; i < players.getCount(); ++i)
     {
-        for (unsigned int i = 0; i < players.getCount(); ++i)
+        players[i].StatisticStep();
+    }
+
+    // Check objective if there is one and there are at least two players
+    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+        return;
+
+    // check winning condition
+    unsigned int max = 0, sum = 0, best = 0xFFFF, maxteam = 0, teampoints = 0, curteam = 0, bestteam = 0xFFFF;
+
+    // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
+    for (unsigned int i = 0; i < players.getCount(); ++i)
+    {
+        if(ggs.lock_teams) //in games with locked team settings check for team victory
         {
-            players[i].StatisticStep();
-        }
-
-        // Check objective if there is one and there are at least two players
-        if (ggs.game_objective != GlobalGameSettings::GO_NONE)
-        {
-            // check winning condition
-            unsigned int max = 0, sum = 0, best = 0xFFFF, maxteam = 0, teampoints = 0, curteam = 0, bestteam = 0xFFFF;
-
-            // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
-            for (unsigned int i = 0; i < players.getCount(); ++i)
+            curteam = 0;
+            teampoints = 0;
+            if(players[i].isDefeated())continue;
+            for(unsigned int j = 0; j < players.getCount(); ++j)
             {
-                if(ggs.lock_teams) //in games with locked team settings check for team victory
+                if(i != j && players[j].IsAlly(i) && !players[j].isDefeated())
                 {
-                    curteam = 0;
-                    teampoints = 0;
-                    if(players[i].isDefeated())continue;
-                    for(unsigned int j = 0; j < players.getCount(); ++j)
-                    {
-                        if(i != j && players[j].IsAlly(i) && !players[j].isDefeated())
-                        {
-                            curteam = curteam | (1 << j);
-                            teampoints += players[j].GetStatisticCurrentValue(STAT_COUNTRY);
-                        }
-                    }
-                    teampoints += players[i].GetStatisticCurrentValue(STAT_COUNTRY);
-                    curteam = curteam | (1 << i);
-                    if(teampoints > maxteam && teampoints - players[i].GetStatisticCurrentValue(STAT_COUNTRY) > 0)
-                    {
-                        maxteam = teampoints;
-                        bestteam = curteam;
-                    }
+                    curteam = curteam | (1 << j);
+                    teampoints += players[j].GetStatisticCurrentValue(STAT_COUNTRY);
                 }
-                unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
-                if (v > max)
-                {
-                    max = v;
-                    best = i;
-                }
-
-                sum += v;
             }
-
-            switch (ggs.game_objective)
+            teampoints += players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+            curteam = curteam | (1 << i);
+            if(teampoints > maxteam && teampoints - players[i].GetStatisticCurrentValue(STAT_COUNTRY) > 0)
             {
-                case GlobalGameSettings::GO_CONQUER3_4: // at least 3/4 of the land
-                    if ((max * 4 >= sum * 3) && (best != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    break;
-
-                case GlobalGameSettings::GO_TOTALDOMINATION:    // whole populated land
-                    if ((max == sum) && (best != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    if ((maxteam == sum) && (bestteam != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            // We have a winner! Objective was changed to GO_NONE to avoid further checks.
-            if (ggs.game_objective == GlobalGameSettings::GO_NONE)
-            {
-                if(maxteam <= best)
-                {
-                    gw->GetGameInterface()->GI_Winner(best);
-                }
-                else
-                {
-                    gw->GetGameInterface()->GI_TeamWinner(bestteam);
-                }
+                maxteam = teampoints;
+                bestteam = curteam;
             }
         }
+        unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+        if (v > max)
+        {
+            max = v;
+            best = i;
+        }
+
+        sum += v;
+    }
+
+    switch (ggs.game_objective)
+    {
+        case GlobalGameSettings::GO_CONQUER3_4: // at least 3/4 of the land
+            if ((max * 4 >= sum * 3) && (best != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            break;
+
+        case GlobalGameSettings::GO_TOTALDOMINATION:    // whole populated land
+            if ((max == sum) && (best != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            if ((maxteam == sum) && (bestteam != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            break;
+        default:
+            break;
+    }
+
+    // We have a winner! Objective was changed to GO_NONE to avoid further checks.
+    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+    {
+        if(maxteam <= best)
+            gw->GetGameInterface()->GI_Winner(best);
+        else
+            gw->GetGameInterface()->GI_TeamWinner(bestteam);
     }
 }
 
@@ -1443,47 +1439,27 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         return;
     }
 
-    // Wurde der nächsten Game-Frame zeitlich erreicht (bzw. wenn nur Frames übersprungen werden sollen,
-    // brauchen wir nicht zu warten)?
+    // Is it time for the next GF? If we are skipping, it is always time for the next GF
     if(skipping || skiptogf > framesinfo.gf_nr || (currentTime - framesinfo.lastTime) > framesinfo.gf_length)
     {
-        //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, RANDOM.GetCurrentRandomValue());
         if(replay_mode)
         {
+            // In replay mode we have all commands in  the file -> Execute them
             // Nächster Game-Frame erreicht
             ++framesinfo.gf_nr;
-
             ExecuteGameFrame_Replay();
-
-            // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frameTime = std::min(currentTime - framesinfo.lastTime, GetGFLength() - 1);
-
-            // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currentTime;
-        }
-        // Ist jetzt auch ein NWF dran?
-        else if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
+        }else if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
         {
-            // entsprechenden NC für diesen NWF ausführen
-            // Beim Replay geht das etwas anderes, da werden die NFCs aus der Datei gelesen
+            // Time for a NWF -> Execute those commands
 
-            // Schauen wir mal ob alles angekommen ist
-            // Laggt einer oder nicht?
-            if(!IsPlayerLagging())
-            {
-                // Kein Lag, normal weitermachen
+            // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest
+            // -> Avoids problems like autosaving multiple times as the current GF is not advanced in this case
+            if(IsPlayerLagging())
+                return;
 
-                // Diesen Zeitpunkt merken
-                framesinfo.lastTime = currentTime;
-                // Nächster Game-Frame erreicht
-                ++framesinfo.gf_nr;
-
-                ExecuteGameFrame_Game();
-
-                // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-                framesinfo.frameTime = currentTime - framesinfo.lastTime;
-
-            } // if(!is_lagging)
+            // Nächster Game-Frame erreicht
+            ++framesinfo.gf_nr;
+            ExecuteNWF();
 
             if(framesinfo.gf_length_new != framesinfo.gf_length)
             {
@@ -1493,62 +1469,59 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 framesinfo.gfNrServer = framesinfo.gfNrServer - oldnwf + framesinfo.nwf_length;
 
                 LOG.lprintf("Client: %d/%d: Speed changed from %d to %d\n", framesinfo.gfNrServer, framesinfo.gf_nr, oldnwf, framesinfo.nwf_length);
-                //LOG.lprintf("Client: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.nr_srv);
             }
-        } // if(framesinfo.nr % framesinfo.nwf_length == 0)
-        else if (framesinfo.gf_nr < framesinfo.gfNrServer)
+        }else if (framesinfo.gf_nr < framesinfo.gfNrServer)
         {
-            // Nächster GameFrame zwischen framesinfos
+            // No replay and no NWF -> Normal GF, just continue the simulation
 
-            // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currentTime;
             // Nächster Game-Frame erreicht
             ++framesinfo.gf_nr;
-
-            // Frame ausführen
             NextGF();
-
-            // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frameTime = currentTime - framesinfo.lastTime;
         }
 
-        // Auto-Speichern ggf.
+        // Store this timestamp (NOT when lagging!)
+        framesinfo.lastTime = currentTime;
+        // Reset frameTime
+        framesinfo.frameTime = 0;
 
-        // Aktiviert?
-        if(SETTINGS.interface.autosave_interval && !replay_mode)
-        {
-            // Alle .... GF
-            if(framesinfo.gf_nr % SETTINGS.interface.autosave_interval == 0)
-            {
-                std::string tmp = GetFilePath(FILE_PATHS[85]);
-
-                if (this->mapinfo.title.length())
-                {
-                    tmp += this->mapinfo.title;
-                    tmp += " (";
-                    tmp += _("Auto-Save");
-                    tmp += ").sav";
-                }
-                else
-                {
-                    tmp += _("Auto-Save");
-                    tmp += ".sav";
-                }
-
-                WriteSaveHeader(tmp);
-            }
-        }
+        HandleAutosave();
 
         // GF-Ende im Replay aktualisieren
         if(!replay_mode)
             replayinfo.replay.UpdateLastGF(framesinfo.gf_nr);
-
-    } // if(skipping || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
-    else
+    }else
     {
-        // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
+        // Next GF not yet reached, just update the time in the current one for drawing
         framesinfo.frameTime = currentTime - framesinfo.lastTime;
         assert(framesinfo.frameTime < framesinfo.gf_length);
+    }
+}
+
+void GameClient::HandleAutosave()
+{
+    // If inactive or during replay -> no autosave
+    if(!SETTINGS.interface.autosave_interval  || replay_mode)
+        return;
+
+    // Alle .... GF
+    if(framesinfo.gf_nr % SETTINGS.interface.autosave_interval == 0)
+    {
+        std::string tmp = GetFilePath(FILE_PATHS[85]);
+
+        if (this->mapinfo.title.length())
+        {
+            tmp += this->mapinfo.title;
+            tmp += " (";
+            tmp += _("Auto-Save");
+            tmp += ").sav";
+        }
+        else
+        {
+            tmp += _("Auto-Save");
+            tmp += ".sav";
+        }
+
+        WriteSaveHeader(tmp);
     }
 }
 
@@ -1577,9 +1550,7 @@ void GameClient::NextGF()
         human_ai->RunGF(framesinfo.gf_nr, (framesinfo.gf_nr % framesinfo.nwf_length == 0));
 
         const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
-
         gameCommands_.insert(gameCommands_.end(), ai_gcs.begin(), ai_gcs.end());
-
         human_ai->FetchGameCommands();
     }
     

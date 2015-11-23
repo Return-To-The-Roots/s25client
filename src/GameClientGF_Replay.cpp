@@ -33,70 +33,58 @@ void GameClient::ExecuteGameFrame_Replay()
     randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
 
     // Commands alle aus der Datei lesen
-    while(true)
+    while(replayinfo.next_gf == framesinfo.gf_nr) // Schon an der Zeit?
     {
-        // Schon an der Zeit?
-        if(replayinfo.next_gf == framesinfo.gf_nr)
+        // RC-Type auslesen
+        Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
+
+        // Chat Command?
+        if(rc == Replay::RC_CHAT)
         {
-            // RC-Type auslesen
-            Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
+            unsigned char player, dest;
+            std::string message;
+            replayinfo.replay.ReadChatCommand(&player, &dest, message);
 
-            // Chat Command?
-            if(rc == Replay::RC_CHAT)
+            // Nächsten Zeitpunkt lesen
+            replayinfo.replay.ReadGF(&replayinfo.next_gf);
+
+            if(ci)
+                ci->CI_Chat(player, ChatDestination(dest), message);
+        }
+        // Game Command?
+        else if(rc == Replay::RC_GAME)
+        {
+            std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
+            // Nächsten Zeitpunkt lesen
+            replayinfo.replay.ReadGF(&replayinfo.next_gf);
+            GameMessage_GameCommand msg(&gcData.front(), gcData.size());
+
+            // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
+            ExecuteAllGCs(msg);
+
+            // Replay ist NSYNC äh ASYNC!
+            if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
             {
-                unsigned char player, dest;
-                std::string message;
-                replayinfo.replay.ReadChatCommand(&player, &dest, message);
-
-                // Nächsten Zeitpunkt lesen
-                replayinfo.replay.ReadGF(&replayinfo.next_gf);
-
-                /*      char from[256];
-                        snprintf(from, 256, _("<%s> "), players[player]->name.GetStr());*/
-
-                if(ci)
-                    ci->CI_Chat(player, ChatDestination(dest), message);
-            }
-            // Game Command?
-            else if(rc == Replay::RC_GAME)
-            {
-                std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
-                // Nächsten Zeitpunkt lesen
-                replayinfo.replay.ReadGF(&replayinfo.next_gf);
-                GameMessage_GameCommand msg(&gcData.front(), gcData.size());
-
-                // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
-                ExecuteAllGCs(msg);
-
-                // Replay ist NSYNC äh ASYNC!
-                if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
+                if(replayinfo.async == 0)
                 {
-                    if(replayinfo.async == 0)
-                    {
-                        // Meldung mit GF erzeugen
-                        char text[256];
-                        sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.gf_nr);
+                    // Meldung mit GF erzeugen
+                    char text[256];
+                    sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.gf_nr);
 
-                        // Messenger im Game (prints to console too)
-                        if(ci && GLOBALVARS.ingame)
-                            ci->CI_ReplayAsync(text);
+                    // Messenger im Game (prints to console too)
+                    if(ci && GLOBALVARS.ingame)
+                        ci->CI_ReplayAsync(text);
 
-                        // pausieren
-                        framesinfo.isPaused = true;
-                    }
-
-                    replayinfo.async++;
+                    // pausieren
+                    framesinfo.isPaused = true;
                 }
 
-                // resync random generator, so replay "can't" be async.
-                // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
-                //RANDOM.ReplaySet(msg.checksum);
+                replayinfo.async++;
             }
-        }
-        else
-        {
-            // noch nichtan der Reihe, dann wieder raus
-            break;
+
+            // resync random generator, so replay "can't" be async.
+            // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
+            //RANDOM.ReplaySet(msg.checksum);
         }
     }
 

@@ -22,7 +22,7 @@
 #include "Random.h"
 #include "GameMessages.h"
 
-void GameClient::ExecuteGameFrame_Game()
+void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
