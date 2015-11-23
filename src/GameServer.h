@@ -88,6 +88,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void KickPlayer(NS_PlayerKicked npk);
 
         void ClientWatchDog(void);
+
         void WaitForClients(void);
         void FillPlayerQueues(void);
 
@@ -116,6 +117,8 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
 
+        /// Handles advancing of GFs, actions of AI and potentially the NWF
+        void ExecuteGameFrame();
         void ExecuteNWF(const unsigned currentTime);
 
     private:

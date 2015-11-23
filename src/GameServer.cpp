@@ -432,6 +432,8 @@ void GameServer::Run(void)
     // auf neue Clients warten
     if(status == SS_CONFIG)
         WaitForClients();
+    else if(status == SS_GAME)
+        ExecuteGameFrame();
 
     // post zustellen
     FillPlayerQueues();
@@ -947,9 +949,11 @@ void GameServer::ClientWatchDog()
         // auf timeout prüfen
         player.doTimeout();
     }
+}
 
-    if(status != SS_GAME)
-        return;
+void GameServer::ExecuteGameFrame()
+{
+    assert(status == SS_GAME);
 
     if(framesinfo.isPaused)
         return;
