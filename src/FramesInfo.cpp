@@ -41,6 +41,7 @@ FramesInfoClient::FramesInfoClient()
 
 void FramesInfoClient::Clear()
 {
+    FramesInfo::Clear();
     gfNrServer = 0;
     pause_gf = 0;
 }
