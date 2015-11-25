@@ -1729,8 +1729,7 @@ void GameWorldGame::SaveFOWNode(const MapPoint pt, const unsigned player)
     // Besitzverhältnisse speichern, damit auch die Grenzsteine im FoW gezeichnet werden können
     fow.owner = GetNode(pt).owner;
     // Grenzsteine merken
-    for(unsigned i = 0; i < 4; ++i)
-        fow.boundary_stones[i] = GetNode(pt).boundary_stones[i];
+    fow.boundary_stones = GetNode(pt).boundary_stones;
 }
 
 /// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)
