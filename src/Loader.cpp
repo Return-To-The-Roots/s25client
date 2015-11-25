@@ -145,7 +145,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 
         for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-            if(!LoadFile( i->c_str(), GetPaletteN("pal5"), isOriginal ) )
+            if(!LoadFile( *i, GetPaletteN("pal5"), isOriginal ) )
                 return false;
         }
         LOG.lprintf(_("finished in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
@@ -1176,7 +1176,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 return false;
             }
 
-            out->setName(itFile->c_str());
+            out->setName(*itFile);
             out->setNx(nx);
             out->setNy(ny);
 
@@ -1187,6 +1187,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             {
                 case libsiedler2::BOBTYPE_BITMAP_RLE:
                 case libsiedler2::BOBTYPE_BITMAP_SHADOW:
+                case libsiedler2::BOBTYPE_BITMAP_RAW:
                 {
                     out->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
                 } break;
@@ -1194,8 +1195,6 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 {
                     dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
                 } break;
-                case libsiedler2::BOBTYPE_BITMAP_RAW:
-                    break; // Nothing?
                 default:
                     throw std::logic_error("Invalid Bitmap type");
             }

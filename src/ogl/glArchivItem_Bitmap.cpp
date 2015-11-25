@@ -209,6 +209,9 @@ void glArchivItem_Bitmap::setFilter(unsigned int filter)
  */
 void glArchivItem_Bitmap::GenerateTexture(void)
 {
+    if(tex_width_ == 0 || tex_height_ == 0)
+        return;
+
     texture = VIDEODRIVER.GenerateTexture();
 
     if(!palette_)
