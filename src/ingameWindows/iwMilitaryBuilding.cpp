@@ -124,10 +124,17 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 
         i = 0;
         for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
+            int hitpoints = static_cast<int>((*it)->GetHitpoints());
+            int maxHitpoints = static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
+            unsigned int hitpointsColour;
+            if (hitpoints < maxHitpoints)
+                hitpointsColour = COLOR_RED;
+            else
+                hitpointsColour = COLOR_YELLOW;
             std::stringstream hitpointsText;
-            hitpointsText << static_cast<int>((*it)->GetHitpoints()) << "/" << static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
+            hitpointsText << hitpoints;
             unsigned short x = leftXCoordinate + 12 + i * 22;
-            NormalFont->Draw(x, GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            NormalFont->Draw(x, GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, hitpointsColour);
         }
     }
 }
