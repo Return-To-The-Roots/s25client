@@ -17,6 +17,7 @@
 
 #include "defines.h"
 #include "FramesInfo.h"
+#include "helpers/mathFuncs.h"
 
 FramesInfo::FramesInfo()
 {
@@ -36,11 +37,11 @@ void FramesInfo::Clear()
 
 void FramesInfo::ApplyNewGFLength()
 {
+    // Current length of a NWF in ms
+    unsigned nwfLenInMs = gf_length * nwf_length;
     gf_length = gf_length_new;
-    if(gf_length == 1)
-        nwf_length = 50;
-    else
-        nwf_length = 250 / gf_length;
+    // Time for one NWF should stay the same
+    nwf_length = helpers::roundedDiv(nwfLenInMs, gf_length);
 }
 
 FramesInfoClient::FramesInfoClient()
