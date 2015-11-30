@@ -127,10 +127,15 @@ void iwMilitaryBuilding::Msg_PaintAfter()
             int hitpoints = static_cast<int>((*it)->GetHitpoints());
             int maxHitpoints = static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
             unsigned int hitpointsColour;
-            if (hitpoints < maxHitpoints)
+            if (hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;
             else
-                hitpointsColour = COLOR_YELLOW;
+            {
+                if (hitpoints == maxHitpoints)
+                    hitpointsColour = COLOR_GREEN;
+                else
+                    hitpointsColour = COLOR_ORANGE;
+            }  
             std::stringstream hitpointsText;
             hitpointsText << hitpoints;
             unsigned short x = leftXCoordinate + 12 + i * 22;
