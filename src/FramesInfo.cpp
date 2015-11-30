@@ -28,7 +28,8 @@ void FramesInfo::Clear()
 {
     gf_nr = 0;
     gf_length = 0;
-    gf_length_new = 0;
+    gfLenghtNew = 0;
+    gfLenghtNew2 = 0;
     nwf_length = 0;
     frameTime = 0;
     lastTime = 0;
@@ -39,7 +40,7 @@ void FramesInfo::ApplyNewGFLength()
 {
     // Current length of a NWF in ms
     unsigned nwfLenInMs = gf_length * nwf_length;
-    gf_length = gf_length_new;
+    gf_length = gfLenghtNew;
     // Time for one NWF should stay the same
     nwf_length = helpers::roundedDiv(nwfLenInMs, gf_length);
 }

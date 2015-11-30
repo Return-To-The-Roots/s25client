@@ -119,7 +119,14 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();
+
+        void RunGF( bool isNWF );
+
         void ExecuteNWF(const unsigned currentTime);
+
+        void CheckAndKickLaggingPlayer(const unsigned char playerIdx);
+
+        unsigned char GetLaggingPlayer() const;
 
     private:
         enum ServerState

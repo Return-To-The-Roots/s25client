@@ -33,7 +33,6 @@
 #include "FOWObjects.h"
 
 #include "ogl/glSmartBitmap.h"
-#include "GameServer.h"
 #include "gameData/TerrainData.h"
 
 ///////////////////////////////////////////////////////////////////////////////

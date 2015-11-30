@@ -32,7 +32,9 @@ public:
     /// Lenght of one GF in ms (~ 1/speed of the game)
     unsigned gf_length;
     /// New length of a GF (applied on next NWF)
-    unsigned gf_length_new;
+    unsigned gfLenghtNew;
+    /// New length of a GF (applied on second next NWF)
+    unsigned gfLenghtNew2;
     /// Length of a NWF (network frame) in GFs
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )

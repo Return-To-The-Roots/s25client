@@ -24,7 +24,6 @@
 #include "nodeObjs/noFlag.h"
 #include "GameClientPlayer.h"
 
-#include "GameServer.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobBaseWarehouse.h"

@@ -336,7 +336,7 @@ void GameClient::StartGame(const unsigned int random_init)
     em = new EventManager();
     GameObject::SetPointers(gw, em);
     for(unsigned i = 0; i < players.getCount(); ++i)
-        dynamic_cast<GameClientPlayer*>(players.getElement(i))->SetGameWorldPointer(gw);
+        players[i].SetGameWorldPointer(gw);
 
     if(ci)
         ci->CI_GameStarted(gw);
@@ -432,11 +432,9 @@ void GameClient::ExitGame()
 {
     GameObject::SetPointers(NULL, NULL);
     // Spielwelt zerstören
-    delete gw;
-    delete em;
-    gw = 0;
-    em = 0;
-
+    deletePtr(human_ai);
+    deletePtr(gw);
+    deletePtr(em);
     deletePtr(human_ai);
     players.clear();
 }
@@ -1236,14 +1234,30 @@ void GameClient::DecreaseReplaySpeed()
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 {
-    framesinfo.gf_length_new = msg.gf_length;
-
-    framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
+    // Emulate a push of the new gf length
+    if(!framesinfo.gfLenghtNew)
+        framesinfo.gfLenghtNew = msg.gf_length;
+    else
+    {
+        assert(framesinfo.gfLenghtNew2 == 0);
+        framesinfo.gfLenghtNew2 = msg.gf_length;
+    }
 
     if(msg.first)
     {
+        if(msg.nr % framesinfo.nwf_length == 0)
+            framesinfo.gfNrServer = msg.nr; // If the next frame is a NWF, we allow only this one
+        else
+        {
+            framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
+            framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
+        }
         state = CS_GAME; // zu gamestate wechseln
         RealStart();
+    }else
+    {
+        assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
+        framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
     }
 
     //LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
@@ -1446,37 +1460,52 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             // Nächster Game-Frame erreicht
             ++framesinfo.gf_nr;
             ExecuteGameFrame_Replay();
-        }else if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
+        }else
         {
-            // Time for a NWF -> Execute those commands
-
-            // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest
-            // -> Avoids problems like autosaving multiple times as the current GF is not advanced in this case
-            if(IsPlayerLagging())
-                return;
-
-            // Nächster Game-Frame erreicht
-            ++framesinfo.gf_nr;
-            ExecuteNWF();
-
-            if(framesinfo.gf_length_new != framesinfo.gf_length)
+            // Is it time for a NWF, handle that first
+            if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
             {
-                int oldnwf = framesinfo.nwf_length;
-                framesinfo.ApplyNewGFLength();
+                // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
+                // -> Don't execute GF, don't autosave etc.
+                if(IsPlayerLagging())
+                    return;
 
-                framesinfo.gfNrServer = framesinfo.gfNrServer - oldnwf + framesinfo.nwf_length;
+                // Same for the server
+                if(framesinfo.gfNrServer < framesinfo.gf_nr)
+                    return;
+                assert(framesinfo.gfNrServer <= framesinfo.gf_nr + framesinfo.nwf_length);
 
-                LOG.lprintf("Client: %d/%d: Speed changed from %d to %d\n", framesinfo.gfNrServer, framesinfo.gf_nr, oldnwf, framesinfo.nwf_length);
+                ExecuteNWF();
+
+                assert(framesinfo.gfLenghtNew != 0);
+                if(framesinfo.gfLenghtNew != framesinfo.gf_length)
+                {
+                    unsigned oldGfLen = framesinfo.gf_length;
+                    int oldNwfLen = framesinfo.nwf_length;
+                    framesinfo.ApplyNewGFLength();
+
+                    // Adjust next confirmation for next NWF (if we have it already)
+                    if(framesinfo.gfNrServer != framesinfo.gf_nr)
+                    {
+                        assert(framesinfo.gfNrServer == framesinfo.gf_nr + oldNwfLen);
+                        framesinfo.gfNrServer = framesinfo.gfNrServer - oldNwfLen + framesinfo.nwf_length;
+                        // Make it a NWF (mostly for validation and consistency)
+                        framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length;
+                    }
+
+                    LOG.lprintf("Client: %u/%u: Speed changed from %u to %u (NWF: %u to %u)\n", framesinfo.gfNrServer, framesinfo.gf_nr, oldGfLen, framesinfo.gf_length, oldNwfLen, framesinfo.nwf_length);
+                }
+                // "pop" the length
+                framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
+                framesinfo.gfLenghtNew2 = 0;
             }
-        }else if (framesinfo.gf_nr < framesinfo.gfNrServer)
-        {
-            // No replay and no NWF -> Normal GF, just continue the simulation
 
-            // Nächster Game-Frame erreicht
+            // continue the simulation
             ++framesinfo.gf_nr;
             NextGF();
         }
 
+        assert(replay_mode || framesinfo.gf_nr <= framesinfo.gfNrServer + framesinfo.nwf_length);
         // Store this timestamp (NOT when lagging!)
         framesinfo.lastTime = currentTime;
         // Reset frameTime
@@ -1534,10 +1563,9 @@ void GameClient::NextGF()
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
         if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
+        {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
             players[i].TestForEmergencyProgramm();
-        if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
-        {
             // Bündnisse auf Aktualität überprüfen
             players[i].TestPacts();
         }
