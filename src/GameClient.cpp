@@ -289,6 +289,7 @@ void GameClient::Stop()
     if (IsHost())
         GAMESERVER.Stop();
 
+    framesinfo.Clear();
     clientconfig.Clear();
     mapinfo.Clear();
     for(std::list<PostMsg*>::iterator it = postMessages.begin(); it != postMessages.end(); ++it)
@@ -1457,8 +1458,6 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         if(replay_mode)
         {
             // In replay mode we have all commands in  the file -> Execute them
-            // Nächster Game-Frame erreicht
-            ++framesinfo.gf_nr;
             ExecuteGameFrame_Replay();
         }else
         {
@@ -1500,8 +1499,6 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 framesinfo.gfLenghtNew2 = 0;
             }
 
-            // continue the simulation
-            ++framesinfo.gf_nr;
             NextGF();
         }
 
@@ -1555,6 +1552,7 @@ void GameClient::HandleAutosave()
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF()
 {
+    ++framesinfo.gf_nr;
     // Statistiken aktualisieren
     StatisticStep();
     //  EventManager Bescheid sagen
