@@ -174,7 +174,7 @@ public:
         int GetNeedForShip(unsigned ships_coming) const;
 
         /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-        void ReceiveGoodsFromShip(const std::list<noFigure*>& figures, std::list<Ware*>& wares);
+        void ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares);
 
         struct SeaAttackerBuilding
         {

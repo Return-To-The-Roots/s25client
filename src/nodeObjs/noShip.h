@@ -135,6 +135,11 @@ class noShip : public noMovable
         /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
         void StartDrivingToHarborPlace();
 
+        /// Looks for a harbour to unload the goods (e.g if old one was destroyed)
+        void FindUnloadGoal(bool isExpedition);
+        /// Aborts a sea attack (in case harbor was not found anymore)
+        void AbortSeaAttack();
+
     public:
 
         /// Konstruktor
@@ -224,11 +229,6 @@ class noShip : public noMovable
         void HarborDestroyed(nobHarborBuilding* hb);
         /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
         void NewHarborBuilt(nobHarborBuilding* hb);
-
-
-
-
-
 };
 
 

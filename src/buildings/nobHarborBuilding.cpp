@@ -111,12 +111,12 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 void nobHarborBuilding::Destroy()
 {
     em->RemoveEvent(orderware_ev);
-    players->getElement(player)->HarborDestroyed(this);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GameClientPlayer& owner = gwg->GetPlayer(player);
     owner.RemoveWarehouse(this);
     owner.RemoveHarbor(this);
+    owner.HarborDestroyed(this);
 
     // Baumaterialien in der Inventur verbuchen
     if(expedition.active)
@@ -562,10 +562,11 @@ void nobHarborBuilding::OrderExpeditionWares()
 /// Eine bestellte Ware konnte doch nicht kommen
 void nobHarborBuilding::WareLost(Ware* ware)
 {
+    assert(!IsBeingDestroyedNow());
     // ggf. neue Waren für Expedition bestellen
     if(expedition.active && (ware->type == GD_BOARDS || ware->type == GD_STONES))
         OrderExpeditionWares();
-    RemoveDependentWare(ware);
+    nobBaseWarehouse::WareLost(ware);
 }
 
 /// Schiff ist angekommen
@@ -1070,7 +1071,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
 }
 
 /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures, std::list<Ware*>& wares)
+void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares)
 {
     // Menschen zur Ausgehliste hinzufügen
     for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
@@ -1130,6 +1131,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
             }
         }
     }
+    figures.clear();
 
     // Waren zur Warteliste hinzufügen
     for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
@@ -1169,6 +1171,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(const std::list<noFigure*>& figures
             }
         }
     }
+    wares.clear();
 }
 
 /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
