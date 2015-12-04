@@ -721,20 +721,7 @@ void noShip::HandleState_ExpeditionDriving()
         } break;
         case HARBOR_DOESNT_EXIST: //should only happen when an expedition is cancelled and the home harbor no longer exists
         {
-            // Kein Heimathafen mehr?
-            // Das Schiff muss einen Notlandeplatz ansteuern
-            if(players->getElement(player)->FindHarborForUnloading(this, pos, &goal_harbor_id, &route_, NULL))
-            {
-                curRouteIdx = 0;
-                home_harbor = goal_harbor_id; //set new home=goal so we will actually unload once we reach the goal
-                HandleState_ExpeditionDriving();
-            }
-            else
-            {
-                // Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
-                // wenn es einen neuen Hafen gibt
-                lost = true;
-            }
+            FindUnloadGoal(true);
         } break;
     }
 }
@@ -781,13 +768,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
         } break;
         case HARBOR_DOESNT_EXIST:
         {
-            // Neuen Hafen suchen
-            if(players->getElement(player)->FindHarborForUnloading(this, pos, &goal_harbor_id, &route_, NULL))
-                HandleState_TransportDriving();
-            else
-                // Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
-                // wenn es einen neuen Hafen gibt
-                lost = true;
+            FindUnloadGoal(false);
 
         } break;
     }
@@ -1006,6 +987,7 @@ void noShip::FindUnloadGoal(bool isExpedition)
     if(players->getElement(player)->FindHarborForUnloading(this, pos, &goal_harbor_id, &route_, NULL))
     {
         curRouteIdx = 0;
+        home_harbor = goal_harbor_id; // To allow unloading here
         if(isExpedition)
             HandleState_ExpeditionDriving();
         else
@@ -1168,27 +1150,26 @@ void noShip::ContinueExplorationExpedition()
 /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
 void noShip::NewHarborBuilt(nobHarborBuilding* hb)
 {
-    if(lost)
+    if(!lost)
+        return;
+
+    // Liegt der Hafen auch am Meer von diesem Schiff?
+    if(!gwg->IsAtThisSea(hb->GetHarborPosID(), seaId_))
+        return;
+    //LOG.lprintf("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
+    home_harbor = goal_harbor_id = hb->GetHarborPosID();
+    lost = false;
+
+    StartDrivingToHarborPlace();
+
+    switch(state)
     {
-        // Liegt der Hafen auch am Meer von diesem Schiff?
-        if(!gwg->IsAtThisSea(hb->GetHarborPosID(), seaId_))
-            return;
-        //LOG.lprintf("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
-        home_harbor = goal_harbor_id = hb->GetHarborPosID();
-        lost = false;
-
-        StartDrivingToHarborPlace();
-
-        switch(state)
+        case STATE_EXPLORATIONEXPEDITION_DRIVING:
+        case STATE_EXPEDITION_DRIVING:
+        case STATE_TRANSPORT_DRIVING:
         {
-            case STATE_EXPLORATIONEXPEDITION_DRIVING:
-            case STATE_EXPEDITION_DRIVING:
-            case STATE_TRANSPORT_DRIVING:
-            {
-                Driven();
-            } break;
-            default: assert(false); // Das darf eigentlich nicht passieren
-        }
-
+            Driven();
+        } break;
+        default: assert(false); // Das darf eigentlich nicht passieren
     }
 }
