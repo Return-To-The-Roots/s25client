@@ -258,7 +258,6 @@ void noShip::DrawDrivingWithWares(int& x, int& y)
     LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
 }
 
-
 void noShip::HandleEvent(const unsigned int id)
 {
     current_ev = NULL;
@@ -473,50 +472,6 @@ void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>&
     StartDriving(route[0]);
 }
 
-void noShip::HandleState_GoToHarbor()
-{
-    // Hafen schon zerstört?
-    if(goal_harbor_id == 0)
-    {
-        StartIdling();
-    }
-    else
-    {
-        Result res = DriveToHarbour();
-        switch(res)
-        {
-            default: return;
-            case GOAL_REACHED:
-            {
-
-                MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
-                // Erstmal nichts machen und idlen
-                StartIdling();
-                // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
-                noBase* hb = goal.isValid() ? gwg->GetNO(goal) : NULL;
-                if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
-                    static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
-            } break;
-            case NO_ROUTE_FOUND:
-            {
-                MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
-                assert(goal.isValid());
-                // Dem Hafen Bescheid sagen
-                gwg->GetSpecObj<nobHarborBuilding>(goal)->ShipLost(this);
-                // Ziel aktualisieren
-                goal_harbor_id = 0;
-                // Nichts machen und idlen
-                StartIdling();
-            } break;
-            case HARBOR_DOESNT_EXIST:
-            {
-                // Nichts machen und idlen
-                StartIdling();
-            } break;
-        }
-    }
-}
-
 /// Startet eine Expedition
 void noShip::StartExpedition()
 {
@@ -679,6 +634,49 @@ void noShip::FoundColony()
         GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
 }
 
+void noShip::HandleState_GoToHarbor()
+{
+    // Hafen schon zerstört?
+    if(goal_harbor_id == 0)
+    {
+        StartIdling();
+    }
+    else
+    {
+        Result res = DriveToHarbour();
+        switch(res)
+        {
+        default: return;
+        case GOAL_REACHED:
+            {
+
+                MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
+                // Erstmal nichts machen und idlen
+                StartIdling();
+                // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
+                noBase* hb = goal.isValid() ? gwg->GetNO(goal) : NULL;
+                if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+                    static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
+            } break;
+        case NO_ROUTE_FOUND:
+            {
+                MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
+                assert(goal.isValid());
+                // Dem Hafen Bescheid sagen
+                gwg->GetSpecObj<nobHarborBuilding>(goal)->ShipLost(this);
+                // Ziel aktualisieren
+                goal_harbor_id = 0;
+                // Nichts machen und idlen
+                StartIdling();
+            } break;
+        case HARBOR_DOESNT_EXIST:
+            {
+                // Nichts machen und idlen
+                StartIdling();
+            } break;
+        }
+    }
+}
 
 void noShip::HandleState_ExpeditionDriving()
 {
@@ -819,6 +817,56 @@ void noShip::HandleState_TransportDriving()
     }
 }
 
+void noShip::HandleState_SeaAttackDriving()
+{
+    Result res = DriveToHarbourPlace();
+    switch(res)
+    {
+    default: return;
+    case GOAL_REACHED:
+        {
+            // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander
+            // raus zum Ziel
+            state = STATE_SEAATTACK_WAITING;
+            current_ev = em->AddEvent(this, 15, 1);
+            remaining_sea_attackers = figures.size();
+
+        } break;
+    case NO_ROUTE_FOUND:
+        {
+            // Nichts machen und idlen
+            StartIdling();
+        } break;
+    case HARBOR_DOESNT_EXIST:
+        AbortSeaAttack();
+        break;
+    }
+}
+
+void noShip::HandleState_SeaAttackReturn()
+{
+    Result res = DriveToHarbour();
+    switch(res)
+    {
+    default: return;
+    case GOAL_REACHED:
+        {
+            // Entladen
+            state = STATE_SEAATTACK_UNLOADING;
+            this->current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
+        } break;
+    case HARBOR_DOESNT_EXIST:
+        {
+            AbortSeaAttack();
+        } break;
+    case NO_ROUTE_FOUND:
+        {
+            // Nichts machen und idlen
+            StartIdling();
+        } break;
+    }
+}
+
 /// Gibt zurück, ob das Schiff jetzt in der Lage wäre, eine Kolonie zu gründen
 bool noShip::IsAbleToFoundColony() const
 {
@@ -879,56 +927,6 @@ void noShip::StartSeaAttack()
     state = STATE_SEAATTACK_DRIVINGTODESTINATION;
     StartDrivingToHarborPlace();
     HandleState_SeaAttackDriving();
-}
-
-void noShip::HandleState_SeaAttackDriving()
-{
-    Result res = DriveToHarbourPlace();
-    switch(res)
-    {
-        default: return;
-        case GOAL_REACHED:
-        {
-            // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander
-            // raus zum Ziel
-            state = STATE_SEAATTACK_WAITING;
-            current_ev = em->AddEvent(this, 15, 1);
-            remaining_sea_attackers = figures.size();
-
-        } break;
-        case NO_ROUTE_FOUND:
-        {
-            // Nichts machen und idlen
-            StartIdling();
-        } break;
-        case HARBOR_DOESNT_EXIST:
-            AbortSeaAttack();
-            break;
-    }
-}
-
-void noShip::HandleState_SeaAttackReturn()
-{
-    Result res = DriveToHarbour();
-    switch(res)
-    {
-        default: return;
-        case GOAL_REACHED:
-        {
-            // Entladen
-            state = STATE_SEAATTACK_UNLOADING;
-            this->current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
-        } break;
-        case HARBOR_DOESNT_EXIST:
-        {
-            AbortSeaAttack();
-        } break;
-        case NO_ROUTE_FOUND:
-        {
-            // Nichts machen und idlen
-            StartIdling();
-        } break;
-    }
 }
 
 void noShip::AbortSeaAttack()
