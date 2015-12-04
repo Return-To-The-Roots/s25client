@@ -78,22 +78,6 @@ void noMovable::Walk()
 	{
 		pos = gwg->GetNeighbour(pos, curMoveDir);
 	}
-/*
-    int tx = x, ty = y;
-    
-            inline void GetPointA(MapPoint& pos, unsigned dir) const {x = GetXA(pos, dir); y = GetYA(pos, dir);}
-    
-    x = gwg->GetXA(t, dir);
-    y = gwg->GetYA(t, dir);
-
-
-    // Auf der jeweiligen Stelle mich suchen und dort entfernen...
-    if(dir != 1 && dir != 2)
-        gwg->RemoveFigure(this, tx, ty);
-
-    // und an der anderen Stelle wieder hinzufgen
-    if(dir != 1 && dir != 2)
-        gwg->AddFigure(this, pos);*/
 }
 
 void noMovable::FaceDir(unsigned char newDir)
