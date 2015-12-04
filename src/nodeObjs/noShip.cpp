@@ -123,8 +123,6 @@ void noShip::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedChar(route_[i]);
     sgd.PushObjectContainer(figures, false);
     sgd.PushObjectContainer(wares, true);
-
-
 }
 
 noShip::noShip(SerializedGameData& sgd, const unsigned obj_id) :
@@ -233,6 +231,7 @@ void noShip::Draw(int x, int y)
         Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
 
 }
+
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
 void noShip::DrawDriving(int& x, int& y)
 {
@@ -262,173 +261,158 @@ void noShip::DrawDrivingWithWares(int& x, int& y)
 
 void noShip::HandleEvent(const unsigned int id)
 {
-    current_ev = 0;
+    current_ev = NULL;
 
-    switch(id)
+    if(id == 0)
     {
-            // Laufevent
-        case 0:
+        // Move event
+        // neue Position einnehmen
+        Walk();
+        // entscheiden, was als nächstes zu tun ist
+        Driven();
+    }else
+    {
+        switch(state)
         {
-            // neue Position einnehmen
-            Walk();
+        default: break;
+        case STATE_EXPEDITION_LOADING:
+            // Schiff ist nun bereit und Expedition kann beginnen
+            state = STATE_EXPEDITION_WAITING;
 
-            // entscheiden, was als nächstes zu tun ist
-            Driven();
-        } break;
-        default:
+            // Spieler benachrichtigen
+            if(GAMECLIENT.GetPlayerID() == this->player)
+                GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
+
+            // KI Event senden
+            GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
+            break;
+        case STATE_EXPLORATIONEXPEDITION_LOADING:
+            // Schiff ist nun bereit und Expedition kann beginnen
+            ContinueExplorationExpedition();
+            break;
+        case STATE_EXPLORATIONEXPEDITION_WAITING:
+            // Schiff ist nun bereit und Expedition kann beginnen
+            ContinueExplorationExpedition();
+            break;
+        case STATE_EXPEDITION_UNLOADING:
         {
-            switch(state)
+            // Hafen herausfinden
+            MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
+            noBase* hb = gwg->GetNO(goal_pos);
+
+            if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
-                default: break;
-                case STATE_EXPEDITION_LOADING:
-                {
-                    // Schiff ist nun bereit und Expedition kann beginnen
-                    state = STATE_EXPEDITION_WAITING;
-
-                    // Spieler benachrichtigen
-                    if(GAMECLIENT.GetPlayerID() == this->player)
-                        GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
-
-                    // KI Event senden
-                    GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
-                } break;
-                case STATE_EXPLORATIONEXPEDITION_LOADING:
-                {
-                    // Schiff ist nun bereit und Expedition kann beginnen
-                    ContinueExplorationExpedition();
-                } break;
-                case STATE_EXPLORATIONEXPEDITION_WAITING:
-                {
-                    // Schiff ist nun bereit und Expedition kann beginnen
-                    ContinueExplorationExpedition();
-                } break;
-
-                case STATE_EXPEDITION_UNLOADING:
-                {
-                    // Hafen herausfinden
-                    MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
-                    noBase* hb = gwg->GetNO(goal_pos);
-
-                    if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
-                    {
-                        Goods goods;
-                        memset(&goods, 0, sizeof(Goods));
-                        unsigned char nation = players->getElement(player)->nation;
-                        goods.goods[GD_BOARDS] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
-                        goods.goods[GD_STONES] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
-                        goods.people[JOB_BUILDER] = 1;
-                        static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
-                        // Wieder idlen und ggf. neuen Job suchen
-                        StartIdling();
-                        players->getElement(player)->GetJobForShip(this);
-                    }
-                    else
-                    {
-                        // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
-                        state = STATE_EXPEDITION_DRIVING;
-                        HandleState_ExpeditionDriving();
-                    }
-
-                } break;
-                case STATE_EXPLORATIONEXPEDITION_UNLOADING:
-                {
-                    // Hafen herausfinden
-                    MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
-                    noBase* hb = gwg->GetNO(goal_pos);
-
-                    unsigned old_visual_range = GetVisualRange();
-
-                    if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
-                    {
-                        // Späher wieder entladen
-                        Goods goods;
-                        memset(&goods, 0, sizeof(Goods));
-                        goods.people[JOB_SCOUT] = SCOUTS_EXPLORATION_EXPEDITION;
-                        static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
-                        // Wieder idlen und ggf. neuen Job suchen
-                        StartIdling();
-                        players->getElement(player)->GetJobForShip(this);
-                    }
-                    else
-                    {
-                        // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
-                        state = STATE_EXPLORATIONEXPEDITION_DRIVING;
-                        HandleState_ExplorationExpeditionDriving();
-                    }
-
-                    // Sichtbarkeiten neu berechnen
-                    gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, player, NULL);
-
-
-                } break;
-                case STATE_TRANSPORT_LOADING:
-                {
-                    StartTransport();
-                } break;
-                case STATE_TRANSPORT_UNLOADING:
-                {
-                    // Hafen herausfinden
-                    remaining_sea_attackers = 0; //can be 1 in case we had sea attackers on board - set to 1 for a special check when the return harbor is destroyed to set the returning attackers goal to 0
-                    MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
-                    noBase* hb = gwg->GetNO(goal_pos);
-                    if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
-                    {
-                        static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures, wares);
-                        figures.clear();
-                        wares.clear();
-
-                        // Hafen bescheid sagen, dass er das Schiff nun nutzen kann
-                        static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
-
-                        // Hafen hat keinen Job für uns?
-                        if (state == STATE_TRANSPORT_UNLOADING)
-                        {
-                            // Wieder idlen und ggf. neuen Job suchen
-                            StartIdling();
-                            players->getElement(player)->GetJobForShip(this);
-                        }
-                    }
-                    else
-                    {
-                        // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
-                        state = STATE_TRANSPORT_DRIVING;
-                        HandleState_TransportDriving();
-                    }
-
-
-                } break;
-                case STATE_SEAATTACK_LOADING:
-                {
-                    StartSeaAttack();
-                } break;
-                case STATE_SEAATTACK_WAITING:
-                {
-                    // Nächsten Soldaten nach draußen beordern
-                    if(figures.empty())
-                        break;
-
-                    nofAttacker* attacker = static_cast<nofAttacker*>(*figures.begin());
-                    // Evtl. ist ein Angreifer schon fertig und wieder an Board gegangen
-                    // der darf dann natürlich nicht noch einmal raus, sonst kann die schöne Reise
-                    // böse enden
-                    if(attacker->IsSeaAttackCompleted())
-                        break;
-
-                    figures.pop_front();
-                    gwg->AddFigure(attacker, pos);
-
-                    current_ev = em->AddEvent(this, 30, 1);
-                    attacker->StartAttackOnOtherIsland(pos, GetObjId());
-                    ;
-                };
-                case STATE_SEAATTACK_UNLOADING:
-                {
-                } break;
+                Goods goods;
+                unsigned char nation = players->getElement(player)->nation;
+                goods.goods[GD_BOARDS] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
+                goods.goods[GD_STONES] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
+                goods.people[JOB_BUILDER] = 1;
+                static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
+                // Wieder idlen und ggf. neuen Job suchen
+                StartIdling();
+                players->getElement(player)->GetJobForShip(this);
             }
-        } break;
+            else
+            {
+                // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
+                state = STATE_EXPEDITION_DRIVING;
+                HandleState_ExpeditionDriving();
+            }
+            break;
+        }
+        case STATE_EXPLORATIONEXPEDITION_UNLOADING:
+        {
+            // Hafen herausfinden
+            MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
+            noBase* hb = gwg->GetNO(goal_pos);
 
+            unsigned old_visual_range = GetVisualRange();
+
+            if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+            {
+                // Späher wieder entladen
+                Goods goods;
+                memset(&goods, 0, sizeof(Goods));
+                goods.people[JOB_SCOUT] = SCOUTS_EXPLORATION_EXPEDITION;
+                static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
+                // Wieder idlen und ggf. neuen Job suchen
+                StartIdling();
+                players->getElement(player)->GetJobForShip(this);
+            }
+            else
+            {
+                // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
+                state = STATE_EXPLORATIONEXPEDITION_DRIVING;
+                HandleState_ExplorationExpeditionDriving();
+            }
+
+            // Sichtbarkeiten neu berechnen
+            gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, player, NULL);
+
+
+            break;
+        }
+        case STATE_TRANSPORT_LOADING:
+            StartTransport();
+            break;
+        case STATE_TRANSPORT_UNLOADING:
+        {
+            // Hafen herausfinden
+            remaining_sea_attackers = 0; //can be 1 in case we had sea attackers on board - set to 1 for a special check when the return harbor is destroyed to set the returning attackers goal to 0
+            MapPoint goal_pos(gwg->GetHarborPoint(goal_harbor_id));
+            noBase* hb = gwg->GetNO(goal_pos);
+            if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+            {
+                static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures, wares);
+                figures.clear();
+                wares.clear();
+
+                // Hafen bescheid sagen, dass er das Schiff nun nutzen kann
+                static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
+
+                // Hafen hat keinen Job für uns?
+                if (state == STATE_TRANSPORT_UNLOADING)
+                {
+                    // Wieder idlen und ggf. neuen Job suchen
+                    StartIdling();
+                    players->getElement(player)->GetJobForShip(this);
+                }
+            }
+            else
+            {
+                // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
+                state = STATE_TRANSPORT_DRIVING;
+                HandleState_TransportDriving();
+            }
+            break;
+        }
+        case STATE_SEAATTACK_LOADING:
+            StartSeaAttack();
+            break;
+        case STATE_SEAATTACK_WAITING:
+        {
+            // Nächsten Soldaten nach draußen beordern
+            if(figures.empty())
+                break;
+
+            nofAttacker* attacker = static_cast<nofAttacker*>(*figures.begin());
+            // Evtl. ist ein Angreifer schon fertig und wieder an Board gegangen
+            // der darf dann natürlich nicht noch einmal raus, sonst kann die schöne Reise
+            // böse enden
+            if(attacker->IsSeaAttackCompleted())
+                break;
+
+            figures.pop_front();
+            gwg->AddFigure(attacker, pos);
+
+            current_ev = em->AddEvent(this, 30, 1);
+            attacker->StartAttackOnOtherIsland(pos, GetObjId());
+            break;
+        };
+        case STATE_SEAATTACK_UNLOADING:
+            break;
+        }
     }
-
 }
 
 void noShip::StartDriving(const unsigned char dir)
@@ -475,9 +459,6 @@ unsigned noShip::GetVisualRange() const
     else
         return VISUALRANGE_SHIP;
 }
-
-
-
 
 /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
 void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route)
@@ -558,7 +539,6 @@ void noShip::StartExplorationExpedition()
     gwg->SetVisibilitiesAroundPoint(pos, GetVisualRange(), player);
 }
 
-
 /// Fährt weiter zu einem Hafen
 noShip::Result noShip::DriveToHarbour()
 {
@@ -569,8 +549,6 @@ noShip::Result noShip::DriveToHarbour()
         return HARBOR_DOESNT_EXIST;
 
     return DriveToHarbourPlace();
-
-    //nobHarborBuilding * hb = gwg->GetSpecObj<nobHarborBuilding>(goal.x,goal.y);
 }
 
 /// Fährt weiter zu Hafenbauplatz
@@ -579,46 +557,43 @@ noShip::Result noShip::DriveToHarbourPlace()
     // Sind wir schon da?
     if(curRouteIdx == route_.size())
         return GOAL_REACHED;
-    else
+
+    // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
+    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
+
+    MapPoint goalRoutePos;
+
+    // Route überprüfen
+    if(!gwg->CheckShipRoute(pos, route_, curRouteIdx, &goalRoutePos))
     {
-        // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
-        MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
-
-        MapPoint goalRoutePos;
-
-        // Route überprüfen
-        if(!gwg->CheckShipRoute(pos, route_, curRouteIdx, &goalRoutePos))
+        // Route kann nicht mehr passiert werden --> neue Route suchen
+        if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
         {
-            // Route kann nicht mehr passiert werden --> neue Route suchen
-            if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
-            {
-                // Wieder keine gefunden -> raus
-                return NO_ROUTE_FOUND;
-            }
-
-            // Wir fangen bei der neuen Route wieder von vorne an
-            curRouteIdx = 0;
+            // Wieder keine gefunden -> raus
+            return NO_ROUTE_FOUND;
         }
 
-        // Kommen wir auch mit unser bisherigen Route an dem ursprünglich anvisierten Hafenplatz an?
-        if(coastalPos != goalRoutePos)
-        {
-            // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
-            assert(route_.size() >= curRouteIdx);
-            if(route_.size() - curRouteIdx < 10)
-            {
-                if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
-                    // Keiner gefunden -> raus
-                    return NO_ROUTE_FOUND;
-
-                curRouteIdx = 0;
-            }
-        }
-
-        StartDriving(route_[curRouteIdx++]);
-        return DRIVING;
+        // Wir fangen bei der neuen Route wieder von vorne an
+        curRouteIdx = 0;
     }
 
+    // Kommen wir auch mit unser bisherigen Route an dem ursprünglich anvisierten Hafenplatz an?
+    if(coastalPos != goalRoutePos)
+    {
+        // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
+        assert(route_.size() >= curRouteIdx);
+        if(route_.size() - curRouteIdx < 10)
+        {
+            if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
+                // Keiner gefunden -> raus
+                return NO_ROUTE_FOUND;
+
+            curRouteIdx = 0;
+        }
+    }
+
+    StartDriving(route_[curRouteIdx++]);
+    return DRIVING;
 }
 
 
@@ -696,7 +671,6 @@ void noShip::FoundColony()
     }
     else //colony founding FAILED - notify ai
         GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
-
 }
 
 
@@ -1068,7 +1042,6 @@ void noShip::StartIdling()
     //goal_harbor_id = 0;
     state = STATE_IDLE;
 }
-
 
 /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
 void noShip::SeaAttackerWishesNoReturn()
