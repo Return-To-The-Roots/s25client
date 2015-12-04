@@ -1000,40 +1000,41 @@ void noShip::StartTransport()
 void noShip::HarborDestroyed(nobHarborBuilding* hb)
 {
     // Ist unser Ziel betroffen?
-    if(hb->GetHarborPosID() == goal_harbor_id)
-    {
-        // Laden wir gerade ein?
-        if(state == STATE_TRANSPORT_LOADING)
-        {
-            // Dann einfach wieder ausladen
-            state = STATE_TRANSPORT_UNLOADING;
-            // Zielpunkt wieder auf Starthafen setzen
-            goal_harbor_id = home_harbor;
+    if(hb->GetHarborPosID() != goal_harbor_id)
+        return;
 
-            // Waren und Figure über verändertes Ziel informieren
-            for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-            {
-                (*it)->Abrogate();
-                (*it)->SetGoalToNULL();
-            }
-            for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
-            {
-                (*it)->NotifyGoalAboutLostWare();
-                (*it)->goal = NULL;
-            }
-        }
-        else
+    // Laden wir gerade ein?
+    if(state == STATE_TRANSPORT_LOADING)
+    {
+        // Dann einfach wieder ausladen
+        state = STATE_TRANSPORT_UNLOADING;
+        // Zielpunkt wieder auf Starthafen setzen
+        goal_harbor_id = home_harbor;
+
+        // Waren und Figure über verändertes Ziel informieren
+        for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
-            if(state == STATE_TRANSPORT_UNLOADING)
-            {
-                // Event zum Abladen abmelden
-                em->RemoveEvent(current_ev);
-                current_ev = NULL;
-                state = STATE_TRANSPORT_DRIVING;
-                HandleState_TransportDriving(); //finds our goal harbor doesnt exist anymore picks a new one if available etc
-            }
+            (*it)->Abrogate();
+            (*it)->SetGoalToNULL();
+        }
+        for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
+        {
+            (*it)->NotifyGoalAboutLostWare();
+            (*it)->goal = NULL;
         }
     }
+    else
+    {
+        if(state == STATE_TRANSPORT_UNLOADING)
+        {
+            // Event zum Abladen abmelden
+            em->RemoveEvent(current_ev);
+            current_ev = NULL;
+            state = STATE_TRANSPORT_DRIVING;
+            HandleState_TransportDriving(); //finds our goal harbor doesnt exist anymore picks a new one if available etc
+        }
+    }
+
 }
 
 /// Fängt an mit idlen und setzt nötigen Sachen auf NULL
