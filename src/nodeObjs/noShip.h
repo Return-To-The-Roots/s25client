@@ -215,10 +215,10 @@ class noShip : public noMovable
         bool IsGoingToHarbor(nobHarborBuilding* hb) const;
 
         /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-        void PrepareTransport(MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
+        void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
 
         /// Belädt das Schiff mit Schiffs-Angreifern
-        void PrepareSeaAttack(MapPoint goal, const std::list<noFigure*>& figures);
+        void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures);
         /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
         void SeaAttackerWishesNoReturn();
         /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt

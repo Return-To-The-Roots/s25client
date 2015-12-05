@@ -592,7 +592,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 ++it;
         }
 
-        ship->PrepareSeaAttack(ship_dest, attackers);
+        ship->PrepareSeaAttack(GetHarborPosID(), ship_dest, attackers);
         return;
     }
     //Expedition ready?
@@ -683,7 +683,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
             }
 
             // Und das Schiff starten lassen
-            ship->PrepareTransport(dest, figures, wares);
+            ship->PrepareTransport(GetHarborPosID(), dest, figures, wares);
         }
     }
 }
