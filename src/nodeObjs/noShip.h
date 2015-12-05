@@ -58,7 +58,7 @@ class noShip : public noMovable
             STATE_SEAATTACK_UNLOADING,
             STATE_SEAATTACK_DRIVINGTODESTINATION, /// Fährt mit den Soldaten zum Zielhafenpunkt
             STATE_SEAATTACK_WAITING, /// wartet an der Küste, während die Soldaten was schönes machen
-            STATE_SEAATTACK_RETURN /// fährt mit den Soldaten wieder zurück zum Heimathafen
+            STATE_SEAATTACK_RETURN_DRIVING /// fährt mit den Soldaten wieder zurück zum Heimathafen
 
         } state;
 
@@ -81,7 +81,6 @@ class noShip : public noMovable
         bool lost;
         /// Bei Schiffen im STATE_SEAATTACK_WAITING:
         /// Anzahl der Soldaten, die noch kommen müssten
-        /// For ships in STATE_TRANSPORT_x a 1 indicates that the ship is carrying returning soldiers from a sea attack
         unsigned remaining_sea_attackers;
         /// Heimathafen der Schiffs-Angreifer
         unsigned home_harbor;
@@ -136,7 +135,7 @@ class noShip : public noMovable
         void StartDrivingToHarborPlace();
 
         /// Looks for a harbour to unload the goods (e.g if old one was destroyed)
-        void FindUnloadGoal(bool isExpedition);
+        void FindUnloadGoal(State newState);
         /// Aborts a sea attack (in case harbor was not found anymore)
         void AbortSeaAttack();
 
@@ -223,7 +222,7 @@ class noShip : public noMovable
         /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
         void SeaAttackerWishesNoReturn();
         /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
-        void AddAttacker(nofAttacker* attacker);
+        void AddReturnedAttacker(nofAttacker* attacker);
 
         /// Sagt dem Schiff, das ein bestimmter Hafen zerstört wurde
         void HarborDestroyed(nobHarborBuilding* hb);

@@ -1106,7 +1106,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
                 // Und von der Landkarte tilgen
                 gwg->RemoveFigure(this, pos);
                 // Uns zum Schiff hinzufügen
-                ship->AddAttacker(this);
+                ship->AddReturnedAttacker(this);
 
                 state = STATE_FIGUREWORK;
                 fs = FS_GOTOGOAL;
