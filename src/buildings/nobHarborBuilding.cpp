@@ -603,7 +603,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // Aufräumen am Hafen
         expedition.active = false;
         // Expedition starten
-        ship->StartExpedition();
+        ship->StartExpedition(GetHarborPosID());
         return;
     }
     // Exploration-Expedition ready?
@@ -612,7 +612,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // Aufräumen am Hafen
         exploration_expedition.active = false;
         // Expedition starten
-        ship->StartExplorationExpedition();
+        ship->StartExplorationExpedition(GetHarborPosID());
         assert(goods_.people[JOB_SCOUT] >= exploration_expedition.scouts);
         goods_.people[JOB_SCOUT] -= exploration_expedition.scouts;
         return;
@@ -659,7 +659,6 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                     it->fig->StartShipJourney(dest);
                     --goods_.people[it->fig->GetJobType()];
                     it = figures_for_ships.erase(it);
-
                 }
                 else
                     ++it;

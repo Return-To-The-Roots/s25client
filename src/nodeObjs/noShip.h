@@ -190,16 +190,12 @@ class noShip : public noMovable
         /// Beim Warten bei der Expedition: Gibt die Hafenpunkt-ID zurück, wo es sich gerade befindet
         unsigned GetCurrentHarbor() const;
 
-        /// Sagt dem Schiff, an welchem Hafenpunkt es gerade ankert, wenn es das selber noch nicht weiß
-        void AssignHarborId(const unsigned harbor_id)
-        { this->goal_harbor_id = harbor_id; }
-
         /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
         void GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route);
         /// Startet eine Expedition
-        void StartExpedition();
+        void StartExpedition(unsigned homeHarborId);
         /// Startet eine Erkundungs-Expedition
-        void StartExplorationExpedition();
+        void StartExplorationExpedition(unsigned homeHarborId);
         /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
         void ContinueExpedition(const unsigned char dir);
         /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum

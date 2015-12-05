@@ -324,7 +324,7 @@ void noShip::HandleEvent(const unsigned int id)
         case STATE_EXPLORATIONEXPEDITION_UNLOADING:
         {
             // Hafen herausfinden
-            noBase* hb = goal_harbor_id ? gwg->GetNO(gwg->GetHarborPoint(goal_harbor_id)) : NULL;
+            noBase* hb = goal_harbor_id ? gwg->GetNO(gwg->GetHarborPoint(goal_harbor_id)): NULL;
 
             unsigned old_visual_range = GetVisualRange();
 
@@ -479,22 +479,26 @@ void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>&
 }
 
 /// Startet eine Expedition
-void noShip::StartExpedition()
+void noShip::StartExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPEDITION_LOADING;
     current_ev = em->AddEvent(this, LOADING_TIME, 1);
-    home_harbor = goal_harbor_id;
+    assert(homeHarborId);
+    assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
+    home_harbor = homeHarborId;
 }
 
 /// Startet eine Erkundungs-Expedition
-void noShip::StartExplorationExpedition()
+void noShip::StartExplorationExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPLORATIONEXPEDITION_LOADING;
     current_ev = em->AddEvent(this, LOADING_TIME, 1);
     covered_distance = 0;
-    home_harbor = goal_harbor_id;
+    assert(homeHarborId);
+    assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
+    home_harbor = homeHarborId;
     // Sichtbarkeiten neu berechnen
     gwg->SetVisibilitiesAroundPoint(pos, GetVisualRange(), player);
 }
@@ -896,10 +900,10 @@ bool noShip::IsGoingToHarbor(nobHarborBuilding* hb) const
     case noShip::STATE_SEAATTACK_LOADING:
     case noShip::STATE_SEAATTACK_DRIVINGTODESTINATION:
     case noShip::STATE_SEAATTACK_WAITING:
-    case noShip::STATE_TRANSPORT_LOADING:   // Almost gone, so don't consider this
         return false;
     case noShip::STATE_GOTOHARBOR:
     case noShip::STATE_TRANSPORT_DRIVING:   // Driving to this harbor
+    case noShip::STATE_TRANSPORT_LOADING:   // Loading at home harbor and going to goal
     case noShip::STATE_TRANSPORT_UNLOADING: // Unloading at this harbor
     case noShip::STATE_SEAATTACK_UNLOADING: // Unloading attackers at this harbor
     case noShip::STATE_SEAATTACK_RETURN_DRIVING:    // Returning attackers to this harbor
