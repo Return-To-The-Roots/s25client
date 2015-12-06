@@ -818,7 +818,7 @@ void noShip::HandleState_SeaAttackDriving()
         return; // OK
     case GOAL_REACHED:
         {
-        // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander raus zum Ziel
+            // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander raus zum Ziel
             state = STATE_SEAATTACK_WAITING;
             current_ev = em->AddEvent(this, 15, 1);
             remaining_sea_attackers = figures.size();
@@ -935,7 +935,7 @@ void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::l
     this->figures = figures;
     for(std::list<noFigure*>::iterator it = this->figures.begin(); it != this->figures.end(); ++it)
     {
-        static_cast<nofAttacker*>(*it)->StartShipJourney(goal);
+        static_cast<nofAttacker*>(*it)->StartShipJourney();
         static_cast<nofAttacker*>(*it)->SeaAttackStarted();
     }
     state = STATE_SEAATTACK_LOADING;
@@ -1121,11 +1121,8 @@ void noShip::SeaAttackerWishesNoReturn()
         em->RemoveEvent(current_ev);
         if(!figures.empty())
         {
-            // Wieder nach Hause fahren
+            // Go back home. Note: home_harbor can be 0 if it was destroyed, allow this and let the state handlers handle that case later
             goal_harbor_id = home_harbor;
-            MapPoint harborPoint = gwg->GetHarborPoint(goal_harbor_id);
-            for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-                (*it)->StartShipJourney(harborPoint);
             state = STATE_SEAATTACK_RETURN_DRIVING;
             StartDrivingToHarborPlace();
             HandleState_SeaAttackReturn();

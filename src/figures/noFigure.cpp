@@ -1214,13 +1214,19 @@ void noFigure::CalcVisibilities(const MapPoint pt)
 }
 
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
-void noFigure::StartShipJourney(const MapPoint goal)
+void noFigure::StartShipJourney()
 {
     // remove us from where we are, so nobody will ever draw us :)
     gwg->RemoveFigure(this, this->pos);
 
-    pos = goal;
+    pos = MapPoint::Invalid();
     on_ship = true;
+}
+
+void noFigure::ArrivedByShip(const MapPoint harborPos)
+{
+    assert(on_ship);
+    pos = harborPos;
 }
 
 /// Informiert die Figur, wenn Kreuzfahrt beendet ist

@@ -656,7 +656,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 if(it->dest == dest)
                 {
                     figures.push_back(it->fig);
-                    it->fig->StartShipJourney(dest);
+                    it->fig->StartShipJourney();
                     --goods_.people[it->fig->GetJobType()];
                     it = figures_for_ships.erase(it);
                 }
@@ -1075,6 +1075,8 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
     // Menschen zur Ausgehliste hinzufügen
     for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
     {
+        (*it)->ArrivedByShip(pos);
+
         if((*it)->GetJobType() == JOB_BOATCARRIER)
         {
             ++goods_.people[JOB_HELPER];

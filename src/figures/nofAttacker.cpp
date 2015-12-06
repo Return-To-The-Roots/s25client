@@ -1037,27 +1037,31 @@ void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigne
 /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: set state,target,goal,building to 0 to avoid future problems (and add to harbor inventory)
 void nofAttacker::SeaAttackFailedBeforeLaunch()
 {
-    attacked_goal = 0;
-    goal_ = 0;
-    building = 0;
+    attacked_goal = NULL;
+    goal_ = NULL;
+    building = NULL;
     state = STATE_FIGUREWORK;
 }
 
 /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
-void nofAttacker::StartReturnViaShip()
+void nofAttacker::StartReturnViaShip(noShip& ship)
 {
     // remove us from where we are, so nobody will ever draw us :)
-    gwg->RemoveFigure(this, this->pos);
+    gwg->RemoveFigure(this, pos);
+    pos = MapPoint::Invalid(); // Similar to start ship journey
+    // Uns zum Schiff hinzufügen
+    ship.AddReturnedAttacker(this);
 
     goal_ = building;
     state = STATE_FIGUREWORK;
+    fs = FS_GOTOGOAL;
     on_ship = true;
 }
 
 /// notify sea attackers that they wont return home
 void nofAttacker::HomeHarborLost()
 {
-    goal_ = 0; //this in combination with telling the home building that the soldier is lost should work just fine
+    goal_ = NULL; //this in combination with telling the home building that the soldier is lost should work just fine
 }
 
 /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
@@ -1102,15 +1106,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         {
             if((*it)->GetObjId() == ship_obj_id)
             {
-                noShip* ship = static_cast<noShip*>(*it);
-                // Und von der Landkarte tilgen
-                gwg->RemoveFigure(this, pos);
-                // Uns zum Schiff hinzufügen
-                ship->AddReturnedAttacker(this);
-
-                state = STATE_FIGUREWORK;
-                fs = FS_GOTOGOAL;
-                StartReturnViaShip();
+                StartReturnViaShip(static_cast<noShip&>(**it));
                 return;
             }
         }

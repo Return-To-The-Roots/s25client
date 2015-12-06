@@ -211,7 +211,9 @@ class noFigure : public noMovable
         void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 
         /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
-        void StartShipJourney(const MapPoint goal);
+        void StartShipJourney();
+        /// Tells the figure it arrived at a harbor at the given position
+        void ArrivedByShip(const MapPoint harborPos);
         /// Informiert die Figur, wenn Kreuzfahrt beendet ist
         void ShipJourneyEnded();
         /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
