@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
     // Enable Memory-Leak-Detection
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_CRT_DF*/);
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_128_DF);
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
     // Signal-Handler setzen

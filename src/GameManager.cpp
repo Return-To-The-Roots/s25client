@@ -162,6 +162,11 @@ void GameManager::Stop()
  */
 bool GameManager::Run()
 {
+#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
+    // Check for heap corruption
+    _ASSERTE(_CrtCheckMemory());
+#endif // _WIN32 && _DEBUG && !NOCRTDBG
+
     // Nachrichtenschleife
     if(!VIDEODRIVER.Run())
         GLOBALVARS.notdone = false;

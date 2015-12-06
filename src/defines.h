@@ -31,6 +31,7 @@
 #ifdef _WIN32
 #    define WIN32_LEAN_AND_MEAN
 #    ifdef _MSC_VER
+#        include <stdlib.h> // Required for crtdbg.h
 #        include <crtdbg.h>
 #        if !defined(snprintf) && _MSC_VER < 1900
 #            define snprintf _snprintf
