@@ -289,9 +289,6 @@ void noShip::HandleEvent(const unsigned int id)
             GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
             break;
         case STATE_EXPLORATIONEXPEDITION_LOADING:
-            // Schiff ist nun bereit und Expedition kann beginnen
-            ContinueExplorationExpedition();
-            break;
         case STATE_EXPLORATIONEXPEDITION_WAITING:
             // Schiff ist nun bereit und Expedition kann beginnen
             ContinueExplorationExpedition();
@@ -766,17 +763,10 @@ void noShip::HandleState_ExplorationExpeditionDriving()
 
         } break;
         case NO_ROUTE_FOUND:
-        {
-            unsigned old_visual_range = GetVisualRange();
-            // Nichts machen und idlen
-            StartIdling();
-            // Sichtbarkeiten neu berechnen
-            gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, player, NULL);
-        } break;
         case HARBOR_DOESNT_EXIST:
-        {
-            FindUnloadGoal(STATE_TRANSPORT_DRIVING); // Go back anywhere
-        } break;
+            gwg->RecalcVisibilitiesAroundPoint(pos, GetVisualRange(), player, NULL);
+            StartIdling();
+            break;
     }
 }
 
@@ -844,7 +834,7 @@ void noShip::HandleState_SeaAttackDriving()
             state = STATE_SEAATTACK_RETURN_DRIVING;
             HandleState_SeaAttackReturn();
         }else
-        AbortSeaAttack();
+            AbortSeaAttack();
         break;
     }
 }
@@ -962,7 +952,7 @@ void noShip::StartSeaAttack()
 
 void noShip::AbortSeaAttack()
 {
-    assert(!STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
+    assert(state != STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
     assert(remaining_sea_attackers == 0); // Some soldiers are still not aboard
 
     // Dann müssen alle Angreifer ihren Heimatgebäuden Bescheid geben, dass sie nun nicht mehr kommen
