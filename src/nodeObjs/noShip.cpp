@@ -487,6 +487,7 @@ void noShip::StartExpedition(unsigned homeHarborId)
     assert(homeHarborId);
     assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
+    goal_harbor_id = homeHarborId; // This is current goal (commands are relative to current goal)
 }
 
 /// Startet eine Erkundungs-Expedition
@@ -499,6 +500,7 @@ void noShip::StartExplorationExpedition(unsigned homeHarborId)
     assert(homeHarborId);
     assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
+    goal_harbor_id = homeHarborId; // This is current goal (commands are relative to current goal)
     // Sichtbarkeiten neu berechnen
     gwg->SetVisibilitiesAroundPoint(pos, GetVisualRange(), player);
 }
@@ -578,10 +580,10 @@ unsigned noShip::GetCurrentHarbor() const
 /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
 void noShip::ContinueExpedition(const unsigned char dir)
 {
+    assert(state == STATE_EXPEDITION_WAITING);
+
     if(state != STATE_EXPEDITION_WAITING)
         return;
-
-    assert(state == STATE_EXPEDITION_WAITING);
 
     // Nächsten Hafenpunkt in dieser Richtung suchen
     unsigned new_goal = gwg->GetNextFreeHarborPoint(pos, goal_harbor_id, dir, player);
