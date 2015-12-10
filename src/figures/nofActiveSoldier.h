@@ -118,7 +118,7 @@ class nofActiveSoldier : public nofSoldier
         nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Tidy up
-    protected:  void Destroy_nofActiveSoldier() { Destroy_nofSoldier(); }
+    protected:  void Destroy_nofActiveSoldier() { assert(!enemy); Destroy_nofSoldier(); }
     public:     void Destroy() { Destroy_nofActiveSoldier(); }
 
         /// Serializer

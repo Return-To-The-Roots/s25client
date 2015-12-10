@@ -98,6 +98,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 
 void noFigure::Destroy_noFigure()
 {
+    assert(HasNoGoal());
     Destroy_noMovable();
 
     assert(!players->getElement(player)->CheckDependentFigure(this));
@@ -376,21 +377,20 @@ void noFigure::WalkToGoal()
 
         if(goal1 == pos || goal2 == pos)
         {
+            noRoadNode* goal = goal_;
+            // Zeug nullen
+            cur_rs = NULL;
+            goal_ = NULL;
+            rs_dir = 0;
+            rs_pos = 0;
             if(fs == FS_GOHOME)
             {
                 // Mann im Lagerhaus angekommen
                 gwg->RemoveFigure(this, pos);
-                static_cast<nobBaseWarehouse*>(goal_)->AddFigure(this);
+                static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
             }
             else
             {
-                // Zeug nullen
-                cur_rs = NULL;
-                rs_dir = 0;
-                rs_pos = 0;
-                goal_ = NULL;
-
-
                 // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
                 fs = FS_JOB;
                 GoalReached();

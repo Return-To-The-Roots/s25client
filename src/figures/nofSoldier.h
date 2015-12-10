@@ -51,7 +51,7 @@ class nofSoldier : public noFigure
         nofSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    protected:  void Destroy_nofSoldier() { Destroy_noFigure(); }
+    protected:  void Destroy_nofSoldier() { assert(HasNoHome()); Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofSoldier(); }
 
         /// Serialisierungsfunktionen
@@ -60,8 +60,8 @@ class nofSoldier : public noFigure
 
         /// Liefert Rang des Soldaten
         unsigned char GetRank() const;
-
         unsigned char GetHitpoints() const;
+        bool HasNoHome() const { return building == NULL; }
 };
 
 /// Comparator to sort soldiers by rank (and ID for ties)
