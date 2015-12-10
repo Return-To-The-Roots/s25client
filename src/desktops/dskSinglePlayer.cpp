@@ -133,7 +133,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 csi.gamename = fileName.string();
                 csi.password = "localgame";
                 csi.port = 3665;
-                csi.type = NP_LOCAL;
+                csi.type = ServerType::LOCAL;
                 csi.ipv6 = false;
                 csi.use_upnp = false;
 
@@ -185,7 +185,7 @@ void dskSinglePlayer::PrepareSinglePlayerServer()
     csi.gamename = _("Unlimited Play");
     csi.password = "localgame";
     csi.port = 3665;
-    csi.type = NP_LOCAL;
+    csi.type = ServerType::LOCAL;
     csi.ipv6 = false;
     csi.use_upnp = false;
 
@@ -198,7 +198,7 @@ void dskSinglePlayer::PrepareLoadGame()
     csi.gamename = _("Unlimited Play");
     csi.password = "localgame";
     csi.port = 3665;
-    csi.type = NP_LOCAL;
+    csi.type = ServerType::LOCAL;
     csi.ipv6 = false;
     csi.use_upnp = false;
 

@@ -75,7 +75,7 @@ dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL
     AddTextButton(6, 530, 440, 250, 22, TC_GREEN2, _("Add Server"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
-    AddTable(10, 20, 20, 500, 262, TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300, ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_NUMBER, _("Version"), 100, ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
+    AddTable(10, 20, 20, 500, 262, TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300, ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100, ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
     // Spieler-Tabelle - "Name", "Punkte", "Version"
     AddTable(11, 530, 20, 250, 410, TC_GREY, NormalFont, 3, _("Name"), 500, ctrlTable::SRT_STRING, _("Points"), 250, ctrlTable::SRT_STRING, _("Version"), 250, ctrlTable::SRT_STRING);
 
@@ -138,7 +138,7 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
                 WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                servercreate = new iwDirectIPCreate(NP_LOBBY);
+                servercreate = new iwDirectIPCreate(ServerType::LOBBY);
                 servercreate->SetParent(this);
                 WINDOWMANAGER.Show(servercreate, true);
             }
@@ -309,7 +309,7 @@ bool dskLobby::ConnectToSelectedGame()
 
         if(it->getVersion() == std::string(GetWindowVersion()))
         {
-            iwDirectIPConnect* connect = new iwDirectIPConnect(NP_LOBBY);
+            iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
             connect->SetHost(it->getHost().c_str());
             connect->SetPort(it->getPort());
             WINDOWMANAGER.Show(connect);
@@ -364,7 +364,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  */
 void dskLobby::LC_Connected(void)
 {
-    WINDOWMANAGER.Switch(new dskHostGame);
+    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

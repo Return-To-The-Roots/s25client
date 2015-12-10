@@ -43,7 +43,7 @@ static char THIS_FILE[] = __FILE__;
  *  @author OLiver
  *  @author FloSoft
  */
-iwDirectIPConnect::iwDirectIPConnect(unsigned int server_type)
+iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCONNECT, 0xFFFF, 0xFFFF, 300, 285, _("Join Game"), LOADER.GetImageN("resource", 41), true),
       server_type(server_type)
 {
@@ -51,11 +51,11 @@ iwDirectIPConnect::iwDirectIPConnect(unsigned int server_type)
 
     // "IP - Adresse vom Host"
     AddText(0, 20, 30, _("IP Address of Host:"), COLOR_YELLOW, 0, NormalFont);
-    host = AddEdit(1, 20, 45, 260, 22, TC_GREEN2, NormalFont, 0, false, (server_type == NP_LOBBY),  true);
+    host = AddEdit(1, 20, 45, 260, 22, TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT),  true);
 
     // "Server-Port"
     AddText(2, 20, 80, _("Server-Port:"), COLOR_YELLOW, 0, NormalFont);
-    port = AddEdit(3, 20, 95, 260, 22, TC_GREEN2, NormalFont, 0, false, (server_type == NP_LOBBY),  true);
+    port = AddEdit(3, 20, 95, 260, 22, TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT),  true);
 
     // "Passwort (falls vorhanden)"
     AddText(4, 20, 130, _("Password (if needed):"), COLOR_YELLOW, 0, NormalFont);
@@ -220,13 +220,10 @@ void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, boo
  *
  *  @author FloSoft
  */
-void iwDirectIPConnect::SetHost(const char* text)
+void iwDirectIPConnect::SetHost(const std::string& hostIp)
 {
-    static char h[256];
-    snprintf(h, 256, "%s", text);
-
     ctrlEdit* host = GetCtrl<ctrlEdit>(1);
-    host->SetText(h);
+    host->SetText(hostIp);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -282,7 +279,7 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 
         case CS_FINISHED: // Wir wurden verbunden
         {
-            WINDOWMANAGER.Switch(new dskHostGame);
+            WINDOWMANAGER.Switch(new dskHostGame(server_type));
         } break;
         default: break;
     }

@@ -24,8 +24,9 @@
 #include "WindowManager.h"
 #include "Loader.h"
 
-#include "dskMainMenu.h"
-#include "dskDirectIP.h"
+#include "desktops/dskMainMenu.h"
+#include "desktops/dskDirectIP.h"
+#include "desktops/dskLAN.h"
 #include "ingameWindows/iwLobbyConnect.h"
 #include "ogl/glArchivItem_Font.h"
 
@@ -80,19 +81,16 @@ void dskMultiPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
     switch(ctrl_id)
     {
         case 3: // Lobby
-        {
             WINDOWMANAGER.Show(new iwLobbyConnect, true);
-        } break;
+            break;
         case 4: // Local Area Network
-        {
-        } break;
+            WINDOWMANAGER.Switch(new dskLAN);
+            break;
         case 5: // Direct IP
-        {
             WINDOWMANAGER.Switch(new dskDirectIP);
-        } break;
+            break;
         case 6: // Zurück
-        {
             WINDOWMANAGER.Switch(new dskMainMenu);
-        } break;
+            break;
     }
 }

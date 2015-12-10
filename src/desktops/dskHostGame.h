@@ -26,8 +26,6 @@
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
 
-#include "ogl/glArchivItem_Bitmap_Raw.h"
-
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame :
     public Desktop,
@@ -37,7 +35,7 @@ class dskHostGame :
     public:
 
         /// Map übergeben, damit die Kartenvorschau erstellt werden kann
-        dskHostGame(bool single_player = false);
+        dskHostGame(ServerType serverType);
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
         void Resize_(unsigned short width, unsigned short height);
@@ -90,11 +88,12 @@ class dskHostGame :
 
         void LC_Status_Error(const std::string& error);
 
+        void GoBack();
     private:
         int temppunkte_; // TODO - wegmachen und durch korrekte punkte ersetzen!
         GlobalGameSettings ggs_;
         bool hasCountdown_;
-        bool isSinglePlayer_;
+        ServerType serverType;
 };
 
 

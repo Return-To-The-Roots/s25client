@@ -47,6 +47,8 @@
 #include "ogl/glArchivItem_Map.h"
 
 #include "gameData/GameConsts.h"
+#include "gameData/LanDiscoveryCfg.h"
+#include "gameTypes/LanGameInfo.h"
 
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
@@ -92,7 +94,6 @@ GameServer::ServerConfig::ServerConfig()
 
 void GameServer::ServerConfig::Clear()
 {
-    servertype = 0;
     playercount = 0;
     gamename.clear();
     password.clear();
@@ -128,7 +129,7 @@ void GameServer::CountDown::Clear(int time)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::GameServer(void)
+GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
 {
     status = SS_STOPPED;
 
@@ -163,9 +164,6 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
     serverconfig.use_upnp = csi.use_upnp;
     mapinfo.map_type = map_type;
 
-    // Titel der Karte (nicht der Dateiname!)
-    std::string map_title;
-
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.map_type)
     {
@@ -185,7 +183,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             assert(header);
 
             serverconfig.playercount = header->getPlayer();
-            map_title = header->getName();
+            mapinfo.title = header->getName();
         } break;
         // Gespeichertes Spiel
         case MAPTYPE_SAVEGAME:
@@ -198,15 +196,15 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             // Spieleranzahl
             serverconfig.playercount = save.GetPlayerCount();
 
-			map_title = serverconfig.mapname.substr(serverconfig.mapname.find_last_of("/\\"));
+            mapinfo.title = serverconfig.mapname.substr(serverconfig.mapname.find_last_of("/\\"));
         } break;
     }
 
     // Von Lobby abhängig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
     // erstellen dürfen
-    if(serverconfig.servertype == NP_LOBBY)
+    if(serverconfig.servertype == ServerType::LOBBY)
     {
-        LOBBYCLIENT.AddServer(serverconfig.gamename.c_str(), map_title.c_str(), (serverconfig.password.length() != 0), serverconfig.port);
+        LOBBYCLIENT.AddServer(serverconfig.gamename.c_str(), mapinfo.title.c_str(), (serverconfig.password.length() != 0), serverconfig.port);
         return true;
     }
     else
@@ -396,7 +394,47 @@ bool GameServer::Start()
     async_player1_log.clear();
     async_player2_log.clear();
 
+    if (serverconfig.servertype == ServerType::LAN)
+    {
+        lanAnnouncer.Start();
+    }
+    AnnounceStatusChange();
+
     return true;
+}
+
+unsigned GameServer::GetFilledSlots() const
+{
+    unsigned numFilled = 0;
+    for (unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
+    {
+        const GameServerPlayer& player = players[cl];
+        if (player.ps != PS_FREE)
+            ++numFilled;
+    }
+    return numFilled;
+}
+
+void GameServer::AnnounceStatusChange()
+{
+    if (serverconfig.servertype == ServerType::LAN)
+    {
+        LanGameInfo info;
+        info.name = serverconfig.gamename;
+        info.hasPwd = !serverconfig.password.empty();
+        info.map = mapinfo.title;
+        info.curPlayer = GetFilledSlots();
+        info.maxPlayer = serverconfig.playercount;
+        info.port = serverconfig.port;
+        info.version = GetWindowVersion();
+        Serializer ser;
+        info.Serialize(ser);
+        lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
+    }
+    else if (serverconfig.servertype == ServerType::LOBBY)
+    {
+        LOBBYCLIENT.UpdateServerPlayerCount(GetFilledSlots(), serverconfig.playercount);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -459,6 +497,8 @@ void GameServer::Run(void)
             player->recv_queue.pop();
         }
     }
+
+    lanAnnouncer.Run();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -483,6 +523,8 @@ void GameServer::Stop(void)
     serversocket.Close();
 	// clear jump target
 	skiptogf=0;
+
+    lanAnnouncer.Stop();
 
     if(status != SS_STOPPED)
         LOG.lprintf("server state changed to stop\n");	
@@ -566,6 +608,8 @@ void GameServer::CancelCountdown()
  */
 bool GameServer::StartGame()
 {
+    lanAnnouncer.Stop();
+
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
     unsigned random_init = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
 
@@ -728,20 +772,14 @@ void GameServer::TogglePlayerState(unsigned char client)
     bool reserved_colors[PLAYER_COLORS_COUNT];
     memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
 
-    unsigned char rc = 0, cc = 0;
     for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
     {
         GameServerPlayer* ki = &players[cl];
 
         if( (player != ki) && ( (ki->ps == PS_OCCUPIED) || (ki->ps == PS_KI) ) )
             reserved_colors[ki->color] = true;
-        if( (ki->ps == PS_OCCUPIED) || (ki->ps == PS_KI) )
-            ++rc;
-        if( ki->ps == PS_LOCKED )
-            ++cc;
     }
-    if(serverconfig.servertype == NP_LOBBY)
-        LOBBYCLIENT.UpdateServerPlayerCount(rc, serverconfig.playercount - cc);
+    AnnounceStatusChange();
 
     // bis wir eine freie farbe gefunden haben!
     if(reserved_colors[player->color] && (player->ps == PS_KI || player->ps == PS_OCCUPIED) )
@@ -884,18 +922,7 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     // beleidskarte verschicken
     SendToAll(GameMessage_Player_Kicked(npk.playerid, npk.cause, npk.param));
 
-    if(serverconfig.servertype == NP_LOBBY)
-    {
-        unsigned char rc = 0;
-        for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-        {
-            GameServerPlayer* ki = &players[cl];
-            if( (ki->ps == PS_OCCUPIED) || (ki->ps == PS_KI) )
-                ++rc;
-        }
-        LOBBYCLIENT.UpdateServerPlayerCount(rc, serverconfig.playercount);
-    }
-
+    AnnounceStatusChange();
 
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", npk.playerid, npk.cause, npk.param);
 
@@ -1486,18 +1513,13 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
         bool reserved_colors[PLAYER_COLORS_COUNT];
         memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
 
-        unsigned char rc = 0;
         for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
         {
             GameServerPlayer* ki = &players[cl];
 
             if( (player != ki) && ( (ki->ps == PS_OCCUPIED) || (ki->ps == PS_KI) ) )
                 reserved_colors[ki->color] = true;
-            if( (ki->ps == PS_OCCUPIED) || (ki->ps == PS_KI) )
-                ++rc;
         }
-        if(serverconfig.servertype == NP_LOBBY)
-            LOBBYCLIENT.UpdateServerPlayerCount(rc, serverconfig.playercount);
 
         // Spielerliste senden
         player->send_queue.push(new GameMessage_Player_List(players));
@@ -1509,6 +1531,8 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 
         // GGS senden
         player->send_queue.push(new GameMessage_GGSChange(ggs_));
+
+        AnnounceStatusChange();
 
         LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
     }

@@ -25,11 +25,11 @@
 class iwDirectIPConnect : public IngameWindow, public ClientInterface
 {
     private:
-        unsigned int server_type;
+        ServerType server_type;
 
     public:
-        iwDirectIPConnect(unsigned int server_type);
-        void SetHost(const char* text);
+        iwDirectIPConnect(ServerType server_type);
+        void SetHost(const std::string& host);
         void SetPort(unsigned short port);
 
     private:

@@ -21,11 +21,12 @@
 
 #include "IngameWindow.h"
 #include "LobbyInterface.h"
+#include "gameTypes/ServerType.h"
 
 /// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
 struct CreateServerInfo
 {
-    unsigned char type;    ///< Typ des Servers.
+    ServerType type;    ///< Typ des Servers.
     unsigned short port;   ///< Port des Servers
     std::string gamename;  ///< Name des Servers.
     std::string password;  ///< Passwort des Servers.
@@ -36,7 +37,7 @@ struct CreateServerInfo
 class iwDirectIPCreate : public IngameWindow, public LobbyInterface
 {
     public:
-        iwDirectIPCreate(unsigned int server_type);
+        iwDirectIPCreate(ServerType server_type);
 
         void LC_Status_Error(const std::string& error);
 
@@ -50,7 +51,7 @@ class iwDirectIPCreate : public IngameWindow, public LobbyInterface
         void SetText(const std::string& text, unsigned int color, bool button);
 
     private:
-        unsigned int server_type;
+        ServerType server_type;
 };
 
 #endif // !iwDIRECTIPCREATE_H_INCLUDED

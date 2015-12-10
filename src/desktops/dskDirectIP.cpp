@@ -77,11 +77,11 @@ void dskDirectIP::Msg_ButtonClick(const unsigned int ctrl_id)
             if(SETTINGS.proxy.typ != 0)
                 WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
-                WINDOWMANAGER.Show(new iwDirectIPCreate(NP_DIRECT));
+                WINDOWMANAGER.Show(new iwDirectIPCreate(ServerType::DIRECT));
         } break;
         case 4: // "Verbinden"
         {
-            WINDOWMANAGER.Show(new iwDirectIPConnect(NP_DIRECT));
+            WINDOWMANAGER.Show(new iwDirectIPConnect(ServerType::DIRECT));
         } break;
         case 5: // "Zurück"
         {
