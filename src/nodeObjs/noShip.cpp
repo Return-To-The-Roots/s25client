@@ -957,7 +957,7 @@ void noShip::AbortSeaAttack()
 
     // Dann müssen alle Angreifer ihren Heimatgebäuden Bescheid geben, dass sie nun nicht mehr kommen
     for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-        static_cast<nofAttacker*>(*it)->CancelAtHomeMilitaryBuilding();
+        static_cast<nofAttacker*>(*it)->CancelSeaAttack();
 
     // Das Schiff muss einen Notlandeplatz ansteuern
     FindUnloadGoal(STATE_SEAATTACK_RETURN_DRIVING);

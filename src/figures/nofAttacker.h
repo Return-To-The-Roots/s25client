@@ -82,6 +82,9 @@ class nofAttacker : public nofActiveSoldier
     public:
         /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
         void InformTargetsAboutCancelling();
+
+        void RemoveFromAttackedGoal();
+
         /// Normaler Konstruktor für Angreifer
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal);
         /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen

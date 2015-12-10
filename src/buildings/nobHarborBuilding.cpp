@@ -166,7 +166,10 @@ void nobHarborBuilding::Destroy()
         nofAttacker* soldier = it->attacker;
         gwg->AddFigure(soldier, pos);
 
-        soldier->CancelAtHomeMilitaryBuilding();
+        soldier->CancelSeaAttack();
+        assert(!soldier->GetAttackedGoal());
+        assert(soldier->HasNoHome());
+        assert(soldier->HasNoGoal());
         soldier->StartWandering();
         soldier->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
     }
@@ -1309,9 +1312,10 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     if (best_harbor_point == 0xffffffff)
     {
         // notify target about noShow, notify home that soldier wont return, add to inventory
-        attacker->InformTargetsAboutCancelling();
-        attacker->CancelAtHomeMilitaryBuilding();
         attacker->SeaAttackFailedBeforeLaunch(); //set state, remove target & home
+        assert(!attacker->GetAttackedGoal());
+        assert(attacker->HasNoHome());
+        assert(attacker->HasNoGoal());
         AddFigure(attacker, true);
         return;
     }
