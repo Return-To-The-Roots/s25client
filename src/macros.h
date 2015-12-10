@@ -66,4 +66,12 @@
 #   define SUPPRESS_UNUSED
 #endif
 
+#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
+    // Check for heap corruption
+#   define CHECK_HEAP_CORRUPTION _ASSERTE(_CrtCheckMemory());
+#else
+#   define CHECK_HEAP_CORRUPTION
+#endif // _WIN32 && _DEBUG && !NOCRTDBG
+
+
 #endif // !MACROS_H_INCLUDED
