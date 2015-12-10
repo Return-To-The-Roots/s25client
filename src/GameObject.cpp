@@ -100,14 +100,8 @@ void GameObject::Serialize(SerializedGameData& sgd) const
  */
 GameObject::~GameObject()
 {
+    assert(!em || !em->ObjectHasEvents(this));
+    assert(!em || !em->ObjectIsInKillList(this));
     // ein Objekt weniger
     --objCounter_;
-
-    /*
-    if (em)
-    {
-        // only for debugging purposes
-        em->RemoveAllEventsOfObject(this);
-    }
-    */
 }
