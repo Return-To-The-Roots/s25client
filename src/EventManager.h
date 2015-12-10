@@ -93,6 +93,8 @@ class EventManager
         bool IsEventActive(const GameObject* const obj, const unsigned id) const;
 
         void RemoveAllEventsOfObject(GameObject* obj);
+        bool ObjectHasEvents(GameObject* obj);
+        bool ObjectIsInKillList(GameObject* obj);
     private:
         typedef std::list<EventPointer> EventList;
         typedef std::map<unsigned, EventList> EventMap;

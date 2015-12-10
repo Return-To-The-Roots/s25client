@@ -159,8 +159,10 @@ void EventManager::NextGF()
     // Kill-List durchgehen und Objekte in den Bytehimmel befördern
     for (GameObjList::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
     {
-        (*it)->Destroy();
-        delete (*it);
+        GameObject* obj = *it;
+        *it = NULL;
+        obj->Destroy();
+        delete obj;
     }
 
     kill_list.clear();
@@ -232,6 +234,25 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
         else
             ++it;
     }
+}
+
+bool EventManager::ObjectHasEvents(GameObject* obj)
+{
+    for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
+    {
+        EventList& curEvents = it->second;
+        for(std::list<Event*>::iterator e_it = curEvents.begin(); e_it != curEvents.end(); ++e_it)
+        {
+            if((*e_it)->obj == obj)
+                return true;
+        }
+    }
+    return false;
+}
+
+bool EventManager::ObjectIsInKillList(GameObject* obj)
+{
+    return helpers::contains(kill_list, obj);
 }
 
 void EventManager::RemoveEvent(EventPointer& ep)
