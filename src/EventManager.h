@@ -19,14 +19,10 @@
 
 #pragma once
 
-#include "Singleton.h"
 #include "GameObject.h"
-#include "helpers/containerUtils.h"
 
 #include <list>
 #include <map>
-#include <cassert>
-#include <algorithm>
 
 class GameObject;
 class SerializedGameData;
@@ -37,7 +33,6 @@ class EventManager
         class Event : public GameObject
         {
             public:
-
                 GameObject* const obj;
                 const unsigned gf;
                 const unsigned gf_length;
@@ -48,11 +43,13 @@ class EventManager
 
                 Event(GameObject* const  obj, const unsigned int gf, const unsigned int gf_length, const unsigned int id)
                     : obj(obj), gf(gf), gf_length(gf_length), gf_next(gf + gf_length), id(id)
-                {}
+                {
+                    assert(obj); // Events without an object are pointless
+                }
 
                 Event(SerializedGameData& sgd, const unsigned obj_id);
 
-                void Destroy(void);
+                void Destroy(void){}
 
                 /// Serialisierungsfunktionen
             protected: void Serialize_Event(SerializedGameData& sgd) const;
@@ -67,6 +64,7 @@ class EventManager
         typedef Event* EventPointer;
 
     public:
+        EventManager(): curActiveEvent(NULL){}
         ~EventManager();
 
         /// führt alle Events des aktuellen GameFrames aus.
@@ -80,11 +78,11 @@ class EventManager
         EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
 
         /// Löscht alle Listen für Spielende
-        void Clear() { eis.clear(); kill_list.clear(); }
+        void Clear();
         /// Removes an event and sets the pointer to NULL
         void RemoveEvent(EventPointer& ep);
         /// Objekt will gekillt werden
-        void AddToKillList(GameObject* obj) { assert(!helpers::contains(kill_list, obj)); kill_list.push_back(obj); }
+        void AddToKillList(GameObject* obj);
 
         /// Serialisieren
         void Serialize(SerializedGameData& sgd) const;
@@ -95,11 +93,17 @@ class EventManager
         bool IsEventActive(const GameObject* const obj, const unsigned id) const;
 
         void RemoveAllEventsOfObject(GameObject* obj);
+        bool ObjectHasEvents(GameObject* obj);
+        bool ObjectIsInKillList(GameObject* obj);
     private:
-        std::map<unsigned, std::list<Event*> > eis;     ///< Liste der Events für die einzelnen Objekte
-        std::list<GameObject*> kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
-};
+        typedef std::list<EventPointer> EventList;
+        typedef std::map<unsigned, EventList> EventMap;
+        typedef std::list<GameObject*> GameObjList;
+        EventMap events;     ///< Liste der Events für die einzelnen Objekte
+        GameObjList kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
+        EventPointer curActiveEvent;
 
-#define EVENTMANAGER EventManager::inst()
+        EventPointer AddEvent(EventPointer event);
+};
 
 #endif // !EVENTMANAGER_H_INCLUDED
