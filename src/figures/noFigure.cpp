@@ -676,6 +676,7 @@ void noFigure::GoHome(noRoadNode* goal)
                    gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
                    || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 
+            goal_ = NULL;
             gwg->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
             return;
         }
