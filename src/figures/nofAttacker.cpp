@@ -260,14 +260,14 @@ void nofAttacker::Walked()
                         CancelAtShip();
                     // Gebäude einnehmen
                     static_cast<nobMilitary*>(attacked_goal)->Capture(player);
-                    // Das ist nun mein neues zu Hause
-                    building = attacked_goal;
+                    // This is the new home. Store also in temporary if the new home wants to destroy/convert the soldier
+                    nobBaseMilitary* newHome = building = attacked_goal;
                     RemoveFromAttackedGoal();
                     // mich zum Gebäude hinzufügen und von der Karte entfernen
-                    building->AddActiveSoldier(this);
+                    newHome->AddActiveSoldier(this);
                     gwg->RemoveFigure(this, pos);
                     // ggf. weitere Soldaten rufen, damit das Gebäude voll wird
-                    static_cast<nobMilitary*>(building)->NeedOccupyingTroops(player);
+                    static_cast<nobMilitary*>(newHome)->NeedOccupyingTroops(player);
                 }
                 // oder ein Hauptquartier oder Hafen?
                 else

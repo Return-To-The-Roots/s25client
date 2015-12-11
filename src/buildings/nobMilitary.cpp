@@ -662,8 +662,6 @@ void nobMilitary::CancelOrders()
 
 void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
 {
-
-
     // aktiver Soldat, eingetroffen werden --> dieser muss erst in einen passiven Soldaten
     // umoperiert werden (neu erzeugt und alter zerstört) werden
     nofPassiveSoldier* passive_soldier = new nofPassiveSoldier(*soldier);
@@ -671,11 +669,12 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
     // neuen Soldaten einhängen
     AddPassiveSoldier(passive_soldier);
 
-    // alten Soldaten später vernichten
-    em->AddToKillList(soldier);
-
     // Soldat ist wie tot, d.h. er muss aus allen Missionslisten etc. wieder rausgenommen werden
     SoldierLost(soldier);
+
+    // alten Soldaten später vernichten
+    soldier->ResetHome();
+    em->AddToKillList(soldier);
 }
 
 void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)

@@ -1011,11 +1011,12 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     // Truppen prüfen in allen Häusern
     gwg->GetPlayer(player).RegulateAllTroops();
 
-    // und Soldat vernichten
-    em->AddToKillList(soldier);
-
     // Ggf. war er auf Mission
     troops_on_mission.remove(soldier);
+
+    // und Soldat vernichten
+    soldier->ResetHome();
+    em->AddToKillList(soldier);
 }
 
 nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
