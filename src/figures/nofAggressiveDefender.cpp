@@ -64,6 +64,8 @@ nofAggressiveDefender::~nofAggressiveDefender()
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
 {
+    assert(!attacker);
+    assert(!attacked_goal);
     Destroy_nofActiveSoldier();
 
     //// Debugging
@@ -90,8 +92,8 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
     }
     else
     {
-        attacker = 0;
-        attacked_goal = 0;
+        attacker = NULL;
+        attacked_goal = NULL;
     }
 }
 
@@ -116,20 +118,26 @@ void nofAggressiveDefender::HomeDestroyed()
 
 void nofAggressiveDefender::HomeDestroyedAtBegin()
 {
-    building = 0;
+    building = NULL;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
-    if(attacked_goal)
-    {
-        attacked_goal->UnlinkAggressiveDefender(this);
-        attacked_goal = 0;
-    }
+    CancelAtAttackedBld();
+
 
     state = STATE_FIGUREWORK;
 
     // Rumirren
     StartWandering();
     StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+}
+
+void nofAggressiveDefender::CancelAtAttackedBld()
+{
+    if(attacked_goal)
+    {
+        attacked_goal->UnlinkAggressiveDefender(this);
+        attacked_goal = NULL;
+    }
 }
 
 /// Wenn ein Kampf gewonnen wurde
@@ -139,7 +147,7 @@ void nofAggressiveDefender::WonFighting()
 	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
-    attacker  = NULL;
+    attacker = NULL;
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
@@ -150,8 +158,7 @@ void nofAggressiveDefender::WonFighting()
         Wander();
 
         // Ziel Bescheid sagen
-        if(attacked_goal)
-            attacked_goal->UnlinkAggressiveDefender(this);
+        CancelAtAttackedBld();
 
         return;
     }
@@ -165,12 +172,11 @@ void nofAggressiveDefender::LostFighting()
 {
     // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reinkönnen),
     // falls es noch existiert
-    if(building)
-        building->SoldierLost(this);
+    AbrogateWorkplace();
 
     // Ziel Bescheid sagen, das ich verteidigt hatte
-    if(attacked_goal)
-        attacked_goal->UnlinkAggressiveDefender(this);
+    CancelAtAttackedBld();
+    attacker = NULL;
 }
 
 
@@ -188,8 +194,8 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
 
     // nach anderen suchen, die in meiner Nähe sind und mich evtl noch mit denen kloppen
-    if((attacker = attacked_goal
-                   ->FindAggressor(this)))
+    attacker = attacked_goal->FindAggressor(this);
+    if(attacker)
     {
         // zum Angreifer gehen und mit ihm kämpfen
         if(state == STATE_MEETENEMY)
@@ -229,19 +235,12 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         attacker = NULL;
 
         // Ziel Bescheid sagen
-        if(attacked_goal)
-        {
-            attacked_goal->UnlinkAggressiveDefender(this);
-            attacked_goal = 0;
-        }
+        CancelAtAttackedBld();
 
         // Rumirren
         state = STATE_FIGUREWORK;
         StartWandering();
         Wander();
-
-
-
         return;
     }
 
@@ -313,11 +312,7 @@ void nofAggressiveDefender::NeedForHomeDefence()
     attacker = NULL;
 
     // Ziel Bescheid sagen
-    if(attacked_goal)
-    {
-        attacked_goal->UnlinkAggressiveDefender(this);
-        attacked_goal = 0;
-    }
+    CancelAtAttackedBld();
 }
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
@@ -326,11 +321,7 @@ void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
     // Angreifer Bescheid sagen
     attacker = NULL;
     // Ziel Bescheid sagen
-    if(attacked_goal)
-    {
-        attacked_goal->UnlinkAggressiveDefender(this);
-        attacked_goal = 0;
-    }
+    CancelAtAttackedBld();
 }
 
 

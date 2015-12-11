@@ -53,7 +53,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(0),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(NULL),
       harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -66,9 +66,8 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR),
-
       attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(0),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(NULL),
       harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -118,6 +117,7 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
 
 nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
+    blocking_event = NULL;
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
@@ -133,9 +133,10 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     }
     else
     {
-        attacked_goal = 0;
+        attacked_goal = NULL;
         should_haunted = 0;
         radius = 0;
+        ship_obj_id = 0;
     }
 
 }
@@ -381,7 +382,7 @@ void nofAttacker::HomeDestroyed()
                 CancelAtShip();
 
             // Rumirren
-            building = 0;
+            building = NULL;
             state = STATE_FIGUREWORK;
             StartWandering();
             Wander();
@@ -394,7 +395,7 @@ void nofAttacker::HomeDestroyed()
         {
             //  Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
-            building = 0;
+            building = NULL;
         } break;
     }
 
@@ -412,16 +413,6 @@ void nofAttacker::HomeDestroyedAtBegin()
     // Rumirren
     StartWandering();
     StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
-}
-
-/// Sagt dem Heimatgebäude Bescheid, dass er nicht mehr nach Hause kommen wird
-void nofAttacker::CancelAtHomeMilitaryBuilding()
-{
-    if(building)
-    {
-        building->SoldierLost(this);
-        building = NULL;
-    }
 }
 
 /// Wenn ein Kampf gewonnen wurde
@@ -500,8 +491,7 @@ void nofAttacker::LostFighting()
 {
     // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reinkönnen)
     // falls das Gebäude noch existiert
-    if(building)
-        building->SoldierLost(this);
+    AbrogateWorkplace();
 
     // Angreifer müssen zusätzlich ihrem Ziel Bescheid sagen
     if(attacked_goal)
@@ -1022,7 +1012,7 @@ void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigne
 void nofAttacker::SeaAttackFailedBeforeLaunch()
 {
     InformTargetsAboutCancelling();
-    CancelAtHomeMilitaryBuilding();
+    AbrogateWorkplace();
     goal_ = NULL;
     state = STATE_FIGUREWORK;
 }
@@ -1059,9 +1049,10 @@ void nofAttacker::CancelAtShip()
         {
             noShip* ship = static_cast<noShip*>(*it);
             ship->SeaAttackerWishesNoReturn();
-            return;
+            break;
         }
     }
+    ship_obj_id = 0;
 }
 
 /// Behandelt das Laufen zurück zum Schiff
@@ -1128,7 +1119,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
 void nofAttacker::CancelSeaAttack()
 {
     InformTargetsAboutCancelling();
-    CancelAtHomeMilitaryBuilding();
+    AbrogateWorkplace();
 }
 
 /// The derived classes regain control after a fight of nofActiveSoldier

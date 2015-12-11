@@ -111,8 +111,6 @@ class nofAttacker : public nofActiveSoldier
         void HomeDestroyed();
         /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
         void HomeDestroyedAtBegin();
-        /// Sagt dem Heimatgebäude Bescheid, dass er nicht mehr nach Hause kommen wird
-        void CancelAtHomeMilitaryBuilding();
 
         /// Wenn ein Kampf gewonnen wurde
         void WonFighting();

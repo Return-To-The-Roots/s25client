@@ -80,7 +80,7 @@ void nofSoldier::AbrogateWorkplace()
     if(building)
     {
         static_cast<nobMilitary*>(building)->SoldierLost(this);
-        building = 0;
+        building = NULL;
     }
 }
 

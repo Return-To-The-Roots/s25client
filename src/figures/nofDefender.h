@@ -51,7 +51,7 @@ class nofDefender : public nofActiveSoldier
         nofDefender(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    protected:  void Destroy_nofDefender() { Destroy_nofActiveSoldier(); }
+    protected:  void Destroy_nofDefender() { assert(!attacker); Destroy_nofActiveSoldier(); }
     public:     void Destroy() { Destroy_nofDefender(); }
 
         /// Serialisierungsfunktionen
@@ -76,12 +76,10 @@ class nofDefender : public nofActiveSoldier
         void LostFighting();
 
         /// Is the defender waiting at the flag for an attacker?
-        bool IsWaitingAtFlag() const
-        { return (state == STATE_DEFENDING_WAITING); }
+        bool IsWaitingAtFlag() const { return (state == STATE_DEFENDING_WAITING); }
         bool IsFightingAtFlag() const {return (state == STATE_FIGHTING);}
         /// Informs the defender that a fight between him and an attacker has started
-        void FightStarted()
-        { state = STATE_FIGHTING; }
+        void FightStarted() { state = STATE_FIGHTING; }
 
 
 };

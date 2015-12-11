@@ -83,8 +83,8 @@ nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 
 void nofBuilder::GoalReached()
 {
-
-    // Ansonsten an der Baustelle normal anfangen zu arbeiten
+    goal_ = NULL;
+    // an der Baustelle normal anfangen zu arbeiten
     state = STATE_WAITINGFREEWALK;
 
     // Sind jetzt an der Baustelle
@@ -92,7 +92,6 @@ void nofBuilder::GoalReached()
 
     // Anfangen um die Baustelle herumzulaufen
     StartFreewalk();
-
 }
 
 void nofBuilder::Walked()
@@ -101,19 +100,17 @@ void nofBuilder::Walked()
 
 void nofBuilder::AbrogateWorkplace()
 {
-
     if(building_site)
     {
         state = STATE_FIGUREWORK;
         building_site->Abrogate();
-        building_site = 0;
+        building_site = NULL;
     }
 }
 
 void nofBuilder::LostWork()
 {
-    building_site = 0;
-
+    building_site = NULL;
 
     if(state == STATE_FIGUREWORK)
         GoHome();
@@ -207,11 +204,10 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 rs_pos = 0;
                 rs_dir = true;
                 cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[4];
-                building_site = 0;
+                building_site = NULL;
 
                 GoHome();
                 StartWalking(4);
-
             }
             else
             {

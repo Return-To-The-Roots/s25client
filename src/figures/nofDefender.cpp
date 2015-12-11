@@ -211,7 +211,7 @@ void nofDefender::WonFighting()
 /// Wenn ein Kampf verloren wurde (Tod)
 void nofDefender::LostFighting()
 {
-    attacker = 0;
+    attacker = NULL;
 
     // Gebäude Bescheid sagen, falls es noch existiert
     if(building)
@@ -224,6 +224,7 @@ void nofDefender::LostFighting()
             if(static_cast<nobMilitary*>(building)->GetTroopsCount())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
+        building = NULL;
     }
 }
 
