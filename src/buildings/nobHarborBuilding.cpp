@@ -1080,60 +1080,39 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
     {
         (*it)->ArrivedByShip(pos);
 
-        if((*it)->GetJobType() == JOB_BOATCARRIER)
-        {
-            ++goods_.people[JOB_HELPER];
-            ++goods_.goods[GD_BOAT];
-        }
-        else
-            ++goods_.people[(*it)->GetJobType()];
-
-        // Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert
-        // werden
-        if ((*it)->HasNoGoal() || ((*it)->GetGoal() == this))
-        {
-            //required for expedition / exploration?
-            // Brauchen wir einen Bauarbeiter für die Expedition?
-            if((*it)->GetJobType() == JOB_BUILDER && expedition.active && !expedition.builder)
-            {
-                --goods_.people[(*it)->GetJobType()]; //reduce visual count again
-                nobBaseWarehouse::RemoveDependentFigure((*it));
-                em->AddToKillList((*it));
-                expedition.builder = true;
-                CheckExpeditionReady();
-            }
-            // Brauchen wir einen Spähter für die Expedition?
-            else if((*it)->GetJobType() == JOB_SCOUT && exploration_expedition.active && !IsExplorationExpeditionReady())
-            {
-                nobBaseWarehouse::RemoveDependentFigure((*it));
-                em->AddToKillList((*it));
-                ++exploration_expedition.scouts;
-                CheckExplorationExpeditionReady();
-            }
-            else    //not required for expedition / exploration:
-            {
-                AddFigure(*it, false);
-            }
-        }
-        else //figure has a different goal
+        // Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert werden
+        if((*it)->GetGoal() == this)
+            (*it)->SetGoalToNULL();
+        else if(!(*it)->HasNoGoal())
         {
             unsigned char nextDir;
             MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir);
 
             if (nextDir == 4)
             {
+                // Increase visual count
+                if((*it)->GetJobType() == JOB_BOATCARRIER)
+                {
+                    ++goods_.people[JOB_HELPER];
+                    ++goods_.goods[GD_BOAT];
+                }
+                else
+                    ++goods_.people[(*it)->GetJobType()];
                 AddLeavingFigure(*it);
                 (*it)->ShipJourneyEnded();
             }
             else if (nextDir == SHIP_DIR)
             {
                 AddFigureForShip(*it, next_harbor);
-            }
-            else
+            }else
             {
-                AddFigure(*it, false);
+                // No or invalid path -> Store here
+                assert(nextDir == 0xFF);
+                (*it)->SetGoalToNULL();
             }
         }
+        if ((*it)->HasNoGoal())
+             AddFigure(*it, true);
     }
     figures.clear();
 
