@@ -179,7 +179,7 @@ void nofDefender::WonFighting()
 	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
-    attacker = 0;
+    attacker = NULL;
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)

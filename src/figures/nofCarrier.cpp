@@ -724,13 +724,12 @@ void nofCarrier::AbrogateWorkplace()
         }
 
         workplace->CarrierAbrogated(this);
-        workplace = 0;
+        workplace = NULL;
         // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
         if(carried_ware)
         {
             carried_ware->WareLost(player);
-            delete carried_ware;
-            carried_ware = 0;
+            deletePtr(carried_ware);
         }
 
         state = CARRS_FIGUREWORK;

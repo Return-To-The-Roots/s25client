@@ -165,7 +165,7 @@ void nofWarehouseWorker::Walked()
                 delete carried_ware;
             }
             // Ich trage keine Ware mehr
-            carried_ware = 0;
+            carried_ware = NULL;
         }
     }
     else
@@ -182,7 +182,7 @@ void nofWarehouseWorker::Walked()
                 delete carried_ware;
             }
             // Ich trage keine Ware mehr
-            carried_ware = 0;
+            carried_ware = NULL;
         }
     }
 
@@ -200,8 +200,7 @@ void nofWarehouseWorker::AbrogateWorkplace()
     if(carried_ware)
     {
         carried_ware->WareLost(player);
-        delete carried_ware;
-        carried_ware = 0;
+        deletePtr(carried_ware);
     }
 
     StartWandering();

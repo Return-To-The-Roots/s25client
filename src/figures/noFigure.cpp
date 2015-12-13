@@ -144,7 +144,7 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id) : noMovable(s
     if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
         goal_ = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
     else
-        goal_ = 0;
+        goal_ = NULL;
 
     waiting_for_free_node = sgd.PopBool();
 
@@ -174,6 +174,7 @@ void noFigure::ActAtFirst()
             {
                 gwg->RemoveFigure(this, pos);
                 static_cast<nobBaseWarehouse*>(goal_)->AddFigure(this);
+                goal_ = NULL;
             }
             else
                 // ansonsten ganz normal rausgehen
@@ -705,7 +706,7 @@ void noFigure::GoHome(noRoadNode* goal)
     {
         // Kein Lagerhaus gefunden --> Rumirren
         StartWandering();
-        cur_rs = 0;
+        cur_rs = NULL;
     }
 }
 
@@ -713,9 +714,9 @@ void noFigure::GoHome(noRoadNode* goal)
 
 void noFigure::StartWandering(const unsigned burned_wh_id)
 {
+    assert(HasNoGoal());
     fs = FS_WANDER;
     cur_rs = 0;
-    goal_ = 0;
     rs_pos = 0;
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
@@ -917,7 +918,7 @@ void noFigure::WanderToFlag()
         {
             // ja, dann können wir ja hingehen
             goal_ = wh;
-            cur_rs = 0;
+            cur_rs = NULL;
             rs_pos = 0;
             fs = FS_GOHOME;
             wh->AddDependentFigure(this);
@@ -1169,9 +1170,13 @@ void noFigure::Abrogate()
     // Arbeisplatz oder Laghaus Bescheid sagen
     if(fs == FS_GOHOME)
     {
-        if(goal_) //goal might by NULL if goal was a harbor that got destroyed during sea travel
+        //goal might by NULL if goal was a harbor that got destroyed during sea travel
+        if(goal_)
+        {
+            assert(dynamic_cast<nobBaseWarehouse*>(goal_));
             static_cast<nobBaseWarehouse*>(goal_)->RemoveDependentFigure(this);
-        else
+            goal_ = NULL;
+        }else
         {
             if(!on_ship) //no goal but going home - should not happen
             {
@@ -1181,7 +1186,10 @@ void noFigure::Abrogate()
         }
     }
     else
+    {
+        goal_ = NULL;
         AbrogateWorkplace();
+    }
 }
 
 

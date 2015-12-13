@@ -299,8 +299,8 @@ void noBuildingSite::GotWorker(Job job, noFigure* worker)
 
 void noBuildingSite::Abrogate()
 {
-    planer = 0;
-    builder = 0;
+    planer = NULL;
+    builder = NULL;
 
     gwg->GetPlayer(player).AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER, this);
 }

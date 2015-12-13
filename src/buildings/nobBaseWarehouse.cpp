@@ -600,10 +600,6 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 else
                     fig->StartWandering();
 
-                // Kein Ziel gefunden, dann später gleich rumirren!
-                /*if(!wh)
-                    fig->StartWandering();*/
-
                 AddLeavingFigure(fig);
 
                 // Person aus Inventar entfernen

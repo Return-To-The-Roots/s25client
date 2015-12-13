@@ -1119,7 +1119,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
 void nofAttacker::CancelSeaAttack()
 {
     InformTargetsAboutCancelling();
-    AbrogateWorkplace();
+    Abrogate();
 }
 
 /// The derived classes regain control after a fight of nofActiveSoldier
