@@ -80,7 +80,7 @@ void nofActiveSoldier::GoalReached()
         else
             LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y,GAMECLIENT.GetGFNumber());
     }
-    static_cast<nobMilitary*>(building)->AddActiveSoldier(this);
+    building->AddActiveSoldier(this);
 
     // And remove myself from the map
     gwg->RemoveFigure(this, pos);
@@ -108,7 +108,6 @@ void nofActiveSoldier::WalkingHome()
         return;
     }
 
-
     // Walking home to our military building
 
     // Are we already at the flag?
@@ -131,13 +130,12 @@ void nofActiveSoldier::WalkingHome()
     // Or we don't find a route?
     if(dir == 0xFF)
     {
+        // Inform our home building that we're not coming anymore
+        Abrogate();
         // Start wandering around then
         StartWandering();
         state = STATE_FIGUREWORK;
         Wander();
-
-        // Inform our home building that we're not coming anymore
-        building->SoldierLost(this);
     }
     // All ok?
     else
@@ -388,7 +386,6 @@ void nofActiveSoldier::MeetingEnemy()
                 enemy = NULL;
 
                 FreeFightEnded();
-
                 Walked();
             }
             // Spot is still ok, let's wait for the enemy
@@ -451,9 +448,6 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
     {
         MeetingEnemy();
     }
-
-
-
 }
 
 /// Looks for an appropriate fighting spot between the two soldiers
