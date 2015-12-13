@@ -106,10 +106,10 @@ void nofDefender::Walked()
             {
                 // mich von der Landkarte tilgen
                 gwg->RemoveFigure(this, pos);
-                // mich zum Gebäude wieder hinzufügen
-                building->AddActiveSoldier(this);
                 // Gebäude Bescheid sagen, dass es nun keinen Verteidiger mehr gibt
                 building->NoDefender();
+                // mich zum Gebäude wieder hinzufügen
+                building->AddActiveSoldier(this);
             }
 
         } break;

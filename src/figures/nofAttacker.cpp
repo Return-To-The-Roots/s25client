@@ -819,8 +819,7 @@ void nofAttacker::CapturingWalking()
         attacked_goal->AddActiveSoldier(this);
 
         // Ein erobernder Soldat weniger
-        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS &&
-                attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
             static_cast<nobMilitary*>(attacked_goal)->CapturingSoldierArrived();
 
         // außerdem aus der Angreiferliste entfernen
