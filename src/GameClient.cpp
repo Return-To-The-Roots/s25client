@@ -1599,10 +1599,6 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF()
 {
-    if(framesinfo.nr == 83831)
-    {
-        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
-    }
     // Statistiken aktualisieren
     StatisticStep();
     //  EventManager Bescheid sagen
