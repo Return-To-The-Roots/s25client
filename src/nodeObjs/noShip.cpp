@@ -577,8 +577,6 @@ unsigned noShip::GetCurrentHarbor() const
 /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
 void noShip::ContinueExpedition(const unsigned char dir)
 {
-    assert(state == STATE_EXPEDITION_WAITING);
-
     if(state != STATE_EXPEDITION_WAITING)
         return;
 
