@@ -78,7 +78,9 @@ void EventManager::Clear()
 
 EventManager::EventPointer EventManager::AddEvent(EventPointer event)
 {
-    assert(event->gf_next > GAMECLIENT.GetGFNumber()); // Should be in the future!
+    // Should be in the future!
+    // At the current GF is allowed as long as a std::list is used for the events of one GF because it retains iterator validy even on modify
+    assert(event->gf_next >= GAMECLIENT.GetGFNumber());
     events[event->gf_next].push_back(event);
     return event;
 }
@@ -288,9 +290,12 @@ void EventManager::RemoveEvent(EventPointer& ep)
     ep = NULL;
 }
 
+#include "figures/noFigure.h"
+
 void EventManager::AddToKillList(GameObject* obj)
 {
     assert(obj);
     assert(!helpers::contains(kill_list, obj));
+    assert(!dynamic_cast<noFigure*>(obj) || static_cast<noFigure*>(obj)->HasNoGoal());
     kill_list.push_back(obj);
 }
