@@ -72,7 +72,11 @@ void EventManager::Clear()
     events.clear();
 
     for(GameObjList::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
-        delete *it;
+    {
+        GameObject* obj = *it;
+        *it = NULL;
+        delete obj;
+    }
     kill_list.clear();
 }
 
