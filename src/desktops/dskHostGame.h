@@ -89,6 +89,7 @@ class dskHostGame :
         void LC_Status_Error(const std::string& error);
 
         void GoBack();
+        bool IsSinglePlayer(){ return serverType == ServerType::LOCAL; }
     private:
         GlobalGameSettings ggs_;
         bool hasCountdown_;

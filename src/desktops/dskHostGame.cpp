@@ -74,7 +74,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     // "Team"
     AddText(14, 405, 40, _("Team"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
-    if (serverType != ServerType::LOCAL)
+    if (!IsSinglePlayer())
     {
         // "Bereit"
         AddText(15, 465, 40, _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
@@ -88,7 +88,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     if(GAMECLIENT.IsSavegame())
         AddText(17, 645, 40, _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
-    if (serverType != ServerType::LOCAL)
+    if (!IsSinglePlayer())
     {
         // Chatfenster
         AddChatCtrl(1, 20, 320, 360, 218, TC_GREY, NormalFont);
@@ -178,7 +178,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         }
     }
 
-    if (serverType == ServerType::LOCAL && !GAMECLIENT.IsSavegame())
+    if (IsSinglePlayer() && !GAMECLIENT.IsSavegame())
     {
         // Setze initial auf KI
         for (unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
@@ -369,7 +369,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 void dskHostGame::Msg_PaintBefore()
 {
     // Chatfenster Fokus geben
-    if (serverType != ServerType::LOCAL)
+    if (!IsSinglePlayer())
     {
         GetCtrl<ctrlEdit>(4)->SetFocus();
     }
@@ -528,7 +528,7 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const u
 
 void dskHostGame::GoBack()
 {
-    if (serverType == ServerType::LOCAL)
+    if (IsSinglePlayer())
         WINDOWMANAGER.Switch(new dskSinglePlayer);
     else if (serverType == ServerType::LAN)
         WINDOWMANAGER.Switch(new dskLAN);
@@ -647,7 +647,7 @@ void dskHostGame::CI_Countdown(int countdown)
 {
     hasCountdown_ = true;
 
-    if (serverType == ServerType::LOCAL)
+    if (IsSinglePlayer())
         return;
 
     std::stringstream message;
@@ -675,7 +675,7 @@ void dskHostGame::CI_Countdown(int countdown)
  */
 void dskHostGame::CI_CancelCountdown()
 {
-    if (serverType == ServerType::LOCAL)
+    if (IsSinglePlayer())
         return;
 
     GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
@@ -936,7 +936,7 @@ void dskHostGame::CI_GameStarted(GameWorldViewer* gwv)
  */
 void dskHostGame::CI_PSChanged(const unsigned player_id, const PlayerState ps)
 {
-    if ((serverType == ServerType::LOCAL) && (ps == PS_FREE))
+    if (IsSinglePlayer() && (ps == PS_FREE))
         GAMESERVER.TogglePlayerState(player_id);
 
     UpdatePlayerRow(player_id);
@@ -1046,7 +1046,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
  */
 void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
-    if ((player_id != 0xFFFFFFFF) && serverType != ServerType::LOCAL)
+    if ((player_id != 0xFFFFFFFF) && !IsSinglePlayer())
     {
         std::string time = TIME.FormatTime("(%H:%i:%s)");
 
