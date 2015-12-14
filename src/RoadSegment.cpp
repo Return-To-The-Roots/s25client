@@ -86,9 +86,10 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned int obj_id)
  */
 void RoadSegment::Destroy_RoadSegment()
 {
-    assert(f1);
-
-    if(f1)
+    // This can be the road segment from the flag to the building (always in this order!)
+    // Those are not considered "roads" and therefore never registered
+    assert(f1->GetGOT() == GOT_FLAG);
+    if(f2->GetGOT() == GOT_FLAG)
         gwg->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
 
     if(carriers_[0])

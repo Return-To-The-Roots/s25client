@@ -429,12 +429,12 @@ void noFigure::WalkToGoal()
             else if(route == SHIP_DIR)
             {
                 // Uns in den Hafen einquartieren
-                noBase* nob;
-                if((nob = gwg->GetNO(pos))->GetGOT() != GOT_NOB_HARBORBUILDING)
+                noBase* nob = gwg->GetNO(pos);
+                if(nob->GetGOT() != GOT_NOB_HARBORBUILDING)
                 {
                     // Es gibt keinen Hafen mehr -> nach Hause gehen
 
-                    // Arbeisplatz oder Laghaus Bescheid sagen
+                    // Arbeitsplatz oder Lagerhaus Bescheid sagen
                     Abrogate();
                     // Wir gehen jetzt nach Hause
                     GoHome();

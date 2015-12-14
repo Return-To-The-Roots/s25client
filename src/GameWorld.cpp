@@ -100,7 +100,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
     // Dummy-Hafenpos für Index 0 einfügen // ask Oliverr why!
     // -> I just did, the dummy is so that the harbor "0" might be used for ships with no particular destination
     // poc: if you ever remove this dummy go to GameWorldBase::CalcDistanceToNearestHarbor and fix the loop to include the first harbor again (think Ive seen other instances of dummyadjusted loops as well...)
-    GameWorldBase::HarborPos dummy(MapPoint(0, 0));
+    HarborPos dummy(MapPoint(0, 0));
     
     harbor_pos.push_back(dummy);
 
@@ -123,7 +123,7 @@ void GameWorld::Scan(glArchivItem_Map* map)
             // Hafenplatz?
             if(TerrainData::IsHarborSpot(t1))
             {	
-				GameWorldBase::HarborPos p(pt);
+				HarborPos p(pt);
                 node.harbor_id = harbor_pos.size();
                 harbor_pos.push_back(p);
             }
@@ -530,46 +530,9 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
 
 
     // Alle Weltpunkte serialisieren
-    for(unsigned i = 0; i < map_size; ++i)
+    for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        for(unsigned z = 0; z < 3; ++z)
-        {
-            if(nodes[i].roads_real[z])
-                sgd.PushUnsignedChar(nodes[i].roads[z]);
-            else
-                sgd.PushUnsignedChar(0);
-        }
-
-        sgd.PushUnsignedChar(nodes[i].altitude);
-        sgd.PushUnsignedChar(nodes[i].shadow);
-        sgd.PushUnsignedChar(nodes[i].t1);
-        sgd.PushUnsignedChar(nodes[i].t2);
-        sgd.PushUnsignedChar(nodes[i].resources);
-        sgd.PushBool(nodes[i].reserved);
-        sgd.PushUnsignedChar(nodes[i].owner);
-        for(unsigned b = 0; b < 4; ++b)
-            sgd.PushUnsignedChar(nodes[i].boundary_stones[b]);
-        sgd.PushUnsignedChar(static_cast<unsigned char>(nodes[i].bq));
-        for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
-        {
-            const MapNode::FoWData& fow = nodes[i].fow[z];
-            sgd.PushUnsignedChar(static_cast<unsigned char>(fow.visibility));
-            // Nur im FoW können FOW-Objekte stehen
-            if(fow.visibility == VIS_FOW)
-            {
-                sgd.PushUnsignedInt(fow.last_update_time);
-                sgd.PushFOWObject(fow.object);
-                for(unsigned r = 0; r < 3; ++r)
-                    sgd.PushUnsignedChar(fow.roads[r]);
-                sgd.PushUnsignedChar(fow.owner);
-                for(unsigned b = 0; b < 4; ++b)
-                    sgd.PushUnsignedChar(fow.boundary_stones[b]);
-            }
-        }
-        sgd.PushObject(nodes[i].obj, false);
-        sgd.PushObjectContainer(nodes[i].figures, false);
-        sgd.PushUnsignedShort(nodes[i].sea_id);
-        sgd.PushUnsignedInt(nodes[i].harbor_id);
+        it->Serialize(sgd);
     }
 
     // Katapultsteine serialisieren
@@ -624,61 +587,21 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
             tgs[i] = new TradeGraph(sgd, this);
     }
 
-    // Alle Weltpunkte serialisieren
-    for(unsigned i = 0; i < map_size; ++i)
+    // Alle Weltpunkte
+    MapPoint curPos(0,0);
+    for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        for(unsigned z = 0; z < 3; ++z)
+        it->Deserialize(sgd);
+        if (it->harbor_id)
         {
-            nodes[i].roads[z] = sgd.PopUnsignedChar();
-            nodes[i].roads_real[z] = nodes[i].roads[z] ? true : false;
-        }
-
-
-        nodes[i].altitude = sgd.PopUnsignedChar();
-        nodes[i].shadow = sgd.PopUnsignedChar();
-        nodes[i].t1 = TerrainType(sgd.PopUnsignedChar());
-        nodes[i].t2 = TerrainType(sgd.PopUnsignedChar());
-        nodes[i].resources = sgd.PopUnsignedChar();
-        nodes[i].reserved = sgd.PopBool();
-        nodes[i].owner = sgd.PopUnsignedChar();
-        for(unsigned b = 0; b < 4; ++b)
-            nodes[i].boundary_stones[b] = sgd.PopUnsignedChar();
-        nodes[i].bq = BuildingQuality(sgd.PopUnsignedChar());
-        for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
-        {
-            MapNode::FoWData& fow = nodes[i].fow[z];
-            fow.visibility = Visibility(sgd.PopUnsignedChar());
-            // Nur im FoW können FOW-Objekte stehen
-            if(fow.visibility == VIS_FOW)
-            {
-                fow.last_update_time = sgd.PopUnsignedInt();
-                fow.object = sgd.PopFOWObject();
-                for(unsigned r = 0; r < 3; ++r)
-                    fow.roads[r] = sgd.PopUnsignedChar();
-                fow.owner = sgd.PopUnsignedChar();
-                for(unsigned b = 0; b < 4; ++b)
-                    fow.boundary_stones[b] = sgd.PopUnsignedChar();
-            }
-            else
-            {
-                fow.last_update_time = 0;
-                fow.object = NULL;
-                for(unsigned r = 0; r < 3; ++r)
-                    fow.roads[r] = 0;
-                fow.owner = 0;
-                for(unsigned b = 0; b < 4; ++b)
-                    fow.boundary_stones[b] = 0;
-            }
-        }
-        nodes[i].obj = sgd.PopObject<noBase>(GOT_UNKNOWN);
-        sgd.PopObjectContainer(nodes[i].figures, GOT_UNKNOWN);
-        nodes[i].sea_id = sgd.PopUnsignedShort();
-        nodes[i].harbor_id = sgd.PopUnsignedInt();
-
-        if (nodes[i].harbor_id)
-        {
-            GameWorldBase::HarborPos p(MapPoint((MapCoord) (i % width_), (MapCoord) (i / width_)));
+            HarborPos p(curPos);
             harbor_pos.push_back(p);
+        }
+        curPos.x++;
+        if(curPos.x >= width_)
+        {
+            curPos.x = 0;
+            curPos.y++;
         }
     }
 

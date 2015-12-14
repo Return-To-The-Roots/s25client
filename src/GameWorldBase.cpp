@@ -220,10 +220,10 @@ GameWorldBase::~GameWorldBase()
 
 void GameWorldBase::Init()
 {
-    map_size = width_ * height_;
+    const unsigned numNodes = width_ * height_;
 
     // Map-Knoten erzeugen
-    nodes.resize(map_size);
+    nodes.resize(numNodes);
     military_squares.resize((width_ / MILITARY_SQUARE_SIZE + 1) * (height_ / MILITARY_SQUARE_SIZE + 1));
 }
 
@@ -231,17 +231,15 @@ void GameWorldBase::Unload()
 {
     // Straßen sammeln und alle dann vernichten
     std::set<RoadSegment*> roadsegments;
-    for(unsigned i = 0; i < map_size; ++i)
+     for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if(!nodes[i].obj)
-            continue;
-        if(nodes[i].obj->GetGOT() != GOT_FLAG)
+        if(!it->obj || it->obj->GetGOT() != GOT_FLAG)
             continue;
         for(unsigned r = 0; r < 6; ++r)
         {
-            if(static_cast<noFlag*>(nodes[i].obj)->routes[r])
+            if(static_cast<noFlag*>(it->obj)->routes[r])
             {
-                roadsegments.insert(static_cast<noFlag*>(nodes[i].obj)->routes[r]);
+                roadsegments.insert(static_cast<noFlag*>(it->obj)->routes[r]);
             }
         }
     }
@@ -251,22 +249,13 @@ void GameWorldBase::Unload()
 
 
     // Objekte vernichten
-    for(unsigned i = 0; i < map_size; ++i)
+    for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if(nodes[i].obj)
-        {
-            delete nodes[i].obj;
-            nodes[i].obj = NULL;
-        }
+        deletePtr(it->obj);
 
         for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
         {
-            MapNode::FoWData& fow = nodes[i].fow[z];
-            if(fow.object)
-            {
-                delete fow.object;
-                fow.object = NULL;
-            }
+            deletePtr(it->fow[z].object);
         }
     }
 
@@ -284,8 +273,6 @@ void GameWorldBase::Unload()
 
     nodes.clear();
     military_squares.clear();
-
-    map_size = 0;
 }
 
 GameClientPlayer& GameWorldBase::GetPlayer(const unsigned int id) const

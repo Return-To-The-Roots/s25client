@@ -26,6 +26,7 @@
 
 class FOWObject;
 class noBase;
+class SerializedGameData;
 
 /// Eigenschaften von einem Punkt auf der Map
 struct MapNode
@@ -76,6 +77,9 @@ struct MapNode
     noBase* obj;
     /// Figuren, Kämpfe, die sich dort befinden
     std::list<noBase*> figures;
+
+    void Serialize(SerializedGameData& sgd) const;
+    void Deserialize(SerializedGameData& sgd);
 };
 
 #endif // MapNode_h__

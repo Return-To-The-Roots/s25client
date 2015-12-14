@@ -156,8 +156,6 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
     gi->GI_FlagDestroyed(pt);
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den echten Straßen-Wert an der Stelle X, Y (berichtigt).
@@ -185,7 +183,6 @@ void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char 
         gi->GI_UpdateMinimap(pt);
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Straßen-Wert um den Punkt X, Y.
@@ -201,8 +198,6 @@ void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned 
     else
         SetRoad(GetNeighbour(pt, dir), dir, type);
 }
-
-
 
 void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
 {
@@ -223,19 +218,12 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
             throw std::runtime_error("Added figure that is in surrounding?");
     }
 #endif // NDEBUG
-
-    //if(fig->GetDir() == 1 || fig->GetDir() == 2)
-    //  figures[y*width+x].push_front(fig);
-    //else
-    //  figures[y*width+x].push_back(fig);
 }
 
 void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)
 {
     GetNode(pt).figures.remove(fig);
 }
-
-
 
 void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
 {
@@ -449,10 +437,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     GetPlayer(playerid).NewRoad(rs);
     // notify ai about the new road
     GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, start, route[0]), playerid);
-
 }
-
-
 
 bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
 {
@@ -912,7 +897,6 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
         }
     }
 
-
     // ggf. Weg kappen
     unsigned char dir;
     noFlag* flag = GetRoadFlag(pt, dir, 0xFF);
@@ -928,7 +912,6 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
         flag->DestroyRoad(dir);
     }
 }
-
 
 bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
 {
@@ -985,8 +968,6 @@ void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
         }
     }
 }
-
-
 
 /// Kleine Klasse für Angriffsfunktion für einen potentielle angreifenden Soldaten
 struct PotentialAttacker
@@ -1118,8 +1099,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     // Send the soldiers to attack
     unsigned short i = 0;
 
-    for(std::list<PotentialAttacker>::iterator it = soldiers.begin();
-            it != soldiers.end() && i < soldiers_count; ++i, ++it)
+    for(std::list<PotentialAttacker>::iterator it = soldiers.begin(); it != soldiers.end() && i < soldiers_count; ++i, ++it)
     {
         // neuen Angreifer-Soldaten erzeugen
         new nofAttacker(it->soldier, attacked_building);
@@ -1269,14 +1249,29 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
 
 void GameWorldGame::Armageddon()
 {
-    for(unsigned i = 0; i < map_size; ++i)
+     for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if(nodes[i].obj)
+        if(it->obj && it->obj->GetGOT() == GOT_FLAG)
         {
-            if(nodes[i].obj->GetGOT() == GOT_FLAG)
+            noFlag* flag = static_cast<noFlag*>(it->obj);
+            it->obj = NULL;
+            flag->DestroyAttachedBuilding();
+            flag->Destroy();
+            delete flag;
+        }
+    }
+}
+
+void GameWorldGame::Armageddon(const unsigned char player)
+{
+     for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        if(it->obj && it->obj->GetGOT() == GOT_FLAG)
+        {
+            noFlag* flag = static_cast<noFlag*>(it->obj);
+            if (flag->GetPlayer() == player)
             {
-                noFlag* flag = static_cast<noFlag*>(nodes[i].obj);
-                nodes[i].obj = 0;
+                it->obj = NULL;
                 flag->DestroyAttachedBuilding();
                 flag->Destroy();
                 delete flag;
@@ -1284,29 +1279,6 @@ void GameWorldGame::Armageddon()
         }
     }
 }
-
-void GameWorldGame::Armageddon(const unsigned char player)
-{
-    for(unsigned i = 0; i < map_size; ++i)
-    {
-        if(nodes[i].obj)
-        {
-            if(nodes[i].obj->GetGOT() == GOT_FLAG)
-            {
-                noFlag* flag = static_cast<noFlag*>(nodes[i].obj);
-                if (flag->GetPlayer() == player)
-                {
-                    nodes[i].obj = 0;
-                    flag->DestroyAttachedBuilding();
-                    flag->Destroy();
-                    delete flag;
-                }
-            }
-        }
-    }
-}
-
-
 
 bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center)
 {
@@ -1986,6 +1958,12 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, pos), player);
 
     return true;
+}
+
+void GameWorldGame::RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site)
+{
+    assert(building_site->GetBuildingType() == BLD_HARBORBUILDING);
+    harbor_building_sites_from_sea.remove(building_site);
 }
 
 /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
