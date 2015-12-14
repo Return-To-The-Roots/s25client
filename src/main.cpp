@@ -305,7 +305,7 @@ int main(int argc, char* argv[])
         csi.gamename = _("Unlimited Play");
         csi.password = "localgame";
         csi.port = 3665;
-        csi.type = NP_LOCAL;
+        csi.type = ServerType::LOCAL;
         csi.ipv6 = false;
         csi.use_upnp = false;
 
