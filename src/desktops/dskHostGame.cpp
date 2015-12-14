@@ -55,8 +55,8 @@ static char THIS_FILE[] = __FILE__;
  *  @author Devil
  *  @author FloSoft
  */
-dskHostGame::dskHostGame(ServerType serverType) :
-    Desktop(LOADER.GetImageN("setup015", 0)), temppunkte_(0), hasCountdown_(false), serverType(serverType)
+dskHostGame::dskHostGame(const ServerType serverType) :
+    Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType)
 {
     const bool readonlySettings = !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame();
 

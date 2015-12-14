@@ -35,7 +35,7 @@ class dskHostGame :
     public:
 
         /// Map übergeben, damit die Kartenvorschau erstellt werden kann
-        dskHostGame(ServerType serverType);
+        dskHostGame(const ServerType serverType);
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
         void Resize_(unsigned short width, unsigned short height);
@@ -90,10 +90,9 @@ class dskHostGame :
 
         void GoBack();
     private:
-        int temppunkte_; // TODO - wegmachen und durch korrekte punkte ersetzen!
         GlobalGameSettings ggs_;
         bool hasCountdown_;
-        ServerType serverType;
+        const ServerType serverType;
 };
 
 
