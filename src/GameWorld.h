@@ -49,10 +49,17 @@ class GameWorld : public GameWorldViewer, public GameWorldGame
         unsigned MeasureSea(const MapPoint pt, const unsigned short sea_id);
 
         /// Erstellt Objekte anhand der ausgelesenen S2map
-        void Scan(glArchivItem_Map* map);
+        void Scan(const glArchivItem_Map& map);
 
-        /// random function using RANDOM.Rand(...) for std::random_shuffle
-        static ptrdiff_t myRandom(ptrdiff_t max);
+        void InitSeasAndHarbors();
+
+        /// Inititalizes the nodes according to the map data
+        void InitNodes(const glArchivItem_Map& map);
+        /// Places all objects on the nodes according to the map data. Returns the positions of the HQs
+        std::vector<MapPoint> PlaceObjects(const glArchivItem_Map& map);
+        void PlaceHQs(std::vector<MapPoint> &headquarter_positions);
+        void PlaceAnimals(const glArchivItem_Map& map);
+
 };
 
 #endif // GameWorld_h__

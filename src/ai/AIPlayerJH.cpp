@@ -426,8 +426,8 @@ void AIPlayerJH::InitReachableNodes()
         {
             unsigned i = gwb.GetIdx(pt);
             nodes[i].reachable = false;
-            const noFlag* myFlag = 0;
-            if ( (myFlag = aii->GetSpecObj<noFlag>(pt)) )
+            const noFlag* myFlag = aii->GetSpecObj<noFlag>(pt);
+            if (myFlag)
             {
                 if (myFlag->GetPlayer() == playerid)
                 {
