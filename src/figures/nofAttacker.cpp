@@ -375,6 +375,7 @@ void nofAttacker::HomeDestroyed()
             // Hier muss sofort reagiert werden, da man steht
 
             // Angreifer muss zusätzlich seinem Ziel Bescheid sagen
+            nobBaseMilitary* curGoal = attacked_goal; // attacked_goal gets reset
             RemoveFromAttackedGoal();
 
             // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
@@ -388,7 +389,7 @@ void nofAttacker::HomeDestroyed()
             Wander();
 
             // und evtl einen Nachrücker für diesen Platz suchen
-            attacked_goal->SendSuccessor(pos, radius, GetCurMoveDir());
+            curGoal->SendSuccessor(pos, radius, GetCurMoveDir());
         } break;
 
         default:
