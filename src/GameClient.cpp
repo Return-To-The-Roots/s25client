@@ -455,6 +455,7 @@ void GameClient::RealStart()
  */
 void GameClient::ExitGame()
 {
+    GameObject::SetPointers(NULL, NULL, NULL);
     // Spielwelt zerstören
     delete gw;
     delete em;
@@ -462,8 +463,6 @@ void GameClient::ExitGame()
     em = 0;
 
     players.clear();
-
-    GameObject::SetPointers(gw, em, &players);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
