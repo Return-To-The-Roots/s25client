@@ -1276,6 +1276,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 {
     unsigned best_distance = 0xffffffff;
     unsigned best_harbor_point = 0xffffffff;
+    assert(attacker->GetAttackedGoal());
     std::vector<unsigned> harbor_points = gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
     for(unsigned i = 0; i < harbor_points.size(); ++i)
     {
