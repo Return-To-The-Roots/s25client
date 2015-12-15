@@ -229,7 +229,6 @@ std::vector<MapPoint> GameWorld::PlaceObjects(const glArchivItem_Map& map)
     {
         for(pt.x = 0; pt.x < width_; ++pt.x)
         {
-            unsigned int pos = GetIdx(pt);
             unsigned char lc = map.GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
             noBase* obj = NULL;
 
@@ -431,8 +430,9 @@ void GameWorld::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
 
     //random locations? -> randomize them :)
     if (GAMECLIENT.GetGGS().random_location)
-                {
-        std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end(), RandomFunctor());
+    {
+        RandomFunctor random;
+        std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end(), random);
 
         for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
             GetPlayer(i).hqPos = headquarter_positions.at(i);
