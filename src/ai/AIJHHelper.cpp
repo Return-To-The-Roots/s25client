@@ -412,11 +412,6 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
         status = AIJH::JOB_FINISHED;
 }
 
-void AIJH::ExpandJob::ExecuteJob()
-{
-
-}
-
 
 void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be finished or failed after execution (no wait or progress)
 {
