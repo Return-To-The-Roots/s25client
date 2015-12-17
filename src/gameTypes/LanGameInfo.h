@@ -17,7 +17,7 @@
 #ifndef LAN_GAME_INFO_H_INCLUDED
 #define LAN_GAME_INFO_H_INCLUDED
 
-#include <cstdint>
+#include <stdint.h>
 #include <string>
 
 class Serializer;
