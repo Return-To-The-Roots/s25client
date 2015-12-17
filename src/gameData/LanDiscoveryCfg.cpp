@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h"
-#include "LANDiscoveryCfg.h"
+#include "LanDiscoveryCfg.h"
 
 static LANDiscoveryBase::Config makeDiscoveryConfig()
 {
