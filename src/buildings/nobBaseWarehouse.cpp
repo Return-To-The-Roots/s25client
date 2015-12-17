@@ -1000,6 +1000,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
 void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen
+    assert(dynamic_cast<nofActiveSoldier*>(soldier));
     assert(helpers::contains(troops_on_mission, static_cast<nofActiveSoldier*>(soldier)));
     troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
 }
@@ -1046,7 +1047,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         for(unsigned i = 0; i < 5; ++i)
         {
 
-            // anderere Soldaten bevorzugen
+            // andere Soldaten bevorzugen
             if(real_goods.people[JOB_PRIVATE + i])
             {
                 if(r == rank)
@@ -1083,33 +1084,29 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     // Kein Soldat gefunden, als letzten Hoffnung die Soldaten nehmen, die ggf in der Warteschlange noch hängen
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
     {
+        nofSoldier* soldier;
         // Soldat?
         if((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
         {
-            static_cast<nofAggressiveDefender*>(*it)->NeedForHomeDefence();
-            // Aus Missionsliste raushauen
-            assert(helpers::contains(troops_on_mission, static_cast<nofAggressiveDefender*>(*it)));
-            troops_on_mission.remove(static_cast<nofAggressiveDefender*>(*it));
-
-            nofDefender* soldier = new nofDefender(pos, player, this, static_cast<nofAggressiveDefender*>(*it)->GetRank(), attacker);
-            (*it)->Destroy();
-            delete *it;
-            leave_house.erase(it);
-            return soldier;
+            nofAggressiveDefender* aggDefender = static_cast<nofAggressiveDefender*>(*it);
+            aggDefender->NeedForHomeDefence();
+            soldier = aggDefender;
         }
         else if((*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
-        {
-            (*it)->Abrogate();
-            nofDefender* soldier = new nofDefender(pos, player, this, static_cast<nofPassiveSoldier*>(*it)->GetRank(), attacker);
-            (*it)->Destroy();
-            delete *it;
-            leave_house.erase(it);
-            return soldier;
-        }
+            soldier = static_cast<nofPassiveSoldier*>(*it);
+        else
+            continue;
+
+        leave_house.erase(it); //Only allowed in the loop as we return now
+        soldier->Abrogate();
+
+        nofDefender* defender = new nofDefender(pos, player, this, soldier->GetRank(), attacker);
+        soldier->Destroy();
+        delete soldier;
+        return defender;
     }
 
     return NULL;
-
 }
 
 
