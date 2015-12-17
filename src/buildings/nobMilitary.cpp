@@ -683,9 +683,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
         RegulateTroops();
     }else
     {
-        nofAttacker* attacker = dynamic_cast<nofAttacker*>(soldier);
-        assert(attacker);
-        UnlinkAggressor(attacker);
+        assert(dynamic_cast<nofAttacker*>(soldier));
     }
 }
 

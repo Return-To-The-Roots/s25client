@@ -244,6 +244,7 @@ void nofAttacker::Walked()
                 // Ist das Gebäude ein "normales Militärgebäude", das wir da erobert haben?
                 if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
                 {
+                    assert(dynamic_cast<nobMilitary*>(attacked_goal));
                     // Meinem Heimatgebäude Bescheid sagen, dass ich nicht mehr komme (falls es noch eins gibt)
                     if(building)
                         building->SoldierLost(this);
@@ -251,16 +252,17 @@ void nofAttacker::Walked()
                     if(ship_obj_id)
                         CancelAtShip();
                     // Gebäude einnehmen
-                    static_cast<nobMilitary*>(attacked_goal)->Capture(player);
-                    // This is the new home. Store also in temporary if the new home wants to destroy/convert the soldier
-                    nobBaseMilitary* newHome = building = attacked_goal;
-                    RemoveFromAttackedGoal();
+                    nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+                    goal->Capture(player);
+                    // This is the new home
+                    building = attacked_goal;
                     // mich zum Gebäude hinzufügen und von der Karte entfernen
-                    newHome->AddActiveSoldier(this);
+                    attacked_goal->AddActiveSoldier(this);
+                    RemoveFromAttackedGoal();
                     gwg->RemoveFigure(this, pos);
                     // ggf. weitere Soldaten rufen, damit das Gebäude voll wird
-                    assert(newHome->GetPlayer() == player);
-                    static_cast<nobMilitary*>(newHome)->NeedOccupyingTroops();
+                    assert(goal->GetPlayer() == player);
+                    goal->NeedOccupyingTroops();
                 }
                 // oder ein Hauptquartier oder Hafen?
                 else
@@ -972,10 +974,10 @@ void nofAttacker::InformTargetsAboutCancelling()
 }
 
 void nofAttacker::RemoveFromAttackedGoal()
-    {
-        attacked_goal->UnlinkAggressor(this);
+{
+    attacked_goal->UnlinkAggressor(this);
     attacked_goal = NULL;
-    }
+}
 
 /// Startet den Angriff am Landungspunkt vom Schiff
 void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id)
