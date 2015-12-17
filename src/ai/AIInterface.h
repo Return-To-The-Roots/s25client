@@ -18,23 +18,15 @@
 #ifndef AIINTERFACE_H_
 #define AIINTERFACE_H_
 
-//TODO: Cleanup includes!
-#include "defines.h"
-#include "GameClientPlayer.h"
-#include "AIJHHelper.h"
 #include "GameWorldBase.h"
-#include "buildings/nobMilitary.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "buildings/nobHarborBuilding.h"
-#include "nodeObjs/noShip.h"
-#include "buildings/noBuilding.h"
-#include "buildings/nobBaseMilitary.h"
-#include "nodeObjs/noFlag.h"
-#include "buildings/nobShipYard.h"
+#include "GameClientPlayer.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/Direction.h"
+#include "ai/Resource.h"
+#include "NodalObjectTypes.h"
 
 class nobHQ;
+class nobShipYard;
 
 class AIInterface: public GameCommandFactory<AIInterface>
 {
@@ -230,19 +222,14 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Tests whether there is a possibility to start a expedtion in a given direction from a given position, assuming a given starting harbor
         bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const;
 
-        void ToggleCoins(const nobMilitary* building) { ToggleCoins(building->GetPos()); }
+        void ToggleCoins(const nobMilitary* building);
         using GC_Factory::ToggleCoins;
 
 		///getnation
 		unsigned GetNation() {return player_.nation;}
 
-        void StartExpedition(const nobHarborBuilding* harbor) { StartExpedition(harbor->GetPos()); }
+        void StartExpedition(const nobHarborBuilding* harbor);
         using GC_Factory::StartExpedition;
-
-        /// Changes an inventory setting of a harbor/storehouse/headquarter
-        void ChangeInventorySetting(const MapPoint pt); // TODO: more parameters needed
-        void ChangeInventorySetting(const nobBaseWarehouse* warehouse) { ChangeInventorySetting(warehouse->GetPos()); }
-        using GC_Factory::ChangeInventorySetting;
 
         /// Lets a ship found a colony
         void FoundColony(const noShip* ship) { FoundColony(player_.GetShipID(ship)); }
@@ -254,16 +241,16 @@ class AIInterface: public GameCommandFactory<AIInterface>
         void CancelExpedition(const noShip* ship) { CancelExpedition(player_.GetShipID(ship)); }
         using GC_Factory::CancelExpedition;
 
-        void ToggleShipYardMode(const nobShipYard* yard) { ToggleShipYardMode(yard->GetPos()); }
+        void ToggleShipYardMode(const nobShipYard* yard);
         using GC_Factory::ToggleShipYardMode;
 
-        void DestroyBuilding(const noBuilding* building) { DestroyBuilding(building->GetPos()); }
+        void DestroyBuilding(const noBuilding* building);
         using GC_Factory::DestroyBuilding;
 
-        void DestroyFlag(const noFlag* flag) { DestroyFlag(flag->GetPos()); }
+        void DestroyFlag(const noFlag* flag);
         using GC_Factory::DestroyFlag;
 
-        void CallGeologist(const noFlag* flag) { CallGeologist(flag->GetPos()); }
+        void CallGeologist(const noFlag* flag);
         using GC_Factory::CallGeologist;
 
         /// Sends a chat message to all players TODO: enemy/ally-chat

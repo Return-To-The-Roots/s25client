@@ -25,6 +25,8 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"
 #include "buildings/noBuildingSite.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobUsual.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"

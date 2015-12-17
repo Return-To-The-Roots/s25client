@@ -25,6 +25,7 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "AIEventManager.h"
+#include "ai/Resource.h"
 
 #include <vector>
 
@@ -37,23 +38,6 @@ namespace gc { class GameCommand; }
 
 namespace AIJH
 {
-    enum Resource
-    {
-        WOOD,
-        STONES,
-        GOLD,
-        IRONORE,
-        COAL,
-        GRANITE,
-        PLANTSPACE,
-        BORDERLAND,
-        FISH,
-        MULTIPLE,
-        // special:
-        BLOCKED = 254,
-        NOTHING = 255
-    };
-
     const unsigned RES_TYPE_COUNT = 9;
     const unsigned RES_RADIUS[RES_TYPE_COUNT] =
     {

@@ -46,6 +46,7 @@ class fowNothing;
 class nofPassiveSoldier;
 class nobHarborBuilding;
 class GameWorldBase;
+class noFlag;
 struct lua_State;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enthält nur deren Daten

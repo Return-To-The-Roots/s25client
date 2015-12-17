@@ -19,9 +19,12 @@
 // Header
 #include "defines.h"
 #include "AIInterface.h"
+#include "ai/AIJHHelper.h"
 
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobHQ.h"
+#include "buildings/nobShipYard.h"
+#include "buildings/nobMilitary.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainData.h"
 #include "pathfinding/RoadPathFinder.h"
@@ -238,3 +241,10 @@ bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int
 {
     return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID_) > 0;
 }
+
+void AIInterface::ToggleCoins(const nobMilitary* building) { ToggleCoins(building->GetPos()); }
+void AIInterface::StartExpedition(const nobHarborBuilding* harbor) { StartExpedition(harbor->GetPos()); }
+void AIInterface::ToggleShipYardMode(const nobShipYard* yard) { ToggleShipYardMode(yard->GetPos()); }
+void AIInterface::DestroyBuilding(const noBuilding* building) { DestroyBuilding(building->GetPos()); }
+void AIInterface::DestroyFlag(const noFlag* flag) { DestroyFlag(flag->GetPos()); }
+void AIInterface::CallGeologist(const noFlag* flag) { CallGeologist(flag->GetPos()); }

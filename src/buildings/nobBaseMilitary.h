@@ -129,7 +129,7 @@ class nobBaseMilitary : public noBuilding
         /// zu kommen, diese Funktion sucht nach solchen Soldaten schickt einen ggf. zur Flagge, um anzugreifen
         void CheckArrestedAttackers();
         /// Der Verteidiger ist entweder tot oder wieder reingegegangen
-        void NoDefender() { defender_ = 0; }
+        void NoDefender() { defender_ = NULL; }
         /// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten
         /// aus der Warteschleife wieder in das Haus --> wenn Angreifer an der Fahne ist und Verteidiger rauskommen soll
         void CancelJobs();

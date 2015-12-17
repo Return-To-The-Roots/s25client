@@ -20,9 +20,10 @@
 #include "defines.h"
 #include "AIConstruction.h"
 
-#include "buildings/nobBaseMilitary.h"
 #include "MapGeometry.h"
 #include "buildings/nobHQ.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobUsual.h"
 #include "AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 
