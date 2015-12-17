@@ -21,13 +21,13 @@
 #include <boost/detail/scoped_enum_emulation.hpp>
 
 // Servertypen
-BOOST_SCOPED_ENUM_START(ServerType)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType)
 {
     LOBBY = 0,
     DIRECT,
     LOCAL,
     LAN
-};
-BOOST_SCOPED_ENUM_END
+}
+BOOST_SCOPED_ENUM_DECLARE_END(ServerType)
 
 #endif // ServerType_h__
