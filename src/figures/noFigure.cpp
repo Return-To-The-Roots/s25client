@@ -1114,6 +1114,15 @@ void noFigure::Die()
     if(!gwg->GetSpecObj<noBase>(pos))
         gwg->SetNO(new noSkeleton(pos), pos);
 
+    RemoveFromInventory();
+
+    // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
+    CalcVisibilities(pos);
+}
+
+
+void noFigure::RemoveFromInventory()
+{
     // Wars ein Bootmann? Dann Boot und Träger abziehen
     if(job_ == JOB_BOATCARRIER)
     {
@@ -1122,10 +1131,8 @@ void noFigure::Die()
     }
     else
         gwg->GetPlayer(player).DecreaseInventoryJob(job_, 1);
-
-    // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
-    CalcVisibilities(pos);
 }
+
 void noFigure::DieFailedTrade()
 {
     // Weg mit mir

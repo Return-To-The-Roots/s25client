@@ -1232,8 +1232,11 @@ void nobMilitary::HitOfCatapultStone()
     // Ein Soldat weniger, falls es noch welche gibt
     if(!troops.empty())
     {
-        (*troops.begin())->Die();
+        nofPassiveSoldier* soldier = *troops.begin();
         helpers::pop_front(troops);
+        // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
+        soldier->RemoveFromInventory();
+        deletePtr(soldier);
     }
 
     // Kein Soldat mehr da? Haus abfackeln

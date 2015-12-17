@@ -189,6 +189,9 @@ class noFigure : public noMovable
         virtual void CorrectSplitData_Derived();
         /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche)
         void Die();
+        /// Removes the figure from the players inventory (e.g. when it does not exist anymore)
+        void RemoveFromInventory();
+
         /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche) - does not reduce good counts because for trade routes they have been reduced already.
         void DieFailedTrade();
         /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
