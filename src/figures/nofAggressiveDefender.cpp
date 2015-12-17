@@ -272,6 +272,8 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         // Enemy found -> abort, because nofActiveSoldier handles all things now
         return;
 
+    assert(pos != attacker->GetPos()); // If so, why was it not found?
+
     // Calc next walking direction
     unsigned char dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
 
@@ -313,7 +315,7 @@ void nofAggressiveDefender::NeedForHomeDefence()
 
     // Ziel Bescheid sagen
     CancelAtAttackedBld();
-    }
+}
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
 void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
@@ -322,7 +324,7 @@ void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
     attacker = NULL;
     // Ziel Bescheid sagen
     CancelAtAttackedBld();
-    }
+}
 
 
 /// The derived classes regain control after a fight of nofActiveSoldier

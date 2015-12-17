@@ -272,41 +272,29 @@ void nofActiveSoldier::Walked()
 /// Returns true if it found one
 bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 {
-    // Vector with potential victims
-    std::vector<nofActiveSoldier*> soldiersNearby;
-
-    // Look in radius 1
-    for(unsigned dir = 0; dir < 6; ++dir)
-    {
-        MapPoint t = gwg->GetNeighbour(pos, dir);
-        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(t);
-        for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
-            if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
-                soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
-    }
-
-    // ... and radius 2
-    for(unsigned dir = 0; dir < 12; ++dir)
-    {
-        MapPoint t = gwg->GetNeighbour2(pos, dir);
-        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(t);
-        for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
-            if (dynamic_cast<nofActiveSoldier*>(*it) && dynamic_cast<nofActiveSoldier*>(*it)->GetPlayer()!=excludedOwner)
-                soldiersNearby.push_back(dynamic_cast<nofActiveSoldier*>(*it));
-    }
-
-
     enemy = NULL;
 
-    // Check if the victims have nothing better to do
-    for(unsigned i = 0; i < soldiersNearby.size(); ++i)
+    // Get all points in a radius of 2
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius(pos, 2);
+    // Don't forget own position
+    pts.insert(pts.begin(), pos);
+
+    for(std::vector<MapPoint>::const_iterator itPos = pts.begin(); itPos != pts.end(); ++itPos)
     {
-        // Ready for fight and good enemy = Good victim
-        if (soldiersNearby[i]->IsReadyForFight() && !GAMECLIENT.GetPlayer(soldiersNearby[i]->GetPlayer()).IsAlly(this->player))
+        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(*itPos);
+        for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
         {
-            enemy = soldiersNearby[i];
-            break;
+            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
+            if (!soldier || soldier->GetPlayer() == excludedOwner)
+                continue;
+            if (soldier->IsReadyForFight() && !GAMECLIENT.GetPlayer(soldier->GetPlayer()).IsAlly(player))
+            {
+                enemy = soldier;
+                break;
+            }
         }
+        if(enemy)
+            break;
     }
 
     // No enemy found? Goodbye
