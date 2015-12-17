@@ -1247,6 +1247,18 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
     }
 }
 
+void GameWorldGame::AddCatapultStone(CatapultStone* cs)
+{
+    assert(!helpers::contains(catapult_stones, cs));
+    catapult_stones.push_back(cs);
+}
+
+void GameWorldGame::RemoveCatapultStone(CatapultStone* cs)
+{
+     assert(helpers::contains(catapult_stones, cs));
+     catapult_stones.remove(cs);
+}
+
 void GameWorldGame::Armageddon()
 {
      for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)

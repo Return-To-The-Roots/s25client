@@ -157,8 +157,8 @@ public:
     std::list<nobBaseMilitary*>& GetMilitarySquare(const MapPoint pt);
 
     /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
-    inline void AddCatapultStone(CatapultStone* cs) {catapult_stones.push_back(cs); }
-    inline void RemoveCatapultStone(CatapultStone* cs) {catapult_stones.remove(cs); }
+    void AddCatapultStone(CatapultStone* cs);
+    void RemoveCatapultStone(CatapultStone* cs);
 
     /// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstört
     void Armageddon();
