@@ -823,7 +823,7 @@ void nofAttacker::CapturingWalking()
                 RemoveFromAttackedGoal();
                 // Evtl. neue Besatzer rufen
                 assert(attackedBld->GetPlayer() == player);
-                attackedBld->NeedOccupyingTroops(0xFF);
+                attackedBld->NeedOccupyingTroops();
             }
 
             // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
