@@ -61,8 +61,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 {
     // Soldaten Bescheid sagen, die evtl auf Mission sind
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
-    std::vector<nofActiveSoldier*> tmposroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
-    for(std::vector<nofActiveSoldier*>::iterator it = tmposroopsOnMission.begin(); it != tmposroopsOnMission.end(); ++it)
+    std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
+    for(std::vector<nofActiveSoldier*>::iterator it = tmpTroopsOnMission.begin(); it != tmpTroopsOnMission.end(); ++it)
         (*it)->HomeDestroyed();
 
     // Und die, die das Gebäude evtl gerade angreifen
