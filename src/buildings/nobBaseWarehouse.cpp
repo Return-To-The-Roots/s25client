@@ -1017,8 +1017,15 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     // Truppen prüfen in allen Häusern
     gwg->GetPlayer(player).RegulateAllTroops();
 
-    // Ggf. war er auf Mission
-    troops_on_mission.remove(soldier);
+    // Returned home
+    if(soldier == defender_)
+        NoDefender();
+    else
+    {
+        // Ggf. war er auf Mission
+        assert(helpers::contains(troops_on_mission, soldier));
+        troops_on_mission.remove(soldier);
+    }
 
     // und Soldat vernichten
     soldier->ResetHome();

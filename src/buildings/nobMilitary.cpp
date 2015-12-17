@@ -678,8 +678,14 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
 
     if(!IsCaptured())
     {
-        assert(helpers::contains(troops_on_mission, soldier));
-        troops_on_mission.remove(soldier); // Returned home
+        // Returned home
+        if(soldier == defender_)
+            NoDefender();
+        else
+        {
+            assert(helpers::contains(troops_on_mission, soldier));
+            troops_on_mission.remove(soldier);
+        }
         RegulateTroops();
     }else
     {

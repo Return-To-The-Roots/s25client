@@ -106,10 +106,11 @@ void nofDefender::Walked()
             {
                 // mich von der Landkarte tilgen
                 gwg->RemoveFigure(this, pos);
-                // Gebäude Bescheid sagen, dass es nun keinen Verteidiger mehr gibt
-                building->NoDefender();
+                nobBaseMilitary* bld = building;
                 // mich zum Gebäude wieder hinzufügen
+                assert(bld->GetDefender() == this); // I should be the defender
                 building->AddActiveSoldier(this);
+                assert(!bld->GetDefender()); // No defender anymore
             }
 
         } break;
@@ -221,6 +222,7 @@ void nofDefender::LostFighting()
         if(building->GetBuildingType() >= BLD_BARRACKS && building->GetBuildingType() <= BLD_FORTRESS)
         {
             // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
+            assert(dynamic_cast<nobBaseMilitary*>(building));
             if(static_cast<nobMilitary*>(building)->GetTroopsCount())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
