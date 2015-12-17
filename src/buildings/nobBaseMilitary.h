@@ -42,9 +42,6 @@ class nobBaseMilitary : public noBuilding
         EventManager::EventPointer leaving_event;
         /// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser
         bool go_out;
-        /// Gibt "Alter" des Gebäudes an, je größer, desto älter ist es! (als Vergleich was zuerst gebaut wurde bei
-        /// Militärgebäuden + HQs und Häfen
-        unsigned age;
         /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie evtl
         /// wieder zurückkkehren könnten (Angriff, Verteidigung etc.)
         std::list<nofActiveSoldier*> troops_on_mission;
