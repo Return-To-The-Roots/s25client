@@ -81,7 +81,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         const GlobalGameSettings& GetGGS() const { return ggs; }
         void LoadGGS();
 
-        bool Connect(const std::string& server, const std::string& password, unsigned char servertyp, unsigned short port, bool host, bool use_ipv6);
+        bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host, bool use_ipv6);
         void Run();
         void Stop();
 
@@ -300,7 +300,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 std::string password;
                 std::string mapfile;
                 std::string mapfilepath;
-                unsigned char servertyp;
+                ServerType servertyp;
                 unsigned short port;
                 bool host;
         } clientconfig;

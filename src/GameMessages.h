@@ -73,17 +73,17 @@ class GameMessage_Pong : public GameMessage
 class GameMessage_Server_Type: public GameMessage
 {
     public:
-        unsigned short type;
+        ServerType type;
         std::string version;
 
     public:
         GameMessage_Server_Type(void) : GameMessage(NMS_SERVER_TYPE) { }
-        GameMessage_Server_Type(const unsigned short type,
+        GameMessage_Server_Type(const ServerType type,
                                 const std::string& version) : GameMessage(NMS_SERVER_TYPE, 0xFF)
         {
             LOG.write(">>> NMS_SERVER_Type(%d, %s)\n", type, version.c_str());
 
-            PushUnsignedShort(type);
+            PushUnsignedShort(boost::underlying_cast<unsigned short>(type));
             PushString(version);
         }
         GameMessage_Server_Type(const unsigned short& type)
@@ -94,7 +94,7 @@ class GameMessage_Server_Type: public GameMessage
         }
         void Run(MessageInterface* callback)
         {
-            type = PopUnsignedShort();
+            type = static_cast<ServerType>(PopUnsignedShort());
 
             if(GetLength() > sizeof(unsigned short))
             {
@@ -105,7 +105,7 @@ class GameMessage_Server_Type: public GameMessage
             }
             else
             {
-                LOG.write("<<< NMS_SERVER_Type(%s)\n", (type == 1 ? "true" : "false"));
+                LOG.write("<<< NMS_SERVER_Type(%s)\n", (type == ServerType::DIRECT ? "true" : "false"));
                 GetInterface(callback)->OnNMSServerType(*this);
             }
         }

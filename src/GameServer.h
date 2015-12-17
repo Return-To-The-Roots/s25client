@@ -31,6 +31,7 @@
 #include "ai/AIEventManager.h"
 
 #include "helpers/Deleter.h"
+#include <LANDiscoveryService.h>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class GameServerPlayer;
@@ -76,6 +77,10 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         void AIChat(const GameMessage& msg) { SendToAll(msg); }
 
+        std::string GetGameName() const { return serverconfig.gamename; }
+        bool HasPwd() const { return !serverconfig.password.empty(); }
+        unsigned short GetPort() const { return serverconfig.port; }
+
     protected:
 
         void SendToAll(const GameMessage& msg);
@@ -92,6 +97,9 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         /// Generiert einen KI-Namen
         void SetAIName(const unsigned player_id);
 
+        unsigned GetFilledSlots() const;
+        /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
+        void AnnounceStatusChange();
     private:
         void OnNMSPong(const GameMessage_Pong& msg);
         void OnNMSServerType(const GameMessage_Server_Type& msg);
@@ -146,7 +154,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 ServerConfig();
                 void Clear();
 
-                unsigned char servertype;
+                ServerType servertype;
                 unsigned char playercount;
                 std::string gamename;
                 std::string password;
@@ -167,6 +175,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 unsigned int length;
                 unsigned int checksum;
                 std::string name;
+                std::string title; // Titel der Karte (nicht der Dateiname!)
                 boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
                 MapType map_type;
                 std::string script;
@@ -195,6 +204,8 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         int async_player1, async_player2;
         bool async_player1_done, async_player2_done;
         std::list<RandomEntry> async_player1_log, async_player2_log;
+
+        LANDiscoveryService lanAnnouncer;
 
     public:
         AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }

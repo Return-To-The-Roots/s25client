@@ -30,10 +30,11 @@
 #include "fileFuncs.h"
 #include "LobbyClient.h"
 
-#include "dskDirectIP.h"
-#include "dskHostGame.h"
-#include "dskLobby.h"
-#include "dskSinglePlayer.h"
+#include "desktops/dskDirectIP.h"
+#include "desktops/dskHostGame.h"
+#include "desktops/dskLobby.h"
+#include "desktops/dskSinglePlayer.h"
+#include "desktops/dskLAN.h"
 
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwSave.h"
@@ -227,6 +228,18 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigne
     }
 }
 
+void dskSelectMap::GoBack()
+{
+    if (csi.type == ServerType::LOCAL)
+        WINDOWMANAGER.Switch(new dskSinglePlayer);
+    else if (csi.type == ServerType::LAN)
+        WINDOWMANAGER.Switch(new dskLAN);
+    else if (csi.type == ServerType::LOBBY && LOBBYCLIENT.LoggedIn())
+        WINDOWMANAGER.Switch(new dskLobby);
+    else
+        WINDOWMANAGER.Switch(new dskDirectIP);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
@@ -238,15 +251,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 3: // "Zurück"
         {
-            if(csi.type == NP_LOCAL)
-                WINDOWMANAGER.Switch(new dskSinglePlayer);
-            else
-            {
-                if(LOBBYCLIENT.LoggedIn())
-                    WINDOWMANAGER.Switch(new dskLobby);
-                else
-                    WINDOWMANAGER.Switch(new dskDirectIP);
-            }
+            GoBack();
         } break;
         case 4: // "Spiel laden..."
         {
@@ -281,17 +286,7 @@ void dskSelectMap::StartServer()
         // Server starten
         if(!GAMESERVER.TryToStart(csi, map_path, MAPTYPE_OLDMAP))
         {
-            // Falls es ein lokal Spiel werden sollte, zurück zum SP-Menü
-            if (csi.type == NP_LOCAL)
-            {
-                WINDOWMANAGER.Switch(new dskSinglePlayer);
-            }
-            else if(LOBBYCLIENT.LoggedIn())
-                // Lobby zeigen, wenn das nich ging
-                WINDOWMANAGER.Switch(new dskLobby);
-            else
-                // Ansonsten DirekteIP
-                WINDOWMANAGER.Switch(new dskDirectIP);
+            GoBack();
         }
         else
         {
@@ -330,7 +325,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
     {
         case CS_FINISHED:
         {
-            WINDOWMANAGER.Switch(new dskHostGame((csi.type == NP_LOCAL)));
+            WINDOWMANAGER.Switch(new dskHostGame(csi.type));
         } break;
         default:
             break;

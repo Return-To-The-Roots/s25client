@@ -14,12 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#pragma once
 #ifndef GAMEPROTOCOL_H_INCLUDED
 #define GAMEPROTOCOL_H_INCLUDED
 
 #include "Protocol.h"
-
-#pragma once
+#include "gameTypes/ServerType.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Netzwerk Messages                       // client> | <server
@@ -161,14 +161,6 @@ enum
     NP_WRONGPASSWORD, // falsches passwort
     NP_WRONGCHECKSUM, // falsche Checksumme
     NP_ASYNC // asynchron
-};
-
-// Servertypen
-enum
-{
-    NP_LOBBY = 0,
-    NP_DIRECT,
-    NP_LOCAL
 };
 
 // Wie lange maximal warten, bis Rausschmiss des Spielers (in milliseconds)

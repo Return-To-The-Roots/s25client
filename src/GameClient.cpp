@@ -78,7 +78,6 @@ void GameClient::ClientConfig::Clear()
     password.clear();
     mapfile.clear();
     mapfilepath.clear();
-    servertyp = 0;
     port = 0;
     host = false;
 }
@@ -189,7 +188,7 @@ GameClient::~GameClient(void)
  *  @author OLiver
  *  @author FloSoft
  */
-bool GameClient::Connect(const std::string& server, const std::string& password, unsigned char servertyp, unsigned short port, bool host, bool use_ipv6)
+bool GameClient::Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host, bool use_ipv6)
 {
     Stop();
     ggs.LoadSettings();
