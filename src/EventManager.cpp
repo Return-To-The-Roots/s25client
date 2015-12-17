@@ -148,7 +148,11 @@ void EventManager::NextGF()
     EventMap::iterator itCurEvents = events.find(gfnr);
     if(itCurEvents != events.end())
     {
-        for(EventList::iterator e_it = itCurEvents->second.begin(); e_it != itCurEvents->second.end(); ++e_it)
+        EventList& curEvents = itCurEvents->second;
+        // We have to allow 2 cases:
+        // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
+        // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
+        for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
         {
             Event* ev = (*e_it);
             assert(ev->obj);
