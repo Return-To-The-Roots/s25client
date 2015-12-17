@@ -26,7 +26,6 @@ class SerializedGameData;
 class GameWorldGame;
 
 /// Constants used for Pathfinding
-const unsigned char NO_PATH = 0xff;
 const unsigned char REACHED_GOAL = 0xdd;
 
 class TradeRoute

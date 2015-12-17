@@ -86,7 +86,7 @@ void nofFlagWorker::GoToFlag()
     if(pos == flag->GetPos())
     {
         // nach Hause gehen
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(flag, FW::Condition_StoreFigure, 0, true, &job_, false))
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*flag, FW::Condition_StoreFigure, 0, true, &job_, false))
         {
             GoHome(wh);
             // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben

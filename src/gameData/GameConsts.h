@@ -18,6 +18,8 @@
 #ifndef GAMECONSTS_H_
 #define GAMECONSTS_H_
 
+#include <limits>
+
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
 const boost::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
 
@@ -29,6 +31,8 @@ const unsigned MINER_RADIUS = 2;
 
 /// Konstante für die Pfadrichtung bei einer Schiffsverbindung
 const unsigned char SHIP_DIR = 100;
+const unsigned char INVALID_DIR = 0xFF;
+const unsigned NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// Anzahl der Späher bei einer Erkundungs-Expedition
 const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;

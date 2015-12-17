@@ -113,9 +113,9 @@ public:
     void DestroyBuilding(const MapPoint pt, const unsigned char playe);
 
     /// Wegfindung für Menschen im Straßennetz
-    unsigned char FindHumanPathOnRoads(const noRoadNode* const start, const noRoadNode* const goal, unsigned* length = NULL, MapPoint * next_harbor = NULL, const RoadSegment* const forbidden = NULL);
+    unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL, const RoadSegment* const forbidden = NULL);
     /// Wegfindung für Waren im Straßennetz
-    unsigned char FindPathForWareOnRoads(const noRoadNode* const start, const noRoadNode* const goal, unsigned* length = NULL, MapPoint * next_harbor = NULL, unsigned max = 0xFFFFFFFF);
+    unsigned char FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL, unsigned max = std::numeric_limits<unsigned>::max());
     /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
     bool CheckShipRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos,
         MapPoint* dest);

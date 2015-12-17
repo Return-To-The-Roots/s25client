@@ -161,30 +161,32 @@ bool AIConstruction::CanStillConstructHere(const MapPoint pt)
 	return true;
 }
 
-std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius, MapPoint real, unsigned short real_radius)
-{
-    std::vector<const noFlag*> flags;
+struct Point2Flag{
+    typedef const noFlag* result_type;
+    const AIInterface& aii_;
 
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
+    Point2Flag(const AIInterface& aii): aii_(aii){}
+
+    result_type operator()(const MapPoint pt, unsigned r) const
     {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                if(aii->GetDistance(t2, real) <= real_radius && aii->GetSpecObj<noFlag>(t2))
-                {
-                    flags.push_back(aii->GetSpecObj<noFlag>(t2));
-                }
-            }
-        }
+        return aii_.GetSpecObj<noFlag>(pt);
     }
-    return flags;
-}
+};
+
+struct IsValidFlag{
+    const unsigned playerId_;
+    
+    IsValidFlag(const unsigned playerId): playerId_(playerId){}
+
+    bool operator()(const noFlag* const flag)
+    {
+        return flag && flag->GetPlayer() == playerId_;
+    }
+};
 
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
-    std::vector<const noFlag*> flags;
+    std::vector<const noFlag*> flags = aii->GetPointsInRadius<30>(pt, radius, Point2Flag(*aii), IsValidFlag(playerID));
 
     // TODO Performance Killer!
     /*
@@ -202,26 +204,6 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         }
     }
     */
-
-    for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = aii->GetNeighbour(t2, Direction(i)), ++r2)
-            {
-                const noFlag* flag = aii->GetSpecObj<noFlag>(t2);
-                if(flag && flag->GetPlayer() == playerID)
-                {
-                    flags.push_back(flag);
-                    if (flags.size() > 30)
-                    {
-                        return flags;
-                    }
-                }
-            }
-        }
-    }
     return flags;
 }
 
@@ -278,76 +260,73 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
     std::cout << "FindFlagsNum: " << flags.size() << std::endl;
 #endif
 
-    unsigned shortest = 0;
+    std::vector<const noFlag*>::iterator shortest = flags.end();
     unsigned int shortestLength = 99999;
     std::vector<unsigned char> tmpRoute;
     bool found = false;
 
     // Jede Flagge testen...
-    for(unsigned i = 0; i < flags.size(); ++i)
+    for(std::vector<const noFlag*>::iterator flagIt = flags.begin(); flagIt != flags.end(); ++flagIt)
     {
+        const noFlag& curFlag = **flagIt;
         tmpRoute.clear();
         unsigned int length;
 		// the flag should not be at a military building!		
-		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flags[i]->GetPos(), Direction::NORTHWEST)))
+		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST)))
 			continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
-        bool pathFound = aii->FindFreePathForNewRoad(flag->GetPos(), flags[i]->GetPos(), &tmpRoute, &length);
+        if(!aii->FindFreePathForNewRoad(flag->GetPos(), curFlag.GetPos(), &tmpRoute, &length))
+            continue;
 
         // Wenn ja, dann gucken ob dieser Pfad möglichst kurz zum "höheren" Ziel (allgemeines Lager im Moment) ist
-        if (pathFound)
+        unsigned size = 0;
+        //check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid path
+        unsigned temp = 0;
+        MapPoint t = flag->GetPos();
+        for(unsigned j = 0; j < tmpRoute.size(); ++j)
         {
-            unsigned int distance = 0;
-            unsigned size = 0;
-            //check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid path
-            unsigned temp = 0;
-            MapPoint t = flag->GetPos();
-            for(unsigned j = 0; j < tmpRoute.size(); ++j)
+            t = aii->GetNeighbour(t, Direction::fromInt(tmpRoute[j]));
+            if(aii->GetBuildingQuality(t) < 1)
+                temp++;
+            else
             {
-                t = aii->GetNeighbour(t, Direction::fromInt(tmpRoute[j]));
-                if(aii->GetBuildingQuality(t) < 1)
-                    temp++;
-                else
-                {
-                    if(size < temp)
-                        size = temp;
-                    temp = 0;
-                }
+                if(size < temp)
+                    size = temp;
+                temp = 0;
             }
-            if(size > 2)
-                continue;
+        }
+        if(size > 2)
+            continue;
 
-            // Strecke von der potenziellen Zielfahne bis zum Lager
-            bool pathFound = aii->FindPathOnRoads(flags[i], targetFlag, &distance);
+        // Find path from current flag to target. If the current flag IS the target then we have already a path with distance=0
+        unsigned distance = 0;
+        bool pathFound = curFlag.GetObjId() == targetFlag->GetObjId() || aii->FindPathOnRoads(curFlag, *targetFlag, &distance);
 
-            // Gewählte Fahne hat leider auch kein Anschluß an ein Lager, zu schade!
-            if (!pathFound)
-                // Und ist auch nicht zufällig die Lager-Flagge selber...
-                if (flags[i]->GetX() != targetFlag->GetX() || flags[i]->GetY() != targetFlag->GetY())
-                    continue;
+        // Gewählte Fahne hat leider auch kein Anschluß an ein Lager, zu schade!
+        if (!pathFound)
+            continue;
 
-            // Sind wir mit der Fahne schon verbunden? Einmal reicht!
-            if (aii->FindPathOnRoads(flags[i], flag))
-                continue;
+        // Sind wir mit der Fahne schon verbunden? Einmal reicht!
+        if (aii->FindPathOnRoads(curFlag, *flag))
+            continue;
 
-            // Ansonsten haben wir einen Pfad!
-            found = true;
+        // Ansonsten haben wir einen Pfad!
+        found = true;
 
-            // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
-            // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
-            if (2 * length + distance + 10 * size < shortestLength)
-            {
-                shortest = i;
-                shortestLength = 2 * length + distance + 10 * size;
-                route = tmpRoute;
-            }
+        // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
+        // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
+        if (2 * length + distance + 10 * size < shortestLength)
+        {
+            shortest = flagIt;
+            shortestLength = 2 * length + distance + 10 * size;
+            route = tmpRoute;
         }
     }
 
     if (found)
     {
         //LOG.lprintf("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
-        return MinorRoadImprovements(flag, flags[shortest], route);
+        return MinorRoadImprovements(flag, *shortest, route);
     }
     return false;
 }
@@ -444,7 +423,7 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
 {
     noFlag* targetFlag = this->FindTargetStoreHouseFlag(flag->GetPos());
     if (targetFlag)
-        return aii->FindPathOnRoads(flag, targetFlag);
+        return (targetFlag == flag) || aii->FindPathOnRoads(*flag, *targetFlag);
     else
         return false;
 }
@@ -746,7 +725,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
 
     // Flaggen in der Umgebung holen
     std::vector<const noFlag*> flags = FindFlags(flag->GetPos(), maxRoadLength);
-    std::vector<unsigned char>mainroad = route;
+    std::vector<unsigned char> mainroad = route;
     //targetflag for mainroad
     MapPoint t = flag->GetPos();
     for(unsigned i = 0; i < mainroad.size(); i++)
@@ -758,64 +737,66 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
     // Jede Flagge testen...
     for(unsigned i = 0; i < flags.size(); ++i)
     {
-        //std::vector<unsigned char> new_route;
+        const noFlag& curFlag = *flags[i];
+        // When the current flag is the end of the main route, we skip it as crossing the main route is dissallowed by crossmainpath check a bit below
+        if(mainflag && curFlag.GetObjId() == mainflag->GetObjId())
+            continue;
+
         route.clear();
         unsigned int newLength;
 		// the flag should not be at a military building!		
-		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flags[i]->GetPos(), Direction::NORTHWEST)))
+		if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST)))
 			continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
-        bool pathFound = aii->FindFreePathForNewRoad(flag->GetPos(), flags[i]->GetPos(), &route, &newLength);
+        if(!aii->FindFreePathForNewRoad(flag->GetPos(), curFlag.GetPos(), &route, &newLength))
+            continue;
 
         // Wenn ja, dann gucken ob unser momentaner Weg zu dieser Flagge vielleicht voll weit ist und sich eine Straße lohnt
-        if (pathFound)
+        unsigned int oldLength = 0;
+
+        // Aktuelle Strecke zu der Flagge
+        bool pathAvailable = aii->FindPathOnRoads(curFlag, *flag, &oldLength);
+        if(!pathAvailable && mainflag)
         {
-            unsigned int oldLength = 0;
-
-            // Aktuelle Strecke zu der Flagge
-            bool pathAvailable = aii->FindPathOnRoads(flags[i], flag, &oldLength);
-            if(!pathAvailable && mainflag)
+            pathAvailable = aii->FindPathOnRoads(curFlag, *mainflag, &oldLength);
+            if(pathAvailable)
+                oldLength += mainroad.size();
+        }
+        bool crossmainpath = false;
+        unsigned size = 0;
+        //more than 5 nonflaggable spaces on the route -> not really valid path
+        unsigned temp = 0;
+        t = flag->GetPos();
+        for(unsigned j = 0; j < route.size(); ++j)
+        {
+            t = aii->GetNeighbour(t, Direction::fromInt(route[j]));
+            MapPoint t2 = flag->GetPos();
+            //check if we cross the planned main road
+            for(unsigned k = 0; k < mainroad.size(); ++k)
             {
-                pathAvailable = aii->FindPathOnRoads(flags[i], mainflag, &oldLength);
-                if(pathAvailable)
-                    oldLength += mainroad.size();
-            }
-            bool crossmainpath = false;
-            unsigned size = 0;
-            //more than 5 nonflaggable spaces on the route -> not really valid path
-            unsigned temp = 0;
-            t = flag->GetPos();
-            for(unsigned j = 0; j < route.size(); ++j)
-            {
-                t = aii->GetNeighbour(t, Direction::fromInt(route[j]));
-                MapPoint t2 = flag->GetPos();
-                //check if we cross the planned main road
-                for(unsigned k = 0; k < mainroad.size(); ++k)
+                t2 = aii->GetNeighbour(t2, Direction::fromInt(mainroad[k]));
+                if(t2 == t)
                 {
-                    t2 = aii->GetNeighbour(t2, Direction::fromInt(mainroad[k]));
-                    if(t2 == t)
-                    {
-                        crossmainpath = true;
-                        break;
-                    }
-                }
-                if(aii->GetBuildingQuality(t) < 1)
-                    temp++;
-                else
-                {
-                    if(size < temp)
-                        size = temp;
-                    temp = 0;
+                    crossmainpath = true;
+                    break;
                 }
             }
-            if(size > 2 || crossmainpath)
-                continue;
-
-            // Lohnt sich die Straße?
-            if (!pathAvailable || newLength * lengthFactor < oldLength)
+            if(aii->GetBuildingQuality(t) < 1)
+                temp++;
+            else
             {
-                return BuildRoad(flag, flags[i], route);
+                if(size < temp)
+                    size = temp;
+                temp = 0;
             }
+        }
+        if(size > 2 || crossmainpath)
+            continue;
+
+        // Lohnt sich die Straße?
+        if (!pathAvailable || newLength * lengthFactor < oldLength)
+        {
+            return BuildRoad(flag, &curFlag, route);
         }
     }
 

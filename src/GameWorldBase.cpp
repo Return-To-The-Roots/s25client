@@ -22,6 +22,8 @@
 #include "GameObject.h"
 #include "nodeObjs/noFlag.h"
 #include "FOWObjects.h"
+#include "pathfinding/RoadPathFinder.h"
+#include "pathfinding/FreePathFinder.h"
 #include "RoadSegment.h"
 #include "nodeObjs/noTree.h"
 #include "buildings/noBaseBuilding.h"
@@ -56,7 +58,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 
-GameWorldBase::GameWorldBase() : gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
+GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), gi(NULL), width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -225,6 +227,7 @@ void GameWorldBase::Init()
     // Map-Knoten erzeugen
     nodes.resize(numNodes);
     military_squares.resize((width_ / MILITARY_SQUARE_SIZE + 1) * (height_ / MILITARY_SQUARE_SIZE + 1));
+    freePathFinder->Init(width_, height_);
 }
 
 void GameWorldBase::Unload()
@@ -696,7 +699,6 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return buildings;
 }
 
-
 /// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
 void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route)
 {
@@ -1027,33 +1029,33 @@ MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) 
     return GetNeighbour(MapPoint(x, y), dir).y;
 }
 
-MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, unsigned dir) const
+MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) const
 {
     MapPoint res;
     
     switch (dir)
     {
-    case 0:
+    case Direction::WEST:
         res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
         res.y = pt.y;
         break;
-    case 1:
+    case Direction::NORTHWEST:
         res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
         res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
         break;
-    case 2:
+    case Direction::NORTHEAST:
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
         res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
         break;
-    case 3:
+    case Direction::EAST:
         res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
         res.y = pt.y;
         break;
-    case 4:
+    case Direction::SOUTHEAST:
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
         res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
         break;
-    case 5:
+    case Direction::SOUTHWEST:
         res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
         res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
         break;

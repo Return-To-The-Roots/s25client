@@ -25,9 +25,16 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/GO_Type.h"
+#include "gameTypes/Direction.h"
+#include "helpers/Deleter.h"
+#include "Identity.h"
+#include "ReturnConst.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 #include <list>
 
+class RoadPathFinder;
+class FreePathFinder;
 class GameInterface;
 class CatapultStone;
 class noBuildingSite;
@@ -41,11 +48,11 @@ class nobHarborBuilding;
 class GameWorldBase;
 struct lua_State;
 
-typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
-
 /// Grundlegende Klasse, die die Gamewelt darstellt, enthält nur deren Daten
 class GameWorldBase
 {
+    boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
+    boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
 protected:
 
     /// Interface zum GUI
@@ -98,11 +105,11 @@ public:
     void Unload();
 
     /// Setzt GameInterface
-    inline void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
+    void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
 
     /// Größe der Map abfragen
-    inline unsigned short GetWidth() const { return width_; }
-    inline unsigned short GetHeight() const { return height_; }
+    unsigned short GetWidth() const { return width_; }
+    unsigned short GetHeight() const { return height_; }
 
     /// Landschaftstyp abfragen
     LandscapeType GetLandscapeType() const { return lt; }
@@ -113,35 +120,51 @@ public:
     /// Gibt Punkt um diesen Punkt (Y-Koordinate)  direkt zurück in einer Richtung von 0-5
     MapCoord GetYA(const MapCoord x, const MapCoord y, unsigned dir) const;
     /// Returns neighbouring point in one direction (0-5)
-    MapPoint GetNeighbour(const MapPoint, unsigned dir) const;
+    MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
+    MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const { return GetNeighbour(pt, Direction::fromInt(dir)); }
     /// Returns neighbouring point (2nd layer: dir 0-11)
     MapPoint GetNeighbour2(const MapPoint, unsigned dir) const;
     /// Berechnet die Differenz zweier Koordinaten von x1 zu x2, wenn man berücksichtigt, dass man über den
     /// Rand weitergehen kann
     MapCoord CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const;
     MapCoord CalcDistanceAroundBorderY(const MapCoord y1, const MapCoord y2) const;
+    
+    /// Returns all points in a radius around pt (excluding pt) that satisfy a given condition. 
+    /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
+    /// Number of results is constrained to maxResults (if > 0)
+    /// Overloads are used due to missing template default args until C++11
+    template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+    inline std::vector<typename T_TransformPt::result_type>
+    GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const;
+    template<class T_TransformPt>
+    std::vector<typename T_TransformPt::result_type>
+        GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt) const
+    {
+        return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
+    }
+    std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
+    {
+        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
+    }
 
     /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
-    inline unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
+    unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
 
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Point<int> pt) const;
     // Erzeugt eindeutige ID aus gegebenen X und Y-Werten
-    inline unsigned MakeCoordID(const MapPoint pt) const { return GetIdx(pt); }
 
     // Returns the linear index for a map point
-    inline unsigned GetIdx(const MapPoint pt) const
+    unsigned GetIdx(const MapPoint pt) const
     { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
 
     /// Gibt Map-Knotenpunkt zurück
-    inline const MapNode& GetNode(const MapPoint pt) const { assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
+    const MapNode& GetNode(const MapPoint pt) const { assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
     MapNode& GetNode(const MapPoint pt) { assert(pt.x < width_ && pt.y < height_); return nodes[GetIdx(pt)]; }
     /// Gibt MapKnotenpunkt darum zurück
-    inline const MapNode& GetNodeAround(const MapPoint pt, const unsigned i) const
-    { return GetNode(GetNeighbour(pt, i));  }
-    inline MapNode& GetNodeAround(const MapPoint pt, const unsigned i)
-    { return GetNode(GetNeighbour(pt, i));  }
+    const MapNode& GetNodeAround(const MapPoint pt, const unsigned i) const { return GetNode(GetNeighbour(pt, i));  }
+    MapNode& GetNodeAround(const MapPoint pt, const unsigned i) { return GetNode(GetNeighbour(pt, i));  }
 
     // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
     noBase* GetNO(const MapPoint pt);
@@ -160,9 +183,9 @@ public:
     std::vector<noBase*> GetDynamicObjectsFrom(const MapPoint pt) const;
 
     // Gibt ein spezifisches Objekt zurück
-    template<typename T> inline T* GetSpecObj(const MapPoint pt) { return dynamic_cast<T*>( GetNode(pt).obj ); }
+    template<typename T> T* GetSpecObj(const MapPoint pt) { return dynamic_cast<T*>( GetNode(pt).obj ); }
     // Gibt ein spezifisches Objekt zurück
-    template<typename T> inline const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>( GetNode(pt).obj ); }
+    template<typename T> const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>( GetNode(pt).obj ); }
 
     /// Gibt ein Terrain-Dreieck um einen Punkt herum zurück.
     TerrainType GetTerrainAround(const MapPoint pt, unsigned char dir) const;
@@ -187,7 +210,7 @@ public:
     /// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist
     BuildingQuality CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true, const bool ignore_player = false) const;
     /// Setzt die errechnete BQ gleich mit
-    inline void SetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true)
+    void SetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true)
     { GetNode(pt).bq = CalcBQ(pt, player, flagonly, visual); }
 
     /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
@@ -220,31 +243,18 @@ public:
         bool left, top, right, bottom;
     };
 
-
-    /// Wegfindung in freiem Terrain - Basisroutine
-    bool FindFreePath(const MapPoint start,
-        const MapPoint dest, const bool random_route,
-        const unsigned max_route, std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const;
-    bool FindFreePathAlternatingConditions(const MapPoint start,
-        const MapPoint dest, const bool random_route,
-        const unsigned max_route, std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param, const bool record) const;
-    /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
-    bool CheckFreeRoute(const MapPoint start, const std::vector<unsigned char>& route,
-        const unsigned pos, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk,
-        MapPoint* dest, const void* const param = NULL) const;
-    /// Wegfindung auf Straßen - Basisroutine
-    bool FindPathOnRoads(const noRoadNode* const start, const noRoadNode* const goal,
-        const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint * next_harbor,
-        const RoadSegment* const forbidden, const bool record = true, unsigned max = 0xFFFFFFFF) const;
+    /* Wegfindung auf Straßen - Basisroutine
+    bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& goal,
+        const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint* next_harbor,
+        const RoadSegment* const forbidden, const bool record = true, const unsigned max = 0xFFFFFFFF) const;*/
     /// Findet einen Weg für Figuren
     unsigned char FindHumanPath(const MapPoint start,
         const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL, const bool record = true) const;
     /// Wegfindung für Schiffe auf dem Wasser
     bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char> * route, unsigned* length, const unsigned max_length = 200,
         CrossBorders* cb = NULL);
-
+    RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
+    FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
     /// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
     void RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route);
@@ -257,11 +267,11 @@ public:
     MapPoint ConvertCoords(int x, int y) const { return ConvertCoords(Point<int>(x, y)); }
 
     /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-    inline unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width_ * pt.y + pt.x; }
+    unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width_ * pt.y + pt.x; }
     /// Gibt Terrainkoordinaten zurück
-    inline Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
-    inline float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
-    inline float GetTerrainY(const MapPoint pt){ return GetTerrain(pt).y; }
+    Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
+    float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
+    float GetTerrainY(const MapPoint pt){ return GetTerrain(pt).y; }
 
     /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
@@ -270,15 +280,14 @@ public:
     Visibility CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const;
 
     /// Gibt die Anzahl an Hafenpunkten zurück
-    inline unsigned GetHarborPointCount() const
-    { return harbor_pos.size() - 1; }
+    unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
     bool IsHarborPointFree(const unsigned harbor_id, const unsigned char player,
         const unsigned short sea_id) const;
     /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
     MapPoint GetHarborPoint(const unsigned harbor_id) const;
     /// Gibt die ID eines Hafenpunktes zurück
-    inline unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
+    unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
     /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
     /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
     unsigned short IsCoastalPoint(const MapPoint pt) const;
@@ -301,7 +310,7 @@ public:
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
-    inline void SetPlayers(GameClientPlayerList* pls) { players = pls; }
+    void SetPlayers(GameClientPlayerList* pls) { players = pls; }
     /// Liefert einen Player zurück
     GameClientPlayer& GetPlayer(const unsigned int id) const;
 
@@ -386,5 +395,41 @@ public:
     void LUA_EventGF(unsigned number);
     void LUA_EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 };
+
+
+//////////////////////////////////////////////////////////////////////////
+/// Implementation
+//////////////////////////////////////////////////////////////////////////
+
+template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+std::vector<typename T_TransformPt::result_type>
+GameWorldBase::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const
+{
+    typedef typename T_TransformPt::result_type Element;
+    std::vector<Element> result;
+    MapPoint curStartPt = pt;
+    for(unsigned r = 1; r <= radius; ++r)
+    {
+        // Go one level/hull to the left
+        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
+        // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
+        MapPoint curPt = curStartPt;
+        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
+        {
+            for(unsigned step = 0; step < r; ++step)
+            {
+                Element el = transformPt(curPt, r);
+                if(isValid(el))
+                {
+                    result.push_back(el);
+                    if(T_maxResults && result.size() >= T_maxResults)
+                        return result;
+                }
+                curPt = GetNeighbour(curPt, Direction(i).toUInt());
+            }
+        }
+    }
+    return result;
+}
 
 #endif // GameWorldBase_h__

@@ -21,6 +21,7 @@
 
 #include "defines.h"
 #include "nobHarborBuilding.h"
+#include "pathfinding/FreePathFinder.h"
 #include "Loader.h"
 #include "nodeObjs/noExtension.h"
 #include "GameClient.h"
@@ -504,6 +505,7 @@ void nobHarborBuilding::OrderExpeditionWares()
     unsigned boards = 0, stones = 0;
     for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
     {
+        assert(*it);
         if (*it == 0) // qx: check for bug #1132707
         {
             std::cout << "Error: Iterator to 0-Ware" << std::endl;
@@ -1053,7 +1055,8 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
     // Evtl. muss die Ware gleich das Schiff nehmen ->
     // dann zum Schiffsreservoir hinzufügen
     MapPoint next_harbor;
-    if(gwg->FindHumanPathOnRoads(this, goal, NULL, &next_harbor) == SHIP_DIR)
+    assert(goal);
+    if(gwg->FindHumanPathOnRoads(*this, *goal, NULL, &next_harbor) == SHIP_DIR)
     {
         // Reduce figure count because figues don't go through the house leaving process
         // And therefore the visual count reducement
@@ -1227,7 +1230,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindFreePath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        if(!gwg->GetFreePathFinder().FindPath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
             continue;
         //neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this , 0};

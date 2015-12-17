@@ -6,17 +6,17 @@ FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system REQUIRED)
 ################################################################################
 
 INCLUDE_DIRECTORIES(
-					${CMAKE_SOURCE_DIR}
-					"${CMAKE_SOURCE_DIR}/liblobby/src/"
-					"${CMAKE_SOURCE_DIR}/libutil/src/"
-					"${CMAKE_SOURCE_DIR}/mygettext/src/"
-					"${CMAKE_SOURCE_DIR}/libsiedler2/src/"
-					"${CMAKE_SOURCE_DIR}/libendian/src/"
-					"${CMAKE_SOURCE_DIR}/src"
-					${BZIP2_INCLUDE_DIR}
-					${Boost_INCLUDE_DIR}
-					${OPENGL_INCLUDE_DIR}
-					)
+	${CMAKE_SOURCE_DIR}
+	"${CMAKE_SOURCE_DIR}/liblobby/src/"
+	"${CMAKE_SOURCE_DIR}/libutil/src/"
+	"${CMAKE_SOURCE_DIR}/mygettext/src/"
+	"${CMAKE_SOURCE_DIR}/libsiedler2/src/"
+	"${CMAKE_SOURCE_DIR}/libendian/src/"
+	"${CMAKE_SOURCE_DIR}/src"
+	${BZIP2_INCLUDE_DIR}
+	${Boost_INCLUDE_DIR}
+	${OPENGL_INCLUDE_DIR}
+	)
 
 LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
 
@@ -46,7 +46,7 @@ AddDirectory(helpers)
 AddDirectory(ingameWindows)
 AddDirectory(nodeObjs)
 AddDirectory(ogl)
-
+AddDirectory(pathfinding)
 ################################################################################
 
 GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL

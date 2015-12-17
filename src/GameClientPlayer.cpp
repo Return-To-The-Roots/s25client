@@ -42,6 +42,7 @@
 
 #include "SerializedGameData.h"
 #include "GameMessages.h"
+#include "pathfinding/RoadPathFinder.h"
 
 #include <stdint.h>
 #include <limits>
@@ -465,31 +466,37 @@ void GameClientPlayer::SwapPlayer(GameClientPlayer& two)
     std::swap(this->gc_queue, two.gc_queue);
 }
 
-nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*),
-        const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length)
+nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*),
+        const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length, bool record) const
 {
-    nobBaseWarehouse* best = 0;
+    nobBaseWarehouse* best = NULL;
 
-//  unsigned char path = 0xFF, tpath = 0xFF;
     unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
 
-    for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w != warehouses.end(); ++w)
+    for(std::list<nobBaseWarehouse*>::const_iterator w = warehouses.begin(); w != warehouses.end(); ++w)
     {
         // Lagerhaus geeignet?
-        if(IsWarehouseGood(*w, param))
+        if(!IsWarehouseGood(*w, param))
+            continue;
+
+        if(start.GetPos() == (*w)->GetPos())
         {
-			//now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
-			if(gwg->CalcDistance(start->GetPos(),(*w)->GetPos()) > best_length)
-				continue;
-            // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
-            if(gwg->FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden, true, best_length))
+            // We are already there -> Take it
+            if(length)
+                *length = 0;
+            return *w;
+        }
+
+		//now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
+		if(gwg->CalcDistance(start.GetPos(),(*w)->GetPos()) > best_length)
+			continue;
+        // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
+        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : **w, to_wh ? **w : start, record, use_boat_roads, best_length, forbidden, &tlength))
+        {
+            if(tlength < best_length || !best)
             {
-                if(tlength < best_length || !best)
-                {
-//                  path = tpath;
-                    best_length = tlength;
-                    best = (*w);
-                }
+                best_length = tlength;
+                best = (*w);
             }
         }
     }
@@ -575,12 +582,12 @@ void GameClientPlayer::RoadDestroyed()
 				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
 				{
 					(*it)->NotifyGoalAboutLostWare();
-					nobBaseWarehouse* wh = gwg->GetPlayer(wareLocation.GetPlayer()).FindWarehouse(&wareLocation, FW::Condition_StoreWare, 0, true, &(*it)->type, true);
+					nobBaseWarehouse* wh = gwg->GetPlayer(wareLocation.GetPlayer()).FindWarehouse(wareLocation, FW::Condition_StoreWare, 0, true, &(*it)->type, true);
 					if(wh)
 					{
 						(*it)->goal = wh;
-						(*it)->SetNextDir(gwg->FindPathForWareOnRoads(&wareLocation, (*it)->goal, NULL, &(*it)->next_harbor));
-						wh->TakeWare((*it));
+						(*it)->SetNextDir(gwg->FindPathForWareOnRoads(wareLocation, *wh, NULL, &(*it)->next_harbor));
+						wh->TakeWare(*it);
 					}
 					else
 					{
@@ -609,6 +616,8 @@ void GameClientPlayer::RoadDestroyed()
                 ware->NotifyGoalAboutLostWare();
                 // Ware aus der Liste raus
                 it = ware_list.erase(it);
+                // And trash it
+                deletePtr(ware);
                 continue;
             }
         }
@@ -649,22 +658,22 @@ bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
     {
         // dann braucht man Träger UND Boot
         FW::Param_WareAndJob p = { {GD_BOAT, 1}, {JOB_HELPER, 1} };
-        best[0] = FindWarehouse(rs->GetF1(), FW::Condition_WareAndJob, rs, 0, &p, false, &length[0]);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::Condition_WareAndJob, rs, 0, &p, false, &length[0]);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(rs->GetF2(), FW::Condition_WareAndJob, rs, 0, &p, false, &length[1]);
+        best[1] = FindWarehouse(*rs->GetF2(), FW::Condition_WareAndJob, rs, 0, &p, false, &length[1]);
     }
     else
     {
         // 1. Flagge des Weges
         FW::Param_Job p = { JOB_HELPER, 1 };
-        best[0] = FindWarehouse(rs->GetF1(), FW::Condition_Job, rs, 0, &p, false, &length[0]);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::Condition_Job, rs, 0, &p, false, &length[0]);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(rs->GetF2(), FW::Condition_Job, rs, 0, &p, false, &length[1]);
+        best[1] = FindWarehouse(*rs->GetF2(), FW::Condition_Job, rs, 0, &p, false, &length[1]);
     }
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
-    if(best[0] && (length[0] < length[1]))
+    if(best[0] && (!best[1] || length[0] < length[1]))
         best[0]->OrderCarrier(rs->GetF1(), rs);
     else if(best[1])
         best[1]->OrderCarrier(rs->GetF2(), rs);
@@ -830,7 +839,7 @@ void GameClientPlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 bool GameClientPlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
 {
     FW::Param_Job p = { job, 1 };
-    nobBaseWarehouse* wh = FindWarehouse(goal, FW::Condition_Job, 0, false, &p, false);
+    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::Condition_Job, 0, false, &p, false);
 
     if(wh)
     {
@@ -862,7 +871,7 @@ Ware* GameClientPlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
 {
     /// Gibt es ein Lagerhaus mit dieser Ware?
     FW::Param_Ware p = { ware, 1 };
-    nobBaseWarehouse* wh = FindWarehouse(goal, FW::Condition_Ware, 0, true, &p, true);
+    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::Condition_Ware, 0, true, &p, true);
 
     if(wh)
     {
@@ -911,13 +920,13 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
 
     // 1. Flagge des Weges
     FW::Param_Job p = { JOB_PACKDONKEY, 1 };
-    best[0] = FindWarehouse(road->GetF1(), FW::Condition_Job, road, 0, &p, false, &length[0]);
+    best[0] = FindWarehouse(*road->GetF1(), FW::Condition_Job, road, 0, &p, false, &length[0]);
     // 2. Flagge des Weges
-    best[1] = FindWarehouse(road->GetF2(), FW::Condition_Job, road, 0, &p, false, &length[1]);
+    best[1] = FindWarehouse(*road->GetF2(), FW::Condition_Job, road, 0, &p, false, &length[1]);
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
-    if(best[0] && (length[0] < length[1]))
+    if(best[0] && (!best[1] || length[0] < length[1]))
         return best[0]->OrderDonkey(road, road->GetF1());
     else if(best[1])
         return best[1]->OrderDonkey(road, road->GetF2());
@@ -942,8 +951,8 @@ RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode**
             noRoadNode* current_best_goal = 0;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg->FindHumanPathOnRoads(start, (*it)->GetF1(), &length1, NULL, *it) != 0xFF;
-            bool isF2Reachable = gwg->FindHumanPathOnRoads(start, (*it)->GetF2(), &length2, NULL, *it) != 0xFF;
+            bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *(*it)->GetF1(), &length1, NULL, *it) != 0xFF;
+            bool isF2Reachable = gwg->FindHumanPathOnRoads(*start, *(*it)->GetF2(), &length2, NULL, *it) != 0xFF;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
@@ -1127,7 +1136,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
-        if (gwg->FindPathForWareOnRoads(start, it->bb, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
+        if (gwg->FindPathForWareOnRoads(*start, *it->bb, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
         {
             unsigned score = it->points - (path_length / 2);
 
@@ -1147,10 +1156,10 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
     if(!bb)
     {
         // Zuerst Einlagernde Lagerhäuser durchgehen
-        bb = FindWarehouse(ware->GetLocation(), FW::Condition_WantStoreWare, 0, true, &gt, true);
+        bb = FindWarehouse(*ware->GetLocation(), FW::Condition_WantStoreWare, 0, true, &gt, true);
         // Wenn das nichts wurde, dann auch restliche Lagerhäuser mit einbeziehen
         if(!bb)
-            bb = FindWarehouse(ware->GetLocation(), FW::Condition_StoreWare, 0, true, &gt, true);
+            bb = FindWarehouse(*ware->GetLocation(), FW::Condition_StoreWare, 0, true, &gt, true);
     }
 
     // Abnehmer Bescheid sagen
@@ -1175,7 +1184,7 @@ nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
         if(points)
         {
             // Weg dorthin berechnen
-            if(gwg->FindPathForWareOnRoads(ware->GetLocation(), *it, &way_points) != 0xFF)
+            if(gwg->FindPathForWareOnRoads(*ware->GetLocation(), **it, &way_points) != 0xFF)
             {
                 // Die Wegpunkte noch davon abziehen
                 points -= way_points;
@@ -1192,7 +1201,7 @@ nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bb)
-        bb = FindWarehouse(ware->GetLocation(), FW::Condition_StoreWare, 0, true, &ware->type, true);
+        bb = FindWarehouse(*ware->GetLocation(), FW::Condition_StoreWare, 0, true, &ware->type, true);
 
     // Abnehmer Bescheid sagen
     if(bb)
@@ -1397,7 +1406,7 @@ void GameClientPlayer::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
     do
     {
         unsigned param_count = 1;
-        wh = FindWarehouse(goal, FW::Condition_Troops, 0, false, &param_count, false);
+        wh = FindWarehouse(*goal, FW::Condition_Troops, 0, false, &param_count, false);
         if(wh)
         {
             unsigned order_count = std::min(wh->GetSoldiersCount(), count);
@@ -1471,7 +1480,7 @@ void GameClientPlayer::CallFlagWorker(const MapPoint pt, const Job job)
     noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
     /// Lagerhaus mit Geologen finden
     FW::Param_Job p = { job, 1 };
-    nobBaseWarehouse* wh = FindWarehouse(flag, FW::Condition_Job, 0, false, &p, false);
+    nobBaseWarehouse* wh = FindWarehouse(*flag, FW::Condition_Job, 0, false, &p, false);
 
     /// Wenns eins gibt, dann rufen
     if(wh)

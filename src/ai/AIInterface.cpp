@@ -24,6 +24,8 @@
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainData.h"
+#include "pathfinding/RoadPathFinder.h"
+#include "pathfinding/FreePathFinder.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -194,35 +196,13 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
         unsigned* length) const
 {
     bool boat = false;
-    return gwb.FindFreePathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
+    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
 }
 
 /// player.FindWarehouse
-nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode* const start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length)
+nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length)
 {
-	 nobBaseWarehouse* best = NULL;
-
-	//  unsigned char path = 0xFF, tpath = 0xFF;
-    unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
-
-	for(std::list<nobBaseWarehouse*>::const_iterator w = player_.GetStorehouses().begin(); w != player_.GetStorehouses().end(); ++w)
-    {
-        // Lagerhaus geeignet?
-        if(!IsWarehouseGood(*w, param))
-            continue;
-        if(!gwb.FindPathOnRoads(to_wh ? start : *w, to_wh ? *w : start, use_boat_roads, &tlength, NULL, NULL, forbidden))
-            continue;
-        if(tlength < best_length || !best)
-        {
-            best_length = tlength;
-            best = (*w);
-        }
-    }
-
-    if(length)
-        *length = best_length;
-
-    return best;
+    return player_.FindWarehouse(start, IsWarehouseGood, forbidden, to_wh, param, use_boat_roads, length, false);
 }
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt, const MapPoint t)
@@ -236,9 +216,12 @@ bool AIInterface::CalcBQSumDifference(const MapPoint pt, const MapPoint t)
     return s2 < s1;
 }
 
-bool AIInterface::FindPathOnRoads(const noRoadNode* start, const noRoadNode* target, unsigned* length) const
+bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
-    return gwb.FindPathOnRoads(start, target, false, length, NULL, NULL, NULL, false);
+    if(length)
+        return gwb.GetRoadPathFinder().FindPath(start, target, false, false, std::numeric_limits<unsigned>::max(), NULL, length);
+    else
+        return gwb.GetRoadPathFinder().PathExists(start, target, false, false);
 }
 
 const nobHQ* AIInterface::GetHeadquarter() const

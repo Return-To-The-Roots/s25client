@@ -160,24 +160,28 @@ void nobBaseMilitary::AddLeavingFigure(noFigure* fig)
 
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 {
-    // Nach weiteren Angreifern auf dieses Gebäude suchen, die in der Nähe und kampfbereit sind
+    // Look for other attackers on this building that are clos and ready to fight
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        // Überhaupos Lust zum Kämpfen?
-        if((*it)->IsReadyForFight())
+        if(!(*it)->IsReadyForFight())
+            continue;
+
+        const MapPoint attackerPos = (*it)->GetPos();
+        const MapPoint defenderPos = defender->GetPos();
+        if(attackerPos == defenderPos)
         {
-            // Mal sehen, ob er auch nicht so weit entfernt ist (erstmal grob)
-            if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) < 5)
+            // Both are at same pos --> Go!
+            (*it)->LetsFight(defender);
+            return (*it);
+        }
+        // Check roughly the distance
+        if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) < 5)
+        {
+            // Check it further (e.g. if they have to walk around a river...)
+            if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)
             {
-                // Er darf auch per Fuß nicht zu weit entfernt sein (nicht dass er an der anderen Seite
-                // von nem Fluss steht (genau)
-                if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)
-                {
-                    // Ja, mit dem kann sich der Soldat duellieren
-                    (*it)->LetsFight(defender);
-                    // zurückgeben
-                    return (*it);
-                }
+                (*it)->LetsFight(defender);
+                return (*it);
             }
         }
     }

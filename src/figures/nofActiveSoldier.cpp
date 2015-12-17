@@ -501,35 +501,25 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * figh
 
     }
 
-    // Points around
-    for(MapCoord tx = gwg->GetXA(middle.x, middle.y, 0), r = 1; r <= MEET_FOR_FIGHT_DISTANCE; tx = gwg->GetXA(tx, middle.y, 0), ++r)
+    // TODO: Put the condition below into a functor and pass it as the condition to GetPointsInRadius with a limit of 1 (much easier in C++11)
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius(middle, MEET_FOR_FIGHT_DISTANCE);
+    for(std::vector<MapPoint>::const_iterator pt = pts.begin(); pt != pts.end(); ++pt)
     {
-        // Wurde ein Punkt in diesem Radius gefunden?
-        // bool found_in_radius = false;
+        // Did we find a good spot?
+        if(gwg->ValidPointForFighting(*pt, true, NULL)
+                && (pos == *pt || gwg->FindHumanPath(pos, *pt, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff)
+                && (other->GetPos() == *pt || gwg->FindHumanPath(other->GetPos(), *pt, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff))
 
-        MapPoint t2(tx, middle.y);
-        for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, i % 6), ++r2)
-            {
-                // Did we find a good spot?
-                if(gwg->ValidPointForFighting(t2, true, NULL)
-                        && gwg->FindHumanPath(pos, t2, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff
-                        && gwg->FindHumanPath(other->GetPos(), t2, MEET_FOR_FIGHT_DISTANCE * 2, false, NULL) != 0xff)
+            // Great, then let's take this one
+            *fight_spot = *pt;
+            return true;
 
-                {
-                    // Great, then let's take this one
-                    *fight_spot = t2;
-                    return true;
-
-                }
-            }
         }
     }
 
     // No point found
     return false;
-
 }
 
 
