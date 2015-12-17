@@ -1350,7 +1350,7 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapPoint pt,
         const unsigned char player, 
         bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const
 {
-
+    assert(origin_harbor_id);
     //unsigned char group_id = harbor_pos[origin_harbor_id-1].cps[
 
     // Herausfinden, in welcher Richtung sich dieser Punkt vom Ausgangspuknt unterscheidet

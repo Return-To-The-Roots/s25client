@@ -79,8 +79,8 @@ void nofSoldier::AbrogateWorkplace()
     // Militärgebäude Bescheid sagen, dass ich nicht kommen kann
     if(building)
     {
-        static_cast<nobMilitary*>(building)->SoldierLost(this);
-        building = 0;
+        building->SoldierLost(this);
+        building = NULL;
     }
 }
 

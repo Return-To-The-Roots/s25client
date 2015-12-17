@@ -147,19 +147,6 @@ namespace AIJH
             void TryToBuildSecondaryRoad();
     };
 
-    class ExpandJob : public Job, public JobWithTarget
-    {
-            friend class iwAIDebug;
-        public:
-            ExpandJob(AIPlayerJH* aijh) : Job(aijh) { }
-            ~ExpandJob() { }
-            void ExecuteJob();
-        private:
-            BuildingType type;
-            std::vector<unsigned char> route;
-    };
-
-
     class ConnectJob : public Job, public JobWithTarget
     {
             friend class iwAIDebug;

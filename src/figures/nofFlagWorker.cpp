@@ -72,7 +72,7 @@ void nofFlagWorker::Destroy_nofFlagWorker()
 
 void nofFlagWorker::AbrogateWorkplace()
 {
-    flag = 0;
+    flag = NULL;
     /// uns entfernen, da wir wieder umdrehen müssen
     gwg->GetPlayer(player).RemoveFlagWorker(this);
 }
@@ -109,7 +109,7 @@ void nofFlagWorker::GoToFlag()
 
         state = STATE_FIGUREWORK;
 
-        flag = 0;
+        flag = NULL;
 
     }
     else
@@ -125,7 +125,7 @@ void nofFlagWorker::GoToFlag()
             Wander();
             state = STATE_FIGUREWORK;
 
-            flag = 0;
+            flag = NULL;
         }
         else
         {

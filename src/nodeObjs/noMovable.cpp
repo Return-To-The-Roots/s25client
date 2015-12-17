@@ -78,22 +78,6 @@ void noMovable::Walk()
 	{
 		pos = gwg->GetNeighbour(pos, curMoveDir);
 	}
-/*
-    int tx = x, ty = y;
-    
-            inline void GetPointA(MapPoint& pos, unsigned dir) const {x = GetXA(pos, dir); y = GetYA(pos, dir);}
-    
-    x = gwg->GetXA(t, dir);
-    y = gwg->GetYA(t, dir);
-
-
-    // Auf der jeweiligen Stelle mich suchen und dort entfernen...
-    if(dir != 1 && dir != 2)
-        gwg->RemoveFigure(this, tx, ty);
-
-    // und an der anderen Stelle wieder hinzufgen
-    if(dir != 1 && dir != 2)
-        gwg->AddFigure(this, pos);*/
 }
 
 void noMovable::FaceDir(unsigned char newDir)
@@ -122,7 +106,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
     // runter natürlich nich so viel schneller werden wie langsamer hoch
     switch(int(gwg->GetNodeAround(pos, newDir).altitude) - int(gwg->GetNode(pos).altitude))
     {
-        default: ascent = 3; // gerade
+        default: ascent = 3; break; // gerade
         case 1: ascent = 4; gf_length+=(gf_length/2); break; // leicht hoch
         case 2: case 3: ascent = 5; gf_length*=2;  break; // mittelsteil hoch
         case 4: case 5: ascent = 6; gf_length*=3;  break; // steil hoch

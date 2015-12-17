@@ -77,8 +77,10 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
         (*it)->AttackedGoalDestroyed();
 
     // Verteidiger Bescheid sagen
-    if(defender_)
+    if(defender_){
         defender_->HomeDestroyed();
+        defender_ = NULL;
+    }
 
     // Warteschlangenevent vernichten
     em->RemoveEvent(leaving_event);

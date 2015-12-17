@@ -2085,7 +2085,6 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
         // ship already there?
         if (ship->GetPos() == dest)
         {
-            ship->AssignHarborId(hb->GetHarborPosID());
             hb->ShipArrived(ship);
             return(true);
         }
@@ -2169,7 +2168,6 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
             // Evtl. sind wir schon da?
             if(ship->GetPos() == dest)
             {
-                ship->AssignHarborId((*it)->GetHarborPosID());
                 (*it)->ShipArrived(ship);
                 return;
             }

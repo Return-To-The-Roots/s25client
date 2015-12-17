@@ -76,6 +76,9 @@ class nofAggressiveDefender : public nofActiveSoldier
         void HomeDestroyed();
         /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
         void HomeDestroyedAtBegin();
+
+        void CancelAtAttackedBld();
+
         /// Wenn ein Kampf gewonnen wurde
         void WonFighting();
         /// Wenn ein Kampf verloren wurde (Tod)

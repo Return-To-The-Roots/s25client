@@ -93,8 +93,10 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
 void nofBuildingWorker::AbrogateWorkplace()
 {
     if(workplace)
+    {
         workplace->WorkerLost();
-    workplace = 0;
+        workplace = NULL;
+    }
 }
 
 void nofBuildingWorker::Draw(int x, int y)

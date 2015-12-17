@@ -24,6 +24,7 @@ class nofAggressiveDefender;
 class nofPassiveSoldier;
 class nobHarborBuilding;
 class nobMilitary;
+class noShip;
 
 /// Angreifender Soldat
 class nofAttacker : public nofActiveSoldier
@@ -81,6 +82,9 @@ class nofAttacker : public nofActiveSoldier
     public:
         /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
         void InformTargetsAboutCancelling();
+
+        void RemoveFromAttackedGoal();
+
         /// Normaler Konstruktor für Angreifer
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal);
         /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
@@ -107,8 +111,6 @@ class nofAttacker : public nofActiveSoldier
         void HomeDestroyed();
         /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
         void HomeDestroyedAtBegin();
-        /// Sagt dem Heimatgebäude Bescheid, dass er nicht mehr nach Hause kommen wird
-        void CancelAtHomeMilitaryBuilding();
 
         /// Wenn ein Kampf gewonnen wurde
         void WonFighting();
@@ -153,14 +155,13 @@ class nofAttacker : public nofActiveSoldier
         /// Startet den Angriff am Landungspunkt vom Schiff
         void StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id);
         /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
-        void StartReturnViaShip();
+        void StartReturnViaShip(noShip& ship);
         /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road
         void SeaAttackFailedBeforeLaunch();
         /// notify sea attackers that they wont return home
         void HomeHarborLost();
         /// Sagt Bescheid, dass sich die Angreifer nun auf dem Schiff befinden
-        void SeaAttackStarted()
-        { state = STATE_SEAATTACKING_ONSHIP; }
+        void SeaAttackStarted() { state = STATE_SEAATTACKING_ONSHIP; }
         /// Fragt einen Schiffs-Angreifer auf dem Schiff, ob er schon einmal
         /// draußen war und gekämpft hat
         bool IsSeaAttackCompleted() const { return (state != STATE_SEAATTACKING_ONSHIP); }

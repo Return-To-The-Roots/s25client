@@ -106,10 +106,10 @@ void nofDefender::Walked()
             {
                 // mich von der Landkarte tilgen
                 gwg->RemoveFigure(this, pos);
-                // mich zum Gebäude wieder hinzufügen
-                building->AddActiveSoldier(this);
                 // Gebäude Bescheid sagen, dass es nun keinen Verteidiger mehr gibt
                 building->NoDefender();
+                // mich zum Gebäude wieder hinzufügen
+                building->AddActiveSoldier(this);
             }
 
         } break;
@@ -179,7 +179,7 @@ void nofDefender::WonFighting()
 	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
-    attacker = 0;
+    attacker = NULL;
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
@@ -211,7 +211,7 @@ void nofDefender::WonFighting()
 /// Wenn ein Kampf verloren wurde (Tod)
 void nofDefender::LostFighting()
 {
-    attacker = 0;
+    attacker = NULL;
 
     // Gebäude Bescheid sagen, falls es noch existiert
     if(building)
@@ -224,6 +224,7 @@ void nofDefender::LostFighting()
             if(static_cast<nobMilitary*>(building)->GetTroopsCount())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
+        building = NULL;
     }
 }
 

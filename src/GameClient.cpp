@@ -461,6 +461,7 @@ void GameClient::ExitGame()
     gw = 0;
     em = 0;
 
+    deletePtr(human_ai);
     players.clear();
 }
 

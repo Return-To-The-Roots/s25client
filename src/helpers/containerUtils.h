@@ -37,9 +37,6 @@ namespace helpers{
             static iterator erase(T& container, iterator it) {
                 return container.erase(it);
             }
-            static const_iterator erase(T& container, const_iterator it) {
-                return container.erase(it);
-            }
         };
         template<class T>
         struct EraseImpl<T, EEraseIterValidy::NextValid>
@@ -49,10 +46,6 @@ namespace helpers{
             typedef typename T::iterator iterator;
             typedef typename T::const_iterator const_iterator;
             static iterator erase(T& container, iterator it) {
-                container.erase(it++);
-                return it;
-            }
-            static const_iterator erase(T& container, const_iterator it) {
                 container.erase(it++);
                 return it;
             }
@@ -67,18 +60,6 @@ namespace helpers{
                 // If only previous iterators remain valid, store the predecessor
                 // and return this after incrementing it after the erase
                 // Corner case: If we erase the first element there is no previous one and we return begin()
-                bool isBegin = it == container.begin();
-                iterator tmp = it;
-                if(!isBegin)
-                    --tmp;
-                container.erase(it);
-                if(isBegin)
-                    tmp = container.begin();
-                else
-                    ++tmp;
-                return tmp;
-            }
-            static const_iterator erase(T& container, const_iterator it) {
                 bool isBegin = it == container.begin();
                 iterator tmp = it;
                 if(!isBegin)
@@ -144,25 +125,12 @@ namespace helpers{
         return detail::EraseImpl<T>::erase(container, it);
     }
 
-    /*template<typename T>
-    inline typename T::const_iterator erase(T& container, typename T::const_iterator it)
-    {
-        return EraseFromContainer<T>::erase(it);
-    }*/
-
     template<typename T>
     inline typename T::reverse_iterator erase(T& container, typename T::reverse_iterator it)
     {
         typename T::reverse_iterator tmp = it;
         return typename T::reverse_iterator(erase(container, (++tmp).base()));
     }
-
-    /*template<typename T>
-    inline typename T::const_reverse_iterator erase(T& container, typename T::const_reverse_iterator it)
-    {
-        typename std::set<T>::const_reverse_iterator tmp = it;
-        return typename T::const_reverse_iterator(erase(container, (++tmp).base()));
-    }*/
 
     /// Removes the first element in a container
     template<typename T>

@@ -98,6 +98,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 
 void noFigure::Destroy_noFigure()
 {
+    assert(HasNoGoal());
     Destroy_noMovable();
 
     assert(!players->getElement(player)->CheckDependentFigure(this));
@@ -143,7 +144,7 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id) : noMovable(s
     if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
         goal_ = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
     else
-        goal_ = 0;
+        goal_ = NULL;
 
     waiting_for_free_node = sgd.PopBool();
 
@@ -173,6 +174,7 @@ void noFigure::ActAtFirst()
             {
                 gwg->RemoveFigure(this, pos);
                 static_cast<nobBaseWarehouse*>(goal_)->AddFigure(this);
+                goal_ = NULL;
             }
             else
                 // ansonsten ganz normal rausgehen
@@ -376,21 +378,20 @@ void noFigure::WalkToGoal()
 
         if(goal1 == pos || goal2 == pos)
         {
+            noRoadNode* goal = goal_;
+            // Zeug nullen
+            cur_rs = NULL;
+            goal_ = NULL;
+            rs_dir = 0;
+            rs_pos = 0;
             if(fs == FS_GOHOME)
             {
                 // Mann im Lagerhaus angekommen
                 gwg->RemoveFigure(this, pos);
-                static_cast<nobBaseWarehouse*>(goal_)->AddFigure(this);
+                static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
             }
             else
             {
-                // Zeug nullen
-                cur_rs = NULL;
-                rs_dir = 0;
-                rs_pos = 0;
-                goal_ = NULL;
-
-
                 // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
                 fs = FS_JOB;
                 GoalReached();
@@ -676,6 +677,7 @@ void noFigure::GoHome(noRoadNode* goal)
                    gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
                    || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 
+            goal_ = NULL;
             gwg->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
             return;
         }
@@ -704,7 +706,7 @@ void noFigure::GoHome(noRoadNode* goal)
     {
         // Kein Lagerhaus gefunden --> Rumirren
         StartWandering();
-        cur_rs = 0;
+        cur_rs = NULL;
     }
 }
 
@@ -712,9 +714,9 @@ void noFigure::GoHome(noRoadNode* goal)
 
 void noFigure::StartWandering(const unsigned burned_wh_id)
 {
+    assert(HasNoGoal());
     fs = FS_WANDER;
     cur_rs = 0;
-    goal_ = 0;
     rs_pos = 0;
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
@@ -916,7 +918,7 @@ void noFigure::WanderToFlag()
         {
             // ja, dann können wir ja hingehen
             goal_ = wh;
-            cur_rs = 0;
+            cur_rs = NULL;
             rs_pos = 0;
             fs = FS_GOHOME;
             wh->AddDependentFigure(this);
@@ -1168,9 +1170,13 @@ void noFigure::Abrogate()
     // Arbeisplatz oder Laghaus Bescheid sagen
     if(fs == FS_GOHOME)
     {
-        if(goal_) //goal might by NULL if goal was a harbor that got destroyed during sea travel
+        //goal might by NULL if goal was a harbor that got destroyed during sea travel
+        if(goal_)
+        {
+            assert(dynamic_cast<nobBaseWarehouse*>(goal_));
             static_cast<nobBaseWarehouse*>(goal_)->RemoveDependentFigure(this);
-        else
+            goal_ = NULL;
+        }else
         {
             if(!on_ship) //no goal but going home - should not happen
             {
@@ -1180,7 +1186,10 @@ void noFigure::Abrogate()
         }
     }
     else
+    {
+        goal_ = NULL;
         AbrogateWorkplace();
+    }
 }
 
 
@@ -1214,13 +1223,19 @@ void noFigure::CalcVisibilities(const MapPoint pt)
 }
 
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
-void noFigure::StartShipJourney(const MapPoint goal)
+void noFigure::StartShipJourney()
 {
     // remove us from where we are, so nobody will ever draw us :)
     gwg->RemoveFigure(this, this->pos);
 
-    pos = goal;
+    pos = MapPoint::Invalid();
     on_ship = true;
+}
+
+void noFigure::ArrivedByShip(const MapPoint harborPos)
+{
+    assert(on_ship);
+    pos = harborPos;
 }
 
 /// Informiert die Figur, wenn Kreuzfahrt beendet ist

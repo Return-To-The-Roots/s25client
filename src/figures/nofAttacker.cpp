@@ -53,7 +53,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(0),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(NULL),
       harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -66,9 +66,8 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR),
-
       attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(0),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(NULL),
       harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -89,6 +88,7 @@ nofAttacker::~nofAttacker()
 
 void nofAttacker::Destroy_nofAttacker()
 {
+    assert(!attacked_goal);
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
@@ -117,6 +117,7 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
 
 nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
+    blocking_event = NULL;
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
@@ -132,9 +133,10 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     }
     else
     {
-        attacked_goal = 0;
+        attacked_goal = NULL;
         should_haunted = 0;
         radius = 0;
+        ship_obj_id = 0;
     }
 
 }
@@ -258,15 +260,14 @@ void nofAttacker::Walked()
                         CancelAtShip();
                     // Gebäude einnehmen
                     static_cast<nobMilitary*>(attacked_goal)->Capture(player);
-                    // Bin nun kein Angreifer mehr
-                    attacked_goal->UnlinkAggressor(this);
-                    // Das ist nun mein neues zu Hause
-                    building = attacked_goal;
+                    // This is the new home. Store also in temporary if the new home wants to destroy/convert the soldier
+                    nobBaseMilitary* newHome = building = attacked_goal;
+                    RemoveFromAttackedGoal();
                     // mich zum Gebäude hinzufügen und von der Karte entfernen
-                    attacked_goal->AddActiveSoldier(this);
+                    newHome->AddActiveSoldier(this);
                     gwg->RemoveFigure(this, pos);
                     // ggf. weitere Soldaten rufen, damit das Gebäude voll wird
-                    static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops(player);
+                    static_cast<nobMilitary*>(newHome)->NeedOccupyingTroops(player);
                 }
                 // oder ein Hauptquartier oder Hafen?
                 else
@@ -374,27 +375,28 @@ void nofAttacker::HomeDestroyed()
             // Hier muss sofort reagiert werden, da man steht
 
             // Angreifer muss zusätzlich seinem Ziel Bescheid sagen
-            attacked_goal->UnlinkAggressor(this);
+            nobBaseMilitary* curGoal = attacked_goal; // attacked_goal gets reset
+            RemoveFromAttackedGoal();
 
             // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
             if(ship_obj_id)
                 CancelAtShip();
 
             // Rumirren
-            building = 0;
+            building = NULL;
             state = STATE_FIGUREWORK;
             StartWandering();
             Wander();
 
             // und evtl einen Nachrücker für diesen Platz suchen
-            attacked_goal->SendSuccessor(pos, radius, GetCurMoveDir());
+            curGoal->SendSuccessor(pos, radius, GetCurMoveDir());
         } break;
 
         default:
         {
             //  Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
-            building = 0;
+            building = NULL;
         } break;
     }
 
@@ -402,27 +404,16 @@ void nofAttacker::HomeDestroyed()
 
 void nofAttacker::HomeDestroyedAtBegin()
 {
-    building = 0;
+    building = NULL;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
-    if(attacked_goal)
-    {
-        attacked_goal->UnlinkAggressor(this);
-        attacked_goal = 0;
-    }
+    InformTargetsAboutCancelling();
 
     state = STATE_FIGUREWORK;
 
     // Rumirren
     StartWandering();
     StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
-}
-
-/// Sagt dem Heimatgebäude Bescheid, dass er nicht mehr nach Hause kommen wird
-void nofAttacker::CancelAtHomeMilitaryBuilding()
-{
-    if(building)
-        building->SoldierLost(this);
 }
 
 /// Wenn ein Kampf gewonnen wurde
@@ -436,10 +427,7 @@ void nofAttacker::WonFighting()
     {
         // Dann dem Ziel Bescheid sagen, falls es existiert (evtl. wurdes zufällig zur selben Zeit zerstört)
         if(attacked_goal)
-        {
-            attacked_goal->UnlinkAggressor(this);
-            attacked_goal = 0;
-        }
+            RemoveFromAttackedGoal();
 
         // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
         if(ship_obj_id)
@@ -453,7 +441,6 @@ void nofAttacker::WonFighting()
         return;
     }
 
-
     // Ist evtl. unser Ziel-Gebäude zerstört?
     if(!attacked_goal)
     {
@@ -462,11 +449,8 @@ void nofAttacker::WonFighting()
 
         return;
     }
-
-
+    
     ContinueAtFlag();
-
-
 }
 
 /// Doesn't find a defender at the flag -> Send defenders or capture it
@@ -508,15 +492,11 @@ void nofAttacker::LostFighting()
 {
     // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reinkönnen)
     // falls das Gebäude noch existiert
-    if(building)
-        building->SoldierLost(this);
+    AbrogateWorkplace();
 
     // Angreifer müssen zusätzlich ihrem Ziel Bescheid sagen
     if(attacked_goal)
-    {
-        attacked_goal->UnlinkAggressor(this);
-        attacked_goal = 0;
-    }
+        RemoveFromAttackedGoal();
 
     // Ggf. Schiff Bescheid sagen
     if(ship_obj_id)
@@ -546,10 +526,7 @@ void nofAttacker::MissAttackingWalk()
     {
         // Dann dem Ziel Bescheid sagen, falls es existiert (evtl. wurdes zufällig zur selben Zeit zerstört)
         if(attacked_goal)
-        {
-            attacked_goal->UnlinkAggressor(this);
-            attacked_goal = 0;
-        }
+            RemoveFromAttackedGoal();
 
         // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
         if(ship_obj_id)
@@ -559,7 +536,6 @@ void nofAttacker::MissAttackingWalk()
         state = STATE_FIGUREWORK;
         StartWandering();
         Wander();
-
 
         return;
     }
@@ -824,6 +800,7 @@ void nofAttacker::CapturingWalking()
 
         return;
     }
+    assert(dynamic_cast<nobMilitary*>(attacked_goal));
 
     MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
 
@@ -843,14 +820,11 @@ void nofAttacker::CapturingWalking()
         attacked_goal->AddActiveSoldier(this);
 
         // Ein erobernder Soldat weniger
-        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS &&
-                attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
             static_cast<nobMilitary*>(attacked_goal)->CapturingSoldierArrived();
 
         // außerdem aus der Angreiferliste entfernen
-        attacked_goal->UnlinkAggressor(this);
-        attacked_goal = 0;
-
+        RemoveFromAttackedGoal();
     }
     // oder zumindest schonmal an der Flagge?
     else if(pos == attFlagPos)
@@ -868,12 +842,10 @@ void nofAttacker::CapturingWalking()
             // Wenn noch das Ziel existiert (könnte ja zeitgleich abgebrannt worden sein)
             if(attacked_goal)
             {
-                // Ziel Bescheid sagen
-                attacked_goal->UnlinkAggressor(this);
+                nobMilitary* attackedBld = static_cast<nobMilitary*>(attacked_goal);
+                RemoveFromAttackedGoal();
                 // Evtl. neue Besatzer rufen
-                static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops(0xFF);
-
-                attacked_goal = 0;
+                attackedBld->NeedOccupyingTroops(0xFF);
             }
 
             // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
@@ -1014,13 +986,15 @@ void nofAttacker::InformTargetsAboutCancelling()
 {
     // Ziel Bescheid sagen, falls es das noch gibt
     if(attacked_goal)
-    {
-        attacked_goal->UnlinkAggressor(this);
-        attacked_goal = 0;
-    }
+        RemoveFromAttackedGoal();
+    assert(attacked_goal == NULL);
 }
 
-
+void nofAttacker::RemoveFromAttackedGoal()
+{
+    attacked_goal->UnlinkAggressor(this);
+    attacked_goal = NULL;
+}
 
 /// Startet den Angriff am Landungspunkt vom Schiff
 void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id)
@@ -1037,27 +1011,31 @@ void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigne
 /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: set state,target,goal,building to 0 to avoid future problems (and add to harbor inventory)
 void nofAttacker::SeaAttackFailedBeforeLaunch()
 {
-    attacked_goal = 0;
-    goal_ = 0;
-    building = 0;
+    InformTargetsAboutCancelling();
+    AbrogateWorkplace();
+    goal_ = NULL;
     state = STATE_FIGUREWORK;
 }
 
 /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
-void nofAttacker::StartReturnViaShip()
+void nofAttacker::StartReturnViaShip(noShip& ship)
 {
     // remove us from where we are, so nobody will ever draw us :)
-    gwg->RemoveFigure(this, this->pos);
+    gwg->RemoveFigure(this, pos);
+    pos = MapPoint::Invalid(); // Similar to start ship journey
+    // Uns zum Schiff hinzufügen
+    ship.AddReturnedAttacker(this);
 
     goal_ = building;
     state = STATE_FIGUREWORK;
+    fs = FS_GOTOGOAL;
     on_ship = true;
 }
 
 /// notify sea attackers that they wont return home
 void nofAttacker::HomeHarborLost()
 {
-    goal_ = 0; //this in combination with telling the home building that the soldier is lost should work just fine
+    goal_ = NULL; //this in combination with telling the home building that the soldier is lost should work just fine
 }
 
 /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
@@ -1071,9 +1049,10 @@ void nofAttacker::CancelAtShip()
         {
             noShip* ship = static_cast<noShip*>(*it);
             ship->SeaAttackerWishesNoReturn();
-            return;
+            break;
         }
     }
+    ship_obj_id = 0;
 }
 
 /// Behandelt das Laufen zurück zum Schiff
@@ -1102,15 +1081,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         {
             if((*it)->GetObjId() == ship_obj_id)
             {
-                noShip* ship = static_cast<noShip*>(*it);
-                // Und von der Landkarte tilgen
-                gwg->RemoveFigure(this, pos);
-                // Uns zum Schiff hinzufügen
-                ship->AddAttacker(this);
-
-                state = STATE_FIGUREWORK;
-                fs = FS_GOTOGOAL;
-                StartReturnViaShip();
+                StartReturnViaShip(static_cast<noShip&>(**it));
                 return;
             }
         }
@@ -1148,8 +1119,8 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
 void nofAttacker::CancelSeaAttack()
 {
     InformTargetsAboutCancelling();
+    Abrogate();
 }
-
 
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofAttacker::FreeFightEnded()

@@ -58,7 +58,7 @@ class noShip : public noMovable
             STATE_SEAATTACK_UNLOADING,
             STATE_SEAATTACK_DRIVINGTODESTINATION, /// Fährt mit den Soldaten zum Zielhafenpunkt
             STATE_SEAATTACK_WAITING, /// wartet an der Küste, während die Soldaten was schönes machen
-            STATE_SEAATTACK_RETURN /// fährt mit den Soldaten wieder zurück zum Heimathafen
+            STATE_SEAATTACK_RETURN_DRIVING /// fährt mit den Soldaten wieder zurück zum Heimathafen
 
         } state;
 
@@ -81,7 +81,6 @@ class noShip : public noMovable
         bool lost;
         /// Bei Schiffen im STATE_SEAATTACK_WAITING:
         /// Anzahl der Soldaten, die noch kommen müssten
-        /// For ships in STATE_TRANSPORT_x a 1 indicates that the ship is carrying returning soldiers from a sea attack
         unsigned remaining_sea_attackers;
         /// Heimathafen der Schiffs-Angreifer
         unsigned home_harbor;
@@ -135,6 +134,11 @@ class noShip : public noMovable
         /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
         void StartDrivingToHarborPlace();
 
+        /// Looks for a harbour to unload the goods (e.g if old one was destroyed)
+        void FindUnloadGoal(State newState);
+        /// Aborts a sea attack (in case harbor was not found anymore)
+        void AbortSeaAttack();
+
     public:
 
         /// Konstruktor
@@ -186,16 +190,12 @@ class noShip : public noMovable
         /// Beim Warten bei der Expedition: Gibt die Hafenpunkt-ID zurück, wo es sich gerade befindet
         unsigned GetCurrentHarbor() const;
 
-        /// Sagt dem Schiff, an welchem Hafenpunkt es gerade ankert, wenn es das selber noch nicht weiß
-        void AssignHarborId(const unsigned harbor_id)
-        { this->goal_harbor_id = harbor_id; }
-
         /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
         void GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route);
         /// Startet eine Expedition
-        void StartExpedition();
+        void StartExpedition(unsigned homeHarborId);
         /// Startet eine Erkundungs-Expedition
-        void StartExplorationExpedition();
+        void StartExplorationExpedition(unsigned homeHarborId);
         /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
         void ContinueExpedition(const unsigned char dir);
         /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
@@ -211,24 +211,19 @@ class noShip : public noMovable
         bool IsGoingToHarbor(nobHarborBuilding* hb) const;
 
         /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-        void PrepareTransport(MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
+        void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
 
         /// Belädt das Schiff mit Schiffs-Angreifern
-        void PrepareSeaAttack(MapPoint goal, const std::list<noFigure*>& figures);
+        void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures);
         /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
         void SeaAttackerWishesNoReturn();
         /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
-        void AddAttacker(nofAttacker* attacker);
+        void AddReturnedAttacker(nofAttacker* attacker);
 
         /// Sagt dem Schiff, das ein bestimmter Hafen zerstört wurde
         void HarborDestroyed(nobHarborBuilding* hb);
         /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
         void NewHarborBuilt(nobHarborBuilding* hb);
-
-
-
-
-
 };
 
 
