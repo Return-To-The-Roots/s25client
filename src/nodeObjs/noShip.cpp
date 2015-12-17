@@ -237,7 +237,9 @@ void noShip::Draw(int x, int y)
 void noShip::DrawDriving(int& x, int& y)
 {
     // Interpolieren zwischen beiden Knotenpunkten
-    CalcWalkingRelative(x, y);
+    Point<int> offset = CalcWalkingRelative();
+    x += offset.x;
+    y += offset.y;
 
     LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
@@ -247,7 +249,9 @@ void noShip::DrawDriving(int& x, int& y)
 void noShip::DrawDrivingWithWares(int& x, int& y)
 {
     // Interpolieren zwischen beiden Knotenpunkten
-    CalcWalkingRelative(x, y);
+    Point<int> offset = CalcWalkingRelative();
+    x += offset.x;
+    y += offset.y;
 
     LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);

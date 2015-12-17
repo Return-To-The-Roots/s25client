@@ -48,11 +48,11 @@ class nofGeologist : public nofFlagWorker
         void HandleDerivedEvent(const unsigned int id);
 
         /// Kann man an diesem Punkt ein Schild aufstellen?
-        bool IsNodeGood(const MapPoint pt);
+        bool IsNodeGood(const MapPoint pt) const;
         /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
         void LookForNewNodes();
-        /// Nimmt den Punkt mit in die Liste auf, wenn er geeignet ist
-        void TestNode(const MapPoint pt);
+        /// Checks if the node is valid as a new target
+        inline bool IsValidTargetNode(const MapPoint pt) const;
         /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
         /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
         unsigned char GetNextNode();

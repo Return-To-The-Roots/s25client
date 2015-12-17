@@ -354,17 +354,17 @@ void nofCarrier::Draw(int x, int y)
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
                 unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
-                CalcFigurRelative(x, y);
+                Point<int> realPos = Point<int>(x, y) + CalcFigurRelative();
 
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(x, y);
+                LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y);
 
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(realPos.x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], realPos.y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
                 }
             }
 
@@ -394,15 +394,15 @@ void nofCarrier::Draw(int x, int y)
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
                 unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
-                CalcFigurRelative(x, y);
+                Point<int> realPos = Point<int>(x, y) + CalcFigurRelative();
 
                 // ruderndes Boot zeichnen
-                LOADER.boat_cache[GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.boat_cache[GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_BOAT[GetCurMoveDir() * 2], y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(realPos.x + WARE_POS_BOAT[GetCurMoveDir() * 2], realPos.y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)

@@ -138,7 +138,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             // Fertig mit warten --> anfangen zu arbeiten
 
             // Liste von potentiellen Zielen
-            std::vector<PossibleTarget> pts;
+            std::vector<PossibleTarget> possibleTargets;
 
             sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
             for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
@@ -157,14 +157,14 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
                         if(distance < 14)
                         {
                             // Mit in die Liste aufnehmen
-                            pts.push_back(PossibleTarget((*it)->GetPos(), distance));
+                            possibleTargets.push_back(PossibleTarget((*it)->GetPos(), distance));
                         }
                     }
                 }
             }
 
             // Gibts evtl keine Ziele?
-            if(pts.empty())
+            if(possibleTargets.empty())
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
                 current_ev = em->AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
@@ -176,42 +176,59 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             workplace->ConsumeWares();
 
             // Eins zufällig auswählen
-            target = pts[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), pts.size())];
+            target = possibleTargets[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleTargets.size())];
+
+            // Get distance and direction
+            int distX;
+            bool targetIsRight; // We should face right (to higher x)
+            if(target.pos.x > pos.x)
+            {
+                distX = target.pos.x - pos.x;
+                targetIsRight = true;
+            }else
+            {
+                distX = pos.x - target.pos.x;
+                targetIsRight = false;
+            }
+            // Distance over map border is closer (max distance is size/2 due to wrap around)
+            if(distX > gwg->GetWidth() / 2)
+            {
+                distX -= gwg->GetWidth() / 2;
+                targetIsRight = !targetIsRight; // Reverse direction
+            }
+
+            // Same for Y
+            int distY;
+            bool targetIsDown; // We should face down (to higher y)
+            if(target.pos.y > pos.y)
+            {
+                distY = target.pos.y - pos.y;
+                targetIsDown = true;
+            }else
+            {
+                distY = pos.y - target.pos.y;
+                targetIsDown = false;
+            }
+            // Distance over map border is closer (max distance is size/2 due to wrap around)
+            if(distY > gwg->GetHeight() / 2)
+            {
+                distY -= gwg->GetHeight() / 2;
+                targetIsDown = !targetIsDown; // Reverse direction
+            }
 
             // Richtung, in die sich der Katapult drehen soll, bestimmen
             unsigned char shooting_dir;
 
-            // Normale X-Distanz (ohne Beachtung der Kartenränderüberquerung)
-            unsigned x_dist = std::abs(int(target.pos.x) - int(pos.x));
-            // Distanzen jeweils bei Überquerung des linken und rechten Randes
-            unsigned x_dist1 = std::abs(int(target.pos.x) - int(pos.x) + gwg->GetWidth());
-            unsigned x_dist2 = std::abs(int(target.pos.x) - int(pos.x) - gwg->GetWidth());
-            // Minimale, d.h. im Endeffekt reale Distanz
-            unsigned min_dist_x = std::min(std::min(x_dist, x_dist1), x_dist2);
-
-            // Normale Y-Distanz (ohne Beachtung der Kartenränderüberquerung)
-            unsigned y_dist = std::abs(int(target.pos.y) - int(pos.y));
-            // Distanzen jeweils bei Überquerung des linken und rechten Randes
-            unsigned y_dist1 = std::abs(int(target.pos.y) - int(pos.y) + gwg->GetHeight());
-            unsigned y_dist2 = std::abs(int(target.pos.y) - int(pos.y) - gwg->GetHeight());
-            // Minimale, d.h. im Endeffekt reale Distanz
-            unsigned min_dist_y = std::min(std::min(y_dist, y_dist1), y_dist2);
-
-            bool side_x = (pos.x < target.pos.x);
-            if(x_dist > x_dist1 || x_dist > x_dist2) side_x = !side_x; // Wenn er über Kartengrenze schießt, Richtung umkehren
-            bool side_y = (pos.y < target.pos.y);
-            if(y_dist > y_dist1 || y_dist > y_dist2) side_y = !side_y;
-
             // Y-Abstand nur unwesentlich klein --> Richtung 0 und 3 (direkt gegenüber) nehmen
-            if(min_dist_y <= min_dist_x / 5)
-                shooting_dir = (side_x) ? 3 : 0;
+            if(distY <= distX / 5)
+                shooting_dir = (targetIsRight) ? 3 : 0;
             else
             {
                 // Ansonsten noch y mit berücksichtigen und je einen der 4 Quadranten nehmen
-                if(side_y)
-                    shooting_dir = (side_x) ? 4 : 5;
+                if(targetIsDown)
+                    shooting_dir = (targetIsRight) ? 4 : 5;
                 else
-                    shooting_dir = (side_x) ? 2 : 1;
+                    shooting_dir = (targetIsRight) ? 2 : 1;
             }
 
             // "Drehschritte" ausrechnen, da von Richtung 4 aus gedreht wird
@@ -256,38 +273,36 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             unsigned char shooting_dir = (7 + wheel_steps) % 6;
 
             // Größe der Welt in Pixeln bestimmen
-            int world_width = gwg->GetWidth() * TR_W;
-            int world_height = gwg->GetHeight() * TR_H;
+            int worldWidth = gwg->GetWidth() * TR_W;
+            int worldHeight = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            int start_x = int(gwg->GetTerrainX(pos)) + STONE_STARTS[(7 + wheel_steps) % 6 * 2];
-            int start_y = int(gwg->GetTerrainY(pos)) + STONE_STARTS[shooting_dir * 2 + 1];
+            Point<int> start = Point<int>(gwg->GetTerrain(pos)) + Point<int>(STONE_STARTS[shooting_dir * 2], STONE_STARTS[shooting_dir * 2 + 1]);
             // (Visuellen) Aufschlagpunkt bestimmen
-            int dest_x = int(gwg->GetTerrainX(destMap));
-            int dest_y = int(gwg->GetTerrainY(destMap));
+            Point<int> dest = Point<int>(gwg->GetTerrain(destMap));
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen
-            if(std::abs(start_x + world_width - dest_x) < std::abs(start_x - dest_x))
-                start_x += world_width;
-            else if(std::abs(start_x - world_width - dest_x) < std::abs(start_x - dest_x))
-                start_x -= world_width;
-            if(std::abs(start_y + world_height - dest_y) < std::abs(start_y - dest_y))
-                start_y += world_height;
-            else if(std::abs(start_y - world_height - dest_y) < std::abs(start_y - dest_y))
-                start_y -= world_height;
+            if(std::abs(start.x + worldWidth - dest.x) < std::abs(start.x - dest.x))
+                start.x += worldWidth;
+            else if(std::abs(start.x - worldWidth - dest.x) < std::abs(start.x - dest.x))
+                start.x -= worldWidth;
+            if(std::abs(start.y + worldHeight - dest.y) < std::abs(start.y - dest.y))
+                start.y += worldHeight;
+            else if(std::abs(start.y - worldHeight - dest.y) < std::abs(start.y - dest.y))
+                start.y -= worldHeight;
 
             // Bei getroffenen den Aufschlagspunkt am Gebäude ein bisschen variieren
             if(hit)
             {
-                dest_x += (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT * 2) - RADIUS_HIT);
+                dest.x += (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT * 2) - RADIUS_HIT);
                 // hier nicht nach unten gehen, da die Tür (also Nullpunkt
                 // ja schon ziemlich weit unten ist!
-                dest_y -= RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT);
+                dest.y -= RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RADIUS_HIT);
             }
 
             // Stein erzeugen
-            gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start_x, start_y, dest_x, dest_y, 80));
+            gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start.x, start.y, dest.x, dest.y, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
             current_ev = em->AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);

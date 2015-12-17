@@ -84,12 +84,12 @@ void noAnimal::Draw(int x, int y)
             // Laufend (bzw. Ente schwimmend zeichnen)
 
             // Interpolieren zwischen beiden Knotenpunkten
-            CalcWalkingRelative(x, y);
+            Point<int> realPos = Point<int>(x, y) + CalcWalkingRelative();
 
             unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir()][ani_step].draw(x, y);
+            LOADER.animal_cache[species][GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)

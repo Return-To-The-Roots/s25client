@@ -38,6 +38,8 @@ static char THIS_FILE[] = __FILE__;
 TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase* const gwb)
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), gwb(gwb)
 {
+    assert(x1 <= x2);
+    assert(y1 <= y2);
     // Feld erzeugen
     nodes.resize((x2 - x1) * (y2 - y1));
 }
@@ -84,19 +86,23 @@ void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const un
 {
     int x = static_cast<int>(pt.x), y = static_cast<int>(pt.y);
 
-    // Gucken, ob der Punkt überhaupt mit in diese Region gehört
-    if(x + gwb->GetWidth() >= int(x1) && x + gwb->GetWidth() < int(x2))
+    // Check if this point is inside this region
+    // Apply wrap-around if on either side
+    if(x < x1)
         x += gwb->GetWidth();
-    else if(x - gwb->GetWidth() >= int(x1) && x - gwb->GetWidth() < int(x2))
+    else if(x >= x2)
         x -= gwb->GetWidth();
-    else if(x < int(x1) || x >= int(x2))
+    // Check the (possibly) adjusted point
+    if(x < x1 || x >= x2)
         return;
 
-    if(y + gwb->GetHeight() >= int(y1) && y + gwb->GetHeight() < int(y2))
+    // Apply wrap-around if on either side
+    if(y < y1)
         y += gwb->GetHeight();
-    else if(y - gwb->GetHeight() >= int(y1) && y - gwb->GetHeight() < int(y2))
+    else if(y >= y2)
         y -= gwb->GetHeight();
-    else if(y < int(y1) || y >= int(y2))
+    // Check the (possibly) adjusted point
+    if(y < y1 || y >= y2)
         return;
 
     // check whether his node is within the area we may have territory in
@@ -113,6 +119,16 @@ void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const un
         nodes[idx].radius = radius;
     }
 }
+
+struct GetMapPointWithRadius
+{
+    typedef std::pair<MapPoint, unsigned> result_type;
+
+    result_type operator()(const MapPoint pt, unsigned r)
+    {
+        return std::make_pair(pt, r);
+    }
+};
 
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const building)
 {
@@ -134,19 +150,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const buildi
     MapPoint pt = building->GetPos();
     TestNode(pt, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 
-    for(unsigned r = 1; r <= radius; ++r)
-    {
-        // Eins weiter nach links gehen
-        pt = gwb->GetNeighbour(pt, 0);
-
-        for(unsigned dir = 0; dir < 6; ++dir)
-        {
-            for(unsigned short i = 0; i < r; ++i)
-            {
-                TestNode(pt, building->GetPlayer(), r, check_barriers);
-                // Nach rechts oben anfangen
-                pt = gwb->GetNeighbour(pt, (2 + dir) % 6);
-            }
-        }
-    }
+    std::vector<GetMapPointWithRadius::result_type> pts = gwb->GetPointsInRadius(pt, radius, GetMapPointWithRadius());
+    for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+        TestNode(it->first, building->GetPlayer(), it->second, check_barriers);
 }

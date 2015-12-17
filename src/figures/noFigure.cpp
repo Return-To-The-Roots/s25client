@@ -197,60 +197,55 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
     this->rs_dir = rs_dir;
 }
 
-bool noFigure::CalcFigurRelative(int& x, int& y)
+Point<int> noFigure::CalcFigurRelative() const
 {
-    int x1 = static_cast<int>(gwg->GetTerrainX(pos));
-    int y1 = static_cast<int>(gwg->GetTerrainY(pos));
-    int x2 = static_cast<int>(gwg->GetTerrainX(gwg->GetNeighbour(pos, GetCurMoveDir())));
-    int y2 = static_cast<int>(gwg->GetTerrainY(gwg->GetNeighbour(pos, GetCurMoveDir())));
-
+    Point<int> curPt  = Point<int>(gwg->GetTerrain(pos));
+    Point<int> nextPt = Point<int>(gwg->GetTerrain(gwg->GetNeighbour(pos, GetCurMoveDir())));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
-    if(std::abs(x1 - x2) >= gwg->GetWidth() * TR_W / 2)
+    const int mapWidth = gwg->GetWidth() * TR_W;
+    if(std::abs(curPt.x - nextPt.x) >= mapWidth / 2)
     {
-        if(std::abs(x1 - int(gwg->GetWidth())*TR_W - x2) < std::abs(x1 - x2))
-            x1 -= gwg->GetWidth() * TR_W;
+        // So we need to get closer to nextPt
+        if(curPt.x > nextPt.x)
+            curPt.x -= mapWidth;
         else
-            x1 += gwg->GetWidth() * TR_W;
+            curPt.x += mapWidth;
     }
     // Und dasselbe für vertikale Richtung
-    if(std::abs(y1 - y2) >= gwg->GetHeight() * TR_H / 2)
+    const int mapHeight = gwg->GetHeight() * TR_H;
+    if(std::abs(curPt.y - nextPt.y) >= mapHeight / 2)
     {
-        if(std::abs(y1 - int(gwg->GetHeight())*TR_H - y2) < std::abs(y1 - y2))
-            y1 -= gwg->GetHeight() * TR_H;
+        if(curPt.y > nextPt.y)
+            curPt.y -= mapHeight;
         else
-            y1 += gwg->GetHeight() * TR_H;
+            curPt.y += mapHeight;
     }
 
-    MapPoint nb = gwg->GetNeighbour(pos, 1);
+    Point<int> result;
 
+    const MapPoint nb = gwg->GetNeighbour(pos, 1);
     if(GetCurMoveDir() == 1 && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
     {
-        noBaseBuilding* bld = gwg->GetSpecObj<noBaseBuilding>(nb);
-        x2 += bld->GetDoorPointX();
-        y2 += bld->GetDoorPointY();
-        x += bld->GetDoorPointX();
-        y += bld->GetDoorPointY();
-    }
-    else if(gwg->GetNO(this->pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
+        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(nb);
+        nextPt += bld->GetDoorPoint();
+        result = bld->GetDoorPoint();
+    }else if(gwg->GetNO(pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(pos)->GetType() == NOP_BUILDING)
     {
-        noBaseBuilding* bld = gwg->GetSpecObj<noBaseBuilding>(this->pos);
-        x1 += bld->GetDoorPointX();
-        y1 += bld->GetDoorPointY();
-        x += bld->GetDoorPointX();
-        y += bld->GetDoorPointY();
-    }
+        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
+        curPt += bld->GetDoorPoint();
+        result = bld->GetDoorPoint();
+    }else
+        result = Point<int>(0, 0);
 
     // Wenn die Träger runterlaufne, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden
     if(GetCurMoveDir() == 1 || GetCurMoveDir() == 2)
     {
-        std::swap(x1, x2);
-        std::swap(y1, y2);
+        using std::swap;
+        swap(curPt, nextPt);
     }
 
-    CalcRelative(x, y, x1, y1, x2, y2);
-
-    return 1;
+    return result + CalcRelative(curPt, nextPt);
 }
 
 void noFigure::StartWalking(const unsigned char newDir)
@@ -759,6 +754,29 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     }
 }*/
 
+struct Point2Flag{
+    typedef noFlag* result_type;
+    GameWorldBase& gwb;
+
+    Point2Flag(GameWorldBase& gwb): gwb(gwb){}
+
+    result_type operator()(const MapPoint pt, unsigned r) const
+    {
+        return gwb.GetSpecObj<noFlag>(pt);
+    }
+};
+
+struct IsValidFlag{
+    const unsigned playerId_;
+
+    IsValidFlag(const unsigned playerId): playerId_(playerId){}
+
+    bool operator()(const noFlag* const flag)
+    {
+        return flag && flag->GetPlayer() == playerId_;
+    }
+};
+
 void noFigure::Wander()
 {
     // Sind wir noch auf der Suche nach einer Flagge?
@@ -776,31 +794,13 @@ void noFigure::Wander()
         const bool is_soldier = (job_ >= JOB_PRIVATE && job_ <= JOB_GENERAL);
         const unsigned short wander_radius = is_soldier ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
 
-        // Umgebung abscannen, nicht über den Rand gehen
-        unsigned short x1 = (pos.x > wander_radius) ? (pos.x - wander_radius) : 0;
-        unsigned short y1 = (pos.y > wander_radius) ? (pos.y - wander_radius) : 0;
-        unsigned short x2 = (pos.x + wander_radius < gwg->GetWidth()) ? (pos.x + wander_radius) : (gwg->GetWidth() - 1);
-        unsigned short y2 = (pos.y + wander_radius < gwg->GetHeight()) ? (pos.y + wander_radius) : (gwg->GetHeight() - 1);
-
         // Flaggen sammeln und dann zufällig eine auswählen
-        std::vector<noFlag*> flags;
-
-        for(MapPoint p(0, y1); p.y <= y2; ++p.y)
-        {
-            for(p.x = x1; p.x <= x2; ++p.x)
-            {
-                if(gwg->GetNO(p)->GetType() == NOP_FLAG)
-                {
-                    if(gwg->GetSpecObj<noFlag>(p)->GetPlayer() == player)
-                        flags.push_back(gwg->GetSpecObj<noFlag>(p));
-                }
-            }
-        }
+        const std::vector<noFlag*> flags = gwg->GetPointsInRadius<0>(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));
 
         unsigned best_way = 0xFFFFFFFF;
-        noFlag* best_flag = 0;
+        noFlag const* best_flag = NULL;
 
-        for(std::vector<noFlag*>::iterator it = flags.begin(); it != flags.end(); ++it)
+        for(std::vector<noFlag*>::const_iterator it = flags.begin(); it != flags.end(); ++it)
         {
             // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
             if(burned_wh_id != 0xFFFFFFFF)
@@ -808,7 +808,6 @@ void noFigure::Wander()
                 // Dann evtl gucken, ob anderen Mitglieder schon gesagt haben, dass die Flagge nicht zugänglich ist
                 if((*it)->IsImpossibleForBWU(burned_wh_id))
                 {
-                    //printf("flagge gesiebt\n");
                     // Dann können wir die Flagge überspringen
                     continue;
                 }
@@ -819,7 +818,7 @@ void noFigure::Wander()
             if(way < best_way)
             {
                 // Are we at that flag or is there a path to it?
-                if(way == 0 || gwg->FindHumanPath(pos, (*it)->GetPos(), 10, false) != 0xFF)
+                if(way == 0 || gwg->FindHumanPath(pos, (*it)->GetPos(), wander_radius, false, &way) != 0xFF)
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
                     if(gwg->GetPlayer(player).FindWarehouse(**it, FW::Condition_StoreFigure, 0, true, &job_, false))
@@ -827,6 +826,8 @@ void noFigure::Wander()
                         // dann nehmen wir die doch glatt
                         best_way = way;
                         best_flag = *it;
+                        if(way == 0)
+                            break; // Can't get better
                     }
                 }
                 else if(burned_wh_id != 0xFFFFFFFF)
@@ -834,6 +835,9 @@ void noFigure::Wander()
                     // Flagge nicht möglich zugänglich bei einem Flüchting aus einem abgebrannten Lagerhaus?
                     // --> der ganzen Gruppe Bescheid sagen, damit die nicht auch alle sinnlos einen Weg zu
                     // dieser Flagge suchen
+
+                    //TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path within the radius
+                    // but others (on the other side) could --> Remove ImpossibleForBWU?
                     (*it)->ImpossibleForBWU(burned_wh_id);
                 }
             }
@@ -872,12 +876,6 @@ void noFigure::Wander()
     {
         unsigned char dir = (d + doffset) % 6;
 
-        // Nicht über den Rand gehen!
-        if(pos.x == 0 && (dir == 0 || dir == 1 || dir == 5)) continue;
-        if(pos.y == 0 && (dir == 1 || dir == 2)) continue;
-        if(pos.x == gwg->GetWidth() - 1 && (dir == 2 || dir == 3 || dir == 4)) continue;
-        if(pos.y == gwg->GetHeight() - 1 && (dir == 4 || dir == 5)) continue;
-
         if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && gwg->IsNodeToNodeForFigure(pos, dir))
         {
             StartWalking(dir);
@@ -892,141 +890,8 @@ void noFigure::Wander()
 
 void noFigure::WanderFailedTrade()
 {
-    // Sind wir noch auf der Suche nach einer Flagge?
     DieFailedTrade();
     return;
-    /*
-    if(wander_way != 0xFFFF)
-    {
-        // Soldaten sind härter im Nehmen
-        bool is_soldier = (job >= JOB_PRIVATE && job <= JOB_GENERAL);
-        unsigned short wander_radius = is_soldier ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
-        // Ist es mal wieder an der Zeit, eine Flagge zu suchen?
-        if(!wander_way)
-        {
-            // Umgebung abscannen, nicht über den Rand gehen
-            unsigned short x1 = (x > wander_radius) ? (x-wander_radius) : 0;
-            unsigned short y1 = (y > wander_radius) ? (y-wander_radius) : 0;
-            unsigned short x2 = (x+wander_radius < gwg->GetWidth()) ? (x+wander_radius) : (gwg->GetWidth()-1);
-            unsigned short y2 = (y+wander_radius < gwg->GetHeight()) ? (y+wander_radius) : (gwg->GetHeight()-1);
-
-            // Flaggen sammeln und dann zufällig eine auswählen
-            list<noFlag*> flags;
-
-            for(unsigned short py = y1;py<=y2;++py)
-            {
-                for(unsigned short px = x1;px<=x2;++px)
-                {
-                    if(gwg->GetNO(px,py)->GetType() == NOP_FLAG)
-                    {
-                        if(gwg->GetSpecObj<noFlag>(px,py)->GetPlayer() == player)
-                            flags.push_back(gwg->GetSpecObj<noFlag>(px,py));
-                    }
-                }
-            }
-
-
-            unsigned best_way = 0xFFFFFFFF;
-            noFlag * best_flag = 0;
-
-            for(list<noFlag*>::iterator it = flags.begin();it.valid();++it)
-            {
-                // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
-                if(burned_wh_id != 0xFFFFFFFF)
-                {
-                    // Dann evtl gucken, ob anderen Mitglieder schon gesagt haben, dass die Flagge nicht zugänglich ist
-                    if((*it)->IsImpossibleForBWU(burned_wh_id))
-                    {
-                        //printf("flagge gesiebt\n");
-                        // Dann können wir die Flagge überspringen
-                        continue;
-                    }
-                }
-
-                // würde die die bisher beste an Weg unterbieten?
-                unsigned way = gwg->CalcDistance(x,y,(*it)->GetPos());
-                if(way < best_way)
-                {
-                    // Gibts nen Weg zu dieser Flagge?
-                    if((dir = gwg->FindHumanPath(x,y,(*it)->GetPos(),10,false)) != 0xFF)
-                    {
-                        // gucken, ob ein Weg zu einem Warenhaus führt
-                        if(gwg->GetPlayer(player).FindWarehouse(*it,FW::Condition_StoreFigure,0,true,&job,false))
-                        {
-                            // dann nehmen wir die doch glatt
-                            best_way = way;
-                            best_flag = *it;
-                        }
-                    }
-                    else if(burned_wh_id != 0xFFFFFFFF)
-                    {
-                        // Flagge nicht möglich zugänglich bei einem Flüchting aus einem abgebrannten Lagerhaus?
-                        // --> der ganzen Gruppe Bescheid sagen, damit die nicht auch alle sinnlos einen Weg zu
-                        // dieser Flagge suchen
-                        (*it)->ImpossibleForBWU(burned_wh_id);
-                    }
-                }
-            }
-
-            if(best_flag)
-            {
-                // bestmögliche schließlich nehmen
-                wander_way = 0xFFFF;
-                flag_x = best_flag->GetX();
-                flag_y = best_flag->GetY();
-                flag_obj_id = best_flag->GetObjId();
-                WanderToFlagFailedTrade();
-                return;
-            }
-
-
-
-            // Wurde keine Flagge gefunden?
-
-            // Haben wir noch Versuche?
-            if(--wander_tryings > 0)
-            {
-                // von vorne beginnen wieder mit Rumirren
-                wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__,__LINE__,obj_id,WANDER_WAY_MAX-WANDER_WAY_MIN);
-            }
-            else
-            {
-                // Genug rumgeirrt, wir finden halt einfach nichts --> Sterben
-                Die();
-                return;
-            }
-        }
-
-        // weiter umherirren, einfach in eine zufällige Richtung
-        // Müssen dabei natürlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
-        unsigned char doffset = RANDOM.Rand(__FILE__,__LINE__,obj_id,6);
-        for(unsigned char d = 0;d<6;++d)
-        {
-            unsigned char dir = (d+doffset)%6;
-
-            // Nicht über den Rand gehen!
-            if(x == 0 && (dir == 0 || dir == 1 || dir == 5)) continue;
-            if(y == 0 && (dir == 1 || dir == 2)) continue;
-            if(x == gwg->GetWidth()-1 && (dir == 2 || dir == 3 || dir == 4)) continue;
-            if(y == gwg->GetHeight()-1 && (dir == 4 || dir == 5)) continue;
-
-            if(gwg->IsNodeForFigures(gwg->GetXA(x,y,dir),gwg->GetYA(x,y,dir))
-                && gwg->IsNodeToNodeForFigure(x,y,dir))
-            {
-                StartWalkingFailedTrade(dir);
-                --wander_way;
-                return;
-            }
-        }
-
-        // Wir sind eingesperrt! Kein Weg mehr gefunden --> Sterben
-        Die();
-    }
-    // Wir laufen schon zur Flagge
-    else
-    {
-        WanderToFlagFailedTrade();
-    }*/
 }
 
 void noFigure::WanderToFlag()
@@ -1082,123 +947,6 @@ void noFigure::WanderToFlag()
         Wander();
     }
 }
-
-/*void noFigure::WanderToFlagFailedTrade()
-{
-    // Existiert die Flagge überhaupt noch?
-    noBase * no = gwg->GetNO(flag_x,flag_y);
-    if(no->GetObjId() != flag_obj_id)
-    {
-        // Wenn nicht, wieder normal weiter rumirren
-        StartWanderingFailedTrade();
-        WanderFailedTrade();
-        return;
-    }
-
-    // Sind wir schon da?
-    if(x == flag_x && y == flag_y)
-    {
-        // Gibts noch nen Weg zu einem Lagerhaus?
-
-        if(nobBaseWarehouse * wh = gwg->GetPlayer(player).FindWarehouse(
-            gwg->GetSpecObj<noRoadNode>(x,y),FW::Condition_StoreFigure,0,true,&job,false))
-        {
-            // ja, dann können wir ja hingehen
-            fs = FS_GOTOGOAL;
-            goal = wh;
-            cur_rs = 0;
-            rs_pos = 0;
-            fs = FS_GOHOME;
-            //wh->AddDependentFigure(this); we do that when we arrive
-            WalkToGoalFailedTrade();
-            return;
-        }
-        else
-        {
-            // Wenn nicht, wieder normal weiter rumirren
-            StartWanderingFailedTrade();
-            WanderFailedTrade();
-            return;
-        }
-    }
-
-    // Weiter zur Flagge gehen
-    // Gibts noch nen Weg dahin bzw. existiert die Flagge noch?
-    if((dir = gwg->FindHumanPath(x,y,flag_x,flag_y,60,false)) != 0xFF)
-    {
-        // weiter hinlaufen
-        StartWalkingFailedTrade(dir);
-    }
-    else
-    {
-        // Wenn nicht, wieder normal weiter rumirren
-        StartWanderingFailedTrade();
-        WanderFailedTrade();
-    }
-}*/
-
-//void noFigure::Wander()
-//{
-//  // Durch die Gegend irren und eine Flagge suchen
-//
-//  // Sind wir grad an einer Flagge?
-//  if(gwg->GetNO(x,y)->GetType() == NOP_FLAG)
-//  {
-//      // Geht ein Weg zu einem Lagerhaus?
-//      unsigned length;
-//      if(nobBaseWarehouse * wh = gwg->GetPlayer(player).FindWarehouse(gwg->GetSpecObj<noRoadNode>(x,y),GD_NOTHING,JOB_NOTHING,0,1,&length))
-//      {
-//          // ja, dann können wir ja hingehen
-//          fs = FS_GOTOGOAL;
-//          goal = wh;
-//          // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
-//          // damit wir mit WalkToGoal weiter bis zum Ziel laufen können
-//          cur_rs = &emulated_wanderroad;
-//          rs_pos = 0;
-//          fs = FS_GOHOME;
-//          WalkToGoal();
-//          return;
-//      }
-//
-//  }
-//
-//  // Flagge in der Nähe? (Betonung liegt auf "Nähe" :D )
-//  for(unsigned i = 0;i<6;++i)
-//  {
-//      if(gwg->GetNO(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i))->GetType() == NOP_FLAG)
-//      {
-//          // ja, eine Flagge in der Nähe, gucken, ob ein Weg zu einem Warenhaus führt
-//          unsigned length;
-//          if(gwg->GetPlayer(player).FindWarehouse(gwg->GetSpecObj<noRoadNode>(gwg->GetXA(x,y,i),gwg->GetYA(x,y,i)),GD_NOTHING,JOB_NOTHING,0,1,&length))
-//          {
-//              // ja, dann gehen wir mal zu der Flagge
-//              StartWalking(i);
-//              return;
-//          }
-//
-//          // Pech gehabt, weitersuchen...
-//      }
-//  }
-//
-//  // Nix gefunden, dann müssen wir halt weiter umherirren, einfach in eine zufälige Richtung
-//  // Müssen dabei natrlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
-//  unsigned char doffset = Random(6);
-//  for(unsigned char d = 0;d<6;++d)
-//  {
-//      dir = (d+doffset)%6;
-//      if(gwg->IsNodeForFigures(gwg->GetXA(x,y,dir),gwg->GetYA(x,y,dir)))
-//      {
-//          StartWalking(dir);
-//          return;
-//      }
-//  }
-//
-//  // Wir sind eingesperrt! Kein Weg mehr gefunden --> Sterben
-//  Die();
-//}
-
-
-
 
 void noFigure::CorrectSplitData(const RoadSegment* const rs2)
 {
@@ -1264,10 +1012,11 @@ void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+    Point<int> realPos = Point<int>(x, y);
     if(!waiting_for_free_node || pause_walked_gf)
-        CalcFigurRelative(x, y);
+        realPos += CalcFigurRelative();
 
-    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(x, y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(realPos.x, realPos.y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 }
 
 
@@ -1284,10 +1033,11 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+    Point<int> realPos = Point<int>(x, y);
     if(!waiting_for_free_node || pause_walked_gf)
-        CalcFigurRelative(x, y);
+        realPos += CalcFigurRelative();
 
-    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(x, y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
 }
 
 
@@ -1297,15 +1047,12 @@ void noFigure::DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int id
     unsigned ani_step = waiting_for_free_node || waitingsoldier ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+    Point<int> realPos = Point<int>(x, y);
     if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
-        CalcFigurRelative(x, y);
+        realPos += CalcFigurRelative();
     if(file)
-        file->Draw(id, GetCurMoveDir(), fat, ani_step, x, y, COLORS[gwg->GetPlayer(player).color]);
-    DrawShadow(x, y, ani_step, GetCurMoveDir());
-
-    /*char number[256];
-    sprintf(number,"%u",obj_id);
-    NormalFont->Draw(x,y,number,0,0xFFFF0000);*/
+        file->Draw(id, GetCurMoveDir(), fat, ani_step, realPos.x, realPos.y, COLORS[gwg->GetPlayer(player).color]);
+    DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
 }
 
 /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
@@ -1315,11 +1062,12 @@ void noFigure::DrawWalking(int x, int y, const char* const file, unsigned int id
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+    Point<int> realPos = Point<int>(x, y);
     if(!waiting_for_free_node || pause_walked_gf)
-        CalcFigurRelative(x, y);
+        realPos += CalcFigurRelative();
 
-    LOADER.GetImageN(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
-    DrawShadow(x, y, ani_step, GetCurMoveDir());
+    LOADER.GetImageN(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
 }
 
 void noFigure::DrawWalking(int x, int y)
@@ -1333,13 +1081,14 @@ void noFigure::DrawWalking(int x, int y)
             unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
             // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+            Point<int> realPos = Point<int>(x, y);
             if(!waiting_for_free_node || pause_walked_gf)
-                CalcFigurRelative(x, y);
+                realPos += CalcFigurRelative();
 
             // Esel
-            LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(x, y);
+            LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         } return;
         case JOB_CHARBURNER:
         {

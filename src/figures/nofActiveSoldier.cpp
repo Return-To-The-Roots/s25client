@@ -462,33 +462,34 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * figh
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
     MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
-    MapPoint middle( (pos.x + otherPos.x) / 2, (pos.y + otherPos.y) / 2 );
+    MapPoint middle = (pos + otherPos) / 2;
 
-    // Did we cross the borders ? ( horizontally)
-    if(SafeDiff(middle.x, pos.x) > MEET_FOR_FIGHT_DISTANCE)
+    // The point is supposed to be in the middle between the 2 soldiers (and guarenteed to be inside the map)
+    // Maximum distance between 2 points is mapSize/2 (due to wrap around)
+    // --> maximum distance between each point and the middle is mapSize/4
+    // So if we see, that this is not the case, we take the "middle" point on the other half of the map
+
+    const unsigned short mapWidth  = gwg->GetWidth();
+    const unsigned short mapHeight = gwg->GetHeight();
+
+    if(std::abs(otherPos.x - middle.x) > mapWidth / 4)
     {
-        // In this case: distance = distance of soldier 1 to left border + distance of soldier 2 to right border
-        MapCoord minx = std::min(pos.x, other->GetX());
-        MapCoord maxx = std::max(pos.x, other->GetX());
-
-        MapCoord diff = minx + (gwg->GetWidth() - maxx);
-        middle.x += diff / 2;
+        const unsigned short halfMapWidth = mapWidth / 2;
+        if(middle.x >= halfMapWidth)
+            middle.x -= halfMapWidth;
+        else
+            middle.x += halfMapWidth;
     }
-
-    // Did we cross the borders ? ( vertically)
-    if(SafeDiff(middle.y, pos.y) > MEET_FOR_FIGHT_DISTANCE)
+    if(std::abs(otherPos.y - middle.y) > mapHeight / 4)
     {
-        // In this case: distance = distance of soldier 1 to left border + distance of soldier 2 to right border
-        MapCoord miny = std::min(pos.y, other->GetY());
-        MapCoord maxy = std::max(pos.y, other->GetY());
-
-        MapCoord diff = miny + (gwg->GetHeight() - maxy);
-        middle.y += diff / 2;
+        const unsigned short halfMapHeight = mapHeight / 2;
+        if(middle.y >= halfMapHeight)
+            middle.y -= halfMapHeight;
+        else
+            middle.y += halfMapHeight;
     }
-
-    // We could have crossed the border due to our interpolating across the borders
-    middle = gwg->ConvertCoords(Point<int>(middle));
-
+    assert(std::abs(otherPos.x - middle.x) <= mapWidth / 4);
+    assert(std::abs(otherPos.y - middle.y) <= mapHeight / 4);
 
     // Test Middle point first
     if(gwg->ValidPointForFighting(middle, true, NULL)
@@ -498,7 +499,6 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * figh
         // Great, then let's take this one
         *fight_spot = middle;
         return true;
-
     }
 
     // TODO: Put the condition below into a functor and pass it as the condition to GetPointsInRadius with a limit of 1 (much easier in C++11)
@@ -514,7 +514,6 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * figh
             // Great, then let's take this one
             *fight_spot = *pt;
             return true;
-
         }
     }
 

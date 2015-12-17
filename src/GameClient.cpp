@@ -203,7 +203,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     clientconfig.host = host;
 
     // Verbinden
-    if(!socket.Connect(server.c_str(), port, use_ipv6, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port)) //-V807
+    if(!socket.Connect(server, port, use_ipv6, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port)) //-V807
     {
         LOG.lprintf("GameClient::Connect: ERROR: Connect failed!\n");
         return false;
