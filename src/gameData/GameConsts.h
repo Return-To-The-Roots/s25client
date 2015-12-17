@@ -32,7 +32,7 @@ const unsigned MINER_RADIUS = 2;
 /// Konstante für die Pfadrichtung bei einer Schiffsverbindung
 const unsigned char SHIP_DIR = 100;
 const unsigned char INVALID_DIR = 0xFF;
-const unsigned NO_MAX_LEN = std::numeric_limits<unsigned>::max();
+const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// Anzahl der Späher bei einer Erkundungs-Expedition
 const unsigned SCOUTS_EXPLORATION_EXPEDITION = 3;
