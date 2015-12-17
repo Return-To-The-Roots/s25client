@@ -85,6 +85,7 @@ EventManager::EventPointer EventManager::AddEvent(EventPointer event)
     // Should be in the future!
     // At the current GF is allowed as long as a std::list is used for the events of one GF because it retains iterator validy even on modify
     assert(event->gf_next >= GAMECLIENT.GetGFNumber());
+    assert(!dynamic_cast<EventPointer>(event->obj)); // Why could this ever happen?
     events[event->gf_next].push_back(event);
     return event;
 }
