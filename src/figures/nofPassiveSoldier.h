@@ -76,6 +76,8 @@ class nofPassiveSoldier : public nofSoldier
 
         /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
         void NotNeeded();
+        /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
+        void LeftBuilding(){ building = NULL; }
 };
 
 #endif // !NOF_PASSIVESOLDIER_H_

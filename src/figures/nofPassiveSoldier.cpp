@@ -36,17 +36,17 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
-    healing_event(0)
+    healing_event(NULL)
 {
     // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
     Heal();
     // Laufevent nullen, laufen ja nicht mehr
-    current_ev = 0;
+    current_ev = NULL;
 }
 
 nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player,
                                      nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank)
-    : nofSoldier(pos, player, goal, home, rank), healing_event(0)
+    : nofSoldier(pos, player, goal, home, rank), healing_event(NULL)
 {
 }
 
@@ -59,6 +59,7 @@ nofPassiveSoldier::~nofPassiveSoldier()
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
     em->RemoveEvent(healing_event);
+    Destroy_nofSoldier();
 }
 
 void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) const
@@ -113,7 +114,7 @@ void nofPassiveSoldier::Heal()
     if(healing_event)
     {
         em->RemoveEvent(healing_event);
-        healing_event = 0;
+        healing_event = NULL;
     }
 
     // Ist er verletzt?

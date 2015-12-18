@@ -744,6 +744,7 @@ void nobMilitary::SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActive
 {
     // Aus der Besatzungsliste raushauen, aber noch mit merken
     troops.erase(passive_soldier);
+    passive_soldier->LeftBuilding();
     troops_on_mission.push_back(active_soldier);
 }
 
@@ -1232,6 +1233,8 @@ void nobMilitary::HitOfCatapultStone()
         helpers::pop_front(troops);
         // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
         soldier->RemoveFromInventory();
+        soldier->LeftBuilding();
+        soldier->Destroy();
         deletePtr(soldier);
     }
 
