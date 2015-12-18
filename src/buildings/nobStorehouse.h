@@ -29,7 +29,7 @@ class nobStorehouse : public nobBaseWarehouse
 
         /// Aufräummethoden
     protected:  void Destroy_nobStorehouse();
-    public:     void Destroy() { Destroy_nobStorehouse(); }
+    public:     void Destroy() { Destroy_nobBaseWarehouse(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobStorehouse(SerializedGameData& sgd) const;

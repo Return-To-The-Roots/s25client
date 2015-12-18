@@ -54,16 +54,6 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
                                                _("New storehouse finished"), PMC_GENERAL, pos, BLD_STOREHOUSE, nation));
 }
 
-
-
-void nobStorehouse::Destroy_nobStorehouse()
-{
-    // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player).RemoveWarehouse(this);
-
-    Destroy_nobBaseWarehouse();
-}
-
 void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const
 {
     Serialize_nobBaseWarehouse(sgd);
