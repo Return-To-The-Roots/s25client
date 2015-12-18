@@ -594,15 +594,15 @@ void nofAttacker::ReachedDestination()
         if(attacked_goal->GetPlayer() == player)
         {
             state = STATE_ATTACKING_CAPTURINGNEXT;
-            CapturingWalking();
+            assert(dynamic_cast<nobMilitary*>(attacked_goal));
             static_cast<nobMilitary*>(attacked_goal)->FarAwayAttackerReachedGoal(this);
+            CapturingWalking();
             return;
         }
 
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
         if(attacked_goal->GetPlayer() == GAMECLIENT.GetPlayerID())
-            GAMECLIENT.SendPostMessage(
-                new ImagePostMsgWithLocation(_("We are under attack!"), PMC_MILITARY, pos,
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("We are under attack!"), PMC_MILITARY, pos,
                                              attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
 
         // Dann Verteidiger rufen
