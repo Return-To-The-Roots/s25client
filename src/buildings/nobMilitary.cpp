@@ -669,7 +669,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
     soldier->ResetHome();
     em->AddToKillList(soldier);
 
-    if(!IsCaptured())
+    if(!IsCaptured() && !IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
     {
         // Returned home
         if(soldier == defender_)
@@ -1036,9 +1036,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
 void nobMilitary::NeedOccupyingTroops()
 {
     assert(IsCaptured()); // Only valid during capturing
-    assert(ordered_troops.size() == 0); // Cannot order when capturing is not yet completed
     // Check if we need more soldiers from the attacking soldiers
-    // Choose the closes ones first to avoid having them walk a long way
+    // Choose the closest ones first to avoid having them walk a long way
 
     nofAttacker* best_attacker = NULL;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
@@ -1280,7 +1279,7 @@ bool nobMilitary::IsDemolitionAllowed() const
 
 void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
 {
-    assert(IsAggressor(soldier) || helpers::contains(far_away_capturers, soldier));
+    assert(IsAggressor(soldier) || IsFarAwayCapturer(soldier));
     aggressors.remove(soldier);
     far_away_capturers.remove(soldier);
 
@@ -1307,16 +1306,17 @@ void nobMilitary::CapturingSoldierArrived()
 }
 
 /// A far-away capturer arrived at the building/flag and starts the capturing
-void nobMilitary::FarAwayAttackerReachedGoal(nofAttacker* attacker)
+void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
 {
-    assert(helpers::contains(far_away_capturers, attacker));
-    far_away_capturers.remove(attacker);
-    aggressors.push_back(attacker);
-    // If we are still capturing just add this soldier to the count
+    assert(IsFarAwayCapturer(attacker));
     if(IsCaptured())
+    {
+        // If we are still capturing just add this soldier to the capturing ones
         capturing_soldiers++;
-    else
-        PrepareCapturing(); // Else restart capturing
+        far_away_capturers.remove(attacker);
+        aggressors.push_back(attacker);
+    }
+    // Otherwise we are in a kind of "normal" working state of the building and will just add him when he gets in
 }
 
 

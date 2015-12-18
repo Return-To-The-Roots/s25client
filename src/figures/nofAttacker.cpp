@@ -595,8 +595,10 @@ void nofAttacker::ReachedDestination()
         {
             state = STATE_ATTACKING_CAPTURINGNEXT;
             assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            static_cast<nobMilitary*>(attacked_goal)->FarAwayAttackerReachedGoal(this);
-            CapturingWalking();
+            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            assert(goal->IsFarAwayCapturer(this));
+            goal->FarAwayCapturerReachedGoal(this);
+            StartWalking(1);
             return;
         }
 
@@ -799,7 +801,15 @@ void nofAttacker::CapturingWalking()
 
         // Ein erobernder Soldat weniger
         if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
-            static_cast<nobMilitary*>(attacked_goal)->CapturingSoldierArrived();
+        {
+            assert(dynamic_cast<nobMilitary*>(attacked_goal));
+            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
+            if(!goal->IsFarAwayCapturer(this))
+                goal->CapturingSoldierArrived();
+            else
+                assert(goal->GetPlayer() == player);
+        }
 
         // außerdem aus der Angreiferliste entfernen
         RemoveFromAttackedGoal();

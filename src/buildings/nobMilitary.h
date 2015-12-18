@@ -184,7 +184,8 @@ class nobMilitary : public nobBaseMilitary
         /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
         void CapturingSoldierArrived();
         /// A far-away capturer arrived at the building/flag and starts the capturing
-        void FarAwayAttackerReachedGoal(nofAttacker* attacker);
+        void FarAwayCapturerReachedGoal(nofAttacker* attacker);
+        bool IsFarAwayCapturer(nofAttacker* attacker){ return helpers::contains(far_away_capturers, attacker); }
 
         /// Stoppt/Erlaubt Goldzufuhr (visuell)
         void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }
