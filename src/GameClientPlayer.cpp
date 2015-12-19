@@ -556,14 +556,16 @@ void GameClientPlayer::RoadDestroyed()
     // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine Straße fehlt
     for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); )
     {
-        if((*it)->IsWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
+        Ware* ware = *it;
+        if(ware->IsWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
         {
-			unsigned char last_next_dir = (*it)->GetNextDir();
-			(*it)->RecalcRoute();			
+			unsigned char last_next_dir = ware->GetNextDir();
+			ware->RecalcRoute();			
 			//special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and drop
 			//it off at the goal was just destroyed? -> try to pick another flip route or tell the goal about failure.
-            noRoadNode& wareLocation = *(*it)->GetLocation();
-			if((*it)->GetGoal() && (*it)->GetNextDir()==1 && wareLocation.GetPos() == (*it)->GetGoal()->GetFlag()->GetPos() && (((*it)->GetGoal()->GetBuildingType()!=BLD_STOREHOUSE && (*it)->GetGoal()->GetBuildingType()!=BLD_HEADQUARTERS && (*it)->GetGoal()->GetBuildingType()!=BLD_HARBORBUILDING) || (*it)->GetGoal()->GetType()==NOP_BUILDINGSITE))
+            noRoadNode& wareLocation = *ware->GetLocation();
+            noBaseBuilding* wareGoal = ware->GetGoal();
+			if(wareGoal && ware->GetNextDir()==1 && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos() && ((wareGoal->GetBuildingType()!=BLD_STOREHOUSE && wareGoal->GetBuildingType()!=BLD_HEADQUARTERS && wareGoal->GetBuildingType()!=BLD_HARBORBUILDING) || wareGoal->GetType()==NOP_BUILDINGSITE))
 			{
 				//LOG.lprintf("road destroyed special at %i,%i gf: %u \n", (*it)->GetLocation()->GetX(),(*it)->GetLocation()->GetY(),GAMECLIENT.GetGFNumber());
 				unsigned gotfliproute=1;
@@ -577,17 +579,16 @@ void GameClientPlayer::RoadDestroyed()
 				}
 				if(gotfliproute!=1)
 				{
-					(*it)->SetNextDir(gotfliproute%6);
+					ware->SetNextDir(gotfliproute%6);
 				}
 				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
 				{
-					(*it)->NotifyGoalAboutLostWare();
+					ware->NotifyGoalAboutLostWare();
 					nobBaseWarehouse* wh = gwg->GetPlayer(wareLocation.GetPlayer()).FindWarehouse(wareLocation, FW::Condition_StoreWare, 0, true, &(*it)->type, true);
 					if(wh)
 					{
 						(*it)->SetGoal(wh);
 						(*it)->SetNextDir(gwg->FindPathForWareOnRoads(wareLocation, *wh, NULL, &(*it)->next_harbor));
-						wh->TakeWare(*it);
 					}
 					else
 					{
@@ -598,20 +599,20 @@ void GameClientPlayer::RoadDestroyed()
 			//end of special case
 
 			// notify carriers/flags about news if there are any
-			if((*it)->GetNextDir() != 0xFF && (*it)->GetNextDir()!=last_next_dir)
-				wareLocation.routes[(*it)->GetNextDir()]->AddWareJob(&wareLocation);
+			if(ware->GetNextDir() != 0xFF && ware->GetNextDir()!=last_next_dir)
+				wareLocation.routes[ware->GetNextDir()]->AddWareJob(&wareLocation);
 			//if the next direction changed: notify current flag that transport in the old direction might not longer be required
-			if((*it)->GetNextDir()!=last_next_dir)
-				(*it)->RemoveWareJobForCurrentDir(last_next_dir);
+			if(ware->GetNextDir()!=last_next_dir)
+				ware->RemoveWareJobForCurrentDir(last_next_dir);
 		}
-        else if((*it)->IsWaitingInWarehouse())
+        else if(ware->IsWaitingInWarehouse())
         {
-            if(!(*it)->FindRouteFromWarehouse())
+            if(!ware->FindRouteFromWarehouse())
             {
                 Ware* ware = *it;
 
                 // Ware aus der Warteliste des Lagerhauses entfernen
-                static_cast<nobBaseWarehouse*>((*it)->GetLocation())->CancelWare(ware);
+                static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
                 // Das Ziel wird nun nich mehr beliefert
                 ware->NotifyGoalAboutLostWare();
                 // Ware aus der Liste raus
@@ -621,10 +622,10 @@ void GameClientPlayer::RoadDestroyed()
                 continue;
             }
         }
-        else if((*it)->IsWaitingForShip())
+        else if(ware->IsWaitingForShip())
         {
             // Weg neu berechnen
-            (*it)->RecalcRoute();
+            ware->RecalcRoute();
         }
 
         ++it;
@@ -1162,10 +1163,6 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
             bb = FindWarehouse(*ware->GetLocation(), FW::Condition_StoreWare, 0, true, &gt, true);
     }
 
-    // Abnehmer Bescheid sagen
-    if(bb)
-        bb->TakeWare(ware);
-
     return bb;
 }
 
@@ -1202,10 +1199,6 @@ nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bb)
         bb = FindWarehouse(*ware->GetLocation(), FW::Condition_StoreWare, 0, true, &ware->type, true);
-
-    // Abnehmer Bescheid sagen
-    if(bb)
-        bb->TakeWare(ware);
 
     return bb;
 }

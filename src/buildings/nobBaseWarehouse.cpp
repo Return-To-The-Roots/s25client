@@ -642,7 +642,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                         Ware* ware = wh->OrderWare(GoodType(i), this);
                         if(ware)
                         {
-                            dependent_wares.push_back(ware);
+                            assert(IsWareDependent(ware));
                             storing_done = true;
                             break;
                         }
@@ -927,6 +927,7 @@ void nobBaseWarehouse::CancelFigure(noFigure* figure)
 void nobBaseWarehouse::TakeWare(Ware* ware)
 {
     // Ware zur Abhängigkeitsliste hinzufügen, damit sie benachrichtigt wird, wenn dieses Lagerhaus zerstört wird
+    assert(!helpers::contains(dependent_wares, ware));
     dependent_wares.push_back(ware);
 }
 

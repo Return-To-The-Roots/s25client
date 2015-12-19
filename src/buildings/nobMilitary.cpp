@@ -603,6 +603,7 @@ bool nobMilitary::IsUseless() const
 void nobMilitary::TakeWare(Ware* ware)
 {
     // Goldmünze in Bestellliste aufnehmen
+    assert(!helpers::contains(ordered_coins, ware));
     ordered_coins.push_back(ware);
 }
 
@@ -1183,8 +1184,7 @@ void nobMilitary::SearchCoins()
                 return;
             }
 
-            // Goldmünze zu den Bestellungen hinzufügen
-            ordered_coins.push_back(ware);
+            assert(helpers::contains(ordered_coins, ware));
 
             // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
             goldorder_event = em->AddEvent(this, 200 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 400), 1);

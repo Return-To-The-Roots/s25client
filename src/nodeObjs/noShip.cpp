@@ -799,7 +799,6 @@ void noShip::HandleState_TransportDriving()
             for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
             {
                 (*it)->NotifyGoalAboutLostWare();
-                (*it)->SetGoal(NULL);
             }
 
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
@@ -1043,7 +1042,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     }
 
     switch (state)
-        {
+    {
     default:
         // Just reset goal
         goal_harbor_id = 0;
@@ -1061,7 +1060,8 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
             // Notify goal only, if it is not the destroyed harbor. It already knows about that ;)
             if((*it)->GetGoal() != hb)
                 (*it)->NotifyGoalAboutLostWare();
-            (*it)->SetGoal(NULL);
+            else
+                (*it)->SetGoal(NULL);
         }
         break;
     case noShip::STATE_SEAATTACK_LOADING:
@@ -1070,27 +1070,27 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         break;
     case noShip::STATE_SEAATTACK_UNLOADING:
         break;
-        }
+    }
 
     // Are we currently getting the wares?
     if(state == STATE_TRANSPORT_LOADING)
-        {
+    {
         // Then save us some time and unload immediately
         // goal is now the start harbor
         goal_harbor_id = home_harbor;
         state = STATE_TRANSPORT_UNLOADING;
     }
     else if(state == STATE_TRANSPORT_UNLOADING || state == STATE_SEAATTACK_UNLOADING)
-            {
+    {
         // Remove current unload event
-                em->RemoveEvent(current_ev);
+        em->RemoveEvent(current_ev);
 
         if(state == STATE_SEAATTACK_UNLOADING)
             AbortSeaAttack();
         else
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
-            }
-        }
+    }
+}
 
 /// Fängt an mit idlen und setzt nötigen Sachen auf NULL
 void noShip::StartIdling()

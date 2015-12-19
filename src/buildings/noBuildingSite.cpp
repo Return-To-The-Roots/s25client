@@ -191,19 +191,17 @@ void noBuildingSite::OrderConstructionMaterial()
     for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][type_].boards; ++i)
     {
         Ware* w = owner.OrderWare(GD_BOARDS, this);
-        if(w)
-            ordered_boards.push_front(w);
-        else
+        if(!w)
             break;
+        assert(helpers::contains(ordered_boards, w));
     }
     // Steine
     for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][type_].stones; ++i)
     {
         Ware* w = owner.OrderWare(GD_STONES, this);
-        if(w)
-            ordered_stones.push_front(w);
-        else
+        if(!w)
             break;
+        assert(helpers::contains(ordered_stones, w));
     }
 }
 
@@ -399,10 +397,14 @@ void noBuildingSite::TakeWare(Ware* ware)
 
     // Ware in die Bestellliste aufnehmen
     if(ware->type == GD_BOARDS)
+    {
+        assert(!helpers::contains(ordered_boards, ware));
         ordered_boards.push_back(ware);
-    else if(ware->type == GD_STONES)
+    }else if(ware->type == GD_STONES)
+    {
+        assert(!helpers::contains(ordered_stones, ware));
         ordered_stones.push_back(ware);
-    else
+    }else
         throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 }
 

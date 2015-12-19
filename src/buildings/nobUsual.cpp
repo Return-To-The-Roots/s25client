@@ -332,7 +332,7 @@ void nobUsual::HandleEvent(const unsigned int id)
             {
                 Ware* w = gwg->GetPlayer(player).OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[last_ordered_ware], this);
                 if(w)
-                    ordered_wares[last_ordered_ware].push_back(w);
+                    assert(helpers::contains(ordered_wares[last_ordered_ware], w));
             }
 
             // Wenn dieser Betrieb 2 Waren benötigt, muss sich bei den Warentypen abgewechselt werden
@@ -514,44 +514,37 @@ void nobUsual::ConsumeWares()
             // 2 Waren verbrauchen
             --wares[0];
             --wares[1];
-
-            // try to get wares from warehouses
-            Ware* w;
-
             GameClientPlayer& owner = gwg->GetPlayer(player);
-            if ((wares[0] < 2) &&
-                    (w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this)))
-            {
-                ordered_wares[0].push_back(w);
-            }
-
-            if ((wares[1] < 2) &&
-                    (w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this)))
-            {
-                ordered_wares[1].push_back(w);
-            }
-
             owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], 1);
             owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], 1);
+
+            // try to get wares from warehouses
+            if(wares[0] < 2)
+            {
+                Ware* w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this);
+                assert(!w || helpers::contains(ordered_wares[0], w));
+            }
+
+            if(wares[1] < 2)
+            {
+                Ware* w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this);
+                assert(!w || helpers::contains(ordered_wares[1], w));
+            }
+
         }
         else
         {
             // Bestand verringern
             --wares[ware_type];
+            // Inventur entsprechend verringern
+            gwg->GetPlayer(player).DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], 1);
 
             // try to get ware from warehouses
             if (wares[ware_type] < 2)
             {
                 Ware* w = gwg->GetPlayer(player).OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], this);
-
-                if (w)
-                {
-                    ordered_wares[ware_type].push_back(w);
-                }
+                assert(!w || helpers::contains(ordered_wares[ware_type], w));
             }
-
-            // Inventur entsprechend verringern
-            gwg->GetPlayer(player).DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], 1);
         }
     }
 
@@ -617,6 +610,7 @@ void nobUsual::TakeWare(Ware* ware)
     {
         if(ware->type == USUAL_BUILDING_CONSTS[this->type_ - 10].wares_needed[i])
         {
+            assert(!helpers::contains(ordered_wares[i], ware));
             ordered_wares[i].push_back(ware);
             return;
         }

@@ -533,7 +533,7 @@ void nobHarborBuilding::OrderExpeditionWares()
             ware = gwg->GetPlayer(player).OrderWare(GD_BOARDS, this);
             if(ware)
             {
-                dependent_wares.push_back(ware);
+                assert(IsWareDependent(ware));
                 --todo_boards;
             }
         }
@@ -550,7 +550,7 @@ void nobHarborBuilding::OrderExpeditionWares()
             ware = gwg->GetPlayer(player).OrderWare(GD_STONES, this);
             if(ware)
             {
-                dependent_wares.push_back(ware);
+                assert(IsWareDependent(ware));
                 --todo_stones;
             }
         }
