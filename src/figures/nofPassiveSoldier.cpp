@@ -136,7 +136,7 @@ void nofPassiveSoldier::GoalReached()
 
 void nofPassiveSoldier::InBuildingDestroyed()
 {
-    building = 0;
+    building = NULL;
 
     // Auf die Karte setzen
     gwg->AddFigure(this, pos);
@@ -155,7 +155,7 @@ void nofPassiveSoldier::LeaveBuilding()
     cur_rs = building->routes[4];
     GoHome();
 
-    building = 0;
+    building = NULL;
 }
 
 
@@ -182,7 +182,7 @@ void nofPassiveSoldier::Walked()
 
 void nofPassiveSoldier::NotNeeded()
 {
-    building = 0;
+    building = NULL;
     GoHome();
 }
 

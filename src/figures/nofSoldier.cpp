@@ -64,7 +64,7 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
     if(fs != FS_WANDER && fs != FS_GOHOME)
         building = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
     else
-        building = 0;
+        building = NULL;
 
     hitpoints = sgd.PopUnsignedChar();
 }

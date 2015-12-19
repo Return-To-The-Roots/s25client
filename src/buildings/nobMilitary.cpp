@@ -796,18 +796,15 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
         // Verteidiger auswählen
         nofPassiveSoldier* soldier = ChooseSoldier();
         // neuen aggressiven Verteidiger daraus erzeugen
-        nofAggressiveDefender* ad = new nofAggressiveDefender(soldier, attacker);
+        nofAggressiveDefender* defender = new nofAggressiveDefender(soldier, attacker);
         // soll rausgehen
-        AddLeavingFigure(ad);
-        // auf die Missionsliste setzen
-        troops_on_mission.push_back(ad);
-        // aus den Truppen rauswerfen
-        troops.erase(soldier);
+        AddLeavingFigure(defender);
+        SoldierOnMission(soldier, defender);
         // alten passiven Soldaten vernichten
         soldier->Destroy();
         delete soldier;
 
-        return ad;
+        return defender;
     }
     else
         return 0;
@@ -915,6 +912,7 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 
     // aus der Liste entfernen
     troops.erase(soldier);
+    soldier->LeftBuilding();
 
     // und vernichten
     soldier->Destroy();

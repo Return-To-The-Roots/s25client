@@ -144,7 +144,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
     case JOB_SERGEANT:
     case JOB_OFFICER:
     case JOB_GENERAL:
-        return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), static_cast<nobBaseMilitary*>(goal), job_id - JOB_PRIVATE);
+        return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), NULL, job_id - JOB_PRIVATE);
     case JOB_PACKDONKEY:
         return new nofCarrier(nofCarrier::CT_DONKEY, pt, player, 0, goal);
     case JOB_SHIPWRIGHT:
