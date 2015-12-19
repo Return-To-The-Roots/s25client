@@ -79,6 +79,10 @@ Ware::Ware(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj
     next_harbor(sgd.PopMapPoint())
 {}
 
+void Ware::SetGoal(noBaseBuilding* newGoal)
+{
+    goal = newGoal;
+}
 
 void Ware::RecalcRoute()
 {

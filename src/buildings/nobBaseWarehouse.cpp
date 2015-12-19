@@ -574,7 +574,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 // Ware
 
                 Ware* ware = new Ware(GoodType(selectedId), NULL, this);
-                ware->goal = gwg->GetPlayer(player).FindClientForWare(ware);
+                ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(ware));
 
                 // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
                 waiting_wares.push_back(ware);
@@ -755,9 +755,9 @@ bool nobBaseWarehouse::FreePlaceAtFlag()
 void nobBaseWarehouse::AddWare(Ware*& ware)
 {
     // Ware not dependent anymore (only if we had a goal)
-    if(ware->goal)
+    if(ware->GetGoal())
     {
-        assert(ware->goal == this); // The goal should be here
+        assert(ware->GetGoal() == this); // The goal should be here
         RemoveDependentWare(ware);
     }
     else

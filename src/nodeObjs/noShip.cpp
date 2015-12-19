@@ -799,7 +799,7 @@ void noShip::HandleState_TransportDriving()
             for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
             {
                 (*it)->NotifyGoalAboutLostWare();
-                (*it)->goal = NULL;
+                (*it)->SetGoal(NULL);
             }
 
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
@@ -1051,18 +1051,18 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     case noShip::STATE_TRANSPORT_LOADING:
     case noShip::STATE_TRANSPORT_UNLOADING:
     // Tell wares and figures that they won't reach their goal
-            for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-            {
-                (*it)->Abrogate();
-                (*it)->SetGoalToNULL();
-            }
-            for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
-            {
-        // Notify goal only, if it is not the destroyed harbor. It already knows about that ;)
-        if((*it)->goal != hb)
+        for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        {
+            (*it)->Abrogate();
+            (*it)->SetGoalToNULL();
+        }
+        for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
+        {
+            // Notify goal only, if it is not the destroyed harbor. It already knows about that ;)
+            if((*it)->GetGoal() != hb)
                 (*it)->NotifyGoalAboutLostWare();
-                (*it)->goal = NULL;
-            }
+            (*it)->SetGoal(NULL);
+        }
         break;
     case noShip::STATE_SEAATTACK_LOADING:
         goal_harbor_id = home_harbor;

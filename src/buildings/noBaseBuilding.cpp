@@ -159,7 +159,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                     // Inventur anpassen
                     gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden
-                    ware->goal = gwg->GetPlayer(player).FindClientForWare(ware);
+                    ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(ware));
                     // Ware soll ihren weiteren Weg berechnen
                     ware->RecalcRoute();
                     // Ware ablegen

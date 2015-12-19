@@ -692,7 +692,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 /// Legt eine Ware im Lagerhaus ab
 void nobHarborBuilding::AddWare(Ware*& ware)
 {
-    if(ware->goal && ware->goal != this)
+    if(ware->GetGoal() && ware->GetGoal() != this)
     {
         // This is not the goal but we have one -> Get new route
         ware->RecalcRoute();
@@ -706,13 +706,13 @@ void nobHarborBuilding::AddWare(Ware*& ware)
         }else if(ware->GetNextDir() != INVALID_DIR)
         {
             // Travel on roads -> Carry out
-            assert(ware->goal != this);
+            assert(ware->GetGoal() != this);
             AddWaitingWare(ware);
             return;
         }else
         {
             // Pathfinding failed -> Ware would want to go here
-            assert(ware->goal == this);
+            assert(ware->GetGoal() == this);
             // Regular handling below
         }
     }
@@ -727,7 +727,7 @@ void nobHarborBuilding::AddWare(Ware*& ware)
             else ++expedition.stones;
 
             // Ware nicht mehr abhängig
-            if(ware->goal)
+            if(ware->GetGoal())
                 RemoveDependentWare(ware);
             // Dann zweigen wir die einfach mal für die Expedition ab
             gwg->GetPlayer(player).RemoveWare(ware);

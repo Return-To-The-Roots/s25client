@@ -563,7 +563,7 @@ void GameClientPlayer::RoadDestroyed()
 			//special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and drop
 			//it off at the goal was just destroyed? -> try to pick another flip route or tell the goal about failure.
             noRoadNode& wareLocation = *(*it)->GetLocation();
-			if((*it)->goal && (*it)->GetNextDir()==1 && wareLocation.GetPos() == (*it)->goal->GetFlag()->GetPos() && (((*it)->goal->GetBuildingType()!=BLD_STOREHOUSE && (*it)->goal->GetBuildingType()!=BLD_HEADQUARTERS && (*it)->goal->GetBuildingType()!=BLD_HARBORBUILDING) || (*it)->goal->GetType()==NOP_BUILDINGSITE))
+			if((*it)->GetGoal() && (*it)->GetNextDir()==1 && wareLocation.GetPos() == (*it)->GetGoal()->GetFlag()->GetPos() && (((*it)->GetGoal()->GetBuildingType()!=BLD_STOREHOUSE && (*it)->GetGoal()->GetBuildingType()!=BLD_HEADQUARTERS && (*it)->GetGoal()->GetBuildingType()!=BLD_HARBORBUILDING) || (*it)->GetGoal()->GetType()==NOP_BUILDINGSITE))
 			{
 				//LOG.lprintf("road destroyed special at %i,%i gf: %u \n", (*it)->GetLocation()->GetX(),(*it)->GetLocation()->GetY(),GAMECLIENT.GetGFNumber());
 				unsigned gotfliproute=1;
@@ -585,13 +585,13 @@ void GameClientPlayer::RoadDestroyed()
 					nobBaseWarehouse* wh = gwg->GetPlayer(wareLocation.GetPlayer()).FindWarehouse(wareLocation, FW::Condition_StoreWare, 0, true, &(*it)->type, true);
 					if(wh)
 					{
-						(*it)->goal = wh;
+						(*it)->SetGoal(wh);
 						(*it)->SetNextDir(gwg->FindPathForWareOnRoads(wareLocation, *wh, NULL, &(*it)->next_harbor));
 						wh->TakeWare(*it);
 					}
 					else
 					{
-						(*it)->goal=0;
+						(*it)->SetGoal(NULL);
 					}
 				}
 			}

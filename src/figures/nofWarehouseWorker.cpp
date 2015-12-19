@@ -109,7 +109,7 @@ void nofWarehouseWorker::GoalReached()
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
         // ( dann ist goal = location )
-        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->goal != carried_ware->GetLocation() && carried_ware->goal != wh)
+        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation() && carried_ware->GetGoal() != wh)
         {
             carried_ware->WaitAtFlag(gwg->GetSpecObj<noFlag>(pos));
 
@@ -153,7 +153,7 @@ void nofWarehouseWorker::Walked()
             if(gwg->GetNO(pos)->GetType() == NOP_BUILDING)
             {
                 nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
-                if(carried_ware->goal == carried_ware->GetLocation() || carried_ware->goal == wh)
+                if(carried_ware->GetGoal() == carried_ware->GetLocation() || carried_ware->GetGoal() == wh)
                     wh->AddWare(carried_ware);
                 else
                     wh->AddWaitingWare(carried_ware);

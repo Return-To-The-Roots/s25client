@@ -193,7 +193,7 @@ void nofBuildingWorker::WorkingReady()
                                   real_ware->type == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : real_ware->type;
             gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
-            real_ware->goal = gwg->GetPlayer(player).FindClientForWare(real_ware);
+            real_ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(real_ware));
             // Ware soll ihren weiteren Weg berechnen
             real_ware->RecalcRoute();
             // Ware ablegen

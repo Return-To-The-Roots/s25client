@@ -45,17 +45,15 @@ class Ware : public GameObject
         } state;
         /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware getragen wird!)
         noRoadNode* location;
-
-    public:
-
-        /// Was für eine Ware
-        const GoodType type;
         /// Wo die Ware mal hin soll
         noBaseBuilding* goal;
+
+    public:
         /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
         MapPoint next_harbor;
 
-    public:
+        /// Was für eine Ware
+        const GoodType type;
 
         Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location);
         Ware(SerializedGameData& sgd, const unsigned obj_id);
@@ -74,6 +72,9 @@ class Ware : public GameObject
         inline unsigned char GetNextDir() const { return next_dir; }
         /// Gibt nächsten Hafen zurück, falls vorhanden
         MapPoint GetNextHarbor() const { return  next_harbor; }
+        noBaseBuilding* GetGoal() const { return goal; }
+        /// Sets the new goal and notifies it
+        void SetGoal(noBaseBuilding* newGoal);
         /// Berechnet den Weg neu zu ihrem Ziel
         void RecalcRoute();
 		/// set new next dir
