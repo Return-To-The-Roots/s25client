@@ -97,8 +97,11 @@ class Ware : public GameObject
         void RemoveWareJobForCurrentDir(const unsigned char last_next_dir);
         /// Überprüft, ob es noch ein Weg zum Ziel gibt für Waren, die noch im Lagerhaus liegen
         bool FindRouteFromWarehouse();
-        /// Sagt der Ware, dass sie sich ein Lagerhaus nochmal suchen soll (für LostWares gedacht, die kein Lagerhaus mehr gefunden haben)
-        void FindRouteToWarehouse();
+        /// Tells the ware that it should look for a warehouse to go to
+        /// If one is found nextDir is set and the warehouse is notified
+        bool FindRouteToWarehouse();
+        /// Tells a carrier that we want to be carried
+        void CallCarrier();
 		///a building is looking for a ware - check if this lost ware can be send to the building and then do it
 		unsigned CheckNewGoalForLostWare(noBaseBuilding* newgoal);
 		void SetNewGoalForLostWare(noBaseBuilding* newgoal);

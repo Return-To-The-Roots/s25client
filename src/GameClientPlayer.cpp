@@ -546,7 +546,8 @@ void GameClientPlayer::FindClientForLostWares()
     {
         if((*it)->IsLostWare())
         {
-            (*it)->FindRouteToWarehouse();
+            if((*it)->FindRouteToWarehouse() && (*it)->IsWaitingAtFlag())
+                (*it)->CallCarrier();
         }
     }
 }
@@ -584,23 +585,14 @@ void GameClientPlayer::RoadDestroyed()
 				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
 				{
 					ware->NotifyGoalAboutLostWare();
-					nobBaseWarehouse* wh = gwg->GetPlayer(wareLocation.GetPlayer()).FindWarehouse(wareLocation, FW::Condition_StoreWare, 0, true, &(*it)->type, true);
-					if(wh)
-					{
-						(*it)->SetGoal(wh);
-						(*it)->SetNextDir(gwg->FindPathForWareOnRoads(wareLocation, *wh, NULL, &(*it)->next_harbor));
-					}
-					else
-					{
-						(*it)->SetGoal(NULL);
-					}
+                    ware->FindRouteToWarehouse();
 				}
 			}
 			//end of special case
 
 			// notify carriers/flags about news if there are any
 			if(ware->GetNextDir() != 0xFF && ware->GetNextDir()!=last_next_dir)
-				wareLocation.routes[ware->GetNextDir()]->AddWareJob(&wareLocation);
+				ware->CallCarrier();
 			//if the next direction changed: notify current flag that transport in the old direction might not longer be required
 			if(ware->GetNextDir()!=last_next_dir)
 				ware->RemoveWareJobForCurrentDir(last_next_dir);
