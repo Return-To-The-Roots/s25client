@@ -27,6 +27,7 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "helpers/containerUtils.h"
+#include <boost/array.hpp>
 #include <list>
 #include <queue>
 #include <algorithm>
@@ -56,8 +57,8 @@ class noFigure;
 /// Informationen über Gebäude-Anzahlen
 struct BuildingCount
 {
-    unsigned building_counts[40];
-    unsigned building_site_counts[40];
+    boost::array<unsigned, 40> building_counts;
+    boost::array<unsigned, 40> building_site_counts;
 };
 
 
@@ -115,10 +116,10 @@ class GameClientPlayer : public GamePlayerInfo
          */
         std::vector< MapPoint > restricted_area;
 
-        bool building_enabled[BUILDING_TYPES_COUNT];
+        boost::array<bool, BUILDING_TYPES_COUNT> building_enabled;
 
         /// Liste, welchen nächsten 10 Angreifern Verteidiger entgegenlaufen sollen
-        bool defenders[5];
+        boost::array<bool, 5> defenders;
         unsigned short defenders_pos;
 
         /// Inventur
@@ -154,13 +155,14 @@ class GameClientPlayer : public GamePlayerInfo
         MapPoint hqPos;
 
         // Informationen über die Verteilung
-        struct
+        struct Distribution
         {
             unsigned char percent_buildings[BUILDING_TYPES_COUNT];
             std::list<BuildingType> client_buildings; // alle Gebäude, die diese Ware bekommen, zusammengefasst
             std::vector<unsigned char> goals;
             unsigned selected_goal;
-        } distribution[WARE_TYPES_COUNT];
+        };
+        boost::array<Distribution, WARE_TYPES_COUNT> distribution;
 
         /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
         unsigned char orderType_;
@@ -173,8 +175,8 @@ class GameClientPlayer : public GamePlayerInfo
         /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
         ToolSettings toolsSettings_;
         // qx:tools
-        unsigned char tools_ordered[TOOL_COUNT];
-        signed char tools_ordered_delta[TOOL_COUNT];
+        boost::array<unsigned char, TOOL_COUNT> tools_ordered;
+        boost::array<signed char, TOOL_COUNT> tools_ordered_delta;
 
         void EnableBuilding(BuildingType type) {building_enabled[type] = true;}
         void DisableBuilding(BuildingType type) {building_enabled[type] = false;}
@@ -350,7 +352,9 @@ class GameClientPlayer : public GamePlayerInfo
         /// Registriert einen Geologen bzw. einen Späher an einer bestimmten Flagge, damit diese informiert werden,
         /// wenn die Flagge abgerissen wird
         void RegisterFlagWorker(nofFlagWorker* flagworker) { flagworkers.push_back(flagworker); }
-        void RemoveFlagWorker(nofFlagWorker* flagworker) { assert(helpers::contains(flagworkers, flagworker)); flagworkers.remove(flagworker); }
+        void RemoveFlagWorker(nofFlagWorker* flagworker) { assert(IsFlagWorker(flagworker)); flagworkers.remove(flagworker); }
+        bool IsFlagWorker(nofFlagWorker* flagworker) { return helpers::contains(flagworkers, flagworker); }
+
         /// Wird aufgerufen, wenn eine Flagge abgerissen wurde, damit das den Flaggen-Arbeitern gesagt werden kann
         void FlagDestroyed(noFlag* flag);
 
@@ -460,7 +464,7 @@ class GameClientPlayer : public GamePlayerInfo
 
     private:
         // Statistikdaten
-        Statistic statistic[STAT_TIME_COUNT];
+        boost::array<Statistic, STAT_TIME_COUNT> statistic;
 
         // Die Statistikwerte die 'aktuell' gemessen werden
         int statisticCurrentData[STAT_TYPE_COUNT];

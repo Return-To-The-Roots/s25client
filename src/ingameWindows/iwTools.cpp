@@ -101,7 +101,7 @@ void iwTools::TransmitSettings()
         for(unsigned char i = 0; i < TOOL_COUNT; ++i)
             GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, GAMECLIENT.GetLocalPlayer().tools_ordered_delta);
+        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, &GAMECLIENT.GetLocalPlayer().tools_ordered_delta[0]);
 
         settings_changed = false;
     }

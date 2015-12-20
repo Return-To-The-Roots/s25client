@@ -1495,11 +1495,10 @@ void GameClientPlayer::FlagDestroyed(noFlag* flag)
 void GameClientPlayer::RefreshDefenderList()
 {
     /// Die Verteidigungsliste muss erneuert werden
-    memset(defenders, 0, 5);
-    for(unsigned i = 0; i < 5; ++i)
+    for(unsigned i = 0; i < defenders.size(); ++i)
         defenders[i] = (i < militarySettings_[2] * 5 / MILITARY_SETTINGS_SCALE[2]);
     // und ordentlich schütteln
-    RANDOM.Shuffle(defenders, 5);
+    RANDOM.Shuffle(&defenders[0], 5);
 
     defenders_pos = 0;
 }

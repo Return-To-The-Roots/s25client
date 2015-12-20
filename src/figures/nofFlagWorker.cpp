@@ -67,14 +67,20 @@ void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
 
 void nofFlagWorker::Destroy_nofFlagWorker()
 {
+    assert(!flag);
+    assert(!gwg->GetPlayer(player).IsFlagWorker(this));
     Destroy_noFigure();
 }
 
 void nofFlagWorker::AbrogateWorkplace()
 {
-    flag = NULL;
-    /// uns entfernen, da wir wieder umdrehen müssen
-    gwg->GetPlayer(player).RemoveFlagWorker(this);
+    if(flag)
+    {
+        /// uns entfernen, da wir wieder umdrehen müssen
+        gwg->GetPlayer(player).RemoveFlagWorker(this);
+        flag = NULL;
+    }else
+        assert(!gwg->GetPlayer(player).IsFlagWorker(this));
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause
