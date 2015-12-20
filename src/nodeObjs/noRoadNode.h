@@ -20,6 +20,7 @@
 
 #include "noCoordBase.h"
 #include "RoadSegment.h"
+#include <boost/array.hpp>
 
 class noFigure;
 class Ware;
@@ -38,7 +39,7 @@ class noRoadNode : public noCoordBase
 
     public:
 
-        RoadSegment* routes[6];
+        boost::array<RoadSegment*, 6> routes;
 
 // For Pathfinding
         // cost from start
