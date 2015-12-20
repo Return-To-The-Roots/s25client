@@ -306,28 +306,28 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
         for(unsigned i = 0; i < 6; ++i)
         {
-            if(routes[i])
-            {
-                if(routes[i]->GetLength() == 1)
-                {
-                    // Gebäude?
+            if(!routes[i])
+                continue;
 
-                    if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
-                    {
-                        if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->FreePlaceAtFlag())
-                            break;
-                    }
-                }
-                else
+            if(routes[i]->GetLength() == 1)
+            {
+                // Gebäude?
+
+                if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
                 {
-                    // Richtiger Weg --> Träger Bescheid sagen
-                    for(unsigned char c = 0; c < 2; ++c)
+                    if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->FreePlaceAtFlag())
+                        break;
+                }
+            }
+            else
+            {
+                // Richtiger Weg --> Träger Bescheid sagen
+                for(unsigned char c = 0; c < 2; ++c)
+                {
+                    if(routes[i]->hasCarrier(c))
                     {
-                        if(routes[i]->hasCarrier(c))
-                        {
-                            if(routes[i]->getCarrier(c)->SpaceAtFlag(this == routes[i]->GetF2()))
-                                break;
-                        }
+                        if(routes[i]->getCarrier(c)->SpaceAtFlag(this == routes[i]->GetF2()))
+                            break;
                     }
                 }
             }

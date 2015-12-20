@@ -47,11 +47,10 @@ class Ware : public GameObject
         noRoadNode* location;
         /// Wo die Ware mal hin soll
         noBaseBuilding* goal;
-
-    public:
         /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
         MapPoint next_harbor;
 
+    public:
         /// Was für eine Ware
         const GoodType type;
 
@@ -94,11 +93,11 @@ class Ware : public GameObject
         bool IsWaitingInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
         bool IsWaitingForShip() const { return (state == STATE_WAITFORSHIP); }
         /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
-        void RemoveWareJobForCurrentDir(const unsigned char last_next_dir);
-        /// Überprüft, ob es noch ein Weg zum Ziel gibt für Waren, die noch im Lagerhaus liegen
-        bool FindRouteFromWarehouse();
-        /// Tells the ware that it should look for a warehouse to go to
-        /// If one is found nextDir is set and the warehouse is notified
+        void RemoveWareJobForDir(const unsigned char last_next_dir);
+        /// Überprüft, ob es noch ein Weg zum Ziel gibt
+        bool IsRouteToGoal();
+        /// Tells the ware that it should look for a warehouse to go to and notifies that (if found)
+        /// Sets nextDir to the next direction or invalid of no warehouse found
         bool FindRouteToWarehouse();
         /// Tells a carrier that we want to be carried
         void CallCarrier();

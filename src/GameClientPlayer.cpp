@@ -569,20 +569,20 @@ void GameClientPlayer::RoadDestroyed()
 			if(wareGoal && ware->GetNextDir()==1 && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos() && ((wareGoal->GetBuildingType()!=BLD_STOREHOUSE && wareGoal->GetBuildingType()!=BLD_HEADQUARTERS && wareGoal->GetBuildingType()!=BLD_HARBORBUILDING) || wareGoal->GetType()==NOP_BUILDINGSITE))
 			{
 				//LOG.lprintf("road destroyed special at %i,%i gf: %u \n", (*it)->GetLocation()->GetX(),(*it)->GetLocation()->GetY(),GAMECLIENT.GetGFNumber());
-				unsigned gotfliproute=1;
-				for(unsigned i=2;i<7;i++)
+				unsigned gotfliproute = 1;
+				for(unsigned i=2; i<7; i++)
 				{
 					if(wareLocation.routes[i%6])
 					{
-						gotfliproute=i;
+						gotfliproute = i;
 						break;
 					}
 				}
-				if(gotfliproute!=1)
+				if(gotfliproute != 1)
 				{
 					ware->SetNextDir(gotfliproute%6);
 				}
-				else //no route to goal -> notify goal, try to send ware to a warehouse and if that fails as well set goal = 0 to mark this ware as lost
+				else //no route to goal -> notify goal, try to send ware to a warehouse
 				{
 					ware->NotifyGoalAboutLostWare();
                     ware->FindRouteToWarehouse();
@@ -591,15 +591,17 @@ void GameClientPlayer::RoadDestroyed()
 			//end of special case
 
 			// notify carriers/flags about news if there are any
-			if(ware->GetNextDir() != 0xFF && ware->GetNextDir()!=last_next_dir)
-				ware->CallCarrier();
-			//if the next direction changed: notify current flag that transport in the old direction might not longer be required
-			if(ware->GetNextDir()!=last_next_dir)
-				ware->RemoveWareJobForCurrentDir(last_next_dir);
+			if(ware->GetNextDir() != last_next_dir)
+            {
+                //notify current flag that transport in the old direction might not longer be required
+                ware->RemoveWareJobForDir(last_next_dir);
+				if(ware->GetNextDir() != 0xFF)
+                    ware->CallCarrier();
+            }
 		}
         else if(ware->IsWaitingInWarehouse())
         {
-            if(!ware->FindRouteFromWarehouse())
+            if(!ware->IsRouteToGoal())
             {
                 Ware* ware = *it;
 
@@ -624,8 +626,7 @@ void GameClientPlayer::RoadDestroyed()
     }
 
     // Alle Häfen müssen ihre Figuren den Weg überprüfen lassen
-    for(std::list<nobHarborBuilding*>::iterator it = harbors.begin();
-            it != harbors.end(); ++it)
+    for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         (*it)->ExamineShipRouteOfPeople();
     }
