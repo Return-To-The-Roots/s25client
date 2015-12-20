@@ -45,14 +45,17 @@ class Ware : public GameObject
         } state;
         /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware getragen wird!)
         noRoadNode* location;
+
+    public:
+        /// Was für eine Ware
+        const GoodType type;
+    private:
         /// Wo die Ware mal hin soll
         noBaseBuilding* goal;
         /// Nächster Hafenpunkt, der ggf. angesteuert werden soll
         MapPoint next_harbor;
 
     public:
-        /// Was für eine Ware
-        const GoodType type;
 
         Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location);
         Ware(SerializedGameData& sgd, const unsigned obj_id);

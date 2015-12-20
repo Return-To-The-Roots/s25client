@@ -40,9 +40,9 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
-    next_dir(255), state(STATE_WAITINWAREHOUSE), location(location),
+    next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),
     type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
-    goal(goal)
+    goal(goal), next_harbor(MapPoint::Invalid())
 {
     // Ware in den Index mit eintragen
     gwg->GetPlayer(location->GetPlayer()).RegisterWare(this);

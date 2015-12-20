@@ -109,7 +109,7 @@ void nofDefender::Walked()
                 nobBaseMilitary* bld = building;
                 // mich zum Gebäude wieder hinzufügen
                 assert(bld->GetDefender() == this); // I should be the defender
-                building->AddActiveSoldier(this);
+                bld->AddActiveSoldier(this);
                 assert(!bld->GetDefender()); // No defender anymore
             }
 

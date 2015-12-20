@@ -522,13 +522,15 @@ void nobUsual::ConsumeWares()
             if(wares[0] < 2)
             {
                 Ware* w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this);
-                assert(!w || helpers::contains(ordered_wares[0], w));
+                if(w)
+                    assert(helpers::contains(ordered_wares[0], w));
             }
 
             if(wares[1] < 2)
             {
                 Ware* w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this);
-                assert(!w || helpers::contains(ordered_wares[1], w));
+                if(w)
+                    assert(helpers::contains(ordered_wares[1], w));
             }
 
         }
@@ -543,7 +545,8 @@ void nobUsual::ConsumeWares()
             if (wares[ware_type] < 2)
             {
                 Ware* w = gwg->GetPlayer(player).OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], this);
-                assert(!w || helpers::contains(ordered_wares[ware_type], w));
+                if(w)
+                    assert(helpers::contains(ordered_wares[ware_type], w));
             }
         }
     }
