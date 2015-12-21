@@ -299,8 +299,11 @@ void EventManager::RemoveEvent(EventPointer& ep)
     ep = NULL;
 }
 
-#include "figures/noFigure.h"
-#include "figures/nofSoldier.h"
+#ifdef _DEBUG
+#   include "figures/noFigure.h"
+#   include "figures/nofSoldier.h"
+#   include "Ware.h"
+#endif
 
 void EventManager::AddToKillList(GameObject* obj)
 {
@@ -308,5 +311,6 @@ void EventManager::AddToKillList(GameObject* obj)
     assert(!helpers::contains(kill_list, obj));
     assert(!dynamic_cast<noFigure*>(obj) || static_cast<noFigure*>(obj)->HasNoGoal());
     assert(!dynamic_cast<nofSoldier*>(obj) || static_cast<nofSoldier*>(obj)->HasNoHome());
+    assert(!dynamic_cast<Ware*>(obj) || !static_cast<Ware*>(obj)->GetGoal());
     kill_list.push_back(obj);
 }
