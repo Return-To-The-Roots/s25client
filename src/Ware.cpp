@@ -156,6 +156,7 @@ void Ware::GoalDestroyed()
         assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
         static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
         GAMECLIENT.GetPlayer(location->GetPlayer()).RemoveWare(this);
+        goal = NULL;
         em->AddToKillList(this);
     }
     else
