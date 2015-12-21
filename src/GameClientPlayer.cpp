@@ -2205,31 +2205,16 @@ noShip* GameClientPlayer::GetShipByID(const unsigned ship_id) const
 
 
 /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-void GameClientPlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings,
-        const unsigned short sea_id) const
+void GameClientPlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short sea_id) const
 {
-    for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
+    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
-        if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
-        {
-            bool existing = false;
-            for(unsigned i = 0; i < harbor_buildings.size(); ++i)
-            {
-                if(harbor_buildings[i] == *it)
-                {
-                    existing = true;
-                    break;
-                }
-            }
+        if(helpers::contains(harbor_buildings, *it))
+            continue;
 
-            if(existing)
-                continue;
-
-            if(gwg->IsAtThisSea(static_cast<nobHarborBuilding*>(*it)->GetHarborPosID(), sea_id))
-                harbor_buildings.push_back(static_cast<nobHarborBuilding*>(*it));
-        }
+        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), sea_id))
+            harbor_buildings.push_back(*it);
     }
-
 }
 
 
