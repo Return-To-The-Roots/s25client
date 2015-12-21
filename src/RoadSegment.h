@@ -70,7 +70,7 @@ class RoadSegment : public GameObject
         /// gibt den Carrier nr zurück
         inline nofCarrier* getCarrier(unsigned char nr) const { return carriers_[nr]; }
         /// setzt den Carrier nr auf c
-        inline void setCarrier(unsigned char nr, nofCarrier* c) { carriers_[nr] = c; }
+        inline void setCarrier(unsigned char nr, nofCarrier* c) { assert(!c || !hasCarrier(nr)); carriers_[nr] = c; }
         /// haben wir den Carrier "nr"?
         inline bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != NULL); }
         /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!

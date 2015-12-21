@@ -83,9 +83,9 @@ class nobBaseWarehouse : public nobBaseMilitary
         bool AreRecruitingConditionsComply();
         /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
         /// (muss in dem Fall true zurückgeben)
-        virtual bool UseWareAtOnce(Ware* ware, noBaseBuilding* const goal);
+        virtual bool UseWareAtOnce(Ware* ware, noBaseBuilding& goal);
         /// Dasselbe für Menschen
-        virtual bool UseFigureAtOnce(noFigure* fig, noRoadNode* const goal);
+        virtual bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal);
         /// Prüft verschiedene Verwendungszwecke für eine neuangekommende Ware
         void CheckUsesForNewWare(const GoodType gt);
         /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat

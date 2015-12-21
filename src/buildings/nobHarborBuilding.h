@@ -90,9 +90,9 @@ class nobHarborBuilding : public nobBaseWarehouse
         bool IsExplorationExpeditionReady() const;
         /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
         /// (muss in dem Fall true zurückgeben)
-        bool UseWareAtOnce(Ware* ware, noBaseBuilding* const goal);
+        bool UseWareAtOnce(Ware* ware, noBaseBuilding& goal) override;
         /// Dasselbe für Menschen
-        bool UseFigureAtOnce(noFigure* fig, noRoadNode* const goal);
+        bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal) override;
         /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
         void CancelFigure(noFigure* figure);
         /// Bestellt ein Schiff zum Hafen, sofern dies nötig ist

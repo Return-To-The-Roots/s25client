@@ -1044,12 +1044,14 @@ void nobHarborBuilding::OrderShip()
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
 /// (muss in dem Fall true zurückgeben)
-bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding* const goal)
+bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
 {
-    // Evtl. muss die Ware gleich das Schiff nehmen ->
-    // dann zum Schiffsreservoir hinzufügen
-    MapPoint next_harbor;
-    ware->RecalcRoute();
+    // Evtl. muss die Ware gleich das Schiff nehmen -> dann zum Schiffsreservoir hinzufügen
+    // Assert: This is a ware that got ordered. There MUST be a path to the goal
+    //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
+    assert(gwg->FindPathForWareOnRoads(*this, goal) != INVALID_DIR);
+    ware->RecalcRoute(); // Also sets nextHarbor!
+    assert(ware->GetNextDir() != INVALID_DIR);
     if(ware->GetNextDir() == SHIP_DIR)
     {
         // Reduce ware count because wares don't go through the house leaving process
@@ -1066,13 +1068,12 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding* const goal)
 
 
 /// Dasselbe für Menschen
-bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
+bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 {
     // Evtl. muss die Ware gleich das Schiff nehmen ->
     // dann zum Schiffsreservoir hinzufügen
     MapPoint next_harbor;
-    assert(goal);
-    if(gwg->FindHumanPathOnRoads(*this, *goal, NULL, &next_harbor) == SHIP_DIR)
+    if(gwg->FindHumanPathOnRoads(*this, goal, NULL, &next_harbor) == SHIP_DIR)
     {
         // Reduce figure count because figues don't go through the house leaving process
         // And therefore the visual count reducement

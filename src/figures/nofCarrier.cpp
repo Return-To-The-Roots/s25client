@@ -854,17 +854,24 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         } break;
     }
 
-    // Mich als Träger für meinen neuen Arbeitsplatz zuweisen
-    workplace->setCarrier(ct == CT_DONKEY ? 1 : 0, this);
+    RoadSegment* otherRoad = (workplace == rs1) ? rs2 : rs1;
+    unsigned char carrierNr = ct == CT_DONKEY ? 1 : 0;
 
-    // Für andere Straße neuen Träger/Esel rufen
-    RoadSegment* uc_road = ((rs1 == workplace) ? (rs2) : (rs1));
-    uc_road->setCarrier(ct == CT_DONKEY ? 1 : 0, NULL);
+    // Switch road if required
+    if(workplace->getCarrier(carrierNr) != this)
+    {
+        assert(otherRoad->getCarrier(carrierNr) == this);  // I should have been on other road
+        // Mich als Träger für meinen neuen Arbeitsplatz zuweisen
+        workplace->setCarrier(carrierNr, this);
+        // Für andere Straße neuen Träger/Esel rufen
+        otherRoad->setCarrier(carrierNr, NULL);
+    }else
+        assert(otherRoad->getCarrier(carrierNr) == NULL);  // No carrier expected
 
     if(ct == CT_NORMAL)
-        gwg->GetPlayer(player).FindCarrierForRoad(uc_road);
+        gwg->GetPlayer(player).FindCarrierForRoad(otherRoad);
     else if(ct == CT_DONKEY)
-        uc_road->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(uc_road));
+        otherRoad->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(otherRoad));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -223,9 +223,11 @@ void nobBaseWarehouse::Clear()
 
 void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workplace)
 {
+    assert(workplace);
+    assert(goal);
     workplace->setCarrier(0, new nofCarrier((workplace->GetRoadType() == RoadSegment::RT_BOAT) ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, workplace, goal));
 
-    if(!UseFigureAtOnce(workplace->getCarrier(0), goal))
+    if(!UseFigureAtOnce(workplace->getCarrier(0), *goal))
         AddLeavingFigure(workplace->getCarrier(0));
 
     --real_goods.people[JOB_HELPER];
@@ -238,7 +240,8 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workpla
 
 bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const bool allow_recruiting)
 {
-    // Job überhaupos hier vorhanden
+    assert(goal);
+    // Job überhaupt hier vorhanden
     if(!real_goods.people[job])
     {
         // Evtl das Werkzeug der Person vorhanden sowie ein Träger?
@@ -252,7 +255,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
 
     noFigure* fig = JobFactory::CreateJob(job, pos, player, goal);
     // Wenn Figur nicht sofort von abgeleiteter Klasse verwenet wird, fügen wir die zur Leave-Liste hinzu
-    if(!UseFigureAtOnce(fig, goal))
+    if(!UseFigureAtOnce(fig, *goal))
         AddLeavingFigure(fig);
 
 
@@ -685,19 +688,20 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
 /// (muss in dem Fall true zurückgeben)
-bool nobBaseWarehouse::UseWareAtOnce(Ware* ware, noBaseBuilding* const goal)
+bool nobBaseWarehouse::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
 {
     return false;
 }
 
 /// Dasselbe für Menschen
-bool nobBaseWarehouse::UseFigureAtOnce(noFigure* fig, noRoadNode* const goal)
+bool nobBaseWarehouse::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 {
     return false;
 }
 
 Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goal)
 {
+    assert(goal);
     // Ware überhaupos hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
     if(!real_goods.goods[good])
     {
@@ -708,7 +712,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     Ware* ware = new Ware(good, goal, this);
 
     // Abgeleitete Klasse fragen, ob die irgnend etwas besonderes mit dieser Ware anfangen will
-    if(!UseWareAtOnce(ware, goal))
+    if(!UseWareAtOnce(ware, *goal))
         // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
         waiting_wares.push_back(ware);
 
