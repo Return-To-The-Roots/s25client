@@ -85,8 +85,16 @@ nobBaseWarehouse::~nobBaseWarehouse()
 
 void nobBaseWarehouse::Destroy_nobBaseWarehouse()
 {
-    // Aus der Warenhausliste entfernen
-    gwg->GetPlayer(player).RemoveWarehouse(this);
+    if(GetBuildingType() != BLD_HARBORBUILDING)
+    {
+        // Aus der Warenhausliste entfernen
+        gwg->GetPlayer(player).RemoveWarehouse(this);
+    }else
+    {
+        // Harbors should also remove the warehouse
+        assert(!helpers::contains(gwg->GetPlayer(player).GetStorehouses(), this));
+    }
+
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         (*it)->GoHome();

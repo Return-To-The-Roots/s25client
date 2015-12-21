@@ -2301,31 +2301,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
     {
         boards += (*w)->GetInventory().goods[GD_BOARDS];
         stones += (*w)->GetInventory().goods[GD_STONES];
-		/*std::list<Ware*> testwares = (*w)->GetDependentWares();
-		unsigned c=0;
-		unsigned bad=-1;
-		for(std::list<Ware*>::iterator a = testwares.begin(); a!= testwares.end(); ++a)
-		{
-			c++;
-			if((*a)->goal->GetX()!=(*w)->GetX() || (*a)->goal->GetY()!=(*w)->GetY())
-			{
-				bad=c;
-				LOG.lprintf("bad ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i expecting wh %i,%i warenumber %i \n",(*a)->GetObjId(),(*a)->type,playerid,(*a)->GetLocation()?(*a)->GetLocation()->GetX():0,(*a)->GetLocation()?(*a)->GetLocation()->GetY():0, (*a)->goal->GetX(),(*a)->goal->GetY(),(*w)->GetX(),(*w)->GetY(),c);
-			}			
-		}*/
     }
-	/*	
-	unsigned c=0;
-	for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
-	{
-		c++;
-		if(!(it->workplace->GetX()<0||it->workplace->GetX()>300||it->workplace->GetY()<0||it->workplace->GetY()>300) && it->workplace->GetPlayer()!=playerid)
-		{
-			LOG.lprintf("soon bad job type %i at %i,%i player %i, jobc %i, owner of workplace %i \n",it->job,it->workplace->GetX(),it->workplace->GetY(),playerid,c,it->workplace->GetPlayer());
-		}			
-		if(it->workplace->GetX()<0||it->workplace->GetX()>300||it->workplace->GetY()<0||it->workplace->GetY()>300)
-			LOG.lprintf("NOW HORRIBLE job needed type %i at %i,%i player %i, jobc %i \n",it->job,it->workplace->GetX(),it->workplace->GetY(),playerid,c);
-	}*/
 
     // Holzfäller und Sägewerke zählen, -10 ftw
     unsigned woodcutter = buildings[BLD_WOODCUTTER - 10].size();
