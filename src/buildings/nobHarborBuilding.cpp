@@ -36,6 +36,7 @@
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
 #include "ogl/glSmartBitmap.h"
+#include "pathfinding/RoadPathFinder.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
@@ -1051,7 +1052,7 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
     // Evtl. muss die Ware gleich das Schiff nehmen -> dann zum Schiffsreservoir hinzufügen
     // Assert: This is a ware that got ordered. There MUST be a path to the goal
     //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
-    assert(gwg->FindPathForWareOnRoads(*this, goal) != INVALID_DIR);
+    assert(gwg->GetRoadPathFinder().PathExists(*this, goal, false, true));
     ware->RecalcRoute(); // Also sets nextHarbor!
     assert(ware->GetNextDir() != INVALID_DIR);
     if(ware->GetNextDir() == SHIP_DIR)
