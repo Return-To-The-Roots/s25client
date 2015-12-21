@@ -260,6 +260,8 @@ void noShip::DrawDrivingWithWares(int& x, int& y)
 
 void noShip::HandleEvent(const unsigned int id)
 {
+    assert(current_ev);
+    assert(current_ev->id == id);
     current_ev = NULL;
 
     if(id == 0)
@@ -528,43 +530,43 @@ noShip::Result noShip::DriveToHarbourPlace()
     if(curRouteIdx == route_.size())
         return GOAL_REACHED;
 
-        // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
-        MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
+    // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
+    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
 
-        MapPoint goalRoutePos;
+    MapPoint goalRoutePos;
 
-        // Route überprüfen
-        if(!gwg->CheckShipRoute(pos, route_, curRouteIdx, &goalRoutePos))
+    // Route überprüfen
+    if(!gwg->CheckShipRoute(pos, route_, curRouteIdx, &goalRoutePos))
+    {
+        // Route kann nicht mehr passiert werden --> neue Route suchen
+        if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
         {
-            // Route kann nicht mehr passiert werden --> neue Route suchen
-            if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
-            {
-                // Wieder keine gefunden -> raus
-                return NO_ROUTE_FOUND;
-            }
+            // Wieder keine gefunden -> raus
+            return NO_ROUTE_FOUND;
+        }
 
-            // Wir fangen bei der neuen Route wieder von vorne an
+        // Wir fangen bei der neuen Route wieder von vorne an
+        curRouteIdx = 0;
+    }
+
+    // Kommen wir auch mit unser bisherigen Route an dem ursprünglich anvisierten Hafenplatz an?
+    if(coastalPos != goalRoutePos)
+    {
+        // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
+        assert(route_.size() >= curRouteIdx);
+        if(route_.size() - curRouteIdx < 10)
+        {
+            if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
+                // Keiner gefunden -> raus
+                return NO_ROUTE_FOUND;
+
             curRouteIdx = 0;
         }
-
-        // Kommen wir auch mit unser bisherigen Route an dem ursprünglich anvisierten Hafenplatz an?
-        if(coastalPos != goalRoutePos)
-        {
-            // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
-            assert(route_.size() >= curRouteIdx);
-            if(route_.size() - curRouteIdx < 10)
-            {
-                if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
-                    // Keiner gefunden -> raus
-                    return NO_ROUTE_FOUND;
-
-                curRouteIdx = 0;
-            }
-        }
-
-        StartDriving(route_[curRouteIdx++]);
-        return DRIVING;
     }
+
+    StartDriving(route_[curRouteIdx++]);
+    return DRIVING;
+}
 
 
 unsigned noShip::GetCurrentHarbor() const
@@ -605,6 +607,13 @@ void noShip::ContinueExpedition(const unsigned char dir)
 /// Hafen zurückzukehren
 void noShip::CancelExpedition()
 {
+    // Protect against double execution
+    if(state != STATE_EXPEDITION_WAITING)
+        return;
+
+    // We are waiting. There should be no event!
+    assert(!current_ev);
+
     // Zum Heimathafen zurückkehren
     // Oder sind wir schon dort?
     if(goal_harbor_id == home_harbor)
@@ -648,7 +657,7 @@ void noShip::HandleState_GoToHarbor()
     {
         StartIdling();
         return;
-}
+    }
 
     Result res = DriveToHarbour();
     switch(res)

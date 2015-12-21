@@ -1753,7 +1753,8 @@ bool AIPlayerJH::HasFrontierBuildings()
 
 void AIPlayerJH::CheckExpeditions()
 {
-    for(std::list<nobHarborBuilding*>::const_iterator it = aii->GetHarbors().begin(); it != aii->GetHarbors().end(); ++it)
+    const std::list<nobHarborBuilding*>& harbors = aii->GetHarbors();
+    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         if(((*it)->IsExpeditionActive() && !HarborPosRelevant((*it)->GetHarborPosID(), true)) || (!(*it)->IsExpeditionActive() && HarborPosRelevant((*it)->GetHarborPosID(), true))) //harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
         {
@@ -1761,7 +1762,8 @@ void AIPlayerJH::CheckExpeditions()
         }
     }
     //find lost expedition ships - ai should get a notice and catch them all but just in case some fell through the system
-    for(std::vector<noShip*>::const_iterator it = aii->GetShips().begin(); it != aii->GetShips().end(); ++it)
+    const std::vector<noShip*>& ships = aii->GetShips();
+    for(std::vector<noShip*>::const_iterator it = ships.begin(); it != ships.end(); ++it)
     {
         if((*it)->IsWaitingForExpeditionInstructions())
             HandleExpedition(*it);

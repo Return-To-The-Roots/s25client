@@ -166,13 +166,11 @@ class noShip : public noMovable
         /// Gibt den Schiffsnamen zurück
         const std::string& GetName() const { return name; }
         /// Führt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?
-        bool IsWaitingForExpeditionInstructions() const
-        { return (state == STATE_EXPEDITION_WAITING); }
+        bool IsWaitingForExpeditionInstructions() const { return (state == STATE_EXPEDITION_WAITING); }
         /// Ist das Schiff gerade irgendwie am Expeditionieren und hat entsprechenden Kram an Bord?
         bool IsOnExpedition() const
         {
-            return (state == STATE_EXPEDITION_LOADING || state == STATE_EXPEDITION_WAITING
-                    || state == STATE_EXPEDITION_DRIVING);
+            return (state == STATE_EXPEDITION_LOADING || state == STATE_EXPEDITION_WAITING || state == STATE_EXPEDITION_DRIVING);
         }
         /// Ist das Schiff gerade irgendwie am Explorations-Expeditionieren und hat entsprechenden Kram an Bord?
         bool IsOnExplorationExpedition() const
