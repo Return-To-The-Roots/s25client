@@ -323,10 +323,10 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 {
     switch(id)
     {
-            // Rausgeh-Event
         case 0:
         {
-            leaving_event = 0;
+            // Rausgeh-Event
+            leaving_event = NULL;
 
             // Falls eine Bestellung storniert wurde
             if(leave_house.empty() && waiting_wares.empty())
@@ -344,15 +344,13 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 // try to find a defender and make him leave the house first
                 for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
                 {
-                    if (((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER) ||
-                            ((*it)->GetGOT() == GOT_NOF_DEFENDER))
+                    if (((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER) || ((*it)->GetGOT() == GOT_NOF_DEFENDER))
                     {
                         // remove defender from list, insert him again in front of all others
                         leave_house.push_front(*it);
                         leave_house.erase(it);
 
                         found = true;
-
                         break;
                     }
                 }
@@ -374,8 +372,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 gwg->AddFigure(fig, pos);
 
                 /// Aktive Soldaten laufen nicht im Wegenetz, die das Haus verteidigen!
-                if(fig->GetGOT() != GOT_NOF_AGGRESSIVEDEFENDER &&
-                        fig->GetGOT() != GOT_NOF_DEFENDER)
+                if(fig->GetGOT() != GOT_NOF_AGGRESSIVEDEFENDER && fig->GetGOT() != GOT_NOF_DEFENDER)
                     // ansonsten alle anderen müssen aber wissen, auf welcher Straße sie zu Beginn laufen
                     fig->InitializeRoadWalking(routes[4], 0, true);
 
@@ -438,7 +435,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
         // Träger-Produzier-Event
         case 1:
         {
-            // Nur bei unter 100 Träcern, weitere "produzieren"
+            // Nur bei unter 100 Trägern, weitere "produzieren"
             if(real_goods.people[JOB_HELPER] < 100)
             {
                 ++real_goods.people[JOB_HELPER];
@@ -500,12 +497,11 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 * recruiting_ratio
                 / MILITARY_SETTINGS_SCALE[0];
             // Wurde abgerundet?
-            if (real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0] != 0)
-                if (unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1))
-                        < real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0])
-                {
-                    ++real_recruits;
-                }
+            unsigned remainingRecruits = real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0];
+            if (remainingRecruits != 0 && unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1)) < remainingRecruits)
+            {
+                ++real_recruits;
+            }
 
             real_goods.people[JOB_PRIVATE] += real_recruits;
             goods_.people[JOB_PRIVATE] += real_recruits;
@@ -537,8 +533,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
             // Wenn vorher keine Soldaten hier waren, Militärgebäude prüfen (evtl kann der Soldat ja wieder in eins gehen)
             if(real_goods.people[JOB_PRIVATE] == real_recruits && real_goods.people[JOB_PRIVATE] > 0)
-                //for (unsigned short i = 0; i < real_recruits; ++i)
-                    owner.NewSoldiersAvailable(real_goods.people[JOB_PRIVATE]);
+                owner.NewSoldiersAvailable(real_goods.people[JOB_PRIVATE]);
 
 
         } break;

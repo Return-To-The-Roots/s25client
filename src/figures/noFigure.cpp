@@ -173,8 +173,11 @@ void noFigure::ActAtFirst()
             if(goal_->GetPos() == pos)
             {
                 gwg->RemoveFigure(this, pos);
-                static_cast<nobBaseWarehouse*>(goal_)->AddFigure(this);
+                assert(static_cast<nobBaseWarehouse*>(goal_));
+                // Reset goal before re-adding to wh
+                nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
                 goal_ = NULL;
+                wh->AddFigure(this);
             }
             else
                 // ansonsten ganz normal rausgehen
