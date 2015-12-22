@@ -273,6 +273,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     }
     else
     {
+        assert(dynamic_cast<noBaseBuilding*>(goal));
         static_cast<noBaseBuilding*>(goal)->GotWorker(job, fig);
     }
 

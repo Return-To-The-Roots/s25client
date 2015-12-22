@@ -1073,8 +1073,12 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
 /// Dasselbe für Menschen
 bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 {
-    // Evtl. muss die Ware gleich das Schiff nehmen ->
-    // dann zum Schiffsreservoir hinzufügen
+    // If the figure needs to take a ship, add it to the ships inventory
+
+    // If the goal is this building don't handle it
+    if(this == &goal)
+        return false;
+
     MapPoint next_harbor;
     if(gwg->FindHumanPathOnRoads(*this, goal, NULL, &next_harbor) == SHIP_DIR)
     {
