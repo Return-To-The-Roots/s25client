@@ -1126,8 +1126,10 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
                 // No or invalid path -> Store here
                 assert(nextDir == 0xFF);
                 (*it)->SetGoalToNULL();
+                AddDependentFigure(*it);
             }
-        }
+        }else
+            AddDependentFigure(*it); // No goal? We take it
         if ((*it)->HasNoGoal())
              AddFigure(*it, true);
     }
