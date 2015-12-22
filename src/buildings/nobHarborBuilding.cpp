@@ -1380,24 +1380,23 @@ nofDefender* nobHarborBuilding::ProvideDefender(nofAttacker* const attacker)
 /// People waiting for a ship have to examine their route if a road was destroyed
 void nobHarborBuilding::ExamineShipRouteOfPeople()
 {
-    for(std::list<FigureForShip>::iterator it = figures_for_ships.begin();
-            it != figures_for_ships.end();)
+    for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end();)
     {
+        noFigure* const fig = it->fig;
         unsigned char nextDir;
-        it->dest = it->fig->ExamineRouteBeforeShipping(nextDir);
+        it->dest = fig->ExamineRouteBeforeShipping(nextDir);
 
         if(nextDir == 0xff)
         {
             // No route found!
             // I.E. insert the worker in this harbor
-            noFigure* fig = it->fig;
             it = figures_for_ships.erase(it);
+            AddDependentFigure(fig);
             AddFigure(fig, false);
         }
         else if(nextDir != SHIP_DIR)
         {
             // Figure want to continue walking to its goal but not on ship anymore
-            noFigure* fig = it->fig;
             it = figures_for_ships.erase(it);
             this->AddLeavingFigure(fig);
         }
