@@ -468,6 +468,7 @@ void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>&
     state = STATE_GOTOHARBOR;
 
     goal_harbor_id = gwg->GetNode(hb->GetPos()).harbor_id;
+    assert(goal_harbor_id);
 
     // Route merken
     this->route_ = route;
@@ -866,6 +867,8 @@ bool noShip::IsAbleToFoundColony() const
     // Warten wir gerade?
     if(state == STATE_EXPEDITION_WAITING)
     {
+        // We must always have a goal harbor
+        assert(goal_harbor_id);
         // Ist der Punkt, an dem wir gerade ankern, noch frei?
         if(gwg->IsHarborPointFree(goal_harbor_id, player, seaId_))
             return true;
@@ -1049,8 +1052,11 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     switch (state)
     {
     default:
-        // Just reset goal
-        goal_harbor_id = 0;
+        // Just reset goal, but not for expeditions
+        if(!IsOnExpedition() && !IsOnExplorationExpedition())
+        {
+            goal_harbor_id = 0;
+        }
         return; // Skip the rest
     case noShip::STATE_TRANSPORT_LOADING:
     case noShip::STATE_TRANSPORT_UNLOADING:
@@ -1194,28 +1200,27 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
 {
     if(!lost)
         return;
-        // Liegt der Hafen auch am Meer von diesem Schiff?
-        if(!gwg->IsAtThisSea(hb->GetHarborPosID(), seaId_))
-            return;
+    // Liegt der Hafen auch am Meer von diesem Schiff?
+    if(!gwg->IsAtThisSea(hb->GetHarborPosID(), seaId_))
+        return;
 
-        //LOG.lprintf("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
-        home_harbor = goal_harbor_id = hb->GetHarborPosID();
-        lost = false;
+    //LOG.lprintf("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
+    home_harbor = goal_harbor_id = hb->GetHarborPosID();
+    lost = false;
 
-        StartDrivingToHarborPlace();
+    StartDrivingToHarborPlace();
 
-        switch(state)
-        {
-            case STATE_EXPLORATIONEXPEDITION_DRIVING:
-            case STATE_EXPEDITION_DRIVING:
-            case STATE_TRANSPORT_DRIVING:
-        case STATE_SEAATTACK_RETURN_DRIVING:
-            {
-                Driven();
-            } break;
-        default:
-            assert(false); // Das darf eigentlich nicht passieren
-            LOG.lprintf("Bug detected: Invalid state in NewHarborBuilt");
-            break;
-        }
+    switch(state)
+    {
+    case STATE_EXPLORATIONEXPEDITION_DRIVING:
+    case STATE_EXPEDITION_DRIVING:
+    case STATE_TRANSPORT_DRIVING:
+    case STATE_SEAATTACK_RETURN_DRIVING:
+        Driven();
+        break;
+    default:
+        assert(false); // Das darf eigentlich nicht passieren
+        LOG.lprintf("Bug detected: Invalid state in NewHarborBuilt");
+        break;
     }
+}
