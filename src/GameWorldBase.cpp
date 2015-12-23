@@ -1385,10 +1385,27 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapPoint pt,
     return 0;
 }
 
+/// Functor that returns true, when the owner of a point is set and different than the player
+struct IsPointOwnerDifferent
+{
+    typedef unsigned char result_type;
+    const GameWorldBase& gwb;
+    // Owner to compare. Note that owner=0 --> No owner => owner=player+1
+    const unsigned char cmpOwner;
+
+    IsPointOwnerDifferent(const GameWorldBase& gwb, const unsigned char player): gwb(gwb), cmpOwner(player + 1){}
+
+    bool operator()(const MapPoint pt) const
+    {
+        const unsigned char owner = gwb.GetNode(pt).owner;
+        return owner != 0 && owner != cmpOwner;
+    }
+};
+
 /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
 bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned char player, const unsigned short sea_id) const
 {
-    MapPoint coords(GetHarborPoint(harbor_id));
+    MapPoint hbPos(GetHarborPoint(harbor_id));
 
     // Befindet sich der Hafenpunkt auch an dem erforderlichen Meer?
     bool at_sea = false;
@@ -1405,25 +1422,14 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned c
         return false;
 
     // Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die Flagge im Spielergebiet liegen
-    MapPoint t3 = GetNeighbour(coords, 4);
-    if(GetNode(coords).owner != player + 1 || GetNode(t3).owner != player + 1)
+    MapPoint flagPos = GetNeighbour(hbPos, 4);
+    if(GetNode(hbPos).owner != player + 1 || GetNode(flagPos).owner != player + 1)
     {
-        for(MapCoord tx = GetXA(coords.x, coords.y, 0), r = 1; r <= 4; tx = GetXA(tx, coords.y, 0), ++r)
-        {
-            MapPoint t2(tx, coords.y);
-            for(unsigned i = 2; i < 8; ++i)
-            {
-                for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, i % 6), ++r2)
-                {
-                    unsigned char owner = GetNode(t2).owner;
-                    if(owner != 0 && owner != player + 1)
-                        return false;
-                }
-            }
-        }
+        if(CheckPointsInRadius(hbPos, 4, IsPointOwnerDifferent(*this, player), false))
+            return false;
     }
 
-    return (CalcBQ(coords, 0, false, false, true) == BQ_HARBOR);
+    return (CalcBQ(hbPos, 0, false, false, true) == BQ_HARBOR);
 }
 
 /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann

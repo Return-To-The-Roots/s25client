@@ -148,6 +148,13 @@ public:
         return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
     }
 
+    /// Returns true, if the IsValid functor returns true for any point in the given radius
+    /// If includePt is true, then the point itself is also checked
+    template<class T_IsValidPt>
+    inline bool
+    CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
+
+
     /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
@@ -431,6 +438,32 @@ GameWorldBase::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_Tra
         }
     }
     return result;
+}
+
+template<class T_IsValidPt>
+inline bool
+GameWorldBase::CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const
+{
+    if(includePt && isValid(pt))
+        return true;
+    MapPoint curStartPt = pt;
+    for(unsigned r = 1; r <= radius; ++r)
+    {
+        // Go one level/hull to the left
+        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
+        // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
+        MapPoint curPt = curStartPt;
+        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
+        {
+            for(unsigned step = 0; step < r; ++step)
+            {
+               if(isValid(curPt))
+                   return true;
+                curPt = GetNeighbour(curPt, Direction(i).toUInt());
+            }
+        }
+    }
+    return false;
 }
 
 #endif // GameWorldBase_h__
