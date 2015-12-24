@@ -1033,7 +1033,7 @@ MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) con
 {
     MapPoint res;
     
-    switch (dir)
+    switch (boost::native_value(dir))
     {
     case Direction::WEST:
         res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
