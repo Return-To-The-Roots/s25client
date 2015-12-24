@@ -670,21 +670,21 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
     soldier->ResetHome();
     em->AddToKillList(soldier);
 
-    if(!IsCaptured() && !IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
+    assert(soldier->GetPlayer() == player);
+
+    // Returned home
+    if(soldier == defender_)
+        NoDefender();
+    else if(helpers::contains(troops_on_mission, soldier))
     {
-        // Returned home
-        if(soldier == defender_)
-            NoDefender();
-        else
-        {
-            assert(helpers::contains(troops_on_mission, soldier));
-            troops_on_mission.remove(soldier);
-        }
-        RegulateTroops();
-    }else
+        troops_on_mission.remove(soldier);
+    }else if(IsCaptured() || IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
     {
         assert(dynamic_cast<nofAttacker*>(soldier));
+        return;
     }
+    // Do only if not capturing
+    RegulateTroops();
 }
 
 void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
