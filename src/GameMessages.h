@@ -81,7 +81,7 @@ class GameMessage_Server_Type: public GameMessage
         GameMessage_Server_Type(const ServerType type,
                                 const std::string& version) : GameMessage(NMS_SERVER_TYPE, 0xFF)
         {
-            LOG.write(">>> NMS_SERVER_Type(%d, %s)\n", static_cast<int>(type), version.c_str());
+            LOG.write(">>> NMS_SERVER_Type(%d, %s)\n", boost::underlying_cast<int>(type), version.c_str());
 
             PushUnsignedShort(boost::underlying_cast<unsigned short>(type));
             PushString(version);
@@ -100,7 +100,7 @@ class GameMessage_Server_Type: public GameMessage
             {
                 version = PopString();
 
-                LOG.write("<<< NMS_SERVER_Type(%d, %s)\n", static_cast<int>(type), version.c_str());
+                LOG.write("<<< NMS_SERVER_Type(%d, %s)\n", boost::underlying_cast<int>(type), version.c_str());
                 GetInterface(callback)->OnNMSServerType(*this);
             }
             else
