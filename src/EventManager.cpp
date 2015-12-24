@@ -299,7 +299,7 @@ void EventManager::RemoveEvent(EventPointer& ep)
     ep = NULL;
 }
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #   include "figures/noFigure.h"
 #   include "figures/nofSoldier.h"
 #   include "Ware.h"
