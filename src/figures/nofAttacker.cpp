@@ -597,8 +597,10 @@ void nofAttacker::ReachedDestination()
             assert(dynamic_cast<nobMilitary*>(attacked_goal));
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
             assert(goal->IsFarAwayCapturer(this));
-            goal->FarAwayCapturerReachedGoal(this);
+            // Start walking first so the flag is free
             StartWalking(1);
+            // Then tell the building
+            goal->FarAwayCapturerReachedGoal(this);
             return;
         }
 
@@ -665,6 +667,15 @@ void nofAttacker::ReachedDestination()
             }
         }
         FaceDir(dir);
+        if(attacked_goal->GetPlayer() == player)
+        {
+            // Building already captured? -> Then we might be a far-away-capturer
+            // -> Tell the building, that we are here
+            assert(dynamic_cast<nobMilitary*>(attacked_goal));
+            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            if(goal->IsFarAwayCapturer(this))
+                goal->FarAwayCapturerReachedGoal(this);
+        }
     }
 }
 
@@ -756,6 +767,7 @@ bool nofAttacker::AttackFlag(nofDefender* defender)
     }
     return false;
 }
+
 void nofAttacker::AttackFlag()
 {
     // "Normal" zur Flagge laufen

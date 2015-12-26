@@ -86,6 +86,8 @@ class nobMilitary : public nobBaseMilitary
         void PrepareUpgrading();
         /// Gets the total amount of soldiers (ordered, stationed, on mission)
         size_t GetTotalSoldiers() const;
+        /// Looks for the next far-away-capturer waiting around and calls it to the flag
+        void CallNextFarAwayCapturer(nofAttacker* attacker);
 
         friend class SerializedGameData;
         friend class BuildingFactory;
@@ -183,8 +185,9 @@ class nobMilitary : public nobBaseMilitary
         void StopCapturing() { assert(capturing_soldiers==0); capturing = false; }
         /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
         void CapturingSoldierArrived();
-        /// A far-away capturer arrived at the building/flag and starts the capturing
+        /// A far-away capturer arrived around the building and starts waiting
         void FarAwayCapturerReachedGoal(nofAttacker* attacker);
+
         bool IsFarAwayCapturer(nofAttacker* attacker){ return helpers::contains(far_away_capturers, attacker); }
 
         /// Stoppt/Erlaubt Goldzufuhr (visuell)

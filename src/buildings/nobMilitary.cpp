@@ -37,7 +37,7 @@
 #include "nobBaseWarehouse.h"
 
 #include "WindowManager.h"
-
+#include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
 #include "MapGeometry.h"
 #include "ai/AIEventManager.h"
@@ -1134,7 +1134,7 @@ void nobMilitary::ToggleCoins()
 
 unsigned nobMilitary::CalcCoinsPoints()
 {
-    // Will ich überhaupos Goldmünzen, wenn nich, sofort raus
+    // Will ich überhaupt Goldmünzen, wenn nich, sofort raus
     if(!WantCoins())
         return 0;
 
@@ -1166,7 +1166,7 @@ bool nobMilitary::WantCoins()
 
 void nobMilitary::SearchCoins()
 {
-    // Brauche ich überhaupos Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
+    // Brauche ich überhaupt Goldmünzen bzw. hab ich vielleicht schon ein Event angemeldet?
     if(WantCoins() && !goldorder_event)
     {
         // Lagerhaus mit Goldmünzen suchen
@@ -1312,12 +1312,41 @@ void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
     assert(IsFarAwayCapturer(attacker));
     if(IsCaptured())
     {
-        // If we are still capturing just add this soldier to the capturing ones
-        capturing_soldiers++;
+        // If we are still capturing just re-add this soldier to the aggressors
+        // one of the currently capturing soldiers will notify him
         far_away_capturers.remove(attacker);
         aggressors.push_back(attacker);
+    }else
+    {
+        // Otherwise we are in a kind of "normal" working state of the building and will just add him when he gets in
+        // Call the next one
+        CallNextFarAwayCapturer(attacker);
     }
-    // Otherwise we are in a kind of "normal" working state of the building and will just add him when he gets in
 }
 
+void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
+{
+    const MapPoint flagPos = GetFlag()->GetPos();
+    unsigned minLength = std::numeric_limits<unsigned>::max();
+    nofAttacker* bestAttacker = NULL;
+    for(std::list<nofAttacker*>::iterator it = far_away_capturers.begin(); it != far_away_capturers.end(); ++it)
+    {
+        // Skip us and possible capturers at the building
+        if(*it == attacker || (*it)->GetPos() == pos)
+            continue;
+        if(!(*it)->IsAttackerReady())
+            continue;
+        assert((*it)->GetPos() != flagPos); // Impossible. This should be the current attacker
+        unsigned length;
+        if(gwg->FindHumanPath((*it)->GetPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length) == INVALID_DIR)
+            continue;
+        if(length < minLength)
+        {
+            minLength = length;
+            bestAttacker = *it;
+        }
+    }
+    if(bestAttacker)
+        bestAttacker->AttackFlag();
+}
 

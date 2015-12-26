@@ -568,7 +568,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     possibleIds.push_back(WARE_TYPES_COUNT + i);
             }
 
-            // Gibts überhaupos welche?
+            // Gibts überhaupt welche?
             if(possibleIds.empty())
                 // ansonsten gleich tschüss
                 return;
@@ -706,7 +706,7 @@ bool nobBaseWarehouse::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goal)
 {
     assert(goal);
-    // Ware überhaupos hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
+    // Ware überhaupt hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
     if(!real_goods.goods[good])
     {
         LOG.lprintf("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n", static_cast<unsigned>(good));

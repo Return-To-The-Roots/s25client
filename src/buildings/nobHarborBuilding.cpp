@@ -1307,7 +1307,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
  */
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 {
-    // Ist überhaupos eine Expedition im Gang und ein entsprechender Warentyp
+    // Ist überhaupt eine Expedition im Gang und ein entsprechender Warentyp
     if(!expedition.active || !(type == GD_BOARDS || type == GD_STONES))
         return 0;
     
