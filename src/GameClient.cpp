@@ -2204,6 +2204,7 @@ void GameClient::LoadGGS()
 
 void GameClient::ToggleHumanAIPlayer()
 {
+    assert(!GAMECLIENT.IsReplayModeOn());
     if (human_ai)
     {
         delete human_ai;

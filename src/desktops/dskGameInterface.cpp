@@ -620,7 +620,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 #ifndef NDEBUG
         case KT_F10:
         {
-	        GAMECLIENT.ToggleHumanAIPlayer();
+            if(GAMECLIENT.GetState() == GameClient::CS_GAME && !GAMECLIENT.IsReplayModeOn())
+	            GAMECLIENT.ToggleHumanAIPlayer();
         } return true;
 #endif
         case KT_F11: // Music player (midi files)
