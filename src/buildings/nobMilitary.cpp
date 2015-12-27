@@ -71,7 +71,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
         case BLD_GUARDHOUSE: size = 1; break;
         case BLD_WATCHTOWER: size = 2; break;
         case BLD_FORTRESS: size = 3; break;
-        default: size = 0xFF; break;
+        default: assert(false); size = 0xFF; break;
     }
 
     LookForEnemyBuildings();
@@ -108,7 +108,6 @@ size_t nobMilitary::GetTotalSoldiers() const
 
 void nobMilitary::Destroy_nobMilitary()
 {
-
     // Bestellungen stornieren
     CancelOrders();
 
@@ -209,6 +208,12 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);
+
+    if(capturing && capturing_soldiers == 0 && aggressors.empty())
+    {
+        LOG.lprintf("Bug in savegame detected: Building at (%d,%d) beeing captured has no capturers. Trying to fix this...\n", pos.x, pos.y);
+        StopCapturing();
+    }
 }
 
 

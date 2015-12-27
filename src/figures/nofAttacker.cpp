@@ -259,10 +259,10 @@ void nofAttacker::Walked()
                     // mich zum Gebäude hinzufügen und von der Karte entfernen
                     attacked_goal->AddActiveSoldier(this);
                     RemoveFromAttackedGoal();
+                    // Tell that we arrived and probably call other capturers
+                    goal->CapturingSoldierArrived();
                     gwg->RemoveFigure(this, pos);
-                    // ggf. weitere Soldaten rufen, damit das Gebäude voll wird
-                    assert(goal->GetPlayer() == player);
-                    goal->NeedOccupyingTroops();
+
                 }
                 // oder ein Hauptquartier oder Hafen?
                 else
@@ -810,21 +810,22 @@ void nofAttacker::CapturingWalking()
         building = attacked_goal;
         // und zum Gebäude hinzufügen
         attacked_goal->AddActiveSoldier(this);
+        // save goal for below (reset in RemoveFromAttackedGoal)
+        nobBaseMilitary* tmpGoal = attacked_goal;
+        // außerdem aus der Angreiferliste entfernen
+        RemoveFromAttackedGoal();
 
         // Ein erobernder Soldat weniger
-        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+        if(tmpGoal->GetBuildingType() >= BLD_BARRACKS && tmpGoal->GetBuildingType() <= BLD_FORTRESS)
         {
-            assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            assert(dynamic_cast<nobMilitary*>(tmpGoal));
+            nobMilitary* goal = static_cast<nobMilitary*>(tmpGoal);
             // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
             if(!goal->IsFarAwayCapturer(this))
                 goal->CapturingSoldierArrived();
             else
                 assert(goal->GetPlayer() == player);
         }
-
-        // außerdem aus der Angreiferliste entfernen
-        RemoveFromAttackedGoal();
     }
     // oder zumindest schonmal an der Flagge?
     else if(pos == attFlagPos)
