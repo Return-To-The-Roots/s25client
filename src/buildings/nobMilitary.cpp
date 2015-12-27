@@ -1015,20 +1015,14 @@ void nobMilitary::Capture(const unsigned char new_owner)
             ++it;
     }
 
-    // Soldat, der zum Erobern reinläuft, ist nun drinne --> Anzahl der erobernden Soldaten entsprechend verringern
-    assert(capturing_soldiers > 0);
-    --capturing_soldiers;
-
     // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
     gwg->MilitaryBuildingCaptured(pos, player);
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
     if(GAMECLIENT.GetPlayerID() == old_player)
-        GAMECLIENT.SendPostMessage(
-            new ImagePostMsgWithLocation(_("Military building lost"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
+        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building lost"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
     if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(
-            new ImagePostMsgWithLocation(_("Military building captured"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
+        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building captured"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
 
     // ggf. Fenster schließen vom alten Spieler
     gwg->ImportantObjectDestroyed(pos);
