@@ -334,7 +334,7 @@ void GameClient::StartGame(const unsigned int random_init)
     gw = new GameWorld();
     gw->SetPlayers(&players);
     em = new EventManager();
-    GameObject::SetPointers(gw, em, &players);
+    GameObject::SetPointers(gw, em);
     for(unsigned i = 0; i < players.getCount(); ++i)
         dynamic_cast<GameClientPlayer*>(players.getElement(i))->SetGameWorldPointer(gw);
 
@@ -430,7 +430,7 @@ void GameClient::RealStart()
  */
 void GameClient::ExitGame()
 {
-    GameObject::SetPointers(NULL, NULL, NULL);
+    GameObject::SetPointers(NULL, NULL);
     // Spielwelt zerstören
     delete gw;
     delete em;

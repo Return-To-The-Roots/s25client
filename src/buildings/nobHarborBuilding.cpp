@@ -858,7 +858,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
         }
 
         // Keinen gefunden, also müssen wir noch einen bestellen
-        players->getElement(player)->AddJobWanted(JOB_BUILDER, this);
+        gwg->GetPlayer(player).AddJobWanted(JOB_BUILDER, this);
     }
 
     // Ist das ein Erkunder und brauchen wir noch welche?
@@ -876,7 +876,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
 
         // Wenn nicht genug Erkunder mehr kommen, müssen wir einen neuen bestellen
         if(exploration_expedition.scouts + scouts_coming < SCOUTS_EXPLORATION_EXPEDITION)
-            players->getElement(player)->AddJobWanted(JOB_SCOUT, this);
+            gwg->GetPlayer(player).AddJobWanted(JOB_SCOUT, this);
     }
 
 
@@ -902,7 +902,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     for(unsigned short sea_id = 0; sea_id < 6; ++sea_id)
     {
         if(sea_ids[sea_id] != 0)
-            players->getElement(player)->GetHarborBuildings(harbor_buildings, sea_ids[sea_id]);
+            gwg->GetPlayer(player).GetHarborBuildings(harbor_buildings, sea_ids[sea_id]);
     }
 
     for(unsigned i = 0; i < harbor_buildings.size(); ++i)
@@ -1036,12 +1036,12 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 void nobHarborBuilding::OrderShip()
 {
     unsigned needed = GetNeededShipsCount();
-    unsigned ordered = players->getElement(player)->GetShipsToHarbor(this);
+    GameClientPlayer& owner = gwg->GetPlayer(player);    
 
     // Order (possibly) remaining ships
-    for(;ordered < needed; ++ordered)
+    for(unsigned ordered = owner.GetShipsToHarbor(this); ordered < needed; ++ordered)
     {
-        players->getElement(player)->OrderShip(this);
+        owner.OrderShip(this);
     }
 }
 

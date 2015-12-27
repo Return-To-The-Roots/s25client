@@ -238,7 +238,7 @@ void nofActiveSoldier::ExpelEnemies()
         noFigure* fig = *it;
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)
-        if(!players->getElement(player)->IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())
+        if(!gwg->GetPlayer(player).IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())
         {
             // Then he should start wandering around
             fig->Abrogate();

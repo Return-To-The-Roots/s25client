@@ -45,7 +45,6 @@ unsigned int GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
 EventManager* GameObject::em = NULL;
-GameClientPlayerList* GameObject::players = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

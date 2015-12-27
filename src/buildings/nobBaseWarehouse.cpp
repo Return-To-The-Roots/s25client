@@ -641,7 +641,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     storing_wanted = true;
 
                     // Lagerhaus suchen, das diese Ware enthält
-                    nobBaseWarehouse* wh = players->getElement(player)->FindWarehouse(*this, FW::Condition_StoreAndDontWantWare, NULL, false, (void*)&i, false);
+                    nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantWare, NULL, false, (void*)&i, false);
                     // Gefunden?
                     if(wh)
                     {
@@ -668,7 +668,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                         storing_wanted = true;
 
                         // Lagerhaus suchen, das diesen Job enthält
-                        nobBaseWarehouse* wh = players->getElement(player)->FindWarehouse(*this, FW::Condition_StoreAndDontWantFigure, NULL, false, (void*)&i, false);
+                        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantFigure, NULL, false, (void*)&i, false);
                         // Gefunden?
                         if(wh)
                         {

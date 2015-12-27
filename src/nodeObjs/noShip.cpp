@@ -100,7 +100,7 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     gwg->AddFigure(this, pos);
 
     // Schiff registrieren lassen
-    players->getElement(player)->RegisterShip(this);
+    gwg->GetPlayer(player).RegisterShip(this);
 }
 
 void noShip::Serialize(SerializedGameData& sgd) const
@@ -149,7 +149,7 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id) :
 void noShip::Destroy()
 {
     // Schiff wieder abmelden
-    players->getElement(player)->RemoveShip(this);
+    gwg->GetPlayer(player).RemoveShip(this);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
@@ -303,14 +303,14 @@ void noShip::HandleEvent(const unsigned int id)
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
                 Goods goods;
-                unsigned char nation = players->getElement(player)->nation;
+                unsigned char nation = gwg->GetPlayer(player).nation;
                 goods.goods[GD_BOARDS] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
                 goods.goods[GD_STONES] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
                 goods.people[JOB_BUILDER] = 1;
                 static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
                 // Wieder idlen und ggf. neuen Job suchen
                 StartIdling();
-                players->getElement(player)->GetJobForShip(this);
+                gwg->GetPlayer(player).GetJobForShip(this);
             }
             else
             {
@@ -335,7 +335,7 @@ void noShip::HandleEvent(const unsigned int id)
                 static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
                 // Wieder idlen und ggf. neuen Job suchen
                 StartIdling();
-                players->getElement(player)->GetJobForShip(this);
+                gwg->GetPlayer(player).GetJobForShip(this);
             }
             else
             {
@@ -373,7 +373,7 @@ void noShip::HandleEvent(const unsigned int id)
                 {
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
-                    players->getElement(player)->GetJobForShip(this);
+                    gwg->GetPlayer(player).GetJobForShip(this);
                 }
             }
             else
@@ -429,7 +429,7 @@ void noShip::Driven()
     if(enemy_territory_discovered.isValid())
     {
         // Send message if necessary
-        if(players->getElement(player)->ShipDiscoveredHostileTerritory(enemy_territory_discovered) && player == GAMECLIENT.GetPlayerID())
+        if(gwg->GetPlayer(player).ShipDiscoveredHostileTerritory(enemy_territory_discovered) && player == GAMECLIENT.GetPlayerID())
             GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
     }
 
@@ -645,7 +645,7 @@ void noShip::FoundColony()
         // Dann idlen wir wieder
         StartIdling();
         // Neue Arbeit suchen
-        players->getElement(player)->GetJobForShip(this);
+        gwg->GetPlayer(player).GetJobForShip(this);
     }
     else //colony founding FAILED - notify ai
         GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
@@ -1008,7 +1008,7 @@ void noShip::FindUnloadGoal(State newState)
     state = newState;
     // Das Schiff muss einen Notlandeplatz ansteuern
     // Neuen Hafen suchen
-    if(players->getElement(player)->FindHarborForUnloading(this, pos, &goal_harbor_id, &route_, NULL))
+    if(gwg->GetPlayer(player).FindHarborForUnloading(this, pos, &goal_harbor_id, &route_, NULL))
     {
         curRouteIdx = 0;
         home_harbor = goal_harbor_id; // To allow unloading here
@@ -1140,7 +1140,7 @@ void noShip::SeaAttackerWishesNoReturn()
         {
             // Wenn keine Soldaten mehr da sind können wir auch erstmal idlen
             StartIdling();
-            players->getElement(player)->GetJobForShip(this);
+            gwg->GetPlayer(player).GetJobForShip(this);
         }
     }
 

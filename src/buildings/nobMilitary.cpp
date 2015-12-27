@@ -823,7 +823,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigne
     // Militäreinstellungen zum Angriff eingestellt wurden
     unsigned short soldiers_count =
         (GetTroopsCount() > 1) ?
-        ((GetTroopsCount() - 1) * players->getElement(player_attacker)->militarySettings_[3] / 5) : 0;
+        ((GetTroopsCount() - 1) * gwg->GetPlayer(player_attacker).militarySettings_[3] / 5) : 0;
 
     unsigned int distance = gwg->CalcDistance(pos, dest);
 

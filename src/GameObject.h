@@ -26,7 +26,6 @@
 class SerializedGameData;
 class GameWorldGame;
 class EventManager;
-class GameClientPlayerList;
 
 /// Basisklasse für alle Spielobjekte
 class GameObject
@@ -58,8 +57,7 @@ class GameObject
         virtual GO_Type GetGOT(void) const = 0;
 
         /// Setzt Pointer auf GameWorld und EventManager
-        static void SetPointers(GameWorldGame* const gameWorld, EventManager* const eventManager, GameClientPlayerList* playerList)
-        { GameObject::gwg = gameWorld; GameObject::em = eventManager; GameObject::players = playerList; }
+        static void SetPointers(GameWorldGame* const gameWorld, EventManager* const eventManager){ GameObject::gwg = gameWorld; GameObject::em = eventManager; }
         /// setzt den Objekt und Objekt-ID-Counter zurück
         static void ResetCounter(void) { objIdCounter_ = 1; objCounter_ = 0; };
         /// Gibt Anzahl Objekte zurück.
@@ -77,12 +75,9 @@ class GameObject
         /// Serialisierungsfunktion.
         void Serialize_GameObject(SerializedGameData& sgd) const {}
 
-    protected:
-
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;
         static EventManager* em;
-        static GameClientPlayerList* players;
 
     private:
         unsigned int objId; ///< eindeutige Objekt-ID
