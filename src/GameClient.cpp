@@ -1703,8 +1703,6 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
 
-    //players.resize(replayinfo.replay.players.getCount());
-
     // Spielerdaten
     for(unsigned char i = 0; i < replayinfo.replay.GetPlayerCount(); ++i)
     {
@@ -1719,6 +1717,31 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             players[i].nation = player.nation;
             players[i].color = player.color;
             players[i].team = Team(player.team);
+        }
+    }
+
+    bool playerFound = false;
+    // Find a player to spectate from
+    // First find a human player
+    for(unsigned char i = 0; i < players.getCount(); ++i)
+    {
+        if(players[i].ps == PS_OCCUPIED)
+        {
+            playerId_ = i;
+            playerFound = true;
+            break;
+        }
+    }
+    if(!playerFound)
+    {
+        // If no human found, take the first AI
+        for(unsigned char i = 0; i < players.getCount(); ++i)
+        {
+            if(players[i].ps == PS_KI)
+            {
+                playerId_ = i;
+                break;
+            }
         }
     }
 
@@ -1740,8 +1763,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             // Mapdaten auslesen und entpacken
             boost::interprocess::unique_ptr<char, Deleter<char[]> > real_data(new char[replayinfo.replay.map_length]);
 
-            int err;
-            if( (err = BZ2_bzBuffToBuffDecompress(real_data.get(), &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data, replayinfo.replay.map_zip_length, 0, 0)) != BZ_OK)
+            int err = BZ2_bzBuffToBuffDecompress(real_data.get(), &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data, replayinfo.replay.map_zip_length, 0, 0);
+            if(err != BZ_OK)
             {
                 LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
                 Stop();
