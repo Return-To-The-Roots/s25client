@@ -989,6 +989,7 @@ bool nofAttacker::IsBlockingRoads() const
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
 void nofAttacker::InformTargetsAboutCancelling()
 {
+    nofActiveSoldier::InformTargetsAboutCancelling();
     // Ziel Bescheid sagen, falls es das noch gibt
     if(attacked_goal)
         RemoveFromAttackedGoal();

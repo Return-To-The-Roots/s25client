@@ -132,7 +132,7 @@ class nofActiveSoldier : public nofSoldier
         virtual void HandleDerivedEvent(const unsigned int id);
 
         /// Informs the different things that we are not coming anymore
-        virtual void InformTargetsAboutCancelling() = 0;
+        virtual void InformTargetsAboutCancelling();
         /// Is called when our home military building was destroyed
         virtual void HomeDestroyed() = 0;
         /// When the soldier is still hanging in the going-out waiting queue in the home military building

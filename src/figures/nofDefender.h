@@ -37,8 +37,6 @@ class nofDefender : public nofActiveSoldier
 
         /// wenn man gelaufen ist
         void Walked();
-        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-        void InformTargetsAboutCancelling();
 
         /// The derived classes regain control after a fight of nofActiveSoldier
         void FreeFightEnded();

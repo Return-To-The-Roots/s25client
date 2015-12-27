@@ -89,12 +89,10 @@ void nofDefender::Walked()
                 state = STATE_FIGUREWORK;
                 StartWandering();
                 Wander();
-
                 return;
             }
 
             // Zu Hause angekommen
-
             // Ist evtl. wieder ein Angreifer in der Zwischenzeit an der Fahne angekommen?
             if(attacker)
             {
@@ -129,26 +127,19 @@ void nofDefender::HomeDestroyed()
         case STATE_DEFENDING_WAITING:
         {
             // Hier muss sofort reagiert werden, da man steht
-
-            attacker = 0;
-
+            attacker = NULL;
             // Rumirren
             state = STATE_FIGUREWORK;
             StartWandering();
             Wander();
-
-
-
         } break;
         case STATE_DEFENDING_WALKINGTO:
         case STATE_DEFENDING_WALKINGFROM:
         {
-            attacker = 0;
-
+            attacker = NULL;
             // Rumirren
             StartWandering();
             state = STATE_FIGUREWORK;
-
         } break;
         case STATE_FIGHTING:
         {
@@ -162,7 +153,7 @@ void nofDefender::HomeDestroyed()
 
 void nofDefender::HomeDestroyedAtBegin()
 {
-    building = 0;
+    building = NULL;
 
     state = STATE_FIGUREWORK;
 
@@ -194,7 +185,8 @@ void nofDefender::WonFighting()
     }
 
     // Neuen Angreifer rufen
-    if( (attacker = building->FindAttackerNearBuilding()) )
+    attacker = building->FindAttackerNearBuilding();
+    if(attacker)
     {
         // Ein Angreifer gefunden, dann warten wir auf ihn, bis er kommt
         state = STATE_DEFENDING_WAITING;
@@ -204,8 +196,6 @@ void nofDefender::WonFighting()
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
         StartWalking(1);
-        // Angreifer auf 0 setzen, er ist ja tot
-        attacker = 0;
     }
 }
 
@@ -234,21 +224,14 @@ void nofDefender::LostFighting()
 void nofDefender::AttackerArrested()
 {
     // Neuen Angreifer suchen
-    if(!(attacker = building->FindAttackerNearBuilding()))
+    attacker = building->FindAttackerNearBuilding();
+    if(!attacker)
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
         StartWalking(1);
-        // Angreifer auf 0 setzen, er ist ja tot
-        attacker = 0;
     }
 }
-
-/// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-void nofDefender::InformTargetsAboutCancelling()
-{
-}
-
 
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofDefender::FreeFightEnded()

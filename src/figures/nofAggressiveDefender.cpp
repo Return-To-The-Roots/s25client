@@ -310,16 +310,13 @@ void nofAggressiveDefender::AttackerLost()
 
 void nofAggressiveDefender::NeedForHomeDefence()
 {
-    // Angreifer Bescheid sagen
-    attacker = NULL;
-
-    // Ziel Bescheid sagen
-    CancelAtAttackedBld();
+    InformTargetsAboutCancelling();
 }
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
+void nofAggressiveDefender::InformTargetsAboutCancelling()
 {
+    nofActiveSoldier::InformTargetsAboutCancelling();
     // Angreifer Bescheid sagen
     attacker = NULL;
     // Ziel Bescheid sagen

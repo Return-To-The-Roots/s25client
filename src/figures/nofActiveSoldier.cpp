@@ -253,7 +253,6 @@ void nofActiveSoldier::ExpelEnemies()
     }
 }
 
-
 /// Handle walking for nofActiveSoldier speciefic sates
 void nofActiveSoldier::Walked()
 {
@@ -266,12 +265,11 @@ void nofActiveSoldier::Walked()
 
 }
 
-
-
 /// Looks for enemies nearby which want to fight with this soldier
 /// Returns true if it found one
 bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 {
+    assert(enemy == NULL);
     enemy = NULL;
 
     // Get all points in a radius of 2
@@ -369,7 +367,7 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // Is the fighting point still valid (could be another fight there already e.g.)?
             // And the enemy still on the way?
-            if (!gwg->ValidPointForFighting(pos, false,this) || !(enemy->GetState() == STATE_MEETENEMY))
+            if (!gwg->ValidPointForFighting(pos, false,this) || enemy->GetState() != STATE_MEETENEMY)
             {
                 // No
                 // Abort the whole fighting fun with the enemy
@@ -381,7 +379,7 @@ void nofActiveSoldier::MeetingEnemy()
             // Spot is still ok, let's wait for the enemy
             else
             {
-                //enemy = NULL;
+                assert(enemy->enemy == this);
                 state = STATE_WAITINGFORFIGHT;
                 return;
             }
@@ -410,6 +408,15 @@ void nofActiveSoldier::MeetingEnemy()
 void nofActiveSoldier::FreeFightEnded()
 {
     enemy = NULL;
+}
+
+void nofActiveSoldier::InformTargetsAboutCancelling()
+{
+    if(enemy)
+    {
+        enemy->FreeFightEnded();
+        enemy = NULL;
+    }
 }
 
 /// Determines if this soldier is ready for a spontaneous  fight
