@@ -239,7 +239,7 @@ void nofActiveSoldier::ExpelEnemies()
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)
         if(!players->getElement(player)->IsAlly(fig->GetPlayer()) &&
-                !(fig->GetJobType() >= JOB_PRIVATE && fig->GetJobType() <= JOB_GENERAL)
+                !fig->IsSoldier()
                 && fig->IsWalkingOnRoad())
         {
             // Then he should start wandering around

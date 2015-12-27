@@ -158,6 +158,21 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id) : noMovable(s
     }
 }
 
+bool noFigure::IsSoldier() const
+{
+    switch (job_)
+    {
+    case JOB_PRIVATE:
+    case JOB_PRIVATEFIRSTCLASS:
+    case JOB_SERGEANT:
+    case JOB_OFFICER:
+    case JOB_GENERAL:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
 
 void noFigure::ActAtFirst()
 {
@@ -726,8 +741,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
     wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), WANDER_WAY_MAX - WANDER_WAY_MIN);
     // Soldaten sind härter im Nehmen
-    bool is_soldier = (job_ >= JOB_PRIVATE && job_ <= JOB_GENERAL);
-    wander_tryings = is_soldier ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
+    wander_tryings = IsSoldier() ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
 
     // Wenn wir stehen, zusätzlich noch loslaufen!
     if(waiting_for_free_node)
@@ -736,28 +750,6 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
         Wander();
     }
 }
-
-/*void noFigure::StartWanderingFailedTrade(const unsigned burned_wh_id)
-{
-    fs = FS_WANDER;
-    cur_rs = 0;
-    goal = 0;
-    rs_pos = 0;
-    this->burned_wh_id = burned_wh_id;
-    // eine bestimmte Strecke rumirren und dann eine Flagge suchen
-    // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
-    wander_way = WANDER_WAY_MIN + RANDOM.Rand(__FILE__,__LINE__,obj_id,WANDER_WAY_MAX-WANDER_WAY_MIN);
-    // Soldaten sind härter im Nehmen
-    bool is_soldier = (job >= JOB_PRIVATE && job <= JOB_GENERAL);
-    wander_tryings = is_soldier ? WANDER_TRYINGS_SOLDIERS : WANDER_TRYINGS;
-
-    // Wenn wir stehen, zusätzlich noch loslaufen!
-    if(waiting_for_free_node)
-    {
-        waiting_for_free_node = false;
-        WanderFailedTrade();
-    }
-}*/
 
 struct Point2Flag{
     typedef noFlag* result_type;
@@ -796,8 +788,7 @@ void noFigure::Wander()
     if(!wander_way)
     {
         // Soldaten sind härter im Nehmen
-        const bool is_soldier = (job_ >= JOB_PRIVATE && job_ <= JOB_GENERAL);
-        const unsigned short wander_radius = is_soldier ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
+        const unsigned short wander_radius = IsSoldier() ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags = gwg->GetPointsInRadius<0>(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));

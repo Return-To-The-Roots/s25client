@@ -260,10 +260,8 @@ void iwShip::DrawCargo()
             orderedFigures[i]--;
 
             unsigned job_bobs_id = JOB_CONSTS[i].jobs_bob_id;
-            if(i >= JOB_PRIVATE && i <= JOB_GENERAL)
-                job_bobs_id = 30 + NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player).nation] * 6 + i - JOB_PRIVATE;
-            else if(i == JOB_SCOUT)
-                job_bobs_id = 35 + NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player).nation] * 6;
+            if((i >= JOB_PRIVATE && i <= JOB_GENERAL) || (i == JOB_SCOUT))
+                job_bobs_id += NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player).nation] * 6;
 
             if (i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->Draw(x, y);

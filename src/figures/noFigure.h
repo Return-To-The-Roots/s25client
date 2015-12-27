@@ -153,6 +153,8 @@ class noFigure : public noMovable
         void InitializeRoadWalking(const RoadSegment* const road, const unsigned short rs_pos, const bool rs_dir);
         /// Gibt Job-Typ zurück
         Job GetJobType() const { return job_; }
+        /// Returns true if this is a soldier (they get some special handling at some points)
+        bool IsSoldier() const;
         /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
         void DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat);
         /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
