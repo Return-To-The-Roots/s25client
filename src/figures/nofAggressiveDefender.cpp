@@ -330,6 +330,7 @@ void nofAggressiveDefender::InformTargetsAboutCancelling() //-V524
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofAggressiveDefender::FreeFightEnded()
 {
+    nofActiveSoldier::FreeFightEnded();
     // Continue with normal walking towards our goal
     state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
 }

@@ -305,8 +305,11 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 	if(excludedOwner==255)
 	{
 		if(!GetFightSpotNear(enemy, &fightSpot_))
+        {
 			// No success? Then no fight
+            enemy = NULL;
 			return false;
+        }
 	}
 	else//we have an excluded owner for our new enemy and that only happens in ffa situations when we won against the last defender so our fightspot is the exact location we have right now
 	{
@@ -371,7 +374,6 @@ void nofActiveSoldier::MeetingEnemy()
                 // No
                 // Abort the whole fighting fun with the enemy
                 enemy->FreeFightEnded();
-                enemy = NULL;
 
                 FreeFightEnded();
                 Walked();
@@ -397,7 +399,6 @@ void nofActiveSoldier::MeetingEnemy()
         {
             // qx: Couldnt find a way from current location to fighting spot -> cancel fight (Fix for #1189150)
             enemy->FreeFightEnded();
-            enemy = NULL;
             FreeFightEnded();
             Walked();
         }
@@ -406,6 +407,10 @@ void nofActiveSoldier::MeetingEnemy()
 
 }
 
+void nofActiveSoldier::FreeFightEnded()
+{
+    enemy = NULL;
+}
 
 /// Determines if this soldier is ready for a spontaneous  fight
 bool nofActiveSoldier::IsReadyForFight() const

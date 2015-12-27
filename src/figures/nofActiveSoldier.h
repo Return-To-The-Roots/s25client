@@ -97,7 +97,7 @@ class nofActiveSoldier : public nofSoldier
 		/// increase rank (used by addon CombatPromotion)
 		void IncreaseRank();
         /// The derived classes regain control after a fight of nofActiveSoldier
-        virtual void FreeFightEnded() = 0;
+        virtual void FreeFightEnded();
 
     private:
 

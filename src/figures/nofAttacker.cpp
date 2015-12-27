@@ -1129,6 +1129,7 @@ void nofAttacker::CancelSeaAttack()
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofAttacker::FreeFightEnded()
 {
+    nofActiveSoldier::FreeFightEnded();
     // Continue with normal walking towards our goal
     state = STATE_ATTACKING_WALKINGTOGOAL;
 }

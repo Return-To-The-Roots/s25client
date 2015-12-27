@@ -255,4 +255,5 @@ void nofDefender::FreeFightEnded()
 {
     // This is not supposed to happen
     assert(false);
+    nofActiveSoldier::FreeFightEnded();
 }
