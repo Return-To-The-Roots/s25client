@@ -74,27 +74,19 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
     :   noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(0),
         rs_pos(0), rs_dir(0), on_ship(false), goal_(goal), waiting_for_free_node(false),
         flagPos_(0xFFFF, 0xFFFF), last_id(0xFFFFFFFF)
-
 {
-    //if(GetVisualRange())
-    //  gwg->SetVisibilitiesAroundPoint(x,y,GetVisualRange(),player);
-
     // Haben wir ein Ziel?
     // Gehen wir in ein Lagerhaus? Dann dürfen wir da nicht unsere Arbeit ausführen, sondern
     // gehen quasi nach Hause von Anfang an aus
     if(goal && (goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE
                 || goal->GetGOT() == GOT_NOB_HQ))
         fs = FS_GOHOME;
-
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
     :   noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(0),
         rs_pos(0), rs_dir(0), on_ship(false), goal_(0), waiting_for_free_node(false), last_id(0xFFFFFFFF)
-{
-    //f(GetVisualRange())
-    //  gwg->SetVisibilitiesAroundPoint(x,y,GetVisualRange(),player);
-}
+{}
 
 void noFigure::Destroy_noFigure()
 {
@@ -302,43 +294,6 @@ void noFigure::StartWalking(const unsigned char newDir)
     }
 }
 
-/*void noFigure::StartWalkingFailedTrade(const unsigned char dir)
-{
-    assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
-
-    assert(dir <= 5);
-    if(dir > 5)
-    {
-        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GAMECLIENT.GetGFNumber(), unsigned(dir));
-        return;
-    }
-
-    // Gehen wir in ein Gebäude?
-    if(dir == 1 && gwg->GetNO(gwg->GetXA(x,y,1),gwg->GetYA(x,y,1))->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(gwg->GetXA(x,y,1),gwg->GetYA(x,y,1))->OpenDoor(); // Dann die Tür aufmachen
-    // oder aus einem raus?
-    if(dir == 4 && gwg->GetNO(x,y)->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(x,y)->OpenDoor(); // Dann die Tür aufmachen
-
-    // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetXA(x,y,dir),gwg->GetYA(x,y,dir),dir) &&
-        cur_rs)
-    {
-        // Dann stehen bleiben!
-        this->dir = dir;
-        waiting_for_free_node = true;
-        // Andere Figuren stoppen
-        gwg->StopOnRoads(x,y,dir);
-    }
-    else
-    {
-        // Normal hinlaufen
-        StartMoving(dir,20);
-    }
-}*/
-
-
-
 void noFigure::DrawShadow(const int x, const int y, const unsigned char anistep, unsigned char dir)
 {
     glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + anistep);
@@ -487,138 +442,6 @@ void noFigure::WalkToGoal()
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
     }
 }
-
-/*void noFigure::WalkToGoalFailedTrade()
-{
-    // Kein Ziel mehr --> Rumirren
-    if(!goal)
-    {
-        StartWanderingFailedTrade();
-        WanderFailedTrade();
-        return;
-    }
-
-    // Straße abgelaufen oder noch gar keine Straße vorhanden?
-    if(((cur_rs)?(rs_pos == cur_rs->GetLength()):true))
-    {
-        // Ziel erreicht?
-        // Bei dem Träger können das beide Flaggen sein!
-        unsigned short goal_x1, goal_y1, goal_x2=0xFFFF, goal_y2=0xFFFF;
-        if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
-        {
-            goal_x1 = static_cast<nofCarrier*>(this)->GetFirstFlag() ?
-                static_cast<nofCarrier*>(this)->GetFirstFlag()->GetX() : 0xFFFF;
-            goal_y1 = static_cast<nofCarrier*>(this)->GetFirstFlag() ?
-                static_cast<nofCarrier*>(this)->GetFirstFlag()->GetY() : 0xFFFF;
-            goal_x2 = static_cast<nofCarrier*>(this)->GetSecondFlag() ?
-                static_cast<nofCarrier*>(this)->GetSecondFlag()->GetX() : 0xFFFF;
-            goal_y2 = static_cast<nofCarrier*>(this)->GetSecondFlag() ?
-                static_cast<nofCarrier*>(this)->GetSecondFlag()->GetY() : 0xFFFF;
-        }
-        else
-        {
-            goal_x1 = goal->GetX();
-            goal_y1 = goal->GetY();
-        }
-
-        if((goal_x1 == x && goal_y1 == y) || (goal_x2 == x && goal_y2 == y))
-        {
-            if(fs == FS_GOHOME)
-            {
-                // Mann im Lagerhaus angekommen     - this is what we hope happens ...
-                gwg->GetPlayer(static_cast<nobBaseWarehouse*>(goal)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(),1);
-                static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
-                gwg->RemoveFigure(this,x,y);
-                // the ware we carried is lost because poc forgot to carry the information and is too lazy to fix it now ...
-
-            }
-            else
-            {
-                // Zeug nullen
-                cur_rs = NULL;
-                rs_dir = 0;
-                rs_pos = 0;
-                goal = NULL;
-
-
-                // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
-                fs = FS_JOB;
-                GoalReached();
-            }
-
-        }
-        else
-        {
-            MapPoint next_harbor;
-            // Neuen Weg berechnen
-            unsigned char route = gwg->FindHumanPathOnRoads(gwg->GetSpecObj<noRoadNode>(x,y),goal,NULL,&next_harbor);
-            // Kein Weg zum Ziel... nächstes Lagerhaus suchen
-            if(route == 0xFF)
-            {
-                // Arbeisplatz oder Laghaus Bescheid sagen
-                Abrogate();
-                // Wir gehen jetzt nach Hause
-                GoHome();
-                // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                if(fs == FS_WANDER)
-                {
-                    WanderFailedTrade();
-                    return;
-                }
-
-                // Nach Hause laufen...
-                WalkToGoalFailedTrade();
-                return;
-            }
-            // Oder müssen wir das Schiff nehmen? shouldnt happen for lost wanderers
-            else if(route == SHIP_DIR)
-            {
-                // Uns in den Hafen einquartieren
-                noBase * nob;
-                if((nob=gwg->GetNO(x,y))->GetGOT() != GOT_NOB_HARBORBUILDING)
-                {
-                    // Es gibt keinen Hafen mehr -> nach Hause gehen
-
-                    // Arbeisplatz oder Laghaus Bescheid sagen
-                    Abrogate();
-                    // Wir gehen jetzt nach Hause
-                    GoHome();
-                    // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                    if(fs == FS_WANDER)
-                    {
-                        WanderFailedTrade();
-                        return;
-                    }
-
-                    // Nach Hause laufen...
-                    WalkToGoalFailedTrade();
-                    return;
-                }
-
-                // Uns in den Hafen einquartieren
-                cur_rs = NULL; // wir laufen nicht mehr auf einer Straße
-                gwg->RemoveFigure(this,x,y);
-                static_cast<nobHarborBuilding*>(nob)->AddFigureForShip(this,next_harbor);
-
-                return;
-            }
-
-
-            // Nächste Straße wollen, auf der man geht
-            cur_rs = gwg->GetSpecObj<noRoadNode>(x,y)->routes[route];
-            StartWalking(route);
-            rs_pos = 0;
-            rs_dir = (gwg->GetSpecObj<noRoadNode>(x,y) == cur_rs->GetF1()) ? false : true;
-        }
-
-    }
-    else
-    {
-        StartWalkingFailedTrade(cur_rs->GetDir(rs_dir,rs_pos));
-    }
-}*/
-
-
 
 void noFigure::HandleEvent(const unsigned int id)
 {
@@ -852,6 +675,7 @@ void noFigure::Wander()
         // Wurde keine Flagge gefunden?
 
         // Haben wir noch Versuche?
+        assert(wander_tryings > 0);
         if(--wander_tryings > 0)
         {
             // von vorne beginnen wieder mit Rumirren
@@ -865,23 +689,32 @@ void noFigure::Wander()
         }
     }
 
-    // weiter umherirren, einfach in eine zufällige Richtung
-    // Müssen dabei natürlich aufpassen, dass wir nur dorthin gehen wo es auch für Figuren möglich ist
-    unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+    if(WalkInRandomDir())
+    {
+        assert(wander_way > 0);
+        --wander_way;
+    }else
+    {
+        // Wir sind eingesperrt! Kein Weg mehr gefunden --> Sterben
+        Die();
+    }
+}
+
+bool noFigure::WalkInRandomDir()
+{
+    // Check all dirs starting with a random one and taking the first possible
+    unsigned char dirOffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
     for(unsigned char d = 0; d < 6; ++d)
     {
-        unsigned char dir = (d + doffset) % 6;
+        unsigned char dir = (d + dirOffset) % 6;
 
         if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && gwg->IsNodeToNodeForFigure(pos, dir))
         {
             StartWalking(dir);
-            --wander_way;
-            return;
+            return true;
         }
     }
-
-    // Wir sind eingesperrt! Kein Weg mehr gefunden --> Sterben
-    Die();
+    return false;
 }
 
 void noFigure::WanderFailedTrade()
@@ -1266,8 +1099,3 @@ MapPoint noFigure::ExamineRouteBeforeShipping(unsigned char& newDir)
     else
         return MapPoint(0, 0);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// EOF
-///////////////////////////////////////////////////////////////////////////////
-

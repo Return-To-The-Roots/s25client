@@ -233,22 +233,25 @@ void nofActiveSoldier::ExpelEnemies()
 
     // Let's see which things are netted and sort the wrong things out
     // ( Don't annoy Erika Steinbach! )
-    for(unsigned i = 0; i < figures.size(); ++i)
+    for(std::vector<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
     {
-        noFigure* fig = figures[i];
+        noFigure* fig = *it;
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)
-        if(!players->getElement(player)->IsAlly(fig->GetPlayer()) &&
-                !fig->IsSoldier()
-                && fig->IsWalkingOnRoad())
+        if(!players->getElement(player)->IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())
         {
             // Then he should start wandering around
             fig->Abrogate();
             fig->StartWandering();
             // Not walking? (Could be carriers who are waiting for wares on roads)
             if(!fig->IsMoving())
-                // Go, go, go
-                fig->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+            {
+                if(!fig->WalkInRandomDir())
+                {
+                    // No possible way found (unlikely but just in case)
+                    fig->Die();
+                }
+            }
         }
     }
 }
@@ -262,7 +265,6 @@ void nofActiveSoldier::Walked()
         case STATE_WALKINGHOME: WalkingHome(); return;
         case STATE_MEETENEMY: MeetingEnemy(); return;
     }
-
 }
 
 /// Looks for enemies nearby which want to fight with this soldier

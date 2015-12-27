@@ -113,6 +113,7 @@ class noFigure : public noMovable
 
         /// Herumirren
         void Wander();
+
         /// Herumirren after failed traderoute
         void WanderFailedTrade();
 
@@ -169,20 +170,16 @@ class noFigure : public noMovable
         Point<int> CalcFigurRelative() const;
         /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
         void StartWalking(const unsigned char dir);
-        /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
-        //void StartWalkingFailedTrade(const unsigned char dir);
+        /// Starts walking in a random dir and returns whether this was possible
+        bool WalkInRandomDir();
         /// Umherirren starten (frei rumlaufen)
         void StartWandering(const unsigned burned_wh_id = 0xFFFFFFFF);
-        /// Umherirren starten (frei rumlaufen - nach fehlgeschlagener handelsroute)
-        //void StartWanderingFailedTrade(const unsigned burned_wh_id = 0xFFFFFFFF);
         /// Auf Straßen(!) nach Hause laufen
         void GoHome(noRoadNode* goal = NULL);
         /// Aktuellen Weg, auf dem er läuft, fr ungültig erklären
         void CutCurrentRoad() { cur_rs = 0; }
         /// Auf Straßen zur Zielflagge laufen
         void WalkToGoal();
-        /// Auf Straßen zur Zielflagge laufen
-        //void WalkToGoalFailedTrade();
         /// Gibt die Straße zurück, auf der man gerade läuft
         const RoadSegment* GetCurrentRoad() { return cur_rs; }
         /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten Straße läuft!
