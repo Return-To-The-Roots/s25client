@@ -810,22 +810,24 @@ void nofAttacker::CapturingWalking()
         building = attacked_goal;
         // und zum Gebäude hinzufügen
         attacked_goal->AddActiveSoldier(this);
-        // save goal for below (reset in RemoveFromAttackedGoal)
-        nobBaseMilitary* tmpGoal = attacked_goal;
-        // außerdem aus der Angreiferliste entfernen
-        RemoveFromAttackedGoal();
 
         // Ein erobernder Soldat weniger
-        if(tmpGoal->GetBuildingType() >= BLD_BARRACKS && tmpGoal->GetBuildingType() <= BLD_FORTRESS)
+        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
         {
-            assert(dynamic_cast<nobMilitary*>(tmpGoal));
-            nobMilitary* goal = static_cast<nobMilitary*>(tmpGoal);
+            assert(dynamic_cast<nobMilitary*>(attacked_goal));
+            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
             // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
             if(!goal->IsFarAwayCapturer(this))
+            {
+                RemoveFromAttackedGoal();
                 goal->CapturingSoldierArrived();
-            else
+            }else
+            {
+                RemoveFromAttackedGoal();
                 assert(goal->GetPlayer() == player);
-        }
+            }
+        }else
+            RemoveFromAttackedGoal();
     }
     // oder zumindest schonmal an der Flagge?
     else if(pos == attFlagPos)
