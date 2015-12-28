@@ -410,14 +410,13 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     {
         if(GAMECLIENT.GetPlayerID() == this->player)
         {
-            std::string error = _("This mine is exhausted");
+            std::string error;
             if(workplace->GetBuildingType() == BLD_WELL)
                 error = _("This well is dried out");
+            else
+                error = _("This mine is exhausted");
 
-            GAMECLIENT.SendPostMessage(
-                new ImagePostMsgWithLocation(_(error), PMC_GENERAL, pos,
-                                             workplace->GetBuildingType(), workplace->GetNation())
-            );
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(error), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
         }
 
         outOfRessourcesMsgSent = true;

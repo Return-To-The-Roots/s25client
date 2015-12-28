@@ -27,6 +27,7 @@
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "Loader.h"
+#include <numeric>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -47,10 +48,10 @@ nobUsual::nobUsual(BuildingType type,
                    unsigned char player,
                    Nation nation)
     : noBuilding(type, pos, player, nation),
-      worker(NULL), productivity(50), disable_production(false), disable_production_virtual(false),
+      worker(NULL), disable_production(false), disable_production_virtual(false),
       last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), is_working(false)
 {
-    wares[0] = wares[1] = wares[2] = 0;
+    std::fill(wares.begin(), wares.end(), 0);
 
     // Entsprechend so viele Listen erstellen, wie nötig sind, bei Bergwerken 3
     if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
@@ -64,11 +65,23 @@ nobUsual::nobUsual(BuildingType type,
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
 
-    // Gebäude in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
-    gwg->GetPlayer(player).AddUsualBuilding(this);
+    const std::list<nobUsual*>& otherBlds = gwg->GetPlayer(player).GetBuildings(type);
+    if(otherBlds.empty())
+        productivity = 0;
+    else
+    {
+        // New building gets half the average productivity from all buildings of the same type
+        int sumProductivity = 0;
+        for(std::list<nobUsual*>::const_iterator it = otherBlds.begin(); it != otherBlds.end(); ++it)
+            sumProductivity += (*it)->GetProduktivity();
+        productivity = sumProductivity / otherBlds.size() / 2;
+    }
+    // Set last productivities to current to avoid resetting it on first recalculation event
+    std::fill(last_productivities.begin(), last_productivities.end(), productivity);
 
-    // Keine Produktivitäten weiter
-    memset(last_productivities, 0, sizeof(unsigned short)*LAST_PRODUCTIVITIES_COUNT);
+    // Gebäude in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
+    // Do this AFTER the productivity calculation or we will get this building too!
+    gwg->GetPlayer(player).AddUsualBuilding(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,8 +149,8 @@ void nobUsual::Destroy_nobUsual()
     // Events löschen
     em->RemoveEvent(orderware_ev);
     em->RemoveEvent(productivity_ev);
-    orderware_ev = 0;
-    productivity_ev = 0;
+    orderware_ev = NULL;
+    productivity_ev = NULL;
 
     // Gebäude wieder aus der Liste entfernen
     gwg->GetPlayer(player).RemoveUsualBuilding(this);
@@ -298,18 +311,16 @@ void nobUsual::HandleEvent(const unsigned int id)
 {
     if(id)
     {
-        productivity = last_productivities[5];
-        // Produktivität "verrücken" und gleich mit ausrechnen
-        for(unsigned short i = LAST_PRODUCTIVITIES_COUNT; i >= 2; --i)
-            productivity += (last_productivities[i - 1] = last_productivities[i - 2]);
-
-        // Die aktuelle Produktivität nehmen und sie mit einberechnen
-        unsigned short current_productivity = worker->CalcProductivity();
-        productivity += current_productivity;
+        const unsigned short current_productivity = worker->CalcProductivity();
+        // Sum over all last productivities and current (as start value)
+        productivity = std::accumulate(last_productivities.begin(), last_productivities.end(), current_productivity);
+        // Produktivität "verrücken"
+        for(unsigned short i = last_productivities.size() - 1; i >= 1; --i)
+            last_productivities[i] = last_productivities[i - 1];
         last_productivities[0] = current_productivity;
 
         // Durschnitt ausrechnen der letzten Produktivitäten PLUS der aktuellen!
-        productivity /= ((LAST_PRODUCTIVITIES_COUNT + 1));
+        productivity /= (last_productivities.size() + 1);
 
         // Event für nächste Abrechnung
         productivity_ev = em->AddEvent(this, 400, 1);
@@ -444,16 +455,13 @@ void nobUsual::WorkerLost()
 {
     // Produktivitätsevent ggf. abmelden
     em->RemoveEvent(productivity_ev);
-    productivity_ev = 0;
 
     // Waren-Bestell-Event abmelden
     em->RemoveEvent(orderware_ev);
-    orderware_ev = 0;
 
     // neuen Arbeiter bestellen
-    worker = 0;
+    worker = NULL;
     gwg->GetPlayer(player).AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -681,8 +689,5 @@ bool nobUsual::HasWorker() const
 void nobUsual::SetProductivityToZero()
 {
     productivity = 0;
-    for (unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
-    {
-        last_productivities[i] = 0;
-    }
+    std::fill(last_productivities.begin(), last_productivities.end(), 0);
 }

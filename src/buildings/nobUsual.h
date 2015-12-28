@@ -20,6 +20,7 @@
 
 #include "noBuilding.h"
 #include "EventManager.h"
+#include <boost/array.hpp>
 #include <vector>
 #include <list>
 
@@ -38,7 +39,7 @@ class nobUsual : public noBuilding
         /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
         unsigned char last_ordered_ware;
         /// Rohstoffe, die zur Produktion benötigt werden
-        unsigned char wares[3];
+        boost::array<unsigned char, 3> wares;
         /// Bestellte Waren
         std::vector< std::list<Ware*> > ordered_wares;
         /// Bestell-Ware-Event
@@ -47,7 +48,7 @@ class nobUsual : public noBuilding
         EventManager::EventPointer productivity_ev;
         /// Letzte Produktivitäten (Durschnitt = Gesamtproduktivität), vorne das neuste !
         static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
-        unsigned short last_productivities[LAST_PRODUCTIVITIES_COUNT];
+        boost::array<unsigned short, LAST_PRODUCTIVITIES_COUNT> last_productivities;
 
 protected:
         friend class SerializedGameData;
@@ -113,6 +114,7 @@ protected:
 
         /// Gibt Pointer auf Produktivität zurück
         const unsigned short* GetProduktivityPointer() const { return &productivity; }
+        const unsigned short GetProduktivity() const { return productivity; }
 
         /// Ermittelt, ob es sich bei diesem Gebäude um ein Bergwerk handelt
         bool IsMine() const { return type_ >= BLD_GRANITEMINE && type_ <= BLD_GOLDMINE; }

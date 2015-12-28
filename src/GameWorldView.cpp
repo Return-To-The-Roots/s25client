@@ -326,7 +326,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                             text[0] = 0;
                                         else
                                         {
-                                            unsigned short p = *n->GetProduktivityPointer();
+                                            unsigned short p = n->GetProduktivity();
                                             snprintf(text, 256, "(%d %%)", p);
                                             if(p >= 60)
                                                 color = 0xFF00E000;

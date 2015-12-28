@@ -101,7 +101,7 @@ GoodType nofPigbreeder::ProduceWare()
 void nofPigbreeder::MakePigSounds()
 {
     /// Ist es wieder Zeit für einen Schweine-Sound?
-    if(GAMECLIENT.GetGFNumber() - last_id > 600 + unsigned(rand() % 200) - unsigned((*workplace->GetProduktivityPointer()) * 5) &&
+    if(GAMECLIENT.GetGFNumber() - last_id > 600 + unsigned(rand() % 200) - unsigned((workplace->GetProduktivity()) * 5) &&
             (GAMECLIENT.GetGFNumber() != last_id) && !GAMECLIENT.IsPaused())
     {
         // "Oink"

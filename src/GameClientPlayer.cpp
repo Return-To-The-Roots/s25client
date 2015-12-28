@@ -1280,7 +1280,7 @@ void GameClientPlayer::CalcProductivities(std::vector<unsigned short>& productiv
         unsigned total_productivity = 0;
 
         for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
-            total_productivity += *(*it)->GetProduktivityPointer();
+            total_productivity += (*it)->GetProduktivity();
 
         if(!buildings[i].empty())
             total_productivity /= buildings[i].size();
@@ -1299,7 +1299,7 @@ unsigned short GameClientPlayer::CalcAverageProductivitiy()
         // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
         // und den Mittelwert bildet
         for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
-            total_productivity += *(*it)->GetProduktivityPointer();
+            total_productivity += (*it)->GetProduktivity();
 
         if(!buildings[i].empty())
             total_count += buildings[i].size();

@@ -160,7 +160,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             int burns = 0;
             for(std::list<nobUsual*>::const_iterator it = sawMills.begin(); it != sawMills.end(); ++it)
             {
-                if(*(*it)->GetProduktivityPointer() < 1 && (*it)->HasWorker() && (*it)->GetWares(0) < 1 && (sawMills.size() - burns) > 3 && !(*it)->AreThereAnyOrderedWares())
+                if((*it)->GetProduktivity() < 1 && (*it)->HasWorker() && (*it)->GetWares(0) < 1 && (sawMills.size() - burns) > 3 && !(*it)->AreThereAnyOrderedWares())
                 {
                     aii->DestroyBuilding((*it));
                     RemoveUnusedRoad(aii->GetSpecObj<noFlag>(aii->GetNeighbour((*it)->GetPos(), Direction::SOUTHEAST)), 1, true);
