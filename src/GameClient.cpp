@@ -1695,6 +1695,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
 
 unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 {
+    replayinfo.Clear();
     replayinfo.filename = path;
 
     if(!replayinfo.replay.LoadHeader(path, true))
