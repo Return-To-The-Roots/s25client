@@ -109,19 +109,25 @@ void noBuildingSite::Destroy_noBuildingSite()
 {
     // Bauarbeiter/Planierer Bescheid sagen
     if(builder)
+    {
         builder->LostWork();
-    else if(planer)
+        builder = NULL;
+    }else if(planer)
+    {
         planer->LostWork();
-    else
+        planer = NULL;
+    }else
         gwg->GetPlayer(player).JobNotWanted(this);
+
+    assert(!builder);
+    assert(!planer);
 
     // Bestellte Waren Bescheid sagen
     for(std::list<Ware*>::iterator it = ordered_boards.begin(); it != ordered_boards.end(); ++it)
         WareNotNeeded(*it);
+    ordered_boards.clear();
     for(std::list<Ware*>::iterator it = ordered_stones.begin(); it != ordered_stones.end(); ++it)
         WareNotNeeded(*it);
-
-    ordered_boards.clear();
     ordered_stones.clear();
 
     // und Feld wird leer
@@ -135,19 +141,13 @@ void noBuildingSite::Destroy_noBuildingSite()
     bool expeditionharbor = IsHarborBuildingSiteFromSea();
     gwg->GetPlayer(player).RemoveBuildingSite(this);
 
+    Destroy_noBaseBuilding();
     // Hafenbaustelle?
     if(expeditionharbor)
     {
-        //LOG.lprintf("harbor building site from sea destroyed/removed");
-        // Ggf. aus der Liste mit den vom Schiff aus gegründeten Baustellen streichen - no longer required as this is done in gwg->GetPlayer(player).RemoveBuildingSite(this);
-        //gwg->RemoveHarborBuildingSiteFromSea(this);
-
-        Destroy_noBaseBuilding();
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
         gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
     }
-    else
-        Destroy_noBaseBuilding();
 }
 
 void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const

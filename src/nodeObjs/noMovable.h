@@ -78,7 +78,4 @@ class noMovable : public noCoordBase
 
 };
 
-
-
-
 #endif

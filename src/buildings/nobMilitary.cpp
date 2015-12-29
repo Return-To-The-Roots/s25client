@@ -114,12 +114,12 @@ void nobMilitary::Destroy_nobMilitary()
     // Soldaten rausschicken
     for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
         (*it)->InBuildingDestroyed();
+    troops.clear();
 
     // Inform far-away capturers
     for(std::list<nofAttacker*>::iterator it = far_away_capturers.begin(); it != far_away_capturers.end(); ++it)
         (*it)->AttackedGoalDestroyed();
-
-    troops.clear();
+    far_away_capturers.clear();
 
     // Events ggf. entfernen
     em->RemoveEvent(goldorder_event);

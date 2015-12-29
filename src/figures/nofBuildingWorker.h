@@ -123,7 +123,7 @@ class nofBuildingWorker : public noFigure
         nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    protected:  void Destroy_nofBuildingWorker() { Destroy_noFigure(); }
+    protected:  void Destroy_nofBuildingWorker() { assert(!workplace); Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofBuildingWorker(); }
 
         /// Serialisierungsfunktionen

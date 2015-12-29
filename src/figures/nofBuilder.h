@@ -72,6 +72,8 @@ class nofBuilder : public noFigure
         nofBuilder(const MapPoint pt, const unsigned char player, noRoadNode* building_site);
         nofBuilder(SerializedGameData& sgd, const unsigned obj_id);
 
+        void Destroy(){ assert(!building_site); noFigure::Destroy(); }
+
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofBuilder(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofBuilder(sgd); }

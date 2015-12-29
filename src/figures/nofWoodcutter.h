@@ -47,11 +47,6 @@ class nofWoodcutter : public nofFarmhand
         nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_WOODCUTTER; }
-
-
-
-
-
 };
 
 #endif

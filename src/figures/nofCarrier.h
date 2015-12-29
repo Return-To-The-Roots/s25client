@@ -83,6 +83,9 @@ class nofCarrier : public noFigure
         void GoalReached();
         void Walked();
         void AbrogateWorkplace();
+        /// Make the carrier loose/destroy the ware if he has any
+        void LooseWare();
+
         void HandleDerivedEvent(const unsigned int id);
 
         /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die Mitte

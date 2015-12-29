@@ -92,6 +92,8 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id) : noBase(
 
 void noFighting::Destroy_noFighting()
 {
+    assert(!soldiers[0]);
+    assert(!soldiers[1]);
     Destroy_noBase();
 }
 
@@ -232,7 +234,7 @@ void noFighting::HandleEvent(const unsigned int id)
                         soldiers[turn]->WonFighting();
                         // Besitzer merken für die Sichtbarkeiten am Ende dann
                         player_won = soldiers[turn]->GetPlayer();
-                        soldiers[turn] = 0;
+                        soldiers[turn] = NULL;
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         turn = 3 + (!turn);
                         // Event zum Sterben des einen Soldaten anmelden
@@ -286,7 +288,7 @@ void noFighting::HandleEvent(const unsigned int id)
                 // Soldaten endgültig umbringen
                 gwg->GetPlayer(soldiers[player_lost]->GetPlayer()).DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
                 soldiers[player_lost]->Destroy();
-                delete soldiers[player_lost];
+                deletePtr(soldiers[player_lost]);
 
             } break;
         }

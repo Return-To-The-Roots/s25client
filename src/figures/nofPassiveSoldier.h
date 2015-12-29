@@ -44,7 +44,6 @@ class nofPassiveSoldier : public nofSoldier
         /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
         void Heal();
 
-
     public:
 
         nofPassiveSoldier(const nofSoldier& soldier);

@@ -64,7 +64,6 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// Einlagerevent für Waren und Figuren
         EventManager::EventPointer store_event;
 
-
     protected:
 
         /// Soldaten-Reserve-Einstellung

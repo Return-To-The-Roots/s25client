@@ -45,7 +45,7 @@ class noExtension : public noBase
         void Destroy_noExtension() { Destroy_noBase(); }
 
     private:
-        noBase* base;
+        noBase* const base;
 };
 
 #endif // !NOEXTENSION_H_INCLUDED

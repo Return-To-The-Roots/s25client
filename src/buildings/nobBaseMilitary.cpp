@@ -65,17 +65,20 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
     for(std::vector<nofActiveSoldier*>::iterator it = tmpTroopsOnMission.begin(); it != tmpTroopsOnMission.end(); ++it)
         (*it)->HomeDestroyed();
+    troops_on_mission.clear();
 
     // Und die, die das Gebäude evtl gerade angreifen
     // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
     std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
     for(std::vector<nofAttacker*>::iterator it = tmpAggressors.begin(); it != tmpAggressors.end(); ++it)
         (*it)->AttackedGoalDestroyed();
+    aggressors.clear();
 
     // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen können
     std::vector<nofAggressiveDefender*> tmpDefenders(aggressive_defenders.begin(), aggressive_defenders.end());
     for(std::vector<nofAggressiveDefender*>::iterator it = tmpDefenders.begin(); it != tmpDefenders.end(); ++it)
         (*it)->AttackedGoalDestroyed();
+    aggressive_defenders.clear();
 
     // Verteidiger Bescheid sagen
     if(defender_){

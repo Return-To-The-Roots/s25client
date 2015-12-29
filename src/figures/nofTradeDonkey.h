@@ -52,6 +52,8 @@ class nofTradeDonkey : public noFigure
                        nofTradeLeader* const leader, const GoodType gt, const Job job);
         nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id);
 
+        void Destroy() override { assert(!leader); assert(!successor); noFigure::Destroy(); }
+
         void Serialize(SerializedGameData& sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_TRADEDONKEY; }

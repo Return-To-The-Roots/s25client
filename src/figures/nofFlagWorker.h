@@ -67,7 +67,6 @@ class nofFlagWorker : public noFigure
 
         /// Gibt Flagge zurück
         noFlag* GetFlag() const { return flag; }
-
 };
 
 

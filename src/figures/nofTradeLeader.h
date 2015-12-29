@@ -51,6 +51,8 @@ class nofTradeLeader : public noFigure
         nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal);
         nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
 
+        void Destroy() override { assert(!successor); noFigure::Destroy(); }
+
         void Serialize(SerializedGameData& sgd) const;
 
         GO_Type GetGOT() const { return GOT_NOF_TRADELEADER; }
@@ -61,8 +63,7 @@ class nofTradeLeader : public noFigure
         void LostWork();
 
         /// Sets the sucessor in the caravane
-        void SetSuccessor(nofTradeDonkey* const successor)
-        { this->successor = successor; }
+        void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 };
 
 

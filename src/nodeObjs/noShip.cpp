@@ -150,6 +150,10 @@ void noShip::Destroy()
 {
     // Schiff wieder abmelden
     gwg->GetPlayer(player).RemoveShip(this);
+    for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        assert(!*it);
+    for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
+        assert(!*it);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren

@@ -106,8 +106,6 @@ class noBuildingSite : public noBaseBuilding
         /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
         bool IsHarborBuildingSiteFromSea() const;
 
-
 };
-
 
 #endif

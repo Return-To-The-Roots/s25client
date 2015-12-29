@@ -85,11 +85,7 @@ class nofFarmhand : public nofBuildingWorker
     protected:  void Serialize_nofFarmhand(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFarmhand(sgd); }
 
-
-
         void HandleDerivedEvent(const unsigned int id);
-
-
 };
 
 

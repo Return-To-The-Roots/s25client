@@ -35,7 +35,6 @@ class noFire : public noCoordBase
         /// Intervall zum nächsten Feuersound
         unsigned next_interval;
 
-
     public:
 
         noFire(const MapPoint pt, const unsigned char size);
@@ -58,7 +57,6 @@ class noFire : public noCoordBase
         void Draw(int x, int y);
         /// Benachrichtigen, wenn neuer gf erreicht wurde
         void HandleEvent(const unsigned int id);
-
 };
 
 #endif

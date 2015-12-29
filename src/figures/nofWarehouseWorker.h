@@ -43,7 +43,7 @@ class nofWarehouseWorker : public noFigure
         Ware* carried_ware;
 
         // Aufgabe, die der Warenhaustyp hat (Ware raustragen (0) oder reinholen)
-        const bool task;
+        const bool shouldBringWareIn;
 
         // Bin ich fett? (werde immer mal dünn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
         bool fat;
@@ -56,9 +56,9 @@ class nofWarehouseWorker : public noFigure
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace();
 
+        void LooseWare();
+
         void HandleDerivedEvent(const unsigned int id);
-
-
 
     public:
 
@@ -86,7 +86,5 @@ class nofWarehouseWorker : public noFigure
         bool MemberOfWarehouse() const { return true; }
 
 };
-
-
 
 #endif

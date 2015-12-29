@@ -53,8 +53,6 @@ class nofFisher : public nofFarmhand
     public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFisher(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_FISHER; }
-
-
 };
 
 #endif

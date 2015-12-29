@@ -214,13 +214,10 @@ nofCarrier::~nofCarrier()
  */
 void nofCarrier::Destroy_nofCarrier()
 {
+    assert(!workplace);
     // Ware vernichten (abmelden)
-    if(carried_ware)
-    {
-        gwg->GetPlayer(player).RemoveWare(carried_ware);
-        gwg->GetPlayer(player).DecreaseInventoryWare(carried_ware->type, 1);
-    }
-
+    assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
+    LooseWare();
     em->RemoveEvent(productivity_ev);
 
     Destroy_noFigure();
@@ -725,14 +722,20 @@ void nofCarrier::AbrogateWorkplace()
 
         workplace->CarrierAbrogated(this);
         workplace = NULL;
-        // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
-        if(carried_ware)
-        {
-            carried_ware->WareLost(player);
-            deletePtr(carried_ware);
-        }
+        LooseWare();
 
         state = CARRS_FIGUREWORK;
+    }
+}
+
+void nofCarrier::LooseWare()
+{
+    // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
+    if(carried_ware)
+    {
+        carried_ware->WareLost(player);
+        carried_ware->Destroy();
+        deletePtr(carried_ware);
     }
 }
 
@@ -744,7 +747,7 @@ void nofCarrier::AbrogateWorkplace()
  */
 void nofCarrier::LostWork()
 {
-    workplace = 0;
+    workplace = NULL;
     em->RemoveEvent(productivity_ev);
 
     if(state == CARRS_FIGUREWORK)
@@ -752,12 +755,7 @@ void nofCarrier::LostWork()
     else
     {
         // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
-        if(carried_ware)
-        {
-            carried_ware->WareLost(player);
-            delete carried_ware;
-            carried_ware = NULL;
-        }
+        LooseWare();
 
         // Is this a boat carrier (i.e. he is on the water)
         if(ct == CT_BOAT)

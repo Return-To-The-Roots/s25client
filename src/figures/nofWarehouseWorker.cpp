@@ -42,7 +42,7 @@ static char THIS_FILE[] = __FILE__;
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
     : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))),
-      carried_ware(ware), task(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) ? true : false)
+      carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) ? true : false)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
@@ -63,12 +63,8 @@ nofWarehouseWorker::~nofWarehouseWorker()
 void nofWarehouseWorker::Destroy_nofWarehouseWorker()
 {
     // Ware vernichten (abmelden)
-
-    if(carried_ware)
-    {
-        gwg->GetPlayer(player).RemoveWare(carried_ware);
-        gwg->GetPlayer(player).DecreaseInventoryWare(carried_ware->type, 1);
-    }
+    assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
+    LooseWare();
 }
 
 
@@ -77,13 +73,13 @@ void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) c
     Serialize_noFigure(sgd);
 
     sgd.PushObject(carried_ware, true);
-    sgd.PushBool(task);
+    sgd.PushBool(shouldBringWareIn);
     sgd.PushBool(fat);
 }
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
     carried_ware(sgd.PopObject<Ware>(GOT_WARE)),
-    task(sgd.PopBool()),
+    shouldBringWareIn(sgd.PopBool()),
     fat(sgd.PopBool())
 {
 }
@@ -104,7 +100,7 @@ void nofWarehouseWorker::Draw(int x, int y)
 void nofWarehouseWorker::GoalReached()
 {
     const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, 1));
-    if(!task)
+    if(!shouldBringWareIn)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
@@ -143,7 +139,7 @@ void nofWarehouseWorker::GoalReached()
 void nofWarehouseWorker::Walked()
 {
     // Wieder im Schloss angekommen
-    if(!task)
+    if(!shouldBringWareIn)
     {
         // If I still cary a ware than either the flag was full or I should not bring it there (goal=warehouse or goal destroyed -> goal=location)
         // So re-add it to waiting wares or to inventory
@@ -161,11 +157,10 @@ void nofWarehouseWorker::Walked()
             else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten
-                carried_ware->WareLost(player);
-                delete carried_ware;
+                LooseWare();
             }
             // Ich trage keine Ware mehr
-            carried_ware = NULL;
+            assert(carried_ware == NULL);
         }
     }
     else
@@ -178,11 +173,10 @@ void nofWarehouseWorker::Walked()
             else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten
-                carried_ware->WareLost(player);
-                delete carried_ware;
+                LooseWare();
             }
             // Ich trage keine Ware mehr
-            carried_ware = NULL;
+            assert(carried_ware == NULL);
         }
     }
 
@@ -196,14 +190,19 @@ void nofWarehouseWorker::Walked()
 
 void nofWarehouseWorker::AbrogateWorkplace()
 {
+    LooseWare();
+    StartWandering();
+}
+
+void nofWarehouseWorker::LooseWare()
+{
     // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
     if(carried_ware)
     {
         carried_ware->WareLost(player);
+        carried_ware->Destroy();
         deletePtr(carried_ware);
     }
-
-    StartWandering();
 }
 
 void nofWarehouseWorker::HandleDerivedEvent(const unsigned int id)

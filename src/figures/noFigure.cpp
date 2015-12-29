@@ -91,6 +91,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 void noFigure::Destroy_noFigure()
 {
     assert(HasNoGoal());
+    assert(!cur_rs);
     Destroy_noMovable();
 
     assert(!gwg->GetPlayer(player).IsDependentFigure(this));

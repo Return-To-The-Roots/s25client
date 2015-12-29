@@ -98,8 +98,10 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         (*it)->GoHome();
+    dependent_figures.clear();
 	for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
         WareNotNeeded(*it);
+    dependent_wares.clear();
 
     // ggf. Events abmelden
     em->RemoveEvent(recruiting_event);
@@ -113,7 +115,6 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
         (*it)->WareLost(player);
         delete (*it);
     }
-
     waiting_wares.clear();
 
     // restliche Warenbestände von der Inventur wieder abziehen

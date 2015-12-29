@@ -137,14 +137,19 @@ void nobUsual::Destroy_nobUsual()
 {
     // Arbeiter Bescheid sagen
     if(worker)
+    {
         worker->LostWork();
-    else
+        worker = NULL;
+    }else
         gwg->GetPlayer(player).JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
     for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
+    {
         for(std::list<Ware*>::iterator it = ordered_wares[i].begin(); it != ordered_wares[i].end(); ++it)
             WareNotNeeded((*it));
+        ordered_wares[i].clear();
+    }
 
     // Events löschen
     em->RemoveEvent(orderware_ev);

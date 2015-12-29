@@ -85,6 +85,7 @@ nofAttacker::~nofAttacker()
 void nofAttacker::Destroy_nofAttacker()
 {
     assert(!attacked_goal);
+    assert(!ship_obj_id);
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;

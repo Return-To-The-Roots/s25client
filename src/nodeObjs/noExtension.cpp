@@ -35,7 +35,5 @@ noExtension::noExtension(SerializedGameData& sgd, const unsigned obj_id) : noBas
 }
 
 noExtension::~noExtension()
-{
-    assert(true);
-}
+{}
 

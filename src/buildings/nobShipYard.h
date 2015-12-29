@@ -20,7 +20,6 @@
 
 #include "nobUsual.h"
 
-
 /// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
 class nobShipYard : public nobUsual
 {
@@ -54,8 +53,6 @@ class nobShipYard : public nobUsual
         /// Schaltet Modus entsprechend um
         void ToggleMode();
 };
-
-
 
 #endif
 

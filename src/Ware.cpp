@@ -51,15 +51,19 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
 }
 
 Ware::~Ware()
-{
-    /*assert(!gwg->GetPlayer((location->GetPlayer()].IsWareRegistred(this));*/
-    //if(location)
-    //  assert(!gwg->GetPlayer((location->GetPlayer()).IsWareDependent(this));
-}
+{}
 
 void Ware::Destroy(void)
 {
     assert(!goal);
+    assert(!location);
+#ifndef NDEBUG
+    for(unsigned p=0; p<GAMECLIENT.GetPlayerCount(); p++)
+    {
+        assert(!gwg->GetPlayer(p).IsWareRegistred(this));
+        assert(!gwg->GetPlayer(p).IsWareDependent(this));
+    }
+#endif
 }
 
 void Ware::Serialize_Ware(SerializedGameData& sgd) const
