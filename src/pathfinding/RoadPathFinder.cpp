@@ -236,7 +236,7 @@ namespace SegmentConstraints{
 
         bool operator()(const RoadSegment& segment) const
         {
-            return Func1::operator()(segment) || Func2::operator()(segment);
+            return Func1::operator()(segment) && Func2::operator()(segment);
         }
     };
 }
