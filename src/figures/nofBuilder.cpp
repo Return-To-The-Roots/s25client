@@ -176,7 +176,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
 
                 // Baustelle kommt in den Bytehimmel
                 gwg->SetNO(NULL, building_site->GetPos());
-                delete building_site;
+                deletePtr(building_site);
 
                 // KI-Event schicken
                 GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingFinished, pos, building_type), player);
@@ -204,7 +204,6 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 rs_pos = 0;
                 rs_dir = true;
                 cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[4];
-                building_site = NULL;
 
                 GoHome();
                 StartWalking(4);
