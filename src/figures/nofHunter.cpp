@@ -429,8 +429,7 @@ void nofHunter::HandleStateEviscerating()
     // Tier vernichten
     animal->Eviscerated();
     animal->Destroy();
-    delete animal;
-    animal = 0;
+    deletePtr(animal);
     // Fleisch in die Hand nehmen
     ware = GD_MEAT;
     // und zurück zur Hütte
@@ -482,7 +481,7 @@ void nofHunter::WalkHome()
 
 void nofHunter::AnimalLost()
 {
-    animal = 0;
+    animal = NULL;
 
     switch(state)
     {
@@ -513,8 +512,10 @@ void nofHunter::WorkAborted()
     if(state == STATE_HUNTER_CHASING || state == STATE_HUNTER_FINDINGSHOOTINGPOINT || state == STATE_HUNTER_SHOOTING)
     {
         if(animal)
+        {
             animal->StopHunting();
-        animal = 0;
+            animal = NULL;
+        }
     }
 }
 

@@ -35,7 +35,7 @@
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
-    , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(0), sound_moment(0)
+    , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(NULL), sound_moment(0)
 {
     if(hunter)
         hunter->AnimalLost();
@@ -69,10 +69,6 @@ void noAnimal::StartLiving()
 void noAnimal::Draw(int x, int y)
 {
     // Tier zeichnen
-
-    /*char str[255];
-    sprintf(str,"%u",obj_id);
-    LOADER.GetFontN("resource",0)->Draw(x,y,str,0,0xFFFF0000);*/
 
     switch(state)
     {
@@ -145,7 +141,7 @@ void noAnimal::Draw(int x, int y)
 
 void noAnimal::HandleEvent(const unsigned int id)
 {
-    current_ev = 0;
+    current_ev = NULL;
 
     switch(id)
     {
@@ -184,7 +180,6 @@ void noAnimal::HandleEvent(const unsigned int id)
         case 3:
         {
             // von der Karte tilgen
-            current_ev = 0;
             gwg->RemoveFigure(this, pos);
             em->AddToKillList(this);
         } break;
@@ -202,7 +197,7 @@ void noAnimal::StandardWalking()
 {
     // neuen Weg suchen
     unsigned char dir = FindDir();
-    if( dir == 0xFF)
+    if(dir == 0xFF)
     {
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
@@ -210,7 +205,7 @@ void noAnimal::StandardWalking()
         if(hunter)
         {
             hunter->AnimalLost();
-            hunter = 0;
+            hunter = NULL;
         }
     }
     else
@@ -273,30 +268,6 @@ unsigned char noAnimal::FindDir()
 
         TerrainType t1 = gwg->GetWalkingTerrain1(pos, d);
         TerrainType t2 = gwg->GetWalkingTerrain2(pos, d);
-
-		/* Animals are people, too. They should be allowed to cross borders as well!
-		
-        if(x == 0)
-        {
-            if(d == 5 || d == 0 || d == 1)
-                continue;
-        }
-        if(x == gwg->GetWidth() - 1)
-        {
-            if(d >= 2 && d <= 4)
-                continue;
-        }
-        if(y == 0)
-        {
-            if(d == 1 || d == 2)
-                continue;
-        }
-        if(y == gwg->GetHeight() - 1)
-        {
-            if(d == 4 || d == 5)
-                continue;
-        }
-        */
 
         if(species == SPEC_DUCK)
         {
@@ -371,7 +342,6 @@ MapPoint noAnimal::HunterIsNear()
         state = STATE_WAITINGFORHUNTER;
         // Warteevent abmelden
         em->RemoveEvent(current_ev);
-        current_ev = 0;
         return pos;
     }
     else
@@ -385,7 +355,7 @@ MapPoint noAnimal::HunterIsNear()
 void noAnimal::StopHunting()
 {
     // keiner jagt uns mehr
-    hunter = 0;
+    hunter = NULL;
 
     switch(state)
     {
@@ -426,6 +396,7 @@ void noAnimal::Eviscerated()
 {
     // Event abmelden
     em->RemoveEvent(current_ev);
-    current_ev = 0;
+    // Reset hunter
+    hunter = NULL;
 }
 
