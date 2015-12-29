@@ -169,7 +169,7 @@ class nobBaseWarehouse : public nobBaseMilitary
         /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück
         Ware* OrderWare(const GoodType good, noBaseBuilding* const goal);
         /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen konnten
-        void AddWaitingWare(Ware* ware);
+        void AddWaitingWare(Ware*& ware);
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
         bool FreePlaceAtFlag();
         // Eine Ware liegt vor der Flagge des Warenhauses und will rein --> ein Warenhausmitarbeiter muss kommen und sie holen

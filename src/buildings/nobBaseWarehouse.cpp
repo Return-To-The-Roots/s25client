@@ -732,7 +732,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     return ware;
 }
 
-void nobBaseWarehouse::AddWaitingWare(Ware* ware)
+void nobBaseWarehouse::AddWaitingWare(Ware*& ware)
 {
     waiting_wares.push_back(ware);
     ware->WaitInWarehouse(this);
@@ -740,6 +740,7 @@ void nobBaseWarehouse::AddWaitingWare(Ware* ware)
     AddLeavingEvent();
     // Die visuelle Warenanzahl wieder erhöhen
     ++goods_.goods[ConvertShields(ware->type)];
+    ware = NULL; // Take ownership
 }
 
 bool nobBaseWarehouse::FreePlaceAtFlag()
