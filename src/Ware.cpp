@@ -44,6 +44,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
     goal(goal), next_harbor(MapPoint::Invalid())
 {
+    assert(location);
     // Ware in den Index mit eintragen
     gwg->GetPlayer(location->GetPlayer()).RegisterWare(this);
     if(goal)
@@ -105,12 +106,12 @@ void Ware::RecalcRoute()
     // Evtl gibts keinen Weg mehr? Dann wieder zurück ins Lagerhaus (wenns vorher überhaupt zu nem Ziel ging)
     if(next_dir == INVALID_DIR && goal)
     {
+        assert(location);
         // Tell goal about this
         NotifyGoalAboutLostWare();
         if(state == STATE_WAITFORSHIP)
         {
             // Ware was waiting for a ship so send the ware into the harbor
-            assert(location);
             assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
             state = STATE_WAITINWAREHOUSE;
             SetGoal(static_cast<nobHarborBuilding*>(location));
@@ -119,7 +120,6 @@ void Ware::RecalcRoute()
         }
         else
         {
-            assert(location);
             FindRouteToWarehouse();
         }
     }
@@ -260,6 +260,7 @@ void Ware::NotifyGoalAboutLostWare()
 /// Wenn die Ware vernichtet werden muss
 void Ware::WareLost(const unsigned char player)
 {
+    location = NULL;
     // Inventur verringern
     gwg->GetPlayer(player).DecreaseInventoryWare(type, 1);
     // Ziel der Ware Bescheid sagen
@@ -404,6 +405,7 @@ void Ware::ShipJorneyEnded(nobHarborBuilding* hb)
 /// Beginnt damit auf ein Schiff im Hafen zu warten
 void Ware::WaitForShip(nobHarborBuilding* hb)
 {
+    assert(hb);
     state = STATE_WAITFORSHIP;
     location = hb;
 }

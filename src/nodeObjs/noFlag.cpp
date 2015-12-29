@@ -137,8 +137,8 @@ void noFlag::Destroy_noFlag()
         {
             // Inventur entsprechend verringern
             wares[i]->WareLost(player);
-            delete wares[i];
-            wares[i] = NULL;
+            wares[i]->Destroy();
+            deletePtr(wares[i]);
         }
     }
 
@@ -424,8 +424,8 @@ void noFlag::Capture(const unsigned char new_owner)
         if(wares[i])
         {
             wares[i]->WareLost(player);
-            delete wares[i];
-            wares[i] = NULL;
+            wares[i]->Destroy();
+            deletePtr(wares[i]);
         }
     }
 

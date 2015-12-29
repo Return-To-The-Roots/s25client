@@ -147,6 +147,7 @@ void nobHarborBuilding::Destroy()
     for(std::list<Ware*>::iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
     {
         (*it)->WareLost(player);
+        (*it)->Destroy();
         delete (*it);
     }
     wares_for_ships.clear();

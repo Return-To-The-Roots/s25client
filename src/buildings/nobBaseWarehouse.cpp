@@ -216,6 +216,7 @@ void nobBaseWarehouse::Clear()
     for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
     {
         (*it)->WareLost(player);
+        (*it)->Destroy();
         delete (*it);
     }
 
