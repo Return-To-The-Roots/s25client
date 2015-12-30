@@ -158,9 +158,12 @@ void Ware::GoalDestroyed()
         // Dann dem Hafen Bescheid sagen
         assert(location);
         assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+        // This also adds the ware to the harbors inventory
         static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
+        // Kill the ware
         GAMECLIENT.GetPlayer(location->GetPlayer()).RemoveWare(this);
         goal = NULL;
+        location = NULL;
         em->AddToKillList(this);
     }
     else
