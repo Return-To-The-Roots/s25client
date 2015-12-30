@@ -14,9 +14,10 @@ see more information on http://www.rttr.info
 ### Prerequisite:
 - cmake
 - git
-- boost / libboost1.55-dev (i.e from contrib)
+- boost / libboost1.55-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
 - libminiupnpc-dev (linux)
-- liblua5.2-dev (linux, i.e from contrib)
+- liblua5.2-dev (linux, i.e from contrib)   
+Most of them can be installed with the package manager.
 
 ### Steps:
 ```
