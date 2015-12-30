@@ -22,6 +22,7 @@
 #include "gameData/JobConsts.h"
 
 class nobUsual;
+class nobBaseWarehouse;
 
 /// Repräsentiert einen Arbeiter in einem Gebäude
 class nofBuildingWorker : public noFigure
@@ -120,6 +121,7 @@ class nofBuildingWorker : public noFigure
         State GetState() { return state; }
 
         nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
+        nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
         nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden

@@ -35,13 +35,15 @@ static char THIS_FILE[] = __FILE__;
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(JOB_SCOUT, pos, player, workplace)
-{
-}
+{}
+
+nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
+    : nofBuildingWorker(JOB_SCOUT, pos, player, goalWh)
+{}
 
 nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id)
-{
-}
+{}
 
 
 void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const
@@ -51,16 +53,13 @@ void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& 
 
 
 void nofScout_LookoutTower::WalkedDerived()
-{
-}
+{}
 
 void nofScout_LookoutTower::DrawWorking(int x, int y)
-{
-}
+{}
 
 void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int id)
-{
-}
+{}
 
 void nofScout_LookoutTower::WorkAborted()
 {

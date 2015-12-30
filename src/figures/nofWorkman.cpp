@@ -40,8 +40,11 @@ static char THIS_FILE[] = __FILE__;
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)
-{
-}
+{}
+
+nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
+    : nofBuildingWorker(job, pos, player, goalWh)
+{}
 
 void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
 {
@@ -49,8 +52,7 @@ void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
 }
 
 nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
-{
-}
+{}
 
 
 void nofWorkman::HandleDerivedEvent(const unsigned int id)

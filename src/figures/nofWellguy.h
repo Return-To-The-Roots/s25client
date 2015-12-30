@@ -21,6 +21,7 @@
 #include "nofWorkman.h"
 
 class nobUsualBuilding;
+class nobBaseWarehouse;
 
 /// Klasse für den Schreiner
 class nofWellguy : public nofWorkman
@@ -37,8 +38,10 @@ class nofWellguy : public nofWorkman
         bool AreWaresAvailable() override;
 
     public:
-
+        /// Ctor for sending the figure to its workplace
         nofWellguy(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+        /// Ctor for sending the figure to a warehouse (harbor, HQ,...)
+        nofWellguy(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
         nofWellguy(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const { return GOT_NOF_WELLGUY; }

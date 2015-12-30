@@ -48,7 +48,12 @@ static char THIS_FILE[] = __FILE__;
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
 {
+    assert(dynamic_cast<nobUsual*>(static_cast<GameObject*>(workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
+
+nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
+    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(NULL), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
+{}
 
 void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
 {
@@ -347,7 +352,7 @@ void nofBuildingWorker::LostWork()
 
     }
 
-    workplace = 0;
+    workplace = NULL;
 }
 
 struct NodeHasResource

@@ -39,6 +39,7 @@ class nofScout_LookoutTower : public nofBuildingWorker
     public:
 
         nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+        nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
         nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Serialisierungsfunktionen

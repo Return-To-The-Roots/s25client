@@ -38,12 +38,14 @@ static char THIS_FILE[] = __FILE__;
 
 nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_HELPER, pos, player, workplace)
-{
-}
+{}
+
+nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
+    : nofWorkman(JOB_HELPER, pos, player, goalWh)
+{}
 
 nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+{}
 
 void nofWellguy::DrawWorking(int x, int y)
 {
