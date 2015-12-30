@@ -106,7 +106,7 @@ iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, n
     AddImage( 8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-    Window* productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, SmallFont, building->GetProduktivityPointer());
+    Window* productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, SmallFont, building->GetProductivityPointer());
     if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
         productivity->SetVisible(false);
 

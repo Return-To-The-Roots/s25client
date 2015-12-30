@@ -73,7 +73,7 @@ nobUsual::nobUsual(BuildingType type,
         // New building gets half the average productivity from all buildings of the same type
         int sumProductivity = 0;
         for(std::list<nobUsual*>::const_iterator it = otherBlds.begin(); it != otherBlds.end(); ++it)
-            sumProductivity += (*it)->GetProduktivity();
+            sumProductivity += (*it)->GetProductivity();
         productivity = sumProductivity / otherBlds.size() / 2;
     }
     // Set last productivities to current to avoid resetting it on first recalculation event

@@ -1040,6 +1040,7 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
     state = STATE_FIGUREWORK;
     fs = FS_GOTOGOAL;
     on_ship = true;
+    ship_obj_id = 0;
 }
 
 /// notify sea attackers that they wont return home
@@ -1095,6 +1096,8 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
             }
         }
 
+        assert(false);
+        ship_obj_id = 0;
         // Kein Schiff gefunden? Das kann eigentlich nich sein!
         // Dann rumirren
         StartWandering();

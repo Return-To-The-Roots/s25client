@@ -113,8 +113,8 @@ protected:
         }
 
         /// Gibt Pointer auf Produktivität zurück
-        const unsigned short* GetProduktivityPointer() const { return &productivity; }
-        const unsigned short GetProduktivity() const { return productivity; }
+        const unsigned short* GetProductivityPointer() const { return &productivity; }
+        const unsigned short GetProductivity() const { return productivity; }
 
         /// Ermittelt, ob es sich bei diesem Gebäude um ein Bergwerk handelt
         bool IsMine() const { return type_ >= BLD_GRANITEMINE && type_ <= BLD_GOLDMINE; }
