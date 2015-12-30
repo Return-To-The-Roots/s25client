@@ -3,6 +3,7 @@
 // Used by s25client.rc
 //
 #define IDI_SYMBOL                      101
+#define APP_MANIFEST 					1
 
 // Next default values for new objects
 //

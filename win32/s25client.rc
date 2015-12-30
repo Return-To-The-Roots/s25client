@@ -55,6 +55,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_SYMBOL              ICON                    "s25client.ico"
+APP_MANIFEST 			RT_MANIFEST				"s25client.exe.manifest"
 #endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////
 
