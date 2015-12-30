@@ -579,7 +579,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
-            // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()d
+            // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()
             SETTINGS.proxy.proxy = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
             SETTINGS.proxy.port = atoi(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
 
@@ -587,23 +587,21 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 
             // Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
-            if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth() //-V807
-                    ||
-                    SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
-                    || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
+            if(SETTINGS.video.fullscreen_width  != VIDEODRIVER.GetScreenWidth() || 
+               SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight() || 
+               SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
                 if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width,
                         SETTINGS.video.fullscreen_height,
                         SETTINGS.video.fullscreen))
                 {
                     WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-
+                    return;
                 }
             }
 #else
             if((SETTINGS.video.fullscreen &&
-                    (SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
-                     ||
+                    (SETTINGS.video.fullscreen_width  != VIDEODRIVER.GetScreenWidth() ||
                      SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
                ) || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
@@ -612,15 +610,14 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
                         SETTINGS.video.fullscreen))
                 {
                     WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-
+                    return;
                 }
             }
 #endif
-            if(SETTINGS.driver.video != VIDEODRIVER.GetName() ||
-                    SETTINGS.driver.audio != AUDIODRIVER.GetName())
+            if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
                 WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-
+                return;
             }
 
             WINDOWMANAGER.Switch(new dskMainMenu);
