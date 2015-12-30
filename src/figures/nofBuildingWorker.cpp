@@ -412,7 +412,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         {
             std::string error;
             if(workplace->GetBuildingType() == BLD_WELL)
-                error = _("This well is dried out");
+                error = _("This well has dried out");
             else
                 error = _("This mine is exhausted");
 
