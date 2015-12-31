@@ -36,10 +36,7 @@
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
     , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(NULL), sound_moment(0)
-{
-    if(hunter)
-        hunter->AnimalLost();
-}
+{}
 
 void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
 {
@@ -173,7 +170,10 @@ void noAnimal::HandleEvent(const unsigned int id)
 
             // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
             if(hunter)
+            {
                 hunter->AnimalLost();
+                hunter = NULL;
+            }
 
         } break;
         // Verschwind-Event
