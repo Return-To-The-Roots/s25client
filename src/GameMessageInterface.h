@@ -32,6 +32,7 @@ class GameMessage_Server_Password;
 class GameMessage_Server_Name;
 class GameMessage_Server_Start;
 class GameMessage_Server_Chat;
+class GameMessage_System_Chat;
 class GameMessage_Server_Async;
 class GameMessage_Server_Countdown;
 class GameMessage_Server_CancelCountdown;
@@ -109,6 +110,8 @@ class GameMessageInterface : public MessageInterface
 
         virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
         virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last);
+
+        virtual void OnNMSSystemChat(const GameMessage_System_Chat& msg) = 0;
 };
 
 /// Castet das allgemeine Message-Interface in ein GameMessage-Interface

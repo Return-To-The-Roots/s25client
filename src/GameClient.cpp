@@ -442,17 +442,6 @@ void GameClient::ExitGame()
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Dead-Nachricht.
- *
- *  @author FloSoft
- */
-void GameClient::OnNMSDeadMsg(unsigned int id)
-{
-    ServerLost();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Ping-Nachricht.
  *
  *  @author FloSoft
@@ -935,6 +924,11 @@ void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
             ci->CI_Chat(msg.player, msg.destination, msg.text);
 
     }
+}
+
+void GameClient::OnNMSSystemChat(const GameMessage_System_Chat& msg)
+{
+    SystemChat(msg.text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1936,13 +1930,18 @@ void GameClient::SkipGF(unsigned int gf)
 
 }
 
-void GameClient::SystemChat(const std::string& text)
+void GameClient::SystemChat(const std::string& text, unsigned char player)
 {
-    ci->CI_Chat(playerId_, CD_SYSTEM, text);
+    if(player == 0xFF)
+        player = playerId_;
+    ci->CI_Chat(player, CD_SYSTEM, text);
 }
 
 unsigned GameClient::SaveToFile(const std::string& filename)
 {
+    GameMessage_System_Chat saveAnnouncement = GameMessage_System_Chat(playerId_, "Saving game...");
+    saveAnnouncement.send(socket);
+
     // Mond malen
     LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
     VIDEODRIVER.SwapBuffers();

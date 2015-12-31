@@ -102,20 +102,21 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
         void AnnounceStatusChange();
     private:
-        void OnNMSPong(const GameMessage_Pong& msg);
-        void OnNMSServerType(const GameMessage_Server_Type& msg);
-        void OnNMSServerPassword(const GameMessage_Server_Password& msg);
-        void OnNMSServerChat(const GameMessage_Server_Chat& msg);
-        void OnNMSPlayerName(const GameMessage_Player_Name& msg);
-        void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg);
-        void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg);
-        void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg);
-        void OnNMSPlayerReady(const GameMessage_Player_Ready& msg);
-        void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg);
-        void OnNMSGameCommand(const GameMessage_GameCommand& msg);
-        void OnNMSServerSpeed(const GameMessage_Server_Speed& msg);
+        void OnNMSPong(const GameMessage_Pong& msg) override;
+        void OnNMSServerType(const GameMessage_Server_Type& msg) override;
+        void OnNMSServerPassword(const GameMessage_Server_Password& msg) override;
+        void OnNMSServerChat(const GameMessage_Server_Chat& msg) override;
+        void OnNMSSystemChat(const GameMessage_System_Chat& msg) override;
+        void OnNMSPlayerName(const GameMessage_Player_Name& msg) override;
+        void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) override;
+        void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
+        void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;
+        void OnNMSPlayerReady(const GameMessage_Player_Ready& msg) override;
+        void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg) override;
+        void OnNMSGameCommand(const GameMessage_GameCommand& msg) override;
+        void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
 
-        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last);
+        void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last) override;
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();

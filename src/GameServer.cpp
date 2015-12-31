@@ -1312,46 +1312,12 @@ void GameServer::OnNMSServerPassword(const GameMessage_Server_Password& msg)
  */
 void GameServer::OnNMSServerChat(const GameMessage_Server_Chat& msg)
 {
-    //GameServerPlayer *player = &players[msg.player];
     SendToAll(msg);
+}
 
-    /*switch(msg.destination)
-    {
-    default:
-    case CD_ALL: // Alle
-        {
-            SendToAll(msg);
-        } break;
-    case CD_ALLIES: // Verbündete
-        {
-            // Besiegte dürfen nicht mehr heimlich mit Verbündeten reden
-            if(!player.isDefeated())
-            {
-                for(unsigned int i = 0; i < players.getCount(); ++i)
-                {
-                    GameServerPlayer *p = players.getElement(i);
-
-                    if(p->ps == PS_OCCUPIED && p->team == player.team && p->team != TM_NOTEAM)
-                        p->send_queue.push(msg.duplicate());
-                }
-            }
-        } break;
-    case CD_ENEMIES: // Feinde
-        {
-            // Besiegte dürfen nicht mehr heimlich mit Feinden reden
-            if(!player.isDefeated())
-            {
-                for(unsigned int i = 0; i < players.getCount(); ++i)
-                {
-                    GameServerPlayer *p = players.getElement(i);
-
-                    // Nur an Feinde aber auch an sich selber senden, damit man sieht, was man geschrieben hat
-                    if(p->ps == PS_OCCUPIED && ( p->team != player.team || i == msg.player ) )
-                        p->send_queue.push(msg.duplicate());
-                }
-            }
-        } break;
-    }*/
+void GameServer::OnNMSSystemChat(const GameMessage_System_Chat& msg)
+{
+    SendToAll(msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

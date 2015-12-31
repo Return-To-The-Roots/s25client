@@ -257,29 +257,48 @@ class GameMessage_Server_CancelCountdown : public GameMessage
 /// ein/ausgehende Server-Chat-Nachricht
 class GameMessage_Server_Chat : public GameMessage
 {
-    public:
-        ChatDestination destination;
-        std::string text;
+public:
+    ChatDestination destination;
+    std::string text;
 
-    public:
-        GameMessage_Server_Chat(void) : GameMessage(NMS_SERVER_CHAT) { }
-        GameMessage_Server_Chat(const unsigned char player,
-                                const ChatDestination destination, const std::string& text) : GameMessage(NMS_SERVER_CHAT, player)
-        {
-            LOG.write(">>> NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
+public:
+    GameMessage_Server_Chat(void) : GameMessage(NMS_SERVER_CHAT) { }
+    GameMessage_Server_Chat(const unsigned char player,
+        const ChatDestination destination, const std::string& text) : GameMessage(NMS_SERVER_CHAT, player)
+    {
+        LOG.write(">>> NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
 
-            PushUnsignedChar(static_cast<unsigned char>(destination));
-            PushString(text);
-        }
+        PushUnsignedChar(static_cast<unsigned char>(destination));
+        PushString(text);
+    }
 
-        void Run(MessageInterface* callback)
-        {
-            destination = ChatDestination(PopUnsignedChar());
-            text = PopString();
+    void Run(MessageInterface* callback)
+    {
+        destination = ChatDestination(PopUnsignedChar());
+        text = PopString();
 
-            LOG.write("<<< NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
-            GetInterface(callback)->OnNMSServerChat(*this);
-        }
+        LOG.write("<<< NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
+        GetInterface(callback)->OnNMSServerChat(*this);
+    }
+};
+
+class GameMessage_System_Chat : public GameMessage
+{
+public:
+    std::string text;
+
+public:
+    GameMessage_System_Chat(void) : GameMessage(NMS_SYSTEM_CHAT) { }
+    GameMessage_System_Chat(const unsigned char player, const std::string& text) : GameMessage(NMS_SYSTEM_CHAT, player)
+    {
+        PushString(text);
+    }
+
+    void Run(MessageInterface* callback)
+    {
+        text = PopString();
+        GetInterface(callback)->OnNMSSystemChat(*this);
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

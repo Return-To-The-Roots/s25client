@@ -65,7 +65,8 @@ enum
     NMS_GGS_CHANGE = 0x0501, //
 
     NMS_GET_ASYNC_LOG = 0x0600,
-    NMS_SEND_ASYNC_LOG
+    NMS_SEND_ASYNC_LOG,
+    NMS_SYSTEM_CHAT
 };
 
 ///////////////////////////////////////////////////////////////////////////////
