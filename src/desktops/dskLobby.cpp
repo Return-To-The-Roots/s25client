@@ -310,8 +310,7 @@ bool dskLobby::ConnectToSelectedGame()
         if(it->getVersion() == std::string(GetWindowVersion()))
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
-            connect->SetHost(it->getHost().c_str());
-            connect->SetPort(it->getPort());
+            connect->Connect(it->getHost(), it->getPort(), false, it->hasPassword());
             WINDOWMANAGER.Show(connect);
             return true;
         }

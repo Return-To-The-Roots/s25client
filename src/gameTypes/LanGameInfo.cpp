@@ -32,6 +32,7 @@ bool LanGameInfo::Serialize(Serializer& serializer)
     serializer.PushUnsignedChar(curPlayer);
     serializer.PushUnsignedChar(maxPlayer);
     serializer.PushUnsignedShort(port);
+    serializer.PushBool(isIPv6);
     serializer.PushString(version);
     return true;
 }
@@ -44,6 +45,7 @@ bool LanGameInfo::Deserialize(Serializer& serializer)
     curPlayer = serializer.PopUnsignedChar();
     maxPlayer = serializer.PopUnsignedChar();
     port = serializer.PopUnsignedShort();
+    isIPv6 = serializer.PopBool();
     version = serializer.PopString();
     return true;
 }

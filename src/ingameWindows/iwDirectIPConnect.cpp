@@ -24,7 +24,7 @@
 #include "GameClient.h"
 #include "controls/controls.h"
 #include "WindowManager.h"
-
+#include "drivers/VideoDriverWrapper.h"
 #include "desktops/dskHostGame.h"
 #include "Settings.h"
 
@@ -224,6 +224,17 @@ void iwDirectIPConnect::SetHost(const std::string& hostIp)
 {
     ctrlEdit* host = GetCtrl<ctrlEdit>(1);
     host->SetText(hostIp);
+}
+
+void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd)
+{
+    SetHost(hostOrIp);
+    SetPort(port);
+    GetCtrl<ctrlOptionGroup>(12)->SetSelection(isIPv6 ? 1 : 0, true);
+    ctrlTextButton* btConnect = GetCtrl<ctrlTextButton>(7);
+    VIDEODRIVER.SetMousePos(btConnect->GetX() + btConnect->GetWidth() / 2, btConnect->GetY());
+    if(!hasPwd)
+        Msg_ButtonClick(7);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

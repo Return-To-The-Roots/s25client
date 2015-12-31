@@ -23,7 +23,7 @@ static LANDiscoveryBase::Config makeDiscoveryConfig()
     LANDiscoveryBase::Config cfg;
     cfg.magicQuery = cfg.MakeMagic("RTTRQRY");
     cfg.magicResponse = cfg.MakeMagic("RTTRRES");
-    cfg.version = 1;
+    cfg.version = 2;
     cfg.portQuery = 3666;
     cfg.portResponse = 3667;
     return cfg;

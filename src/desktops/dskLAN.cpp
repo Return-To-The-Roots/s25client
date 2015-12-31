@@ -176,8 +176,7 @@ bool dskLAN::ConnectToSelectedGame()
     if(game.info.version == std::string(GetWindowVersion()))
     {
         iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LAN);
-        connect->SetHost(game.ip);
-        connect->SetPort(game.info.port);
+        connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);
         WINDOWMANAGER.Show(connect);
         return true;
     }

@@ -68,10 +68,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
-
-
-
 GameServer::ServerConfig::ServerConfig()
 {
     Clear();
@@ -411,6 +407,7 @@ void GameServer::AnnounceStatusChange()
         info.curPlayer = GetFilledSlots();
         info.maxPlayer = serverconfig.playercount;
         info.port = serverconfig.port;
+        info.isIPv6 = serverconfig.ipv6;
         info.version = GetWindowVersion();
         Serializer ser;
         info.Serialize(ser);

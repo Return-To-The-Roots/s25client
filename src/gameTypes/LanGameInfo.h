@@ -29,6 +29,7 @@ struct LanGameInfo
     std::string map;
     uint8_t curPlayer, maxPlayer;
     uint16_t port;
+    bool isIPv6;
     std::string version;
 
     bool Serialize(Serializer& serializer);

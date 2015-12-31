@@ -31,6 +31,8 @@ class iwDirectIPConnect : public IngameWindow, public ClientInterface
         iwDirectIPConnect(ServerType server_type);
         void SetHost(const std::string& host);
         void SetPort(unsigned short port);
+        /// Connects to the given server or fills in the info if it has a password
+        void Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd);
 
     private:
         void SetText(const std::string& text, unsigned int color, bool button);
