@@ -102,8 +102,6 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
     // Choose wares at first
     box->SetSelection(0);
     Msg_ComboSelectItem(2, 0);
-
-
 }
 
 
@@ -113,14 +111,14 @@ void iwTrade::Msg_PaintBefore()
     glArchivItem_Bitmap* bitmap = LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType() + 1);
 
     if(bitmap)
-        bitmap->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-
+    {
+        ctrlImage* img = GetCtrl<ctrlImage>(0);
+        bitmap->Draw(img->GetX(), img->GetY(), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    }
 }
 
 void iwTrade::Msg_PaintAfter()
-{
-
-}
+{}
 
 
 void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
