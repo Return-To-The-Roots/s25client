@@ -160,7 +160,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Spiel pausiert?
         bool IsPaused() const { return framesinfo.isPaused; }
         /// Schreibt Header der Save-Datei
-        unsigned WriteSaveHeader(const std::string& filename);
+        unsigned SaveToFile(const std::string& filename);
         /// Visuelle Einstellungen aus den richtigen ableiten
         void GetVisualSettings();
 

@@ -972,7 +972,7 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
 
 //  LOG.lprintf("Async log saved at \"%s\"\n",filename);
 
-    GAMECLIENT.WriteSaveHeader(fileName);
+    GAMECLIENT.SaveToFile(fileName);
 
     // Pausieren
 
@@ -1560,7 +1560,7 @@ void GameClient::HandleAutosave()
             tmp += ".sav";
         }
 
-        WriteSaveHeader(tmp);
+        SaveToFile(tmp);
     }
 }
 
@@ -1941,7 +1941,7 @@ void GameClient::SystemChat(const std::string& text)
     ci->CI_Chat(playerId_, CD_SYSTEM, text);
 }
 
-unsigned GameClient::WriteSaveHeader(const std::string& filename)
+unsigned GameClient::SaveToFile(const std::string& filename)
 {
     // Mond malen
     LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);

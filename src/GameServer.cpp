@@ -1679,7 +1679,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
 
     // write async save
     fileName = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
-    GAMECLIENT.WriteSaveHeader(fileName);
+    GAMECLIENT.SaveToFile(fileName);
 
     KickPlayer(msg.player, NP_ASYNC, 0);
 }

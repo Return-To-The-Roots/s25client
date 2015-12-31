@@ -175,7 +175,7 @@ void iwSave::SaveLoad()
     tmp += ".sav";
 
     // Speichern
-    GAMECLIENT.WriteSaveHeader(tmp);
+    GAMECLIENT.SaveToFile(tmp);
 
     // Aktualisieren
     RefreshTable();
