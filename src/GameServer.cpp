@@ -891,9 +891,13 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     {
         // KI-Spieler muss übernehmen
         player.ps = PS_KI;
+        player.aiInfo.type = AI::DUMMY;
+        player.aiInfo.level = AI::MEDIUM;
         ai_players[npk.playerid] = GAMECLIENT.CreateAIPlayer(npk.playerid);
         // Und Socket schließen, das brauchen wir nicht mehr
         player.so.Close();
+        // Clear queue as this is an AI now (Client executes the GCs, not the server, otherwise we WOULD need to execute those GCs)
+        player.gc_queue.clear();
     }
     else
         player.clear();
@@ -1048,11 +1052,10 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         checksums.push_back(curChecksum.checksum);
 
         // Checksumme des ersten Spielers als Richtwert
-        if (referencePlayerIdx == 0xFF && (player.ps == PS_OCCUPIED))
+        if (!checksumValid)
         {
             referenceChecksum = curChecksum;
             checksumValid = true;
-            referencePlayerIdx = client;
         }
 
         for(std::vector<gc::GameCommandPtr>::const_iterator it = frontGC.gcs.begin(); it != frontGC.gcs.end(); ++it)
@@ -1071,12 +1074,9 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         //LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, RANDOM.GetCurrentRandomValue());
 
         // Checksummen nicht gleich?
-        if ( checksumValid && player.ps == PS_OCCUPIED &&
-            (
-                curChecksum.checksum != referenceChecksum.checksum ||
-                curChecksum.objCt != referenceChecksum.objCt ||
-                curChecksum.objIdCt != referenceChecksum.objIdCt)
-            )
+        if (curChecksum.checksum != referenceChecksum.checksum ||
+            curChecksum.objCt    != referenceChecksum.objCt ||
+            curChecksum.objIdCt  != referenceChecksum.objIdCt)
         {
             LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.gf_nr, curChecksum.checksum, referenceChecksum.checksum,
                 curChecksum.objCt, referenceChecksum.objCt, curChecksum.objIdCt, referenceChecksum.objIdCt);
@@ -1534,14 +1534,21 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
     GameServerPlayer& player = players[msg.player];
 
-    // NFCs speichern
-    player.gc_queue.push_back(msg);
+    // Only valid from humans (for now)
+    if(player.ps != PS_OCCUPIED)
+        return;
 
     //// Command schließlich an alle Clients weiterleiten, aber nicht in der Pause und nicht, wenn derjenige Spieler besiegt wurde!
-    if(!this->framesinfo.isPaused && !players[msg.player].isDefeated())
+    if(!this->framesinfo.isPaused && !player.isDefeated())
+    {
+        // NFCs speichern
+        player.gc_queue.push_back(msg);
         SendToAll(msg);
-    else
+    }else
+    {
+        player.gc_queue.push_back(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
         SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
+    }
 }
 
 void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& in, bool last)
@@ -1569,7 +1576,6 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     else
     {
         LOG.lprintf("Received async log from %u, but did not expect it!\n", msg.player);
-
         return;
     }
 

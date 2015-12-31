@@ -1261,7 +1261,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
         framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
     }
 
-    //LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
+    //LOG.write("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n", framesinfo.gf_nr, framesinfo.gfNrServer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1602,9 +1602,6 @@ void GameClient::SendNothingNC(int checksum)
 {
     if(checksum == -1)
         checksum = RANDOM.GetCurrentRandomValue();
-
-    /*GameMessage nfc(NMS_NFC_COMMANDS, 5);
-    *static_cast<int*>(nfc.m_pData) = checksum;*/
 
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, std::vector<gc::GameCommandPtr>()));
 }

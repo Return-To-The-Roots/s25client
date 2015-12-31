@@ -52,7 +52,6 @@ void GameClient::ExecuteNWF()
 
             // Nachricht abwerfen :)
             players[i].gc_queue.pop();
-
         }
     }
 
