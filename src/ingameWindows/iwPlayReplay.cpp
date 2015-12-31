@@ -67,10 +67,23 @@ iwPlayReplay::iwPlayReplay(void)
 {
     ctrlTable* table = AddTable(0, 20, 30, 560, 220, TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
 
-    // Starten
-    AddTextButton(1, 195, 260, 100, 22, TC_GREEN2, _("Start"), NormalFont);
-    // Aufräumen
-    AddTextButton(2, 305, 260, 100, 22, TC_RED1, _("Clear"), NormalFont);
+    AddTextButton(1, 120, 260, 100, 22, TC_GREEN2, _("Start"), NormalFont);
+    AddTextButton(2, 320, 260, 100, 22, TC_RED1, _("Clear"), NormalFont);
+    AddTextButton(3, 430, 260, 150, 22, TC_RED1, _("Delete selected"), NormalFont);
+
+    PopulateTable();
+
+    GAMECLIENT.SetInterface(NULL);
+}
+
+void iwPlayReplay::PopulateTable()
+{
+    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    unsigned short sortCol = table->GetSortColumn();
+    if(sortCol == 0xFFFF)
+        sortCol = 0;
+    bool sortDir = table->GetSortDirection();
+    table->DeleteAllItems();
 
     // Verzeichnis auflisten
     std::string tmp = GetFilePath(FILE_PATHS[51]);
@@ -78,9 +91,7 @@ iwPlayReplay::iwPlayReplay(void)
     ListDir(tmp, false, FillReplayTable, table);
 
     // Erst einmal nach Dateiname sortieren
-    table->SortRows(0);
-
-    GAMECLIENT.SetInterface(NULL);
+    table->SortRows(sortCol, &sortDir);
 }
 
 void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -89,15 +100,17 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         default: break;
         case 1:
-        {
             StartReplay();
-        } break;
+            break;
         case 2:
-        {
             // Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
             WINDOWMANAGER.Show( new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1) );
-
-        } break;
+            break;
+        case 3:
+            ctrlTable* table = GetCtrl<ctrlTable>(0);
+            if(table->GetSelection() < table->GetRowCount())
+                WINDOWMANAGER.Show( new iwMsgbox(_("Delete selected"), _("Are you sure you want to remove the selected replay?"), this, MSB_YESNO, MSB_QUESTIONRED, 2) );
+            break;
     }
 }
 
@@ -147,6 +160,14 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
 
         // Tabelle leeren
         GetCtrl<ctrlTable>(0)->DeleteAllItems();
+    }else if(msgbox_id == 2 && mbr == MSR_YES)
+    {
+        ctrlTable* table = GetCtrl<ctrlTable>(0);
+        if(table->GetSelection() < table->GetRowCount())
+        {
+            RemoveReplay(table->GetItemText(table->GetSelection(), 4), NULL);
+            PopulateTable();
+        }
     }
 }
 

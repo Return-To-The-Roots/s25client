@@ -28,6 +28,8 @@ class iwPlayReplay : public IngameWindow
         /// Konstruktor von @p iwPlayReplay.
         iwPlayReplay();
 
+        void PopulateTable();
+
     private:
 
         void Msg_ButtonClick(const unsigned int ctrl_id);
