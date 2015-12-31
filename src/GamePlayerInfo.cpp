@@ -45,8 +45,6 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     color(0),
     ping(0),
     rating(0),
-	obj_cnt(0),
-	obj_id_cnt(0),
     ready(false)
 {
 }
@@ -64,8 +62,6 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer* ser) :
     color(ser->PopUnsignedChar()),
     ping(ser->PopUnsignedInt()),
     rating(ser->PopUnsignedInt()),
-	obj_cnt(0),
-	obj_id_cnt(0),
     ready(ser->PopBool())
 {
 }
@@ -106,7 +102,6 @@ void GamePlayerInfo::serialize(Serializer* ser) const
 
 void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
-    /// Besiegt?
     std::swap(ps, two.ps);
     std::swap(aiInfo, two.aiInfo);
     std::swap(defeated, two.defeated);
@@ -114,7 +109,6 @@ void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
     std::swap(is_host, two.is_host);
     std::swap(ping, two.ping);
     std::swap(rating, two.rating);
-    std::swap(checksum, two.checksum);
     std::swap(ready, two.ready);
 }
 

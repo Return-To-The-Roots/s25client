@@ -337,8 +337,8 @@ bool DebugInfo::SendReplay()
     return true;
 }
 
-bool DebugInfo::SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list<RandomEntry>::iterator first_b,
-                             std::list<RandomEntry> &a, std::list<RandomEntry> &b, unsigned identical)
+bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
+                             const std::vector<RandomEntry> &a, const std::vector<RandomEntry> &b, unsigned identical)
 {
     if (!SendString("AsyncLog"))
     {
@@ -349,8 +349,8 @@ bool DebugInfo::SendAsyncLog(std::list<RandomEntry>::iterator first_a, std::list
     unsigned len =  4;
     unsigned cnt = 0;
 
-    std::list<RandomEntry>::iterator it_a = first_a;
-    std::list<RandomEntry>::iterator it_b = first_b;
+    std::vector<RandomEntry>::const_iterator it_a = first_a;
+    std::vector<RandomEntry>::const_iterator it_b = first_b;
 
     // if there were any identical lines, include only the last one
     if (identical)

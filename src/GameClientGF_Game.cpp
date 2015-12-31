@@ -22,7 +22,7 @@
 #include "Random.h"
 #include "GameMessages.h"
 
-void GameClient::ExecuteGameFrame_Game()
+void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
@@ -40,7 +40,7 @@ void GameClient::ExecuteGameFrame_Game()
 
             // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
             // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
-            if(msg.gcs.size() > 0 && !replay_mode)
+            if(!msg.gcs.empty() && !replay_mode)
             {
                 // Aktuelle Checksumme reinschreiben
                 GameMessage_GameCommand tmp(msg.player, checksum, msg.gcs);
@@ -52,16 +52,10 @@ void GameClient::ExecuteGameFrame_Game()
 
             // Nachricht abwerfen :)
             players[i].gc_queue.pop();
-
         }
     }
 
-    // Frame ausführen
-    NextGF();
-
-    //LOG.lprintf("%d = %d - %d\n", framesinfo.nr / framesinfo.nwf_length, checksum, RANDOM.GetCurrentRandomValue());
-
-    // Stehen eigene Commands an, die gesendet werden müssen?
+    // Send GC message for this NWF
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, gameCommands_));
 
     // alles gesendet --> Liste löschen

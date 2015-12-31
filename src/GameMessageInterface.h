@@ -21,7 +21,7 @@
 
 #include "MessageInterface.h"
 #include "Random.h"
-#include <list>
+#include <vector>
 
 class GameMessage_Ping;
 class GameMessage_Pong;
@@ -108,7 +108,7 @@ class GameMessageInterface : public MessageInterface
         virtual void OnNMSGGSChange(const GameMessage_GGSChange& msg);
 
         virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg);
-        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, std::list<RandomEntry>* his, bool last);
+        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last);
 };
 
 /// Castet das allgemeine Message-Interface in ein GameMessage-Interface

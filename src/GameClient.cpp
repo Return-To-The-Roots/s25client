@@ -289,6 +289,7 @@ void GameClient::Stop()
     if (IsHost())
         GAMESERVER.Stop();
 
+    framesinfo.Clear();
     clientconfig.Clear();
     mapinfo.Clear();
     for(std::list<PostMsg*>::iterator it = postMessages.begin(); it != postMessages.end(); ++it)
@@ -302,8 +303,8 @@ void GameClient::Stop()
 
     socket.Close();
 
-	// clear jump target
-	skiptogf=0;
+    // clear jump target
+    skiptogf=0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -336,7 +337,7 @@ void GameClient::StartGame(const unsigned int random_init)
     em = new EventManager();
     GameObject::SetPointers(gw, em);
     for(unsigned i = 0; i < players.getCount(); ++i)
-        dynamic_cast<GameClientPlayer*>(players.getElement(i))->SetGameWorldPointer(gw);
+        players[i].SetGameWorldPointer(gw);
 
     if(ci)
         ci->CI_GameStarted(gw);
@@ -432,11 +433,9 @@ void GameClient::ExitGame()
 {
     GameObject::SetPointers(NULL, NULL);
     // Spielwelt zerstören
-    delete gw;
-    delete em;
-    gw = 0;
-    em = 0;
-
+    deletePtr(human_ai);
+    deletePtr(gw);
+    deletePtr(em);
     deletePtr(human_ai);
     players.clear();
 }
@@ -949,10 +948,10 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
     // Liste mit Namen und Checksummen erzeugen
     std::stringstream checksum_list;
     checksum_list << 23;
-    for(unsigned int i = 0; i < players.getCount(); ++i)
+    for(unsigned int i = 0; i < msg.checksums.size(); ++i)
     {
-        checksum_list << players.getElement(i)->name << ": " << msg.checksums.at(i);
-        if(i != players.getCount() - 1)
+        checksum_list << players.getElement(i)->name << ": " << msg.checksums[i];
+        if(i + 1 < msg.checksums.size())
             checksum_list << ", ";
     }
 
@@ -973,7 +972,7 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
 
 //  LOG.lprintf("Async log saved at \"%s\"\n",filename);
 
-    GAMECLIENT.WriteSaveHeader(fileName);
+    GAMECLIENT.SaveToFile(fileName);
 
     // Pausieren
 
@@ -1204,30 +1203,30 @@ void GameClient::IncreaseSpeed()
 
 void GameClient::IncreaseReplaySpeed()
 {
-	if (replay_mode)
-	{
-		if (framesinfo.gf_length > 10)
-		{
-			framesinfo.gf_length -= 10;
-		} else if (framesinfo.gf_length == 10)
-		{
-			framesinfo.gf_length = 1;
-		}
-	}
+    if (replay_mode)
+    {
+        if (framesinfo.gf_length > 10)
+        {
+            framesinfo.gf_length -= 10;
+        } else if (framesinfo.gf_length == 10)
+        {
+            framesinfo.gf_length = 1;
+        }
+    }
 }
 
 void GameClient::DecreaseReplaySpeed()
 {
-	if (replay_mode)
-	{
-		if (framesinfo.gf_length == 1)
-		{
-			framesinfo.gf_length = 10;
-		} else if (framesinfo.gf_length < 1000)
-		{
-			framesinfo.gf_length += 10;
-		}
-	}
+    if (replay_mode)
+    {
+        if (framesinfo.gf_length == 1)
+        {
+            framesinfo.gf_length = 10;
+        } else if (framesinfo.gf_length < 1000)
+        {
+            framesinfo.gf_length += 10;
+        }
+    }
 }
 
 
@@ -1236,17 +1235,33 @@ void GameClient::DecreaseReplaySpeed()
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 {
-    framesinfo.gf_length_new = msg.gf_length;
-
-    framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
+    // Emulate a push of the new gf length
+    if(!framesinfo.gfLenghtNew)
+        framesinfo.gfLenghtNew = msg.gf_length;
+    else
+    {
+        assert(framesinfo.gfLenghtNew2 == 0);
+        framesinfo.gfLenghtNew2 = msg.gf_length;
+    }
 
     if(msg.first)
     {
+        if(msg.nr % framesinfo.nwf_length == 0)
+            framesinfo.gfNrServer = msg.nr; // If the next frame is a NWF, we allow only this one
+        else
+        {
+            framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
+            framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
+        }
         state = CS_GAME; // zu gamestate wechseln
         RealStart();
+    }else
+    {
+        assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
+        framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
     }
 
-    //LOG.lprintf("framesinfo.nr(%d) == framesinfo.nr_srv(%d)\n", framesinfo.nr, framesinfo.nr_srv);
+    //LOG.write("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n", framesinfo.gf_nr, framesinfo.gfNrServer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1260,13 +1275,13 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
 void GameClient::OnNMSPause(const GameMessage_Pause& msg)
 {
     //framesinfo.pause =  msg.paused;
-	if(msg.paused)
-		framesinfo.pause_gf = msg.nr;
-	else
-	{
-	    framesinfo.isPaused =  false;
-		framesinfo.pause_gf = 0;
-	}
+    if(msg.paused)
+        framesinfo.pause_gf = msg.nr;
+    else
+    {
+        framesinfo.isPaused =  false;
+        framesinfo.pause_gf = 0;
+    }
 
     LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
 
@@ -1292,7 +1307,7 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
     // stückeln...
     std::list<RandomEntry>* async_log = RANDOM.GetAsyncLog();
 
-    std::list<RandomEntry> part;
+    std::vector<RandomEntry> part;
 
     for (std::list<RandomEntry>::iterator it = async_log->begin(); it != async_log->end(); ++it)
     {
@@ -1300,14 +1315,12 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
 
         if (part.size() == 10)
         {
-            send_queue.push(new GameMessage_SendAsyncLog(&part, false));
+            send_queue.push(new GameMessage_SendAsyncLog(part, false));
             part.clear();
         }
     }
 
-    send_queue.push(new GameMessage_SendAsyncLog(&part, true));
-
-    part.clear();
+    send_queue.push(new GameMessage_SendAsyncLog(part, true));
 }
 
 /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
@@ -1319,7 +1332,7 @@ bool GameClient::IsPlayerLagging()
     {
         if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
         {
-            if(players[i].gc_queue.size() == 0)
+            if(players[i].gc_queue.empty())
             {
                 players[i].is_lagging = true;
                 is_lagging = true;
@@ -1336,93 +1349,89 @@ bool GameClient::IsPlayerLagging()
 void GameClient::StatisticStep()
 {
     // Soll alle 750 GFs (30 Sekunden auf 'Schnell') aufgerufen werden
-    if ((framesinfo.gf_nr - 1) % 750 == 0)
+    if ((framesinfo.gf_nr - 1) % 750 > 0)
+        return;
+
+    for (unsigned int i = 0; i < players.getCount(); ++i)
     {
-        for (unsigned int i = 0; i < players.getCount(); ++i)
+        players[i].StatisticStep();
+    }
+
+    // Check objective if there is one and there are at least two players
+    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+        return;
+
+    // check winning condition
+    unsigned int max = 0, sum = 0, best = 0xFFFF, maxteam = 0, teampoints = 0, curteam = 0, bestteam = 0xFFFF;
+
+    // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
+    for (unsigned int i = 0; i < players.getCount(); ++i)
+    {
+        if(ggs.lock_teams) //in games with locked team settings check for team victory
         {
-            players[i].StatisticStep();
-        }
-
-        // Check objective if there is one and there are at least two players
-        if (ggs.game_objective != GlobalGameSettings::GO_NONE)
-        {
-            // check winning condition
-            unsigned int max = 0, sum = 0, best = 0xFFFF, maxteam = 0, teampoints = 0, curteam = 0, bestteam = 0xFFFF;
-
-            // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
-            for (unsigned int i = 0; i < players.getCount(); ++i)
+            curteam = 0;
+            teampoints = 0;
+            if(players[i].isDefeated())continue;
+            for(unsigned int j = 0; j < players.getCount(); ++j)
             {
-                if(ggs.lock_teams) //in games with locked team settings check for team victory
+                if(i != j && players[j].IsAlly(i) && !players[j].isDefeated())
                 {
-                    curteam = 0;
-                    teampoints = 0;
-                    if(players[i].isDefeated())continue;
-                    for(unsigned int j = 0; j < players.getCount(); ++j)
-                    {
-                        if(i != j && players[j].IsAlly(i) && !players[j].isDefeated())
-                        {
-                            curteam = curteam | (1 << j);
-                            teampoints += players[j].GetStatisticCurrentValue(STAT_COUNTRY);
-                        }
-                    }
-                    teampoints += players[i].GetStatisticCurrentValue(STAT_COUNTRY);
-                    curteam = curteam | (1 << i);
-                    if(teampoints > maxteam && teampoints - players[i].GetStatisticCurrentValue(STAT_COUNTRY) > 0)
-                    {
-                        maxteam = teampoints;
-                        bestteam = curteam;
-                    }
+                    curteam = curteam | (1 << j);
+                    teampoints += players[j].GetStatisticCurrentValue(STAT_COUNTRY);
                 }
-                unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
-                if (v > max)
-                {
-                    max = v;
-                    best = i;
-                }
-
-                sum += v;
             }
-
-            switch (ggs.game_objective)
+            teampoints += players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+            curteam = curteam | (1 << i);
+            if(teampoints > maxteam && teampoints - players[i].GetStatisticCurrentValue(STAT_COUNTRY) > 0)
             {
-                case GlobalGameSettings::GO_CONQUER3_4: // at least 3/4 of the land
-                    if ((max * 4 >= sum * 3) && (best != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    break;
-
-                case GlobalGameSettings::GO_TOTALDOMINATION:    // whole populated land
-                    if ((max == sum) && (best != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    if ((maxteam == sum) && (bestteam != 0xFFFF))
-                    {
-                        ggs.game_objective = GlobalGameSettings::GO_NONE;
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            // We have a winner! Objective was changed to GO_NONE to avoid further checks.
-            if (ggs.game_objective == GlobalGameSettings::GO_NONE)
-            {
-                if(maxteam <= best)
-                {
-                    gw->GetGameInterface()->GI_Winner(best);
-                }
-                else
-                {
-                    gw->GetGameInterface()->GI_TeamWinner(bestteam);
-                }
+                maxteam = teampoints;
+                bestteam = curteam;
             }
         }
+        unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+        if (v > max)
+        {
+            max = v;
+            best = i;
+        }
+
+        sum += v;
+    }
+
+    switch (ggs.game_objective)
+    {
+        case GlobalGameSettings::GO_CONQUER3_4: // at least 3/4 of the land
+            if ((max * 4 >= sum * 3) && (best != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            break;
+
+        case GlobalGameSettings::GO_TOTALDOMINATION:    // whole populated land
+            if ((max == sum) && (best != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            if ((maxteam == sum) && (bestteam != 0xFFFF))
+            {
+                ggs.game_objective = GlobalGameSettings::GO_NONE;
+            }
+            break;
+        default:
+            break;
+    }
+
+    // We have a winner! Objective was changed to GO_NONE to avoid further checks.
+    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+    {
+        if(maxteam <= best)
+            gw->GetGameInterface()->GI_Winner(best);
+        else
+            gw->GetGameInterface()->GI_TeamWinner(bestteam);
     }
 }
 
@@ -1430,12 +1439,12 @@ void GameClient::StatisticStep()
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
-    unsigned int currenttime = VIDEODRIVER.GetTickCount();
-	if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && framesinfo.gf_nr == framesinfo.pause_gf)
-	{
-		framesinfo.pause_gf = 0;
-		framesinfo.isPaused = true;
-	}
+    unsigned int currentTime = VIDEODRIVER.GetTickCount();
+    if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && framesinfo.gf_nr == framesinfo.pause_gf)
+    {
+        framesinfo.pause_gf = 0;
+        framesinfo.isPaused = true;
+    }
 
     if(framesinfo.isPaused)
     {
@@ -1443,124 +1452,122 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         return;
     }
 
-    // Wurde der nächsten Game-Frame zeitlich erreicht (bzw. wenn nur Frames übersprungen werden sollen,
-    // brauchen wir nicht zu warten)?
-    if(skipping || skiptogf > framesinfo.gf_nr || (currenttime - framesinfo.lastTime) > framesinfo.gf_length)
+    if(framesinfo.forcePauseLen)
     {
-        //LOG.lprintf("%d = %d\n", framesinfo.nr / framesinfo.nwf_length, RANDOM.GetCurrentRandomValue());
+        if(currentTime - framesinfo.forcePauseStart > framesinfo.forcePauseLen)
+            framesinfo.forcePauseLen = 0;
+        else
+            return; // Pause
+    }
+
+    // Is it time for the next GF? If we are skipping, it is always time for the next GF
+    if(skipping || skiptogf > framesinfo.gf_nr || (currentTime - framesinfo.lastTime) > framesinfo.gf_length)
+    {
         if(replay_mode)
         {
-            // Nächster Game-Frame erreicht
-            ++framesinfo.gf_nr;
-
+            // In replay mode we have all commands in  the file -> Execute them
             ExecuteGameFrame_Replay();
-
-            // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frameTime = std::min(currenttime - framesinfo.lastTime, GetGFLength() - 1);
-
-            // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currenttime;
-        }
-        // Ist jetzt auch ein NWF dran?
-        else if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
+        }else
         {
-            // entsprechenden NC für diesen NWF ausführen
-            // Beim Replay geht das etwas anderes, da werden die NFCs aus der Datei gelesen
-
-            // Schauen wir mal ob alles angekommen ist
-            // Laggt einer oder nicht?
-            if(!IsPlayerLagging())
+            // Is it time for a NWF, handle that first
+            if(framesinfo.gf_nr % framesinfo.nwf_length == 0)
             {
-                // Kein Lag, normal weitermachen
+                // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
+                // -> Don't execute GF, don't autosave etc.
+                if(IsPlayerLagging())
+                {
+                    // If a player is a few GFs behind, he will never catch up and always lag
+                    // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
+                    // Do not reset frameTime or lastTime as this will mess up interpolation for drawing
+                    framesinfo.forcePauseStart = currentTime;
+                    framesinfo.forcePauseLen = (rand() * 4 * framesinfo.gf_length) / RAND_MAX;
+                    return;
+                }
 
-                // Diesen Zeitpunkt merken
-                framesinfo.lastTime = currenttime;
-                // Nächster Game-Frame erreicht
-                ++framesinfo.gf_nr;
+                // Same for the server
+                if(framesinfo.gfNrServer < framesinfo.gf_nr)
+                    return;
+                assert(framesinfo.gfNrServer <= framesinfo.gf_nr + framesinfo.nwf_length);
 
-                ExecuteGameFrame_Game();
+                ExecuteNWF();
 
-                // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-                framesinfo.frameTime = currenttime - framesinfo.lastTime;
+                assert(framesinfo.gfLenghtNew != 0);
+                if(framesinfo.gfLenghtNew != framesinfo.gf_length)
+                {
+                    unsigned oldGfLen = framesinfo.gf_length;
+                    int oldNwfLen = framesinfo.nwf_length;
+                    framesinfo.ApplyNewGFLength();
 
-            } // if(!is_lagging)
+                    // Adjust next confirmation for next NWF (if we have it already)
+                    if(framesinfo.gfNrServer != framesinfo.gf_nr)
+                    {
+                        assert(framesinfo.gfNrServer == framesinfo.gf_nr + oldNwfLen);
+                        framesinfo.gfNrServer = framesinfo.gfNrServer - oldNwfLen + framesinfo.nwf_length;
+                        // Make it a NWF (mostly for validation and consistency)
+                        framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length;
+                    }
 
-            if(framesinfo.gf_length_new != framesinfo.gf_length)
-            {
-                framesinfo.gf_length = framesinfo.gf_length_new;
-
-                //int oldgfl = framesinfo.gf_length;
-                int oldnwf = framesinfo.nwf_length;
-
-                if(framesinfo.gf_length == 1)
-                    framesinfo.nwf_length = 50;
-                else
-                    framesinfo.nwf_length = 250 / framesinfo.gf_length;
-
-                framesinfo.gfNrServer = framesinfo.gfNrServer - oldnwf + framesinfo.nwf_length;
-
-                LOG.lprintf("Client: %d/%d: Speed changed from %d to %d\n", framesinfo.gfNrServer, framesinfo.gf_nr, oldnwf, framesinfo.nwf_length);
-                //LOG.lprintf("Client: GF-Length: %5d => %5d, NWF-Length: %5d => %5d, GF: %5d\n", oldgfl, framesinfo.gf_length, oldnwf, framesinfo.nwf_length, framesinfo.nr_srv);
+                    LOG.lprintf("Client: %u/%u: Speed changed from %u to %u (NWF: %u to %u)\n", framesinfo.gfNrServer, framesinfo.gf_nr, oldGfLen, framesinfo.gf_length, oldNwfLen, framesinfo.nwf_length);
+                }
+                // "pop" the length
+                framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
+                framesinfo.gfLenghtNew2 = 0;
             }
-        } // if(framesinfo.nr % framesinfo.nwf_length == 0)
-        else if (framesinfo.gf_nr < framesinfo.gfNrServer)
-        {
-            // Nächster GameFrame zwischen framesinfos
 
-            // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currenttime;
-            // Nächster Game-Frame erreicht
-            ++framesinfo.gf_nr;
-
-            // Frame ausführen
             NextGF();
-
-            // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-            framesinfo.frameTime = currenttime - framesinfo.lastTime;
         }
 
-        // Auto-Speichern ggf.
+        assert(replay_mode || framesinfo.gf_nr <= framesinfo.gfNrServer + framesinfo.nwf_length);
+        // Store this timestamp
+        framesinfo.lastTime = currentTime;
+        // Reset frameTime
+        framesinfo.frameTime = 0;
 
-        // Aktiviert?
-        if(SETTINGS.interface.autosave_interval && !replay_mode)
-        {
-            // Alle .... GF
-            if(framesinfo.gf_nr % SETTINGS.interface.autosave_interval == 0)
-            {
-                std::string tmp = GetFilePath(FILE_PATHS[85]);
-
-                if (this->mapinfo.title.length())
-                {
-                    tmp += this->mapinfo.title;
-                    tmp += " (";
-                    tmp += _("Auto-Save");
-                    tmp += ").sav";
-                }
-                else
-                {
-                    tmp += _("Auto-Save");
-                    tmp += ".sav";
-                }
-
-                WriteSaveHeader(tmp);
-            }
-        }
+        HandleAutosave();
 
         // GF-Ende im Replay aktualisieren
         if(!replay_mode)
             replayinfo.replay.UpdateLastGF(framesinfo.gf_nr);
-
-    } // if(skipping || (currenttime - framesinfo.lasttime) > framesinfo.gf_length)
-    else
+    }else
     {
-        // Frame-Time setzen zum Zeichnen, (immer außer bei Lags)
-        framesinfo.frameTime = currenttime - framesinfo.lastTime;
+        // Next GF not yet reached, just update the time in the current one for drawing
+        framesinfo.frameTime = currentTime - framesinfo.lastTime;
+        assert(framesinfo.frameTime <= framesinfo.gf_length);
+    }
+}
+
+void GameClient::HandleAutosave()
+{
+    // If inactive or during replay -> no autosave
+    if(!SETTINGS.interface.autosave_interval  || replay_mode)
+        return;
+
+    // Alle .... GF
+    if(framesinfo.gf_nr % SETTINGS.interface.autosave_interval == 0)
+    {
+        std::string tmp = GetFilePath(FILE_PATHS[85]);
+
+        if (this->mapinfo.title.length())
+        {
+            tmp += this->mapinfo.title;
+            tmp += " (";
+            tmp += _("Auto-Save");
+            tmp += ").sav";
+        }
+        else
+        {
+            tmp += _("Auto-Save");
+            tmp += ".sav";
+        }
+
+        SaveToFile(tmp);
     }
 }
 
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF()
 {
+    ++framesinfo.gf_nr;
     // Statistiken aktualisieren
     StatisticStep();
     //  EventManager Bescheid sagen
@@ -1569,10 +1576,9 @@ void GameClient::NextGF()
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
         if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
+        {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
             players[i].TestForEmergencyProgramm();
-        if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
-        {
             // Bündnisse auf Aktualität überprüfen
             players[i].TestPacts();
         }
@@ -1583,9 +1589,7 @@ void GameClient::NextGF()
         human_ai->RunGF(framesinfo.gf_nr, (framesinfo.gf_nr % framesinfo.nwf_length == 0));
 
         const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
-
         gameCommands_.insert(gameCommands_.end(), ai_gcs.begin(), ai_gcs.end());
-
         human_ai->FetchGameCommands();
     }
     
@@ -1613,9 +1617,6 @@ void GameClient::SendNothingNC(int checksum)
 {
     if(checksum == -1)
         checksum = RANDOM.GetCurrentRandomValue();
-
-    /*GameMessage nfc(NMS_NFC_COMMANDS, 5);
-    *static_cast<int*>(nfc.m_pData) = checksum;*/
 
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, std::vector<gc::GameCommandPtr>()));
 }
@@ -1809,7 +1810,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-	state = CS_GAME; // zu gamestate wechseln
+    state = CS_GAME; // zu gamestate wechseln
     RealStart();
 
     gwv = gw;
@@ -1883,25 +1884,25 @@ void GameClient::SkipGF(unsigned int gf)
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
     // Spiel entpausieren
-	if(replay_mode)
-		SetReplayPause(false);
-	if(!replay_mode)
-	{
-		//unpause before skipping
-		if(GAMESERVER.IsPaused())
-		{
-			GAMESERVER.TogglePause();
-			//return;
-		}
-		GAMESERVER.skiptogf=gf;
-		skiptogf=gf;
-		LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.gf_nr, gf);
-		return;
-	}
-	
+    if(replay_mode)
+        SetReplayPause(false);
+    if(!replay_mode)
+    {
+        //unpause before skipping
+        if(GAMESERVER.IsPaused())
+        {
+            GAMESERVER.TogglePause();
+            //return;
+        }
+        GAMESERVER.skiptogf=gf;
+        skiptogf=gf;
+        LOG.lprintf("jumping from gf %i to gf %i \n", framesinfo.gf_nr, gf);
+        return;
+    }
+    
 
     // GFs überspringen
-	for(unsigned int i = framesinfo.gf_nr; i < gf;++i)
+    for(unsigned int i = framesinfo.gf_nr; i < gf;++i)
     {
         if(i % 1000 == 0)
         {
@@ -1917,21 +1918,21 @@ void GameClient::SkipGF(unsigned int gf)
             gw->Draw(GetPlayerID(), &water_percent, false, MapPoint(0, 0), road);
 
             // text oben noch hinschreiben
-            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );			
+            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );            
             LargeFont->Draw(VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }
         ExecuteGameFrame(true);
-		//LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);		
+        //LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);        
     }
-	
+    
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat 
     unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
-	char text[256];
-	snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
-	ci->CI_Chat(playerId_, CD_SYSTEM, text); 
-	SetReplayPause(true);
+    char text[256];
+    snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
+    ci->CI_Chat(playerId_, CD_SYSTEM, text); 
+    SetReplayPause(true);
 
 }
 
@@ -1940,7 +1941,7 @@ void GameClient::SystemChat(const std::string& text)
     ci->CI_Chat(playerId_, CD_SYSTEM, text);
 }
 
-unsigned GameClient::WriteSaveHeader(const std::string& filename)
+unsigned GameClient::SaveToFile(const std::string& filename)
 {
     // Mond malen
     LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);

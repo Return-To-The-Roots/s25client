@@ -23,6 +23,8 @@ namespace helpers{
     /// Returns the greatest common divisor of a and b
     /// That is the greatest number x with a % x == b % x == 0
     int gcd(int a, int b);
+    /// Returns the result of "divident / divisor" rounded to the nearest integer value
+    unsigned roundedDiv(unsigned dividend, unsigned divisor);
 }
 
 #endif // mathFuncs_h__

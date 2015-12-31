@@ -36,4 +36,13 @@ namespace helpers{
         }
         return a;
     }
+
+    unsigned roundedDiv(unsigned dividend, unsigned divisor)
+    {
+        assert(divisor > 0);
+        assert(dividend + (divisor / 2) >= dividend); // Overflow check
+        // Standard way for emulation mathematical rounding: floor(divident / divisor + 0.5)
+        // Which is the same as: floor((divident + 0.5 * divisor) / divisor) == floor((divident + divisor / 2) / divisor)
+        return (dividend + (divisor / 2)) / divisor;
+    }
 }

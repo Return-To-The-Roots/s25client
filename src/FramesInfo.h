@@ -24,13 +24,17 @@ struct FramesInfo
 public:
     FramesInfo();
     void Clear();
+    /// Changes the GF length to GFLengthNEw and adapts the NWF length accordingly
+    void ApplyNewGFLength();
 
     /// Current GameFrame (GF) (from start of the game)
     unsigned gf_nr;
     /// Lenght of one GF in ms (~ 1/speed of the game)
     unsigned gf_length;
     /// New length of a GF (applied on next NWF)
-    unsigned gf_length_new;
+    unsigned gfLenghtNew;
+    /// New length of a GF (applied on second next NWF)
+    unsigned gfLenghtNew2;
     /// Length of a NWF (network frame) in GFs
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )
@@ -52,6 +56,8 @@ public:
     unsigned gfNrServer;
     /// GF at wich we should pause the game
     unsigned pause_gf;
+    /// Force pause the game (start TS and length) e.g. to compensate for lags
+    unsigned forcePauseStart, forcePauseLen;
 };
 
 #endif // FramesInfo_h__
