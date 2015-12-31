@@ -45,7 +45,7 @@ static char THIS_FILE[] = __FILE__;
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(0), shootingPos(0, 0), shooting_dir(0)
+    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(NULL), shootingPos(0, 0), shooting_dir(0)
 {
 }
 
@@ -68,6 +68,10 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
         animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
         shootingPos = sgd.PopMapPoint();
         shooting_dir = sgd.PopUnsignedChar();
+    }else
+    {
+        animal = NULL;
+        shootingPos = MapPoint::Invalid();
     }
 }
 
@@ -168,12 +172,9 @@ void nofHunter::TryStartHunting()
         for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
         {
             MapPoint curMapPos = gwg->MakeMapPoint(curPos);
-            // Gibts hier was bewegliches?
             const std::list<noBase*>& figures = gwg->GetFigures(curMapPos);
-            if(figures.empty())
-                continue;
 
-            // Dann nach Tieren suchen
+            // nach Tieren suchen
             for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 if((*it)->GetType() != NOP_ANIMAL)
