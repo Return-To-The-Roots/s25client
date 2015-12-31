@@ -1452,6 +1452,14 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         return;
     }
 
+    if(framesinfo.forcePauseLen)
+    {
+        if(currentTime - framesinfo.forcePauseStart > framesinfo.forcePauseLen)
+            framesinfo.forcePauseLen = 0;
+        else
+            return; // Pause
+    }
+
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
     if(skipping || skiptogf > framesinfo.gf_nr || (currentTime - framesinfo.lastTime) > framesinfo.gf_length)
     {
@@ -1467,7 +1475,14 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
                 // -> Don't execute GF, don't autosave etc.
                 if(IsPlayerLagging())
+                {
+                    // If a player is a few GFs behind, he will never catch up and always lag
+                    // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
+                    // Do not reset frameTime or lastTime as this will mess up interpolation for drawing
+                    framesinfo.forcePauseStart = currentTime;
+                    framesinfo.forcePauseLen = (rand() * 4 * framesinfo.gf_length) / RAND_MAX;
                     return;
+                }
 
                 // Same for the server
                 if(framesinfo.gfNrServer < framesinfo.gf_nr)
@@ -1503,7 +1518,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         }
 
         assert(replay_mode || framesinfo.gf_nr <= framesinfo.gfNrServer + framesinfo.nwf_length);
-        // Store this timestamp (NOT when lagging!)
+        // Store this timestamp
         framesinfo.lastTime = currentTime;
         // Reset frameTime
         framesinfo.frameTime = 0;

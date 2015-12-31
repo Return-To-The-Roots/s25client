@@ -56,6 +56,8 @@ public:
     unsigned gfNrServer;
     /// GF at wich we should pause the game
     unsigned pause_gf;
+    /// Force pause the game (start TS and length) e.g. to compensate for lags
+    unsigned forcePauseStart, forcePauseLen;
 };
 
 #endif // FramesInfo_h__
