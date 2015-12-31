@@ -1517,7 +1517,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     {
         // Next GF not yet reached, just update the time in the current one for drawing
         framesinfo.frameTime = currentTime - framesinfo.lastTime;
-        assert(framesinfo.frameTime < framesinfo.gf_length);
+        assert(framesinfo.frameTime <= framesinfo.gf_length);
     }
 }
 
