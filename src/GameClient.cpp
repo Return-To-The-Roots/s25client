@@ -928,7 +928,7 @@ void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
 
 void GameClient::OnNMSSystemChat(const GameMessage_System_Chat& msg)
 {
-    SystemChat(msg.text);
+    SystemChat(msg.text, msg.player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
