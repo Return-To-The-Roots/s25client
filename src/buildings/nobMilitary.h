@@ -182,7 +182,7 @@ class nobMilitary : public nobBaseMilitary
         /// Wird das Gebäude gerade eingenommen?
         bool IsCaptured() const { return capturing; }
         /// Gebäude wird nicht mehr eingenommen (falls anderer Soldat zuvor reingekommen ist beim Einnehmen)
-        void StopCapturing() { assert(capturing_soldiers==0); capturing = false; }
+        void StopCapturing() { capturing_soldiers = 0; capturing = false; }
         /// Sagt, dass ein erobernder Soldat das Militärgebäude erreicht hat
         void CapturingSoldierArrived();
         /// A far-away capturer arrived around the building and starts waiting

@@ -212,7 +212,7 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
     if(capturing && capturing_soldiers == 0 && aggressors.empty())
     {
         LOG.lprintf("Bug in savegame detected: Building at (%d,%d) beeing captured has no capturers. Trying to fix this...\n", pos.x, pos.y);
-        StopCapturing();
+        capturing = false;
     }
 }
 
@@ -1299,7 +1299,7 @@ void nobMilitary::CapturingSoldierArrived()
         if(capturing_soldiers > 0)
             return; // Found more
         // Einnahme beendet
-        StopCapturing();
+        capturing = false;
         // Nun die Besetzung prüfen
         RegulateTroops();
     }
