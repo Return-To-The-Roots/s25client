@@ -108,6 +108,11 @@ size_t nobMilitary::GetTotalSoldiers() const
 
 void nobMilitary::Destroy_nobMilitary()
 {
+    // Remove from military square and buildings first, to avoid e.g. sending canceled soldiers back to this building
+    gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
+    assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
+    gwg->GetMilitarySquare(pos).remove(this);
+
     // Bestellungen stornieren
     CancelOrders();
 
@@ -129,11 +134,6 @@ void nobMilitary::Destroy_nobMilitary()
     gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, coins);
 
     Destroy_nobBaseMilitary();
-
-    // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
-    assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
-    gwg->GetMilitarySquare(pos).remove(this);
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
@@ -437,6 +437,8 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 
 void nobMilitary::RegulateTroops()
 {
+    assert(helpers::contains(gwg->GetPlayer(player).GetMilitaryBuildings(), this)); // If this fails, the building is beeing destroyed!
+
     // Wenn das Gebäude eingenommen wird, erstmal keine neuen Truppen und warten, wieviele noch reinkommen
     if(IsCaptured())
         return;
@@ -643,6 +645,7 @@ bool nobMilitary::FreePlaceAtFlag()
 void nobMilitary::GotWorker(Job job, noFigure* worker)
 {
     // Insert soldiers sorted. Weak ones first
+    assert(dynamic_cast<nofPassiveSoldier*>(worker));
     nofPassiveSoldier* soldier = static_cast<nofPassiveSoldier*>(worker);
     ordered_troops.insert(soldier);
 }
