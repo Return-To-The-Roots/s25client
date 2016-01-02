@@ -1123,10 +1123,16 @@ void nobMilitary::ToggleCoins()
     else
     {
         // send coins back if just deactivated
-        for(std::list<Ware*>::iterator it = ordered_coins.begin(); it != ordered_coins.end(); ++it)
-            WareNotNeeded(*it);
-
-        ordered_coins.clear();
+        for(std::list<Ware*>::iterator it = ordered_coins.begin(); it != ordered_coins.end();)
+        {
+            // But only those, that are not just beeing carried in
+            if((*it)->GetLocation() != this)
+            {
+                WareNotNeeded(*it);
+                it = ordered_coins.erase(it);
+            }else
+                ++it;
+        }
     }
 }
 
