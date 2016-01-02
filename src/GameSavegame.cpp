@@ -21,6 +21,7 @@
 #include "GameSavegame.h"
 #include "BinaryFile.h"
 #include "Log.h"
+#include "libendian/src/ConvertEndianess.h"
 
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
 const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
@@ -54,7 +55,7 @@ bool Savegame::Save(const std::string& filename)
 {
     BinaryFile file;
 
-    if(!file.Open(filename.c_str(), OFM_WRITE))
+    if(!file.Open(filename, OFM_WRITE))
         return false;
 
     bool ret = Save(file);
@@ -74,8 +75,9 @@ bool Savegame::Save(BinaryFile& file)
     // Versionszeug schreiben
     WriteVersion(file, 8, SAVE_SIGNATURE, SAVE_VERSION);
 
-    // Timestamp der Aufzeichnung (TODO: Little/Big Endian unterscheidung)
-    file.WriteRawData(&save_time, 8);
+    // Timestamp der Aufzeichnung
+    unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
+    file.WriteRawData(&tmpTime, 8);
 
     // Mapname
     file.WriteShortString(map_name);
@@ -118,7 +120,7 @@ bool Savegame::Load(const std::string&  filename, const bool load_players, const
 {
     BinaryFile file;
 
-    if(!file.Open(filename.c_str(), OFM_READ))
+    if(!file.Open(filename, OFM_READ))
         return false;
 
     bool ret = Load(file, load_players, load_sgd);
@@ -144,6 +146,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
 
     // Zeitstempel
     file.ReadRawData(&save_time, 8);
+    save_time = libendian::ConvertEndianess<false>::toNative(save_time);
 
     // Map-Name
     file.ReadShortString(map_name);

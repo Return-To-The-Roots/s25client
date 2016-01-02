@@ -21,6 +21,7 @@
 #include "GameReplay.h"
 #include "GameSavegame.h"
 #include "Log.h"
+#include <boost/filesystem.hpp>
 
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
@@ -69,8 +70,11 @@ void Replay::StopRecording()
  */
 bool Replay::WriteHeader(const std::string& filename)
 {
+    // Deny overwrite, also avoids double-opening by different processes
+    if(bfs::exists(filename))
+        return false;
     // Datei öffnen
-    if(!file.Open(filename.c_str(), OFM_WRITE))
+    if(!file.Open(filename, OFM_WRITE))
         return false;
 
     Replay::fileName_ = filename;
@@ -123,10 +127,6 @@ bool Replay::WriteHeader(const std::string& filename)
     // Mapname
     file.WriteShortString(map_name);
 
-    // bei ungerader 4er position aufrunden
-    //while(file.Tell() % 4)
-    //  file.WriteSignedChar(0);
-
     // Alles sofort reinschreiben
     file.Flush();
 
@@ -134,7 +134,7 @@ bool Replay::WriteHeader(const std::string& filename)
 
     // Create File for pathfinding results
     if(pathfinding_results)
-        pf_file.Open((filename + "_res").c_str(), OFM_WRITE);
+        pf_file.Open(filename + "_res", OFM_WRITE);
 
     return true;
 }
@@ -148,7 +148,7 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
 {
     this->fileName_ = filename;
     // Datei öffnen
-    if(!file.Open(filename.c_str(), OFM_READ))
+    if(!file.Open(filename, OFM_READ))
         return false;
 
     // Version überprüfen
@@ -204,19 +204,15 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
         }
 
         file.ReadShortString(map_name);
-
-        // bei ungerader 4er position aufrunden
-        //while(file.Tell() % 4)
-        //  file.Seek(1, SEEK_CUR);
     }
 
     if(load_extended_header)
     {
         // Try to open precalculated pathfinding results
-        pathfinding_results = pf_file.Open((filename + "_res").c_str(), OFM_READ);
+        pathfinding_results = pf_file.Open(filename + "_res", OFM_READ);
 
         if(!pathfinding_results)
-            pf_file.Open((filename + "_res").c_str(), OFM_WRITE);
+            pf_file.Open(filename + "_res", OFM_WRITE);
     }
 
 
@@ -244,8 +240,6 @@ void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const
     else
         file.WriteUnsignedInt(gf);
 
-
-
     // Type (0)
     file.WriteUnsignedChar(RC_CHAT);
     // Spieler
@@ -254,10 +248,6 @@ void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const
     file.WriteUnsignedChar(dest);
     // Chat-Text
     file.WriteLongString(str);
-
-    // bei ungerader 4er position aufrunden
-    //while(file.() % 4)
-    //  file.WriteSignedChar(0);
 
     // Platzhalter für nächste GF-Zahl
     gf_file_pos = file.Tell();
@@ -299,10 +289,6 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
     // Daten
     file.WriteRawData(data, length);
 
-    // bei ungerader 4er position aufrunden
-    //while(file.Tell() % 4)
-    //  file.WriteSignedChar(0);
-
     // Platzhalter für nächste GF-Zahl
     gf_file_pos = file.Tell();
     file.WriteUnsignedInt(0xeeeeeeee);
@@ -328,8 +314,6 @@ void Replay::AddPathfindingResult(const unsigned char data, const unsigned* cons
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
@@ -337,10 +321,6 @@ void Replay::AddPathfindingResult(const unsigned char data, const unsigned* cons
  */
 bool Replay::ReadGF(unsigned* gf)
 {
-    // bei ungerader 4er position aufrunden
-    //while(file.Tell() % 4 && !file.EndOfFile())
-    //  file.Seek(1, SEEK_CUR);
-
     //// kein Marker bedeutet das Ende der Welt
     //if(memcmp(marker, "GCCM", 4) != 0)
     //  return false;
@@ -402,7 +382,7 @@ bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoi
     {
         // Open the file for writing
         pf_file.Close();
-        pf_file.Open((fileName_ + "_res").c_str(), OFM_WRITE_ADD);
+        pf_file.Open(fileName_ + "_res", OFM_WRITE_ADD);
         pathfinding_results = false;
         return false;
     }
@@ -416,7 +396,6 @@ bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoi
     }
 
     return true;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -426,6 +405,9 @@ bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoi
  */
 void Replay::UpdateLastGF(const unsigned last_gf)
 {
+    if(!file.IsValid())
+        return;
+
     // An die Stelle springen
     file.Seek(last_gf_file_pos, SEEK_SET);
     // Dorthin schreiben

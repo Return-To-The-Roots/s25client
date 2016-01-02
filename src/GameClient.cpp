@@ -1773,7 +1773,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 
             // Und entpackte Mapdaten speichern
             BinaryFile map_f;
-            if(!map_f.Open(clientconfig.mapfilepath.c_str(), OFM_WRITE))
+            if(!map_f.Open(clientconfig.mapfilepath, OFM_WRITE))
             {
                 LOG.lprintf("GameClient::StartReplay: ERROR: Couldn't open file \'%s\' for writing!\n", clientconfig.mapfilepath.c_str());
                 Stop();
