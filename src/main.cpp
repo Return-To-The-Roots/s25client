@@ -102,19 +102,7 @@ void WaitForEnter()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/**
- *  Exit-Handler, wird bei @p exit ausgeführt.
- *
- *  @author FloSoft
- */
-void ExitHandler(void)
-{
-    Socket::Shutdown();
 
-#ifdef _DEBUG
-    WaitForEnter();
-#endif
-}
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
 ///////////////////////////////////////////////////////////////////////////////
@@ -191,6 +179,70 @@ void LinExceptionHandler(int sig)
 
 #include "MapGeometry.h"
 
+void InstallSignalHandlers()
+{
+#ifdef _WIN32
+    SetConsoleCtrlHandler(HandlerRoutine, TRUE);
+
+#   ifndef _MSC_VER
+    signal(SIGSEGV, WinExceptionHandler);
+#   else
+    SetUnhandledExceptionFilter(WinExceptionHandler);
+#   endif
+#else
+    struct sigaction sa;
+    sa.sa_handler = HandlerRoutine;
+    sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGPIPE, &sa, NULL);
+    sigaction(SIGALRM, &sa, NULL);
+
+    signal(SIGSEGV, LinExceptionHandler);
+#endif // _WIN32
+}
+
+void UninstallSignalHandlers()
+{
+#ifdef _WIN32
+    SetConsoleCtrlHandler(HandlerRoutine, FALSE);
+
+#   ifndef _MSC_VER
+    signal(SIGSEGV, SIG_DFL);
+#   else
+    SetUnhandledExceptionFilter(NULL);
+#   endif
+#else
+    struct sigaction sa;
+    sa.sa_handler = SIG_DFL;
+    sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGINT, SIG_DFL, NULL);
+    sigaction(SIGPIPE, SIG_DFL, NULL);
+    sigaction(SIGALRM, SIG_DFL, NULL);
+
+    signal(SIGSEGV, SIG_DFL);
+#endif // _WIN32
+}
+
+//////////////////////////////////////////////////////////////////////////
+/**
+ *  Exit-Handler, wird bei @p exit ausgeführt.
+ *
+ *  @author FloSoft
+ */
+void ExitHandler(void)
+{
+    Socket::Shutdown();
+    UninstallSignalHandlers();
+
+#ifdef _DEBUG
+    WaitForEnter();
+#endif
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
@@ -214,34 +266,15 @@ int main(int argc, char* argv[])
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_1024_DF);
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
-    // Signal-Handler setzen
 #ifdef _WIN32
-    SetConsoleCtrlHandler(HandlerRoutine, TRUE);
-
     // set console window icon
     SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
 
     // Set UTF-8 console charset
     SetConsoleOutputCP(CP_UTF8);
-
-#ifndef _MSC_VER
-    signal(SIGSEGV, WinExceptionHandler);
-#else
-    SetUnhandledExceptionFilter(WinExceptionHandler);
-#endif
-    //AddVectoredExceptionHandler(1, WinExceptionHandler);
-#else
-    struct sigaction sa;
-    sa.sa_handler = HandlerRoutine;
-    sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
-    sigemptyset(&sa.sa_mask);
-
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGPIPE, &sa, NULL);
-    sigaction(SIGALRM, &sa, NULL);
-
-    signal(SIGSEGV, LinExceptionHandler);
 #endif // _WIN32
+
+    InstallSignalHandlers();
 
     // diverse dirs anlegen
     const unsigned int dir_count = 7;
