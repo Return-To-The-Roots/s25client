@@ -22,8 +22,8 @@
 namespace helpers{
     int gcd(int a, int b)
     {
-        a = std::abs(a);
-        b = std::abs(b);
+        a = abs(a);
+        b = abs(b);
         using std::swap;
         if(a < b)
             swap(a, b);
