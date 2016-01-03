@@ -425,10 +425,8 @@ struct RandomFunctor
 
 void GameWorld::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
 {
-    assert(headquarter_positions.size() >= GAMECLIENT.GetPlayerCount());
-
     //random locations? -> randomize them :)
-    if (GAMECLIENT.GetGGS().random_location)
+    if (GAMECLIENT.GetGGS().random_location && headquarter_positions.size() >= GAMECLIENT.GetPlayerCount())
     {
         RandomFunctor random;
         std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end(), random);
