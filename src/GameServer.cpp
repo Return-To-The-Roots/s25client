@@ -1511,8 +1511,10 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
         SendToAll(msg);
     }else
     {
-        player.gc_queue.push_back(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
-        SendToAll(GameMessage_GameCommand(msg.player, msg.checksum, std::vector<gc::GameCommandPtr>()));
+        GameMessage_GameCommand emptyMsg = msg;
+        emptyMsg.gcs.clear();
+        player.gc_queue.push_back(emptyMsg);
+        SendToAll(emptyMsg);
     }
 }
 
