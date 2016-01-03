@@ -132,7 +132,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         // yes, load all files in the directory
         unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
-        LOG.lprintf(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG files from \"%s\"\n"), GetFilePath(file).c_str());
+        LOG.lprintf(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n"), GetFilePath(file).c_str());
 
         std::list<std::string> lst;
         ListDir(file + "*.lst", true, NULL, NULL, &lst);
@@ -142,6 +142,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         ListDir(file + "*.txt", true, NULL, NULL, &lst);
         ListDir(file + "*.ger", true, NULL, NULL, &lst);
         ListDir(file + "*.eng", true, NULL, NULL, &lst);
+        ListDir(file + "*.ini", true, NULL, NULL, &lst);
 
         for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {

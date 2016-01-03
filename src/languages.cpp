@@ -44,26 +44,15 @@ static char THIS_FILE[] = __FILE__;
  */
 void Languages::loadLanguages()
 {
-    libsiedler2::ArchivInfo& langInfo = *LOADER.GetInfoN("lang");
+    const libsiedler2::ArchivInfo& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
     unsigned int count = langInfo.size();
 
-    // abrunden
-    count -= (count % 2);
-
-    for(unsigned int i = 0; i < count; i += 2)
+    for(unsigned int i = 0; i < count; i++)
     {
-        libsiedler2::ArchivItem_Text* n = dynamic_cast<libsiedler2::ArchivItem_Text*>(langInfo.get(i));
-        libsiedler2::ArchivItem_Text* c = dynamic_cast<libsiedler2::ArchivItem_Text*>(langInfo.get(i + 1));
-
-        if(!n)
-            continue;
-
-        Language l(n->getText(), "");
-
-        if(c)
-            l.code = c->getText();
-
-        languages.push_back(l);
+        const libsiedler2::ArchivItem_Text& langEntry = dynamic_cast<const libsiedler2::ArchivItem_Text&>(*langInfo[i]);
+        Language lang(langEntry.getName(), langEntry.getText());
+        assert(!lang.name.empty());
+        languages.push_back(lang);
     }
 
     // Sprachen sortieren
