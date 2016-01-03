@@ -219,9 +219,9 @@ void UninstallSignalHandlers()
     sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
-    sigaction(SIGINT, SIG_DFL, NULL);
-    sigaction(SIGPIPE, SIG_DFL, NULL);
-    sigaction(SIGALRM, SIG_DFL, NULL);
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGPIPE, &sa, NULL);
+    sigaction(SIGALRM, &sa, NULL);
 
     signal(SIGSEGV, SIG_DFL);
 #endif // _WIN32
