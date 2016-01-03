@@ -22,6 +22,8 @@
 #include "nobBaseMilitary.h"
 #include "EventManager.h"
 #include "figures/noFigure.h"
+#include "gameTypes/InventorySetting.h"
+#include <boost/array.hpp>
 #include <list>
 
 class nofCarrier;
@@ -34,11 +36,10 @@ class TradeRoute;
 /// Ein/Auslagereinstellungsstruktur
 struct InventorySettings
 {
-    unsigned char wares[WARE_TYPES_COUNT];
-    unsigned char figures[JOB_TYPES_COUNT];
+    boost::array<InventorySetting, WARE_TYPES_COUNT> wares;
+    boost::array<InventorySetting, JOB_TYPES_COUNT> figures;
 
-    InventorySettings()
-    { memset(wares, 0, sizeof(wares)); memset(figures, 0, sizeof(figures)); }
+    InventorySettings();
 };
 
 /// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen)

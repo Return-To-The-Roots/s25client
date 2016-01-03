@@ -164,15 +164,13 @@ namespace gc{
     void ChangeInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt_)
-            ->ChangeRealInventorySetting(category, state, type);
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->ChangeRealInventorySetting(category, state, type);
     }
 
     void ChangeAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt_)
-            ->ChangeAllRealInventorySettings(category, state);
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->ChangeAllRealInventorySettings(category, state);
     }
 
     void ChangeReserve::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

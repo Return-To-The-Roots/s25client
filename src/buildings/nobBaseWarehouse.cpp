@@ -53,6 +53,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+InventorySettings::InventorySettings()
+{
+    std::fill(wares.begin(), wares.end(), INV_SET_NONE);
+    std::fill(figures.begin(), figures.end(), INV_SET_NONE);
+}
+
 /// Intervall für Ausleerung (in gf)
 const unsigned empty_INTERVAL = 25;
 /// Intervall für Einlieferung
@@ -1320,21 +1326,6 @@ bool nobBaseWarehouse::CheckVisualInventorySettings(unsigned char category, unsi
 {
     return ((((category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type]) & state) == state);
 }
-
-
-//void nobBaseWarehouse::ChangeRealInventorySetting(const unsigned char * const wares,const unsigned char * const figures)
-//{
-//  memcpy(inventory_settings_real.wares,wares,36);
-//  memcpy(inventory_settings_real.figures,figures,31);
-//
-//  // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
-//  gwg->GetPlayer(player).FindClientForLostWares();
-//
-//  // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
-//  if(AreWaresToEmpty() && !empty_event.valid())
-//      empty_event = em->AddEvent(this,empty_INTERVAL,3);
-//
-//}
 
 /// Verändert Ein/Auslagerungseinstellungen (real)
 void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, unsigned char state, unsigned char type)
