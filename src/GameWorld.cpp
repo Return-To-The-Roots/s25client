@@ -131,7 +131,6 @@ void GameWorld::Scan(const glArchivItem_Map& map)
             }
         }
     }
-
 }
 
 void GameWorld::InitNodes(const glArchivItem_Map& map)
@@ -187,21 +186,21 @@ void GameWorld::InitNodes(const glArchivItem_Map& map)
             node.sea_id = 0;
 
             Visibility fowVisibility;
-                switch(GAMECLIENT.GetGGS().exploration)
-                {
-                    case GlobalGameSettings::EXP_DISABLED:
-                fowVisibility = VIS_VISIBLE;
-                break;
-                    case GlobalGameSettings::EXP_CLASSIC:
-                    case GlobalGameSettings::EXP_FOGOFWAR:
-                fowVisibility = VIS_INVISIBLE;
-                break;
-                    case GlobalGameSettings::EXP_FOGOFWARE_EXPLORED:
-                fowVisibility = VIS_FOW;
-                break;
-            default:
-                throw std::invalid_argument("Visibility for FoW");
-                }
+            switch(GAMECLIENT.GetGGS().exploration)
+            {
+                case GlobalGameSettings::EXP_DISABLED:
+                    fowVisibility = VIS_VISIBLE;
+                    break;
+                case GlobalGameSettings::EXP_CLASSIC:
+                case GlobalGameSettings::EXP_FOGOFWAR:
+                    fowVisibility = VIS_INVISIBLE;
+                    break;
+                case GlobalGameSettings::EXP_FOGOFWARE_EXPLORED:
+                    fowVisibility = VIS_FOW;
+                    break;
+                default:
+                    throw std::invalid_argument("Visibility for FoW");
+            }
 
             // FOW-Zeug initialisieren
             for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
@@ -374,7 +373,7 @@ std::vector<MapPoint> GameWorld::PlaceObjects(const glArchivItem_Map& map)
         }
     }
     return headquarter_positions;
-        }
+}
 
 void GameWorld::PlaceAnimals(const glArchivItem_Map& map)
     {
@@ -394,14 +393,14 @@ void GameWorld::PlaceAnimals(const glArchivItem_Map& map)
                 case 4: species = SPEC_DEER; break;
                 case 5: species = SPEC_DUCK; break;
                 case 6: species = SPEC_SHEEP; break;
-            case 0: species = SPEC_NOTHING; break;
-            default:
+                case 0: species = SPEC_NOTHING; break;
+                default:
 #ifndef NDEBUG
-                unsigned char unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
-                LOG.lprintf("Unknown animal species at x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, unknownAnimal, unknownAnimal);
+                    unsigned char unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
+                    LOG.lprintf("Unknown animal species at x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, unknownAnimal, unknownAnimal);
 #endif // !NDEBUG
-                species = SPEC_NOTHING;
-                break;
+                    species = SPEC_NOTHING;
+                    break;
             }
 
             if(species != SPEC_NOTHING)
@@ -417,15 +416,15 @@ void GameWorld::PlaceAnimals(const glArchivItem_Map& map)
 
 // random function using RANDOM.Rand(...) for std::random_shuffle
 struct RandomFunctor
-    {
+{
     ptrdiff_t operator()(ptrdiff_t max) const
-        {
+    {
         return(RANDOM.Rand(__FILE__, __LINE__, 0, max));
     }
 };
 
 void GameWorld::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
-            {
+{
     assert(headquarter_positions.size() >= GAMECLIENT.GetPlayerCount());
 
     //random locations? -> randomize them :)
@@ -450,27 +449,27 @@ void GameWorld::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
                 nobHQ* hq = new nobHQ(player.hqPos, i, player.nation);
                 SetNO(hq, player.hqPos);
                 player.AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
+            }
         }
-    }
     }
 }
 
 void GameWorld::InitSeasAndHarbors()
-    {
+{
     /// Weltmeere vermessen
     MapPoint pt;
-        for(pt.y = 0; pt.y < height_; ++pt.y)
+    for(pt.y = 0; pt.y < height_; ++pt.y)
+    {
+        for(pt.x = 0; pt.x < width_; ++pt.x)
         {
-            for(pt.x = 0; pt.x < width_; ++pt.x)
-            {
             // Noch kein Meer an diesem Punkt  Aber trotzdem Teil eines noch nicht vermessenen Meeres?
             if(!GetNode(pt).sea_id && IsSeaPoint(pt))
-                {
+            {
                 unsigned sea_size = MeasureSea(pt, seas.size());
                 seas.push_back(Sea(sea_size));
-                }
             }
         }
+    }
 
     /// Die Meere herausfinden, an die die Hafenpunkte grenzen
     for(unsigned i = 0; i < harbor_pos.size(); ++i)
@@ -507,7 +506,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         it->Serialize(sgd);
-        }
+    }
 
     // Katapultsteine serialisieren
     sgd.PushObjectContainer(catapult_stones, true);
@@ -576,8 +575,8 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
         {
             curPos.x = 0;
             curPos.y++;
-            }
-            }
+        }
+    }
 
     // Katapultsteine deserialisieren
     sgd.PopObjectContainer(catapult_stones, GOT_CATAPULTSTONE);
@@ -635,7 +634,7 @@ void GameWorld::MilitaryBuildingCaptured(const MapPoint pt, const unsigned char 
 {
     if(player == GAMECLIENT.GetPlayerID())
         LOADER.GetSoundN("sound", 110)->Play(255, false);
-    }
+}
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
 /// Wasserpunkte mit der gleichen ID belegt und die Anzahl zurückgibt
@@ -669,7 +668,7 @@ unsigned GameWorld::MeasureSea(const MapPoint start, const unsigned short sea_id
             // Ist das dort auch ein Meerespunkt?
             if(IsSeaPoint(neighbourPt))
                 todo.push(neighbourPt);
-            }
+        }
 
         ++count;
     }
