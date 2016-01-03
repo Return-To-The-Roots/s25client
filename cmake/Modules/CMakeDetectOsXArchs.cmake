@@ -6,7 +6,7 @@ MACRO(DetectOsXArchs)
 	SET(LIB_SYSTEM_PATH "${CMAKE_OSX_SYSROOT}/usr/lib/libSystem.B.dylib")
 	
 	IF(EXISTS ${LIB_SYSTEM_PATH})
-		IF(NOT ${CMAKE_LIPO})
+		IF(NOT "${CMAKE_LIPO}" OR "${CMAKE_LIPO}" STREQUAL "")
 			# find lipo
 			FIND_PROGRAM(LIPO NAMES apple-lipo lipo i686-apple-darwin10-lipo)
 			SET(CMAKE_LIPO "${LIPO}" CACHE PATH "" FORCE)
