@@ -1011,7 +1011,6 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
     unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
 
     // We take the checksum of the first human player as the reference
-    bool checksumValid = false;
     unsigned char referencePlayerIdx = 0xFF;
     struct AsyncChecksum{
         int checksum;
@@ -1052,10 +1051,10 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         checksums.push_back(curChecksum.checksum);
 
         // Checksumme des ersten Spielers als Richtwert
-        if (!checksumValid)
+        if (referencePlayerIdx == 0xFF)
         {
             referenceChecksum = curChecksum;
-            checksumValid = true;
+            referencePlayerIdx = client;
         }
 
         for(std::vector<gc::GameCommandPtr>::const_iterator it = frontGC.gcs.begin(); it != frontGC.gcs.end(); ++it)
@@ -1071,15 +1070,15 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         player.gc_queue.pop_front();
         assert(player.gc_queue.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
 
-        //LOG.lprintf("%d = %d - %d\n", framesinfo.nr, checksum, RANDOM.GetCurrentRandomValue());
-
         // Checksummen nicht gleich?
         if (curChecksum.checksum != referenceChecksum.checksum ||
             curChecksum.objCt    != referenceChecksum.objCt ||
             curChecksum.objIdCt  != referenceChecksum.objIdCt)
         {
-            LOG.lprintf("%u = C%i:%i O:%u;%u I:%u:%u\n", framesinfo.gf_nr, curChecksum.checksum, referenceChecksum.checksum,
-                curChecksum.objCt, referenceChecksum.objCt, curChecksum.objIdCt, referenceChecksum.objIdCt);
+            LOG.lprintf("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", framesinfo.gf_nr, client, referencePlayerIdx,
+                curChecksum.checksum, referenceChecksum.checksum,
+                curChecksum.objCt, referenceChecksum.objCt,
+                curChecksum.objIdCt, referenceChecksum.objIdCt);
 
             // AsyncLog der asynchronen Player anfordern
             if (async_player1 == -1)
@@ -1546,10 +1545,8 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     }
 
     // list is not yet complete, keep it coming...
-    if ((!async_player1_done) || (!async_player2_done))
-    {
+    if (!async_player1_done || !async_player2_done)
         return;
-    }
 
     LOG.lprintf("Async logs received completely.\n");
 
@@ -1577,18 +1574,15 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     // count identical lines
     unsigned identical = 0;
     while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()) &&
-            (it1->max == it2->max) && (it1->value == it2->value) && (it1->obj_id == it2->obj_id))
+            (it1->max == it2->max) && (it1->rngState == it2->rngState) && (it1->obj_id == it2->obj_id))
     {
         ++identical; ++it1; ++it2;
     }
 
-    if (identical)
-    {
-        // make iterators pointing to the last identical element
-        --it1; --it2;
-    }
+    it1 -= identical;
+    it2 -= identical;
 
-    LOG.lprintf("Skipped %u identical async log entries.\n", identical - 1);
+    LOG.lprintf("There are %u identical async log entries.\n", identical);
 
     if ((SETTINGS.global.submit_debug_data == 1)
 #ifdef _WIN32
@@ -1605,30 +1599,27 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
         di.SendReplay();
     }
 
-    std::string timeStr = TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s");
-    std::string fileName = GetFilePath(FILE_PATHS[47]) + timeStr + ".log";
+    std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + ".log";
 
     // open async log
     FILE* file = fopen(fileName.c_str(), "w");
 
     if (file)
     {
-        // if there were any identical lines, include only the last one
-        if (identical)
+        // print identical lines, they help in tracing the bug
+        for(unsigned i = 0; i < identical; i++)
         {
-            // write last common line
-            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name.c_str(), it1->src_line, it1->obj_id);
-
+            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, Random::GetValueFromState(it1->rngState, it1->max), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            
             ++it1; ++it2;
         }
 
         while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
         {
-            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it1->counter, it1->max, (it1->value * it1->max) / 32768, it1->value, it1->src_name.c_str(), it1->src_line, it1->obj_id);
-            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it2->counter, it2->max, (it2->value * it2->max) / 32768, it2->value, it2->src_name.c_str(), it2->src_line, it2->obj_id);
+            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, Random::GetValueFromState(it1->rngState, it1->max), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it2->counter, it2->max, Random::GetValueFromState(it2->rngState, it2->max), it2->rngState, it2->src_name.c_str(), it2->src_line, it2->obj_id);
 
-            ++it1;
-            ++it2;
+            ++it1; ++it2;
         }
 
         fclose(file);
@@ -1642,10 +1633,6 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
 
     async_player1_log.clear();
     async_player2_log.clear();
-
-    // write async save
-    fileName = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
-    GAMECLIENT.SaveToFile(fileName);
 
     KickPlayer(msg.player, NP_ASYNC, 0);
 }

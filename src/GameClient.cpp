@@ -958,18 +958,12 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
     if(ci && GLOBALVARS.ingame)
         ci->CI_Async(checksum_list.str());
 
-    std::string fileName = GetFilePath(FILE_PATHS[85]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + ".sav";
-
-//  sprintf(filename,"%s%s-%u.log",  GetFilePath(FILE_PATHS[47]).c_str(), time_str, rand()%100);
-
-//  RANDOM.SaveLog(filename);
-
-//  LOG.lprintf("Async log saved at \"%s\"\n",filename);
-
-    GAMECLIENT.SaveToFile(fileName);
-
-    // Pausieren
-
+    std::string timeStr = TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    std::string filePathSave = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
+    std::string filePathLog = GetFilePath(FILE_PATHS[47]) + timeStr + "Player.log";
+    RANDOM.SaveLog(filePathLog);
+    GAMECLIENT.SaveToFile(filePathSave);
+    LOG.lprintf("Async log saved at \"%s\", game saved at \"%s\"\n", filePathLog.c_str(), filePathSave.c_str());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1298,12 +1292,11 @@ void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
 {
     // AsyncLog an den Server senden
 
+    std::vector<RandomEntry> async_log = RANDOM.GetAsyncLog();
+
     // stückeln...
-    std::list<RandomEntry>* async_log = RANDOM.GetAsyncLog();
-
     std::vector<RandomEntry> part;
-
-    for (std::list<RandomEntry>::iterator it = async_log->begin(); it != async_log->end(); ++it)
+    for (std::vector<RandomEntry>::iterator it = async_log.begin(); it != async_log.end(); ++it)
     {
         part.push_back(*it);
 

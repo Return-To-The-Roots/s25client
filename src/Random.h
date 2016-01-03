@@ -20,8 +20,8 @@
 #pragma once
 
 #include "Singleton.h"
-#include <list>
-#include <cstddef>
+#include <boost/array.hpp>
+#include <vector>
 #include <string>
 
 #ifdef max
@@ -32,20 +32,19 @@ struct RandomEntry
 {
     unsigned counter;
     int max;
-    int value;
+    int rngState;
     std::string src_name;
     unsigned src_line;
     unsigned obj_id;
 
-    RandomEntry(unsigned counter, int max, int value, const std::string& src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), value(value), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
-    RandomEntry() : counter(0), max(0), value(0), src_line(0), obj_id(0) {};
+    RandomEntry(unsigned counter, int max, int rngState, const std::string& src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), rngState(rngState), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
+    RandomEntry() : counter(0), max(0), rngState(0), src_line(0), obj_id(0) {};
 };
 
 class Random : public Singleton<Random>
 {
         unsigned counter;
-//  std::list<RandomEntry> async_log;
-        RandomEntry async_log[1024];
+        boost::array<RandomEntry, 1024> async_log;
 
     public:
 
@@ -73,16 +72,18 @@ class Random : public Singleton<Random>
         }
 
         /// Gibt aktuelle Zufallszahl zurück
-        int GetCurrentRandomValue() const { return zahl; }
-        void ReplaySet(const unsigned int checksum) { zahl = checksum; }
+        int GetCurrentRandomValue() const { return rngState_; }
+        void ReplaySet(const unsigned int checksum) { rngState_ = checksum; }
 
-        std::list<RandomEntry>* GetAsyncLog();
+        std::vector<RandomEntry> GetAsyncLog();
 
         /// Speichere Log
-        void SaveLog(const char* const filename);
+        void SaveLog(const std::string& filename);
 
+        static int GetValueFromState(const int rngState, const int maxVal);
     private:
-        int zahl; ///< Die aktuelle Zufallszahl.
+        int rngState_; ///< Die aktuelle Zufallszahl.
+        static inline int GetNextState(const int rngState, const int maxVal);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

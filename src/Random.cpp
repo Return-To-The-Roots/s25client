@@ -20,8 +20,6 @@
 #include "defines.h"
 #include "Random.h"
 
-#include "GameClient.h"
-
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -52,9 +50,18 @@ Random::Random(void)
  */
 void Random::Init(const unsigned int init)
 {
-    zahl = init;
+    rngState_ = init;
     counter = 0;
-//  async_log.clear();
+}
+
+int Random::GetValueFromState(const int rngState, const int maxVal)
+{
+    return (rngState * maxVal) / 32768;
+}
+
+int Random::GetNextState(const int rngState, const int maxVal)
+{
+    return (rngState * 997 + 1 + maxVal) & 32767;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,40 +76,36 @@ void Random::Init(const unsigned int init)
  */
 int Random::Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max)
 {
-    zahl = ( (zahl * 997) + 1 + max) & 32767;
+    rngState_ = GetNextState(rngState_, max);
 
-    async_log[counter % 1024] = RandomEntry(counter, max, zahl, src_name, src_line, obj_id);
-
-    /*  async_log.push_back();
-        if(async_log.size() > 10000)
-            async_log.pop_front();*/
-
+    async_log[counter % async_log.size()] = RandomEntry(counter, max, rngState_, src_name, src_line, obj_id);
     ++counter;
-    return ( (zahl * max) / 32768);
+
+    return GetValueFromState(rngState_, max);
 }
 
-std::list<RandomEntry> *Random::GetAsyncLog()
+std::vector<RandomEntry> Random::GetAsyncLog()
 {
-    std::list<RandomEntry> *ret = new std::list<RandomEntry>;
+    std::vector<RandomEntry> ret;
 
-    unsigned int max = (counter > 1024 ? 1024 : counter);
+    unsigned int max = (counter > async_log.size() ? async_log.size() : counter);
     for (unsigned int i = 0; i < max; ++i)
     {
-        ret->push_back(async_log[(i + counter) % 1024]);
+        ret.push_back(async_log[(i + counter) % async_log.size()]);
     }
 
-    return(ret);
+    return ret;
 }
 
-void Random::SaveLog(const char* const filename)
+void Random::SaveLog(const std::string& filename)
 {
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(filename.c_str(), "w");
 
-    unsigned int max = (counter > 1024 ? 1024 : counter);
+    unsigned int max = (counter > async_log.size() ? async_log.size() : counter);
     for (unsigned int i = 0; i < max; ++i)
     {
-        RandomEntry* it = &(async_log[(i + counter) % 1024]);
-        fprintf(file, "%u:R(%d)=%d,z=%d | %s Z: %u|id=%u\n", it->counter, it->max, (it->value * it->max) / 32768, it->value, it->src_name.c_str(), it->src_line, it->obj_id);
+        RandomEntry& it = async_log[(i + counter) % async_log.size()];
+        fprintf(file, "%u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it.counter, it.max, GetValueFromState(it.rngState, it.max), it.rngState, it.src_name.c_str(), it.src_line, it.obj_id);
     }
 
     fclose(file);

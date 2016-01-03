@@ -129,26 +129,17 @@ bool DebugInfo::SendSigned(signed i)
 bool DebugInfo::SendString(const char* str, unsigned len)
 {
     if (len == 0)
-    {
         len  = strlen(str) + 1;
-    }
 
     if (!SendUnsigned(len))
-    {
         return(false);
-    }
 
     return(Send(str, len));
 }
 
 bool DebugInfo::SendString(const std::string& str)
 {
-    if (!SendUnsigned(str.length()))
-    {
-        return(false);
-    }
-
-    return(Send(str.c_str(), str.length()));
+    return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
 }
 
 #ifdef _WIN32
@@ -355,6 +346,9 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     // if there were any identical lines, include only the last one
     if (identical)
     {
+        // sizes of: counter, max, rngState
+        //           string = length Bytes + 1 NULL terminator + 4B length
+        //           srcLine, objId
         len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
 
         ++cnt; ++it_a; ++it_b;
@@ -363,26 +357,25 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     while ((it_a != a.end()) && (it_b != b.end()))
     {
         len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
-        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
+        len += 4 + 4 + 4 + it_b->src_name.length() + 1 + 4 + 4 + 4;
 
         cnt += 2;
-
         ++it_a; ++it_b;
     }
 
     if (!SendUnsigned(len))         return(false);
-    if (!SendUnsigned(identical))           return(false);
+    if (!SendUnsigned(identical))   return(false);
     if (!SendUnsigned(cnt))         return(false);
 
     it_a = first_a;
     it_b = first_b;
 
-    // if there were any identical lines, include only the last one
-    if (identical)
+    // if there were any identical lines, send only one each
+    for(unsigned i = 0; i< identical; i++)
     {
         if (!SendUnsigned(it_a->counter))   return(false);
-        if (!SendSigned(it_a->max))     return(false);
-        if (!SendSigned(it_a->value))       return(false);
+        if (!SendSigned(it_a->max))         return(false);
+        if (!SendSigned(it_a->rngState))    return(false);
         if (!SendString(it_a->src_name))    return(false);
         if (!SendUnsigned(it_a->src_line))  return(false);
         if (!SendUnsigned(it_a->obj_id))    return(false);
@@ -393,15 +386,15 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     while ((it_a != a.end()) && (it_b != b.end()))
     {
         if (!SendUnsigned(it_a->counter))   return(false);
-        if (!SendSigned(it_a->max))     return(false);
-        if (!SendSigned(it_a->value))       return(false);
+        if (!SendSigned(it_a->max))         return(false);
+        if (!SendSigned(it_a->rngState))    return(false);
         if (!SendString(it_a->src_name))    return(false);
         if (!SendUnsigned(it_a->src_line))  return(false);
         if (!SendUnsigned(it_a->obj_id))    return(false);
 
         if (!SendUnsigned(it_b->counter))   return(false);
-        if (!SendSigned(it_b->max))     return(false);
-        if (!SendSigned(it_b->value))       return(false);
+        if (!SendSigned(it_b->max))         return(false);
+        if (!SendSigned(it_b->rngState))    return(false);
         if (!SendString(it_b->src_name))    return(false);
         if (!SendUnsigned(it_b->src_line))  return(false);
         if (!SendUnsigned(it_b->obj_id))    return(false);

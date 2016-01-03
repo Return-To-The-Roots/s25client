@@ -883,7 +883,7 @@ class GameMessage_SendAsyncLog : public GameMessage
             {
                 PushUnsignedInt(it->counter);
                 PushSignedInt(it->max);
-                PushSignedInt(it->value);
+                PushSignedInt(it->rngState);
                 PushString(it->src_name);
                 PushUnsignedInt(it->src_line);
                 PushUnsignedInt(it->obj_id);
@@ -895,12 +895,6 @@ class GameMessage_SendAsyncLog : public GameMessage
         {
             bool last =  PopBool();
             unsigned int cnt = PopUnsignedInt();
-            unsigned counter;
-            int max;
-            int value;
-            std::string src_name;
-            unsigned int src_line;
-            unsigned obj_id;
 
             LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", cnt, last ? "last" : "non-last");
 
@@ -908,14 +902,14 @@ class GameMessage_SendAsyncLog : public GameMessage
 
             while (cnt--)
             {
-                counter = PopUnsignedInt();
-                max = PopSignedInt();
-                value = PopSignedInt();
-                src_name = PopString();
-                src_line = PopUnsignedInt();
-                obj_id = PopUnsignedInt();
+                unsigned counter = PopUnsignedInt();
+                int max = PopSignedInt();
+                int rngState = PopSignedInt();
+                std::string src_name = PopString();
+                unsigned src_line = PopUnsignedInt();
+                unsigned obj_id = PopUnsignedInt();
 
-                recved_log.push_back(RandomEntry(counter, max, value, src_name, src_line, obj_id));
+                recved_log.push_back(RandomEntry(counter, max, rngState, src_name, src_line, obj_id));
             }
 
             GetInterface(callback)->OnNMSSendAsyncLog(*this, recved_log, last);
