@@ -11,6 +11,7 @@ SET(OSX105_SDK "/usr/lib/apple/SDKs/MacOSX10.5.sdk")
 #SET(OSX106_SDK "/usr/lib/apple/SDKs/MacOSX10.6.sdk")
 
 # set SDK (use newest first)
+MESSAGE(STATUS "Getting SDK. Old deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}. Old sysroot: ${CMAKE_OSX_SYSROOT}")
 SET(CMAKE_OSX_DEPLOYMENT_TARGET )
 IF(EXISTS ${OSX105_SDK})
 	SET(CMAKE_OSX_SYSROOT ${OSX105_SDK})
