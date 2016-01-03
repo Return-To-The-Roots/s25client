@@ -1083,16 +1083,16 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
             // AsyncLog der asynchronen Player anfordern
             if (async_player1 == -1)
             {
-                async_player1 = client;
+                GameServerPlayer& refPlayer = players[referencePlayerIdx];
+                async_player1 = refPlayer.getPlayerID();
                 async_player1_done = false;
+                refPlayer.send_queue.push(new GameMessage_GetAsyncLog(async_player1));
+                refPlayer.send_queue.flush(refPlayer.so);
+
+                async_player2 = client;
+                async_player2_done = false;
                 player.send_queue.push(new GameMessage_GetAsyncLog(client));
                 player.send_queue.flush(player.so);
-
-                GameServerPlayer& refPlayer = players[referencePlayerIdx];
-                async_player2 = refPlayer.getPlayerID();
-                async_player2_done = false;
-                refPlayer.send_queue.push(new GameMessage_GetAsyncLog(async_player2));
-                refPlayer.send_queue.flush(refPlayer.so);
 
                 // Async-Meldung rausgeben.
                 SendToAll(GameMessage_Server_Async(checksums));
