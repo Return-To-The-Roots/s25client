@@ -24,6 +24,7 @@
 #include "GameClientPlayer.h"
 #include "AIJHHelper.h"
 #include "AIEventManager.h"
+#include "AIResourceMap.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <queue>
@@ -67,7 +68,7 @@ struct PositionSearch
     std::vector<bool>* tested;
 
     // which nodes are currently queued to be tested next?
-    std::queue<unsigned>* toTest;
+    std::queue<MapPoint>* toTest;
 
     // results
     MapPoint result;
@@ -107,7 +108,6 @@ class AIPlayerJH : public AIBase
         ~AIPlayerJH();
 
 		int initgfcomplete;
-        int GetResMapValue(const MapPoint pt, AIJH::Resource res);
         AIInterface* GetInterface() { return aii; }
 
         /// Test whether the player should resign or not
@@ -186,13 +186,7 @@ class AIPlayerJH : public AIBase
         //returns true if we can get to the startflag in <maxlen without turning back
         bool IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, const noFlag* curFlag, unsigned char excludeDir, bool init, std::vector<MapPoint> oldFlags);
 
-        //globally update a layer of the resource map
-        void RecalcResource(AIJH::Resource res);
-
         //get me the current addon settings?
-
-        /// Changes a single resource map around point pt in radius; to every point around pt distanceFromCenter * value is added
-        void ChangeResourceMap(const MapPoint pt, unsigned radius, std::vector<int> &resMap, int value);
 
         /// Finds a good position for a specific resource in an area using the resource maps,
         /// first position satisfying threshold is returned, returns false if no such position found
@@ -313,12 +307,13 @@ class AIPlayerJH : public AIBase
 
         bool NoEnemyHarbor();
 		
-        void SetResourceMap(AIJH::Resource res, unsigned nodenumber, int newvalue) {resourceMaps[res][nodenumber] = newvalue;}
-		
-		MapCoord UpgradeBldX,UpgradeBldY;
-		
-
+    public:
+        int GetResMapValue(const MapPoint pt, AIJH::Resource res);
     protected:
+        void SetResourceMap(AIJH::Resource res, const MapPoint pt, int newvalue) {resourceMaps[res][pt] = newvalue;}
+		
+		MapCoord UpgradeBldX,UpgradeBldY;		
+
         /// The current job the AI is working on
         boost::interprocess::unique_ptr<AIJH::Job, Deleter<AIJH::Job> > currentJob;
 
@@ -335,7 +330,7 @@ class AIPlayerJH : public AIBase
         std::vector<AIJH::Node> nodes;
 
         /// Resource maps, containing a rating for every map point concerning a resource
-        std::vector<std::vector<int> > resourceMaps;
+        std::vector<AIResourceMap> resourceMaps;
 
 		// Required by the AIJobs:
 		

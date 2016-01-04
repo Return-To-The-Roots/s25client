@@ -19,21 +19,24 @@
 
 #pragma once
 
+#include "ai/Resource.h"
+#include "ai/AIInterface.h"
+#include "ai/AIJHHelper.h"
 #include <vector>
-#include "AIPlayerJH.h"
-
 
 class AIResourceMap
 {
     public:
-        AIResourceMap(const GameWorldBase& gwb, const std::vector<AIJH::Node> &nodes);
+        AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes);
         ~AIResourceMap();
 
         /// Initialize the resource map
         void Init();
+        void Recalc();
 
         /// Changes a single resource map around point pt in radius; to every point around pt distanceFromCenter * value is added
         void ChangeResourceMap(const MapPoint pt, unsigned radius, int value);
+        void ChangeResourceMap(const MapPoint pt, int value){ ChangeResourceMap(pt, resRadius, value); }
 
         /// Finds a good position for a specific resource in an area using the resource maps,
         /// first position satisfying threshold is returned, returns false if no such position found
@@ -42,14 +45,19 @@ class AIResourceMap
         /// Finds the best position for a specific resource in an area using the resource maps,
         /// satisfying the minimum value, returns false if no such position is found
         bool FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-        bool FindBestPosition(MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true)
-        { return FindBestPosition(pt, size, 1, radius, inTerritory); }
+        bool FindBestPosition(MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true){ return FindBestPosition(pt, size, 1, radius, inTerritory); }
+
+        int& operator[](const MapPoint& pt) { return map[aii.GetIdx(pt)]; }
+        int operator[](const MapPoint& pt) const { return map[aii.GetIdx(pt)]; }
 
     private:
+        void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
+
         std::vector<int> map;
-        const GameWorldBase& gwb;
+        const AIInterface& aii;
         const std::vector<AIJH::Node> &nodes;
-        AIJH::Resource res;
+        const AIJH::Resource res;
+        const unsigned resRadius;
 };
 
 #endif //! AIRESOURCEMAP_H_INCLUDED

@@ -166,7 +166,7 @@ void AIJH::BuildJob::TryToBuild()
                 if(foundPos && !aijh->ValidStoneinRange(bPos))
                 {
                     foundPos = false;
-                    aijh->SetResourceMap(AIJH::STONES, aii->GetIdx(bPos), 0);
+                    aijh->SetResourceMap(AIJH::STONES, bPos, 0);
                 }
                 break;
             }
@@ -202,7 +202,7 @@ void AIJH::BuildJob::TryToBuild()
                 foundPos = aijh->FindBestPosition(bPos, AIJH::FISH, BQ_HUT, 11, true);
                 if(foundPos && !aijh->ValidFishInRange(bPos))
                 {
-                    aijh->SetResourceMap(AIJH::FISH, aii->GetIdx(bPos), 0);
+                    aijh->SetResourceMap(AIJH::FISH, bPos, 0);
                     foundPos = false;
                 }
                 break;

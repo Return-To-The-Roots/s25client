@@ -67,6 +67,8 @@ class AIInterface: public GameCommandFactory<AIInterface>
 
         unsigned GetIdx(MapPoint pt) const { return gwb.GetIdx(pt); }
 
+        TerrainType GetTerrain(MapPoint pt) const { return gwb.GetNode(pt).t1; }
+
         /// Returns x-coordinate of the neighbouring point in given direction (6 possible directions)
         inline MapCoord GetXA(const MapPoint pt, Direction direction) { return gwb.GetXA(pt, direction.toUInt()); }
         inline MapCoord GetXA(const MapCoord x, const MapCoord y, Direction direction) { return gwb.GetXA(x, y, direction.toUInt()); }

@@ -540,74 +540,12 @@ void AIPlayerJH::InitResourceMaps()
     unsigned short width = aii->GetMapWidth();
     unsigned short height = aii->GetMapHeight();
 
-    resourceMaps.resize(AIJH::RES_TYPE_COUNT);
+    resourceMaps.clear();
+    resourceMaps.reserve(AIJH::RES_TYPE_COUNT);
     for (unsigned res = 0; res < AIJH::RES_TYPE_COUNT; ++res)
     {
-        resourceMaps[res].resize(width * height);
-        for (MapPoint pt(0, 0); pt.y < height; ++pt.y)
-        {
-            for (pt.x = 0; pt.x < width; ++pt.x)
-            {
-                unsigned i = aii->GetIdx(pt);
-                //resourceMaps[res][i] = 0;
-                if (nodes[i].res == (AIJH::Resource)res && (AIJH::Resource)res != AIJH::BORDERLAND)
-                {
-                    ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
-                }
-
-                // Grenzgebiet"ressource"
-                else if (nodes[i].border && (AIJH::Resource)res == AIJH::BORDERLAND)
-                {
-                    ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], resourceMaps[AIJH::BORDERLAND], 1);
-                }
-                if(nodes[i].res == AIJH::MULTIPLE)
-                {
-                    if(aii->GetSubsurfaceResource(pt) == (AIJH::Resource)res || aii->GetSurfaceResource(pt) == (AIJH::Resource)res)
-                        ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resourceMaps[res], 1);
-                }
-            }
-        }
-    }
-}
-
-void AIPlayerJH::RecalcResource(AIJH::Resource res)
-{
-    unsigned short width = aii->GetMapWidth();
-    unsigned short height = aii->GetMapHeight();
-    std::vector<int> &resmap = resourceMaps[res];
-    for (unsigned y = 0; y < resmap.size(); ++y)
-    {
-        resmap[y] = 0;
-    }
-    for (MapPoint pt(0, 0); pt.y < height; ++pt.y)
-    {
-        for (pt.x = 0; pt.x < width; ++pt.x)
-        {
-            unsigned i = aii->GetIdx(pt);
-            //resourceMaps[res][i] = 0;
-            if (nodes[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(gwb.GetNode(pt).t1))
-            {
-                ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resmap, 1);
-            }
-            // Grenzgebiet"ressource"
-            else if (aii->IsBorder(pt) && res == AIJH::BORDERLAND)
-            {
-                //only count border area that is actually passable terrain
-                if(TerrainData::IsUseable(gwb.GetNode(pt).t1))
-                    ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], resmap, 1);
-            }
-            if (nodes[i].res == AIJH::MULTIPLE && TerrainData::IsUseable(gwb.GetNode(pt).t1) )
-            {
-                if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
-                    ChangeResourceMap(pt, AIJH::RES_RADIUS[res], resmap, 1);
-            }
-            if(res == AIJH::WOOD && aii->IsBuildingOnNode(pt, BLD_WOODCUTTER)) //existing woodcutters reduce wood rating
-                ChangeResourceMap(pt, 7, resmap, -10);
-            if(res == AIJH::PLANTSPACE && aii->IsBuildingOnNode(pt, BLD_FARM)) //existing farm reduce plantspace rating
-                ChangeResourceMap(pt, 3, resmap, -25);
-            if(res == AIJH::PLANTSPACE && aii->IsBuildingOnNode(pt, BLD_FORESTER)) //existing forester reduce plantspace rating
-                ChangeResourceMap(pt, 6, resmap, -25);
-        }
+        resourceMaps.push_back(AIResourceMap(static_cast<AIJH::Resource>(res), *aii, nodes));
+        resourceMaps[res].Init();
     }
 }
 
@@ -646,46 +584,9 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
         nodes[*it].farmed = set;
 }
 
-void AIPlayerJH::ChangeResourceMap(const MapPoint pt, unsigned radius, std::vector<int> &resMap, int value)
-{
-    resMap[aii->GetIdx(pt)] += value * radius;
-    std::vector< std::pair<unsigned, unsigned> > ptIdxs = aii->GetPointsInRadius(pt, radius, MapPoint2IdxWithRadius(*aii));
-    for(std::vector< std::pair<unsigned, unsigned> >::const_iterator it = ptIdxs.begin(); it != ptIdxs.end(); ++it)
-        resMap[it->first] += value * (radius - it->second);
-}
-
 bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    unsigned short width = aii->GetMapWidth();
-    unsigned short height = aii->GetMapHeight();
-
-    if (pt.x >= width || pt.y >= height)
-    {
-        pt = aii->GetHeadquarter()->GetPos();
-    }
-
-    // TODO was besseres wär schön ;)
-    if (radius == -1)
-        radius = 30;
-
-    std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, radius);
-    for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-    {
-        const unsigned idx = aii->GetIdx(*it);
-        if (resourceMaps[res][idx] >= threshold)
-        {
-            if ((inTerritory && !aii->IsOwnTerritory(*it)) || nodes[idx].farmed)
-                continue;
-            const BuildingQuality bq = aii->GetBuildingQuality(*it);
-            if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
-                || (bq == size)) // auch Bergwerke
-            {
-                pt = *it;
-                return true;
-            }
-        }
-    }
-    return false;
+    return resourceMaps[res].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
 PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best)
@@ -698,7 +599,7 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
     // allocate memory for the nodes
     unsigned numNodes = aii->GetMapWidth() * aii->GetMapHeight();
     p->tested = new std::vector<bool>(numNodes, false);
-    p->toTest = new std::queue<unsigned>;
+    p->toTest = new std::queue<MapPoint>;
 
 
     // if no useful startpos is given, use headquarter
@@ -708,7 +609,7 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
     }
 
     // insert start position as first node to test
-    p->toTest->push(aii->GetIdx(pt));
+    p->toTest->push(pt);
     (*p->tested)[aii->GetIdx(pt)] = true;
 
     return p;
@@ -724,20 +625,18 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
             break;
 
         // get the node
-        unsigned nodeIndex = search->toTest->front();
+        MapPoint pt = search->toTest->front();
         search->toTest->pop();
-        AIJH::Node* node = &nodes[nodeIndex];
-        unsigned short width = aii->GetMapWidth();
-        MapPoint pt(nodeIndex % width, nodeIndex / width);
+        AIJH::Node* node = &nodes[aii->GetIdx(pt)];
 
         // and test it... TODO exception at res::borderland?
-        if (resourceMaps[search->res][nodeIndex] > search->resultValue // value better
+        if (resourceMaps[search->res][pt] > search->resultValue // value better
                 && node->owned && node->reachable && !node->farmed // available node
                 && ((node->bq >= search->size && node->bq < BQ_MINE) || (node->bq == search->size)) // matching size
            )
         {
             // store location & value
-            search->resultValue = resourceMaps[search->res][nodeIndex];
+            search->resultValue = resourceMaps[search->res][pt];
             search->result = pt;
         }
 
@@ -750,7 +649,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
             // test if already tested or not in territory
             if (!(*search->tested)[ni] && nodes[ni].owned)
             {
-                search->toTest->push(ni);
+                search->toTest->push(pt);
                 (*search->tested)[ni] = true;
             }
         }
@@ -808,70 +707,59 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
             for(MapCoord step = 0; step < r; ++step)
             {
                 unsigned n = aii->GetIdx(t2);
+                int& resMapVal = resourceMaps[res][t2];
                 if(fixed)
-                    temp = resourceMaps[res][n];
+                    temp = resMapVal;
                 else
                 {
                     //only do a complete calculation for the first point or when moving outward and the last value is unknown
-                    if((r < 2 || !lastcirclevaluecalculated) && step < 1 && curDir < 3 && resourceMaps[res][n])
+                    if((r < 2 || !lastcirclevaluecalculated) && step < 1 && curDir < 3 && resMapVal)
                     {
                         temp = aii->CalcResourceValue(t2, res);
                         circlestartvalue = temp;
                         lastcirclevaluecalculated = true;
                         lastvaluecalculated = true;
                     }
+                    else if(!resMapVal) //was there ever anything? if not skip it!
+                    {
+                        if(step < 1 && curDir < 3)
+                            lastcirclevaluecalculated = false;
+                        lastvaluecalculated = false;
+                        temp = resMapVal;
+                    }
+                    else if(step < 1 && curDir < 3)  //circle not yet started? -> last direction was outward (left=0)
+                    {
+                        temp = aii->CalcResourceValue(t2, res, 0, circlestartvalue);
+                        circlestartvalue = temp;
+                    }
+                    else if(lastvaluecalculated)
+                    {
+                        if(step > 0) //we moved direction i%6
+                            temp = aii->CalcResourceValue(t2, res, curDir % 6, temp);
+                        else //last step was the previous direction
+                            temp = aii->CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
+                    }
                     else
                     {
-                        //was there ever anything? if not skip it!
-                        if(!resourceMaps[res][n])
-                        {
-                            if(step < 1 && curDir < 3)
-                                lastcirclevaluecalculated = false;
-                            lastvaluecalculated = false;
-                            temp = resourceMaps[res][n];
-                        }
-                        else
-                        {
-                            //temp=aii->CalcResourceValue(t2,res);
-                            //circle not yet started? -> last direction was outward (left=0)
-                            if(step < 1 && curDir < 3)
-                            {
-                                temp = aii->CalcResourceValue(t2, res, 0, circlestartvalue);
-                                circlestartvalue = temp;
-                            }
-                            else
-                            {
-                                if(lastvaluecalculated)
-                                {
-                                    if(step > 0) //we moved direction i%6
-                                        temp = aii->CalcResourceValue(t2, res, curDir % 6, temp);
-                                    else //last step was the previous direction
-                                        temp = aii->CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
-                                }
-                                else
-                                {
-                                    temp = aii->CalcResourceValue(t2, res);
-                                    lastvaluecalculated = true;
-                                }
-                            }
-                        }
+                        temp = aii->CalcResourceValue(t2, res);
+                        lastvaluecalculated = true;
                     }
-                    //if(resourceMaps[res][n])
+                    //if(resMapVal)
                     //assert(temp==aii->CalcResourceValue(t2,res));
                     //copy the value to the resource map
-                    resourceMaps[res][n] = temp;
+                    resMapVal = temp;
                 }
                 if(res == AIJH::FISH || res == AIJH::STONES)
                 {
                     //remove permanently invalid spots to speed up future checks
-                    TerrainType t1 = gwb.GetNode(t2).t1;
+                    TerrainType t1 = aii->GetTerrain(t2);
                     if(!TerrainData::IsUseable(t1) || TerrainData::IsMineable(t1) || t1 == TT_DESERT)
-                        resourceMaps[res][n] = 0;
+                        resMapVal = 0;
                 }
                 else //= granite,gold,iron,coal
                 {
-                    if(!TerrainData::IsMineable(gwb.GetNode(t2).t1))
-                        resourceMaps[res][n] = 0;
+                    if(!TerrainData::IsMineable(aii->GetTerrain(t2)))
+                        resMapVal = 0;
                 }
                 if (temp > best_value)
                 {
@@ -881,13 +769,10 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         continue;
                     }
                     //special case fish -> check for other fishery buildings
-                    if(res == AIJH::FISH)
+                    if(res == AIJH::FISH && BuildingNearby(t2, BLD_FISHERY, 6))
                     {
-                        if(BuildingNearby(t2, BLD_FISHERY, 6))
-                        {
-                            t2 = aii->GetNeighbour(t2, Direction(curDir));
-                            continue;
-                        }
+                        t2 = aii->GetNeighbour(t2, Direction(curDir));
+                        continue;
                     }
                     //dont build next to harborspots
                     if(HarborPosClose(t2, 3, true))
@@ -923,7 +808,6 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
         return FindBestPositionDiminishingResource(pt, res, size, minimum, radius, inTerritory);
     unsigned short width = aii->GetMapWidth();
     unsigned short height = aii->GetMapHeight();
-    int temp = 0;
     //to avoid having to calculate a value twice and still move left on the same level without any problems we use this variable to remember the first calculation we did in the circle.
     int circlestartvalue = 0;
     //outside of map bounds? -> search around our main storehouse!
@@ -947,6 +831,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
             for(MapCoord step = 0; step < r; ++step)
             {
                 unsigned n = aii->GetIdx(t2);
+                int temp;
                 if(r == 1 && step == 0 && curDir == 2)
                 {
                     //only do a complete calculation for the first point!
@@ -959,15 +844,12 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                     temp = aii->CalcResourceValue(t2, res, 0, circlestartvalue);
                     circlestartvalue = temp;
                 }
-                else
-                {
-                    if(step > 0) //we moved direction i%6
-                        temp = aii->CalcResourceValue(t2, res, curDir % 6, temp);
-                    else //last step was the previous direction
-                        temp = aii->CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
-                }
+                else if(step > 0) //we moved direction i%6
+                    temp = aii->CalcResourceValue(t2, res, curDir % 6, temp);
+                else //last step was the previous direction
+                    temp = aii->CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
                 //copy the value to the resource map (map is only used in the ai debug mode)
-                resourceMaps[res][n] = temp;
+                resourceMaps[res][t2] = temp;
                 if (temp > best_value)
                 {
                     if (!nodes[n].reachable || (inTerritory && !aii->IsOwnTerritory(t2)) || nodes[n].farmed)
@@ -1617,7 +1499,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
         }
         aii->DestroyBuilding(pt);
 		if(bld==BLD_FISHERY) //fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this location again
-			SetResourceMap(AIJH::FISH, aii->GetIdx(pt), 0);
+			SetResourceMap(AIJH::FISH, pt, 0);
     }
     else
         return;
@@ -2071,7 +1953,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     RecalcBQAround(pt);
     if (GetAINode(pt).res == AIJH::PLANTSPACE)
     {
-        ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::PLANTSPACE], resourceMaps[AIJH::PLANTSPACE], -1);
+        resourceMaps[AIJH::PLANTSPACE].ChangeResourceMap(pt, -1);
         GetAINode(pt).res = AIJH::NOTHING;
     }
 
@@ -2080,7 +1962,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     RecalcBQAround(pt);
     if (GetAINode(pt).res == AIJH::PLANTSPACE)
     {
-        ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::PLANTSPACE], resourceMaps[AIJH::PLANTSPACE], -1);
+        resourceMaps[AIJH::PLANTSPACE].ChangeResourceMap(pt, -1);
         GetAINode(pt).res = AIJH::NOTHING;
     }
 
@@ -2092,7 +1974,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
         // Auch Plantspace entsprechend anpassen:
         if (GetAINode(pt).res == AIJH::PLANTSPACE)
         {
-            ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::PLANTSPACE], resourceMaps[AIJH::PLANTSPACE], -1);
+            resourceMaps[AIJH::PLANTSPACE].ChangeResourceMap(pt, -1);
             GetAINode(pt).res = AIJH::NOTHING;
         }
     }
@@ -2123,7 +2005,7 @@ void AIPlayerJH::SaveResourceMapsToFile()
 
 int AIPlayerJH::GetResMapValue(const MapPoint pt, AIJH::Resource res)
 {
-    return resourceMaps[res][aii->GetIdx(pt)];
+    return resourceMaps[res][pt];
 }
 
 void AIPlayerJH::SendAIEvent(AIEvent::Base* ev)

@@ -19,9 +19,12 @@
 // Header
 #include "defines.h"
 #include "AIResourceMap.h"
+#include "gameData/TerrainData.h"
+#include "buildings/nobUsual.h"
+#include "buildings/noBuildingSite.h"
 
-AIResourceMap::AIResourceMap(const GameWorldBase& gwb, const std::vector<AIJH::Node> &nodes)
-    : gwb(gwb), nodes(nodes)
+AIResourceMap::AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes)
+    : res(res), aii(aii), nodes(nodes), resRadius(AIJH::RES_RADIUS[res])
 {
 }
 
@@ -31,8 +34,8 @@ AIResourceMap::~AIResourceMap(void)
 
 void AIResourceMap::Init()
 {
-    unsigned short width = gwb.GetWidth();
-    unsigned short height = gwb.GetHeight();
+    unsigned short width = aii.GetMapWidth();
+    unsigned short height = aii.GetMapHeight();
 
     map.clear();
     map.resize(width * height);
@@ -40,70 +43,90 @@ void AIResourceMap::Init()
     {
         for (pt.x = 0; pt.x < width; ++pt.x)
         {
-            unsigned i = gwb.GetIdx(pt);
-            if (nodes[i].res == res && res != AIJH::BORDERLAND)
+            unsigned i = aii.GetIdx(pt);
+            if (nodes[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(aii.GetTerrain(pt)))
             {
-                ChangeResourceMap(pt, AIJH::RES_RADIUS[res], 1);
-            }else if (nodes[i].border && res == AIJH::BORDERLAND)
+                ChangeResourceMap(pt, 1);
+            }
+            else if (res == AIJH::BORDERLAND && aii.IsBorder(pt))
             {
-                ChangeResourceMap(pt, AIJH::RES_RADIUS[AIJH::BORDERLAND], 1);
+                //only count border area that is actually passable terrain
+                if(TerrainData::IsUseable(aii.GetTerrain(pt)))
+                    ChangeResourceMap(pt, 1);
+            }
+            if (nodes[i].res == AIJH::MULTIPLE && TerrainData::IsUseable(aii.GetTerrain(pt)) )
+            {
+                if(aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)
+                    ChangeResourceMap(pt, 1);
             }
         }
+    }
+}
+
+void AIResourceMap::Recalc()
+{
+    Init();
+    if(res == AIJH::WOOD) //existing woodcutters reduce rating      
+        AdjustRatingForBlds(BLD_WOODCUTTER, 7, -10);
+    else if(res == AIJH::PLANTSPACE)
+    {
+        AdjustRatingForBlds(BLD_FARM, 3, -25);
+        AdjustRatingForBlds(BLD_FORESTER, 6, -25);
+    }
+}
+
+void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int value)
+{
+    const std::list<nobUsual*>& blds = aii.GetBuildings(bld);
+    for(std::list<nobUsual*>::const_iterator it = blds.begin(); it != blds.end(); ++it)
+        ChangeResourceMap((*it)->GetPos(), radius, value);
+    const std::list<noBuildingSite*>& bldSites = aii.GetBuildingSites();
+    for(std::list<noBuildingSite*>::const_iterator it = bldSites.begin(); it != bldSites.end(); ++it)
+    {
+        if((*it)->GetBuildingType() == bld)
+            ChangeResourceMap((*it)->GetPos(), radius, value);
     }
 }
 
 struct MapPoint2IdxWithRadius
 {
     typedef std::pair<unsigned, unsigned> result_type;
-    const GameWorldBase& gwb_;
+    const AIInterface& aii_;
 
-    MapPoint2IdxWithRadius(const GameWorldBase& gwb): gwb_(gwb){}
+    MapPoint2IdxWithRadius(const AIInterface& aii): aii_(aii){}
     result_type operator()(const MapPoint pt, unsigned r)
     {
-        return std::make_pair(gwb_.GetIdx(pt), r);
-    }
-};
-
-struct MapPoint2Idx
-{
-    typedef unsigned result_type;
-    const GameWorldBase& gwb_;
-
-    MapPoint2Idx(const GameWorldBase& gwb): gwb_(gwb){}
-    result_type operator()(const MapPoint pt, unsigned r)
-    {
-        return gwb_.GetIdx(pt);
+        return std::make_pair(aii_.GetIdx(pt), r);
     }
 };
 
 void AIResourceMap::ChangeResourceMap(const MapPoint pt, unsigned radius, int value)
 {
-    map[gwb.GetIdx(pt)] += value * radius;
-    std::vector<MapPoint2IdxWithRadius::result_type> pts = gwb.GetPointsInRadius(pt, radius, MapPoint2IdxWithRadius(gwb));
-
+    map[aii.GetIdx(pt)] += value * radius;
+    std::vector<MapPoint2IdxWithRadius::result_type> pts = aii.GetPointsInRadius(pt, radius, MapPoint2IdxWithRadius(aii));
     for(std::vector<MapPoint2IdxWithRadius::result_type>::iterator it = pts.begin(); it != pts.end(); ++it)
         map[it->first] += value * (radius - it->second);
 }
 
-
 bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    assert(pt.x < gwb.GetWidth() && pt.y < gwb.GetHeight());
+    assert(pt.x < aii.GetMapWidth() && pt.y < aii.GetMapHeight());
 
     // TODO was besseres wär schön ;)
     if (radius == -1)
         radius = 30;
 
-    std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, radius);
+    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
     for(std::vector<MapPoint>::iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        const unsigned idx = gwb.GetIdx(*it);
+        const unsigned idx = aii.GetIdx(*it);
         if (map[idx] >= threshold)
         {
             if ((inTerritory && !nodes[idx].owned) || nodes[idx].farmed)
                 continue;
-            if ( (nodes[idx].bq >= size && nodes[idx].bq < BQ_MINE) // normales Gebäude
-                || (nodes[idx].bq == size))   // auch Bergwerke
+            const BuildingQuality bq = aii.GetBuildingQuality(*it); //nodes[idx].bq; TODO: Update nodes BQ and use that
+            if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
+                || (bq == size))   // auch Bergwerke
             {
                 pt = *it;
                 return true;
@@ -116,7 +139,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
 
 bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
-    assert(pt.x < gwb.GetWidth() && pt.y < gwb.GetHeight());
+    assert(pt.x < aii.GetMapWidth() && pt.y < aii.GetMapHeight());
 
     // TODO was besseres wär schön ;)
     if (radius == -1)
@@ -125,16 +148,17 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
     MapPoint best(0, 0);
     int best_value = -1;
 
-    std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, radius);
+    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
     for(std::vector<MapPoint>::iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        const unsigned idx = gwb.GetIdx(*it);
+        const unsigned idx = aii.GetIdx(*it);
         if (map[idx] > best_value)
         {
             if (!nodes[idx].reachable || (inTerritory && !nodes[idx].owned) || nodes[idx].farmed)
                 continue;
-            if ( (nodes[idx].bq >= size && nodes[idx].bq < BQ_MINE) // normales Gebäude
-                || (nodes[idx].bq == size))   // auch Bergwerke
+            const BuildingQuality bq = aii.GetBuildingQuality(*it); //nodes[idx].bq; TODO: Update nodes BQ and use that
+            if ( (bq >= size && bq < BQ_MINE) // normales Gebäude
+                || (bq == size))   // auch Bergwerke
             {
                 best = *it;
                 best_value = map[idx];
