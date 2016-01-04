@@ -44,7 +44,7 @@ class noBuilding : public noBaseBuilding
         void DrawBaseBuilding(int x, int y);
 
         void OpenDoor() {++opendoor;}
-        void CloseDoor() {--opendoor;}
+        void CloseDoor() {assert(opendoor); --opendoor;}
 
         void GotWorker(Job job, noFigure* worker);
 
