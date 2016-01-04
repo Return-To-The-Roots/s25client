@@ -46,18 +46,18 @@ void AIResourceMap::Init()
             unsigned i = aii.GetIdx(pt);
             if (nodes[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(aii.GetTerrain(pt)))
             {
-                ChangeResourceMap(pt, 1);
+                Change(pt, 1);
             }
             else if (res == AIJH::BORDERLAND && aii.IsBorder(pt))
             {
                 //only count border area that is actually passable terrain
                 if(TerrainData::IsUseable(aii.GetTerrain(pt)))
-                    ChangeResourceMap(pt, 1);
+                    Change(pt, 1);
             }
             if (nodes[i].res == AIJH::MULTIPLE && TerrainData::IsUseable(aii.GetTerrain(pt)) )
             {
                 if(aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)
-                    ChangeResourceMap(pt, 1);
+                    Change(pt, 1);
             }
         }
     }
@@ -79,12 +79,12 @@ void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int v
 {
     const std::list<nobUsual*>& blds = aii.GetBuildings(bld);
     for(std::list<nobUsual*>::const_iterator it = blds.begin(); it != blds.end(); ++it)
-        ChangeResourceMap((*it)->GetPos(), radius, value);
+        Change((*it)->GetPos(), radius, value);
     const std::list<noBuildingSite*>& bldSites = aii.GetBuildingSites();
     for(std::list<noBuildingSite*>::const_iterator it = bldSites.begin(); it != bldSites.end(); ++it)
     {
         if((*it)->GetBuildingType() == bld)
-            ChangeResourceMap((*it)->GetPos(), radius, value);
+            Change((*it)->GetPos(), radius, value);
     }
 }
 
@@ -100,7 +100,7 @@ struct MapPoint2IdxWithRadius
     }
 };
 
-void AIResourceMap::ChangeResourceMap(const MapPoint pt, unsigned radius, int value)
+void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
 {
     map[aii.GetIdx(pt)] += value * radius;
     std::vector<MapPoint2IdxWithRadius::result_type> pts = aii.GetPointsInRadius(pt, radius, MapPoint2IdxWithRadius(aii));

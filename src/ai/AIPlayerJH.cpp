@@ -1944,7 +1944,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     RecalcBQAround(pt);
     if (GetAINode(pt).res == AIJH::PLANTSPACE)
     {
-        resourceMaps[AIJH::PLANTSPACE].ChangeResourceMap(pt, -1);
+        resourceMaps[AIJH::PLANTSPACE].Change(pt, -1);
         GetAINode(pt).res = AIJH::NOTHING;
     }
 
@@ -1953,7 +1953,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     RecalcBQAround(pt);
     if (GetAINode(pt).res == AIJH::PLANTSPACE)
     {
-        resourceMaps[AIJH::PLANTSPACE].ChangeResourceMap(pt, -1);
+        resourceMaps[AIJH::PLANTSPACE].Change(pt, -1);
         GetAINode(pt).res = AIJH::NOTHING;
     }
 
@@ -1965,7 +1965,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
         // Auch Plantspace entsprechend anpassen:
         if (GetAINode(pt).res == AIJH::PLANTSPACE)
         {
-            resourceMaps[AIJH::PLANTSPACE].ChangeResourceMap(pt, -1);
+            resourceMaps[AIJH::PLANTSPACE].Change(pt, -1);
             GetAINode(pt).res = AIJH::NOTHING;
         }
     }
