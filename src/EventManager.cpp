@@ -83,8 +83,7 @@ void EventManager::Clear()
 EventManager::EventPointer EventManager::AddEvent(EventPointer event)
 {
     // Should be in the future!
-    // At the current GF is allowed as long as a std::list is used for the events of one GF because it retains iterator validy even on modify
-    assert(event->gf_next >= GAMECLIENT.GetGFNumber());
+    assert(event->gf_next > GAMECLIENT.GetGFNumber());
     assert(!dynamic_cast<EventPointer>(event->obj)); // Why could this ever happen?
     events[event->gf_next].push_back(event);
     return event;
@@ -121,7 +120,7 @@ EventManager::EventPointer EventManager::AddEvent(SerializedGameData& sgd, const
 
 EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed)
 {
-    assert(gf_length >= gf_elapsed);
+    assert(gf_length > gf_elapsed);
 
     /*  if (IsEventActive(obj, id))
         {
