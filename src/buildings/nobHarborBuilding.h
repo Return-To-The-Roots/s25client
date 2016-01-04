@@ -163,7 +163,7 @@ public:
         /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
         void AddFigureForShip(noFigure* fig, MapPoint dest);
         /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
-        void AddWareForShip(Ware* ware);
+        void AddWareForShip(Ware*& ware);
 
         /// A ware changed its route and doesn't want to use the ship anymore
         void WareDontWantToTravelByShip(Ware* ware);

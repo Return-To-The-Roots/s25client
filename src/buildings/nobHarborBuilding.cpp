@@ -931,14 +931,15 @@ void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
 }
 
 /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
-void nobHarborBuilding::AddWareForShip(Ware* ware)
+void nobHarborBuilding::AddWareForShip(Ware*& ware)
 {
     wares_for_ships.push_back(ware);
     // Anzahl visuell erhöhen
     ++goods_.goods[ConvertShields(ware->type)];
     ware->WaitForShip(this);
     OrderShip();
-
+    // Take ownership
+    ware = NULL;
 }
 
 /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
