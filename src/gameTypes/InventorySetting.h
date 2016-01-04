@@ -18,6 +18,8 @@
 #ifndef InventorySetting_h__
 #define InventorySetting_h__
 
+/// Setting for each item in a warehouses inventory
+/// These are bit flags!
 enum InventorySetting{
     INV_SET_NONE = 0,
     INV_SET_STOP = 2,
@@ -25,5 +27,15 @@ enum InventorySetting{
     INV_SET_STOP_AND_SEND = 6,
     INV_SET_COLLECT = 8
 };
+
+inline InventorySetting operator~(const InventorySetting a){ return static_cast<InventorySetting>(~static_cast<int>(a)); }
+
+inline InventorySetting operator|(const InventorySetting a, const InventorySetting b){ return static_cast<InventorySetting>(static_cast<int>(a) | static_cast<int>(b)); }
+inline InventorySetting operator&(const InventorySetting a, const InventorySetting b){ return static_cast<InventorySetting>(static_cast<int>(a) & static_cast<int>(b)); }
+inline InventorySetting operator^(const InventorySetting a, const InventorySetting b){ return static_cast<InventorySetting>(static_cast<int>(a) ^ static_cast<int>(b)); }
+
+inline InventorySetting& operator|=(InventorySetting& a, const InventorySetting b){ return a = a | b; }
+inline InventorySetting& operator&=(InventorySetting& a, const InventorySetting b){ return a = a & b; }
+inline InventorySetting& operator^=(InventorySetting& a, const InventorySetting b){ return a = a ^ b; }
 
 #endif // InventorySetting_h__

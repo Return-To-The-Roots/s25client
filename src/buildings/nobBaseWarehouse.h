@@ -90,7 +90,8 @@ class nobBaseWarehouse : public nobBaseMilitary
         void CheckUsesForNewWare(const GoodType gt);
         /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
         void CheckJobsForNewFigure(const Job job);
-
+        /// Called after the inventory setting(s) was changed to check e.g. for events
+        void OnInventorySettingChange(InventorySetting state, unsigned char category, unsigned char type);
 
     protected:
 
@@ -139,19 +140,17 @@ class nobBaseWarehouse : public nobBaseMilitary
 
 
         /// Verändert Ein/Auslagerungseinstellungen (visuell)
-        void ChangeVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type);
+        void ChangeVisualInventorySettings(unsigned char category, InventorySetting state, unsigned char type);
         /// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
-        bool CheckVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type) const;
-        ///// Generiert einen NC-Befehl für eine Inventory Settings änderung und führt noch entsprechend eigene änderungen aus
-        //void SubmitInventorySettings();
+        bool CheckVisualInventorySettings(unsigned char category, InventorySetting state, unsigned char type) const;
 
         /// Verändert Ein/Auslagerungseinstellungen (real)
-        void ChangeRealInventorySetting(unsigned char category, unsigned char state, unsigned char type);
+        void ChangeRealInventorySetting(unsigned char category, InventorySetting state, unsigned char type);
+
         /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
-        void ChangeAllRealInventorySettings(unsigned char category, unsigned char state);
+        void ChangeAllRealInventorySettings(unsigned char category, InventorySetting state);
         /// Gibt Ein/Auslagerungseinstellungen zurück (real), cannot check for state 0
-        bool CheckRealInventorySettings(unsigned char category, unsigned char state, unsigned char type) const
-        { return ((((category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type]) & state) == state); }
+        bool CheckRealInventorySettings(unsigned char category, InventorySetting state, unsigned char type) const;
 
         /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
         void CheckOuthousing(unsigned char category, unsigned job_ware_id);

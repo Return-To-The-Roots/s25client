@@ -25,6 +25,7 @@
 #include "gameTypes/ShipDirection.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/InventorySetting.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 
@@ -74,8 +75,8 @@ public:
     bool ToggleProduction(const MapPoint pt);
     bool NotifyAlliesOfLocation(const MapPoint pt);
     /// changes inventory settings for a warehouse by XOR with old settings (self fixing stupid settings)
-    bool ChangeInventorySetting(const MapPoint pt, const unsigned char category, const unsigned char state, const unsigned char type);
-    bool ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const unsigned char state);
+    bool ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type);
+    bool ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state);
     bool ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count);
     bool CheatArmageddon();
     /// Simply surrenders...

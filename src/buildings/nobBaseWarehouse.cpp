@@ -193,13 +193,13 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     {
         goods_.goods[i] = sgd.PopUnsignedInt();
         real_goods.goods[i] = sgd.PopUnsignedInt();
-        inventory_settings_real.wares[i] = inventory_settings_visual.wares[i] = sgd.PopUnsignedChar();
+        inventory_settings_real.wares[i] = inventory_settings_visual.wares[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
         goods_.people[i] = sgd.PopUnsignedInt();
         real_goods.people[i] = sgd.PopUnsignedInt();
-        inventory_settings_real.figures[i] = inventory_settings_visual.figures[i] = sgd.PopUnsignedChar();
+        inventory_settings_real.figures[i] = inventory_settings_visual.figures[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
 }
 
@@ -558,13 +558,13 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             empty_event = 0;
 
             std::vector<unsigned> possibleIds;
-            // Waren und Figuren zum Auslagern zusammensuchen (id >= 34 --> Figur!)
+            // Waren und Figuren zum Auslagern zusammensuchen
             // Wenn keine Platz an Flagge, dann keine Waren raus
             if(GetFlag()->IsSpaceForWare())
             {
                 for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
                 {
-                    if(CheckRealInventorySettings(0, 4, i) && real_goods.goods[i])
+                    if(CheckRealInventorySettings(0, INV_SET_SEND, i) && real_goods.goods[i])
                         possibleIds.push_back(i);
                 }
             }
@@ -572,7 +572,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
             {
                 // Figuren, die noch nicht implementiert sind, nicht nehmen!
-                if(CheckRealInventorySettings(1, 4, i) && real_goods.people[i])
+                if(CheckRealInventorySettings(1, INV_SET_SEND, i) && real_goods.people[i])
                     possibleIds.push_back(WARE_TYPES_COUNT + i);
             }
 
@@ -644,23 +644,23 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
             for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
             {
                 // Soll Ware eingeliefert werden?
-                if(inventory_settings_real.wares[i] & 8)
-                {
-                    storing_wanted = true;
+                if(!CheckRealInventorySettings(0, INV_SET_COLLECT, i))
+                    continue;
 
-                    // Lagerhaus suchen, das diese Ware enthält
-                    nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantWare, NULL, false, (void*)&i, false);
-                    // Gefunden?
-                    if(wh)
+                storing_wanted = true;
+
+                // Lagerhaus suchen, das diese Ware enthält
+                nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantWare, NULL, false, (void*)&i, false);
+                // Gefunden?
+                if(wh)
+                {
+                    // Dann bestellen
+                    Ware* ware = wh->OrderWare(GoodType(i), this);
+                    if(ware)
                     {
-                        // Dann bestellen
-                        Ware* ware = wh->OrderWare(GoodType(i), this);
-                        if(ware)
-                        {
-                            assert(IsWareDependent(ware));
-                            storing_done = true;
-                            break;
-                        }
+                        assert(IsWareDependent(ware));
+                        storing_done = true;
+                        break;
                     }
                 }
             }
@@ -671,19 +671,19 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
                 {
                     // Soll dieser Typ von Mensch bestellt werden?
-                    if(inventory_settings_real.figures[i] & 8)
-                    {
-                        storing_wanted = true;
+                    if(!CheckRealInventorySettings(1, INV_SET_COLLECT, i))
+                        continue;
 
-                        // Lagerhaus suchen, das diesen Job enthält
-                        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantFigure, NULL, false, (void*)&i, false);
-                        // Gefunden?
-                        if(wh)
-                        {
-                            // Dann bestellen
-                            if(wh->OrderJob(Job(i), this, false))
-                                break;
-                        }
+                    storing_wanted = true;
+
+                    // Lagerhaus suchen, das diesen Job enthält
+                    nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantFigure, NULL, false, (void*)&i, false);
+                    // Gefunden?
+                    if(wh)
+                    {
+                        // Dann bestellen
+                        if(wh->OrderJob(Job(i), this, false))
+                            break;
                     }
                 }
             }
@@ -1221,11 +1221,8 @@ bool FW::Condition_StoreWare(nobBaseWarehouse* wh, const void* param)
 {
     // Einlagern darf nicht verboten sein
     // Schilder beachten!
-    if(*static_cast<const GoodType*>(param) == GD_SHIELDVIKINGS || *static_cast<const GoodType*>(param) == GD_SHIELDAFRICANS ||
-            *static_cast<const GoodType*>(param) == GD_SHIELDJAPANESE)
-        return (!wh->CheckRealInventorySettings(0, 2, GD_SHIELDROMANS));
-    else
-        return (!wh->CheckRealInventorySettings(0, 2, *static_cast<const GoodType*>(param)));
+    const GoodType good = ConvertShields(*static_cast<const GoodType*>(param));
+    return (!wh->CheckRealInventorySettings(0, INV_SET_STOP, *static_cast<const GoodType*>(param)));
 }
 
 
@@ -1233,16 +1230,16 @@ bool FW::Condition_StoreFigure(nobBaseWarehouse* wh, const void* param)
 {
     // Einlagern darf nicht verboten sein, Bootstypen zu normalen Trägern machen
     if(*static_cast<const Job*>(param) == JOB_BOATCARRIER)
-        return (!wh->CheckRealInventorySettings(1, 2, JOB_HELPER));
+        return (!wh->CheckRealInventorySettings(1, INV_SET_STOP, JOB_HELPER));
     else
-        return (!wh->CheckRealInventorySettings(1, 2, *static_cast<const Job*>(param)));
+        return (!wh->CheckRealInventorySettings(1, INV_SET_STOP, *static_cast<const Job*>(param)));
 }
 
 bool FW::Condition_WantStoreFigure(nobBaseWarehouse* wh, const void* param)
 {
     // Einlagern muss gewollt sein
     Job job = (*static_cast<const Job*>(param) == JOB_BOATCARRIER) ? JOB_HELPER : *static_cast<const Job*>(param);
-    return (wh->CheckRealInventorySettings(1, 8, job));
+    return (wh->CheckRealInventorySettings(1, INV_SET_COLLECT, job));
 }
 
 bool FW::Condition_WantStoreWare(nobBaseWarehouse* wh, const void* param)
@@ -1250,7 +1247,7 @@ bool FW::Condition_WantStoreWare(nobBaseWarehouse* wh, const void* param)
     // Einlagern muss gewollt sein
     // Schilder beachten!
     GoodType gt = ConvertShields(*static_cast<const GoodType*>(param));
-    return (wh->CheckRealInventorySettings(0, 8, gt));
+    return (wh->CheckRealInventorySettings(0, INV_SET_COLLECT, gt));
 }
 
 // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
@@ -1308,59 +1305,72 @@ void nobBaseWarehouse::AddToInventory()
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (visuell)
-void nobBaseWarehouse::ChangeVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type)
+void nobBaseWarehouse::ChangeVisualInventorySettings(unsigned char category, InventorySetting state, unsigned char type)
 {
-    ((category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type]) ^= state;
+    InventorySetting& curState = (category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type];
+    curState ^= state;
 
     // Einlagern -> Einlagern verbieten / Auslagern auf false setzen, weil es keinen Sinn macht
-    if(state == 8)
-        ((category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type]) &= 8;
+    if(state == INV_SET_COLLECT)
+        curState &= ~INV_SET_STOP_AND_SEND;
     else
         // Und jeweils umgekehrt
-        ((category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type]) &= ( 2 | 4 );
+        curState &= ~INV_SET_COLLECT;
 
 }
 
 /// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
-bool nobBaseWarehouse::CheckVisualInventorySettings(unsigned char category, unsigned char state, unsigned char type) const
+bool nobBaseWarehouse::CheckVisualInventorySettings(unsigned char category, InventorySetting state, unsigned char type) const
 {
-    return ((((category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type]) & state) == state);
+    InventorySetting curState = (category == 0) ? inventory_settings_visual.wares[type] : inventory_settings_visual.figures[type];
+    return ((curState & state) == state);
+}
+
+/// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
+bool nobBaseWarehouse::CheckRealInventorySettings(unsigned char category, InventorySetting state, unsigned char type) const
+{
+    InventorySetting curState = (category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type];
+    return ((curState & state) == state);
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (real)
-void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, unsigned char state, unsigned char type)
+void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, InventorySetting state, unsigned char type)
 {
-    /// Einstellung ändern
-    ((category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type]) ^= state;
+    InventorySetting& curState = (category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type];
+    curState ^= state;
 
     // Einlagern -> Einlagern verbieten / Auslagern auf false setzen, weil es keinen Sinn macht
-    if(state == 8)
-        ((category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type]) &= 8;
+    if(state == INV_SET_COLLECT)
+        curState &= ~INV_SET_STOP_AND_SEND;
     else
         // Und jeweils umgekehrt
-        ((category == 0) ? inventory_settings_real.wares[type] : inventory_settings_real.figures[type]) &= ( 2 | 4 );
-
+        curState &= ~INV_SET_COLLECT;
 
     /// Bei anderen Spielern als dem lokalen, der das in Auftrag gegeben hat, müssen die visuellen ebenfalls
     /// geändert werden oder auch bei Replays
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerID() != player)
         ChangeVisualInventorySettings(category, state, type);
 
-    // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
-    if(state == 2)
-        gwg->GetPlayer(player).FindClientForLostWares();
-
-    // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
-    if(state == 4 && ((category == 0) ? real_goods.goods[type] : real_goods.people[type]) && !empty_event)
-        empty_event = em->AddEvent(this, empty_INTERVAL, 3);
-
-    // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
-    if(state == 8 && !store_event && ((category == 0) ? inventory_settings_real.wares[type] : (inventory_settings_real.figures[type]) & 8))
+    if(state == INV_SET_STOP)
+    {
+        // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
+        if(!CheckRealInventorySettings(category, INV_SET_STOP, type))
+            gwg->GetPlayer(player).FindClientForLostWares();
+    }else if(state == INV_SET_SEND)
+    {
+        // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
+        if(CheckRealInventorySettings(category, INV_SET_SEND, type) && !empty_event && ((category == 0) ? real_goods.goods[type] : real_goods.people[type]))
+            empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+    }else if(state == INV_SET_COLLECT)
+    {
+        // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
+        if(CheckRealInventorySettings(category, INV_SET_COLLECT, type) && !store_event)
         store_event = em->AddEvent(this, STORE_INTERVAL, 4);
+    }
 }
 
 /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
-void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, unsigned char state)
+void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, InventorySetting state)
 {
     // Merken, ob Waren/Figuren eingelagert werden sollen
     bool store = false;
@@ -1371,7 +1381,7 @@ void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, un
         for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
         {
             inventory_settings_real.wares[i] ^= state;
-            if(state == 8 && (inventory_settings_real.wares[i] & state))
+            if(state == INV_SET_COLLECT && (inventory_settings_real.wares[i] & state))
                 store = true;
         }
     }
@@ -1381,23 +1391,20 @@ void nobBaseWarehouse::ChangeAllRealInventorySettings(unsigned char category, un
         for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
         {
             inventory_settings_real.figures[i] ^= state;
-            if(state == 8 && (inventory_settings_real.figures[i] & state))
+            if(state == INV_SET_COLLECT && (inventory_settings_real.figures[i] & state))
                 store = true;
         }
     }
 
     // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
-    if(state == 2)
+    if(state == INV_SET_STOP)
         gwg->GetPlayer(player).FindClientForLostWares();
-
     // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
-    if(state == 4 && AreWaresToEmpty() && !empty_event)
+    else if(state == INV_SET_SEND && AreWaresToEmpty() && !empty_event)
         empty_event = em->AddEvent(this, empty_INTERVAL, 3);
-
     // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
-    if(store && !store_event)
+    else if(store && !store_event)
         store_event = em->AddEvent(this, STORE_INTERVAL, 4);
-
 }
 
 
@@ -1407,14 +1414,14 @@ bool nobBaseWarehouse::AreWaresToEmpty() const
     // Waren überprüfen
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        if(CheckRealInventorySettings(0, 4, i) && real_goods.goods[i])
+        if(CheckRealInventorySettings(0, INV_SET_SEND, i) && real_goods.goods[i])
             return true;
     }
 
     // Figuren überprüfen
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        if(CheckRealInventorySettings(1, 4, i) && real_goods.people[i])
+        if(CheckRealInventorySettings(1, INV_SET_SEND, i) && real_goods.people[i])
             return true;
     }
 
@@ -1505,7 +1512,7 @@ void nobBaseWarehouse::CheckOuthousing(unsigned char category, unsigned job_ware
     if(category == 1 && job_ware_id == JOB_BOATCARRIER)
         job_ware_id = JOB_HELPER;
 
-    if(CheckRealInventorySettings(category, 4, job_ware_id) && !empty_event)
+    if(CheckRealInventorySettings(category, INV_SET_SEND, job_ware_id) && !empty_event)
         empty_event = em->AddEvent(this, empty_INTERVAL, 3);
 }
 

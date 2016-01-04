@@ -7,6 +7,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/InventorySetting.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 #include <cassert>
@@ -546,15 +547,16 @@ namespace gc{
     {
         GC_FRIEND_DECL;
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
-            const unsigned char category, state, type;
+            const unsigned char category;
+            const InventorySetting state;
+            const unsigned char type;
         protected:
-            ChangeInventorySetting(const MapPoint pt, const unsigned char category,
-                                   const unsigned char state, const unsigned char type)
+            ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type)
                 : Coords(CHANGEINVENTORYSETTING, pt), category(category), state(state), type(type) {}
             ChangeInventorySetting(Serializer* ser)
                 : Coords(CHANGEINVENTORYSETTING, ser),
                   category(ser->PopUnsignedChar()),
-                  state(ser->PopUnsignedChar()),
+                  state(static_cast<InventorySetting>(ser->PopUnsignedChar())),
                   type(ser->PopUnsignedChar())
             {}
         public:
@@ -576,15 +578,15 @@ namespace gc{
     {
         GC_FRIEND_DECL;
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
-            const unsigned char category, state;
+            const unsigned char category;
+            const InventorySetting state;
         protected:
-            ChangeAllInventorySettings(const MapPoint pt, const unsigned char category,
-                                       const unsigned char state)
+            ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state)
                 : Coords(CHANGEALLINVENTORYSETTINGS, pt), category(category), state(state) {}
             ChangeAllInventorySettings(Serializer* ser)
                 : Coords(CHANGEALLINVENTORYSETTINGS, ser),
                   category(ser->PopUnsignedChar()),
-                  state(ser->PopUnsignedChar())
+                  state(static_cast<InventorySetting>(ser->PopUnsignedChar()))
             {}
         public:
             virtual void Serialize(Serializer* ser) const

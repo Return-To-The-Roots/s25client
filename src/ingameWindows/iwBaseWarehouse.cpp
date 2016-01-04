@@ -36,6 +36,8 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobStorehouse.h"
 
+#include <stdexcept>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER
@@ -87,20 +89,20 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
             // Einlagern verbieten-Bild (de)aktivieren
             image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(400 + i);
             if(image)
-                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, 2, i) :
-                                  wh->CheckVisualInventorySettings(category, 2, i));
+                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_STOP, i) :
+                                  wh->CheckVisualInventorySettings(category, INV_SET_STOP, i));
 
             // Auslagern-Bild (de)aktivieren
             image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(500 + i);
             if(image)
-                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, 4, i) :
-                                  wh->CheckVisualInventorySettings(category, 4, i));
+                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_SEND, i) :
+                                  wh->CheckVisualInventorySettings(category, INV_SET_SEND, i));
 
             // Einlagern-Bild (de)aktivieren
             image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(700 + i);
             if(image)
-                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, 8, i) :
-                                  wh->CheckVisualInventorySettings(category, 8, i));
+                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_COLLECT, i) :
+                                  wh->CheckVisualInventorySettings(category, INV_SET_COLLECT, i));
         }
     }
 
@@ -131,12 +133,14 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
         {
             ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
 
-            unsigned int data = 0;
+            InventorySetting data;
             switch(optiongroup->GetSelection())
             {
-                case 0: data = 8; break;
-                case 1: data = 4; break;
-                case 2: data = 2; break;
+                case 0: data = INV_SET_COLLECT; break;
+                case 1: data = INV_SET_SEND; break;
+                case 2: data = INV_SET_STOP; break;
+                default:
+                    throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
             if(data != 0)
             {
@@ -164,12 +168,14 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
             if(this->page < 2)
             {
                 ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
-                unsigned int data = 0;
+                InventorySetting data;
                 switch(optiongroup->GetSelection())
                 {
-                    case 0: data = 8; break;
-                    case 1: data = 4; break;
-                    case 2: data = 2; break;
+                    case 0: data = INV_SET_COLLECT; break;
+                    case 1: data = INV_SET_SEND; break;
+                    case 2: data = INV_SET_STOP; break;
+                    default:
+                        throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
                 }
                 if(data != 0)
                 {
@@ -248,7 +254,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author FloSoft
  */
-void iwBaseWarehouse::ChangeOverlay(unsigned int i, unsigned int what)
+void iwBaseWarehouse::ChangeOverlay(unsigned int i, InventorySetting what)
 {
     ctrlImage* image;
 
@@ -258,15 +264,15 @@ void iwBaseWarehouse::ChangeOverlay(unsigned int i, unsigned int what)
     // Einlagern verbieten-Bild (de)aktivieren
     image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(400 + i);
     if(image)
-        image->SetVisible(wh->CheckVisualInventorySettings(page, 2, i));
+        image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_STOP, i));
 
     // Auslagern-Bild (de)aktivieren
     image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(500 + i);
     if(image)
-        image->SetVisible(wh->CheckVisualInventorySettings(page, 4, i));
+        image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_SEND, i));
 
     // Einlagern-Bild (de)aktivieren
     image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(700 + i);
     if(image)
-        image->SetVisible(wh->CheckVisualInventorySettings(page, 8, i));
+        image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_COLLECT, i));
 }

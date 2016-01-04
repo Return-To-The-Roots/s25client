@@ -20,6 +20,7 @@
 #pragma once
 
 #include "iwWares.h"
+#include "gameTypes/InventorySetting.h"
 
 class nobBaseWarehouse;
 class GameWorldViewer;
@@ -41,7 +42,7 @@ class iwBaseWarehouse : public iwWares
     protected:
 
         /// Overlay ändern
-        void ChangeOverlay(unsigned int i, unsigned int what);
+        void ChangeOverlay(unsigned int i, InventorySetting what);
 
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
         void Msg_ButtonClick(const unsigned int ctrl_id);
