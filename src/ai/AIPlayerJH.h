@@ -65,10 +65,10 @@ struct PositionSearch
     int nodesPerStep;
 
     // which nodes have already been tested or will be tested next (=already in queue)?
-    std::vector<bool>* tested;
+    std::vector<bool> tested;
 
     // which nodes are currently queued to be tested next?
-    std::queue<MapPoint>* toTest;
+    std::queue<MapPoint> toTest;
 
     // results
     MapPoint result;
@@ -81,12 +81,6 @@ struct PositionSearch
 
     PositionSearch(const MapPoint pt, AIJH::Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
         : start(pt), res(res), minimum(minimum), size(size), bld(bld), best(best) { }
-
-    ~PositionSearch()
-    {
-        delete tested;
-        delete toTest;
-    }
 };
 
 /// Klasse für die besser JH-KI

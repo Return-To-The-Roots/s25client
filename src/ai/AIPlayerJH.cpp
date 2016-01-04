@@ -598,8 +598,10 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
 
     // allocate memory for the nodes
     unsigned numNodes = aii->GetMapWidth() * aii->GetMapHeight();
-    p->tested = new std::vector<bool>(numNodes, false);
-    p->toTest = new std::queue<MapPoint>;
+    p->tested.clear();
+    p->tested.resize(numNodes, false);
+    std::queue<MapPoint> emptyQueue;
+    p->toTest.swap(emptyQueue);
 
 
     // if no useful startpos is given, use headquarter
@@ -609,8 +611,8 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
     }
 
     // insert start position as first node to test
-    p->toTest->push(pt);
-    (*p->tested)[aii->GetIdx(pt)] = true;
+    p->toTest.push(pt);
+    p->tested[aii->GetIdx(pt)] = true;
 
     return p;
 }
@@ -621,12 +623,12 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
     for (int i = 0; i < search->nodesPerStep; i++)
     {
         // no more nodes to test? end this!
-        if (search->toTest->empty())
+        if (search->toTest.empty())
             break;
 
         // get the node
-        MapPoint pt = search->toTest->front();
-        search->toTest->pop();
+        MapPoint pt = search->toTest.front();
+        search->toTest.pop();
         AIJH::Node* node = &nodes[aii->GetIdx(pt)];
 
         // and test it... TODO exception at res::borderland?
@@ -647,23 +649,23 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
             unsigned ni = aii->GetIdx(n);
 
             // test if already tested or not in territory
-            if (!(*search->tested)[ni] && nodes[ni].owned)
+            if (!search->tested[ni] && nodes[ni].owned)
             {
-                search->toTest->push(pt);
-                (*search->tested)[ni] = true;
+                search->toTest.push(pt);
+                search->tested[ni] = true;
             }
         }
     }
 
     // decide the state of the search
 
-    if (search->toTest->empty() && search->resultValue < search->minimum)
+    if (search->toTest.empty() && search->resultValue < search->minimum)
     {
         // no more nodes to test, not reached minimum
         return SEARCH_FAILED;
     }
     else if ( (search->resultValue >= search->minimum && !best)
-              || (search->resultValue >= search->minimum && search->toTest->empty()))
+              || (search->resultValue >= search->minimum && search->toTest.empty()))
     {
         // reached minimal satifiying value or best value, if needed
         return SEARCH_SUCCESSFUL;
