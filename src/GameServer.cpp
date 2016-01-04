@@ -176,8 +176,8 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
 
             // Spieleranzahl
             serverconfig.playercount = save.GetPlayerCount();
-
-            mapinfo.title = serverconfig.mapname.substr(serverconfig.mapname.find_last_of("/\\"));
+            bfs::path mapPath = map_path;
+            mapinfo.title = mapPath.stem().string(); // Get name only
         } break;
     }
 
