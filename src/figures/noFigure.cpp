@@ -571,7 +571,11 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     if(waiting_for_free_node)
     {
         waiting_for_free_node = false;
-        Wander();
+        // We should be paused, so just continue moving now
+        if(pause_walked_gf)
+            StartMoving(GetCurMoveDir(), pause_event_length);
+        else
+            Wander();
     }
 }
 
@@ -976,28 +980,24 @@ void noFigure::DieFailedTrade()
 void noFigure::NodeFreed(const MapPoint pt)
 {
     // Stehen wir gerade aus diesem Grund?
-    if(waiting_for_free_node)
-    {
-        // Ist das der Punkt, zu dem wir hin wollen?
-        if(pt == gwg->GetNeighbour(this->pos, GetCurMoveDir()))
-        {
-            // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-            if(GetCurMoveDir() == 1 && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
-                gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, 1))->CloseDoor();
-            // oder aus einem raus?
-            if(GetCurMoveDir() == 4 && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
-                gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
+    if(!waiting_for_free_node || pt != gwg->GetNeighbour(this->pos, GetCurMoveDir()))
+        return;
 
-            // Wir stehen nun nicht mehr
-            waiting_for_free_node = false;
+    // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
+    if(GetCurMoveDir() == 1 && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, 1))->CloseDoor();
+    // oder aus einem raus?
+    if(GetCurMoveDir() == 4 && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
 
-            // Dann loslaufen
-            StartWalking(GetCurMoveDir());
+    // Wir stehen nun nicht mehr
+    waiting_for_free_node = false;
 
-            // anderen Leuten noch ggf Bescheid sagen
-            gwg->RoadNodeAvailable(this->pos);
-        }
-    }
+    // Dann loslaufen
+    StartWalking(GetCurMoveDir());
+
+    // anderen Leuten noch ggf Bescheid sagen
+    gwg->RoadNodeAvailable(this->pos);
 }
 
 void noFigure::Abrogate()
