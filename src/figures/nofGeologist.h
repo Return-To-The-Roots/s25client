@@ -21,6 +21,8 @@
 #include "nofFlagWorker.h"
 #include "Point.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/Resource.h"
+#include <boost/array.hpp>
 #include <vector>
 
 class noFlag;
@@ -39,7 +41,7 @@ class nofGeologist : public nofFlagWorker
         /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
         static const unsigned short MAX_RADIUS = 10;
 
-        std::vector<bool> resAlreadyFound;
+        boost::array<bool, RES_TYPES_COUNT> resAlreadyFound;
 
     private:
 

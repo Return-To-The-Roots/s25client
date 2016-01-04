@@ -22,6 +22,7 @@
 #include "defines.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/Resource.h"
 #include <queue>
 
 namespace AIEvent
@@ -43,7 +44,8 @@ namespace AIEvent
         RoadConstructionComplete,
         RoadConstructionFailed,
         NewColonyFounded,
-		LuaConstructionOrder
+		LuaConstructionOrder,
+        ResourceFound
     };
 
 
@@ -94,7 +96,12 @@ namespace AIEvent
             BuildingType building;
     };
 
-
+    class Resource: public Location
+    {
+    public:
+        const ::Resource resType;
+        Resource(AIEventType type, const MapPoint& pt, ::Resource resType): Location(type, pt), resType(resType){}
+    };
 }
 
 class AIEventManager

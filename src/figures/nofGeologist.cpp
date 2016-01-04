@@ -40,10 +40,9 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), resAlreadyFound(std::vector<bool>(5))
+    : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), node_goal(0, 0)
 {
-    node_goal.x = 0;
-    node_goal.y = 0;
+    std::fill(resAlreadyFound.begin(), resAlreadyFound.end(), false);
 }
 
 void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
@@ -66,7 +65,7 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
 }
 
 nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    signs(sgd.PopUnsignedShort()), resAlreadyFound(std::vector<bool>(5))
+    signs(sgd.PopUnsignedShort())
 {
     unsigned available_nodes_count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
@@ -179,8 +178,7 @@ void nofGeologist::GoalReached()
     signs = 15;
 
     // Für jeden Ressourcentyp nur einmal eine Post-Nachricht schicken
-    for(unsigned i = 0; i < 5; ++i)
-        resAlreadyFound[i] = false;
+    std::fill(resAlreadyFound.begin(), resAlreadyFound.end(), false);
 
     // Umgebung absuchen
     LookForNewNodes();
@@ -413,46 +411,42 @@ void nofGeologist::SetSign(const unsigned char resources)
     }
 
     // Schildtyp und -häufigkeit herausfinden
-    unsigned char type, quantity;
+    unsigned char quantity;
+    Resource type;
 
     if(resources >= 0x41 && resources <= 0x47)
     {
-        // Kohle
-        type = 2;
+        type = RES_COAL;
         quantity = (resources - 0x40) / 3;
     }
     else if(resources >= 0x49 && resources <= 0x4F)
     {
-        // Eisen
-        type = 0;
+        type = RES_IRON_ORE;
         quantity = (resources - 0x48) / 3;
     }
     else if(resources >= 0x51 && resources <= 0x57)
     {
-        // Gold
-        type = 1;
+        type = RES_GOLD;
         quantity = (resources - 0x50) / 3;
     }
     else if(resources >= 0x59 && resources <= 0x5F)
     {
-        // Granit
-        type = 3;
+        type = RES_GRANITE;
         quantity = (resources - 0x58) / 3;
     }
     else if(resources >= 0x21 && resources <= 0x27)
     {
-        // Wasser
-        type = 4;
+        type = RES_WATER;
         quantity = (resources - 0x20) / 3;
     }
     else
     {
         // nichts
-        type = 5;
+        type = RES_TYPES_COUNT;
         quantity = 0;
     }
 
-    if (type < 5)
+    if (type < RES_TYPES_COUNT)
     {
         if (!resAlreadyFound[type] && !IsSignInArea(type))
         {
@@ -474,6 +468,7 @@ void nofGeologist::SetSign(const unsigned char resources)
                         ;
                 }
             }
+            GAMECLIENT.SendAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, pos, type), player);
         }
         resAlreadyFound[type] = true;
     }
@@ -482,8 +477,6 @@ void nofGeologist::SetSign(const unsigned char resources)
 
     // Schild setzen
     gwg->SetNO(new noSign(pos, type, quantity), pos);
-
-
 }
 
 void nofGeologist::LostWork()
@@ -513,24 +506,22 @@ void nofGeologist::LostWork()
     }
 }
 
+struct IsSignOfType
+{
+    const unsigned type;
+    const GameWorldBase& gwb;
+
+    IsSignOfType(unsigned type, const GameWorldBase& gwb): type(type), gwb(gwb){}
+
+    bool operator()(const MapPoint& pt)
+    {
+        const noSign* sign = gwb.GetSpecObj<noSign>(pt);
+        return sign && sign->GetSignType() == type;
+    }
+};
+
 bool nofGeologist::IsSignInArea(unsigned char type) const
 {
     const unsigned short radius = 7;
-    for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; r <= radius; tx = gwg->GetXA(tx, pos.y, 0), ++r)
-    {
-        MapPoint t2(tx, pos.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
-            {
-                noSign* sign = 0;
-                if ((sign = gwg->GetSpecObj<noSign>(t2)))
-                {
-                    if (sign->GetSignType() == type)
-                        return true;
-                }
-            }
-        }
-    }
-    return false;
+    return gwg->CheckPointsInRadius(pos, 7, IsSignOfType(type, *gwg), false);
 }
