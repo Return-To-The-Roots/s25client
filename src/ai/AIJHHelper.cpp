@@ -265,8 +265,8 @@ void AIJH::BuildJob::TryToBuild()
 
 void AIJH::BuildJob::BuildMainRoad()
 {
-    const noBuildingSite* bld;
-    if (!(bld = aii->GetSpecObj<noBuildingSite>(target)))
+    const noBuildingSite* bld = aii->GetSpecObj<noBuildingSite>(target);
+    if (!bld)
     {
         // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
         BuildingQuality bq = aii->GetBuildingQuality(target);
