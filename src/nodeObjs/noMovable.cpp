@@ -95,7 +95,10 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
     if(pause_walked_gf)
     {
         // Das Laufevent fortführen
-        /*  assert(dir == this->dir);*/
+        assert(newDir == curMoveDir);
+        // Avoid setting an event for current gf by increasing the length
+        if(pause_walked_gf == pause_event_length)
+            pause_event_length++;
         current_ev = em->AddEvent(this, pause_event_length, 0, pause_walked_gf);
         pause_walked_gf = 0;
         moving = true;
