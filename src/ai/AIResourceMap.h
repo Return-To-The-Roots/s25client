@@ -26,7 +26,7 @@
 class AIResourceMap
 {
     public:
-        AIResourceMap(const GameWorldBase* const gwb, const std::vector<AIJH::Node> &nodes);
+        AIResourceMap(const GameWorldBase& gwb, const std::vector<AIJH::Node> &nodes);
         ~AIResourceMap();
 
         /// Initialize the resource map
@@ -47,7 +47,7 @@ class AIResourceMap
 
     private:
         std::vector<int> map;
-        const GameWorldBase* const gwb;
+        const GameWorldBase& gwb;
         const std::vector<AIJH::Node> &nodes;
         AIJH::Resource res;
 };
