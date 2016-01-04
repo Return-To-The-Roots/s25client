@@ -27,6 +27,7 @@
 class AIResourceMap
 {
     public:
+        AIResourceMap():aii(NULL), nodes(NULL){} // Default ctor to allow storage in arrays
         AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes);
         ~AIResourceMap();
 
@@ -47,17 +48,17 @@ class AIResourceMap
         bool FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
         bool FindBestPosition(MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true){ return FindBestPosition(pt, size, 1, radius, inTerritory); }
 
-        int& operator[](const MapPoint& pt) { return map[aii.GetIdx(pt)]; }
-        int operator[](const MapPoint& pt) const { return map[aii.GetIdx(pt)]; }
+        int& operator[](const MapPoint& pt) { return map[aii->GetIdx(pt)]; }
+        int operator[](const MapPoint& pt) const { return map[aii->GetIdx(pt)]; }
 
     private:
         void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
 
         std::vector<int> map;
-        const AIInterface& aii;
-        const std::vector<AIJH::Node> &nodes;
-        const AIJH::Resource res;
-        const unsigned resRadius;
+        AIJH::Resource res; // Do not change! const ommited to to able to store this in a vector
+        const AIInterface* aii;
+        const std::vector<AIJH::Node>* nodes;
+        unsigned resRadius; // Do not change! const ommited to to able to store this in a vector
 };
 
 #endif //! AIRESOURCEMAP_H_INCLUDED

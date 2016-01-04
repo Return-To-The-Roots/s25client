@@ -1017,7 +1017,7 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         unsigned objCt;
         unsigned objIdCt;
     };
-    AsyncChecksum referenceChecksum;
+    AsyncChecksum referenceChecksum = {0, 0, 0};
     std::vector<int> checksums;
     checksums.reserve(serverconfig.playercount);
 

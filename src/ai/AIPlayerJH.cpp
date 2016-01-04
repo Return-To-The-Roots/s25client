@@ -537,14 +537,9 @@ void AIPlayerJH::UpdateNodes()
 
 void AIPlayerJH::InitResourceMaps()
 {
-    unsigned short width = aii->GetMapWidth();
-    unsigned short height = aii->GetMapHeight();
-
-    resourceMaps.clear();
-    resourceMaps.reserve(AIJH::RES_TYPE_COUNT);
     for (unsigned res = 0; res < AIJH::RES_TYPE_COUNT; ++res)
     {
-        resourceMaps.push_back(AIResourceMap(static_cast<AIJH::Resource>(res), *aii, nodes));
+        resourceMaps[res] = AIResourceMap(static_cast<AIJH::Resource>(res), *aii, nodes);
         resourceMaps[res].Init();
     }
 }
@@ -589,7 +584,7 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
     p->tested.clear();
     p->tested.resize(numNodes, false);
     std::queue<MapPoint> emptyQueue;
-    p->toTest.swap(emptyQueue);
+    p->toTest = emptyQueue;
 
 
     // if no useful startpos is given, use headquarter

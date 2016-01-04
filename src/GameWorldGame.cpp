@@ -659,10 +659,10 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                     DestroyPlayerRests(tt, GetNode(t).owner, building, false);
 
                     // BQ neu berechnen
-                    GetNode(tt).bq = CalcBQ(tt, GAMECLIENT.GetPlayerID());
+                    CalcAndSetBQ(tt, GAMECLIENT.GetPlayerID());
                     // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
                     if(GetNodeAround(tt, 1).bq)
-                        SetBQ(GetNeighbour(tt, 1), GAMECLIENT.GetPlayerID());
+                        CalcAndSetBQ(GetNeighbour(tt, 1), GAMECLIENT.GetPlayerID());
                 }
 
                 if(gi)

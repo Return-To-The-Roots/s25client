@@ -27,6 +27,7 @@
 #include "AIResourceMap.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/array.hpp>
 #include <queue>
 #include <deque>
 #include <list>
@@ -324,7 +325,7 @@ class AIPlayerJH : public AIBase
         std::vector<AIJH::Node> nodes;
 
         /// Resource maps, containing a rating for every map point concerning a resource
-        std::vector<AIResourceMap> resourceMaps;
+        boost::array<AIResourceMap, AIJH::RES_TYPE_COUNT> resourceMaps;
 
 		// Required by the AIJobs:
 		
