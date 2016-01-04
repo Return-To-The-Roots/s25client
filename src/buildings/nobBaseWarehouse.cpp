@@ -819,7 +819,7 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
     TryRecruiting();
 
     // Evtl die Ware gleich wieder auslagern, falls erforderlich
-    CheckOuthousing(0, type_);
+    CheckOuthousing(0, gt);
 }
 
 /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
@@ -1365,7 +1365,7 @@ void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, Invent
     {
         // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
         if(CheckRealInventorySettings(category, INV_SET_COLLECT, type) && !store_event)
-        store_event = em->AddEvent(this, STORE_INTERVAL, 4);
+            store_event = em->AddEvent(this, STORE_INTERVAL, 4);
     }
 }
 
