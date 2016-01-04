@@ -21,13 +21,14 @@
 
 #include "iwWares.h"
 #include "gameTypes/InventorySetting.h"
+#include "IDataChangedListener.h"
 
 class nobBaseWarehouse;
 class GameWorldViewer;
 class dskGameInterface;
 
 /// Basisklasse für die HQ- und Lagerhäuserfenster
-class iwBaseWarehouse : public iwWares
+class iwBaseWarehouse : public iwWares, public IDataChangedListener
 {
         GameWorldViewer* const gwv;		
 		dskGameInterface* const gi;
@@ -38,17 +39,18 @@ class iwBaseWarehouse : public iwWares
     public:
         /// Konstruktor von @p iwBaseWarehouse.
         iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
+        ~iwBaseWarehouse();
+
+        void OnChange(unsigned changeId) override;
 
     protected:
 
         /// Overlay ändern
         void ChangeOverlay(unsigned int i, InventorySetting what);
+        void UpdateOverlays();
 
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
         void Msg_ButtonClick(const unsigned int ctrl_id);
-
-
-
 };
 
 #endif // !iwHQ_H_INCLUDED

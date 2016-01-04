@@ -22,6 +22,7 @@
 #include "nobBaseMilitary.h"
 #include "EventManager.h"
 #include "figures/noFigure.h"
+#include "DataChangedObservable.h"
 #include "gameTypes/InventorySetting.h"
 #include <boost/array.hpp>
 #include <list>
@@ -42,9 +43,9 @@ struct InventorySettings
     InventorySettings();
 };
 
-/// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen)
-/// wichtig sind.
-class nobBaseWarehouse : public nobBaseMilitary
+/// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen) wichtig sind.
+/// Change events: 0=InventorySettings
+class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 {
     protected:
         // Liste von Waren, die noch rausgebracht werden müssen, was im Moment aber nicht möglich ist,

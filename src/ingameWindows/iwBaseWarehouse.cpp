@@ -57,6 +57,8 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
                                  nobBaseWarehouse* wh)
     : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv), gi(gi), wh(wh)
 {
+    wh->AddListener(this);
+
     // Basisinitialisierungsänderungen
     background = LOADER.GetImageN("resource", 41);
 
@@ -78,37 +80,11 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
 	// Go to next warehouse
 	AddImageButton(14, 139, 369, 15, 32, TC_GREY, LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
 
-    // Ein/Auslager Overlays entsprechend setzen
-    // bei Replays die reellen Einstellungen nehmen, weils die visuellen da logischweise nich gibt!
-    for(unsigned char category = 0; category < 2; ++category)
-    {
-        unsigned count = (category == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
-        for(unsigned i = 0; i < count; ++i)
-        {
-            // Einlagern verbieten-Bild (de)aktivieren
-            ctrlImage* image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(400 + i);
-            if(image)
-                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_STOP, i) :
-                                  wh->CheckVisualInventorySettings(category, INV_SET_STOP, i));
-
-            // Auslagern-Bild (de)aktivieren
-            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(500 + i);
-            if(image)
-                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_SEND, i) :
-                                  wh->CheckVisualInventorySettings(category, INV_SET_SEND, i));
-
-            // Einlagern-Bild (de)aktivieren
-            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(700 + i);
-            if(image)
-                image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_COLLECT, i) :
-                                  wh->CheckVisualInventorySettings(category, INV_SET_COLLECT, i));
-        }
-    }
+    UpdateOverlays();
 
     // Lagerhaus oder Hafengebäude?
     if(wh->GetGOT() == GOT_NOB_STOREHOUSE || wh->GetGOT() == GOT_NOB_HARBORBUILDING)
     {
-
         // Abbrennbutton hinzufügen
         // "Blättern" in Bretter stauchen und verschieben
         GetCtrl<ctrlButton>(0)->SetWidth(32);
@@ -118,6 +94,10 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
     }
 }
 
+iwBaseWarehouse::~iwBaseWarehouse()
+{
+    wh->RemoveListener(this);
+}
 
 void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
@@ -265,4 +245,40 @@ void iwBaseWarehouse::ChangeOverlay(unsigned int i, InventorySetting what)
     image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(700 + i);
     if(image)
         image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_COLLECT, i));
+}
+
+void iwBaseWarehouse::UpdateOverlays()
+{
+    // Ein/Auslager Overlays entsprechend setzen
+    // bei Replays die reellen Einstellungen nehmen, weils die visuellen da logischweise nich gibt!
+    const bool replayModeOn = GAMECLIENT.IsReplayModeOn();
+    for(unsigned char category = 0; category < 2; ++category)
+    {
+        unsigned count = (category == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
+        for(unsigned i = 0; i < count; ++i)
+        {
+            // Einlagern verbieten-Bild (de)aktivieren
+            ctrlImage* image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(400 + i);
+            if(image)
+            {
+                image->SetVisible(replayModeOn ? wh->CheckRealInventorySettings(category, INV_SET_STOP, i) : wh->CheckVisualInventorySettings(category, INV_SET_STOP, i));
+            }
+
+            // Auslagern-Bild (de)aktivieren
+            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(500 + i);
+            if(image)
+                image->SetVisible(replayModeOn ? wh->CheckRealInventorySettings(category, INV_SET_SEND, i) : wh->CheckVisualInventorySettings(category, INV_SET_SEND, i));
+
+            // Einlagern-Bild (de)aktivieren
+            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(700 + i);
+            if(image)
+                image->SetVisible(replayModeOn ? wh->CheckRealInventorySettings(category, INV_SET_COLLECT, i) : wh->CheckVisualInventorySettings(category, INV_SET_COLLECT, i));
+        }
+    }
+}
+
+void iwBaseWarehouse::OnChange(unsigned changeId)
+{
+    if(changeId == 0)
+        UpdateOverlays();
 }

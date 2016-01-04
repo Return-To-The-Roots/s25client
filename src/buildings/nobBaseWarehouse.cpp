@@ -1317,6 +1317,7 @@ void nobBaseWarehouse::ChangeVisualInventorySettings(unsigned char category, Inv
         // Und jeweils umgekehrt
         curState &= ~INV_SET_COLLECT;
 
+    NotifyListeners(0);
 }
 
 /// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
@@ -1367,6 +1368,7 @@ void nobBaseWarehouse::ChangeRealInventorySetting(unsigned char category, Invent
         if(CheckRealInventorySettings(category, INV_SET_COLLECT, type) && !store_event)
             store_event = em->AddEvent(this, STORE_INTERVAL, 4);
     }
+    NotifyListeners(0);
 }
 
 /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
