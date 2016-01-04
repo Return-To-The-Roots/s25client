@@ -35,13 +35,9 @@
 #include "Settings.h"
 #include <boost/filesystem.hpp>
 
-#ifndef _WIN32
-#	include <unistd.h>
-#endif // _WIN32
-
-iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer* parent, const unsigned win_id, const std::string& title)
-    : IngameWindow(CGI_INPUTWINDOW, (unsigned short) - 2, (unsigned short) - 2,
-                   300, 100, title, LOADER.GetImageN("resource", 41), true, true, parent_), win_id(win_id)
+iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
+    : IngameWindow(CGI_INPUTWINDOW, 0xFFFE, 0xFFFE,
+                   300, 100, title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
 {
     AddEdit(0, 20, 30, GetWidth() - 40, 22, TC_GREEN2, NormalFont);
     AddTextButton(1, 20, 60, 100, 22, TC_GREEN1, _("OK"), NormalFont);
@@ -52,15 +48,14 @@ iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer* parent, const unsigned wi
 void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     if(ctrl_id == 1)
-        static_cast<iwMusicPlayer*>(parent_)->Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
+        playerWnd_.Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
 
     Close();
 }
 
 void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int ctrl_id)
 {
-    static_cast<iwMusicPlayer*>(parent_)->Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
-    Close();
+    Msg_ButtonClick(1);
 }
 
 
@@ -175,7 +170,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
             // Add Playlist
         case 3:
         {
-            WINDOWMANAGER.Show(new InputWindow(this, 1, _("Specify the playlist name")));
+            WINDOWMANAGER.Show(new InputWindow(*this, 1, _("Specify the playlist name")));
         } break;
         // Remove Playlist
         case 4:
@@ -194,11 +189,8 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                     return;
                 }
 
-#ifdef _MSC_VER
-				_unlink(GetFullPlaylistPath(str).c_str());
-#else
-				unlink(GetFullPlaylistPath(str).c_str());
-#endif
+                boost::system::error_code ec;
+                bfs::remove(GetFullPlaylistPath(str), ec);
                 this->UpdatePlaylistCombo(SETTINGS.sound.playlist);
             }
         } break;
@@ -216,13 +208,13 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // Add Track
         case 7:
         {
-            WINDOWMANAGER.Show(new InputWindow(this, 0, _("Add track")));
+            WINDOWMANAGER.Show(new InputWindow(*this, 0, _("Add track")));
             changed = true;
         } break;
         // Add Directory of tracks
         case 8:
         {
-            WINDOWMANAGER.Show(new InputWindow(this, 2, _("Add directory of tracks")));
+            WINDOWMANAGER.Show(new InputWindow(*this, 2, _("Add directory of tracks")));
             changed = true;
         } break;
         // Remove Track

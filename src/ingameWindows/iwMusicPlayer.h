@@ -26,9 +26,10 @@ class iwMusicPlayer : public IngameWindow
         class InputWindow  : public IngameWindow
         {
                 const unsigned win_id;
+                iwMusicPlayer& playerWnd_;
             public:
 
-                InputWindow(iwMusicPlayer* parent, const unsigned win_id, const std::string& title);
+                InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title);
 
                 void Msg_ButtonClick(const unsigned int ctrl_id);
                 void Msg_EditEnter(const unsigned int ctrl_id);
