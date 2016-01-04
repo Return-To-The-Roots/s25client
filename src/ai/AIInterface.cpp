@@ -118,29 +118,19 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIJH::Resource res) const
 
 int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char direction, int lastval) const
 {
-    int returnVal = 0;
+    int returnVal;
     if(direction == -1) //calculate complete value from scratch (3n^2+3n+1)
     {
-        MapPoint tmpPt = pt;
-        for(unsigned r = 1; r <= AIJH::RES_RADIUS[res]; ++r)
-        {
-            tmpPt = gwb.GetNeighbour(tmpPt, 0);
-            MapPoint tmpPt2 = tmpPt;
-            for(unsigned i = 2; i < 8; ++i)
-            {
-                for(MapCoord r2 = 0; r2 < r; ++r2)
-                {
-                    returnVal += GetResourceRating(tmpPt2, res);
-                    tmpPt2 = gwb.GetNeighbour(tmpPt2, i % 6);
-                }
-            }
-        }
+        returnVal = 0;
+        std::vector<MapPoint> pts = GetPointsInRadius(pt, AIJH::RES_RADIUS[res]);
+        for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+            returnVal += GetResourceRating(*it, res);
         //add the center point value
         returnVal += GetResourceRating(pt, res);
     }
     else//calculate different nodes only (4n+2 ?anyways much faster)
     {
-        returnVal += lastval;
+        returnVal = lastval;
         //add new points
         //first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
