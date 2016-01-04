@@ -80,14 +80,13 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
 
     // Ein/Auslager Overlays entsprechend setzen
     // bei Replays die reellen Einstellungen nehmen, weils die visuellen da logischweise nich gibt!
-    ctrlImage* image;
     for(unsigned char category = 0; category < 2; ++category)
     {
-        unsigned count = (category == 0) ? 35 : 32;
+        unsigned count = (category == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
         for(unsigned i = 0; i < count; ++i)
         {
             // Einlagern verbieten-Bild (de)aktivieren
-            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(400 + i);
+            ctrlImage* image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(400 + i);
             if(image)
                 image->SetVisible(GAMECLIENT.IsReplayModeOn() ? wh->CheckRealInventorySettings(category, INV_SET_STOP, i) :
                                   wh->CheckVisualInventorySettings(category, INV_SET_STOP, i));
@@ -142,13 +141,10 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
                 default:
                     throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            if(data != 0)
-            {
-                // Nicht bei Replays setzen
-                if(GAMECLIENT.ChangeInventorySetting(wh->GetPos(), page, data, ctrl_id - 100))
-                    // optisch schonmal setzen
-                    ChangeOverlay(ctrl_id - 100, data);;
-            }
+            // Nicht bei Replays setzen
+            if(GAMECLIENT.ChangeInventorySetting(wh->GetPos(), page, data, ctrl_id - 100))
+                // optisch schonmal setzen
+                ChangeOverlay(ctrl_id - 100, data);
         } break;
     }
 }
@@ -177,18 +173,14 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
                     default:
                         throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
                 }
-                if(data != 0)
+                // Nicht bei Replays setzen
+                if(GAMECLIENT.ChangeAllInventorySettings(wh->GetPos(), page, data))
                 {
-                    // Nicht bei Replays setzen
-                    if(GAMECLIENT.ChangeAllInventorySettings(wh->GetPos(), page, data))
-                    {
-                        // optisch setzen
-                        unsigned short count = ((page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT);
-                        for(unsigned char i = 0; i < count; ++i)
-                            ChangeOverlay(i, data);
-                    }
+                    // optisch setzen
+                    unsigned short count = ((page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT);
+                    for(unsigned char i = 0; i < count; ++i)
+                        ChangeOverlay(i, data);
                 }
-
             }
         } break;
         case 12: // "Hilfe"
@@ -207,7 +199,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 			//go through list once we get to current building -> open window for the next one and go to next location
 			for(std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin(); it != storehouses.end(); ++it)
 			{
-				if((*it)->GetX()==wh->GetX() && (*it)->GetY()==wh->GetY()) //got to current building in the list?
+				if((*it)->GetPos()==wh->GetPos()) //got to current building in the list?
 				{
 					//close old window, open new window (todo: only open if it isnt already open), move to location of next building
 					Close();
@@ -223,13 +215,13 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					}
 					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 					{
-						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
+						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 					{
-						iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
+						iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
@@ -256,13 +248,11 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
  */
 void iwBaseWarehouse::ChangeOverlay(unsigned int i, InventorySetting what)
 {
-    ctrlImage* image;
-
     // Status ändern
     wh->ChangeVisualInventorySettings(page, what, i);
 
     // Einlagern verbieten-Bild (de)aktivieren
-    image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(400 + i);
+    ctrlImage* image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(400 + i);
     if(image)
         image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_STOP, i));
 
