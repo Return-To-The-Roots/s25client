@@ -885,8 +885,7 @@ void WindowManager::Close(IngameWindow* window)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Sucht ein Fenster mit der entsprechenden Fenster-ID
- *  und schließt es (falls es so eins gibt)
+ *  Closes _ALL_ windows with the given ID
  *
  *  @param[in] id ID des/der Fenster(s) welche(s) geschlossen werden soll
  *
@@ -898,7 +897,6 @@ void WindowManager::Close(unsigned int id)
     {
         if((*it)->id_ == id){
             Close(*it);
-            return;
         }
     }
 }
