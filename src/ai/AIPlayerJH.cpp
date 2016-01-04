@@ -561,18 +561,6 @@ struct MapPoint2Idx
     }
 };
 
-struct MapPoint2IdxWithRadius
-{
-    typedef std::pair<unsigned, unsigned> result_type;
-    const AIInterface& aii_;
-
-    MapPoint2IdxWithRadius(const AIInterface& aii): aii_(aii){}
-    result_type operator()(const MapPoint pt, unsigned r)
-    {
-        return std::make_pair(aii_.GetIdx(pt), r);
-    }
-};
-
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 {
     // Radius in dem Bausplatz für Felder blockiert wird
@@ -619,6 +607,7 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource re
 
 PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool best)
 {
+    AIResourceMap& resMap = resourceMaps[search->res];
     // make nodesPerStep tests
     for (int i = 0; i < search->nodesPerStep; i++)
     {
@@ -629,16 +618,16 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         // get the node
         MapPoint pt = search->toTest.front();
         search->toTest.pop();
-        AIJH::Node* node = &nodes[aii->GetIdx(pt)];
+        AIJH::Node& node = nodes[aii->GetIdx(pt)];
 
         // and test it... TODO exception at res::borderland?
-        if (resourceMaps[search->res][pt] > search->resultValue // value better
-                && node->owned && node->reachable && !node->farmed // available node
-                && ((node->bq >= search->size && node->bq < BQ_MINE) || (node->bq == search->size)) // matching size
+        if (resMap[pt] > search->resultValue // value better
+                && node.owned && node.reachable && !node.farmed // available node
+                && ((node.bq >= search->size && node.bq < BQ_MINE) || (node.bq == search->size)) // matching size
            )
         {
             // store location & value
-            search->resultValue = resourceMaps[search->res][pt];
+            search->resultValue = resMap[pt];
             search->result = pt;
         }
 
