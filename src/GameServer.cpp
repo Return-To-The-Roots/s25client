@@ -1503,8 +1503,8 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
     if(player.ps != PS_OCCUPIED)
         return;
 
-    //// Command schließlich an alle Clients weiterleiten, aber nicht in der Pause und nicht, wenn derjenige Spieler besiegt wurde!
-    if(!this->framesinfo.isPaused && !player.isDefeated())
+    //// Command schließlich an alle Clients weiterleiten, aber nicht wenn derjenige Spieler besiegt wurde!
+    if(!player.isDefeated())
     {
         // NFCs speichern
         player.gc_queue.push_back(msg);
