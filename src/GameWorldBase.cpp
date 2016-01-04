@@ -569,10 +569,10 @@ bool GameWorldBase::FlagNear(const MapPoint pt) const
 
 void GameWorldBase::CalcRoad(const MapPoint pt, const unsigned char player)
 {
-    SetBQ(pt, GAMECLIENT.GetPlayerID());
+    CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
 
     for(unsigned i = 3; i < 6; ++i)
-        SetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
+        CalcAndSetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
 }
 
 bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
@@ -1188,10 +1188,10 @@ void GameWorldBase::ChangeAltitude(const MapPoint pt, const unsigned char altitu
     // Baumöglichkeiten neu berechnen
     // Direkt drumherum
     for(unsigned i = 0; i < 6; ++i)
-        SetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
+        CalcAndSetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
     // noch eine Schale weiter außen
     for(unsigned i = 0; i < 12; ++i)
-        SetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
+        CalcAndSetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
 
     // Abgeleiteter Klasse Bescheid sagen
     AltitudeChanged(pt);

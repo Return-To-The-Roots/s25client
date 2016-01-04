@@ -218,7 +218,7 @@ public:
     /// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist
     BuildingQuality CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true, const bool ignore_player = false) const;
     /// Setzt die errechnete BQ gleich mit
-    void SetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true)
+    void CalcAndSetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true)
     { GetNode(pt).bq = CalcBQ(pt, player, flagonly, visual); }
 
     /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)

@@ -153,7 +153,7 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
         for(unsigned y = 0; y < gw->GetHeight(); ++y)
         {
             for(unsigned x = 0; x < gw->GetWidth(); ++x)
-                gw->SetBQ(MapPoint(x, y), new_id);
+                gw->CalcAndSetBQ(MapPoint(x, y), new_id);
         }
 
         // Visuelle Einstellungen vom Spieler wieder holen
@@ -193,7 +193,7 @@ void GameClient::ChangeReplayPlayer(const unsigned new_id)
     for(unsigned y = 0; y < gw->GetHeight(); ++y)
     {
         for(unsigned x = 0; x < gw->GetWidth(); ++x)
-            gw->SetBQ(MapPoint(x, y), new_id);
+            gw->CalcAndSetBQ(MapPoint(x, y), new_id);
     }
 
     // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)

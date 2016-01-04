@@ -110,7 +110,7 @@ void GameWorld::Scan(const glArchivItem_Map& map)
         for(pt.x = 0; pt.x < width_; ++pt.x)
         {
             RecalcShadow(pt);
-            SetBQ(pt, GAMECLIENT.GetPlayerID());
+            CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
         }
     }
 	
@@ -611,7 +611,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
     {
         for(unsigned x = 0; x < width_; ++x)
         {
-            SetBQ(MapPoint(x, y), GAMECLIENT.GetPlayerID());
+            CalcAndSetBQ(MapPoint(x, y), GAMECLIENT.GetPlayerID());
         }
     }
 
