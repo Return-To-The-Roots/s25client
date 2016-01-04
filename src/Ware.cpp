@@ -314,8 +314,13 @@ bool Ware::FindRouteToWarehouse()
         // Find path if not already carried (will be called after arrival in that case)
         if(state != STATE_CARRIED)
         {
-            next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
-            assert(next_dir != INVALID_DIR);
+            if (location == goal)
+                next_dir = INVALID_DIR; // Warehouse will detect this
+            else
+            {
+                next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
+                assert(next_dir != INVALID_DIR);
+            }
         }
     }else
         next_dir = INVALID_DIR; // Make sure we are not going anywhere
