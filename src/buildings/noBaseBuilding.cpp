@@ -32,6 +32,7 @@
 #include "WindowManager.h"
 #include "SerializedGameData.h"
 #include "GameInterface.h"
+#include "Log.h"
 #include <iostream>
 
 
@@ -242,7 +243,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
     if (!ware)
     {
         assert(false);
-        std::cerr << "Warning: Trying to remove non-existing ware. Please report this replay to https://bugs.launchpad.net/s25rttr/!" << std::endl;
+        LOG.lprintf("Warning: Trying to remove non-existing ware. Please report this replay!\n");
         return;
     }
 
