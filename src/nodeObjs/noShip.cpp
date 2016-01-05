@@ -89,7 +89,7 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(unsigned i = 0; i < 6; ++i)
     {
-        unsigned short sea_id = gwg->GetNodeAround(pos, i).sea_id;
+        unsigned short sea_id = gwg->GetNeighbourNode(pos, i).sea_id;
         if(sea_id)
             this->seaId_ = sea_id;
     }
@@ -1113,6 +1113,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         }
         break;
     case noShip::STATE_SEAATTACK_LOADING:
+        // We could also just set the goal harbor id to 0 but this can reuse the event
         AbortSeaAttack();
         break;
     case noShip::STATE_SEAATTACK_UNLOADING:

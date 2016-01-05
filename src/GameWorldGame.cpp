@@ -659,7 +659,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                     // BQ neu berechnen
                     CalcAndSetBQ(tt, GAMECLIENT.GetPlayerID());
                     // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
-                    if(GetNodeAround(tt, 1).bq)
+                    if(GetNeighbourNode(tt, 1).bq)
                         CalcAndSetBQ(GetNeighbour(tt, 1), GAMECLIENT.GetPlayerID());
                 }
 
@@ -707,7 +707,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                 for(unsigned i = 0; i < 6; ++i)
                 {
                     neighbors[y - (y1 - 3)][x - (x1 - 3)] = 0;
-                    if(GetNodeAround(c, i).boundary_stones[0] == owner)
+                    if(GetNeighbourNode(c, i).boundary_stones[0] == owner)
                         ++neighbors[y - (y1 - 3)][x - (x1 - 3)];
                 }
             }
@@ -718,7 +718,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                     GetNode(c).boundary_stones[i] = 0;
 
                 //for(unsigned i = 0;i<3;++i)
-                //  GetNodeAround(x, y, 3+i).boundary_stones[i+1] = 0;
+                //  GetNeighbourNode(x, y, 3+i).boundary_stones[i+1] = 0;
             }
 
 

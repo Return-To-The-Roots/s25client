@@ -112,7 +112,7 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
 
 /// Returns to coordinate of the node around this node
 /// (Directions 1-8 (incl), 0 = no change)
-MapPoint TradeGraph::GetNodeAround(const MapPoint pos, const unsigned char dir) const
+MapPoint TradeGraph::GetNeighbourNode(const MapPoint pos, const unsigned char dir) const
 {
     Point<int> cpos = Point<int>(pos.x, pos.y);
     Point<int> new_pos(cpos);
@@ -199,7 +199,7 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
             if(edgeLen == NO_EDGE)
                 continue;
 
-            MapPoint new_pos(GetNodeAround(bestPos, i + 1));
+            MapPoint new_pos(GetNeighbourNode(bestPos, i + 1));
 
             if(nodes[new_pos.y * size.x + new_pos.x].visited)
                 continue;
@@ -212,7 +212,7 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
 
                 MapPoint pos = bestPos;
 
-                for(int z = route.size() - 2; z >= 0; --z, pos = GetNodeAround(pos, (nodes[pos.y * size.x + pos.x].dir + 4) % 8 + 1))
+                for(int z = route.size() - 2; z >= 0; --z, pos = GetNeighbourNode(pos, (nodes[pos.y * size.x + pos.x].dir + 4) % 8 + 1))
                     route[z] = nodes[pos.y * size.x + pos.x].dir;
 
                 return true;
@@ -325,7 +325,7 @@ void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGr
         GetNode(pos).dirs[dir] = tg->GetNode(pos).dirs[dir];
         return;
     }
-    MapPoint other = GetNodeAround(pos, dir + 1);
+    MapPoint other = GetNeighbourNode(pos, dir + 1);
     unsigned char other_dir = (dir + 4) % 8;
     if(GetNode(other).doesNotCrossPlayerTerritory[other_dir])
     {

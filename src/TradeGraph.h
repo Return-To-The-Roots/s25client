@@ -64,7 +64,7 @@ class TradeGraph
 
         /// Returns to coordinate of the node around this node
         /// (Directions 1-8 (incl), 0 = no change)
-        MapPoint GetNodeAround(const MapPoint pos, const unsigned char dir) const;
+        MapPoint GetNeighbourNode(const MapPoint pos, const unsigned char dir) const;
 
         /// Updates one speciefic edge
         void UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGraph* const tg);

@@ -107,7 +107,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
     // runter natürlich nich so viel schneller werden wie langsamer hoch
-    switch(int(gwg->GetNodeAround(pos, newDir).altitude) - int(gwg->GetNode(pos).altitude))
+    switch(int(gwg->GetNeighbourNode(pos, newDir).altitude) - int(gwg->GetNode(pos).altitude))
     {
         default: ascent = 3; break; // gerade
         case 1: ascent = 4; gf_length+=(gf_length/2); break; // leicht hoch

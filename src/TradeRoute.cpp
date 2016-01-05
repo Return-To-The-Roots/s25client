@@ -95,7 +95,7 @@ unsigned char TradeRoute::GetNextDir()
     {
         local_pos = 0;
         if(global_pos < global_route.size())
-            current_pos_tg = tg->GetNodeAround(current_pos_tg, global_route[global_pos] + 1);
+            current_pos_tg = tg->GetNeighbourNode(current_pos_tg, global_route[global_pos] + 1);
         ++global_pos;
         RecalcLocalRoute();
     }
@@ -155,7 +155,7 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     for(unsigned char i = 0; i <= 8; ++i)
     {
         // Try to find path
-        start_tgn = tg->GetNodeAround(current_pos_tg, i);
+        start_tgn = tg->GetNeighbourNode(current_pos_tg, i);
         MapPoint mainPt = tg->GetNode(start_tgn).main_pos;
         if(start == mainPt)
         {
@@ -179,7 +179,7 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     for(unsigned char i = 0; i <= 8; ++i)
     {
         // Try to find path
-        goal_tgn = tg->GetNodeAround(goal_tgn_tmp, i);
+        goal_tgn = tg->GetNeighbourNode(goal_tgn_tmp, i);
         MapPoint mainPt = tg->GetNode(goal_tgn).main_pos;
         if(goal == mainPt)
         {
