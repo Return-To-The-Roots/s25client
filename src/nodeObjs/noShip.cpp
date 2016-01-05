@@ -963,13 +963,23 @@ void noShip::AbortSeaAttack()
         // We did not start the attack yet and we can (possibly) go back to our home harbor
         // -> tell the soldiers we go back (like after an attack)
         goal_harbor_id = home_harbor;
-        state = STATE_SEAATTACK_RETURN_DRIVING;
         for (std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
             assert(dynamic_cast<nofAttacker*>(*it));
             static_cast<nofAttacker*>(*it)->StartReturnViaShip(*this);
         }
-        HandleState_SeaAttackReturn();
+        if(state == STATE_SEAATTACK_LOADING)
+        {
+            // We are still loading (loading event must be active)
+            // -> Use it to unload
+            assert(current_ev);
+            state = STATE_SEAATTACK_UNLOADING;
+        }else
+        {
+            // Else start driving back
+            state = STATE_SEAATTACK_RETURN_DRIVING;
+            HandleState_SeaAttackReturn();
+        }
     }else
     {
         // attack failed and we cannot go back to our home harbor 
@@ -978,6 +988,13 @@ void noShip::AbortSeaAttack()
         {
             assert(dynamic_cast<nofAttacker*>(*it));
             static_cast<nofAttacker*>(*it)->CancelSeaAttack();
+        }
+
+        if (state == STATE_SEAATTACK_LOADING)
+        {
+            // Abort loading
+            assert(current_ev);
+            em->RemoveEvent(current_ev);
         }
 
         // Das Schiff muss einen Notlandeplatz ansteuern
@@ -1058,11 +1075,12 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     // Almost every case of a destroyed harbor is handled when the ships event fires (the handler detects the destroyed harbor)
     // So mostly we just reset the corresponding id
 
+    if (destroyedHarborId == home_harbor)
+        home_harbor = 0;
+
     // Ist unser Ziel betroffen?
     if(destroyedHarborId != goal_harbor_id)
     {
-        if(destroyedHarborId == home_harbor)
-            home_harbor = 0;
         return;
     }
 
@@ -1095,8 +1113,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         }
         break;
     case noShip::STATE_SEAATTACK_LOADING:
-        goal_harbor_id = home_harbor;
-        state = STATE_SEAATTACK_UNLOADING;
+        AbortSeaAttack();
         break;
     case noShip::STATE_SEAATTACK_UNLOADING:
         break;
@@ -1105,10 +1122,19 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     // Are we currently getting the wares?
     if(oldState == STATE_TRANSPORT_LOADING)
     {
-        // Then save us some time and unload immediately
-        // goal is now the start harbor
-        goal_harbor_id = home_harbor;
-        state = STATE_TRANSPORT_UNLOADING;
+        assert(current_ev);
+        if (home_harbor)
+        {
+            // Then save us some time and unload immediately
+            // goal is now the start harbor (if it still exists)
+            goal_harbor_id = home_harbor;
+            state = STATE_TRANSPORT_UNLOADING;
+        }
+        else
+        {
+            em->RemoveEvent(current_ev);
+            FindUnloadGoal(STATE_TRANSPORT_DRIVING);
+        }
     }
     else if(oldState == STATE_TRANSPORT_UNLOADING || oldState == STATE_SEAATTACK_UNLOADING)
     {
