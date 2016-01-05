@@ -364,13 +364,13 @@ void Settings::Save(void)
 
     // language
     // {
-    iniLanguage->setValue("language", language.language.c_str());
+    iniLanguage->setValue("language", language.language);
     // }
 
     // driver
     // {
-    iniDriver->setValue("video", driver.video.c_str());
-    iniDriver->setValue("audio", driver.audio.c_str());
+    iniDriver->setValue("video", driver.video);
+    iniDriver->setValue("audio", driver.audio);
     // }
 
     // sound
@@ -379,20 +379,20 @@ void Settings::Save(void)
     iniSound->setValue("musik_volume", sound.musik_volume);
     iniSound->setValue("effekte", (sound.effekte ? 1 : 0) );
     iniSound->setValue("effekte_volume", sound.effekte_volume);
-    iniSound->setValue("playlist", sound.playlist.c_str());
+    iniSound->setValue("playlist", sound.playlist);
     // }
 
     // lobby
     // {
-    iniLobby->setValue("name", lobby.name.c_str());
-    iniLobby->setValue("email", lobby.email.c_str());
-    iniLobby->setValue("password", lobby.password.c_str());
+    iniLobby->setValue("name", lobby.name);
+    iniLobby->setValue("email", lobby.email);
+    iniLobby->setValue("password", lobby.password);
     iniLobby->setValue("save_password", (lobby.save_password ? 1 : 0));
     // }
 
     // server
     // {
-    iniServer->setValue("last_ip", server.last_ip.c_str());
+    iniServer->setValue("last_ip", server.last_ip);
     iniServer->setValue("ipv6", (server.ipv6 ? 1 : 0));
     // }
 
@@ -410,7 +410,7 @@ void Settings::Save(void)
 
     // proxy
     // {
-    iniProxy->setValue("proxy", proxy.proxy.c_str());
+    iniProxy->setValue("proxy", proxy.proxy);
     iniProxy->setValue("port", proxy.port);
     iniProxy->setValue("typ", proxy.typ);
     // }
@@ -434,7 +434,7 @@ void Settings::Save(void)
         std::stringstream name, value;
         name << it->first;
         value << it->second;
-        iniAddons->addValue(name.str().c_str(), value.str().c_str());
+        iniAddons->addValue(name.str(), value.str());
     }
     // }
 
