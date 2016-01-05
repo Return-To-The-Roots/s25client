@@ -77,14 +77,18 @@ void AIResourceMap::Recalc()
 
 void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int value)
 {
-    const std::list<nobUsual*>& blds = aii->GetBuildings(bld);
-    for(std::list<nobUsual*>::const_iterator it = blds.begin(); it != blds.end(); ++it)
-        Change((*it)->GetPos(), radius, value);
-    const std::list<noBuildingSite*>& bldSites = aii->GetBuildingSites();
-    for(std::list<noBuildingSite*>::const_iterator it = bldSites.begin(); it != bldSites.end(); ++it)
+    const unsigned playerCt = aii->GetPlayerCount();
+    for(unsigned i=0; i<playerCt; i++)
     {
-        if((*it)->GetBuildingType() == bld)
+        const std::list<nobUsual*>& blds = aii->GetPlayerBuildings(bld, i);
+        for(std::list<nobUsual*>::const_iterator it = blds.begin(); it != blds.end(); ++it)
             Change((*it)->GetPos(), radius, value);
+        const std::list<noBuildingSite*>& bldSites = aii->GetPlayerBuildingSites(i);
+        for(std::list<noBuildingSite*>::const_iterator it = bldSites.begin(); it != bldSites.end(); ++it)
+        {
+            if((*it)->GetBuildingType() == bld)
+                Change((*it)->GetPos(), radius, value);
+        }
     }
 }
 

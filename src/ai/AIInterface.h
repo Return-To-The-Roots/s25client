@@ -100,6 +100,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         unsigned GetDistance(MapPoint p1, MapPoint p2) const { return gwb.CalcDistance(p1, p2); }
 
         unsigned char GetPlayerID() const { return playerID_; }
+        unsigned GetPlayerCount() const { return gwb.GetPlayerCt(); }
 
 		bool IsDefeated() const {return player_.isDefeated();}
 
@@ -186,9 +187,11 @@ class AIInterface: public GameCommandFactory<AIInterface>
 
         // Returns reference to the list of building sites
         const std::list<noBuildingSite*> &GetBuildingSites() const { return player_.GetBuildingSites(); }
+        const std::list<noBuildingSite*>& GetPlayerBuildingSites(unsigned playerId) const { return gwb.GetPlayer(playerId).GetBuildingSites(); }
 
         // Returns a list to buildings of a given type
         const std::list<nobUsual*>& GetBuildings(const BuildingType type) const { return player_.GetBuildings(type); }
+        const std::list<nobUsual*>& GetPlayerBuildings(const BuildingType type, unsigned playerId) const { return gwb.GetPlayer(playerId).GetBuildings(type); }
 
         // Returns a list containing all military buildings
         const std::list<nobMilitary*>& GetMilitaryBuildings() const {return player_.GetMilitaryBuildings();}

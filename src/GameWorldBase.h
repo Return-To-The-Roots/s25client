@@ -321,6 +321,7 @@ public:
     void SetPlayers(GameClientPlayerList* pls) { players = pls; }
     /// Liefert einen Player zurück
     GameClientPlayer& GetPlayer(const unsigned int id) const;
+    unsigned GetPlayerCt() const;
 
     struct PotentialSeaAttacker
     {

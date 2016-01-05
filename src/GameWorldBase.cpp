@@ -283,6 +283,11 @@ GameClientPlayer& GameWorldBase::GetPlayer(const unsigned int id) const
     return *players->getElement(id);
 }
 
+unsigned GameWorldBase::GetPlayerCt() const
+{
+    return players->getCount();
+}
+
 noBase* GameWorldBase::GetNO(const MapPoint pt)
 {
     if(GetNode(pt).obj)
