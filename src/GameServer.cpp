@@ -1114,7 +1114,7 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         unsigned oldnNwfLen = framesinfo.nwf_length;
         framesinfo.ApplyNewGFLength();
 
-        LOG.lprintf("Server %d/%d: Speed changed from %d to %d\n", framesinfo.gf_nr, framesinfo.gf_nr, oldGfLen, framesinfo.gf_length, oldnNwfLen, framesinfo.nwf_length);
+        LOG.lprintf("Server %d/%d: Speed changed from %d to %d. NWF %u to %u\n", framesinfo.gf_nr, framesinfo.gf_nr, oldGfLen, framesinfo.gf_length, oldnNwfLen, framesinfo.nwf_length);
     }
 
     framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
