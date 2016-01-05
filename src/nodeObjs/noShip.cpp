@@ -820,7 +820,7 @@ void noShip::HandleState_TransportDriving()
 }
 
 void noShip::HandleState_SeaAttackDriving()
-            {
+{
     Result res = DriveToHarbourPlace();
     switch(res)
     {
@@ -834,15 +834,8 @@ void noShip::HandleState_SeaAttackDriving()
         break;
     case NO_ROUTE_FOUND:
     case HARBOR_DOESNT_EXIST:
-        // Try to go back
         assert(goal_harbor_id != home_harbor || home_harbor == 0);
-        if(goal_harbor_id != home_harbor && home_harbor != 0) // Todo: Remove first part of check if that assertion above is correct
-        {
-            goal_harbor_id = home_harbor;
-            state = STATE_SEAATTACK_RETURN_DRIVING;
-            HandleState_SeaAttackReturn();
-        }else
-            AbortSeaAttack();
+        AbortSeaAttack();
         break;
     }
 }
@@ -964,13 +957,33 @@ void noShip::AbortSeaAttack()
     assert(state != STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
     assert(remaining_sea_attackers == 0); // Some soldiers are still not aboard
 
-    // Dann müssen alle Angreifer ihren Heimatgebäuden Bescheid geben, dass sie nun nicht mehr kommen
-    for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-        static_cast<nofAttacker*>(*it)->CancelSeaAttack();
+    if ((state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION) &&
+        goal_harbor_id != home_harbor && home_harbor != 0)
+    {
+        // We did not start the attack yet and we can (possibly) go back to our home harbor
+        // -> tell the soldiers we go back (like after an attack)
+        goal_harbor_id = home_harbor;
+        state = STATE_SEAATTACK_RETURN_DRIVING;
+        for (std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        {
+            assert(dynamic_cast<nofAttacker*>(*it));
+            static_cast<nofAttacker*>(*it)->StartReturnViaShip(*this);
+        }
+        HandleState_SeaAttackReturn();
+    }else
+    {
+        // attack failed and we cannot go back to our home harbor 
+        // -> Tell figures that they won't go to their planned destination
+        for (std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        {
+            assert(dynamic_cast<nofAttacker*>(*it));
+            static_cast<nofAttacker*>(*it)->CancelSeaAttack();
+        }
 
-            // Das Schiff muss einen Notlandeplatz ansteuern
-    FindUnloadGoal(STATE_SEAATTACK_RETURN_DRIVING);
+        // Das Schiff muss einen Notlandeplatz ansteuern
+        FindUnloadGoal(STATE_SEAATTACK_RETURN_DRIVING);
     }
+}
 
 /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
 void noShip::StartDrivingToHarborPlace()
@@ -1053,6 +1066,8 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         return;
     }
 
+    State oldState = state;
+
     switch (state)
     {
     default:
@@ -1088,19 +1103,19 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     }
 
     // Are we currently getting the wares?
-    if(state == STATE_TRANSPORT_LOADING)
+    if(oldState == STATE_TRANSPORT_LOADING)
     {
         // Then save us some time and unload immediately
         // goal is now the start harbor
         goal_harbor_id = home_harbor;
         state = STATE_TRANSPORT_UNLOADING;
     }
-    else if(state == STATE_TRANSPORT_UNLOADING || state == STATE_SEAATTACK_UNLOADING)
+    else if(oldState == STATE_TRANSPORT_UNLOADING || oldState == STATE_SEAATTACK_UNLOADING)
     {
         // Remove current unload event
         em->RemoveEvent(current_ev);
 
-        if(state == STATE_SEAATTACK_UNLOADING)
+        if(oldState == STATE_SEAATTACK_UNLOADING)
             AbortSeaAttack();
         else
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);

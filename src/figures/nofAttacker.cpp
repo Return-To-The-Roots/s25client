@@ -1030,11 +1030,21 @@ void nofAttacker::SeaAttackFailedBeforeLaunch()
 /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
 void nofAttacker::StartReturnViaShip(noShip& ship)
 {
-    // remove us from where we are, so nobody will ever draw us :)
-    gwg->RemoveFigure(this, pos);
-    pos = MapPoint::Invalid(); // Similar to start ship journey
-    // Uns zum Schiff hinzufügen
-    ship.AddReturnedAttacker(this);
+    if(pos.isValid())
+    {
+        // remove us from where we are, so nobody will ever draw us :)
+        gwg->RemoveFigure(this, pos);
+        pos = MapPoint::Invalid(); // Similar to start ship journey
+        // Uns zum Schiff hinzufügen
+        ship.AddReturnedAttacker(this);
+    }else
+    {
+        // If pos is not valid, then we are still on the ship!
+        // This can happen, if the ship cannot reach its target
+        assert(state = STATE_SEAATTACKING_ONSHIP);
+        assert(helpers::contains(ship.GetFigures(), this));
+        InformTargetsAboutCancelling();
+    }
 
     goal_ = building;
     state = STATE_FIGUREWORK;
