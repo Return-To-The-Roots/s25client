@@ -61,10 +61,9 @@ void nofTradeDonkey::GoalReached()
 
 void nofTradeDonkey::Walked()
 {
-    if(next_dirs.size() < 1)
+    if(next_dirs.empty())
     {
-        //WanderFailedTrade();
-        gwg->RemoveFigure(this, pos);
+        WanderFailedTrade();
         return;
     }
     unsigned char next_dir = GetNextDir();
@@ -72,11 +71,13 @@ void nofTradeDonkey::Walked()
     if(next_dir == REACHED_GOAL)
     {
         noBase* nob = gwg->GetNO(pos);
-        bool invalid_goal = false;
+        bool invalid_goal;
         if(nob->GetType() != NOP_BUILDING)
             invalid_goal = true;
         else if(!static_cast<noBuilding*>(nob)->IsWarehouse())
             invalid_goal = true;
+        else
+            invalid_goal = false;
 
         if(invalid_goal)
         {
@@ -98,15 +99,12 @@ void nofTradeDonkey::Walked()
             gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryWare(gt, 1);
         }
     }
+    else if(next_dir != INVALID_DIR)
+        StartWalking(next_dir);
     else
     {
-        if(next_dir != INVALID_DIR)
-            StartWalking(next_dir);
-        else
-        {
-            CancelTradeCaravane();
-            WanderFailedTrade();
-        }
+        CancelTradeCaravane();
+        WanderFailedTrade();
     }
     if(successor)
         successor->AddNextDir(next_dir);
@@ -162,6 +160,4 @@ void nofTradeDonkey::CancelTradeCaravane()
         successor->CancelTradeCaravane();
         successor = NULL;
     }
-    //DieFailedTrade();
-    //StartWanderingFailedTrade();
 }

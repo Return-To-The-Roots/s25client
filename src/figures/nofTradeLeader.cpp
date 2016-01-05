@@ -64,24 +64,30 @@ void nofTradeLeader::Walked()
         WanderFailedTrade();
         return;
     }
-    bool invalid_goal = false;
 
+    bool invalid_goal;
     noBase* nob = gwg->GetNO(goal_);
     if(nob->GetType() != NOP_BUILDING)
         invalid_goal = true;
-    if(!static_cast<noBuilding*>(nob)->IsWarehouse())
+    else if(!static_cast<noBuilding*>(nob)->IsWarehouse())
         invalid_goal = true;
+    else
+        invalid_goal = false;
 
     unsigned char next_dir;
     if(invalid_goal)
     {
         TryToGoHome();
         next_dir = tr.GetNextDir();
+        if(next_dir == INVALID_DIR)
+        {
+            CancelTradeCaravane();
+            next_dir = GetCurMoveDir();
+        }
         StartWalking(next_dir);
     }
     else
     {
-
         next_dir = tr.GetNextDir();
         // Are we now at the goal?
         if(next_dir == REACHED_GOAL)
@@ -100,16 +106,12 @@ void nofTradeLeader::Walked()
             {
                 CancelTradeCaravane();
                 next_dir = GetCurMoveDir();
-                //StartWanderingFailedTrade();
             }
             StartWalking(next_dir);
-            //next_dir=tr.GetNextDir();
-            //next_dir = dir;
         }
 
     }
 
-    //if(successor&&next_dir!=INVALID_DIR)
     if(successor)
     {
         successor->AddNextDir(next_dir);
@@ -136,14 +138,11 @@ void nofTradeLeader::LostWork()
 void nofTradeLeader::TryToGoHome()
 {
     fails++;
-    //if(fails>1)
-    //CancelTradeCaravane();
 
     // Find a way back home
     tr.AssignNewGoal(gwg->GetNeighbour(start, 4), this->GetPos());
     if(!tr.IsValid())
         CancelTradeCaravane();
-
 }
 
 /// Start wandering and informs the other successors about this
@@ -154,7 +153,4 @@ void nofTradeLeader::CancelTradeCaravane()
         successor->CancelTradeCaravane();
         successor = NULL;
     }
-    //StartWanderingFailedTrade();
-    //DieFailedTrade();
-    //WanderFailedTrade();
 }

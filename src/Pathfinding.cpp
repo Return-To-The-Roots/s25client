@@ -172,7 +172,7 @@ unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const
     if(GetRoadPathFinder().FindPath(start, goal, true, false, std::numeric_limits<unsigned>::max(), forbidden, length, &first_dir, firstPt))
         return first_dir;
     else
-        return 0xFF;
+        return INVALID_DIR;
 }
 
 /// Wegfindung für Waren im Straßennetz
@@ -182,7 +182,7 @@ unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, con
     if(GetRoadPathFinder().FindPath(start, goal, true, true, max, NULL, length, &first_dir, firstPt))
         return first_dir;
     else
-        return 0xFF;
+        return INVALID_DIR;
 }
 
 
@@ -251,9 +251,9 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
     //static unsigned cc = 0;
     //++cc;
 
-    unsigned char pp = GetNode(dest).owner;
-    if(!(pp == 0 || GetPlayer(player).IsAlly(pp - 1)))
-        return 0xff;
+    unsigned char owner = GetNode(dest).owner;
+    if(owner != 0 && !GetPlayer(player).IsAlly(owner -1))
+        return INVALID_DIR;
     bool is_warehouse_at_goal = false;
     if(GetNO(dest)->GetType() == NOP_BUILDING)
     {
@@ -262,11 +262,10 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
     }
 
     if(!IsNodeForFigures(dest) && !is_warehouse_at_goal )
-        return 0xff;
+        return INVALID_DIR;
 
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, IsPointOK_TradePath, 
-                 IsPointToDestOK_TradePath, &player, record);
+    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, IsPointOK_TradePath, IsPointToDestOK_TradePath, &player, record);
 
     //if(GetTickCount()-tt > 100)
     //  printf("%u: %u ms; (%u, %u) to (%u, %u)\n", cc, GetTickCount()-tt, start.x, start.y, dest.x, dest.y);

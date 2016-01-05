@@ -20,6 +20,7 @@
 #include "TradeRoute.h"
 #include "TradeGraph.h"
 #include "SerializedGameData.h"
+#include "gameData/GameConsts.h"
 
 TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame* const gwg, const unsigned char player) :
     tg(gwg->GetTradeGraph(player)),
@@ -61,11 +62,12 @@ void TradeRoute::Serialize(SerializedGameData& sgd) const
 /// Gets the next direction the caravane has to take
 unsigned char TradeRoute::GetNextDir()
 {
-    if(local_route.size() == 0) return 0xff;
+    if(local_route.empty())
+        return INVALID_DIR;
 
     if(current_pos == tg->gwg->GetNeighbour(goal, 1))
     {
-        return 0xdd;
+        return REACHED_GOAL;
     }
 
     // Test the route in the trade graph
@@ -98,9 +100,7 @@ unsigned char TradeRoute::GetNextDir()
         RecalcLocalRoute();
     }
 
-
     return next_dir;
-
 }
 
 /// Recalc local route and returns next direction
@@ -143,17 +143,15 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     {
         // Try to find path
         start_tgn = tg->GetNodeAround(current_pos_tg, i);
-        next_dir = tg->gwg->FindTradePath(current_pos, tg->GetNode
-            (start_tgn).main_pos, tg->player, TG_PF_LENGTH,
-            false, &local_route);
+        next_dir = tg->gwg->FindTradePath(current_pos, tg->GetNode(start_tgn).main_pos, tg->player, TG_PF_LENGTH, false, &local_route);
         // Found a path? Then abort the loop
-        if(next_dir != 0xff)
+        if(next_dir != INVALID_DIR)
             break;
     }
 
     // Didn't find any paths? Then bye
-    if(next_dir == 0xff)
-        return 0xff;
+    if(next_dir == INVALID_DIR)
+        return INVALID_DIR;
 
     // The same for the last path main_point-->destination
     // TG node where we end
@@ -164,23 +162,21 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     {
         // Try to find path
         goal_tgn = tg->GetNodeAround(goal_tgn_tmp, i);
-        next_dir = tg->gwg->FindTradePath(tg->GetNode
-            (goal_tgn).main_pos, goal, tg->player, TG_PF_LENGTH,
-            false);
+        next_dir = tg->gwg->FindTradePath(tg->GetNode(goal_tgn).main_pos, goal, tg->player, TG_PF_LENGTH, false);
         // Found a path? Then abort the loop
-        if(next_dir != 0xff)
+        if(next_dir != INVALID_DIR)
             break;
     }
     // Didn't find any paths? Then bye
-    if(next_dir == 0xff)
-        return 0xff;
+    if(next_dir == INVALID_DIR)
+        return INVALID_DIR;
 
 
     // Pathfinding on the TradeGraph
     if(!tg->FindPath(start_tgn, goal_tgn, global_route))
     {
         local_route.clear();
-        return 0xff;
+        return INVALID_DIR;
     }
 
     return local_route[0];
