@@ -33,7 +33,7 @@ struct TradeGraphNode
     /// Point of the node, representing the main node
     MapPoint main_pos;
     /// Possible 8 directions with way costs
-    boost::array<MapCoord, 8> dirs;
+    boost::array<unsigned short, 8> dirs;
     /// Direction not possible, even in the future (water, lava, swamp etc.)
     boost::array<bool, 8> not_possible_forever;
     /// Is the route running over any player territory?

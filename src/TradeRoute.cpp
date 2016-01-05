@@ -156,7 +156,13 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     {
         // Try to find path
         start_tgn = tg->GetNodeAround(current_pos_tg, i);
-        next_dir = tg->gwg->FindTradePath(start, tg->GetNode(start_tgn).main_pos, tg->player, TG_PF_LENGTH, false, &local_route);
+        MapPoint mainPt = tg->GetNode(start_tgn).main_pos;
+        if(start == mainPt)
+        {
+            next_dir = REACHED_GOAL;
+            break;
+        }
+        next_dir = tg->gwg->FindTradePath(start, mainPt, tg->player, TG_PF_LENGTH, false, &local_route);
         // Found a path? Then abort the loop
         if(next_dir != INVALID_DIR)
             break;
@@ -174,7 +180,13 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     {
         // Try to find path
         goal_tgn = tg->GetNodeAround(goal_tgn_tmp, i);
-        next_dir = tg->gwg->FindTradePath(tg->GetNode(goal_tgn).main_pos, goal, tg->player, TG_PF_LENGTH, false);
+        MapPoint mainPt = tg->GetNode(goal_tgn).main_pos;
+        if(goal == mainPt)
+        {
+            next_dir = REACHED_GOAL;
+            break;
+        }
+        next_dir = tg->gwg->FindTradePath(mainPt, goal, tg->player, TG_PF_LENGTH, false);
         // Found a path? Then abort the loop
         if(next_dir != INVALID_DIR)
             break;
