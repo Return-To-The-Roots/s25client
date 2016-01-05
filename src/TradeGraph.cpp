@@ -158,6 +158,7 @@ struct TGN
 /// Find a path on the Trade Graph
 bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector<unsigned char>& route) const
 {
+    assert(start != goal);
     // Todo list
     std::vector< MapPoint > todo;
     todo.push_back(start);

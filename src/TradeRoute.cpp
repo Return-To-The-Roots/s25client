@@ -65,7 +65,7 @@ unsigned char TradeRoute::GetNextDir()
     if(local_route.empty())
         return INVALID_DIR;
 
-    if(current_pos == tg->gwg->GetNeighbour(goal, 1))
+    if(current_pos == goal)
     {
         return REACHED_GOAL;
     }
@@ -137,13 +137,26 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     global_pos = 0;
     // TG node where we start
     MapPoint start_tgn  = current_pos_tg = TradeGraphNode::ConverToTGCoords(start);
+    MapPoint goal_tgn = TradeGraphNode::ConverToTGCoords(goal);
+    if(start_tgn == goal_tgn)
+    {
+        // Start and goal are at the same TGN
+        if(start == goal)
+        {
+            local_route.push_back(REACHED_GOAL);
+            local_pos = 1;
+            return REACHED_GOAL;
+        }else
+            return tg->gwg->FindTradePath(start, goal, tg->player, TG_PF_LENGTH * 2, false, &local_route);
+    }
+
     // Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
     unsigned char next_dir;
     for(unsigned char i = 0; i <= 8; ++i)
     {
         // Try to find path
         start_tgn = tg->GetNodeAround(current_pos_tg, i);
-        next_dir = tg->gwg->FindTradePath(current_pos, tg->GetNode(start_tgn).main_pos, tg->player, TG_PF_LENGTH, false, &local_route);
+        next_dir = tg->gwg->FindTradePath(start, tg->GetNode(start_tgn).main_pos, tg->player, TG_PF_LENGTH, false, &local_route);
         // Found a path? Then abort the loop
         if(next_dir != INVALID_DIR)
             break;
@@ -155,7 +168,6 @@ unsigned char TradeRoute::RecalcGlobalRoute()
 
     // The same for the last path main_point-->destination
     // TG node where we end
-    MapPoint goal_tgn = TradeGraphNode::ConverToTGCoords(goal);
     MapPoint goal_tgn_tmp = goal_tgn;
     // Try to calc paths to the main point and - if this doesn't work - to the mainpoints of the surrounded nodes
     for(unsigned char i = 0; i <= 8; ++i)

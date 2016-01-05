@@ -2046,5 +2046,6 @@ void GameWorldGame::CreateTradeGraphs()
 /// Creates a Trade Route from one point to another
 TradeRoute GameWorldGame::CreateTradeRoute(const nobBaseWarehouse& start, const nobBaseWarehouse& dest, const unsigned char player)
 {
-    return TradeRoute(tgs[player], start.GetFlag()->GetPos(), dest.GetFlag()->GetPos());
+    // Start at wh flag and go to other wh
+    return TradeRoute(tgs[player], start.GetFlag()->GetPos(), dest.GetPos());
 }
