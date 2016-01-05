@@ -2281,7 +2281,7 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start
         route->clear();
         *goal_harbor_id = best->GetHarborPosID();
         // Weg dorthin gefunden?
-        if(gwg->FindShipPath(start, dest, route, NULL))
+        if(start == dest || gwg->FindShipPath(start, dest, route, NULL))
             return true;
     }
     
