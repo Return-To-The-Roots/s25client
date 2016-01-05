@@ -172,27 +172,34 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
     {
         unsigned shortest_route = std::numeric_limits<unsigned>::max();
 
-        std::vector<MapPoint >::iterator best_it;
-
-        for(std::vector<MapPoint >::iterator it = todo.begin(); it != todo.end(); ++it)
+        MapPoint bestPos;
         {
-            unsigned new_way = nodes[it->y * size.x + it->x].real_length + TGN_SIZE;
-            if(new_way < shortest_route)
+            std::vector<MapPoint >::iterator best_it;
+            for(std::vector<MapPoint >::iterator it = todo.begin(); it != todo.end(); ++it)
             {
-                shortest_route = new_way;
-                best_it = it;
+                unsigned new_way = nodes[it->y * size.x + it->x].real_length + TGN_SIZE;
+                if(new_way < shortest_route)
+                {
+                    shortest_route = new_way;
+                    best_it = it;
+                }
             }
+            bestPos = *best_it;
+            // Knoten behandelt --> raus aus der todo Liste
+            *best_it = todo.back();
+            todo.pop_back();
         }
 
-        nodes[best_it->y * size.x + best_it->x].visited = true;
+        nodes[bestPos.y * size.x + bestPos.x].visited = true;
 
 
         for(unsigned i = 0; i < 8; ++i)
         {
-            if(GetNode(*best_it).dirs[i] == NO_EDGE)
+            unsigned short edgeLen = GetNode(bestPos).dirs[i];
+            if(edgeLen == NO_EDGE)
                 continue;
 
-            MapPoint new_pos(GetNodeAround(*best_it, i + 1));
+            MapPoint new_pos(GetNodeAround(bestPos, i + 1));
 
             if(nodes[new_pos.y * size.x + new_pos.x].visited)
                 continue;
@@ -200,10 +207,10 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
             if(new_pos == goal)
             {
                 // Reached goal
-                route.resize(nodes[best_it->y * size.x + best_it->x].route_length + 1);
+                route.resize(nodes[bestPos.y * size.x + bestPos.x].route_length + 1);
                 route[route.size() - 1] = i;
 
-                MapPoint pos = *best_it;
+                MapPoint pos = bestPos;
 
                 for(int z = route.size() - 2; z >= 0; --z, pos = GetNodeAround(pos, (nodes[pos.y * size.x + pos.x].dir + 4) % 8 + 1))
                     route[z] = nodes[pos.y * size.x + pos.x].dir;
@@ -211,13 +218,13 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
                 return true;
             }
 
-            unsigned new_length = nodes[best_it->y * size.x + best_it->x].real_length + GetNode(*best_it).dirs[i];
+            unsigned new_length = nodes[bestPos.y * size.x + bestPos.x].real_length + edgeLen;
 
             if(new_length < nodes[new_pos.y * size.x + new_pos.x].real_length)
             {
                 nodes[new_pos.y * size.x + new_pos.x].real_length = new_length;
                 nodes[new_pos.y * size.x + new_pos.x].dir = i;
-                nodes[new_pos.y * size.x + new_pos.x].route_length = nodes[best_it->y * size.x + best_it->x].route_length + 1;
+                nodes[new_pos.y * size.x + new_pos.x].route_length = nodes[bestPos.y * size.x + bestPos.x].route_length + 1;
                 if(!nodes[new_pos.y * size.x + new_pos.x].in_list)
                 {
                     nodes[new_pos.y * size.x + new_pos.x].in_list = true;
@@ -225,10 +232,6 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
                 }
             }
         }
-
-        // Knoten behandelt --> raus aus der todo Liste
-        *best_it = todo.back();
-        todo.pop_back();
     }
 
     return false;
