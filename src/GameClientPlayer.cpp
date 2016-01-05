@@ -2414,14 +2414,14 @@ bool GameClientPlayer::IsDependentFigure(noFigure* fig)
 }
 
 /// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
-unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* wh, const GoodType gt, const Job job) const
+unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* goalWh, const GoodType gt, const Job job) const
 {
     unsigned count = 0;
 
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
         // Find a trade path from this warehouse to wh? (Start from flag of wh)
-        TradeRoute tr = gwg->CreateTradeRoute(**it, *wh, playerid);
+        TradeRoute tr = gwg->CreateTradeRoute(**it, *goalWh, playerid);
 
         // Found a path?
         if(tr.IsValid())

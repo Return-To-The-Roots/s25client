@@ -426,8 +426,8 @@ class GameClientPlayer : public GamePlayerInfo
         /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
         void TestPacts();
 
-        /// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
-        unsigned GetAvailableWaresForTrading(nobBaseWarehouse* wh, const GoodType gt, const Job job) const;
+        /// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse goalWh
+        unsigned GetAvailableWaresForTrading(nobBaseWarehouse* goalWh, const GoodType gt, const Job job) const;
         /// Send wares to warehouse wh
         void Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const;
 
