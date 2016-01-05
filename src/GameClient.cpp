@@ -1247,6 +1247,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
     {
         assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
         framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
+        framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
     }
 
     //LOG.write("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n", framesinfo.gf_nr, framesinfo.gfNrServer);
