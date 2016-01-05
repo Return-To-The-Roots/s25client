@@ -37,7 +37,7 @@ struct TradeGraphNode
     /// Direction not possible, even in the future (water, lava, swamp etc.)
     boost::array<bool, 8> not_possible_forever;
     /// Is the route running over any player territory?
-    boost::array<bool, MAX_PLAYERS> dont_run_over_player_territory;
+    boost::array<bool, MAX_PLAYERS> doesNotCrossPlayerTerritory;
 
     TradeGraphNode();
 

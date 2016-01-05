@@ -24,7 +24,7 @@ TradeGraphNode::TradeGraphNode(): main_pos(MapPoint::Invalid())
 {
     std::fill(dirs.begin(), dirs.end(), NO_EDGE);
     std::fill(not_possible_forever.begin(), not_possible_forever.end(), false);
-    std::fill(dont_run_over_player_territory.begin(), dont_run_over_player_territory.end(), false);
+    std::fill(doesNotCrossPlayerTerritory.begin(), doesNotCrossPlayerTerritory.end(), false);
 }
 
 void TradeGraphNode::Deserialize(SerializedGameData& sgd)
@@ -34,7 +34,7 @@ void TradeGraphNode::Deserialize(SerializedGameData& sgd)
     {
         dirs[i] = sgd.PopUnsignedShort();
         not_possible_forever[i] = sgd.PopBool();
-        dont_run_over_player_territory[i] = sgd.PopBool();
+        doesNotCrossPlayerTerritory[i] = sgd.PopBool();
     }
 }
 
@@ -45,6 +45,6 @@ void TradeGraphNode::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushUnsignedShort(dirs[i]);
         sgd.PushBool(not_possible_forever[i]);
-        sgd.PushBool(dont_run_over_player_territory[i]);
+        sgd.PushBool(doesNotCrossPlayerTerritory[i]);
     }
 }

@@ -20,13 +20,16 @@
 #include "TradeGraph.h"
 #include "GamePlayerList.h"
 #include "SerializedGameData.h"
+#include "gameData/GameConsts.h"
 #include <boost/array.hpp>
 
 TradeGraph::TradeGraph(const unsigned char player, const GameWorldGame* const gwg)
     : gwg(gwg), player(player), size(gwg->GetWidth() / TGN_SIZE, gwg->GetHeight() / TGN_SIZE)
 {
-    if(gwg->GetWidth() % TGN_SIZE > 0) ++size.x;
-    if(gwg->GetHeight() % TGN_SIZE > 0) ++size.y;
+    if(gwg->GetWidth() % TGN_SIZE > 0)
+        ++size.x;
+    if(gwg->GetHeight() % TGN_SIZE > 0)
+        ++size.y;
     trade_graph.resize(size.x * size.y);
 }
 
@@ -72,6 +75,8 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
             unsigned nearest_hq = std::numeric_limits<unsigned>::max();
             for(unsigned i = 0; i < players.getCount(); ++i)
             {
+                if(!players[i].hqPos.isValid())
+                    continue;
                 unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, players[i].hqPos);
 
                 if(new_distance < nearest_hq)
@@ -91,6 +96,8 @@ void TradeGraph::CreateWithHelpOfAnotherPlayer(const TradeGraph& helper, const G
             unsigned nearest_hq = std::numeric_limits<unsigned>::max();
             for(unsigned i = 0; i < players.getCount(); ++i)
             {
+                if(!players[i].hqPos.isValid())
+                    continue;
                 unsigned new_distance = gwg->CalcDistance(helper.GetNode(p).main_pos, players[i].hqPos);
 
                 if(new_distance < nearest_hq)
@@ -123,12 +130,16 @@ MapPoint TradeGraph::GetNodeAround(const MapPoint pos, const unsigned char dir) 
     }
 
     // Consider map borders
-    if(new_pos.x < 0) new_pos.x += size.x;
-    if(new_pos.x >= size.x) new_pos.x -= size.x;
-    if(new_pos.y < 0) new_pos.y += size.y;
-    if(new_pos.y >= size.y) new_pos.y -= size.y;
+    if(new_pos.x < 0)
+        new_pos.x += size.x;
+    if(new_pos.x >= size.x)
+        new_pos.x -= size.x;
+    if(new_pos.y < 0)
+        new_pos.y += size.y;
+    if(new_pos.y >= size.y)
+        new_pos.y -= size.y;
 
-    return MapPoint(new_pos.x, new_pos.y);
+    return MapPoint(new_pos);
 }
 
 struct TGN
@@ -148,7 +159,7 @@ struct TGN
 bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector<unsigned char>& route) const
 {
     // Todo list
-    std::list< MapPoint > todo;
+    std::vector< MapPoint > todo;
     todo.push_back(start);
 
     std::vector<TGN> nodes(size.x * size.y);
@@ -158,11 +169,11 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
 
     while(!todo.empty())
     {
-        unsigned shortest_route = 0xFFFFFFFF;
+        unsigned shortest_route = std::numeric_limits<unsigned>::max();
 
-        std::list<MapPoint >::iterator best_it;
+        std::vector<MapPoint >::iterator best_it;
 
-        for(std::list<MapPoint >::iterator it = todo.begin(); it != todo.end(); ++it)
+        for(std::vector<MapPoint >::iterator it = todo.begin(); it != todo.end(); ++it)
         {
             unsigned new_way = nodes[it->y * size.x + it->x].real_length + TGN_SIZE;
             if(new_way < shortest_route)
@@ -215,7 +226,8 @@ bool TradeGraph::FindPath(const MapPoint start, const MapPoint goal, std::vector
         }
 
         // Knoten behandelt --> raus aus der todo Liste
-        todo.erase(best_it);
+        *best_it = todo.back();
+        todo.pop_back();
     }
 
     return false;
@@ -275,14 +287,18 @@ void TradeGraph::FindMainPoint(const MapPoint tgn)
     unsigned best_connections = 0, best_id = 0;
     for(unsigned i = 0; i < POTENTIAL_MAIN_POINTS; ++i)
     {
+        if(!good_points[i])
+            continue;
         MapPoint p = ps[i];
         unsigned connections = 0;
         for(unsigned j = 0; j < POTENTIAL_MAIN_POINTS; ++j)
         {
-            if(i == j || !good_points[j]) continue;
+            if(i == j || !good_points[j])
+                continue;
 
             unsigned char next_dir = gwg->FindTradePath(p, ps[j], player, TG_PF_LENGTH, false, NULL, NULL, false);
-            if(next_dir != 0xff) ++connections;
+            if(next_dir != INVALID_DIR)
+                ++connections;
         }
 
         if(connections >= best_connections)
@@ -299,18 +315,17 @@ void TradeGraph::FindMainPoint(const MapPoint tgn)
 /// Updates one specific edge
 void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGraph* const tg)
 {
-    if(tg)
-        if(tg->GetNode(pos).dont_run_over_player_territory[dir])
-        {
-            GetNode(pos).dont_run_over_player_territory[dir] = true;
-            GetNode(pos).dirs[dir] = tg->GetNode(pos).dirs[dir];
-            return;
-        }
+    if(tg && tg->GetNode(pos).doesNotCrossPlayerTerritory[dir])
+    {
+        GetNode(pos).doesNotCrossPlayerTerritory[dir] = true;
+        GetNode(pos).dirs[dir] = tg->GetNode(pos).dirs[dir];
+        return;
+    }
     MapPoint other = GetNodeAround(pos, dir + 1);
     unsigned char other_dir = (dir + 4) % 8;
-    if(GetNode(other).dont_run_over_player_territory[other_dir])
+    if(GetNode(other).doesNotCrossPlayerTerritory[other_dir])
     {
-        GetNode(pos).dont_run_over_player_territory[dir] = true;
+        GetNode(pos).doesNotCrossPlayerTerritory[dir] = true;
         GetNode(pos).dirs[dir] = GetNode(other).dirs[other_dir];
         return;
     }
@@ -319,8 +334,7 @@ void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGr
     std::vector<unsigned char> route;
     MapPoint mpos(GetNode(pos).main_pos);
     // Simply try to find a path from one main point to another
-    if(gwg->FindTradePath(mpos, GetNode(other).main_pos,
-                          player, TG_PF_LENGTH, false, &route, &length) == 0xff)
+    if(gwg->FindTradePath(mpos, GetNode(other).main_pos, player, TG_PF_LENGTH, false, &route, &length) == INVALID_DIR)
         length = NO_EDGE;
     GetNode(pos).dirs[dir] = static_cast<MapCoord>(length);
 
@@ -329,9 +343,12 @@ void TradeGraph::UpdateEdge(MapPoint pos, const unsigned char dir, const TradeGr
     {
         mpos = gwg->GetNeighbour(mpos, route[i]);
         if(gwg->GetNode(mpos).owner != 0)
+        {
             hasOwner = true;
+            break;
+        }
     }
 
     if(!hasOwner)
-        GetNode(pos).dont_run_over_player_territory[dir] = true;
+        GetNode(pos).doesNotCrossPlayerTerritory[dir] = true;
 }
