@@ -212,14 +212,14 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
             if( (borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].left_right_offset[1] = triangleCount++;
 
-            t1 = gwv.GetNodeAround(pt, 3).t1;
+            t1 = gwv.GetNeighbourNode(pt, 3).t1;
             if( (borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].right_left_offset[0] = triangleCount++;
             if( (borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].right_left_offset[1] = triangleCount++;
 
             t1 = gwv.GetNode(pt).t1;
-            t2 = gwv.GetNodeAround(pt, 5).t2;
+            t2 = gwv.GetNeighbourNode(pt, 5).t2;
             if( (borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].top_down_offset[0] = triangleCount++;
             if( (borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t2)) )

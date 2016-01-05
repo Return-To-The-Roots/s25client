@@ -240,6 +240,50 @@ bool IsPointToDestOK_TradePath(const GameWorldBase& gwb, const MapPoint pt, cons
     }
 }
 
+struct PathConditionTrade
+{
+    const GameClientPlayer& player;
+    const GameWorldBase& gwb;
+
+    PathConditionTrade(const unsigned char player, const GameWorldBase& gwb): player(gwb.GetPlayer(player)), gwb(gwb){}
+
+    bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
+    {
+        // Feld passierbar?
+        noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
+        if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
+            return false;
+
+        unsigned char owner = gwb.GetNode(pt).owner;
+        // Ally or no player? Then ok
+        if(owner == 0 || player.IsAlly(owner - 1))
+            return true;
+        else
+            return false;
+    }
+
+    bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    {
+        // Feld passierbar?
+        // Nicht über Wasser, Lava, Sümpfe gehen
+        const unsigned char reverseDir = (dir + 3) % 6;
+        if(!gwb.IsNodeToNodeForFigure(pt, reverseDir))
+            return false;
+
+        // Not trough hostile territory?
+        unsigned char ownerFromPt = gwb.GetNode(gwb.GetNeighbour(pt, reverseDir)).owner, 
+            ownerCurPt = gwb.GetNode(pt).owner;
+        // Ally or no player? Then ok
+        if(ownerCurPt == 0 || player.IsAlly(ownerCurPt - 1))
+            return true;
+        else if(ownerFromPt != 0 && !player.IsAlly(ownerFromPt - 1)) // Old player also evil?
+            return true;
+        else
+            return false;
+    }
+};
+
+#include "pathfinding/FreePathFinderImpl.h"
 
 /// Find a route for trade caravanes
 unsigned char GameWorldGame::FindTradePath(const MapPoint start, 
@@ -261,11 +305,11 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
             is_warehouse_at_goal = true;
     }
 
-    if(!IsNodeForFigures(dest) && !is_warehouse_at_goal )
+    if(!is_warehouse_at_goal && !IsNodeForFigures(dest))
         return INVALID_DIR;
 
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, IsPointOK_TradePath, IsPointToDestOK_TradePath, &player, record);
+    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, PathConditionTrade(player, *this), record);
 
     //if(GetTickCount()-tt > 100)
     //  printf("%u: %u ms; (%u, %u) to (%u, %u)\n", cc, GetTickCount()-tt, start.x, start.y, dest.x, dest.y);

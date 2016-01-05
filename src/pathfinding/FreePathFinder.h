@@ -25,6 +25,10 @@ class GameWorldBase;
 
 typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
 
+// There are 2 callback types:
+// IsNodeToDestOk: Called for every point to check if this node is usable
+// IsNodeOk: Additionally called for every point but the destination
+
 class FreePathFinder
 {
     GameWorldBase& gwb_;
@@ -37,13 +41,22 @@ public:
     /// Wegfindung in freiem Terrain - Basisroutine
     bool FindPath(const MapPoint start, const MapPoint dest,
         const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
+        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
         FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
+        const bool record);
+
+    /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
+    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)
+    template<class TNodeChecker>
+    bool FindPath(const MapPoint start, const MapPoint dest,
+        const bool randomRoute, const unsigned maxLength,
+        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
+        const TNodeChecker& nodeChecker,
         const bool record);
 
     bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
         const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* first_dir,
+        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
         FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
         const bool record);
 

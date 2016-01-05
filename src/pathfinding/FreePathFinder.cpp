@@ -17,64 +17,12 @@
 
 #include "defines.h"
 #include "pathfinding/FreePathFinder.h"
+#include "pathfinding/PathfindingPoint.h"
+#include "pathfinding/NewNode.h"
 #include "GameWorldBase.h"
 #include "GameClient.h"
 #include "Log.h"
 #include <set>
-
-/// Konstante für einen ungültigen Vorgänerknoten
-const unsigned INVALID_PREV = 0xFFFFFFFF;
-
-//////////////////////////////////////////////////////////////////////////
-/// Helpers
-//////////////////////////////////////////////////////////////////////////
-
-/// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x, y im set mit rumgeschleppt
-/// werden müsen
-struct PathfindingPoint
-{
-public:
-    const unsigned id_, distance_;
-    unsigned estimate_;
-
-    /// Konstruktoren
-    PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay): id_(id), distance_(distance), estimate_(curWay + distance_)
-    {}
-
-    /// Operator für den Vergleich
-    bool operator<(const PathfindingPoint& rhs) const
-    {
-        // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng monoton steigende Folge brauchen
-        if(estimate_ == rhs.estimate_)
-            return (id_ < rhs.id_);
-        else
-            return (estimate_ < rhs.estimate_);
-    }
-};
-
-/// Klass für einen Knoten mit dazugehörigen Informationen
-/// Wir speichern einfach die gesamte Map und sparen uns so das dauernde Allokieren und Freigeben von Speicher
-/// Die Knoten können im Array mit einer eindeutigen ID (gebildet aus y*Kartenbreite+x) identifiziert werden
-struct NewNode
-{
-    NewNode() : way(0), dir(0), prev(INVALID_PREV), lastVisited(0) {}
-
-    /// Wegkosten, die vom Startpunkt bis zu diesem Knoten bestehen
-    unsigned way;
-    unsigned wayEven;
-    /// Die Richtung, über die dieser Knoten erreicht wurde
-    unsigned char dir;
-    unsigned char dirEven;
-    /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
-    unsigned prev;
-    unsigned prevEven;
-    /// Iterator auf Position in der Prioritätswarteschlange (std::set), freies Pathfinding
-    std::set<PathfindingPoint>::iterator it_p;
-    /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
-    unsigned lastVisited;
-    unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
-    MapPoint mapPt;
-};
 
 //////////////////////////////////////////////////////////////////////////
 /// FreePathFinder implementation
