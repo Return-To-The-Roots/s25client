@@ -30,34 +30,51 @@
 
 /// MapNodes
 typedef std::vector<NewNode> MapNodes;
+typedef std::vector<NewNode2> MapNodes2;
 MapNodes nodes;
+MapNodes2 nodes2;
 
 void FreePathFinder::Init(const unsigned mapWidth, const unsigned mapHeight)
 {
+    currentVisit = 0;
     width_ = mapWidth;
     height_ = mapHeight;
     // Reset nodes
     nodes.clear();
+    nodes2.clear();
     nodes.resize(width_ * height_);
+    nodes2.resize(width_ * height_);
     for(unsigned y = 0; y < height_; ++y)
+    {
         for(unsigned x = 0; x < width_; ++x)
-            nodes[gwb_.GetIdx(MapPoint(x, y))].mapPt = MapPoint(x, y);
+        {
+            const MapPoint pt = MapPoint(x, y);
+            const unsigned idx = gwb_.GetIdx(pt);
+            nodes[idx].mapPt = pt;
+            nodes2[idx].lastVisited = 0;
+            nodes2[idx].mapPt = pt;
+            nodes2[idx].idx = idx;
+        }
+    }
 }
 
 void FreePathFinder::IncreaseCurrentVisit()
 {
-    currentVisit++;
-
     // if the counter reaches its maxium, tidy up
-    if (currentVisit == std::numeric_limits<unsigned>::max() - 1)
+    if (currentVisit == std::numeric_limits<unsigned>::max())
     {
         for (MapNodes::iterator it = nodes.begin(); it != nodes.end(); ++it)
         {
             it->lastVisited = 0;
             it->lastVisitedEven = 0;
         }
+        for (MapNodes2::iterator it = nodes2.begin(); it != nodes2.end(); ++it)
+        {
+            it->lastVisited = 0;
+        }
         currentVisit = 1;
-    }
+    }else
+        currentVisit++;
 }
 
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe

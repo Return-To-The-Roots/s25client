@@ -46,4 +46,23 @@ struct NewNode
     MapPoint mapPt;
 };
 
+struct NewNode2
+{
+    /// Indicator if node was visited (lastVisited == currentVisit)
+    unsigned lastVisited;
+    /// Previous node
+    NewNode2* prev;
+    /// Distance from start to this node
+    unsigned curDistance;
+    /// Distance from node to target
+    unsigned targetDistance;
+    /// Distance from start over thise node to target (== curDistance + targetDistance)
+    unsigned estimatedDistance;
+    /// Index used to distinguish nodes with same estimate
+    unsigned idx;
+    /// Direction used to reach this node
+    unsigned char dir;
+    /// Point on map which this node represents
+    MapPoint mapPt;
+};
 #endif // NewNode_h__
