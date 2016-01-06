@@ -247,21 +247,19 @@ struct PathConditionTrade
 
     PathConditionTrade(const unsigned char player, const GameWorldBase& gwb): player(gwb.GetPlayer(player)), gwb(gwb){}
 
+    // Called first for every node but the goal
     bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
     {
         // Feld passierbar?
         noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
         if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
             return false;
-
-        unsigned char owner = gwb.GetNode(pt).owner;
-        // Ally or no player? Then ok
-        if(owner == 0 || player.IsAlly(owner - 1))
-            return true;
         else
-            return false;
+            return true;
+        // owner check is done by other function
     }
 
+    // Called for every node
     bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
     {
         // Feld passierbar?
@@ -270,16 +268,9 @@ struct PathConditionTrade
         if(!gwb.IsNodeToNodeForFigure(pt, reverseDir))
             return false;
 
-        // Not trough hostile territory?
-        unsigned char ownerFromPt = gwb.GetNode(gwb.GetNeighbour(pt, reverseDir)).owner, 
-            ownerCurPt = gwb.GetNode(pt).owner;
+        unsigned char owner = gwb.GetNode(pt).owner;
         // Ally or no player? Then ok
-        if(ownerCurPt == 0 || player.IsAlly(ownerCurPt - 1))
-            return true;
-        else if(ownerFromPt != 0 && !player.IsAlly(ownerFromPt - 1)) // Old player also evil?
-            return true;
-        else
-            return false;
+        return (owner == 0 || player.IsAlly(owner - 1));
     }
 };
 
