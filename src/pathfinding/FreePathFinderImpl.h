@@ -21,9 +21,26 @@
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/NewNode.h"
+#include "pathfinding/OpenListPrioQueue.h"
 
-typedef std::vector<NewNode> MapNodes;
-extern MapNodes nodes;
+typedef std::vector<NewNode2> MapNodes;
+extern MapNodes nodes2;
+
+struct NewNode2PtrCmpGreater
+{
+    bool operator()(const NewNode2* const lhs, const NewNode2* const rhs) const
+    {
+        if (lhs->estimatedDistance == rhs->estimatedDistance)
+        {
+            // Enforce strictly monotonic increasing order
+            return (lhs->idx > rhs->idx);
+        }
+
+        return (lhs->estimatedDistance > rhs->estimatedDistance);
+    }
+};
+
+typedef OpenListPrioQueue<NewNode2*, NewNode2PtrCmpGreater> QueueImpl;
 
 template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
@@ -37,16 +54,21 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     // increase currentVisit, so we don't have to clear the visited-states at every run
     IncreaseCurrentVisit();
 
-    std::set<PathfindingPoint> todo;
-    const unsigned destId = gwb_.GetIdx(dest);
+    QueueImpl todo;
+    const unsigned startId = gwb_.GetIdx(start);
+    const unsigned destId  = gwb_.GetIdx(dest);
+    NewNode2& startNode = nodes2[startId];
+    NewNode2& destNode  = nodes2[destId];
 
     // Anfangsknoten einfügen Und mit entsprechenden Werten füllen
-    unsigned startId = gwb_.GetIdx(start);
-    nodes[startId].it_p = todo.insert(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0)).first;
-    nodes[startId].prev = INVALID_PREV;
-    nodes[startId].lastVisited = currentVisit;
-    nodes[startId].way = 0;
-    nodes[startId].dir = 0;
+    startNode.targetDistance = gwb_.CalcDistance(start, dest);
+    startNode.estimatedDistance = startNode.targetDistance;
+    startNode.lastVisited = currentVisit;
+    startNode.prev = NULL;
+    startNode.curDistance = 0;
+    startNode.dir = 0;
+
+    todo.push(&startNode);
 
     // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
     // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
@@ -55,41 +77,37 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     while(!todo.empty())
     {
         // Knoten mit den geringsten Wegkosten auswählen
-        PathfindingPoint best = *todo.begin();
-        // Knoten behandelt --> raus aus der todo Liste
-        todo.erase(todo.begin());
-
-        unsigned bestId = best.id_;
-
-        // Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
-        // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
-        nodes[bestId].it_p = todo.end();
+        NewNode2& best = *todo.pop();
 
         // Ziel schon erreicht?
-        if(destId == bestId)
+        if(&best == &destNode)
         {
             // Ziel erreicht!
             // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
             if(length)
-                *length = nodes[bestId].way;
+                *length = best.curDistance;
             if(route)
-                route->resize(nodes[bestId].way);
+                route->resize(best.curDistance);
 
+            NewNode2* curNode = &best;
             // Route rekonstruieren und ggf. die erste Richtung speichern, falls gewünscht
-            for(unsigned z = nodes[bestId].way - 1; bestId != startId; --z, bestId = nodes[bestId].prev)
+            for(unsigned z = best.curDistance; z > 0; --z)
             {
                 if(route)
-                    (*route)[z] = nodes[bestId].dir;
-                if(firstDir && z == 0)
-                    *firstDir = nodes[bestId].dir;
+                    (*route)[z - 1] = curNode->dir;
+                if(firstDir && z == 1)
+                    *firstDir = curNode->dir;
+                curNode = curNode->prev;
             }
+
+            assert(curNode == &startNode);
 
             // Fertig, es wurde ein Pfad gefunden
             return true;
         }
 
         // Maximaler Weg schon erreicht? In dem Fall brauchen wir keine weiteren Knoten von diesem aus bilden
-        if(nodes[bestId].way == maxLength)
+        if(best.curDistance >= maxLength)
             continue;
 
         // Knoten in alle 6 Richtungen bilden
@@ -98,52 +116,52 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
             unsigned dir = z % 6;
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);
+            MapPoint neighbourPos = gwb_.GetNeighbour(best.mapPt, dir);
 
             // ID des umliegenden Knotens bilden
             unsigned nbId = gwb_.GetIdx(neighbourPos);
+            NewNode2& neighbour = nodes2[nbId];
 
             // Don't try to go back where we came from (would also bail out in the conditions below)
-            if(nodes[bestId].prev == nbId)
+            if(best.prev == &neighbour)
                 continue;
 
             // Knoten schon auf dem Feld gebildet?
-            if (nodes[nbId].lastVisited == currentVisit)
+            if (neighbour.lastVisited == currentVisit)
             {
                 // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
-                if(nodes[nbId].it_p != todo.end() && nodes[bestId].way + 1 < nodes[nbId].way)
+                if(best.curDistance + 1 < neighbour.curDistance)
                 {
-                    nodes[nbId].way  = nodes[bestId].way + 1;
-                    nodes[nbId].prev = bestId;
-                    PathfindingPoint neighborPt = *nodes[nbId].it_p;
-                    neighborPt.estimate_ = neighborPt.distance_ + nodes[nbId].way;
-                    todo.erase(nodes[nbId].it_p);
-                    nodes[nbId].it_p = todo.insert(neighborPt).first;
-                    nodes[nbId].dir = dir;
+                    neighbour.curDistance  = best.curDistance + 1;
+                    neighbour.estimatedDistance = neighbour.curDistance + neighbour.targetDistance;
+                    neighbour.prev = &best;
+                    neighbour.dir = dir;
+                    todo.rearrange(&neighbour);
                 }
-                // Wir wollen nicht denselben Knoten noch einmal einfügen, daher Abbruch
-                continue;
-            }
-
-            // Das Ziel wollen wir auf jedenfall erreichen lassen, daher nur diese zusätzlichen
-            // Bedingungen, wenn es nicht das Ziel ist
-            if(nbId != destId)
+            }else
             {
-                if(!nodeChecker.IsNodeOk(neighbourPos, dir))
+                // Das Ziel wollen wir auf jedenfall erreichen lassen, daher nur diese zusätzlichen
+                // Bedingungen, wenn es nicht das Ziel ist
+                if(&neighbour == &destNode)
+                {
+                    if(!nodeChecker.IsNodeOk(neighbourPos, dir))
+                        continue;
+                }
+
+                // Zusätzliche Bedingungen, auch die das letzte Stück zum Ziel betreffen
+                if(!nodeChecker.IsNodeToDestOk(neighbourPos, dir))
                     continue;
+
+                // Alles in Ordnung, Knoten kann gebildet werden
+                neighbour.lastVisited = currentVisit;
+                neighbour.curDistance = best.curDistance + 1;
+                neighbour.targetDistance = gwb_.CalcDistance(neighbourPos, dest);
+                neighbour.estimatedDistance = neighbour.curDistance + neighbour.targetDistance;
+                neighbour.dir = dir;
+                neighbour.prev = &best;
+
+                todo.push(&neighbour);
             }
-
-            // Zusätzliche Bedingungen, auch die das letzte Stück zum Ziel betreffen
-            if(!nodeChecker.IsNodeToDestOk(neighbourPos, dir))
-                continue;
-
-            // Alles in Ordnung, Knoten kann gebildet werden
-            nodes[nbId].lastVisited = currentVisit;
-            nodes[nbId].way = nodes[bestId].way + 1;
-            nodes[nbId].dir = dir;
-            nodes[nbId].prev = bestId;
-
-            nodes[nbId].it_p = todo.insert(PathfindingPoint(nbId, gwb_.CalcDistance(neighbourPos, dest), nodes[nbId].way)).first;
         }
     }
 
