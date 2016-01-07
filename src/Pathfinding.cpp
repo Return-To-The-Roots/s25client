@@ -248,7 +248,7 @@ struct PathConditionTrade
     PathConditionTrade(const unsigned char player, const GameWorldBase& gwb): player(gwb.GetPlayer(player)), gwb(gwb){}
 
     // Called first for every node but the goal
-    bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
+    __forceinline bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
     {
         // Feld passierbar?
         noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
@@ -260,7 +260,7 @@ struct PathConditionTrade
     }
 
     // Called for every node
-    bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    __forceinline bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
     {
         // Feld passierbar?
         // Nicht über Wasser, Lava, Sümpfe gehen
