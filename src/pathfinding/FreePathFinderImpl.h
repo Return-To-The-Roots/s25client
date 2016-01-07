@@ -142,7 +142,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
             {
                 // Das Ziel wollen wir auf jedenfall erreichen lassen, daher nur diese zusätzlichen
                 // Bedingungen, wenn es nicht das Ziel ist
-                if(&neighbour == &destNode)
+                if(&neighbour != &destNode)
                 {
                     if(!nodeChecker.IsNodeOk(neighbourPos, dir))
                         continue;
