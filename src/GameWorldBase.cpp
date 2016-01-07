@@ -1034,6 +1034,43 @@ MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) 
     return GetNeighbour(MapPoint(x, y), dir).y;
 }
 
+MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) const
+{
+    MapPoint res;
+    
+    switch (static_cast<Direction::Type>(dir))
+    {
+    case Direction::WEST:
+        res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
+        res.y = pt.y;
+        break;
+    case Direction::NORTHWEST:
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
+        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+        break;
+    case Direction::NORTHEAST:
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
+        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+        break;
+    case Direction::EAST:
+        res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
+        res.y = pt.y;
+        break;
+    case Direction::SOUTHEAST:
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
+        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
+        break;
+    case Direction::SOUTHWEST:
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
+        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
+        break;
+    default:
+        throw std::logic_error("Invalid direction!");
+    }
+    
+    return res;
+}
+
 MapPoint GameWorldBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
 {
     if(dir >= 12)
