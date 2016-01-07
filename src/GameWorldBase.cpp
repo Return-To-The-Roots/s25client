@@ -1036,38 +1036,53 @@ MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) 
 
 MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) const
 {
+    /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
+        Modifications for the dirs:
+        current row:    Even    Odd   
+                     W  -1|0   -1|0
+        D           NW  -1|-1   0|-1
+        I           NE   0|-1   1|-1
+        R            E   1|0    1|0
+                    SE   0|1    1|1
+                    SW  -1|1    0|1
+     */
+
     MapPoint res;
-    
     switch (static_cast<Direction::Type>(dir))
     {
-    case Direction::WEST:
-        res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
+    case Direction::WEST: // -1|0   -1|0
+        res.x = ((pt.x == 0) ? width_ : pt.x) - 1;
         res.y = pt.y;
         break;
-    case Direction::NORTHWEST:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
-        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+    case Direction::NORTHWEST: // -1|-1   0|-1
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
+        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
         break;
-    case Direction::NORTHEAST:
+    case Direction::NORTHEAST: // 0|-1  -1|-1
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
         break;
-    case Direction::EAST:
-        res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
+    case Direction::EAST: // 1|0    1|0
+        res.x = pt.x + 1;
+        if(res.x == width_)
+            res.x = 0;
         res.y = pt.y;
         break;
-    case Direction::SOUTHEAST:
+    case Direction::SOUTHEAST: // 1|1    0|1
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
-        break;
-    case Direction::SOUTHWEST:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
-        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
+        res.y = pt.y + 1;
+        if(res.y == height_)
+            res.y = 0;
         break;
     default:
-        throw std::logic_error("Invalid direction!");
+        assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
+        res.y = pt.y + 1;
+        if(res.y == height_)
+            res.y = 0;
+        break;
     }
-    
+
     return res;
 }
 
