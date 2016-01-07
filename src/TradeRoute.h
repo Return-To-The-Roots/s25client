@@ -47,6 +47,7 @@ private:
     unsigned char RecalcLocalRoute();
     /// Recalc the whole route and returns next direction
     unsigned char RecalcGlobalRoute();
+    unsigned char AdvanceGlobalPos();
 
 public:
 
@@ -60,6 +61,7 @@ public:
     bool IsValid() const { return !local_route.empty(); }
     /// Gets the next direction the caravane has to take
     unsigned char GetNextDir();
+
     /// Assigns new start and goal positions and hence, a new route
     void AssignNewGoal(const MapPoint new_goal, const MapPoint current);
 };

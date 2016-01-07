@@ -66,9 +66,7 @@ unsigned char TradeRoute::GetNextDir()
         return INVALID_DIR;
 
     if(current_pos == goal)
-    {
         return REACHED_GOAL;
-    }
 
     // Test the route in the trade graph
     for(unsigned i = global_pos; i < global_route.size(); ++i)
@@ -92,27 +90,26 @@ unsigned char TradeRoute::GetNextDir()
 
     // Next step
     if(++local_pos >= local_route.size())
-    {
-        local_pos = 0;
-        if(global_pos < global_route.size())
-            current_pos_tg = tg->GetNeighbourNode(current_pos_tg, global_route[global_pos] + 1);
-        ++global_pos;
-        RecalcLocalRoute();
-    }
+        return AdvanceGlobalPos();
+    else
+        return next_dir;
+}
 
-    return next_dir;
+unsigned char TradeRoute::AdvanceGlobalPos()
+{
+    local_pos = 0;
+    if(global_pos < global_route.size())
+        current_pos_tg = tg->GetNeighbourNode(current_pos_tg, global_route[global_pos] + 1);
+    ++global_pos;
+    return RecalcLocalRoute();
 }
 
 /// Recalc local route and returns next direction
 unsigned char TradeRoute::RecalcLocalRoute()
 {
-    /// Are we at the flag of the goal?
+    /// Are we at the goal?
     if(current_pos == goal)
-    {
-        local_route.resize(1);
-        local_route[0] = 1;
-        return 1;
-    }
+        return REACHED_GOAL;
 
     unsigned char next_dir;
     if(global_pos >= global_route.size() || tg->gwg->CalcDistance(current_pos, goal) < TGN_SIZE / 2)
@@ -120,13 +117,12 @@ unsigned char TradeRoute::RecalcLocalRoute()
         // Global route over or are we near the goal? Then find a (real) path to our goal
         global_pos = global_route.size();
         next_dir = tg->gwg->FindTradePath(current_pos, goal, tg->player, TG_PF_LENGTH, false, &local_route);
-        local_pos = 0;
     }
     else
     {
         next_dir = tg->gwg->FindTradePath(current_pos, tg->GetNode(current_pos_tg).main_pos, tg->player, TG_PF_LENGTH, false, &local_route);
-        local_pos = 0;
     }
+    local_pos = 0;
     return next_dir;
 }
 
@@ -203,7 +199,11 @@ unsigned char TradeRoute::RecalcGlobalRoute()
         return INVALID_DIR;
     }
 
-    return local_route[0];
+    if(local_route.empty())
+    {
+        return AdvanceGlobalPos();
+    }else
+        return local_route[0];
 }
 
 /// Assigns new start and goal positions and hence, a new route
