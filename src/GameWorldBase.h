@@ -481,35 +481,39 @@ inline MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction d
      */
 
     MapPoint res;
-
     switch (static_cast<Direction::Type>(dir))
     {
     case Direction::WEST:
-        res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
+        res.x = ((pt.x == 0) ? width_ : pt.x) - 1;
         res.y = pt.y;
         break;
     case Direction::NORTHWEST:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
-        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ : pt.x) - 1;
+        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
         break;
     case Direction::NORTHEAST:
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
         break;
     case Direction::EAST:
-        res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
+        res.x = pt.x + 1;
+        if(res.x == width_)
+            res.x = 0;
         res.y = pt.y;
         break;
     case Direction::SOUTHEAST:
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
-        break;
-    case Direction::SOUTHWEST:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
-        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
+        res.y = pt.y + 1;
+        if(res.y == height_)
+            res.y = 0;
         break;
     default:
-        throw std::logic_error("Invalid direction!");
+        assert(dir == Direction::SOUTHWEST);
+        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ : pt.x) - 1;
+        res.y = pt.y + 1;
+        if(res.y == height_)
+            res.y = 0;
+        break;
     }
 
     return res;
