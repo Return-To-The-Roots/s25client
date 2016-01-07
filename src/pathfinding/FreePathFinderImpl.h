@@ -40,6 +40,15 @@ struct NewNode2PtrCmpGreater
     }
 };
 
+struct GetEstimatedDistanceFromPtr
+{
+    template<typename T>
+    static inline unsigned GetValue(T* el)
+    {
+        return el->estimatedDistance;
+    }
+};
+
 typedef OpenListPrioQueue<NewNode2*, NewNode2PtrCmpGreater> QueueImpl;
 
 template<class TNodeChecker>
