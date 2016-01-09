@@ -189,8 +189,10 @@ unsigned char TradeRoute::RecalcGlobalRoute()
     }
     // Didn't find any paths? Then bye
     if(next_dir == INVALID_DIR)
+    {
+        local_route.clear();
         return INVALID_DIR;
-
+    }
 
     // Pathfinding on the TradeGraph
     if(!tg->FindPath(start_tgn, goal_tgn, global_route))
