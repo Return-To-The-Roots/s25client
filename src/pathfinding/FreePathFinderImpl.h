@@ -22,6 +22,7 @@
 #include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/NewNode.h"
 #include "pathfinding/OpenListPrioQueue.h"
+#include "pathfinding/OpenListBinaryHeap.h"
 
 typedef std::vector<NewNode2> MapNodes;
 extern MapNodes nodes2;
@@ -40,6 +41,14 @@ struct NewNode2PtrCmpGreater
     }
 };
 
+struct NewNodeCmp
+{
+    bool operator()(const NewNode2& lhs, const NewNode2& rhs) const
+    {
+        return (lhs.estimatedDistance < rhs.estimatedDistance);
+    }
+};
+
 struct GetEstimatedDistanceFromPtr
 {
     template<typename T>
@@ -49,7 +58,8 @@ struct GetEstimatedDistanceFromPtr
     }
 };
 
-typedef OpenListPrioQueue<NewNode2*, NewNode2PtrCmpGreater> QueueImpl;
+//typedef OpenListPrioQueue<NewNode2*, NewNode2PtrCmpGreater> QueueImpl;
+typedef OpenListBinaryHeap<NewNode2, NewNodeCmp> QueueImpl;
 
 template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,

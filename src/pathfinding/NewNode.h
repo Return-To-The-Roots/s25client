@@ -19,6 +19,7 @@
 #define NewNode_h__
 
 #include "pathfinding/PathfindingPoint.h"
+#include "pathfinding/OpenListBinaryHeap.h"
 #include <set>
 
 /// Konstante für einen ungültigen Vorgängerknoten
@@ -64,5 +65,6 @@ struct NewNode2
     unsigned char dir;
     /// Point on map which this node represents
     MapPoint mapPt;
+    OpenListBinaryHeapBase<NewNode2>::PosMarker posMarker;
 };
 #endif // NewNode_h__
