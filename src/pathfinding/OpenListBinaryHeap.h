@@ -27,6 +27,13 @@ class OpenListBinaryHeapBase
 public:
     typedef unsigned size_type;
     typedef T value_type;
+    struct Element {
+        unsigned key;
+        T* el;
+        Element() {}
+        Element(unsigned key, T* el) :key(key), el(el) {}
+    };
+
 
     /// Class used to store the position in the heap
     struct PosMarker{
@@ -41,7 +48,7 @@ public:
     bool empty() const{ return elements.empty(); }
 
 protected:
-    std::vector<value_type*> elements;
+    std::vector<Element> elements;
     static size_type& GetPos(PosMarker& posMarker){ return posMarker.pos; }
 }; 
 
@@ -93,9 +100,9 @@ bool OpenListBinaryHeap<T, Pr, GetPosMarker>::isHeap(size_type pos) const
             const size_type left = LeftChildPos(i);
             const size_type right = RightChildPos(i);
             // If child exist, parent must be "less" than child
-            if(left < size() && Pr()(*elements[left], *elements[i]))
+            if(left < size() && Pr()(*elements[left].el, *elements[i].el))
                 return false;
-            if(right < size() && Pr()(*elements[right], *elements[i]))
+            if(right < size() && Pr()(*elements[right].el, *elements[i].el))
                 return false;
         }
         return true;
@@ -104,9 +111,9 @@ bool OpenListBinaryHeap<T, Pr, GetPosMarker>::isHeap(size_type pos) const
         const size_type left = LeftChildPos(pos);
         const size_type right = RightChildPos(pos);
         // If child exist, parent must be "less" than child
-        if(left < size() && Pr()(*elements[left], *elements[pos]))
+        if(left < size() && Pr()(*elements[left].el, *elements[pos].el))
             return false;
-        if(right < size() && Pr()(*elements[right], *elements[pos]))
+        if(right < size() && Pr()(*elements[right].el, *elements[pos].el))
             return false;
         return isHeap(left) && isHeap(right);
     }
@@ -117,7 +124,7 @@ bool OpenListBinaryHeap<T, Pr, GetPosMarker>::arePositionsValid() const
 {
     for(size_type i=0; i<size(); i++)
     {
-        if(i != GetPos(elements[i]))
+        if(i != GetPos(elements[i].el))
             return false;
     }
     return true;
@@ -126,7 +133,7 @@ bool OpenListBinaryHeap<T, Pr, GetPosMarker>::arePositionsValid() const
 template<typename T, class Pr, class GetPosMarker>
 inline T* OpenListBinaryHeap<T, Pr, GetPosMarker>::top() const
 {
-    return elements[0];
+    return elements[0].el;
 }
 
 template<typename T, class Pr, class GetPosMarker>
@@ -135,7 +142,7 @@ inline void OpenListBinaryHeap<T, Pr, GetPosMarker>::push(T* newEl)
     assert(isHeap());
     assert(arePositionsValid());
     GetPos(newEl) = size();
-    elements.push_back(newEl);
+    elements.push_back(Element(newEl->estimatedDistance, newEl));
     decreasedKey(newEl);
     assert(isHeap());
 }
@@ -145,14 +152,16 @@ inline void OpenListBinaryHeap<T, Pr, GetPosMarker>::decreasedKey(T* el)
 {
     assert(arePositionsValid());
     size_type& i = GetPos(el);
+    elements[i].key = el->estimatedDistance;
+    unsigned elVal = el->estimatedDistance;
     assert(i < size());
     while(i > 0)
     {
         const unsigned parentPos = ParentPos(i);
-        if(!Pr()(*el, *elements[parentPos]))
+        if(elVal >= elements[parentPos].key)
             break;
         using std::swap;
-        GetPos(elements[parentPos]) = i;
+        GetPos(elements[parentPos].el) = i;
         swap(elements[parentPos], elements[i]);
         i = parentPos;
     }
@@ -168,49 +177,50 @@ inline T* OpenListBinaryHeap<T, Pr, GetPosMarker>::pop()
     assert(!empty());
 
     T* result = top();
+    const unsigned size = this->size() - 1;
 
-    if(size() == 1)
+    if(size == 0)
     {
         // If this is the last element, just remove it
         elements.pop_back();
         return result;
     }
 
-    elements[0] = elements[size() - 1];
+    Element el = elements.back();
     elements.pop_back();
 
-    using std::swap;
-    GetPos(elements[0]) = 0;
     size_type i = 0;
     do{
         const size_type left = LeftChildPos(i);
         assert(isHeap(left));
-        if(left >= size())
+        if(left >= size)
             break;
         const size_type right = RightChildPos(i);
         assert(isHeap(right));
-        if(Pr()(*elements[left], *elements[i])) // left < i
+        unsigned leftVal = elements[left].key;
+        if(leftVal < el.key) // left < i
         {
-            if(right >= size() || Pr()(*elements[left], *elements[right])) // left < right
+            if(right >= size || leftVal<elements[right].key) // left < right
             {
-                swap(elements[i], elements[left]);
-                GetPos(elements[i]) = i;
-                GetPos(elements[left]) = left;
+                elements[i] = elements[left];
+                GetPos(elements[i].el) = i;
                 i = left;
                 continue;
             }
 
         }
         // left >= i || (left < i && left >= right)
-        if(right < size() && Pr()(*elements[right], *elements[i])) // right < i
+        if(right < size && elements[right].key < el.key) // right < i
         {
-            swap(elements[i], elements[right]);
-            GetPos(elements[i]) = i;
-            GetPos(elements[right]) = right;
+            elements[i] = elements[right];
+            GetPos(elements[i].el) = i;
             i = right;
         }else
             break;
     }while(true);
+
+    elements[i] = el;
+    GetPos(el.el) = i;
 
     assert(isHeap());
     assert(arePositionsValid());
