@@ -837,6 +837,17 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     }
 }
 
+struct IsWindowId
+{
+    const unsigned id;
+    IsWindowId(const unsigned id) : id(id) {}
+
+    bool operator()(IngameWindow* wnd)
+    {
+        return wnd->GetID() == id;
+    }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
@@ -893,11 +904,11 @@ void WindowManager::Close(IngameWindow* window)
  */
 void WindowManager::Close(unsigned int id)
 {
-    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
+    IgwListIterator it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
+    while (it != windows.end())
     {
-        if((*it)->id_ == id){
-            Close(*it);
-        }
+        Close(*it);
+        it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
     }
 }
 
