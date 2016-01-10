@@ -808,6 +808,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
 
     MapPoint best(0, 0);
     int best_value = -1;
+    int temp;
 
     for(MapCoord tx = aii->GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii->GetXA(tx, pt.y, Direction::WEST), ++r)
     {
@@ -817,7 +818,6 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
             for(MapCoord step = 0; step < r; ++step)
             {
                 unsigned n = aii->GetIdx(t2);
-                int temp;
                 if(r == 1 && step == 0 && curDir == 2)
                 {
                     //only do a complete calculation for the first point!
