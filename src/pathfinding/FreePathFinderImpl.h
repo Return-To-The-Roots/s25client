@@ -41,11 +41,11 @@ struct NewNode2PtrCmpGreater
     }
 };
 
-struct NewNodeCmp
+struct GetEstimatedDistanceFromNewNode2
 {
-    bool operator()(const NewNode2& lhs, const NewNode2& rhs) const
+    unsigned operator()(const NewNode2& lhs) const
     {
-        return (lhs.estimatedDistance < rhs.estimatedDistance);
+        return lhs.estimatedDistance;
     }
 };
 
@@ -59,7 +59,7 @@ struct GetEstimatedDistanceFromPtr
 };
 
 //typedef OpenListPrioQueue<NewNode2*, NewNode2PtrCmpGreater> QueueImpl;
-typedef OpenListBinaryHeap<NewNode2, NewNodeCmp> QueueImpl;
+typedef OpenListBinaryHeap<NewNode2, GetEstimatedDistanceFromNewNode2> QueueImpl;
 
 template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
