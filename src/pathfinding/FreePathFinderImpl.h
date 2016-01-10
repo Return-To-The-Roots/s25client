@@ -179,5 +179,32 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     return false;
 }
 
+/// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
+template<class TNodeChecker>
+bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, 
+                                const TNodeChecker& nodeChecker, MapPoint* dest) const
+{
+    assert(pos < route.size());
+
+    MapPoint curPt(start);
+    // Check all but last step
+    unsigned sizeM1 = route.size() - 1;
+    for(unsigned i = pos; i < sizeM1; ++i)
+    {
+        curPt = gwb_.GetNeighbour(curPt, route[i]);
+        if(!nodeChecker.IsNodeOk(curPt, route[i]) || !nodeChecker.IsNodeToDestOk(curPt, route[i]))
+            return false;
+    }
+
+    // Last step
+    curPt = gwb_.GetNeighbour(curPt, route.back());
+    if(!nodeChecker.IsNodeToDestOk(curPt, route.back()))
+        return false;
+
+    if(dest)
+        *dest = curPt;
+
+    return true;
+}
 
 #endif // FreePathFinderImpl_h__

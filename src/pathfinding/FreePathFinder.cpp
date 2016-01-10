@@ -424,26 +424,3 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     // Liste leer und kein Ziel erreicht --> kein Weg
     return false;
 }
-
-/// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
-bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, 
-                                FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, MapPoint* dest, const void* const param) const
-{
-    MapPoint pt(start);
-
-    RTTR_Assert(pos < route.size());
-
-    for(unsigned i = pos; i < route.size(); ++i)
-    {
-        pt = gwb_.GetNeighbour(pt, route[i]);
-        if(!IsNodeToDestOk(gwb_, pt, route[i], param))
-            return false;
-        if(i + 1u < route.size() && !IsNodeOK(gwb_, pt, route[i], param))
-            return false;
-    }
-
-    if(dest)
-        *dest = pt;
-
-    return true;
-}

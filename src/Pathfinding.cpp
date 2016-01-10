@@ -142,6 +142,38 @@ bool IsPointToDestOK_ShipPath(const GameWorldBase& gwb, const MapPoint pt, const
         return false;
 }
 
+struct PathConditionShip
+{
+    const GameWorldBase& gwb;
+
+    PathConditionShip(const GameWorldBase& gwb): gwb(gwb){}
+
+    // Called first for every node but the goal
+    __forceinline bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
+    {
+        // Ein Meeresfeld?
+        for(unsigned i = 0; i < 6; ++i)
+        {
+            if(!TerrainData::IsUsableByShip(gwb.GetTerrainAround(pt, i)))
+                return false;
+        }
+
+        return true;
+    }
+
+    // Called for every node
+    __forceinline bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    {
+        // Der Übergang muss immer aus Wasser sein zu beiden Seiten
+        const unsigned char reverseDir = (dir + 3) % 6;
+        if(TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(pt, reverseDir)) && TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(pt, reverseDir)))
+            return true;
+        else
+            return false;
+    }
+};
+
+
 /// Findet einen Weg für Figuren
 unsigned char GameWorldBase::FindHumanPath(const MapPoint start, 
         const MapPoint dest, const unsigned max_route, const bool random_route, unsigned* length, const bool record) const
@@ -196,7 +228,7 @@ bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std:
 /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
 bool GameWorldGame::CheckShipRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, MapPoint* dest)
 {
-    return GetFreePathFinder().CheckRoute(start, route, pos, IsPointOK_ShipPath, IsPointToDestOK_ShipPath, dest, NULL);
+    return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionShip(*this), dest);
 }
 
 
@@ -313,5 +345,5 @@ bool GameWorldGame::CheckTradeRoute(const MapPoint start, const std::vector<unsi
                                     const unsigned pos, const unsigned char player, 
                                     MapPoint* dest) const
 {
-    return GetFreePathFinder().CheckRoute(start, route, pos, IsPointOK_TradePath, IsPointToDestOK_HumanPath, dest, &player);
+    return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionTrade(player, *this), dest);
 }
