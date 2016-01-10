@@ -30,9 +30,9 @@
 
 /// MapNodes
 typedef std::vector<NewNode> MapNodes;
-typedef std::vector<NewNode2> MapNodes2;
+typedef std::vector<FreePathNode> FreePathNodes;
 MapNodes nodes;
-MapNodes2 nodes2;
+FreePathNodes fpNodes;
 
 void FreePathFinder::Init(const unsigned mapWidth, const unsigned mapHeight)
 {
@@ -41,9 +41,9 @@ void FreePathFinder::Init(const unsigned mapWidth, const unsigned mapHeight)
     height_ = mapHeight;
     // Reset nodes
     nodes.clear();
-    nodes2.clear();
+    fpNodes.clear();
     nodes.resize(width_ * height_);
-    nodes2.resize(width_ * height_);
+    fpNodes.resize(width_ * height_);
     for(unsigned y = 0; y < height_; ++y)
     {
         for(unsigned x = 0; x < width_; ++x)
@@ -51,9 +51,9 @@ void FreePathFinder::Init(const unsigned mapWidth, const unsigned mapHeight)
             const MapPoint pt = MapPoint(x, y);
             const unsigned idx = gwb_.GetIdx(pt);
             nodes[idx].mapPt = pt;
-            nodes2[idx].lastVisited = 0;
-            nodes2[idx].mapPt = pt;
-            nodes2[idx].idx = idx;
+            fpNodes[idx].lastVisited = 0;
+            fpNodes[idx].mapPt = pt;
+            fpNodes[idx].idx = idx;
         }
     }
 }
@@ -68,7 +68,7 @@ void FreePathFinder::IncreaseCurrentVisit()
             it->lastVisited = 0;
             it->lastVisitedEven = 0;
         }
-        for (MapNodes2::iterator it = nodes2.begin(); it != nodes2.end(); ++it)
+        for (FreePathNodes::iterator it = fpNodes.begin(); it != fpNodes.end(); ++it)
         {
             it->lastVisited = 0;
         }

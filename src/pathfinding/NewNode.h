@@ -47,12 +47,12 @@ struct NewNode
     MapPoint mapPt;
 };
 
-struct NewNode2
+struct FreePathNode
 {
     /// Indicator if node was visited (lastVisited == currentVisit)
     unsigned lastVisited;
     /// Previous node
-    NewNode2* prev;
+    FreePathNode* prev;
     /// Distance from start to this node
     unsigned curDistance;
     /// Distance from node to target
@@ -65,6 +65,6 @@ struct NewNode2
     unsigned char dir;
     /// Point on map which this node represents
     MapPoint mapPt;
-    OpenListBinaryHeapBase<NewNode2>::PosMarker posMarker;
+    OpenListBinaryHeapBase<FreePathNode>::PosMarker posMarker;
 };
 #endif // NewNode_h__

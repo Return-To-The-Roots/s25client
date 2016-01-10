@@ -24,12 +24,12 @@
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListBinaryHeap.h"
 
-typedef std::vector<NewNode2> MapNodes;
-extern MapNodes nodes2;
+typedef std::vector<FreePathNode> FreePathNodes;
+extern FreePathNodes fpNodes;
 
-struct NewNode2PtrCmpGreater
+struct NodePtrCmpGreater
 {
-    bool operator()(const NewNode2* const lhs, const NewNode2* const rhs) const
+    bool operator()(const FreePathNode* const lhs, const FreePathNode* const rhs) const
     {
         if (lhs->estimatedDistance == rhs->estimatedDistance)
         {
@@ -41,25 +41,16 @@ struct NewNode2PtrCmpGreater
     }
 };
 
-struct GetEstimatedDistanceFromNewNode2
+struct GetEstimatedDistance
 {
-    unsigned operator()(const NewNode2& lhs) const
+    unsigned operator()(const FreePathNode& lhs) const
     {
         return lhs.estimatedDistance;
     }
 };
 
-struct GetEstimatedDistanceFromPtr
-{
-    template<typename T>
-    static inline unsigned GetValue(T* el)
-    {
-        return el->estimatedDistance;
-    }
-};
-
-//typedef OpenListPrioQueue<NewNode2*, NewNode2PtrCmpGreater> QueueImpl;
-typedef OpenListBinaryHeap<NewNode2, GetEstimatedDistanceFromNewNode2> QueueImpl;
+//typedef OpenListPrioQueue<NewNode2*, NodePtrCmpGreater> QueueImpl;
+typedef OpenListBinaryHeap<FreePathNode, GetEstimatedDistance> QueueImpl;
 
 template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
@@ -76,8 +67,8 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     QueueImpl todo;
     const unsigned startId = gwb_.GetIdx(start);
     const unsigned destId  = gwb_.GetIdx(dest);
-    NewNode2& startNode = nodes2[startId];
-    NewNode2& destNode  = nodes2[destId];
+    FreePathNode& startNode = fpNodes[startId];
+    FreePathNode& destNode  = fpNodes[destId];
 
     // Anfangsknoten einfügen Und mit entsprechenden Werten füllen
     startNode.targetDistance = gwb_.CalcDistance(start, dest);
@@ -96,7 +87,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     while(!todo.empty())
     {
         // Knoten mit den geringsten Wegkosten auswählen
-        NewNode2& best = *todo.pop();
+        FreePathNode& best = *todo.pop();
 
         // Ziel schon erreicht?
         if(&best == &destNode)
@@ -108,7 +99,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
             if(route)
                 route->resize(best.curDistance);
 
-            NewNode2* curNode = &best;
+            FreePathNode* curNode = &best;
             // Route rekonstruieren und ggf. die erste Richtung speichern, falls gewünscht
             for(unsigned z = best.curDistance; z > 0; --z)
             {
@@ -139,7 +130,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
             // ID des umliegenden Knotens bilden
             unsigned nbId = gwb_.GetIdx(neighbourPos);
-            NewNode2& neighbour = nodes2[nbId];
+            FreePathNode& neighbour = fpNodes[nbId];
 
             // Don't try to go back where we came from (would also bail out in the conditions below)
             if(best.prev == &neighbour)
