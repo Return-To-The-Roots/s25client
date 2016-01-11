@@ -305,11 +305,9 @@ void nofFarmhand::WalkHome()
     if(dir == 0xFF)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
+        AbrogateWorkplace();
         StartWandering();
         Wander();
-        // Haus Bescheid sagen
-        workplace->WorkerLost();
-        workplace = 0;
     }
     else
     {

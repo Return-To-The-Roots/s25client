@@ -458,6 +458,14 @@ void nobUsual::GotWorker(Job job, noFigure* worker)
  */
 void nobUsual::WorkerLost()
 {
+    // Check if worker is or was here (e.g. hunter could currently be outside)
+    if(HasWorker())
+    {
+        // If we have a worker, we must be producing something
+        assert(productivity_ev);
+        // Open the door till we get a new worker
+        OpenDoor();
+    }
     // Produktivitätsevent ggf. abmelden
     em->RemoveEvent(productivity_ev);
 
@@ -682,7 +690,7 @@ void nobUsual::ToggleProduction()
  */
 bool nobUsual::HasWorker() const
 {
-    return ( (worker) ? (worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK) : false);
+    return worker && worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK;;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
