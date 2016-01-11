@@ -38,13 +38,6 @@ public:
     FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0) {}
     void Init(const unsigned mapWidth, const unsigned mapHeight);
 
-    /// Wegfindung in freiem Terrain - Basisroutine
-    bool FindPath(const MapPoint start, const MapPoint dest,
-        const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
-        const bool record);
-
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
     /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)
     template<class TNodeChecker>

@@ -416,15 +416,12 @@ MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
 unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
+    assert(dir < 3);
 
-    unsigned pos = GetIdx(pt);
-
-    if(dir >= 3)
-    	throw std::out_of_range("Dir");
-
+    const MapNode& node = GetNode(pt);
     // Entweder muss es eine richtige Straße sein oder es müssen auch visuelle Straßen erlaubt sein
-	if(nodes[pos].roads_real[(unsigned)dir] || all)
-		return nodes[pos].roads[(unsigned)dir];
+	if(all || node.roads_real[(unsigned)dir])
+		return node.roads[(unsigned)dir];
 
     return 0;
 }
@@ -440,26 +437,26 @@ unsigned char GameWorldBase::GetPointRoad(const MapPoint pt, unsigned char dir, 
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        return GetRoad(pt, dir % 3, all);
+        return GetRoad(pt, dir - 3, all);
     else
         return GetRoad(GetNeighbour(pt, dir), dir, all);
 }
 
 unsigned char GameWorldBase::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
 {
+    assert(dir < 6);
+
     if(dir >= 3)
         dir = dir - 3;
     else
-    {
         pt = GetNeighbour(pt, dir);
-    }
 
     return GetNode(pt).fow[viewing_player].roads[dir];
 }
 
 bool GameWorldBase::IsPlayerTerritory(const MapPoint pt) const
 {
-    unsigned char owner = GetNode(pt).owner;
+    const unsigned char owner = GetNode(pt).owner;
 
     // Umliegende Punkte dürfen keinem anderen gehören
     for(unsigned i = 0; i < 6; ++i)
@@ -493,10 +490,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
 
         // Other roads at this point?
         if(GetPointRoad(pt, z, visual))
-        {
-//            (void) GetPointRoad(pt, z, visual);
             return false;
-        }
     }
 
     for(unsigned char i = 3; i < 6; ++i)
@@ -508,18 +502,18 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
     // Terrain (unterscheiden, ob Wasser und Landweg)
     if(!boat_road)
     {
-        unsigned flag_hits = 0;
+        bool flagPossible = false;
 
         for(unsigned char i = 0; i < 6; ++i)
         {
             BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
             if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG)
-                ++flag_hits;
+                flagPossible = true;
             else if(bq == BQ_DANGER)
-                return 0;
+                return false;
         }
 
-        if(!flag_hits)
+        if(!flagPossible)
             return false;
 
         // Richtung übergeben? Dann auch das zwischen den beiden Punkten beachten, damit
