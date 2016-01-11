@@ -99,7 +99,11 @@ namespace helpers{
         struct EraseReturnsIterator
         {
             typedef typename T::iterator iterator;
+#ifdef _MSC_VER
+            typedef Type2Type<decltype(declval<T>().erase(declval<iterator>()))> result;
+#else
             typedef BOOST_TYPEOF_TPL((declval<T>().erase(declval<iterator>()), Type2Type<void>())) result;
+#endif
 
             BOOST_STATIC_CONSTEXPR bool value = boost::is_same<iterator, typename result::type>::value;
         };
