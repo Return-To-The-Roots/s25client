@@ -336,21 +336,26 @@ void noFigure::WalkToGoal()
     {
         // Ziel erreicht?
         // Bei dem Träger können das beide Flaggen sein!
-        MapPoint goal1, goal2;
+        bool reachedGoal;
         if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
         {
-            goal1 = static_cast<nofCarrier*>(this)->GetFirstFlag() ?
-                static_cast<nofCarrier*>(this)->GetFirstFlag()->GetPos() : MapPoint(0xFFFF, 0xFFFF);
-            goal2 = static_cast<nofCarrier*>(this)->GetSecondFlag() ?
-                static_cast<nofCarrier*>(this)->GetSecondFlag()->GetPos() : MapPoint(0xFFFF, 0xFFFF);
+            assert(static_cast<nofCarrier*>(this));
+            nofCarrier* carrier = static_cast<nofCarrier*>(this);
+            noRoadNode* flag = carrier->GetFirstFlag();
+            if (flag && flag->GetPos() == pos)
+                reachedGoal = true;
+            else
+            {
+                flag = carrier->GetSecondFlag();
+                reachedGoal = flag && flag->GetPos() == pos;
+            }
         }
         else
         {
-            goal1 = goal_->GetPos();
-            goal2 = MapPoint(0xFFFF, 0xFFFF);
+            reachedGoal = goal_->GetPos() == pos;
         }
 
-        if(goal1 == pos || goal2 == pos)
+        if(reachedGoal)
         {
             noRoadNode* goal = goal_;
             // Zeug nullen
@@ -376,8 +381,8 @@ void noFigure::WalkToGoal()
         {
             MapPoint next_harbor;
             // Neuen Weg berechnen
-            noRoadNode* roadNode = gwg->GetSpecObj<noRoadNode>(pos);
-            unsigned char route = roadNode ? gwg->FindHumanPathOnRoads(*roadNode, *goal_, NULL, &next_harbor) : 0xFF;
+            noRoadNode* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
+            unsigned char route = curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, NULL, &next_harbor) : 0xFF;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == 0xFF)
             {
@@ -387,21 +392,16 @@ void noFigure::WalkToGoal()
                 GoHome();
                 // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
                 if(fs == FS_WANDER)
-                {
                     Wander();
-                    return;
-                }
-
-                // Nach Hause laufen...
-                WalkToGoal();
-                return;
+                else
+                    WalkToGoal(); // Nach Hause laufen...
             }
             // Oder müssen wir das Schiff nehmen?
             else if(route == SHIP_DIR)
             {
                 // Uns in den Hafen einquartieren
-                noBase* nob = gwg->GetNO(pos);
-                if(nob->GetGOT() != GOT_NOB_HARBORBUILDING)
+                noBase* hb = gwg->GetNO(pos);
+                if(hb->GetGOT() != GOT_NOB_HARBORBUILDING)
                 {
                     // Es gibt keinen Hafen mehr -> nach Hause gehen
 
@@ -410,31 +410,25 @@ void noFigure::WalkToGoal()
                     // Wir gehen jetzt nach Hause
                     GoHome();
                     // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                    if(fs == FS_WANDER)
-                    {
+                    if (fs == FS_WANDER)
                         Wander();
-                        return;
-                    }
-
-                    // Nach Hause laufen...
-                    WalkToGoal();
-                    return;
+                    else
+                        WalkToGoal(); // Nach Hause laufen...
+                }else
+                {
+                    // Uns in den Hafen einquartieren
+                    cur_rs = NULL; // wir laufen nicht mehr auf einer Straße
+                    gwg->RemoveFigure(this, pos);
+                    static_cast<nobHarborBuilding*>(hb)->AddFigureForShip(this, next_harbor);
                 }
-
-                // Uns in den Hafen einquartieren
-                cur_rs = NULL; // wir laufen nicht mehr auf einer Straße
-                gwg->RemoveFigure(this, pos);
-                static_cast<nobHarborBuilding*>(nob)->AddFigureForShip(this, next_harbor);
-
-                return;
+            }else
+            {
+                // Get next street we are walking on
+                cur_rs = curRoadNode->routes[route];
+                StartWalking(route);
+                rs_pos = 0;
+                rs_dir = (curRoadNode == cur_rs->GetF1()) ? false : true;
             }
-
-
-            // Nächste Straße wollen, auf der man geht
-            cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[route];
-            StartWalking(route);
-            rs_pos = 0;
-            rs_dir = (gwg->GetSpecObj<noRoadNode>(pos) == cur_rs->GetF1()) ? false : true;
         }
 
     }
