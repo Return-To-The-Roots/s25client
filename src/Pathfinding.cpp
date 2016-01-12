@@ -146,14 +146,10 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
     unsigned char owner = GetNode(dest).owner;
     if(owner != 0 && !GetPlayer(player).IsAlly(owner -1))
         return INVALID_DIR;
-    bool is_warehouse_at_goal = false;
-    if(GetNO(dest)->GetType() == NOP_BUILDING)
-    {
-        if(GetSpecObj<noBuilding>(dest)->IsWarehouse())
-            is_warehouse_at_goal = true;
-    }
+    
+    assert(GetNO(dest)->GetType() == NOP_FLAG); // Goal should be the flag of a wh
 
-    if(!is_warehouse_at_goal && !IsNodeForFigures(dest))
+    if(!IsNodeForFigures(dest))
         return INVALID_DIR;
 
     unsigned char first_dir = INVALID_DIR;
