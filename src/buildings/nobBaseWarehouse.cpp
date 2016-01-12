@@ -379,9 +379,8 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
 
                 gwg->AddFigure(fig, pos);
 
-                /// Aktive Soldaten laufen nicht im Wegenetz, die das Haus verteidigen!
-                if(fig->GetGOT() != GOT_NOF_AGGRESSIVEDEFENDER && fig->GetGOT() != GOT_NOF_DEFENDER)
-                    // ansonsten alle anderen müssen aber wissen, auf welcher Straße sie zu Beginn laufen
+                // Init road walking for figures walking on roads
+                if(fig->IsWalkingOnRoad())
                     fig->InitializeRoadWalking(routes[4], 0, true);
 
                 fig->ActAtFirst();
