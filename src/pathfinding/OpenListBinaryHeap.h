@@ -67,6 +67,9 @@ class OpenListBinaryHeap: public OpenListBinaryHeapBase<T>
 {
     typedef OpenListBinaryHeapBase<T> Parent;
 public:
+    typedef typename Parent::size_type size_type;
+    typedef typename Parent::key_type key_type;
+
     T* top() const;
     void push(T* newEl);
     T* pop();
@@ -84,7 +87,7 @@ private:
     bool arePositionsValid() const;
     static size_type& GetPos(T* el){ return Parent::GetPos(GetPosMarker()(el)); }
     static key_type GetKey(T* el){ return T_GetKey()(*el); }
-    key_type GetKey(size_type idx) const { return GetKey(elements[idx].el); }
+    key_type GetKey(size_type idx) const { return GetKey(this->elements[idx].el); }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -126,9 +129,9 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap(size_type pos) const
 template<typename T, class T_GetKey, class GetPosMarker>
 bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::arePositionsValid() const
 {
-    for(size_type i=0; i<size(); i++)
+    for(size_type i=0; i<this->size(); i++)
     {
-        if(i != GetPos(elements[i].el))
+        if(i != GetPos(this->elements[i].el))
             return false;
     }
     return true;
@@ -137,7 +140,7 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::arePositionsValid() const
 template<typename T, class T_GetKey, class GetPosMarker>
 inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::top() const
 {
-    return elements.front().el;
+    return this->elements.front().el;
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
@@ -145,8 +148,8 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::push(T* newEl)
 {
     assert(isHeap());
     assert(arePositionsValid());
-    GetPos(newEl) = size();
-    elements.push_back(Element(GetKey(newEl), newEl));
+    GetPos(newEl) = this->size();
+    this->elements.push_back(Element(GetKey(newEl), newEl));
     decreasedKey(newEl);
     assert(isHeap());
 }
@@ -156,16 +159,16 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
 {
     assert(arePositionsValid());
     size_type i = GetPos(el);
-    unsigned elVal = elements[i].key = GetKey(el);
+    unsigned elVal = this->elements[i].key = GetKey(el);
     assert(i < size());
     while(i > 0)
     {
         const unsigned parentPos = ParentPos(i);
-        if(elVal >= elements[parentPos].key)
+        if(elVal >= this->elements[parentPos].key)
             break;
         using std::swap;
-        GetPos(elements[parentPos].el) = i;
-        swap(elements[parentPos], elements[i]);
+        GetPos(this->elements[parentPos].el) = i;
+        swap(this->elements[parentPos], this->elements[i]);
         i = parentPos;
     }
     GetPos(el) = i;
@@ -187,14 +190,14 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     if(size == 0)
     {
         // If this is the last element, just remove it
-        elements.pop_back();
+        this->elements.pop_back();
         return result;
     }
     // Else move the last element to the front and let it sink
 
     // First store the last element in a temporary
-    Element el = elements.back();
-    elements.pop_back();
+    typename Parent::Element el = this->elements.back();
+    this->elements.pop_back();
 
     // We do not move it till we know its final destination, but just assume it was at the front (i=0)
     size_type i = 0;
@@ -206,29 +209,29 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
             break; // No child? -> All ok
         const size_type right = RightChildPos(i);
         assert(isHeap(right));
-        const unsigned leftVal = elements[left].key;
+        const unsigned leftVal = this->elements[left].key;
         if(leftVal < el.key) // left < i
         {
-            if(right >= size || leftVal < elements[right].key) // left < right
+            if(right >= size || leftVal < this->elements[right].key) // left < right
             {
-                elements[i] = elements[left];
-                GetPos(elements[i].el) = i;
+                this->elements[i] = this->elements[left];
+                GetPos(this->elements[i].el) = i;
                 i = left;
                 continue;
             }
 
         }
         // left >= i || (left < i && left >= right)
-        if(right < size && elements[right].key < el.key) // right < i
+        if(right < size && this->elements[right].key < el.key) // right < i
         {
-            elements[i] = elements[right];
-            GetPos(elements[i].el) = i;
+            this->elements[i] = this->elements[right];
+            GetPos(this->elements[i].el) = i;
             i = right;
         }else
             break;
     }while(true);
 
-    elements[i] = el;
+    this->elements[i] = el;
     GetPos(el.el) = i;
 
     assert(isHeap());
