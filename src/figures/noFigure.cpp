@@ -71,7 +71,7 @@ const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    :   noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(0),
+    :   noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(NULL),
         rs_pos(0), rs_dir(0), on_ship(false), goal_(goal), waiting_for_free_node(false),
         flagPos_(0xFFFF, 0xFFFF), last_id(0xFFFFFFFF)
 {
@@ -84,8 +84,8 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    :   noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(0),
-        rs_pos(0), rs_dir(0), on_ship(false), goal_(0), waiting_for_free_node(false), last_id(0xFFFFFFFF)
+    :   noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(NULL),
+        rs_pos(0), rs_dir(0), on_ship(false), goal_(NULL), waiting_for_free_node(false), last_id(0xFFFFFFFF)
 {}
 
 void noFigure::Destroy_noFigure()
@@ -332,7 +332,7 @@ void noFigure::WalkToGoal()
     }
 
     // Straße abgelaufen oder noch gar keine Straße vorhanden?
-    if(((cur_rs) ? (rs_pos == cur_rs->GetLength()) : true))
+    if(cur_rs && rs_pos == cur_rs->GetLength())
     {
         // Ziel erreicht?
         // Bei dem Träger können das beide Flaggen sein!
@@ -552,7 +552,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 {
     RTTR_Assert(HasNoGoal());
     fs = FS_WANDER;
-    cur_rs = 0;
+    cur_rs = NULL;
     rs_pos = 0;
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
