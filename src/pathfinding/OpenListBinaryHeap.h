@@ -66,6 +66,7 @@ template<typename T, class T_GetKey, class GetPosMarker = DefaultGetPosMarker<Op
 class OpenListBinaryHeap: public OpenListBinaryHeapBase<T>
 {
     typedef OpenListBinaryHeapBase<T> Parent;
+    typedef typename Parent::Element Element;
 public:
     typedef typename Parent::size_type size_type;
     typedef typename Parent::key_type key_type;
@@ -196,7 +197,7 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     // Else move the last element to the front and let it sink
 
     // First store the last element in a temporary
-    typename Parent::Element el = this->elements.back();
+    Element el = this->elements.back();
     this->elements.pop_back();
 
     // We do not move it till we know its final destination, but just assume it was at the front (i=0)
