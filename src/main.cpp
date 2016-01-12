@@ -19,7 +19,6 @@
 // Header
 #include "defines.h"
 
-
 #ifdef _WIN32
 #   include <windows.h>
 #   define chdir !SetCurrentDirectoryA
@@ -177,8 +176,6 @@ void LinExceptionHandler(int sig)
 }
 #endif
 
-#include "MapGeometry.h"
-
 void InstallSignalHandlers()
 {
 #ifdef _WIN32
@@ -243,19 +240,7 @@ void ExitHandler(void)
 #endif
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Hauptfunktion von Siedler II.5 Return to the Roots
- *
- *  @param[in] argc Anzahl übergebener Argumente
- *  @param[in] argv Array der übergebenen Argumente
- *
- *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
- *
- *  @author FloSoft
- *  @author OLiver
- */
-int main(int argc, char* argv[])
+void InitProgram()
 {
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
     _set_se_translator(ExceptionHandler);
@@ -275,7 +260,10 @@ int main(int argc, char* argv[])
 #endif // _WIN32
 
     InstallSignalHandlers();
+}
 
+bool InitDirectories()
+{
     // diverse dirs anlegen
     const unsigned int dir_count = 7;
     unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
@@ -301,18 +289,16 @@ int main(int argc, char* argv[])
             error("Directory %s could not be created: ", dir.c_str());
             error("Failed to start the game");
             WaitForEnter();
-            return 1;
+            return false;
         }
     }
+    return true;
+}
 
+bool InitGame()
+{
     libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
     libsiedler2::setAllocator(new GlAllocator());
-
-    // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
-    srand(static_cast<unsigned int>(std::time(NULL)));
-
-    // Exit-Handler initialisieren
-    atexit(&ExitHandler);
 
     // Socketzeug initialisieren
     if(!Socket::Initialize())
@@ -320,7 +306,7 @@ int main(int argc, char* argv[])
         error("Could not init sockets!");
         error("Failed to start the game");
         WaitForEnter();
-        return 1;
+        return false;
     }
 
     // Spiel starten
@@ -328,62 +314,81 @@ int main(int argc, char* argv[])
     {
         error("Failed to start the game");
         WaitForEnter();
-        return 1;
+        return false;
     }
+    return true;
+}
+
+void QuickStartGame(const std::string& filePath)
+{
+    CreateServerInfo csi;
+    csi.gamename = _("Unlimited Play");
+    csi.password = "localgame";
+    csi.port = 3665;
+    csi.type = ServerType::LOCAL;
+    csi.ipv6 = false;
+    csi.use_upnp = false;
+
+    printf("loading game!\n");
+
+    WINDOWMANAGER.Switch(new dskSelectMap(csi));
+
+    if(GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME) || GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP))
+    {
+        WINDOWMANAGER.Draw();
+        WINDOWMANAGER.Show(new iwPleaseWait);
+    }else
+    {
+        GameWorldViewer* gwv;
+        unsigned int error = GAMECLIENT.StartReplay(filePath, gwv);
+
+        std::string replay_errors[] =
+        {
+            _("Error while playing replay!"),
+            _("Error while opening file!"),
+            _("Invalid Replay!"),
+            _("Error: Replay is too old!"),
+            _("Program version is too old to play that replay!"),
+            _("Temporary map file was not found!")
+        };
+
+        if (error)
+            std::cerr << "ERROR: " << replay_errors[error-1] << std::endl;
+        else
+            WINDOWMANAGER.Switch(new dskGameLoader(gwv));
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  Hauptfunktion von Siedler II.5 Return to the Roots
+ *
+ *  @param[in] argc Anzahl übergebener Argumente
+ *  @param[in] argv Array der übergebenen Argumente
+ *
+ *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
+ *
+ *  @author FloSoft
+ *  @author OLiver
+ */
+int main(int argc, char* argv[])
+{
+    InitProgram();
+    if(!InitDirectories())
+        return 1;
+
+    // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
+    srand(static_cast<unsigned int>(std::time(NULL)));
+
+    // Exit-Handler initialisieren
+    atexit(&ExitHandler);
+
+    if(!InitGame())
+        return 2;
 
 #ifndef NDEBUG
     if (argc > 1)
-    {
-        CreateServerInfo csi;
-        csi.gamename = _("Unlimited Play");
-        csi.password = "localgame";
-        csi.port = 3665;
-        csi.type = ServerType::LOCAL;
-        csi.ipv6 = false;
-        csi.use_upnp = false;
-
-        printf("loading game!\n");
-
-        WINDOWMANAGER.Switch(new dskSelectMap(csi));
-
-        if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_SAVEGAME))
-        {
-            if(!GAMESERVER.TryToStart(csi, argv[1], MAPTYPE_OLDMAP))
-            {
-                GameWorldViewer* gwv;
-                unsigned int error = GAMECLIENT.StartReplay(argv[1], gwv);
-
-                std::string replay_errors[] =
-                {
-                    _("Error while playing replay!"),
-                    _("Error while opening file!"),
-                    _("Invalid Replay!"),
-                    _("Error: Replay is too old!"),
-                    _("Program version is too old to play that replay!"),
-                    _("Temporary map file was not found!")
-                };
-
-                if (error)
-                {
-                    printf("ERROR: %s\n", replay_errors[error-1].c_str());
-                }
-                else
-                {
-                    WINDOWMANAGER.Switch(new dskGameLoader(gwv));
-                }
-            }
-            else
-            {
-                WINDOWMANAGER.Draw();
-                WINDOWMANAGER.Show(new iwPleaseWait);
-            }
-        }
-        else
-        {
-            WINDOWMANAGER.Draw();
-            WINDOWMANAGER.Show(new iwPleaseWait);
-        }
-    }
+        QuickStartGame(argv[1]);
 #endif
 
     // Hauptschleife
