@@ -15,40 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TradeGraphNode_h__
-#define TradeGraphNode_h__
+#ifndef TradePath_h__
+#define TradePath_h__
 
-#include "gameData/PlayerConsts.h"
 #include "gameTypes/MapTypes.h"
-#include <boost/array.hpp>
+#include <vector>
 
 class SerializedGameData;
 
-const MapCoord NO_EDGE = 0xffff;
-/// Size of such a TradeGraphNode
-const MapCoord TGN_SIZE = 20;
-
-struct TradeGraphNode
+/// Represents a path from start to goal
+struct TradePath
 {
-    /// Point of the node, representing the main node
-    MapPoint main_pos;
-    /// Possible 8 directions with way costs
-    boost::array<unsigned short, 8> dirs;
-    /// Direction not possible, even in the future (water, lava, swamp etc.)
-    boost::array<bool, 8> not_possible_forever;
-    /// Is the route running over any player territory?
-    boost::array<bool, MAX_PLAYERS> doesNotCrossPlayerTerritory;
+    MapPoint start, goal;
+    std::vector<unsigned char> route;
 
-    TradeGraphNode();
+    TradePath(){}
+    TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<unsigned char>& route): start(start), goal(goal), route(route){}
+    TradePath(SerializedGameData& sgd);
 
-    void Deserialize(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const;
-
-    /// Converts map coords to TG coords
-    static MapPoint ConverToTGCoords(const MapPoint pos)
-    {
-        return pos / TGN_SIZE;
-    }
 };
 
-#endif // TradeGraphNode_h__
+#endif // TradePath_h__

@@ -28,27 +28,26 @@ class nofTradeLeader : public noFigure
 {
         /// Route of this caravane
         TradeRoute tr;
-        /// Successor (NULL if this is the one behind the leader)
+        /// Successor (NULL if there is none)
         nofTradeDonkey* successor;
         /// The start and home warehosue
-        MapPoint start, goal_;
+        MapPoint homePos, goalPos;
 
     private:
 
-        unsigned char fails;
         void GoalReached();
         void Walked();
         void HandleDerivedEvent(const unsigned int id);
         void AbrogateWorkplace();
 
-        /// Tries to go to the home ware house, otherwise start wandering
-        void TryToGoHome();
+        /// Tries to go to the home ware house and returns whether this is possible
+        bool TryToGoHome();
         /// Start wandering and informs the other successors about this
         void CancelTradeCaravane();
 
     public:
 
-        nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal);
+        nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
         nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
 
         void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }

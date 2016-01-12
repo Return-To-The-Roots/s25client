@@ -1555,10 +1555,12 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     nofTradeDonkey* last = NULL;
     for(unsigned i = 0; i < count; ++i)
     {
-        nofTradeDonkey* next = new nofTradeDonkey(pos, player, tl, gt, job);
+        nofTradeDonkey* next = new nofTradeDonkey(pos, player, gt, job);
 
-        if(!last) tl->SetSuccessor(next);
-        else last->SetSuccessor(next);
+        if(last)
+            last->SetSuccessor(next);
+        else
+            tl->SetSuccessor(next);
 
         last = next;
 
@@ -1566,41 +1568,29 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     }
 
     GameClientPlayer& owner = gwg->GetPlayer(player);
+    // Remove leader
+    --real_goods.people[JOB_HELPER];
+    owner.DecreaseInventoryJob(JOB_HELPER, 1);
+
     // Also diminish the count of donkeys
     if(job == JOB_NOTHING)
     {
-        job = JOB_PACKDONKEY;
         // Diminish the goods in the warehouse
-        --real_goods.people[JOB_HELPER];
-        owner.DecreaseInventoryJob(JOB_HELPER, 1);
-        if(gt != GD_NOTHING)
-        {
-            real_goods.goods[gt] -= count;
-            owner.DecreaseInventoryWare(gt, count);
-        }
-        if(job != JOB_NOTHING) //now that we have removed the goods lets remove the donkeys
-        {
-            real_goods.people[job] -= count;
-            owner.DecreaseInventoryJob(job, count);
-        }
+        assert(gt != GD_NOTHING);
+        real_goods.goods[gt] -= count;
+        owner.DecreaseInventoryWare(gt, count);
+        //now that we have removed the goods lets remove the donkeys
+        real_goods.people[JOB_PACKDONKEY] -= count;
+        owner.DecreaseInventoryJob(JOB_PACKDONKEY, count);
     }
     else
     {
-        --real_goods.people[JOB_HELPER];
-        owner.DecreaseInventoryJob(JOB_HELPER, 1);
-        if(gt != GD_NOTHING)
-        {
-            real_goods.goods[gt] -= count;
-            owner.DecreaseInventoryWare(gt, count);
-        }
-        if(job != JOB_NOTHING) //we shouldnt have had goods so lets remove the jobs & the helpers
-        {
-            real_goods.people[job] -= count;
-            owner.DecreaseInventoryJob(job, count);
-            real_goods.people[JOB_HELPER] -= count;
-            owner.DecreaseInventoryJob(JOB_HELPER, count);
-        }
+        assert(gt == GD_NOTHING);
+        //remove the jobs & the helpers
+        real_goods.people[job] -= count;
+        owner.DecreaseInventoryJob(job, count);
+        real_goods.people[JOB_HELPER] -= count;
+        owner.DecreaseInventoryJob(JOB_HELPER, count);
     }
-
 }
 

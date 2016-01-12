@@ -17,97 +17,76 @@
 
 #include "defines.h"
 #include "nofTradeDonkey.h"
-#include "nofTradeLeader.h"
 #include "GameClient.h"
 #include "gameData/JobConsts.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 
-nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
-                               nofTradeLeader* const leader, const GoodType gt, const Job job)
-    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), leader(leader), successor(NULL), gt(gt)
+nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
+    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)
 {
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id),
-      leader(sgd.PopObject<nofTradeLeader>(GOT_NOF_TRADELEADER)),
       successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
       gt(GoodType(sgd.PopUnsignedChar())),
-      next_dirs(sgd.PopUnsignedInt())
-{
-    for(unsigned i = 0; i < next_dirs.size(); ++i)
-        next_dirs[i] = sgd.PopUnsignedChar();
-}
+      next_dirs(sgd.PopContainer(next_dirs))
+{}
 
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd.PushObject(leader, true);
     sgd.PushObject(successor, true);
     sgd.PushUnsignedChar(static_cast<unsigned char>(gt));
-    sgd.PushUnsignedInt(next_dirs.size());
-
-    for(unsigned i = 0; i < next_dirs.size(); ++i)
-        sgd.PushUnsignedChar(next_dirs[i]);
+    sgd.PushContainer(next_dirs);
 }
 
 void nofTradeDonkey::GoalReached()
 {
+    assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
+    nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
+    GameClientPlayer& player = gwg->GetPlayer(wh->GetPlayer());
+
+    if(gt != GD_NOTHING)
+    {
+        Goods goods;
+        goods.goods[gt] = 1;
+        wh->AddGoods(goods);
+        player.IncreaseInventoryWare(gt, 1);
+    }
+
+    player.IncreaseInventoryJob(this->GetJobType(), 1);
+    gwg->RemoveFigure(this, pos);
+    wh->AddFigure(this);
 }
 
 void nofTradeDonkey::Walked()
 {
     if(next_dirs.empty())
-    {
-        WanderFailedTrade();
         return;
-    }
-    unsigned char next_dir = GetNextDir();
+
+    unsigned char nextDir = GetNextDir();
     // Are we now at the goal?
-    if(next_dir == REACHED_GOAL)
+    if(nextDir == REACHED_GOAL)
     {
+        // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
-        bool invalid_goal;
-        if(nob->GetType() != NOP_BUILDING)
-            invalid_goal = true;
-        else if(!static_cast<noBuilding*>(nob)->IsWarehouse())
-            invalid_goal = true;
-        else
-            invalid_goal = false;
-
-        if(invalid_goal)
-        {
+        if(nob->GetType() != NOP_BUILDING || !static_cast<noBuilding*>(nob)->IsWarehouse())
             CancelTradeCaravane();
-            WanderFailedTrade();
-            return;
-        }
-
-        gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
-        gwg->RemoveFigure(this, pos);
-        static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
-
-        // Add also our ware if we carry one
-        if(gt != GD_NOTHING)
-        {
-            Goods goods;
-            goods.goods[gt] = 1;
-            static_cast<nobBaseWarehouse*>(nob)->AddGoods(goods);
-            gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryWare(gt, 1);
-        }
+        else
+            GoalReached();
     }
-    else if(next_dir != INVALID_DIR)
-        StartWalking(next_dir);
+    else if(nextDir != INVALID_DIR)
+        StartWalking(nextDir);
     else
-    {
         CancelTradeCaravane();
-        WanderFailedTrade();
-    }
+       
     if(successor)
-        successor->AddNextDir(next_dir);
+        successor->AddNextDir(nextDir);
 }
 
 void nofTradeDonkey::HandleDerivedEvent(const unsigned int id)
@@ -119,7 +98,6 @@ void nofTradeDonkey::AbrogateWorkplace()
 
 void nofTradeDonkey::Draw(int x, int y)
 {
-
     if(job_ == JOB_PACKDONKEY)
     {
         // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
@@ -154,10 +132,10 @@ void nofTradeDonkey::LostWork()
 void nofTradeDonkey::CancelTradeCaravane()
 {
     next_dirs.clear();
-    next_dirs.push_front(REACHED_GOAL);
     if(successor)
     {
         successor->CancelTradeCaravane();
         successor = NULL;
     }
+     WanderFailedTrade();
 }

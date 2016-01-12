@@ -48,8 +48,7 @@
 #include "MapGeometry.h"
 #include "figures/nofScout_Free.h"
 #include "nodeObjs/noShip.h"
-#include "TradeGraph.h"
-#include "TradeRoute.h"
+#include "TradePathCache.h"
 
 #include "WindowManager.h"
 #include "GameInterface.h"
@@ -61,11 +60,13 @@
 #include <algorithm>
 #include <stdexcept>
 
-GameWorldGame::~GameWorldGame()
+GameWorldGame::GameWorldGame()
 {
-    for(unsigned i = 0; i < tgs.size(); ++i)
-        delete tgs[i];
+    TradePathCache::inst().Clear();
 }
+
+GameWorldGame::~GameWorldGame()
+{}
 
 std::list<nobBaseMilitary*>& GameWorldGame::GetMilitarySquare(const MapPoint pt)
 {
@@ -2022,30 +2023,5 @@ void GameWorldGame::CreateTradeGraphs()
     if(!GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
         return;
 
-    unsigned tt = VIDEODRIVER.GetTickCount();
-
-
-    for(unsigned i = 0; i < tgs.size(); ++i)
-        delete tgs[i];
-    tgs.resize(GAMECLIENT.GetPlayerCount());
-    for(unsigned i = 0; i < tgs.size(); ++i)
-        tgs[i] = new TradeGraph(i, this);
-
-    // Calc the graph for the first player completely
-    tgs[0]->Create();
-
-    printf("first: %u ms;\n", VIDEODRIVER.GetTickCount() - tt);
-
-
-    // And use this one for the others
-    for(unsigned i = 1; i < GAMECLIENT.GetPlayerCount(); ++i)
-        tgs[i]->CreateWithHelpOfAnotherPlayer(*tgs[0], *players);
-    printf("others: %u ms;\n", VIDEODRIVER.GetTickCount() - tt);
-}
-
-/// Creates a Trade Route from one point to another
-TradeRoute GameWorldGame::CreateTradeRoute(const nobBaseWarehouse& start, const nobBaseWarehouse& dest, const unsigned char player)
-{
-    // Start at wh flag and go to other wh
-    return TradeRoute(tgs[player], start.GetFlag()->GetPos(), dest.GetPos());
+    TradePathCache::inst().Clear();
 }
