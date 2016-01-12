@@ -332,7 +332,7 @@ void noFigure::WalkToGoal()
     }
 
     // Straße abgelaufen oder noch gar keine Straße vorhanden?
-    if(cur_rs && rs_pos == cur_rs->GetLength())
+    if(!cur_rs || rs_pos == cur_rs->GetLength())
     {
         // Ziel erreicht?
         // Bei dem Träger können das beide Flaggen sein!
