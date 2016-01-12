@@ -77,7 +77,6 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 /// Straßenbau-Pathfinding
 bool GameWorldViewer::FindRoadPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>& route, const bool boat_road)
 {
-    Param_RoadPath prp = { boat_road };
     return GetFreePathFinder().FindPath(start, dest, false, 100, &route, NULL, NULL, PathConditionRoad(*this, boat_road), false);
 }
 
