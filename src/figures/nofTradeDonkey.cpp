@@ -48,6 +48,7 @@ void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 void nofTradeDonkey::GoalReached()
 {
     assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
+    successor = NULL;
     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
     GameClientPlayer& player = gwg->GetPlayer(wh->GetPlayer());
 
@@ -70,6 +71,8 @@ void nofTradeDonkey::Walked()
         return;
 
     unsigned char nextDir = GetNextDir();
+    if(successor)
+        successor->AddNextDir(nextDir);
     // Are we now at the goal?
     if(nextDir == REACHED_GOAL)
     {
@@ -84,9 +87,6 @@ void nofTradeDonkey::Walked()
         StartWalking(nextDir);
     else
         CancelTradeCaravane();
-       
-    if(successor)
-        successor->AddNextDir(nextDir);
 }
 
 void nofTradeDonkey::HandleDerivedEvent(const unsigned int id)

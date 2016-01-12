@@ -58,7 +58,6 @@ class nofTradeDonkey : public noFigure
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
         void LostWork();
 
-
         /// Adds the next direction, this is usually done by the predecessor
         void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
 
