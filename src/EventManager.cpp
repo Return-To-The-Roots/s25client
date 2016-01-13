@@ -298,7 +298,7 @@ void EventManager::RemoveEvent(EventPointer& ep)
     ep = NULL;
 }
 
-#ifndef NDEBUG
+#if RTTR_ENABLE_ASSERTS
 #   include "figures/noFigure.h"
 #   include "figures/nofSoldier.h"
 #   include "Ware.h"

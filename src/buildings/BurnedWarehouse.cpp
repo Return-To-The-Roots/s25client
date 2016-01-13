@@ -176,11 +176,9 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
     {
         // fertig, sich selbst töten
         em->AddToKillList(this);
-#ifndef NDEBUG
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
         for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
             RTTR_Assert(*it == 0);
-#endif
     }
     else
     {

@@ -208,16 +208,13 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
     RTTR_Assert(!helpers::contains(figures, fig));
     figures.push_back(fig);
 
-#ifndef NDEBUG
+#if RTTR_ENABLE_ASSERTS
     for(unsigned char i = 0; i < 6; ++i)
     {
         MapPoint nb = GetNeighbour(pt, i);
-
-        const std::list<noBase*>& figures = GetNode(nb).figures;
-        if(helpers::contains(figures, fig))
-            throw std::runtime_error("Added figure that is in surrounding?");
+        RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
     }
-#endif // NDEBUG
+#endif RTTR_ENABLE_ASSERTS
 }
 
 void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)

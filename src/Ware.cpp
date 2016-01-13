@@ -58,7 +58,7 @@ void Ware::Destroy(void)
 {
     RTTR_Assert(!goal);
     RTTR_Assert(!location);
-#ifndef NDEBUG
+#if RTTR_ENABLE_ASSERTS
     for(unsigned p=0; p<GAMECLIENT.GetPlayerCount(); p++)
     {
         RTTR_Assert(!gwg->GetPlayer(p).IsWareRegistred(this));

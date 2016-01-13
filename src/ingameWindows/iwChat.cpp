@@ -79,7 +79,6 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
     if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
         chat_dest = 0;
 
-//#ifndef NDEBUG
     if (edit->GetText() == "apocalypsis")
     {
         GAMECLIENT.CheatArmageddon();
@@ -103,7 +102,6 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
 
         return;
     }
-//#endif
 
     GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest + 1));
 
