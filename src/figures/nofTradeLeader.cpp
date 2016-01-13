@@ -73,7 +73,10 @@ void nofTradeLeader::Walked()
         if(TryToGoHome())
             Walked();
         else
+        {
             CancelTradeCaravane();
+            WanderFailedTrade();
+        }
         return;
     }else if(pos == goalPos)
         GoalReached();
@@ -86,7 +89,10 @@ void nofTradeLeader::Walked()
             if(TryToGoHome())
                 Walked();
             else
+            {
                 CancelTradeCaravane();
+                WanderFailedTrade();
+            }
             return;
         }else if(next_dir == REACHED_GOAL)
             next_dir = 1; // Walk into building
@@ -127,11 +133,10 @@ bool nofTradeLeader::TryToGoHome()
 
     // Find a way back home
     MapPoint homeFlagPos = gwg->GetNeighbour(homePos, 4);
-    tr.AssignNewGoal(homeFlagPos, this->GetPos());
+    tr.AssignNewGoal(this->GetPos(), homeFlagPos);
     return tr.IsValid();
 }
 
-/// Start wandering and informs the other successors about this
 void nofTradeLeader::CancelTradeCaravane()
 {
     if(successor)
@@ -139,5 +144,4 @@ void nofTradeLeader::CancelTradeCaravane()
         successor->CancelTradeCaravane();
         successor = NULL;
     }
-    WanderFailedTrade();
 }

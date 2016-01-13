@@ -78,15 +78,21 @@ void nofTradeDonkey::Walked()
     {
         // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
-        if(nob->GetType() != NOP_BUILDING || !static_cast<noBuilding*>(nob)->IsWarehouse())
-            CancelTradeCaravane();
-        else
+        if(nob->GetType() == NOP_BUILDING && static_cast<noBuilding*>(nob)->IsWarehouse())
             GoalReached();
+        else
+        {
+            CancelTradeCaravane();
+            WanderFailedTrade();
+        }
     }
     else if(nextDir != INVALID_DIR)
         StartWalking(nextDir);
     else
+    {
         CancelTradeCaravane();
+        WanderFailedTrade();
+    }
 }
 
 void nofTradeDonkey::HandleDerivedEvent(const unsigned int id)
@@ -128,14 +134,13 @@ void nofTradeDonkey::LostWork()
 }
 
 
-/// Start wandering and informs the other successors about this
 void nofTradeDonkey::CancelTradeCaravane()
 {
     next_dirs.clear();
+    next_dirs.push_back(INVALID_DIR);
     if(successor)
     {
         successor->CancelTradeCaravane();
         successor = NULL;
     }
-     WanderFailedTrade();
 }

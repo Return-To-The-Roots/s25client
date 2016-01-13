@@ -67,7 +67,7 @@ class nofTradeDonkey : public noFigure
         /// Sets the sucessor in the caravane
         void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 
-        /// Start wandering and informs the other successors about this
+        /// Inform successor that the caravane is canceled
         void CancelTradeCaravane();
 };
 

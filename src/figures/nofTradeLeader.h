@@ -42,7 +42,7 @@ class nofTradeLeader : public noFigure
 
         /// Tries to go to the home ware house and returns whether this is possible
         bool TryToGoHome();
-        /// Start wandering and informs the other successors about this
+        /// Inform successor that the caravane is canceled
         void CancelTradeCaravane();
 
     public:
