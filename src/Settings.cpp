@@ -25,6 +25,8 @@
 #include "Loader.h"
 #include "languages.h"
 #include "build_version.h"
+#include "drivers/AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
 #include "../libutil/src/error.h"
 #include <sstream>
@@ -73,11 +75,11 @@ bool Settings::LoadDefaults()
 
     // video
     // {
-    video.fullscreen_width  = 800;
-    video.fullscreen_height = 600;
-    video.windowed_width    = 800;
-    video.windowed_height   = 600;
-    video.fullscreen        = false;
+    video.fullscreen_width  = VIDEODRIVER.GetScreenWidth();
+    video.fullscreen_height = VIDEODRIVER.GetScreenHeight();
+    video.windowed_width    = VIDEODRIVER.IsFullscreen() ? 800 : video.fullscreen_width;
+    video.windowed_height   = VIDEODRIVER.IsFullscreen() ? 600 : video.fullscreen_height;
+    video.fullscreen        = VIDEODRIVER.IsFullscreen();
     video.vsync             = 0;
     video.vbo               = false;
     video.shared_textures   = true;
@@ -92,8 +94,8 @@ bool Settings::LoadDefaults()
 
     // driver
     // {
-    driver.audio.clear();
-    driver.video.clear();
+    driver.audio = AUDIODRIVER.GetName();
+    driver.video = VIDEODRIVER.GetName();
     // }
 
     // sound

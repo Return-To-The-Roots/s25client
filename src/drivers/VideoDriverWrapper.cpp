@@ -82,7 +82,7 @@ bool VideoDriverWrapper::LoadDriver(void)
 {
 #ifdef _WIN32
     // unter Windows standardmäßig WinAPI prüfen
-    if(SETTINGS.driver.video == "")
+    if(SETTINGS.driver.video.empty())
         SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
 #endif
 
