@@ -191,6 +191,13 @@ MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
 
 INCLUDE_DIRECTORIES("${LUA_DIR}/include")
 
+SET(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
+IF("${RTTR_Assert_Enabled}" EQUAL 0)
+	ADD_DEFINITIONS(-DRTTR_ENABLE_ASSERTS=0)
+ELSEIF("${RTTR_Assert_Enabled}" EQUAL 1)
+	ADD_DEFINITIONS(-DRTTR_ENABLE_ASSERTS=1)
+ENDIF()
+
 ################################################################################
 
 IF (MSVC)
