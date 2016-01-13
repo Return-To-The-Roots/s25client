@@ -1222,7 +1222,7 @@ bool FW::Condition_StoreWare(nobBaseWarehouse* wh, const void* param)
     // Einlagern darf nicht verboten sein
     // Schilder beachten!
     const GoodType good = ConvertShields(*static_cast<const GoodType*>(param));
-    return (!wh->CheckRealInventorySettings(0, INV_SET_STOP, *static_cast<const GoodType*>(param)));
+    return !wh->CheckRealInventorySettings(0, INV_SET_STOP, good);
 }
 
 

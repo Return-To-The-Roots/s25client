@@ -522,6 +522,5 @@ struct IsSignOfType
 
 bool nofGeologist::IsSignInArea(unsigned char type) const
 {
-    const unsigned short radius = 7;
     return gwg->CheckPointsInRadius(pos, 7, IsSignOfType(type, *gwg), false);
 }

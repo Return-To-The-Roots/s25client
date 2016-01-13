@@ -214,7 +214,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
         MapPoint nb = GetNeighbour(pt, i);
         RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
     }
-#endif RTTR_ENABLE_ASSERTS
+#endif
 }
 
 void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)
