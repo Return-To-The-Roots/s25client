@@ -17,8 +17,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-//#include <main.h>
-
 #include <build_version.h>
 #include <build_version_defines.h>
 #include <cstring>

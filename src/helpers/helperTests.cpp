@@ -17,6 +17,7 @@
 
 // This test the implementation of the helpers
 
+#include "defines.h"
 #include "helpers/traits.h"
 
 #include <boost/container/flat_set.hpp>

@@ -19,6 +19,9 @@
 // Header
 #include "main.h"
 #include "VideoSDL.h"
+#ifndef RTTR_Assert
+#   define RTTR_Assert assert
+#endif
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include <VideoInterface.h>
