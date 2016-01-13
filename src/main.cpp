@@ -49,15 +49,7 @@
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
 
-#ifndef NDEBUG
-    #include "GameServer.h"
-    #include "ingameWindows/iwDirectIPCreate.h"
-    #include "WindowManager.h"
-    #include "desktops/dskGameLoader.h"
-    #include "desktops/dskSelectMap.h"
-    #include "ingameWindows/iwPleaseWait.h"
-#endif
-
+#include "QuickStartGame.h"
 #include "fileFuncs.h"
 
 #ifdef __APPLE__
@@ -318,46 +310,6 @@ bool InitGame()
         return false;
     }
     return true;
-}
-
-void QuickStartGame(const std::string& filePath)
-{
-    CreateServerInfo csi;
-    csi.gamename = _("Unlimited Play");
-    csi.password = "localgame";
-    csi.port = 3665;
-    csi.type = ServerType::LOCAL;
-    csi.ipv6 = false;
-    csi.use_upnp = false;
-
-    printf("loading game!\n");
-
-    WINDOWMANAGER.Switch(new dskSelectMap(csi));
-
-    if(GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME) || GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP))
-    {
-        WINDOWMANAGER.Draw();
-        WINDOWMANAGER.Show(new iwPleaseWait);
-    }else
-    {
-        GameWorldViewer* gwv;
-        unsigned int error = GAMECLIENT.StartReplay(filePath, gwv);
-
-        std::string replay_errors[] =
-        {
-            _("Error while playing replay!"),
-            _("Error while opening file!"),
-            _("Invalid Replay!"),
-            _("Error: Replay is too old!"),
-            _("Program version is too old to play that replay!"),
-            _("Temporary map file was not found!")
-        };
-
-        if (error)
-            std::cerr << "ERROR: " << replay_errors[error-1] << std::endl;
-        else
-            WINDOWMANAGER.Switch(new dskGameLoader(gwv));
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
