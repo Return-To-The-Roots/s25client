@@ -53,7 +53,7 @@ nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id) : n
 
 void nofScout_Free::Draw(int x, int y)
 {
-    //assert(this->GetObjId()!= 8215505);
+    //RTTR_Assert(this->GetObjId()!= 8215505);
     // normales Laufen zeichnen
     DrawWalking(x, y);
 }

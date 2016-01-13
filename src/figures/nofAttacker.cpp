@@ -79,17 +79,17 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 nofAttacker::~nofAttacker()
 {
     //unsigned char oplayer = (player == 0) ? 1 : 0;
-    //assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));
+    //RTTR_Assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));
 }
 
 void nofAttacker::Destroy_nofAttacker()
 {
-    assert(!attacked_goal);
-    assert(!ship_obj_id);
+    RTTR_Assert(!attacked_goal);
+    RTTR_Assert(!ship_obj_id);
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
-    assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));*/
+    RTTR_Assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));*/
 }
 
 void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
@@ -163,7 +163,7 @@ void nofAttacker::Walked()
             }
 
             MapPoint goalFlagPos = attacked_goal->GetFlag()->GetPos();
-            //assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
+            //RTTR_Assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
             // Are we at the flag?
 
             nofDefender* defender = NULL;
@@ -245,7 +245,7 @@ void nofAttacker::Walked()
                 // Ist das Gebäude ein "normales Militärgebäude", das wir da erobert haben?
                 if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
                 {
-                    assert(dynamic_cast<nobMilitary*>(attacked_goal));
+                    RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
                     // Meinem Heimatgebäude Bescheid sagen, dass ich nicht mehr komme (falls es noch eins gibt)
                     if(building)
                         building->SoldierLost(this);
@@ -349,7 +349,7 @@ void nofAttacker::Walked()
         case STATE_SEAATTACKING_ONSHIP: // befindet sich auf dem Schiff auf dem Weg zum Zielpunkt
         {
             // Auweia, das darf nicht passieren
-            assert(false);
+            RTTR_Assert(false);
         } break;
         case STATE_SEAATTACKING_RETURNTOSHIP: // befindet sich an der Zielposition auf dem Weg zurück zum Schiff
         {
@@ -595,9 +595,9 @@ void nofAttacker::ReachedDestination()
         if(attacked_goal->GetPlayer() == player)
         {
             state = STATE_ATTACKING_CAPTURINGNEXT;
-            assert(dynamic_cast<nobMilitary*>(attacked_goal));
+            RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
-            assert(goal->IsFarAwayCapturer(this));
+            RTTR_Assert(goal->IsFarAwayCapturer(this));
             // Start walking first so the flag is free
             StartWalking(1);
             // Then tell the building
@@ -672,7 +672,7 @@ void nofAttacker::ReachedDestination()
         {
             // Building already captured? -> Then we might be a far-away-capturer
             // -> Tell the building, that we are here
-            assert(dynamic_cast<nobMilitary*>(attacked_goal));
+            RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
             if(goal->IsFarAwayCapturer(this))
                 goal->FarAwayCapturerReachedGoal(this);
@@ -793,7 +793,7 @@ void nofAttacker::CapturingWalking()
         ReturnHomeMissionAttacking();
         return;
     }
-    assert(dynamic_cast<nobMilitary*>(attacked_goal));
+    RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
 
     MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
 
@@ -815,7 +815,7 @@ void nofAttacker::CapturingWalking()
         // Ein erobernder Soldat weniger
         if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
         {
-            assert(dynamic_cast<nobMilitary*>(attacked_goal));
+            RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
             // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
             if(!goal->IsFarAwayCapturer(this))
@@ -825,7 +825,7 @@ void nofAttacker::CapturingWalking()
             }else
             {
                 RemoveFromAttackedGoal();
-                assert(goal->GetPlayer() == player);
+                RTTR_Assert(goal->GetPlayer() == player);
             }
         }else
             RemoveFromAttackedGoal();
@@ -836,7 +836,7 @@ void nofAttacker::CapturingWalking()
         // ins Gebäude laufen
         StartWalking(1);
         // nächsten Angreifer ggf. rufen, der auch reingehen soll
-        assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
+        RTTR_Assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
         static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
     }
     else
@@ -850,7 +850,7 @@ void nofAttacker::CapturingWalking()
                 nobMilitary* attackedBld = static_cast<nobMilitary*>(attacked_goal);
                 RemoveFromAttackedGoal();
                 // Evtl. neue Besatzer rufen
-                assert(attackedBld->GetPlayer() == player);
+                RTTR_Assert(attackedBld->GetPlayer() == player);
                 attackedBld->NeedOccupyingTroops();
             }
 
@@ -873,7 +873,7 @@ void nofAttacker::CapturingWalking()
             // auweia, es wurde kein Weg mehr gefunden
 
             // Evtl. neue Besatzer rufen
-            assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
+            RTTR_Assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
             static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
             // Nach Hause gehen
             ReturnHomeMissionAttacking();
@@ -997,7 +997,7 @@ void nofAttacker::InformTargetsAboutCancelling()
     // Ziel Bescheid sagen, falls es das noch gibt
     if(attacked_goal)
         RemoveFromAttackedGoal();
-    assert(attacked_goal == NULL);
+    RTTR_Assert(attacked_goal == NULL);
 }
 
 void nofAttacker::RemoveFromAttackedGoal()
@@ -1041,8 +1041,8 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
     {
         // If pos is not valid, then we are still on the ship!
         // This can happen, if the ship cannot reach its target
-        assert(state = STATE_SEAATTACKING_ONSHIP);
-        assert(helpers::contains(ship.GetFigures(), this));
+        RTTR_Assert(state = STATE_SEAATTACKING_ONSHIP);
+        RTTR_Assert(helpers::contains(ship.GetFigures(), this));
         InformTargetsAboutCancelling();
     }
 
@@ -1106,7 +1106,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
             }
         }
 
-        assert(false);
+        RTTR_Assert(false);
         ship_obj_id = 0;
         // Kein Schiff gefunden? Das kann eigentlich nich sein!
         // Dann rumirren

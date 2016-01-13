@@ -122,7 +122,7 @@ std::string ctrlVarText::GetFormatedText() const
                 str << '%';
                 break;
             default:
-                assert(false); // Invalid format string
+                RTTR_Assert(false); // Invalid format string
                 str << '%' << *it;
                 break;
             }
@@ -135,7 +135,7 @@ std::string ctrlVarText::GetFormatedText() const
 
     if(isInFormat)
     {
-        assert(false); // Invalid format string
+        RTTR_Assert(false); // Invalid format string
         str << '%';
     }
 

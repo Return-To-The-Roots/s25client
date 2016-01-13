@@ -49,7 +49,7 @@ class nofDefender : public nofActiveSoldier
         nofDefender(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    protected:  void Destroy_nofDefender() { assert(!attacker); Destroy_nofActiveSoldier(); }
+    protected:  void Destroy_nofDefender() { RTTR_Assert(!attacker); Destroy_nofActiveSoldier(); }
     public:     void Destroy() { Destroy_nofDefender(); }
 
         /// Serialisierungsfunktionen

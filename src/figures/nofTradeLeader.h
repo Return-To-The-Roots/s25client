@@ -51,7 +51,7 @@ class nofTradeLeader : public noFigure
         nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal);
         nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy() override { assert(!successor); noFigure::Destroy(); }
+        void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }
 
         void Serialize(SerializedGameData& sgd) const;
 

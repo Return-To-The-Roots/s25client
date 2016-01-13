@@ -348,7 +348,7 @@ void nobUsual::HandleEvent(const unsigned int id)
             {
                 Ware* w = gwg->GetPlayer(player).OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[last_ordered_ware], this);
                 if(w)
-                    assert(helpers::contains(ordered_wares[last_ordered_ware], w));
+                    RTTR_Assert(helpers::contains(ordered_wares[last_ordered_ware], w));
             }
 
             // Wenn dieser Betrieb 2 Waren benötigt, muss sich bei den Warentypen abgewechselt werden
@@ -385,7 +385,7 @@ void nobUsual::AddWare(Ware*& ware)
         if(ware->type == USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i])
         {
             ++wares[i];
-            assert(helpers::contains(ordered_wares[i], ware));
+            RTTR_Assert(helpers::contains(ordered_wares[i], ware));
             ordered_wares[i].remove(ware);
             break;
         }
@@ -428,7 +428,7 @@ void nobUsual::WareLost(Ware* ware)
     {
         if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i] == ware->type)
         {
-            assert(helpers::contains(ordered_wares[i], ware));
+            RTTR_Assert(helpers::contains(ordered_wares[i], ware));
             ordered_wares[i].remove(ware);
             break;
         }
@@ -462,7 +462,7 @@ void nobUsual::WorkerLost()
     if(HasWorker())
     {
         // If we have a worker, we must be producing something
-        assert(productivity_ev);
+        RTTR_Assert(productivity_ev);
         // Open the door till we get a new worker
         OpenDoor();
     }
@@ -544,14 +544,14 @@ void nobUsual::ConsumeWares()
             {
                 Ware* w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], this);
                 if(w)
-                    assert(helpers::contains(ordered_wares[0], w));
+                    RTTR_Assert(helpers::contains(ordered_wares[0], w));
             }
 
             if(wares[1] < 2)
             {
                 Ware* w = owner.OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], this);
                 if(w)
-                    assert(helpers::contains(ordered_wares[1], w));
+                    RTTR_Assert(helpers::contains(ordered_wares[1], w));
             }
 
         }
@@ -567,7 +567,7 @@ void nobUsual::ConsumeWares()
             {
                 Ware* w = gwg->GetPlayer(player).OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], this);
                 if(w)
-                    assert(helpers::contains(ordered_wares[ware_type], w));
+                    RTTR_Assert(helpers::contains(ordered_wares[ware_type], w));
             }
         }
     }
@@ -634,7 +634,7 @@ void nobUsual::TakeWare(Ware* ware)
     {
         if(ware->type == USUAL_BUILDING_CONSTS[this->type_ - 10].wares_needed[i])
         {
-            assert(!helpers::contains(ordered_wares[i], ware));
+            RTTR_Assert(!helpers::contains(ordered_wares[i], ware));
             ordered_wares[i].push_back(ware);
             return;
         }

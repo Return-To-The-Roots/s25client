@@ -114,7 +114,7 @@ void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
 
 bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    assert(pt.x < aii->GetMapWidth() && pt.y < aii->GetMapHeight());
+    RTTR_Assert(pt.x < aii->GetMapWidth() && pt.y < aii->GetMapHeight());
 
     // TODO was besseres wär schön ;)
     if (radius == -1)
@@ -143,7 +143,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
 
 bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
-    assert(pt.x < aii->GetMapWidth() && pt.y < aii->GetMapHeight());
+    RTTR_Assert(pt.x < aii->GetMapWidth() && pt.y < aii->GetMapHeight());
 
     // TODO was besseres wär schön ;)
     if (radius == -1)

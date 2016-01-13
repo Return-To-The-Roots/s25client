@@ -71,7 +71,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
         case BLD_GUARDHOUSE: size = 1; break;
         case BLD_WATCHTOWER: size = 2; break;
         case BLD_FORTRESS: size = 3; break;
-        default: assert(false); size = 0xFF; break;
+        default: RTTR_Assert(false); size = 0xFF; break;
     }
 
     LookForEnemyBuildings();
@@ -110,7 +110,7 @@ void nobMilitary::Destroy_nobMilitary()
 {
     // Remove from military square and buildings first, to avoid e.g. sending canceled soldiers back to this building
     gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
-    assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
+    RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
     gwg->GetMilitarySquare(pos).remove(this);
 
     // Bestellungen stornieren
@@ -437,7 +437,7 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 
 void nobMilitary::RegulateTroops()
 {
-    assert(helpers::contains(gwg->GetPlayer(player).GetMilitaryBuildings(), this)); // If this fails, the building is beeing destroyed!
+    RTTR_Assert(helpers::contains(gwg->GetPlayer(player).GetMilitaryBuildings(), this)); // If this fails, the building is beeing destroyed!
 
     // Wenn das Gebäude eingenommen wird, erstmal keine neuen Truppen und warten, wieviele noch reinkommen
     if(IsCaptured())
@@ -610,7 +610,7 @@ bool nobMilitary::IsUseless() const
 void nobMilitary::TakeWare(Ware* ware)
 {
     // Goldmünze in Bestellliste aufnehmen
-    assert(!helpers::contains(ordered_coins, ware));
+    RTTR_Assert(!helpers::contains(ordered_coins, ware));
     ordered_coins.push_back(ware);
 }
 
@@ -620,7 +620,7 @@ void nobMilitary::AddWare(Ware*& ware)
     // Ein Golstück mehr
     ++coins;
     // aus der Bestellliste raushaun
-    assert(helpers::contains(ordered_coins, ware));
+    RTTR_Assert(helpers::contains(ordered_coins, ware));
     ordered_coins.remove(ware);
 
     // Ware vernichten
@@ -634,7 +634,7 @@ void nobMilitary::AddWare(Ware*& ware)
 void nobMilitary::WareLost(Ware* ware)
 {
     // Ein Goldstück konnte nicht kommen --> aus der Bestellliste entfernen
-    assert(helpers::contains(ordered_coins, ware));
+    RTTR_Assert(helpers::contains(ordered_coins, ware));
     ordered_coins.remove(ware);
 }
 
@@ -645,7 +645,7 @@ bool nobMilitary::FreePlaceAtFlag()
 void nobMilitary::GotWorker(Job job, noFigure* worker)
 {
     // Insert soldiers sorted. Weak ones first
-    assert(dynamic_cast<nofPassiveSoldier*>(worker));
+    RTTR_Assert(dynamic_cast<nofPassiveSoldier*>(worker));
     nofPassiveSoldier* soldier = static_cast<nofPassiveSoldier*>(worker);
     ordered_troops.insert(soldier);
 }
@@ -678,7 +678,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
     soldier->ResetHome();
     em->AddToKillList(soldier);
 
-    assert(soldier->GetPlayer() == player);
+    RTTR_Assert(soldier->GetPlayer() == player);
 
     // Returned home
     if(soldier == defender_)
@@ -688,7 +688,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
         troops_on_mission.remove(soldier);
     }else if(IsCaptured() || IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
     {
-        assert(dynamic_cast<nofAttacker*>(soldier));
+        RTTR_Assert(dynamic_cast<nofAttacker*>(soldier));
         return;
     }
     // Do only if not capturing
@@ -697,8 +697,8 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
 
 void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
 {
-    assert(soldier->GetPlayer() == player);
-    assert(troops.size() < unsigned(TROOPS_COUNT[nation][size]));
+    RTTR_Assert(soldier->GetPlayer() == player);
+    RTTR_Assert(troops.size() < unsigned(TROOPS_COUNT[nation][size]));
 
     troops.insert(soldier);
 
@@ -737,13 +737,13 @@ void nobMilitary::SoldierLost(nofSoldier* soldier)
     // Soldat konnte nicht (mehr) kommen --> rauswerfen und ggf. neue Soldaten rufen
     if(soldier->GetGOT() == GOT_NOF_PASSIVESOLDIER)
     {
-        assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)));
+        RTTR_Assert(helpers::contains(ordered_troops, static_cast<nofPassiveSoldier*>(soldier)));
         ordered_troops.erase(static_cast<nofPassiveSoldier*>(soldier));
     }else
     {
         nofActiveSoldier* actSoldier = dynamic_cast<nofActiveSoldier*>(soldier);
-        assert(actSoldier);
-        assert(helpers::contains(troops_on_mission, actSoldier));
+        RTTR_Assert(actSoldier);
+        RTTR_Assert(helpers::contains(troops_on_mission, actSoldier));
         troops_on_mission.remove(actSoldier);
     }
     RegulateTroops();
@@ -932,7 +932,7 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 
 void nobMilitary::Capture(const unsigned char new_owner)
 {
-    assert(IsCaptured());
+    RTTR_Assert(IsCaptured());
 
     captured_not_built = true;
 
@@ -1037,7 +1037,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
 void nobMilitary::NeedOccupyingTroops()
 {
-    assert(IsCaptured()); // Only valid during capturing
+    RTTR_Assert(IsCaptured()); // Only valid during capturing
     // Check if we need more soldiers from the attacking soldiers
     // Choose the closest ones first to avoid having them walk a long way
 
@@ -1186,13 +1186,13 @@ void nobMilitary::SearchCoins()
 
             if(!ware)
             {
-                assert(false);
+                RTTR_Assert(false);
                 // Ware dürfte nicht 0 werden, da ja ein Lagerhaus MIT GOLDMÜNZEN bereits gesucht wird
                 LOG.lprintf("nobMilitary::SearchCoins: WARNING: ware = 0. Bug alarm!\n");
                 return;
             }
 
-            assert(helpers::contains(ordered_coins, ware));
+            RTTR_Assert(helpers::contains(ordered_coins, ware));
 
             // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
             goldorder_event = em->AddEvent(this, 200 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 400), 1);
@@ -1288,7 +1288,7 @@ bool nobMilitary::IsDemolitionAllowed() const
 
 void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
 {
-    assert(IsAggressor(soldier) || IsFarAwayCapturer(soldier));
+    RTTR_Assert(IsAggressor(soldier) || IsFarAwayCapturer(soldier));
     aggressors.remove(soldier);
     far_away_capturers.remove(soldier);
 
@@ -1298,8 +1298,8 @@ void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
 
 void nobMilitary::CapturingSoldierArrived()
 {
-    assert(IsCaptured());
-    assert(capturing_soldiers > 0);
+    RTTR_Assert(IsCaptured());
+    RTTR_Assert(capturing_soldiers > 0);
     --capturing_soldiers;
     if(capturing_soldiers == 0)
     {
@@ -1317,7 +1317,7 @@ void nobMilitary::CapturingSoldierArrived()
 /// A far-away capturer arrived at the building/flag and starts the capturing
 void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
 {
-    assert(IsFarAwayCapturer(attacker));
+    RTTR_Assert(IsFarAwayCapturer(attacker));
     if(IsCaptured())
     {
         // If we are still capturing just re-add this soldier to the aggressors
@@ -1344,7 +1344,7 @@ void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
             continue;
         if(!(*it)->IsAttackerReady())
             continue;
-        assert((*it)->GetPos() != flagPos); // Impossible. This should be the current attacker
+        RTTR_Assert((*it)->GetPos() != flagPos); // Impossible. This should be the current attacker
         unsigned length;
         if(gwg->FindHumanPath((*it)->GetPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length) == INVALID_DIR)
             continue;

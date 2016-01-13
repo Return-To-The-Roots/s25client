@@ -215,7 +215,7 @@ void GameWorld::InitNodes(const glArchivItem_Map& map)
             }
 
             node.obj = NULL; // Will be overwritten later...
-            assert(node.figures.empty());
+            RTTR_Assert(node.figures.empty());
         }
     }
 }
@@ -653,7 +653,7 @@ unsigned GameWorld::MeasureSea(const MapPoint start, const unsigned short sea_id
         MapPoint p = todo.front();
         todo.pop();
 
-        assert(visited[GetIdx(p)]);
+        RTTR_Assert(visited[GetIdx(p)]);
         GetNode(p).sea_id = sea_id;
 
         for(unsigned i = 0; i < 6; ++i)

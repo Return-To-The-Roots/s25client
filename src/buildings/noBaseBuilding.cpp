@@ -79,7 +79,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         // vorhandene Straße der Flagge nutzen
         noFlag* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
-        assert(flag->routes[1]);
+        RTTR_Assert(flag->routes[1]);
         routes[4] = flag->routes[1];
         routes[4]->SetF2(this);
 
@@ -242,7 +242,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
 {
     if (!ware)
     {
-        assert(false);
+        RTTR_Assert(false);
         LOG.lprintf("Warning: Trying to remove non-existing ware. Please report this replay!\n");
         return;
     }

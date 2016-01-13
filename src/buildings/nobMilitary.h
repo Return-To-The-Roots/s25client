@@ -177,7 +177,7 @@ class nobMilitary : public nobBaseMilitary
         void NeedOccupyingTroops();
         /// Sagt dem Gebäude schonmal, dass es eingenommen wird, wenn er erste Eroberer gerade in das Gebäude reinläuft
         /// (also noch bevor er drinnen ist!) - damit da nicht zusätzliche Soldaten reinlaufen
-        void PrepareCapturing() { assert(!IsCaptured()); capturing = true; ++capturing_soldiers; }
+        void PrepareCapturing() { RTTR_Assert(!IsCaptured()); capturing = true; ++capturing_soldiers; }
 
         /// Wird das Gebäude gerade eingenommen?
         bool IsCaptured() const { return capturing; }

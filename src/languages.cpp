@@ -51,7 +51,7 @@ void Languages::loadLanguages()
     {
         const libsiedler2::ArchivItem_Text& langEntry = dynamic_cast<const libsiedler2::ArchivItem_Text&>(*langInfo[i]);
         Language lang(langEntry.getName(), langEntry.getText());
-        assert(!lang.name.empty());
+        RTTR_Assert(!lang.name.empty());
         languages.push_back(lang);
     }
 

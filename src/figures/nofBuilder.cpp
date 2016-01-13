@@ -268,7 +268,7 @@ void nofBuilder::StartFreewalk()
     if(rel_x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && rel_y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(4);
 
-    assert(possible_directions.size() > 0);
+    RTTR_Assert(possible_directions.size() > 0);
     // Zufällige Richtung von diesen auswählen
     FaceDir(possible_directions[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possible_directions.size())]);
 

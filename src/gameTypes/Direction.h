@@ -33,9 +33,9 @@ struct Direction
     static const int COUNT = SOUTHWEST + 1;
 
     Type t_;
-    Direction(Type t) : t_(t) { assert(t_ >= WEST && t_ < COUNT); }
+    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && t_ < COUNT); }
     /// Converts an UInt safely to a Direction
-    explicit Direction(unsigned t): t_(Type(t % COUNT)){ assert(t_ >= WEST && t_ < COUNT); }
+    explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && t_ < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t){ return Type(t); }
     static Direction fromInt(int t){ return Type(t); }

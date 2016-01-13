@@ -44,7 +44,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
     goal(goal), next_harbor(MapPoint::Invalid())
 {
-    assert(location);
+    RTTR_Assert(location);
     // Ware in den Index mit eintragen
     gwg->GetPlayer(location->GetPlayer()).RegisterWare(this);
     if(goal)
@@ -56,13 +56,13 @@ Ware::~Ware()
 
 void Ware::Destroy(void)
 {
-    assert(!goal);
-    assert(!location);
+    RTTR_Assert(!goal);
+    RTTR_Assert(!location);
 #ifndef NDEBUG
     for(unsigned p=0; p<GAMECLIENT.GetPlayerCount(); p++)
     {
-        assert(!gwg->GetPlayer(p).IsWareRegistred(this));
-        assert(!gwg->GetPlayer(p).IsWareDependent(this));
+        RTTR_Assert(!gwg->GetPlayer(p).IsWareRegistred(this));
+        RTTR_Assert(!gwg->GetPlayer(p).IsWareDependent(this));
     }
 #endif
 }
@@ -106,13 +106,13 @@ void Ware::RecalcRoute()
     // Evtl gibts keinen Weg mehr? Dann wieder zurück ins Lagerhaus (wenns vorher überhaupt zu nem Ziel ging)
     if(next_dir == INVALID_DIR && goal)
     {
-        assert(location);
+        RTTR_Assert(location);
         // Tell goal about this
         NotifyGoalAboutLostWare();
         if(state == STATE_WAITFORSHIP)
         {
             // Ware was waiting for a ship so send the ware into the harbor
-            assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+            RTTR_Assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
             state = STATE_WAITINWAREHOUSE;
             SetGoal(static_cast<nobHarborBuilding*>(location));
             // but not going by ship
@@ -129,8 +129,8 @@ void Ware::RecalcRoute()
         // -> inform the harbor so that it can remove us from its list
         if(state == STATE_WAITFORSHIP && next_dir != SHIP_DIR)
         {
-            assert(location);
-            assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+            RTTR_Assert(location);
+            RTTR_Assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
             state = STATE_WAITINWAREHOUSE;
             static_cast<nobHarborBuilding*>(location)->WareDontWantToTravelByShip(this);
         }
@@ -142,7 +142,7 @@ void Ware::GoalDestroyed()
     if(state == STATE_WAITINWAREHOUSE)
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
-        assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
+        RTTR_Assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
         goal = NULL; // just in case: avoid corruption although the ware itself might be lost (won't ever be carried again)
     }
     // Ist sie evtl. gerade mit dem Schiff unterwegs?
@@ -156,8 +156,8 @@ void Ware::GoalDestroyed()
     else if(state == STATE_WAITFORSHIP)
     {
         // Dann dem Hafen Bescheid sagen
-        assert(location);
-        assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
+        RTTR_Assert(location);
+        RTTR_Assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
         // This also adds the ware to the harbors inventory
         static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
         // Kill the ware
@@ -169,8 +169,8 @@ void Ware::GoalDestroyed()
     else
     {
         // Ware ist unterwegs, Lagerhaus finden und Ware dort einliefern
-        assert(location);
-        assert(location->GetPlayer() < MAX_PLAYERS);
+        RTTR_Assert(location);
+        RTTR_Assert(location->GetPlayer() < MAX_PLAYERS);
 
         // Wird sie gerade aus einem Lagerhaus rausgetragen?
         if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ)
@@ -196,10 +196,10 @@ void Ware::GoalDestroyed()
                 RemoveWareJobForDir(oldNextDir);
                 if(next_dir != INVALID_DIR)
                 {
-                    assert(goal); // Having a nextDir implies having a goal
+                    RTTR_Assert(goal); // Having a nextDir implies having a goal
                     CallCarrier();
                 }else
-                    assert(!goal); // Can only have a goal with a valid path
+                    RTTR_Assert(!goal); // Can only have a goal with a valid path
             }
         }
         else if(state == STATE_CARRIED)
@@ -229,21 +229,21 @@ void Ware::GoalDestroyed()
 
 void Ware::WaitAtFlag(noFlag* flag)
 {
-    assert(flag);
+    RTTR_Assert(flag);
     state = STATE_WAITATFLAG;
     location = flag;
 }
 
 void Ware::WaitInWarehouse(nobBaseWarehouse* wh)
 {
-    assert(wh);
+    RTTR_Assert(wh);
     state = STATE_WAITINWAREHOUSE;
     location = wh;
 }
 
 void Ware::Carry(noRoadNode* nextGoal)
 {
-    assert(nextGoal);
+    RTTR_Assert(nextGoal);
     state = STATE_CARRIED;
     location = nextGoal;
 }
@@ -297,16 +297,16 @@ void Ware::RemoveWareJobForDir(const unsigned char last_next_dir)
 
 void Ware::CallCarrier()
 {
-    assert(IsWaitingAtFlag());
-    assert(next_dir != INVALID_DIR);
-    assert(location);
+    RTTR_Assert(IsWaitingAtFlag());
+    RTTR_Assert(next_dir != INVALID_DIR);
+    RTTR_Assert(location);
     location->routes[next_dir]->AddWareJob(location);
 }
 
 bool Ware::FindRouteToWarehouse()
 {
-    assert(location);
-    assert(!goal); // Goal should have been notified and therefore reset
+    RTTR_Assert(location);
+    RTTR_Assert(!goal); // Goal should have been notified and therefore reset
     SetGoal(gwg->GetPlayer(location->GetPlayer()).FindWarehouse(*location, FW::Condition_StoreWare, 0, true, &type, true));
 
     if(goal)
@@ -319,7 +319,7 @@ bool Ware::FindRouteToWarehouse()
             else
             {
                 next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
-                assert(next_dir != INVALID_DIR);
+                RTTR_Assert(next_dir != INVALID_DIR);
             }
         }
     }else
@@ -360,7 +360,7 @@ unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
 /// this assumes that the ware is at a flag (todo: handle carried wares) and that there is a valid path to the goal
 void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
 {
-    assert(location && newgoal);
+    RTTR_Assert(location && newgoal);
     unsigned char possibledir = gwg->FindPathForWareOnRoads(*location, *newgoal);
     if(possibledir != INVALID_DIR) //there is a valid path to the goal? -> ordered!
     {
@@ -387,7 +387,7 @@ void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
 
 bool Ware::IsRouteToGoal()
 {
-    assert(location);
+    RTTR_Assert(location);
     if(!goal)
         return false;
     if(location == goal)
@@ -405,7 +405,7 @@ void Ware::StartShipJourney()
 /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
 void Ware::ShipJorneyEnded(nobHarborBuilding* hb)
 {
-    assert(hb);
+    RTTR_Assert(hb);
     state = STATE_WAITINWAREHOUSE;
     location = hb;
 }
@@ -413,7 +413,7 @@ void Ware::ShipJorneyEnded(nobHarborBuilding* hb)
 /// Beginnt damit auf ein Schiff im Hafen zu warten
 void Ware::WaitForShip(nobHarborBuilding* hb)
 {
-    assert(hb);
+    RTTR_Assert(hb);
     state = STATE_WAITFORSHIP;
     location = hb;
 }

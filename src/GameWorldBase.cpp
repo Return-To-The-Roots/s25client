@@ -401,8 +401,8 @@ MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
         pt.x += width_;
     if(pt.y < 0)
         pt.y += height_;
-    assert(pt.x >= 0 && pt.y >= 0);
-    assert(pt.x < width_ && pt.y < height_);
+    RTTR_Assert(pt.x >= 0 && pt.y >= 0);
+    RTTR_Assert(pt.x < width_ && pt.y < height_);
     return MapPoint(pt);
 }
 
@@ -415,7 +415,7 @@ MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
  */
 unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
-    assert(pt.x < width_ && pt.y < height_);
+    RTTR_Assert(pt.x < width_ && pt.y < height_);
 
     unsigned pos = GetIdx(pt);
 
@@ -437,7 +437,7 @@ unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool 
  */
 unsigned char GameWorldBase::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
 
     if(dir >= 3)
         return GetRoad(pt, dir % 3, all);
@@ -614,7 +614,7 @@ bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigne
  */
 void GameWorldBase::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
-    assert(dir < 3);
+    RTTR_Assert(dir < 3);
 
     unsigned pos = width_ * unsigned(pt.y) + unsigned(pt.x);
 
@@ -629,7 +629,7 @@ void GameWorldBase::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigne
  */
 void GameWorldBase::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
 
     if(dir >= 3)
         SetVirtualRoad(pt, dir - 3, type);
@@ -1326,7 +1326,7 @@ bool GameWorldBase::IsAtThisSea(const unsigned harbor_id, const unsigned short s
 /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
 MapPoint GameWorldBase::GetHarborPoint(const unsigned harbor_id) const
 {
-    assert(harbor_id);
+    RTTR_Assert(harbor_id);
 
     return harbor_pos[harbor_id].pos;
 }
@@ -1334,7 +1334,7 @@ MapPoint GameWorldBase::GetHarborPoint(const unsigned harbor_id) const
 /// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren können
 MapPoint GameWorldBase::GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const
 {
-    assert(harbor_id);
+    RTTR_Assert(harbor_id);
 
     for(unsigned i = 0; i < 6; ++i)
     {
@@ -1355,7 +1355,7 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapPoint pt,
         const unsigned char player, 
         bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const
 {
-    assert(origin_harbor_id);
+    RTTR_Assert(origin_harbor_id);
     //unsigned char group_id = harbor_pos[origin_harbor_id-1].cps[
 
     // Herausfinden, in welcher Richtung sich dieser Punkt vom Ausgangspuknt unterscheidet
@@ -1370,7 +1370,7 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapPoint pt,
         }
     }
 
-    assert(coastal_point_dir != 0xff);
+    RTTR_Assert(coastal_point_dir != 0xff);
 
     unsigned short sea_id = harbor_pos[origin_harbor_id].cps[coastal_point_dir].sea_id;
 
@@ -1857,7 +1857,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
         // Soldaten hinzufügen
         for(std::vector<nofPassiveSoldier*>::const_iterator itSoldier = tmp_soldiers.begin(); itSoldier != tmp_soldiers.end(); ++itSoldier)
         {
-            assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(*itSoldier)) == attackers.end());
+            RTTR_Assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(*itSoldier)) == attackers.end());
             PotentialSeaAttacker pa(*itSoldier, it->harbor, it->distance);
             attackers.push_back(pa);
         }

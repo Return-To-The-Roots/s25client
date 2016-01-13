@@ -68,7 +68,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
     if(this->selection_ != 0xFFFF)
     {
         ctrlButton* button = GetCtrl<ctrlButton>(this->selection_);
-        assert(button);
+        RTTR_Assert(button);
         switch(select_type)
         {
             case ILLUMINATE: button->SetIlluminated(false); break;
@@ -81,7 +81,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
     if(selection != 0xFFFF)
     {
         ctrlButton* button = GetCtrl<ctrlButton>(selection);
-        assert(button);
+        RTTR_Assert(button);
         switch(select_type)
         {
             case ILLUMINATE: button->SetIlluminated(true); break;

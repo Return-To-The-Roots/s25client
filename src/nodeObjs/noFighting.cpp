@@ -43,7 +43,7 @@ static char THIS_FILE[] = __FILE__;
 
 noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NOP_FIGHTING)
 {
-    assert(soldier1->GetPlayer() != soldier2->GetPlayer());
+    RTTR_Assert(soldier1->GetPlayer() != soldier2->GetPlayer());
 
     soldiers[0] = soldier1;
     soldiers[1] = soldier2;
@@ -92,8 +92,8 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id) : noBase(
 
 void noFighting::Destroy_noFighting()
 {
-    assert(!soldiers[0]);
-    assert(!soldiers[1]);
+    RTTR_Assert(!soldiers[0]);
+    RTTR_Assert(!soldiers[1]);
     Destroy_noBase();
 }
 

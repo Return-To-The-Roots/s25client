@@ -98,7 +98,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     }else
     {
         // Harbors should also remove the warehouse
-        assert(!helpers::contains(gwg->GetPlayer(player).GetStorehouses(), this));
+        RTTR_Assert(!helpers::contains(gwg->GetPlayer(player).GetStorehouses(), this));
     }
 
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
@@ -239,8 +239,8 @@ void nobBaseWarehouse::Clear()
 
 void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workplace)
 {
-    assert(workplace);
-    assert(goal);
+    RTTR_Assert(workplace);
+    RTTR_Assert(goal);
     workplace->setCarrier(0, new nofCarrier((workplace->GetRoadType() == RoadSegment::RT_BOAT) ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, workplace, goal));
 
     if(!UseFigureAtOnce(workplace->getCarrier(0), *goal))
@@ -256,7 +256,7 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workpla
 
 bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const bool allow_recruiting)
 {
-    assert(goal);
+    RTTR_Assert(goal);
     // Job überhaupt hier vorhanden
     if(!real_goods.people[job])
     {
@@ -281,7 +281,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     }
     else
     {
-        assert(dynamic_cast<noBaseBuilding*>(goal));
+        RTTR_Assert(dynamic_cast<noBaseBuilding*>(goal));
         static_cast<noBaseBuilding*>(goal)->GotWorker(job, fig);
     }
 
@@ -419,7 +419,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     Ware* ware = waiting_wares.front();
                     nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, 0);
                     gwg->AddFigure(worker, pos);
-                    assert(goods_.goods[ConvertShields(ware->type)] > 0);
+                    RTTR_Assert(goods_.goods[ConvertShields(ware->type)] > 0);
                     --goods_.goods[ConvertShields(ware->type)];
                     worker->WalkToGoal();
                     ware->Carry(GetFlag());
@@ -658,7 +658,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     Ware* ware = wh->OrderWare(GoodType(i), this);
                     if(ware)
                     {
-                        assert(IsWareDependent(ware));
+                        RTTR_Assert(IsWareDependent(ware));
                         storing_done = true;
                         break;
                     }
@@ -713,7 +713,7 @@ bool nobBaseWarehouse::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 
 Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goal)
 {
-    assert(goal);
+    RTTR_Assert(goal);
     // Ware überhaupt hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
     if(!real_goods.goods[good])
     {
@@ -774,11 +774,11 @@ void nobBaseWarehouse::AddWare(Ware*& ware)
     // Ware not dependent anymore (only if we had a goal)
     if(ware->GetGoal())
     {
-        assert(ware->GetGoal() == this); // The goal should be here
+        RTTR_Assert(ware->GetGoal() == this); // The goal should be here
         RemoveDependentWare(ware);
     }
     else
-        assert(!IsWareDependent(ware));
+        RTTR_Assert(!IsWareDependent(ware));
 
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
     GoodType type;
@@ -923,7 +923,7 @@ void nobBaseWarehouse::WareLost(Ware* ware)
 void nobBaseWarehouse::CancelWare(Ware* ware)
 {
     // Ware aus den Waiting-Wares entfernen
-    assert(helpers::contains(waiting_wares, ware));
+    RTTR_Assert(helpers::contains(waiting_wares, ware));
     waiting_wares.remove(ware);
     // Anzahl davon wieder hochsetzen
     ++real_goods.goods[ConvertShields(ware->type)];
@@ -944,7 +944,7 @@ void nobBaseWarehouse::CancelFigure(noFigure* figure)
 void nobBaseWarehouse::TakeWare(Ware* ware)
 {
     // Ware zur Abhängigkeitsliste hinzufügen, damit sie benachrichtigt wird, wenn dieses Lagerhaus zerstört wird
-    assert(!helpers::contains(dependent_wares, ware));
+    RTTR_Assert(!helpers::contains(dependent_wares, ware));
     dependent_wares.push_back(ware);
 }
 
@@ -1018,8 +1018,8 @@ nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
 void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
 {
     // Soldat konnte nicht (mehr) kommen --> rauswerfen
-    assert(dynamic_cast<nofActiveSoldier*>(soldier));
-    assert(helpers::contains(troops_on_mission, static_cast<nofActiveSoldier*>(soldier)));
+    RTTR_Assert(dynamic_cast<nofActiveSoldier*>(soldier));
+    RTTR_Assert(helpers::contains(troops_on_mission, static_cast<nofActiveSoldier*>(soldier)));
     troops_on_mission.remove(static_cast<nofActiveSoldier*>(soldier));
 }
 
@@ -1041,7 +1041,7 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
     else
     {
         // Ggf. war er auf Mission
-        assert(helpers::contains(troops_on_mission, soldier));
+        RTTR_Assert(helpers::contains(troops_on_mission, soldier));
         troops_on_mission.remove(soldier);
     }
 

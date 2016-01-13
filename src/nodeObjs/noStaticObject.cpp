@@ -120,7 +120,7 @@ void noStaticObject::Draw(int x, int y)
             shadow = LOADER.GetImageN(files[file], id + 1);
     }
 
-    assert(bitmap);
+    RTTR_Assert(bitmap);
 
     // Bild zeichnen
     bitmap->Draw(x, y, 0, 0, 0, 0, 0, 0);

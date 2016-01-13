@@ -122,7 +122,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     if(start == dest)
     {
         // Path where start==goal should never happen
-        assert(false);
+        RTTR_Assert(false);
         LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.x), unsigned(start.y));
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
@@ -264,7 +264,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     if(start == dest)
     {
         // Path where start==goal should never happen
-        assert(false);
+        RTTR_Assert(false);
         LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.x), unsigned(start.y));
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
@@ -466,7 +466,7 @@ bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned
 {
     MapPoint pt(start);
 
-    assert(pos < route.size());
+    RTTR_Assert(pos < route.size());
 
     for(unsigned i = pos; i < route.size(); ++i)
     {

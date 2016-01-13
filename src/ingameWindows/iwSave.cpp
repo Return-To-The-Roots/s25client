@@ -151,7 +151,7 @@ void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
     bfs::path fileName = path.filename();
 
     // ".sav" am Ende weg
-    assert(fileName.has_extension());
+    RTTR_Assert(fileName.has_extension());
     fileName.replace_extension();
 
     char start_gf[32];

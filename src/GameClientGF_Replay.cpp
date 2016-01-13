@@ -32,7 +32,7 @@ void GameClient::ExecuteGameFrame_Replay()
 {
     randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
 
-    assert(replayinfo.next_gf >= framesinfo.gf_nr || framesinfo.gf_nr > replayinfo.replay.lastGF_);
+    RTTR_Assert(replayinfo.next_gf >= framesinfo.gf_nr || framesinfo.gf_nr > replayinfo.replay.lastGF_);
 
     // Commands alle aus der Datei lesen
     while(replayinfo.next_gf == framesinfo.gf_nr) // Schon an der Zeit?

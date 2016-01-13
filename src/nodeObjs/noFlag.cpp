@@ -233,7 +233,7 @@ void noFlag::AddWare(Ware*& ware)
             routes[ware->GetNextDir()]->AddWareJob(this);
         return;
     }
-    assert(false); // No place found???
+    RTTR_Assert(false); // No place found???
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -333,7 +333,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
         }
     }
 
-    /*  assert(best_ware);
+    /*  RTTR_Assert(best_ware);
         if(!best_ware)
             LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFlag::SelectWare: best_ware = 0!\n", GAMECLIENT.GetGFNumber());
     */

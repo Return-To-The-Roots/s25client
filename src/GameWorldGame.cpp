@@ -165,7 +165,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
  */
 void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
 
     // Virtuelle Straße setzen
     SetVirtualRoad(pt, dir, type);
@@ -191,7 +191,7 @@ void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char 
  */
 void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
 
     if(dir >= 3)
         SetRoad(pt, dir - 3, type);
@@ -205,7 +205,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
         return;
 
     std::list<noBase*>& figures = GetNode(pt).figures;
-    assert(!helpers::contains(figures, fig));
+    RTTR_Assert(!helpers::contains(figures, fig));
     figures.push_back(fig);
 
 #ifndef NDEBUG
@@ -222,7 +222,7 @@ void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
 
 void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)
 {
-    assert(helpers::contains(GetNode(pt).figures, fig));
+    RTTR_Assert(helpers::contains(GetNode(pt).figures, fig));
     GetNode(pt).figures.remove(fig);
 }
 
@@ -324,7 +324,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     // TODO: Verzögerungsbugabfrage, kann später ggf. weg
     // Gucken, ob der Weg überhaupt noch gebaut werden kann
     MapPoint test(start);
-    assert(route.size() > 1);
+    RTTR_Assert(route.size() > 1);
     for(unsigned i = 0; i + 1 < route.size(); ++i)
     {
         test = GetNeighbour(test, route[i]);
@@ -1250,13 +1250,13 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
 
 void GameWorldGame::AddCatapultStone(CatapultStone* cs)
 {
-    assert(!helpers::contains(catapult_stones, cs));
+    RTTR_Assert(!helpers::contains(catapult_stones, cs));
     catapult_stones.push_back(cs);
 }
 
 void GameWorldGame::RemoveCatapultStone(CatapultStone* cs)
 {
-     assert(helpers::contains(catapult_stones, cs));
+     RTTR_Assert(helpers::contains(catapult_stones, cs));
      catapult_stones.remove(cs);
 }
 
@@ -1974,7 +1974,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
 
 void GameWorldGame::RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site)
 {
-    assert(building_site->GetBuildingType() == BLD_HARBORBUILDING);
+    RTTR_Assert(building_site->GetBuildingType() == BLD_HARBORBUILDING);
     harbor_building_sites_from_sea.remove(building_site);
 }
 
@@ -2004,8 +2004,8 @@ std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned h
 
 bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char type) const
 {
-    assert(pt.x < GetWidth());
-    assert(pt.y < GetHeight());
+    RTTR_Assert(pt.x < GetWidth());
+    RTTR_Assert(pt.y < GetHeight());
 
     unsigned char resources = GetNode(pt).resources;
 

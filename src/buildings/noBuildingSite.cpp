@@ -119,8 +119,8 @@ void noBuildingSite::Destroy_noBuildingSite()
     }else
         gwg->GetPlayer(player).JobNotWanted(this);
 
-    assert(!builder);
-    assert(!planer);
+    RTTR_Assert(!builder);
+    RTTR_Assert(!planer);
 
     // Bestellte Waren Bescheid sagen
     for(std::list<Ware*>::iterator it = ordered_boards.begin(); it != ordered_boards.end(); ++it)
@@ -193,7 +193,7 @@ void noBuildingSite::OrderConstructionMaterial()
         Ware* w = owner.OrderWare(GD_BOARDS, this);
         if(!w)
             break;
-        assert(helpers::contains(ordered_boards, w));
+        RTTR_Assert(helpers::contains(ordered_boards, w));
     }
     // Steine
     for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][type_].stones; ++i)
@@ -201,7 +201,7 @@ void noBuildingSite::OrderConstructionMaterial()
         Ware* w = owner.OrderWare(GD_STONES, this);
         if(!w)
             break;
-        assert(helpers::contains(ordered_stones, w));
+        RTTR_Assert(helpers::contains(ordered_stones, w));
     }
 }
 
@@ -285,12 +285,12 @@ void noBuildingSite::GotWorker(Job job, noFigure* worker)
     // Aha, wir haben nen Planierer/Bauarbeiter bekommen
     if(state == STATE_PLANING)
     {
-        assert(worker->GetGOT() == GOT_NOF_PLANER);
+        RTTR_Assert(worker->GetGOT() == GOT_NOF_PLANER);
         planer = static_cast<nofPlaner*>(worker);
     }
     else
     {
-        assert(worker->GetGOT() == GOT_NOF_BUILDER);
+        RTTR_Assert(worker->GetGOT() == GOT_NOF_BUILDER);
         builder = static_cast<nofBuilder*>(worker);
     }
 }
@@ -315,8 +315,8 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* start, const GoodTyp
 
     const unsigned curBoards = ordered_boards.size() + boards + used_boards;
     const unsigned curStones = ordered_stones.size() + stones + used_stones;
-    assert(curBoards <= BUILDING_COSTS[nation][this->type_].boards);
-    assert(curStones <= BUILDING_COSTS[nation][this->type_].stones);
+    RTTR_Assert(curBoards <= BUILDING_COSTS[nation][this->type_].boards);
+    RTTR_Assert(curStones <= BUILDING_COSTS[nation][this->type_].stones);
 
     // Wenn wir schon genug Baumaterial haben, brauchen wir nichts mehr
     if((goodtype == GD_BOARDS && curBoards == BUILDING_COSTS[nation][this->type_].boards) ||
@@ -340,24 +340,24 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* start, const GoodTyp
     else
         points = 0;
 
-    assert(points <= basePoints); // Underflow detection. Should never happen...
+    RTTR_Assert(points <= basePoints); // Underflow detection. Should never happen...
 
     return points;
 }
 
 void noBuildingSite::AddWare(Ware*& ware)
 {
-    assert(state == STATE_BUILDING);
+    RTTR_Assert(state == STATE_BUILDING);
 
     if(ware->type == GD_BOARDS)
     {
-        assert(helpers::contains(ordered_boards, ware));
+        RTTR_Assert(helpers::contains(ordered_boards, ware));
         ordered_boards.remove(ware);
         ++boards;
     }
     else if(ware->type == GD_STONES)
     {
-        assert(helpers::contains(ordered_stones, ware));
+        RTTR_Assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
         ++stones;
     }
@@ -372,16 +372,16 @@ void noBuildingSite::AddWare(Ware*& ware)
 
 void noBuildingSite::WareLost(Ware* ware)
 {
-    assert(state == STATE_BUILDING);
+    RTTR_Assert(state == STATE_BUILDING);
 
     if(ware->type == GD_BOARDS)
     {
-        assert(helpers::contains(ordered_boards, ware));
+        RTTR_Assert(helpers::contains(ordered_boards, ware));
         ordered_boards.remove(ware);
     }
     else if(ware->type == GD_STONES)
     {
-        assert(helpers::contains(ordered_stones, ware));
+        RTTR_Assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
     }
     else
@@ -393,16 +393,16 @@ void noBuildingSite::WareLost(Ware* ware)
 
 void noBuildingSite::TakeWare(Ware* ware)
 {
-    assert(state == STATE_BUILDING);
+    RTTR_Assert(state == STATE_BUILDING);
 
     // Ware in die Bestellliste aufnehmen
     if(ware->type == GD_BOARDS)
     {
-        assert(!helpers::contains(ordered_boards, ware));
+        RTTR_Assert(!helpers::contains(ordered_boards, ware));
         ordered_boards.push_back(ware);
     }else if(ware->type == GD_STONES)
     {
-        assert(!helpers::contains(ordered_stones, ware));
+        RTTR_Assert(!helpers::contains(ordered_stones, ware));
         ordered_stones.push_back(ware);
     }else
         throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));

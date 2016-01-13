@@ -124,7 +124,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 bfs::path fileName = path.filename();
 
                 // ".sav" am Ende weg
-                assert(fileName.has_extension());
+                RTTR_Assert(fileName.has_extension());
                 fileName.replace_extension();
 
                 // Server info

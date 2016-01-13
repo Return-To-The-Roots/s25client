@@ -18,6 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
+#include "RTTR_AssertError.h"
 
 #ifdef _WIN32
 #   include <windows.h>
@@ -383,25 +384,34 @@ int main(int argc, char* argv[])
     // Exit-Handler initialisieren
     atexit(&ExitHandler);
 
-    if(!InitGame())
-        return 2;
+    try{
+        if(!InitGame())
+            return 2;
 
 #ifndef NDEBUG
-    if (argc > 1)
-        QuickStartGame(argv[1]);
+        if (argc > 1)
+            QuickStartGame(argv[1]);
 #endif
 
-    // Hauptschleife
-    while(GAMEMANAGER.Run())
-    {
+        // Hauptschleife
+        while(GAMEMANAGER.Run())
+        {
 #ifndef _WIN32
-        extern bool killme;
-        killme = false;
+            extern bool killme;
+            killme = false;
 #endif // !_WIN32
-    }
+        }
 
-    // Spiel beenden
-    GAMEMANAGER.Stop();
+        // Spiel beenden
+        GAMEMANAGER.Stop();
+    }catch(RTTR_AssertError& error)
+    {
+        // Write to log file, but don't throw any errors if this fails too
+        try{
+            LOG.write(error.what());
+        }catch(...){}
+        return 42;
+    }
 
     return 0;
 }

@@ -83,7 +83,7 @@ void dskLAN::Msg_Timer(const unsigned int ctrl_id)
     else if (ctrl_id == tmrRefreshListId)
         UpdateServerList();
     else
-        assert(false);
+        RTTR_Assert(false);
 }
 
 void dskLAN::Msg_PaintBefore()

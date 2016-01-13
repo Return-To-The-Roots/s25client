@@ -106,9 +106,9 @@ void nofDefender::Walked()
                 gwg->RemoveFigure(this, pos);
                 nobBaseMilitary* bld = building;
                 // mich zum Gebäude wieder hinzufügen
-                assert(bld->GetDefender() == this); // I should be the defender
+                RTTR_Assert(bld->GetDefender() == this); // I should be the defender
                 bld->AddActiveSoldier(this);
-                assert(!bld->GetDefender()); // No defender anymore
+                RTTR_Assert(!bld->GetDefender()); // No defender anymore
             }
 
         } break;
@@ -212,7 +212,7 @@ void nofDefender::LostFighting()
         if(building->GetBuildingType() >= BLD_BARRACKS && building->GetBuildingType() <= BLD_FORTRESS)
         {
             // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
-            assert(dynamic_cast<nobBaseMilitary*>(building));
+            RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));
             if(static_cast<nobMilitary*>(building)->GetTroopsCount())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
@@ -237,6 +237,6 @@ void nofDefender::AttackerArrested()
 void nofDefender::FreeFightEnded()
 {
     // This is not supposed to happen
-    assert(false);
+    RTTR_Assert(false);
     nofActiveSoldier::FreeFightEnded();
 }

@@ -340,7 +340,7 @@ void Settings::Save(void)
     libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
 
     // ist eine der Kategorien nicht vorhanden?
-    assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy && iniInterface && iniIngame && iniAddons);
+    RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy && iniInterface && iniIngame && iniAddons);
 
     // global
     // {

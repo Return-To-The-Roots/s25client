@@ -44,7 +44,7 @@ class EventManager
                 Event(GameObject* const  obj, const unsigned int gf, const unsigned int gf_length, const unsigned int id)
                     : obj(obj), gf(gf), gf_length(gf_length), gf_next(gf + gf_length), id(id)
                 {
-                    assert(obj); // Events without an object are pointless
+                    RTTR_Assert(obj); // Events without an object are pointless
                 }
 
                 Event(SerializedGameData& sgd, const unsigned obj_id);

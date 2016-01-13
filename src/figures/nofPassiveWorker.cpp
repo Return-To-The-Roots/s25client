@@ -52,7 +52,7 @@ void nofPassiveWorker::GoalReached()
     // Mich hier einquartieren
     gwg->RemoveFigure(this, pos);
     nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
-    assert(wh);
+    RTTR_Assert(wh);
     wh->AddFigure(this);
 }
 

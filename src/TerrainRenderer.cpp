@@ -359,7 +359,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
         Rect texRect = TerrainData::GetPosInTexture(node.t1);
         int w = texRect.right - texRect.left;
         int h = texRect.bottom - texRect.top;
-        assert(w > 0 && h > 0);
+        RTTR_Assert(w > 0 && h > 0);
         unsigned texW = helpers::roundToNextPowerOfTwo(w);
         unsigned texH = helpers::roundToNextPowerOfTwo(h);
 
@@ -389,7 +389,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
         Rect texRect = TerrainData::GetPosInTexture(node.t1);
         int w = texRect.right - texRect.left;
         int h = texRect.bottom - texRect.top;
-        assert(w > 0 && h > 0);
+        RTTR_Assert(w > 0 && h > 0);
         unsigned texW = helpers::roundToNextPowerOfTwo(w);
         unsigned texH = helpers::roundToNextPowerOfTwo(h);
         float texScaleW = 1.f / texW;
@@ -650,8 +650,8 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
  */
 void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 {
-    assert(!gl_vertices.empty());
-    assert(!borders.empty());
+    RTTR_Assert(!gl_vertices.empty());
+    RTTR_Assert(!borders.empty());
 
     /*  if ((gwv.GetXOffset() == gwv.terrain_last_xoffset) && (gwv.GetYOffset() == gwv.terrain_last_yoffset) && (gwv.terrain_list != 0) && (GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) == gwv.terrain_last_global_animation))
         {
@@ -838,7 +838,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
                 lastOffset = it->posOffset;
             }
 
-            assert(it->tileOffset + it->count <= width * height * 2u);
+            RTTR_Assert(it->tileOffset + it->count <= width * height * 2u);
             glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
@@ -863,7 +863,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
                 glTranslatef( float(trans.x), float(trans.y), 0.0f);
                 lastOffset = it->posOffset;
             }
-            assert(it->tileOffset + it->count <= gl_vertices.size());
+            RTTR_Assert(it->tileOffset + it->count <= gl_vertices.size());
             glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
@@ -913,7 +913,7 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) con
 	    	offset->y = (pt.y / height) * (TR_H * height);
 		ptOut.y = static_cast<MapCoord>(pt.y % height);
 	}
-    assert(ptOut.x < width && ptOut.y < height);
+    RTTR_Assert(ptOut.x < width && ptOut.y < height);
     return ptOut;
 }
 
@@ -1026,7 +1026,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
 
         for (std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
         {
-            assert(it->dir < 3); // begin_end_coords has 3 dir entries
+            RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
             tmp[i].tx = 0.0f;
             tmp[i].ty = 0.0f;
 

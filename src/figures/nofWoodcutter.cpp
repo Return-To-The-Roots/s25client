@@ -114,7 +114,7 @@ unsigned short nofWoodcutter::GetCarryID() const
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofWoodcutter::WorkStarted()
 {
-    assert(gwg->GetSpecObj<noTree>(dest)->GetType() == NOP_TREE);
+    RTTR_Assert(gwg->GetSpecObj<noTree>(dest)->GetType() == NOP_TREE);
 
     gwg->GetSpecObj<noTree>(dest)->FallSoon();
 }

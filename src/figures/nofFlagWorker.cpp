@@ -67,8 +67,8 @@ void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
 
 void nofFlagWorker::Destroy_nofFlagWorker()
 {
-    assert(!flag);
-    assert(!gwg->GetPlayer(player).IsFlagWorker(this));
+    RTTR_Assert(!flag);
+    RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
     Destroy_noFigure();
 }
 
@@ -80,7 +80,7 @@ void nofFlagWorker::AbrogateWorkplace()
         gwg->GetPlayer(player).RemoveFlagWorker(this);
         flag = NULL;
     }else
-        assert(!gwg->GetPlayer(player).IsFlagWorker(this));
+        RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause

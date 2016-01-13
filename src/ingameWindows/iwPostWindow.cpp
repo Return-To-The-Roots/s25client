@@ -248,7 +248,7 @@ PostMsg* iwPostWindow::GetPostMsg(unsigned pos) const
         }
         counter++;
     }
-    assert(pm);
+    RTTR_Assert(pm);
     return pm;
 }
 
@@ -303,7 +303,7 @@ void iwPostWindow::DisplayPostMessage()
         case PMT_IMAGE_WITH_LOCATION:
         {
             ImagePostMsgWithLocation* ipm = dynamic_cast<ImagePostMsgWithLocation*>(pm);
-            assert(ipm);
+            RTTR_Assert(ipm);
 
             SetMessageText(pm->GetText());
             GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);
@@ -320,7 +320,7 @@ void iwPostWindow::DisplayPostMessage()
         } break;
         case PMT_WITH_LOCATION:
         {
-            assert(dynamic_cast<PostMsgWithLocation*>(pm));
+            RTTR_Assert(dynamic_cast<PostMsgWithLocation*>(pm));
 
             SetMessageText(pm->GetText());
             GetCtrl<ctrlMultiline>(12)->Move(xTextCenter, yTextCenter);
@@ -332,7 +332,7 @@ void iwPostWindow::DisplayPostMessage()
         } break;
         case PMT_DIPLOMACYQUESTION:
         {
-            assert(dynamic_cast<DiplomacyPostQuestion*>(pm));
+            RTTR_Assert(dynamic_cast<DiplomacyPostQuestion*>(pm));
 
             SetMessageText(pm->GetText());
             GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);
@@ -357,7 +357,7 @@ void iwPostWindow::DisplayPostMessage()
         case PMT_SHIP:
         {
             ShipPostMsg* ipm = dynamic_cast<ShipPostMsg*>(pm);
-            assert(ipm);
+            RTTR_Assert(ipm);
 
             SetMessageText(pm->GetText());
             GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);

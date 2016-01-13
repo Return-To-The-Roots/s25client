@@ -1134,7 +1134,7 @@ void Window::DrawControls(void)
     for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
     {
         Window* control = it->second;
-        assert(control);
+        RTTR_Assert(control);
 
         control->Msg_PaintBefore();
         control->Draw();
@@ -1143,7 +1143,7 @@ void Window::DrawControls(void)
     for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
     {
         Window* control = it->second;
-        assert(control);
+        RTTR_Assert(control);
 
         control->Msg_PaintAfter();
     }

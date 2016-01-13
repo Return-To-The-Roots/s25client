@@ -59,17 +59,17 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
 
 nofAggressiveDefender::~nofAggressiveDefender()
 {
-    //assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
+    //RTTR_Assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
 {
-    assert(!attacker);
-    assert(!attacked_goal);
+    RTTR_Assert(!attacker);
+    RTTR_Assert(!attacked_goal);
     Destroy_nofActiveSoldier();
 
     //// Debugging
-    //assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
+    //RTTR_Assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& sgd) const
@@ -272,7 +272,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         // Enemy found -> abort, because nofActiveSoldier handles all things now
         return;
 
-    assert(pos != attacker->GetPos()); // If so, why was it not found?
+    RTTR_Assert(pos != attacker->GetPos()); // If so, why was it not found?
 
     // Calc next walking direction
     unsigned char dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);

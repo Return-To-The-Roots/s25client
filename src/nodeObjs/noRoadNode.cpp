@@ -132,7 +132,7 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
         }
 
 #ifndef NDEBUG
-        assert(found);
+        RTTR_Assert(found);
 #endif
 
         RoadSegment* tmp = routes[dir];

@@ -34,9 +34,9 @@ struct ShipDirection
     static const int COUNT = NORTHWEST + 1;
 
     Type t_;
-    ShipDirection(Type t) : t_(t) { assert(t_ >= NORTH && t_ < COUNT); }
+    ShipDirection(Type t) : t_(t) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt safely to a Direction
-    explicit ShipDirection(unsigned t): t_(Type(t % COUNT)){ assert(t_ >= NORTH && t_ < COUNT); }
+    explicit ShipDirection(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static ShipDirection fromInt(unsigned t){ return Type(t); }
     static ShipDirection fromInt(int t){ return Type(t); }

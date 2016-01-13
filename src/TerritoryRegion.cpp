@@ -38,8 +38,8 @@ static char THIS_FILE[] = __FILE__;
 TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase* const gwb)
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), gwb(gwb)
 {
-    assert(x1 <= x2);
-    assert(y1 <= y2);
+    RTTR_Assert(x1 <= x2);
+    RTTR_Assert(y1 <= y2);
     // Feld erzeugen
     nodes.resize((x2 - x1) * (y2 - y1));
 }

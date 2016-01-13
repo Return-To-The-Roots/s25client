@@ -227,13 +227,13 @@ class GameClientPlayer : public GamePlayerInfo
         /// Warenhaus zur Warenhausliste hinzufügen
         void AddWarehouse(nobBaseWarehouse* wh) { warehouses.push_back(wh); }
         /// Warenhaus aus Warenhausliste entfernen
-        void RemoveWarehouse(nobBaseWarehouse* wh) { assert(helpers::contains(warehouses, wh)); warehouses.remove(wh); TestDefeat(); }
+        void RemoveWarehouse(nobBaseWarehouse* wh) { RTTR_Assert(helpers::contains(warehouses, wh)); warehouses.remove(wh); TestDefeat(); }
         /// Hafen zur Warenhausliste hinzufügen
         void AddHarbor(nobHarborBuilding* hb);
         /// Hafen aus Warenhausliste entfernen
-        void RemoveHarbor(nobHarborBuilding* hb) { assert(helpers::contains(harbors, hb)); harbors.remove(hb); }
+        void RemoveHarbor(nobHarborBuilding* hb) { RTTR_Assert(helpers::contains(harbors, hb)); harbors.remove(hb); }
         /// (Unbesetzte) Straße aus der Liste entfernen
-        void DeleteRoad(RoadSegment* rs) { assert(helpers::contains(roads, rs)); roads.remove(rs); }
+        void DeleteRoad(RoadSegment* rs) { RTTR_Assert(helpers::contains(roads, rs)); roads.remove(rs); }
 
         /// Für alle unbesetzen Straßen Weg neu berechnen
         void FindWarehouseForAllRoads();
@@ -305,7 +305,7 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Ware zur globalen Warenliste hinzufügen und entfernen
         void RegisterWare(Ware* ware) { ware_list.push_back(ware); }
-        void RemoveWare(Ware* ware) { assert(IsWareRegistred(ware)); ware_list.remove(ware); }
+        void RemoveWare(Ware* ware) { RTTR_Assert(IsWareRegistred(ware)); ware_list.remove(ware); }
         bool IsWareRegistred(Ware* ware) { return (helpers::contains(ware_list, ware)); }
         bool IsWareDependent(Ware* ware);
 
@@ -313,7 +313,7 @@ class GameClientPlayer : public GamePlayerInfo
         void IncreaseInventoryWare(const GoodType ware, const unsigned count);
         void DecreaseInventoryWare(const GoodType ware, const unsigned count);
         void IncreaseInventoryJob(const Job job, const unsigned count) { global_inventory.people[job] += count; }
-        void DecreaseInventoryJob(const Job job, const unsigned count) { assert(global_inventory.people[job] >= count); global_inventory.people[job] -= count; }
+        void DecreaseInventoryJob(const Job job, const unsigned count) { RTTR_Assert(global_inventory.people[job] >= count); global_inventory.people[job] -= count; }
 
         /// Gibt Inventory-Settings zurück
         const Goods& GetInventory() const { return global_inventory; }
@@ -352,7 +352,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Registriert einen Geologen bzw. einen Späher an einer bestimmten Flagge, damit diese informiert werden,
         /// wenn die Flagge abgerissen wird
         void RegisterFlagWorker(nofFlagWorker* flagworker) { flagworkers.push_back(flagworker); }
-        void RemoveFlagWorker(nofFlagWorker* flagworker) { assert(IsFlagWorker(flagworker)); flagworkers.remove(flagworker); }
+        void RemoveFlagWorker(nofFlagWorker* flagworker) { RTTR_Assert(IsFlagWorker(flagworker)); flagworkers.remove(flagworker); }
         bool IsFlagWorker(nofFlagWorker* flagworker) { return helpers::contains(flagworkers, flagworker); }
 
         /// Wird aufgerufen, wenn eine Flagge abgerissen wurde, damit das den Flaggen-Arbeitern gesagt werden kann
@@ -457,7 +457,7 @@ class GameClientPlayer : public GamePlayerInfo
         };
 
         const Statistic& GetStatistic(StatisticTime time) { return statistic[time]; };
-        const unsigned int GetStatisticCurrentValue(unsigned int idx)  { assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
+        const unsigned int GetStatisticCurrentValue(unsigned int idx)  { RTTR_Assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
 
         // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
         void TestForEmergencyProgramm();

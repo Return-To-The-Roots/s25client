@@ -95,7 +95,7 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     }
 
     // Auf irgendeinem Meer müssen wir ja sein
-    assert(seaId_ > 0);
+    RTTR_Assert(seaId_ > 0);
 
     gwg->AddFigure(this, pos);
 
@@ -151,9 +151,9 @@ void noShip::Destroy()
     // Schiff wieder abmelden
     gwg->GetPlayer(player).RemoveShip(this);
     for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-        assert(!*it);
+        RTTR_Assert(!*it);
     for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
-        assert(!*it);
+        RTTR_Assert(!*it);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
@@ -264,8 +264,8 @@ void noShip::DrawDrivingWithWares(int& x, int& y)
 
 void noShip::HandleEvent(const unsigned int id)
 {
-    assert(current_ev);
-    assert(current_ev->id == id);
+    RTTR_Assert(current_ev);
+    RTTR_Assert(current_ev->id == id);
     current_ev = NULL;
 
     if(id == 0)
@@ -280,7 +280,7 @@ void noShip::HandleEvent(const unsigned int id)
         switch(state)
         {
         default: 
-            assert(false);
+            RTTR_Assert(false);
             LOG.lprintf("Bug detected: Invalid state in ship event");
             break;
         case STATE_EXPEDITION_LOADING:
@@ -360,7 +360,7 @@ void noShip::HandleEvent(const unsigned int id)
         case STATE_SEAATTACK_UNLOADING:
         {
             // Hafen herausfinden
-            assert(state == STATE_SEAATTACK_UNLOADING || remaining_sea_attackers == 0);
+            RTTR_Assert(state == STATE_SEAATTACK_UNLOADING || remaining_sea_attackers == 0);
             noBase* hb = goal_harbor_id ? gwg->GetNO(gwg->GetHarborPoint(goal_harbor_id)): NULL;
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
@@ -446,7 +446,7 @@ void noShip::Driven()
         case STATE_SEAATTACK_DRIVINGTODESTINATION: HandleState_SeaAttackDriving(); break;
         case STATE_SEAATTACK_RETURN_DRIVING: HandleState_SeaAttackReturn(); break;
         default:
-            assert(false);
+            RTTR_Assert(false);
             break;
     }
 }
@@ -464,15 +464,15 @@ unsigned noShip::GetVisualRange() const
 /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
 void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route)
 {
-    assert(state == STATE_IDLE); // otherwise we might carry wares etc
-    assert(figures.empty());
-    assert(wares.empty());
-    assert(remaining_sea_attackers == 0);
+    RTTR_Assert(state == STATE_IDLE); // otherwise we might carry wares etc
+    RTTR_Assert(figures.empty());
+    RTTR_Assert(wares.empty());
+    RTTR_Assert(remaining_sea_attackers == 0);
 
     state = STATE_GOTOHARBOR;
 
     goal_harbor_id = gwg->GetNode(hb->GetPos()).harbor_id;
-    assert(goal_harbor_id);
+    RTTR_Assert(goal_harbor_id);
 
     // Route merken
     this->route_ = route;
@@ -488,8 +488,8 @@ void noShip::StartExpedition(unsigned homeHarborId)
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPEDITION_LOADING;
     current_ev = em->AddEvent(this, LOADING_TIME, 1);
-    assert(homeHarborId);
-    assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
+    RTTR_Assert(homeHarborId);
+    RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
     goal_harbor_id = homeHarborId; // This is current goal (commands are relative to current goal)
 }
@@ -501,8 +501,8 @@ void noShip::StartExplorationExpedition(unsigned homeHarborId)
     state = STATE_EXPLORATIONEXPEDITION_LOADING;
     current_ev = em->AddEvent(this, LOADING_TIME, 1);
     covered_distance = 0;
-    assert(homeHarborId);
-    assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
+    RTTR_Assert(homeHarborId);
+    RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
     goal_harbor_id = homeHarborId; // This is current goal (commands are relative to current goal)
     // Sichtbarkeiten neu berechnen
@@ -516,7 +516,7 @@ noShip::Result noShip::DriveToHarbour()
         return HARBOR_DOESNT_EXIST;
 
     MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
-    assert(goal.isValid());
+    RTTR_Assert(goal.isValid());
 
     // Existiert der Hafen überhaupt noch?
     if(gwg->GetGOT(goal) != GOT_NOB_HARBORBUILDING)
@@ -558,7 +558,7 @@ noShip::Result noShip::DriveToHarbourPlace()
     if(coastalPos != goalRoutePos)
     {
         // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
-        assert(route_.size() >= curRouteIdx);
+        RTTR_Assert(route_.size() >= curRouteIdx);
         if(route_.size() - curRouteIdx < 10)
         {
             if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
@@ -576,7 +576,7 @@ noShip::Result noShip::DriveToHarbourPlace()
 
 unsigned noShip::GetCurrentHarbor() const
 {
-    assert(state == STATE_EXPEDITION_WAITING);
+    RTTR_Assert(state == STATE_EXPEDITION_WAITING);
     return goal_harbor_id;
 }
 
@@ -617,7 +617,7 @@ void noShip::CancelExpedition()
         return;
 
     // We are waiting. There should be no event!
-    assert(!current_ev);
+    RTTR_Assert(!current_ev);
 
     // Zum Heimathafen zurückkehren
     // Oder sind wir schon dort?
@@ -672,7 +672,7 @@ void noShip::HandleState_GoToHarbor()
     case GOAL_REACHED:
         {
             MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
-            assert(goal.isValid());
+            RTTR_Assert(goal.isValid());
             // Go idle here (if harbor does not need it)
             StartIdling();
             // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
@@ -683,7 +683,7 @@ void noShip::HandleState_GoToHarbor()
     case NO_ROUTE_FOUND:
         {
             MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
-            assert(goal.isValid());
+            RTTR_Assert(goal.isValid());
             // Dem Hafen Bescheid sagen
             gwg->GetSpecObj<nobHarborBuilding>(goal)->ShipLost(this);
             StartIdling();
@@ -797,7 +797,7 @@ void noShip::HandleState_TransportDriving()
         case NO_ROUTE_FOUND:
         case HARBOR_DOESNT_EXIST:
         {
-            assert(!remaining_sea_attackers);
+            RTTR_Assert(!remaining_sea_attackers);
             // Kein Hafen mehr?
             // Dann müssen alle Leute ihren Heimatgebäuden Bescheid geben, dass sie
             // nun nicht mehr kommen
@@ -834,7 +834,7 @@ void noShip::HandleState_SeaAttackDriving()
         break;
     case NO_ROUTE_FOUND:
     case HARBOR_DOESNT_EXIST:
-        assert(goal_harbor_id != home_harbor || home_harbor == 0);
+        RTTR_Assert(goal_harbor_id != home_harbor || home_harbor == 0);
         AbortSeaAttack();
         break;
     }
@@ -865,7 +865,7 @@ bool noShip::IsAbleToFoundColony() const
     if(state == STATE_EXPEDITION_WAITING)
     {
         // We must always have a goal harbor
-        assert(goal_harbor_id);
+        RTTR_Assert(goal_harbor_id);
         // Ist der Punkt, an dem wir gerade ankern, noch frei?
         if(gwg->IsHarborPointFree(goal_harbor_id, player, seaId_))
             return true;
@@ -903,19 +903,19 @@ bool noShip::IsGoingToHarbor(nobHarborBuilding* hb) const
     case noShip::STATE_SEAATTACK_RETURN_DRIVING:    // Returning attackers to this harbor
         return true;
 }
-    assert(false);
+    RTTR_Assert(false);
     return false;
 }
 
 /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
 void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares)
 {
-    assert(homeHarborId);
-    assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
+    RTTR_Assert(homeHarborId);
+    RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     this->home_harbor = homeHarborId;
     // ID von Zielhafen herausfinden
     noBase* nb = gwg->GetNO(goal);
-    assert(nb->GetGOT() == GOT_NOB_HARBORBUILDING);
+    RTTR_Assert(nb->GetGOT() == GOT_NOB_HARBORBUILDING);
     this->goal_harbor_id = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
 
     this->figures = figures;
@@ -929,11 +929,11 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
 void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures)
 {
     // Heimathafen merken
-    assert(homeHarborId);
-    assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
+    RTTR_Assert(homeHarborId);
+    RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     this->home_harbor = homeHarborId;
     this->goal_harbor_id = gwg->GetHarborPointID(goal);
-    assert(goal_harbor_id);
+    RTTR_Assert(goal_harbor_id);
     this->figures = figures;
     for(std::list<noFigure*>::iterator it = this->figures.begin(); it != this->figures.end(); ++it)
     {
@@ -954,8 +954,8 @@ void noShip::StartSeaAttack()
 
 void noShip::AbortSeaAttack()
 {
-    assert(state != STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
-    assert(remaining_sea_attackers == 0); // Some soldiers are still not aboard
+    RTTR_Assert(state != STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
+    RTTR_Assert(remaining_sea_attackers == 0); // Some soldiers are still not aboard
 
     if ((state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION) &&
         goal_harbor_id != home_harbor && home_harbor != 0)
@@ -965,14 +965,14 @@ void noShip::AbortSeaAttack()
         goal_harbor_id = home_harbor;
         for (std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
-            assert(dynamic_cast<nofAttacker*>(*it));
+            RTTR_Assert(dynamic_cast<nofAttacker*>(*it));
             static_cast<nofAttacker*>(*it)->StartReturnViaShip(*this);
         }
         if(state == STATE_SEAATTACK_LOADING)
         {
             // We are still loading (loading event must be active)
             // -> Use it to unload
-            assert(current_ev);
+            RTTR_Assert(current_ev);
             state = STATE_SEAATTACK_UNLOADING;
         }else
         {
@@ -986,14 +986,14 @@ void noShip::AbortSeaAttack()
         // -> Tell figures that they won't go to their planned destination
         for (std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
-            assert(dynamic_cast<nofAttacker*>(*it));
+            RTTR_Assert(dynamic_cast<nofAttacker*>(*it));
             static_cast<nofAttacker*>(*it)->CancelSeaAttack();
         }
 
         if (state == STATE_SEAATTACK_LOADING)
         {
             // Abort loading
-            assert(current_ev);
+            RTTR_Assert(current_ev);
             em->RemoveEvent(current_ev);
         }
 
@@ -1018,7 +1018,7 @@ void noShip::StartDrivingToHarborPlace()
     else if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
     {
         // todo
-        assert(false);
+        RTTR_Assert(false);
         LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n",
             GAMECLIENT.GetGFNumber(), player, state, pos.x, pos.y, coastalPos.x, coastalPos.y, goal_harbor_id, gwg->GetHarborPoint(goal_harbor_id).x, gwg->GetHarborPoint(goal_harbor_id).y);
         goal_harbor_id = 0;
@@ -1054,7 +1054,7 @@ void noShip::FindUnloadGoal(State newState)
             HandleState_SeaAttackReturn();
         else
         {
-            assert(false);
+            RTTR_Assert(false);
             LOG.lprintf("Bug detected: Invalid state for FindUnloadGoal");
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
         }
@@ -1122,7 +1122,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     // Are we currently getting the wares?
     if(oldState == STATE_TRANSPORT_LOADING)
     {
-        assert(current_ev);
+        RTTR_Assert(current_ev);
         if (home_harbor)
         {
             // Then save us some time and unload immediately
@@ -1152,9 +1152,9 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
 void noShip::StartIdling()
 {
     // If those are not empty, then we ware lost, not idling!
-    assert(figures.empty());
-    assert(wares.empty());
-    assert(remaining_sea_attackers == 0);
+    RTTR_Assert(figures.empty());
+    RTTR_Assert(wares.empty());
+    RTTR_Assert(remaining_sea_attackers == 0);
 
     home_harbor = 0;
     goal_harbor_id = 0;
@@ -1164,8 +1164,8 @@ void noShip::StartIdling()
 /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
 void noShip::SeaAttackerWishesNoReturn()
 {
-    assert(remaining_sea_attackers);
-    assert(state == STATE_SEAATTACK_WAITING);
+    RTTR_Assert(remaining_sea_attackers);
+    RTTR_Assert(state == STATE_SEAATTACK_WAITING);
 
     --remaining_sea_attackers;
     // Alle Soldaten an Bord
@@ -1194,7 +1194,7 @@ void noShip::SeaAttackerWishesNoReturn()
 /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
 void noShip::AddReturnedAttacker(nofAttacker* attacker)
 {
-    assert(!helpers::contains(figures, attacker));
+    RTTR_Assert(!helpers::contains(figures, attacker));
 
     figures.push_back(attacker);
     // Nun brauchen wir quasi einen Angreifer weniger
@@ -1264,7 +1264,7 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
         Driven();
         break;
     default:
-        assert(false); // Das darf eigentlich nicht passieren
+        RTTR_Assert(false); // Das darf eigentlich nicht passieren
         LOG.lprintf("Bug detected: Invalid state in NewHarborBuilt");
         break;
     }

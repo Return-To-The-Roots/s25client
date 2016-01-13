@@ -170,9 +170,9 @@ void nobHarborBuilding::Destroy()
         gwg->AddFigure(soldier, pos);
 
         soldier->CancelSeaAttack();
-        assert(!soldier->GetAttackedGoal());
-        assert(soldier->HasNoHome());
-        assert(soldier->HasNoGoal());
+        RTTR_Assert(!soldier->GetAttackedGoal());
+        RTTR_Assert(soldier->HasNoHome());
+        RTTR_Assert(soldier->HasNoGoal());
         soldier->StartWandering();
         soldier->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
     }
@@ -185,7 +185,7 @@ void nobHarborBuilding::Destroy()
     gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
+    RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
     gwg->GetMilitarySquare(pos).remove(this);
 }
 
@@ -502,7 +502,7 @@ void nobHarborBuilding::StartExplorationExpedition()
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
-    assert(!IsBeingDestroyedNow()); // Wares should already be canceled!
+    RTTR_Assert(!IsBeingDestroyedNow()); // Wares should already be canceled!
     if (this->IsBeingDestroyedNow()) // don't order new stuff if we are about to be destroyed
         return;
 
@@ -512,7 +512,7 @@ void nobHarborBuilding::OrderExpeditionWares()
     unsigned boards = 0, stones = 0;
     for(std::list<Ware*>::iterator it = dependent_wares.begin(); it!=dependent_wares.end(); ++it)
     {
-        assert(*it);
+        RTTR_Assert(*it);
         if (*it == 0) // qx: check for bug #1132707
         {
             std::cout << "Error: Iterator to 0-Ware" << std::endl;
@@ -537,7 +537,7 @@ void nobHarborBuilding::OrderExpeditionWares()
             ware = gwg->GetPlayer(player).OrderWare(GD_BOARDS, this);
             if(ware)
             {
-                assert(IsWareDependent(ware));
+                RTTR_Assert(IsWareDependent(ware));
                 --todo_boards;
             }
         }
@@ -554,7 +554,7 @@ void nobHarborBuilding::OrderExpeditionWares()
             ware = gwg->GetPlayer(player).OrderWare(GD_STONES, this);
             if(ware)
             {
-                assert(IsWareDependent(ware));
+                RTTR_Assert(IsWareDependent(ware));
                 --todo_stones;
             }
         }
@@ -569,7 +569,7 @@ void nobHarborBuilding::OrderExpeditionWares()
 /// Eine bestellte Ware konnte doch nicht kommen
 void nobHarborBuilding::WareLost(Ware* ware)
 {
-    assert(!IsBeingDestroyedNow());
+    RTTR_Assert(!IsBeingDestroyedNow());
     // ggf. neue Waren für Expedition bestellen
     if(expedition.active && (ware->type == GD_BOARDS || ware->type == GD_STONES))
         OrderExpeditionWares();
@@ -620,7 +620,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         exploration_expedition.active = false;
         // Expedition starten
         ship->StartExplorationExpedition(GetHarborPosID());
-        assert(goods_.people[JOB_SCOUT] >= exploration_expedition.scouts);
+        RTTR_Assert(goods_.people[JOB_SCOUT] >= exploration_expedition.scouts);
         goods_.people[JOB_SCOUT] -= exploration_expedition.scouts;
         return;
 
@@ -710,13 +710,13 @@ void nobHarborBuilding::AddWare(Ware*& ware)
         }else if(ware->GetNextDir() != INVALID_DIR)
         {
             // Travel on roads -> Carry out
-            assert(ware->GetGoal() != this);
+            RTTR_Assert(ware->GetGoal() != this);
             AddWaitingWare(ware);
             return;
         }else
         {
             // Pathfinding failed -> Ware would want to go here
-            assert(ware->GetGoal() == this);
+            RTTR_Assert(ware->GetGoal() == this);
             // Regular handling below
         }
     }
@@ -893,7 +893,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     // Should already be handled by the above check, but keep the runtime check for now (TODO: remove runtime check)
-    assert(gwg->GetGOT(pos) == GOT_NOB_HARBORBUILDING);
+    RTTR_Assert(gwg->GetGOT(pos) == GOT_NOB_HARBORBUILDING);
 
     // Is there any harbor building at all? (could be destroyed)?
     if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
@@ -922,7 +922,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
 /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
 void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
 {
-    assert(!helpers::contains(gwg->GetFigures(fig->GetPos()), fig)); // Figure is in the harbor, so it cannot be outside
+    RTTR_Assert(!helpers::contains(gwg->GetFigures(fig->GetPos()), fig)); // Figure is in the harbor, so it cannot be outside
     FigureForShip ffs = { fig, dest };
     figures_for_ships.push_back(ffs);
     OrderShip();
@@ -1054,9 +1054,9 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
     // Evtl. muss die Ware gleich das Schiff nehmen -> dann zum Schiffsreservoir hinzufügen
     // Assert: This is a ware that got ordered. There MUST be a path to the goal
     //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
-    assert(gwg->GetRoadPathFinder().PathExists(*this, goal, false, true));
+    RTTR_Assert(gwg->GetRoadPathFinder().PathExists(*this, goal, false, true));
     ware->RecalcRoute(); // Also sets nextHarbor!
-    assert(ware->GetNextDir() != INVALID_DIR);
+    RTTR_Assert(ware->GetNextDir() != INVALID_DIR);
     if(ware->GetNextDir() == SHIP_DIR)
     {
         // Reduce ware count because wares don't go through the house leaving process
@@ -1130,7 +1130,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
             }else
             {
                 // No or invalid path -> Store here
-                assert(nextDir == 0xFF);
+                RTTR_Assert(nextDir == 0xFF);
                 (*it)->SetGoalToNULL();
                 AddDependentFigure(*it);
             }
@@ -1154,7 +1154,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
 void nobHarborBuilding::CancelWareForShip(Ware* ware)
 {
     // Ware aus der Liste entfernen
-    assert(helpers::contains(wares_for_ships, ware));
+    RTTR_Assert(helpers::contains(wares_for_ships, ware));
     wares_for_ships.remove(ware);
     // Ware zur Inventur hinzufügen
     // Anzahl davon wieder hochsetzen
@@ -1270,7 +1270,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 {
     unsigned best_distance = 0xffffffff;
     unsigned best_harbor_point = 0xffffffff;
-    assert(attacker->GetAttackedGoal());
+    RTTR_Assert(attacker->GetAttackedGoal());
     std::vector<unsigned> harbor_points = gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
     for(unsigned i = 0; i < harbor_points.size(); ++i)
     {
@@ -1287,9 +1287,9 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     {
         // notify target about noShow, notify home that soldier wont return, add to inventory
         attacker->SeaAttackFailedBeforeLaunch(); //set state, remove target & home
-        assert(!attacker->GetAttackedGoal());
-        assert(attacker->HasNoHome());
-        assert(attacker->HasNoGoal());
+        RTTR_Assert(!attacker->GetAttackedGoal());
+        RTTR_Assert(attacker->HasNoHome());
+        RTTR_Assert(attacker->HasNoGoal());
         AddFigure(attacker, true);
         return;
     }
@@ -1348,7 +1348,7 @@ void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
     if(gwg->GetGOT(pos) != GOT_NOB_HARBORBUILDING)
         return;
 
-    assert(helpers::contains(wares_for_ships, ware));
+    RTTR_Assert(helpers::contains(wares_for_ships, ware));
     // Ware aus unserer Liste streichen
     wares_for_ships.remove(ware);
     // Carry out. If it would want to go back to this building, then this will be handled by the carrier

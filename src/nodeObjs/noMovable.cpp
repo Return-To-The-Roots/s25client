@@ -82,20 +82,20 @@ void noMovable::Walk()
 
 void noMovable::FaceDir(unsigned char newDir)
 {
-    assert(newDir < 6);
+    RTTR_Assert(newDir < 6);
     curMoveDir = newDir;
 }
 
 void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
 {
-    assert(!moving);
-    assert(newDir < 6);
+    RTTR_Assert(!moving);
+    RTTR_Assert(newDir < 6);
 
     // Ist das Wesen stehengeblieben mitten aufm Weg?
     if(pause_walked_gf)
     {
         // Das Laufevent fortführen
-        assert(newDir == curMoveDir);
+        RTTR_Assert(newDir == curMoveDir);
         // Avoid setting an event for current gf by increasing the length
         if(pause_walked_gf == pause_event_length)
             pause_event_length++;
@@ -134,7 +134,7 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
 {
     if(current_ev)
     {
-        assert(current_ev->gf_length > 0);
+        RTTR_Assert(current_ev->gf_length > 0);
         if(current_ev->gf_length == 0)
         {
             LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n", GAMECLIENT.GetGFNumber());
@@ -142,7 +142,7 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
         }
     }
 
-    assert(current_ev || pause_walked_gf);
+    RTTR_Assert(current_ev || pause_walked_gf);
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     unsigned gf_diff = current_ev ? (GAMECLIENT.GetGFNumber() - current_ev->gf) : pause_walked_gf;
@@ -157,10 +157,10 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
     unsigned duration = evLength * gfLength;
 
     // We are in that event
-    assert(curTimePassed <= duration);
+    RTTR_Assert(curTimePassed <= duration);
     // We need to convert to int
-    assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
-    assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
+    RTTR_Assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
+    RTTR_Assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
 
     if(curMoveDir != 1 && curMoveDir != 2)
     {

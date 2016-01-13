@@ -88,7 +88,7 @@ void RoadSegment::Destroy_RoadSegment()
 {
     // This can be the road segment from the flag to the building (always in this order!)
     // Those are not considered "roads" and therefore never registered
-    assert(f1->GetGOT() == GOT_FLAG);
+    RTTR_Assert(f1->GetGOT() == GOT_FLAG);
     if(f2->GetGOT() == GOT_FLAG)
         gwg->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
 
@@ -364,8 +364,8 @@ void RoadSegment::UpgradeDonkeyRoad()
     }
 
     // Flaggen auf beiden Seiten upgraden
-    assert(f1->GetGOT() == GOT_FLAG);
-    assert(f2->GetGOT() == GOT_FLAG);
+    RTTR_Assert(f1->GetGOT() == GOT_FLAG);
+    RTTR_Assert(f2->GetGOT() == GOT_FLAG);
 
     static_cast<noFlag*>(f1)->Upgrade();
     static_cast<noFlag*>(f2)->Upgrade();
@@ -418,7 +418,7 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 {
     //is it a valid flag?
-    assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
+    RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
     if(flag->GetPos() == f1->GetPos())
         return gwg->GetSpecObj<noFlag>(f2->GetPos());
     if(flag->GetPos() == f2->GetPos())
@@ -435,7 +435,7 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 unsigned char RoadSegment::GetOtherFlagDir(const noFlag* flag)
 {
     //is it a valid flag?
-    assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
+    RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
     if(flag->GetPos() == f1->GetPos())
         return route[route.size() - 1];
     if(flag->GetPos() == f2->GetPos())

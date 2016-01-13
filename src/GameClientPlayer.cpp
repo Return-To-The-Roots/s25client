@@ -477,7 +477,7 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, bool 
     {
         // Lagerhaus geeignet?
         nobBaseWarehouse* wh = *itWh;
-        assert(wh);
+        RTTR_Assert(wh);
         if(!IsWarehouseGood(wh, param))
             continue;
 
@@ -1138,7 +1138,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
             // As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
             // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points. :)
-            assert(score > best_points);
+            RTTR_Assert(score > best_points);
 
             best_points = score;
             bb = it->bb;
@@ -1205,7 +1205,7 @@ void GameClientPlayer::AddBuildingSite(noBuildingSite* building_site)
 
 void GameClientPlayer::RemoveBuildingSite(noBuildingSite* building_site)
 {
-    assert(helpers::contains(building_sites, building_site));
+    RTTR_Assert(helpers::contains(building_sites, building_site));
     building_sites.remove(building_site);
 
     if(building_site->GetBuildingType() == BLD_HARBORBUILDING)
@@ -1220,7 +1220,7 @@ void GameClientPlayer::AddUsualBuilding(nobUsual* building)
 
 void GameClientPlayer::RemoveUsualBuilding(nobUsual* building)
 {
-    assert(helpers::contains(buildings[building->GetBuildingType() - 10], building));
+    RTTR_Assert(helpers::contains(buildings[building->GetBuildingType() - 10], building));
     buildings[building->GetBuildingType() - 10].remove(building);
     ChangeStatisticValue(STAT_BUILDINGS, -1);
 }
@@ -1233,7 +1233,7 @@ void GameClientPlayer::AddMilitaryBuilding(nobMilitary* building)
 
 void GameClientPlayer::RemoveMilitaryBuilding(nobMilitary* building)
 {
-    assert(helpers::contains(military_buildings, building));
+    RTTR_Assert(helpers::contains(military_buildings, building));
     military_buildings.remove(building);
     ChangeStatisticValue(STAT_BUILDINGS, -1);
     TestDefeat();
@@ -1242,7 +1242,7 @@ void GameClientPlayer::RemoveMilitaryBuilding(nobMilitary* building)
 /// Gibt Liste von Gebäuden des Spieler zurück
 const std::list<nobUsual*>& GameClientPlayer::GetBuildings(const BuildingType type) const
 {
-    assert(type >= 10);
+    RTTR_Assert(type >= 10);
 
     return buildings[type - 10];
 }
@@ -1271,7 +1271,7 @@ void GameClientPlayer::GetBuildingCount(BuildingCount& bc) const
 /// (erwartet als Argument ein 40-er Array!)
 void GameClientPlayer::CalcProductivities(std::vector<unsigned short>& productivities)
 {
-    assert(productivities.size() == 40);
+    RTTR_Assert(productivities.size() == 40);
 
     for(unsigned i = 0; i < 30; ++i)
     {
@@ -1342,7 +1342,7 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
     }
 
     LOG.lprintf("GameClientPlayer::GetBuidingSitePriority: ERROR: BuildingSite or type of it not found in the list!\n");
-    assert(false);
+    RTTR_Assert(false);
     // We may want to multiply this value so don't return the absolute max value
     return std::numeric_limits<unsigned>::max() / 1000;
 }
@@ -1426,7 +1426,7 @@ void GameClientPlayer::RecalcMilitaryFlags()
 /// entsprechende Soldatenanzahl im Lagerhaus verlangt
 void GameClientPlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 {
-    assert(soldier_count > 0);
+    RTTR_Assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
     for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
@@ -1514,7 +1514,7 @@ void GameClientPlayer::ChangeMilitarySettings(const boost::array<unsigned char, 
     for(unsigned i = 0; i < military_settings.size(); ++i)
     {
         // Sicherstellen, dass im validen Bereich
-        assert(military_settings[i] <= MILITARY_SETTINGS_SCALE[i]);
+        RTTR_Assert(military_settings[i] <= MILITARY_SETTINGS_SCALE[i]);
         this->militarySettings_[i] = military_settings[i];
     }
     /// Truppen müssen neu kalkuliert werden
@@ -1991,7 +1991,7 @@ void GameClientPlayer::IncreaseInventoryWare(const GoodType ware, const unsigned
 
 void GameClientPlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    assert(global_inventory.goods[ConvertShields(ware)] >= count);
+    RTTR_Assert(global_inventory.goods[ConvertShields(ware)] >= count);
     global_inventory.goods[ConvertShields(ware)] -= count;
 }
 

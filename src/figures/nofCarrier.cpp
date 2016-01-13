@@ -214,9 +214,9 @@ nofCarrier::~nofCarrier()
  */
 void nofCarrier::Destroy_nofCarrier()
 {
-    assert(!workplace);
+    RTTR_Assert(!workplace);
     // Ware vernichten (abmelden)
-    assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
+    RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
     LooseWare();
     em->RemoveEvent(productivity_ev);
 
@@ -858,13 +858,13 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     // Switch road if required
     if(workplace->getCarrier(carrierNr) != this)
     {
-        assert(otherRoad->getCarrier(carrierNr) == this);  // I should have been on other road
+        RTTR_Assert(otherRoad->getCarrier(carrierNr) == this);  // I should have been on other road
         // Mich als Träger für meinen neuen Arbeitsplatz zuweisen
         workplace->setCarrier(carrierNr, this);
         // Für andere Straße neuen Träger/Esel rufen
         otherRoad->setCarrier(carrierNr, NULL);
     }else
-        assert(otherRoad->getCarrier(carrierNr) == NULL);  // No carrier expected
+        RTTR_Assert(otherRoad->getCarrier(carrierNr) == NULL);  // No carrier expected
 
     if(ct == CT_NORMAL)
         gwg->GetPlayer(player).FindCarrierForRoad(otherRoad);

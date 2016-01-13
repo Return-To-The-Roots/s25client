@@ -118,7 +118,7 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 
     VIDEODRIVER.BindTexture(texture);
 
-    assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
+    RTTR_Assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
     struct GL_T2F_C4UB_V3F_Struct
     {

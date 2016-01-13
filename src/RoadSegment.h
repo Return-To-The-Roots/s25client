@@ -70,13 +70,13 @@ class RoadSegment : public GameObject
         /// gibt den Carrier nr zurück
         inline nofCarrier* getCarrier(unsigned char nr) const { return carriers_[nr]; }
         /// setzt den Carrier nr auf c
-        inline void setCarrier(unsigned char nr, nofCarrier* c) { assert(!c || !hasCarrier(nr)); carriers_[nr] = c; }
+        inline void setCarrier(unsigned char nr, nofCarrier* c) { RTTR_Assert(!c || !hasCarrier(nr)); carriers_[nr] = c; }
         /// haben wir den Carrier "nr"?
         inline bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != NULL); }
         /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
         inline bool NeedDonkey() const { return (rt == RT_DONKEY && carriers_[0] && !carriers_[1]); }
         /// Hat einen Esel als Arbeiter dazubekommen.
-        inline void GotDonkey(nofCarrier* donkey) { assert(!carriers_[1]); carriers_[1] = donkey; }
+        inline void GotDonkey(nofCarrier* donkey) { RTTR_Assert(!carriers_[1]); carriers_[1] = donkey; }
 
         /// haben wir überhaupt Carrier?
         inline bool isOccupied() const

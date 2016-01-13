@@ -73,7 +73,7 @@ class noAnimal : public noMovable
     public:     void Serialize(SerializedGameData& sgd) const { Serialize_noAnimal(sgd); }
 
         /// Aufräummethoden
-    protected:  void Destroy_noAnimal() { assert(!hunter); Destroy_noMovable(); }
+    protected:  void Destroy_noAnimal() { RTTR_Assert(!hunter); Destroy_noMovable(); }
     public:     void Destroy() { Destroy_noAnimal(); }
 
         GO_Type GetGOT() const { return GOT_ANIMAL; }

@@ -393,7 +393,7 @@ void nobBaseMilitary::CancelJobs()
         if((*it)->DoJobWorks() && (*it)->GetGOT() != GOT_NOF_DEFENDER)
         {
             nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
-            assert(soldier);
+            RTTR_Assert(soldier);
 
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!
             soldier->InformTargetsAboutCancelling();

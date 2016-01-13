@@ -73,7 +73,7 @@ namespace helpers{
             AllInvalidated // Erase invalidates all -> Erase from loop is not possible
         };
         Type t_;
-        EEraseIterValidy(Type t) : t_(t) { assert(t_ >= IterReturned && t_ <= PrevValid); }
+        EEraseIterValidy(Type t) : t_(t) { RTTR_Assert(t_ >= IterReturned && t_ <= PrevValid); }
         operator Type() const { return t_; }
     private:
         //prevent automatic conversion for any other built-in types such as bool, int, etc

@@ -364,7 +364,7 @@ void GameClient::StartGame(const unsigned int random_init)
     }
     else
     {
-        assert(mapinfo.map_type != MAPTYPE_SAVEGAME);
+        RTTR_Assert(mapinfo.map_type != MAPTYPE_SAVEGAME);
         /// Startbündnisse setzen
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
             players[i].MakeStartPacts();
@@ -1086,7 +1086,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
                 }
 
                 const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
-                assert(header);
+                RTTR_Assert(header);
 
                 players.clear();
                 for(unsigned i = 0; i < header->getPlayer(); ++i)
@@ -1228,7 +1228,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
         framesinfo.gfLenghtNew = msg.gf_length;
     else
     {
-        assert(framesinfo.gfLenghtNew2 == 0);
+        RTTR_Assert(framesinfo.gfLenghtNew2 == 0);
         framesinfo.gfLenghtNew2 = msg.gf_length;
     }
 
@@ -1245,7 +1245,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
         RealStart();
     }else
     {
-        assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
+        RTTR_Assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
         framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
         framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
     }
@@ -1475,11 +1475,11 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 // Same for the server
                 if(framesinfo.gfNrServer < framesinfo.gf_nr)
                     return;
-                assert(framesinfo.gfNrServer <= framesinfo.gf_nr + framesinfo.nwf_length);
+                RTTR_Assert(framesinfo.gfNrServer <= framesinfo.gf_nr + framesinfo.nwf_length);
 
                 ExecuteNWF();
 
-                assert(framesinfo.gfLenghtNew != 0);
+                RTTR_Assert(framesinfo.gfLenghtNew != 0);
                 if(framesinfo.gfLenghtNew != framesinfo.gf_length)
                 {
                     unsigned oldGfLen = framesinfo.gf_length;
@@ -1489,7 +1489,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                     // Adjust next confirmation for next NWF (if we have it already)
                     if(framesinfo.gfNrServer != framesinfo.gf_nr)
                     {
-                        assert(framesinfo.gfNrServer == framesinfo.gf_nr + oldNwfLen);
+                        RTTR_Assert(framesinfo.gfNrServer == framesinfo.gf_nr + oldNwfLen);
                         framesinfo.gfNrServer = framesinfo.gfNrServer - oldNwfLen + framesinfo.nwf_length;
                         // Make it a NWF (mostly for validation and consistency)
                         framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length;
@@ -1505,7 +1505,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             NextGF();
         }
 
-        assert(replay_mode || framesinfo.gf_nr <= framesinfo.gfNrServer + framesinfo.nwf_length);
+        RTTR_Assert(replay_mode || framesinfo.gf_nr <= framesinfo.gfNrServer + framesinfo.nwf_length);
         // Store this timestamp
         framesinfo.lastTime = currentTime;
         // Reset frameTime
@@ -1520,7 +1520,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     {
         // Next GF not yet reached, just update the time in the current one for drawing
         framesinfo.frameTime = currentTime - framesinfo.lastTime;
-        assert(framesinfo.frameTime <= framesinfo.gf_length);
+        RTTR_Assert(framesinfo.frameTime <= framesinfo.gf_length);
     }
 }
 
@@ -1828,13 +1828,13 @@ unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsi
 
 unsigned GameClient::Interpolate(unsigned max_val, EventManager::EventPointer ev)
 {
-    assert( ev );
+    RTTR_Assert( ev );
     return min<unsigned int>(((max_val * ((framesinfo.gf_nr - ev->gf) * framesinfo.gf_length + framesinfo.frameTime)) / (ev->gf_length * framesinfo.gf_length)), max_val - 1);
 }
 
 int GameClient::Interpolate(int x1, int x2, EventManager::EventPointer ev)
 {
-    assert( ev );
+    RTTR_Assert( ev );
     return (x1 + ( (x2 - x1) * ((int(framesinfo.gf_nr) - int(ev->gf)) * int(framesinfo.gf_length) + int(framesinfo.frameTime))) / int(ev->gf_length * framesinfo.gf_length));
 }
 
@@ -2222,7 +2222,7 @@ void GameClient::LoadGGS()
 
 void GameClient::ToggleHumanAIPlayer()
 {
-    assert(!GAMECLIENT.IsReplayModeOn());
+    RTTR_Assert(!GAMECLIENT.IsReplayModeOn());
     if (human_ai)
     {
         delete human_ai;

@@ -48,7 +48,7 @@ nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char p
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
-    assert(gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4))->routes[1]->GetLength() == 1);
+    RTTR_Assert(gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4))->routes[1]->GetLength() == 1);
     cur_rs = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4))->routes[1];
     rs_dir = true;
 }
@@ -63,7 +63,7 @@ nofWarehouseWorker::~nofWarehouseWorker()
 void nofWarehouseWorker::Destroy_nofWarehouseWorker()
 {
     // Ware vernichten (abmelden)
-    assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
+    RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
     LooseWare();
 }
 
@@ -160,7 +160,7 @@ void nofWarehouseWorker::Walked()
                 LooseWare();
             }
             // Ich trage keine Ware mehr
-            assert(carried_ware == NULL);
+            RTTR_Assert(carried_ware == NULL);
         }
     }
     else
@@ -176,7 +176,7 @@ void nofWarehouseWorker::Walked()
                 LooseWare();
             }
             // Ich trage keine Ware mehr
-            assert(carried_ware == NULL);
+            RTTR_Assert(carried_ware == NULL);
         }
     }
 

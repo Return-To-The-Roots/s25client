@@ -188,7 +188,7 @@ void nofActiveSoldier::Draw(int x, int y)
 void nofActiveSoldier::HandleDerivedEvent(const unsigned int id)
 {
     // That's not supposed to happen!
-    assert(false);
+    RTTR_Assert(false);
 }
 
 /// Gets the visual range radius of this soldier
@@ -271,7 +271,7 @@ void nofActiveSoldier::Walked()
 /// Returns true if it found one
 bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 {
-    assert(enemy == NULL);
+    RTTR_Assert(enemy == NULL);
     enemy = NULL;
 
     // Get all points in a radius of 2
@@ -381,7 +381,7 @@ void nofActiveSoldier::MeetingEnemy()
             // Spot is still ok, let's wait for the enemy
             else
             {
-                assert(enemy->enemy == this);
+                RTTR_Assert(enemy->enemy == this);
                 state = STATE_WAITINGFORFIGHT;
                 return;
             }
@@ -484,8 +484,8 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * figh
         else
             middle.y += halfMapHeight;
     }
-    assert(std::abs(otherPos.x - middle.x) <= mapWidth / 4);
-    assert(std::abs(otherPos.y - middle.y) <= mapHeight / 4);
+    RTTR_Assert(std::abs(otherPos.x - middle.x) <= mapWidth / 4);
+    RTTR_Assert(std::abs(otherPos.y - middle.y) <= mapHeight / 4);
 
     // Test Middle point first
     if(gwg->ValidPointForFighting(middle, true, NULL)

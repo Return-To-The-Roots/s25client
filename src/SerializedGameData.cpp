@@ -246,10 +246,10 @@ void SerializedGameData::ReadFromFile(BinaryFile& file)
 
 void SerializedGameData::PushObject(const GameObject* go, const bool known)
 {
-    assert(!isReading);
+    RTTR_Assert(!isReading);
     if(go)
     {
-        //assert(go->GetObjId() < GameObject::GetObjIDCounter());
+        //RTTR_Assert(go->GetObjId() < GameObject::GetObjIDCounter());
         if(go->GetObjId() >= GameObject::GetObjIDCounter())
         {
             LOG.lprintf("%s\n", _("An error occured while saving which was suppressed!"));
@@ -279,7 +279,7 @@ void SerializedGameData::PushObject(const GameObject* go, const bool known)
     writtenObjIds.insert(go->GetObjId());
 
     objectsCount++;
-    assert(objectsCount <= GameObject::GetObjCount());
+    RTTR_Assert(objectsCount <= GameObject::GetObjCount());
 
     // Objekt serialisieren
     go->Serialize(*this);
@@ -321,7 +321,7 @@ FOWObject* SerializedGameData::PopFOWObject()
 
 GameObject* SerializedGameData::PopObject_(GO_Type got)
 {
-    assert(isReading);
+    RTTR_Assert(isReading);
     // Obj-ID holen
     unsigned obj_id = PopUnsignedInt();
 
@@ -371,24 +371,24 @@ MapPoint SerializedGameData::PopMapPoint()
 
 void SerializedGameData::AddObject(GameObject* go)
 {
-    assert(isReading);
-    assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
+    RTTR_Assert(isReading);
+    RTTR_Assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
     readObjects[go->GetObjId()] = go;
     objectsCount++;
-    assert(objectsCount <= expectedObjectsReadCount);
+    RTTR_Assert(objectsCount <= expectedObjectsReadCount);
 }
 
 bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
 {
-    assert(!isReading);
-    assert(obj_id < GameObject::GetObjIDCounter());
+    RTTR_Assert(!isReading);
+    RTTR_Assert(obj_id < GameObject::GetObjIDCounter());
     return helpers::contains(writtenObjIds, obj_id);
 }
 
 GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
-    assert(isReading);
-    assert(obj_id < GameObject::GetObjIDCounter());
+    RTTR_Assert(isReading);
+    RTTR_Assert(obj_id < GameObject::GetObjIDCounter());
     std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return NULL;

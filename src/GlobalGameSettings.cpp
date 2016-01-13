@@ -272,6 +272,6 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
 unsigned GlobalGameSettings::GetMaxMilitaryRank() const
 {
     unsigned selection = getSelection(ADDON_MAX_RANK);
-    assert(selection <= MAX_MILITARY_RANK);
+    RTTR_Assert(selection <= MAX_MILITARY_RANK);
     return MAX_MILITARY_RANK - selection;
 }

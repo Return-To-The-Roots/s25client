@@ -98,11 +98,11 @@ class nobBaseMilitary : public noBuilding
 
         /// Soldaten zur Angreifer-Liste hinzufügen und wieder entfernen
         void LinkAggressor(nofAttacker* soldier) { aggressors.push_back(soldier); }
-        virtual void UnlinkAggressor(nofAttacker* soldier) { assert(IsAggressor(soldier)); aggressors.remove(soldier); }
+        virtual void UnlinkAggressor(nofAttacker* soldier) { RTTR_Assert(IsAggressor(soldier)); aggressors.remove(soldier); }
 
         /// Soldaten zur Aggressiven-Verteidiger-Liste hinzufügen und wieder entfernen
         void LinkAggressiveDefender(nofAggressiveDefender* soldier) { aggressive_defenders.push_back(soldier); }
-        void UnlinkAggressiveDefender(nofAggressiveDefender* soldier) { assert(IsAggressiveDefender(soldier)); aggressive_defenders.remove(soldier); }
+        void UnlinkAggressiveDefender(nofAggressiveDefender* soldier) { RTTR_Assert(IsAggressiveDefender(soldier)); aggressive_defenders.remove(soldier); }
 
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
         virtual void SoldierLost(nofSoldier* soldier) = 0;

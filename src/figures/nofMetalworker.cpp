@@ -203,7 +203,7 @@ bool nofMetalworker::ReadyForWork()
 
     if(current_ev)
     {
-        assert(current_ev->id == 2 && state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
+        RTTR_Assert(current_ev->id == 2 && state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
         em->RemoveEvent(current_ev);
     }
     if(nextProducedTool != GD_NOTHING)
@@ -226,7 +226,7 @@ void nofMetalworker::HandleDerivedEvent(const unsigned int id)
         nofWorkman::HandleDerivedEvent(id);
         return;
     }
-    assert(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
+    RTTR_Assert(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
     current_ev = NULL;
     TryToWork();
 }

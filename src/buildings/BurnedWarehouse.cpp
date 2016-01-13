@@ -82,7 +82,7 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
 
 void BurnedWarehouse::HandleEvent(const unsigned int id)
 {
-    assert(go_out_phase != GO_OUT_PHASES);
+    RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
     bool dirIsPossible[6];
     unsigned possibleDirCt = 0;
@@ -137,7 +137,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
                 last_dir = dir;
         }
 
-        assert(last_dir < 6);
+        RTTR_Assert(last_dir < 6);
 
         for(unsigned char d = 0; d < 6; ++d)
         {
@@ -179,7 +179,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int id)
 #ifndef NDEBUG
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
         for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
-            assert(*it == 0);
+            RTTR_Assert(*it == 0);
 #endif
     }
     else

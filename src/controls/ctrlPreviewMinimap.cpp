@@ -71,7 +71,7 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
                 if(s2map->GetMapDataAt(MAP_TYPE, x, y) == 0x80)
                 {
                     unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
-                    assert(player < MAX_PLAYERS);
+                    RTTR_Assert(player < MAX_PLAYERS);
                     players[player].x = x;
                     players[player].y = y;
                 }

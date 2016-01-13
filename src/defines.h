@@ -19,54 +19,50 @@
 #ifndef defines_h__
 #define defines_h__
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // System-Header
 
 #define _CRTDBG_MAP_ALLOC
 #ifndef NOMINMAX
-#define NOMINMAX
+#   define NOMINMAX
 #endif
 
 #ifdef _WIN32
-#    define WIN32_LEAN_AND_MEAN
-#    ifdef _MSC_VER
-#        include <stdlib.h> // Required for crtdbg.h
-#        include <crtdbg.h>
-#        if !defined(snprintf) && _MSC_VER < 1900
-#            define snprintf _snprintf
-#        endif
-#        ifndef assert
-#            define assert _ASSERT
-#        endif
-#    else
-#        include <assert.h>
-#    endif
+#   define WIN32_LEAN_AND_MEAN
+#   ifdef _MSC_VER
+#       include <stdlib.h> // Required for crtdbg.h
+#       include <crtdbg.h>
+#       if !defined(snprintf) && _MSC_VER < 1900
+#           define snprintf _snprintf
+#       endif
+        extern void __cdecl __debugbreak();
+#       define BREAKPOINT __debugbreak()
+#       ifndef assert
+#           define assert _ASSERT
+#       endif
+#   else
+#       include <assert.h>
+#       define BREAKPOINT
+#   endif
 
-#    undef PlaySound
-#    ifdef _DEBUG
-#        include <crtdbg.h>
-#    endif // _WIN32 && _DEBUG
-
-     typedef int socklen_t;
-#    define BREAKPOINT ;
+#   undef PlaySound
+    typedef int socklen_t;
 #else
-#    define BREAKPOINT raise(SIGTRAP)
-#    define SOCKET int
-#    define INVALID_SOCKET -1
-#    define SOCKET_ERROR -1
-#    define HINSTANCE void*
+#   define BREAKPOINT raise(SIGTRAP)
+#   define SOCKET int
+#   define INVALID_SOCKET -1
+#   define SOCKET_ERROR -1
+#   define HINSTANCE void*
 
-#    define closesocket close
-#    define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
-#    define LoadLibraryW LoadLibrary
-#    define LoadLibraryA LoadLibrary
-#    define GetProcAddress(lib, name) dlsym(lib, name)
-#    define GetProcAddressW GetProcAddress
-#    define GetProcAddressA GetProcAddress
-#    define FreeLibrary(lib) dlclose(lib)
-
-#    include <assert.h>
+#   define closesocket close
+#   define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
+#   define LoadLibraryW LoadLibrary
+#   define LoadLibraryA LoadLibrary
+#   define GetProcAddress(lib, name) dlsym(lib, name)
+#   define GetProcAddressW GetProcAddress
+#   define GetProcAddressA GetProcAddress
+#   define FreeLibrary(lib) dlclose(lib)
+#   include <assert.h>
 #endif // !_WIN32
 
 #ifndef NO_BUILD_PATHS
@@ -74,6 +70,7 @@
 #endif
 
 #include "macros.h"
+#include "RTTR_Assert.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

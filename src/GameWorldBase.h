@@ -168,8 +168,8 @@ public:
     { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
 
     /// Gibt Map-Knotenpunkt zurück
-    const MapNode& GetNode(const MapPoint pt) const { assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
-    MapNode& GetNode(const MapPoint pt) { assert(pt.x < width_ && pt.y < height_); return nodes[GetIdx(pt)]; }
+    const MapNode& GetNode(const MapPoint pt) const { RTTR_Assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
+    MapNode& GetNode(const MapPoint pt) { RTTR_Assert(pt.x < width_ && pt.y < height_); return nodes[GetIdx(pt)]; }
     /// Gibt MapKnotenpunkt darum zurück
     const MapNode& GetNodeAround(const MapPoint pt, const unsigned i) const { return GetNode(GetNeighbour(pt, i));  }
     MapNode& GetNodeAround(const MapPoint pt, const unsigned i) { return GetNode(GetNeighbour(pt, i));  }

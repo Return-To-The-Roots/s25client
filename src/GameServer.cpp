@@ -161,7 +161,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
                 return false;
             }
             const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
-            assert(header);
+            RTTR_Assert(header);
 
             serverconfig.playercount = header->getPlayer();
             mapinfo.title = header->getName();
@@ -957,7 +957,7 @@ void GameServer::ClientWatchDog()
 
 void GameServer::ExecuteGameFrame()
 {
-    assert(status == SS_GAME);
+    RTTR_Assert(status == SS_GAME);
 
     if(framesinfo.isPaused)
         return;
@@ -1031,14 +1031,14 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         {
             SendToAll(GameMessage_GameCommand(client, 0, ai_players[client]->GetGameCommands()));
             ai_players[client]->FetchGameCommands();
-            assert(player.gc_queue.empty());
+            RTTR_Assert(player.gc_queue.empty());
             continue; // No GCs in the queue for KIs
         }
 
         if(player.ps != PS_OCCUPIED)
             continue; // No player
 
-        assert(!player.gc_queue.empty()); // Players should not be lagging at this point
+        RTTR_Assert(!player.gc_queue.empty()); // Players should not be lagging at this point
 
         // Spieler laggt nicht (mehr ggf)
         player.NotLagging();
@@ -1068,7 +1068,7 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         }
 
         player.gc_queue.pop_front();
-        assert(player.gc_queue.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
+        RTTR_Assert(player.gc_queue.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
 
         // Checksummen nicht gleich?
         if (curChecksum.checksum != referenceChecksum.checksum ||
@@ -1098,7 +1098,7 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
                 SendToAll(GameMessage_Server_Async(checksums));
 
                 // Spiel pausieren
-                assert(!framesinfo.isPaused);
+                RTTR_Assert(!framesinfo.isPaused);
                 TogglePause();
             }
         }
@@ -1342,7 +1342,7 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
         curPos += dataSize;
     }while(curPos < mapinfo.ziplength);
     
-    assert(curPos == mapinfo.ziplength);
+    RTTR_Assert(curPos == mapinfo.ziplength);
 }
 
 

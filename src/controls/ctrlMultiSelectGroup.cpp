@@ -66,7 +66,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 {
     // Neuen Button auswählen
     ctrlButton* button = GetCtrl<ctrlButton>(selection);
-    assert(button);
+    RTTR_Assert(button);
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(true); break;
@@ -90,7 +90,7 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 {
     // Neuen Button auswählen
     ctrlButton* button = GetCtrl<ctrlButton>(selection);
-    assert(button);
+    RTTR_Assert(button);
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(false); break;

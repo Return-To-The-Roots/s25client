@@ -90,11 +90,11 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 
 void noFigure::Destroy_noFigure()
 {
-    assert(HasNoGoal());
-    assert(!cur_rs);
+    RTTR_Assert(HasNoGoal());
+    RTTR_Assert(!cur_rs);
     Destroy_noMovable();
 
-    assert(!gwg->GetPlayer(player).IsDependentFigure(this));
+    RTTR_Assert(!gwg->GetPlayer(player).IsDependentFigure(this));
 }
 
 void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
@@ -181,7 +181,7 @@ void noFigure::ActAtFirst()
             if(goal_->GetPos() == pos)
             {
                 gwg->RemoveFigure(this, pos);
-                assert(static_cast<nobBaseWarehouse*>(goal_));
+                RTTR_Assert(static_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
                 nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
                 goal_ = NULL;
@@ -263,9 +263,9 @@ Point<int> noFigure::CalcFigurRelative() const
 
 void noFigure::StartWalking(const unsigned char newDir)
 {
-    assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
+    RTTR_Assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
 
-    assert(newDir <= 5);
+    RTTR_Assert(newDir <= 5);
     if(newDir > 5)
     {
         LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GAMECLIENT.GetGFNumber(), unsigned(newDir));
@@ -339,7 +339,7 @@ void noFigure::WalkToGoal()
         bool reachedGoal;
         if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
         {
-            assert(static_cast<nofCarrier*>(this));
+            RTTR_Assert(static_cast<nofCarrier*>(this));
             nofCarrier* carrier = static_cast<nofCarrier*>(this);
             noRoadNode* flag = carrier->GetFirstFlag();
             if (flag && flag->GetPos() == pos)
@@ -509,7 +509,7 @@ void noFigure::GoHome(noRoadNode* goal)
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == 0)
         {
-            assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
+            RTTR_Assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
                    gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
                    || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 
@@ -550,7 +550,7 @@ void noFigure::GoHome(noRoadNode* goal)
 
 void noFigure::StartWandering(const unsigned burned_wh_id)
 {
-    assert(HasNoGoal());
+    RTTR_Assert(HasNoGoal());
     fs = FS_WANDER;
     cur_rs = 0;
     rs_pos = 0;
@@ -674,7 +674,7 @@ void noFigure::Wander()
         // Wurde keine Flagge gefunden?
 
         // Haben wir noch Versuche?
-        assert(wander_tryings > 0);
+        RTTR_Assert(wander_tryings > 0);
         if(--wander_tryings > 0)
         {
             // von vorne beginnen wieder mit Rumirren
@@ -690,7 +690,7 @@ void noFigure::Wander()
 
     if(WalkInRandomDir())
     {
-        assert(wander_way > 0);
+        RTTR_Assert(wander_way > 0);
         --wander_way;
     }else
     {
@@ -738,7 +738,7 @@ void noFigure::WanderToFlag()
     if(pos == flagPos_)
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
-        assert(gwg->GetSpecObj<noRoadNode>(pos));
+        RTTR_Assert(gwg->GetSpecObj<noRoadNode>(pos));
         if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(
                                       *gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job_, false))
         {
@@ -1002,7 +1002,7 @@ void noFigure::Abrogate()
         //goal might by NULL if goal was a harbor that got destroyed during sea travel
         if(goal_)
         {
-            assert(dynamic_cast<nobBaseWarehouse*>(goal_));
+            RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
             static_cast<nobBaseWarehouse*>(goal_)->RemoveDependentFigure(this);
             goal_ = NULL;
         }else
@@ -1010,7 +1010,7 @@ void noFigure::Abrogate()
             if(!on_ship) //no goal but going home - should not happen
             {
                 LOG.lprintf("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n", player, fs, pos.x, pos.y);
-                //assert(false);
+                //RTTR_Assert(false);
             }
         }
     }
@@ -1055,7 +1055,7 @@ void noFigure::CalcVisibilities(const MapPoint pt)
 void noFigure::StartShipJourney()
 {
     // We should not be in the world, as we start the journey from a harbor -> We are in that harbor
-    assert(!helpers::contains(gwg->GetFigures(pos), this));
+    RTTR_Assert(!helpers::contains(gwg->GetFigures(pos), this));
 
     pos = MapPoint::Invalid();
     on_ship = true;
@@ -1063,7 +1063,7 @@ void noFigure::StartShipJourney()
 
 void noFigure::ArrivedByShip(const MapPoint harborPos)
 {
-    assert(on_ship);
+    RTTR_Assert(on_ship);
     pos = harborPos;
 }
 

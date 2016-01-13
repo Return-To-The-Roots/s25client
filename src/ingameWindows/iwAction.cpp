@@ -349,7 +349,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
 
 void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& width)
 {
-    assert(group);
+    RTTR_Assert(group);
 
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
     {

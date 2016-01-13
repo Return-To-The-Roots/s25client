@@ -64,7 +64,7 @@ class nofHunter : public nofBuildingWorker
         nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofHunter(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy(){ assert(!animal); nofBuildingWorker::Destroy(); }
+        void Destroy(){ RTTR_Assert(!animal); nofBuildingWorker::Destroy(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofHunter(SerializedGameData& sgd) const;

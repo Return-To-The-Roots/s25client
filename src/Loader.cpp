@@ -415,7 +415,7 @@ bool Loader::SaveSettings()
  */
 bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 {
-    assert(gfxset <= LT_WINTERWORLD);
+    RTTR_Assert(gfxset <= LT_WINTERWORLD);
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned int> files;
 
@@ -889,7 +889,7 @@ void Loader::ClearTerrainTextures()
  */
 bool Loader::CreateTerrainTextures(void)
 {
-    assert(lastgfx <= 2);
+    RTTR_Assert(lastgfx <= 2);
     ClearTerrainTextures();
 
     // Ränder

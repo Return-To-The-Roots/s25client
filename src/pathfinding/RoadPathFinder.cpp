@@ -86,7 +86,7 @@ public:
 
     T pop()
     {
-        assert(!empty());
+        RTTR_Assert(!empty());
         const int size = static_cast<int>(elements.size());
         if (size == 1)
         {
@@ -248,11 +248,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                               const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
                               unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
-    assert(&start && &goal);
+    RTTR_Assert(&start && &goal);
     if(&start == &goal)
     {
         // Path where start==goal should never happen
-        assert(false);
+        RTTR_Assert(false);
         LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.GetX()), unsigned(start.GetY()));
         // But for now we assume it to be valid and return (kind of) correct values
         if(length)
@@ -458,7 +458,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
               const bool record, const bool wareMode, const unsigned max, const RoadSegment* const forbidden,
               unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
-    assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!
+    RTTR_Assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!
 
     if(wareMode)
     {

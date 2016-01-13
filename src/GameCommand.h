@@ -130,7 +130,7 @@ inline void intrusive_ptr_add_ref(gc::GameCommand* x){
 }
 
 inline void intrusive_ptr_release(gc::GameCommand* x){
-    assert(x->refCounter_);
+    RTTR_Assert(x->refCounter_);
     if(--x->refCounter_ == 0) 
         delete x;
 }

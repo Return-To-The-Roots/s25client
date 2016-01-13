@@ -161,7 +161,7 @@ class Ware : public GameObject
                 case GD_WATEREMPTY: return("GD_WATEREMPTY");
                 case GD_WOOD: return("GD_WOOD");
             }
-            assert(false);
+            RTTR_Assert(false);
             return("unknown");
         }
 };

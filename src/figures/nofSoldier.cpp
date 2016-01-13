@@ -41,14 +41,14 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
                        nobBaseMilitary* const goal , nobBaseMilitary* const home, const unsigned char rank)
     : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
-    assert(IsSoldier());
+    RTTR_Assert(IsSoldier());
 }
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
                        nobBaseMilitary* const home, const unsigned char rank)
     : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
-    assert(IsSoldier());
+    RTTR_Assert(IsSoldier());
 }
 
 void nofSoldier::Serialize_nofSoldier(SerializedGameData& sgd) const
@@ -63,7 +63,7 @@ void nofSoldier::Serialize_nofSoldier(SerializedGameData& sgd) const
 
 nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
-    assert(IsSoldier());
+    RTTR_Assert(IsSoldier());
 
     if(fs != FS_WANDER && fs != FS_GOHOME)
         building = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);

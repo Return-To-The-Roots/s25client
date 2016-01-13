@@ -51,7 +51,7 @@ EventManager::Event::Event(SerializedGameData& sgd, const unsigned obj_id) : Gam
     gf_next(gf + gf_length),
     id(sgd.PopUnsignedInt())
 {
-    assert(obj);
+    RTTR_Assert(obj);
 }
 
 
@@ -83,8 +83,8 @@ void EventManager::Clear()
 EventManager::EventPointer EventManager::AddEvent(EventPointer event)
 {
     // Should be in the future!
-    assert(event->gf_next > GAMECLIENT.GetGFNumber());
-    assert(!dynamic_cast<EventPointer>(event->obj)); // Why could this ever happen?
+    RTTR_Assert(event->gf_next > GAMECLIENT.GetGFNumber());
+    RTTR_Assert(!dynamic_cast<EventPointer>(event->obj)); // Why could this ever happen?
     events[event->gf_next].push_back(event);
     return event;
 }
@@ -100,8 +100,8 @@ EventManager::EventPointer EventManager::AddEvent(EventPointer event)
  */
 EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id)
 {
-    assert(obj);
-    assert(gf_length);
+    RTTR_Assert(obj);
+    RTTR_Assert(gf_length);
 
     /*  if (IsEventActive(obj, id))
         {
@@ -120,7 +120,7 @@ EventManager::EventPointer EventManager::AddEvent(SerializedGameData& sgd, const
 
 EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed)
 {
-    assert(gf_length > gf_elapsed);
+    RTTR_Assert(gf_length > gf_elapsed);
 
     /*  if (IsEventActive(obj, id))
         {
@@ -128,7 +128,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
         }*/
 
     // Anfang des Events in die Vergangenheit zurückverlegen
-    assert(GAMECLIENT.GetGFNumber() >= gf_elapsed);
+    RTTR_Assert(GAMECLIENT.GetGFNumber() >= gf_elapsed);
     return AddEvent(new Event(obj, GAMECLIENT.GetGFNumber() - gf_elapsed, gf_length, id));
 }
 
@@ -141,7 +141,7 @@ void EventManager::NextGF()
 {
     unsigned int gfnr = GAMECLIENT.GetGFNumber();
 
-    assert(events.empty() || events.begin()->first >= gfnr);
+    RTTR_Assert(events.empty() || events.begin()->first >= gfnr);
 
     // Events abfragen
     EventMap::iterator itCurEvents = events.find(gfnr);
@@ -154,8 +154,8 @@ void EventManager::NextGF()
         for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
         {
             Event* ev = (*e_it);
-            assert(ev->obj);
-            assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
+            RTTR_Assert(ev->obj);
+            RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
 
             curActiveEvent = ev;
             ev->obj->HandleEvent(ev->id);
@@ -181,7 +181,7 @@ void EventManager::NextGF()
 void EventManager::Serialize(SerializedGameData& sgd) const
 {
     // Kill-Liste muss leer sein!
-    assert(kill_list.empty());
+    RTTR_Assert(kill_list.empty());
 
     std::list<const Event*> save_events;
     // Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
@@ -272,7 +272,7 @@ void EventManager::RemoveEvent(EventPointer& ep)
 
     if(ep == curActiveEvent)
     {
-        assert(false);
+        RTTR_Assert(false);
         LOG.lprintf("Bug detected: Active event deleted");
         ep = NULL;
         return;
@@ -306,10 +306,10 @@ void EventManager::RemoveEvent(EventPointer& ep)
 
 void EventManager::AddToKillList(GameObject* obj)
 {
-    assert(obj);
-    assert(!helpers::contains(kill_list, obj));
-    assert(!dynamic_cast<noFigure*>(obj) || static_cast<noFigure*>(obj)->HasNoGoal());
-    assert(!dynamic_cast<nofSoldier*>(obj) || static_cast<nofSoldier*>(obj)->HasNoHome());
-    assert(!dynamic_cast<Ware*>(obj) || !static_cast<Ware*>(obj)->GetGoal());
+    RTTR_Assert(obj);
+    RTTR_Assert(!helpers::contains(kill_list, obj));
+    RTTR_Assert(!dynamic_cast<noFigure*>(obj) || static_cast<noFigure*>(obj)->HasNoGoal());
+    RTTR_Assert(!dynamic_cast<nofSoldier*>(obj) || static_cast<nofSoldier*>(obj)->HasNoHome());
+    RTTR_Assert(!dynamic_cast<Ware*>(obj) || !static_cast<Ware*>(obj)->GetGoal());
     kill_list.push_back(obj);
 }

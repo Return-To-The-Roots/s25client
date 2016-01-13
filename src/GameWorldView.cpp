@@ -427,7 +427,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
                 const unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into dskGameInterface.cpp, too
                 const unsigned char index = GAMECLIENT.GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
-                assert(index <= sizeof(waterway_lengthes) - 1);
+                RTTR_Assert(index <= sizeof(waterway_lengthes) - 1);
                 const unsigned char max_length = waterway_lengthes[index];
 
                 for(unsigned i = 0; i < 6; ++i)

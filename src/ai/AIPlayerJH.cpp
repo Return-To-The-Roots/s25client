@@ -731,7 +731,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         lastvaluecalculated = true;
                     }
                     //if(resMapVal)
-                    //assert(temp==aii->CalcResourceValue(t2,res));
+                    //RTTR_Assert(temp==aii->CalcResourceValue(t2,res));
                     //copy the value to the resource map
                     resMapVal = temp;
                 }
@@ -1162,7 +1162,7 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIJH::Resource res, int radius)
 
     std::vector<unsigned> idxs = aii->GetPointsInRadius(pt, radius, MapPoint2Idx(*aii));
     const unsigned all = idxs.size();
-    assert(all > 0);
+    RTTR_Assert(all > 0);
 
     unsigned good = 0;
     for(std::vector<unsigned>::const_iterator it = idxs.begin(); it != idxs.end(); ++it)
@@ -2344,7 +2344,7 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
 bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bld, unsigned min)
 {
     //assert not a military building
-    assert(bld >= 10);
+    RTTR_Assert(bld >= 10);
     for(std::list<nobUsual*>::const_iterator it = aii->GetBuildings(bld).begin(); it != aii->GetBuildings(bld).end(); ++it)
     {
         if(gwb.CalcDistance(pt, (*it)->GetPos()) < min)
@@ -2423,7 +2423,7 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
 {
     if(harborid < 1 || harborid > gwb.GetHarborPointCount()) //not a real harbor - shouldnt happen...
     {
-        assert(false);
+        RTTR_Assert(false);
         return false;
     }
     //get sea ids of harbor id given - is there at least 1 sea id? if so check for other harbors with the same id!

@@ -50,7 +50,7 @@ Point<int> GetPointAround(const Point<int>& p, unsigned dir)
         case 3: return Point<int>(p.x + 1, p.y); break;
         case 4: return Point<int>(p.x + (p.y&1), p.y+1); break;
         case 5: return Point<int>(p.x - !(p.y&1), p.y+1); break;
-        default: assert(false); return Point<int>(0xffffff, 0xffffff);
+        default: RTTR_Assert(false); return Point<int>(0xffffff, 0xffffff);
     }
 }
 

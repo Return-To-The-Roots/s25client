@@ -75,37 +75,37 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         else
             return new nofBuilder(pt, player, goal);
     case JOB_PLANER:
-        assert(dynamic_cast<noBuildingSite*>(goal));
+        RTTR_Assert(dynamic_cast<noBuildingSite*>(goal));
         return new nofPlaner(pt, player, static_cast<noBuildingSite*>(goal));
     case JOB_CARPENTER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofCarpenter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_ARMORER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofArmorer(pt, player, static_cast<nobUsual*>(goal));
     case JOB_STONEMASON:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofStonemason(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BREWER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofBrewer(pt, player, static_cast<nobUsual*>(goal));
     case JOB_MINTER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofMinter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BUTCHER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofButcher(pt, player, static_cast<nobUsual*>(goal));
     case JOB_IRONFOUNDER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofIronfounder(pt, player, static_cast<nobUsual*>(goal));
     case JOB_MILLER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofMiller(pt, player, static_cast<nobUsual*>(goal));
     case JOB_METALWORKER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofMetalworker(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BAKER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofBaker(pt, player, static_cast<nobUsual*>(goal));
     case JOB_HELPER:
         // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
@@ -122,7 +122,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         }else
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
     case JOB_GEOLOGIST:
-        assert(dynamic_cast<noFlag*>(goal));
+        RTTR_Assert(dynamic_cast<noFlag*>(goal));
         return new nofGeologist(pt, player, static_cast<noFlag*>(goal));
     case JOB_SCOUT:
         // Im Spähturm arbeitet ein anderer Späher-Typ
@@ -133,50 +133,50 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
             return new nofPassiveWorker(JOB_SCOUT, pt, player, goal);
         else if(goal->GetGOT() == GOT_NOB_USUAL) // Spähturm / Lagerhaus?
         {
-            assert(dynamic_cast<nobUsual*>(goal));
+            RTTR_Assert(dynamic_cast<nobUsual*>(goal));
             return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(goal));
         }else if(goal->GetGOT() == GOT_FLAG)
             return new nofScout_Free(pt, player, goal);
         else
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
     case JOB_MINER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofMiner(pt, player, static_cast<nobUsual*>(goal));
     case JOB_FARMER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofFarmer(pt, player, static_cast<nobUsual*>(goal));
     case JOB_FORESTER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofForester(pt, player, static_cast<nobUsual*>(goal));
     case JOB_WOODCUTTER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofWoodcutter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_PIGBREEDER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofPigbreeder(pt, player, static_cast<nobUsual*>(goal));
     case JOB_DONKEYBREEDER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofDonkeybreeder(pt, player, static_cast<nobUsual*>(goal) );
     case JOB_HUNTER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofHunter(pt, player, static_cast<nobUsual*>(goal));
     case JOB_FISHER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofFisher(pt, player, static_cast<nobUsual*>(goal));
     case JOB_PRIVATE:
     case JOB_PRIVATEFIRSTCLASS:
     case JOB_SERGEANT:
     case JOB_OFFICER:
     case JOB_GENERAL:
-        assert(dynamic_cast<nobBaseMilitary*>(goal));
+        RTTR_Assert(dynamic_cast<nobBaseMilitary*>(goal));
         return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), NULL, job_id - JOB_PRIVATE);
     case JOB_PACKDONKEY:
         return new nofCarrier(nofCarrier::CT_DONKEY, pt, player, 0, goal);
     case JOB_SHIPWRIGHT:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofShipWright(pt, player, static_cast<nobUsual*>(goal));
     case JOB_CHARBURNER:
-        assert(dynamic_cast<nobUsual*>(goal));
+        RTTR_Assert(dynamic_cast<nobUsual*>(goal));
         return new nofCharburner(pt, player, static_cast<nobUsual*>(goal));
     case JOB_BOATCARRIER:
         throw std::runtime_error("Cannot create a boat carrier job (try creating JOB_HELPER).");

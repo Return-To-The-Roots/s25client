@@ -75,7 +75,7 @@ void AIJH::BuildJob::ExecuteJob()
         break;
 
         default:
-            assert(false);
+            RTTR_Assert(false);
             break;
 
 

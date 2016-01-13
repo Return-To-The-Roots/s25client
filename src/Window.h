@@ -305,7 +305,7 @@ class Window
         template <typename T>
         T* AddCtrl(unsigned int id, T* ctrl)
         {
-            assert(childIdToWnd_.find(id) == childIdToWnd_.end());
+            RTTR_Assert(childIdToWnd_.find(id) == childIdToWnd_.end());
             // ID auf control mappen
             childIdToWnd_.insert(std::make_pair(id, ctrl));
 

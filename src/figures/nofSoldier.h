@@ -50,7 +50,7 @@ class nofSoldier : public noFigure
         nofSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    protected:  void Destroy_nofSoldier() { assert(HasNoHome()); Destroy_noFigure(); }
+    protected:  void Destroy_nofSoldier() { RTTR_Assert(HasNoHome()); Destroy_noFigure(); }
     public:     void Destroy() { Destroy_nofSoldier(); }
 
         /// Serialisierungsfunktionen

@@ -136,7 +136,7 @@ namespace helpers{
     template<typename T>
     inline void pop_front(T& container)
     {
-        assert(!container.empty());
+        RTTR_Assert(!container.empty());
         detail::PopFrontImpl<T>::pop(container);
     }
 

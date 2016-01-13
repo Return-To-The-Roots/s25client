@@ -197,14 +197,14 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void TakeWare(Ware* ware);
 
         /// Fügt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
-        void AddDependentFigure(noFigure* figure) { assert(!IsDependentFigure(figure)); dependent_figures.push_back(figure); }
+        void AddDependentFigure(noFigure* figure) { RTTR_Assert(!IsDependentFigure(figure)); dependent_figures.push_back(figure); }
         //// Entfernt eine abhängige Figur wieder aus der Liste
-        virtual void RemoveDependentFigure(noFigure* figure) { assert(IsDependentFigure(figure)); dependent_figures.remove(figure); }
+        virtual void RemoveDependentFigure(noFigure* figure) { RTTR_Assert(IsDependentFigure(figure)); dependent_figures.remove(figure); }
         /// Wird aufgerufen, wenn ein Arbeiter hierher kommt
-        void GotWorker(Job job, noFigure* worker) { assert(!IsDependentFigure(worker)); dependent_figures.push_back(worker); }
+        void GotWorker(Job job, noFigure* worker) { RTTR_Assert(!IsDependentFigure(worker)); dependent_figures.push_back(worker); }
 
         //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
-		void RemoveDependentWare(Ware* ware) { assert(IsWareDependent(ware)); dependent_wares.remove(ware); }
+		void RemoveDependentWare(Ware* ware) { RTTR_Assert(IsWareDependent(ware)); dependent_wares.remove(ware); }
         /// Überprüft, ob Ware abhängig ist
 		bool IsWareDependent(Ware* ware) { return helpers::contains(dependent_wares, ware); }
         /// Prüft, ob es Waren zum Auslagern gibt

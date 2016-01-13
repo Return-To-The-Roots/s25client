@@ -167,7 +167,7 @@ namespace gc{
             Distributions data;
         protected:
             ChangeDistribution(const Distributions& data)
-                : GameCommand(CHANGEDISTRIBUTION), data(data) { assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGEDISTRIBUTION), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
             ChangeDistribution(Serializer* ser)
                 : GameCommand(CHANGEDISTRIBUTION)
             {
@@ -197,7 +197,7 @@ namespace gc{
             boost::array<unsigned char, 31> data;
         protected:
             ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 31>& data)
-                : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) { assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
             ChangeBuildOrder(Serializer* ser)
                 : GameCommand(CHANGEBUILDORDER), order_type(ser->PopUnsignedChar())
             {
@@ -294,7 +294,7 @@ namespace gc{
             TransportOrders data;
         protected:
             ChangeTransport(const TransportOrders& data)
-                : GameCommand(CHANGETRANSPORT), data(data) { assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGETRANSPORT), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
             ChangeTransport(Serializer* ser)
                 : GameCommand(CHANGETRANSPORT)
             {
@@ -322,7 +322,7 @@ namespace gc{
              boost::array<unsigned char, MILITARY_SETTINGS_COUNT> data;
         protected:
             ChangeMilitary(const  boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
-                : GameCommand(CHANGEMILITARY), data(data) { assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGEMILITARY), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
             ChangeMilitary(Serializer* ser)
                 : GameCommand(CHANGEMILITARY)
             {
@@ -354,7 +354,7 @@ namespace gc{
             ChangeTools(const ToolSettings& data, signed char* order_delta = 0)
                 : GameCommand(CHANGETOOLS), data(data)
             {
-                assert(data.size() == DATA_SIZE);
+                RTTR_Assert(data.size() == DATA_SIZE);
 
                 if (order_delta != 0)
                 {

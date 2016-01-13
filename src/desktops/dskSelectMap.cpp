@@ -406,7 +406,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
     if(libsiedler2::loader::LoadMAP(filename, map, true) == 0)
     {
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
-        assert(header);
+        RTTR_Assert(header);
 
         if (header->getPlayer() > MAX_PLAYERS)
             return;

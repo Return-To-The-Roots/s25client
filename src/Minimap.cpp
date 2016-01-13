@@ -169,7 +169,7 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     else
     {
         unsigned char gfxSet = s2Map->getHeader().getGfxSet();
-        assert(gfxSet < LT_COUNT);
+        RTTR_Assert(gfxSet < LT_COUNT);
         color = TerrainData::GetColor(LandscapeType(gfxSet), TerrainData::MapIdx2Terrain(s2Map->GetMapDataAt(MapLayer(MAP_TERRAIN1 + t), pt.x, pt.y)));
 
         // Schattierung

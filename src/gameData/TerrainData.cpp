@@ -49,7 +49,7 @@ TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
     case 22: return TT_LAVA4;
     case 34: return TT_BUILDABLE_MOUNTAIN;
     default:
-        assert(false); // Unknown/invalid texture
+        RTTR_Assert(false); // Unknown/invalid texture
         return TT_SNOW;
     }
 }

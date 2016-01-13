@@ -786,7 +786,7 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
     if(rm != RM_DISABLED)
     {
         road.route.clear();
-        assert(selected.x < width_ && selected.y < height_);
+        RTTR_Assert(selected.x < width_ && selected.y < height_);
         road.start = road.point = selected;
     }
     else
@@ -822,7 +822,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool end)
         unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into GameWorldViewer.cpp, too
         unsigned char index = GAMECLIENT.GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
 
-        assert(index <= sizeof(waterway_lengthes) - 1);
+        RTTR_Assert(index <= sizeof(waterway_lengthes) - 1);
         const unsigned char max_length = waterway_lengthes[index];
 
         unsigned short length = road.route.size() + new_route.size();

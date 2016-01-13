@@ -229,7 +229,7 @@ void iwMilitaryBuilding::DemolitionNotAllowed()
     std::string msg;
     switch(GAMECLIENT.GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
     {
-        default: assert(false); break;
+        default: RTTR_Assert(false); break;
         case 1: msg = _("Demolition ist not allowed because the building is under attack!"); break;
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
