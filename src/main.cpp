@@ -22,7 +22,6 @@
 
 #ifdef _WIN32
 #   include <windows.h>
-#   define chdir !SetCurrentDirectoryA
 #else
 #   include <unistd.h>
 #endif
@@ -37,20 +36,20 @@
 
 #include "GameManager.h"
 
-#include "GameClient.h"
 #include "Settings.h"
 #include "Log.h"
 #include "error.h"
 #include "files.h"
-
-#include "../libsiedler2/src/types.h"
-#include "ogl/glAllocator.h"
 
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
 
 #include "QuickStartGame.h"
 #include "fileFuncs.h"
+
+#include "ogl/glAllocator.h"
+#include "../libsiedler2/src/types.h"
+#include "mygettext.h"
 
 #ifdef __APPLE__
 #   include <SDL_main.h>
@@ -59,9 +58,6 @@
 #ifdef _WIN32
 #   include "../win32/resource.h"
 #   include "drivers/VideoDriverWrapper.h"
-#   ifdef _MSC_VER
-#        define getch _getch
-#   endif
 #endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS

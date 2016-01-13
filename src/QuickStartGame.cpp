@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "QuickStartGame.h"
 #include "GameServer.h"
+#include "GameClient.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
