@@ -298,18 +298,9 @@ void EventManager::RemoveEvent(EventPointer& ep)
     ep = NULL;
 }
 
-#if RTTR_ENABLE_ASSERTS
-#   include "figures/noFigure.h"
-#   include "figures/nofSoldier.h"
-#   include "Ware.h"
-#endif
-
 void EventManager::AddToKillList(GameObject* obj)
 {
     RTTR_Assert(obj);
     RTTR_Assert(!helpers::contains(kill_list, obj));
-    RTTR_Assert(!dynamic_cast<noFigure*>(obj) || static_cast<noFigure*>(obj)->HasNoGoal());
-    RTTR_Assert(!dynamic_cast<nofSoldier*>(obj) || static_cast<nofSoldier*>(obj)->HasNoHome());
-    RTTR_Assert(!dynamic_cast<Ware*>(obj) || !static_cast<Ware*>(obj)->GetGoal());
     kill_list.push_back(obj);
 }
