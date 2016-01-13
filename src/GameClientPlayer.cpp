@@ -2416,29 +2416,24 @@ bool GameClientPlayer::IsDependentFigure(noFigure* fig)
     return false;
 }
 
-/// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
-unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* goalWh, const GoodType gt, const Job job) const
+std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse* goalWh) const
 {
+    std::vector<nobBaseWarehouse*> result;
+
+    // Don't try to trade with us!
+    if(goalWh->GetPlayer() == playerid)
+        return result;
+
     const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
-    unsigned count = 0;
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
         if(TradePathCache::inst().PathExists(*gwg, (*it)->GetFlag()->GetPos(), goalFlagPos, playerid))
-        {
-            // Then consider this warehouse
-            if(gt != GD_NOTHING)
-                count += (*it)->GetAvailableWaresForTrading(gt);
-            else
-            {
-                assert(job != JOB_NOTHING);
-                count += (*it)->GetAvailableFiguresForTrading(job);
-            }
-        }
+            result.push_back(*it);
     }
 
-    return count;
+    return result;
 }
 
 struct WarehouseDistanceComparator
@@ -2460,15 +2455,19 @@ struct WarehouseDistanceComparator
 };
 
 /// Send wares to warehouse wh
-void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const
+void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job job, unsigned count) const
 {
-    if(count < 1) //block trolling player who wants to send empty tradecaravan, sending packdonkeys is forbidden because it crashes the game
+    if(count == 0)
         return;
 
-    const MapPoint goalFlagPos = wh->GetFlag()->GetPos();
+    // Don't try to trade with us!
+    if(goalWh->GetPlayer() == playerid)
+        return;
+
+    const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
     std::list<nobBaseWarehouse*> whs(warehouses);
-    whs.sort(WarehouseDistanceComparator(*wh, *gwg));
+    whs.sort(WarehouseDistanceComparator(*goalWh, *gwg));
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
         // Get available wares
@@ -2493,7 +2492,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job 
             // Add to cache for future searches
             TradePathCache::inst().AddEntry(*gwg, tr.GetTradePath(), playerid);
 
-            (*it)->StartTradeCaravane(gt, job, available, tr, wh);
+            (*it)->StartTradeCaravane(gt, job, available, tr, goalWh);
             count -= available;
             if(count == 0)
                 return;

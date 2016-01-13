@@ -55,12 +55,10 @@ static char THIS_FILE[] = __FILE__;
  */
 iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* const wh)
     : IngameWindow(wh->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gi(gi), wh(wh)
+      gwv(gwv), gi(gi), wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
-    char title[512];
-    sprintf(title, _("Trade with %s"), GAMECLIENT.GetPlayer(wh->GetPlayer()).name.c_str());
-    SetTitle(title);
+    SetTitle(_("Trade with %s") + GAMECLIENT.GetPlayer(wh->GetPlayer()).name);
     // Gebäudebild und dessen Schatten
     AddImage( 0, 100, 144, LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
 
@@ -139,7 +137,6 @@ void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-
 void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection)
 {
     switch(ctrl_id)
@@ -178,8 +175,8 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                 // Set the new image of the ware which was selected
                 GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(2250 + wares[selection]));
 
-                // Get the number of available wares/figures
-                number = GAMECLIENT.GetLocalPlayer().GetAvailableWaresForTrading(wh, wares[selection], JOB_NOTHING);
+                // Get the number of available wares
+                number = GetPossibleTradeAmount(wares[selection]);
             }
             else
             {
@@ -189,8 +186,8 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
                     image = LOADER.GetImageN("io_new", 5);
                 GetCtrl<ctrlImage>(5)->SetImage(image);
 
-                // Get the number of available wares/figures
-                number = GAMECLIENT.GetLocalPlayer().GetAvailableWaresForTrading(wh, GD_NOTHING, jobs[selection]);
+                // Get the number of available figures
+                number = GetPossibleTradeAmount(jobs[selection]);
             }
 
             char str[256];
@@ -198,4 +195,29 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short s
             GetCtrl<ctrlText>(7)->SetText(str);
         } break;
     }
+}
+
+unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
+{
+    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    unsigned amount = 0;
+    for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
+    {
+        if(player.IsWarehouseValid(*it))
+            amount += (*it)->GetAvailableFiguresForTrading(job);
+    }
+    return amount;
+}
+
+unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
+{
+    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    unsigned amount = 0;
+    for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
+    {
+        if(player.IsWarehouseValid(*it))
+            amount += (*it)->GetAvailableWaresForTrading(good);
+    }
+    return amount;
+
 }
