@@ -26,35 +26,32 @@ class GameMessage : public Message
     public:
         /// Spieler-ID, von dem diese Nachricht stammt
         unsigned char player;
-    public:
+
         GameMessage(const unsigned short id) : Message(id) {}
         /// Konstruktor von @p GameMessage.
-        GameMessage(const unsigned short id, const unsigned char player)
-            : Message(id), player(player)
+        GameMessage(const unsigned short id, const unsigned char player): Message(id), player(player){}
+
+        void Serialize(Serializer& ser) const override
         {
-            PushUnsignedChar(player);
+            Message::Serialize(ser);
+            ser.PushUnsignedChar(player);
         }
-        /// Konstruktor, um Message aus vorhandenem Datenblock heraus zu erstellen
-        GameMessage(const unsigned id, const unsigned char* const data, const unsigned length)
-            : Message(id, data, length), player(PopUnsignedChar())
+
+        void Deserialize(Serializer& ser) override
         {
+            Message::Deserialize(ser);
+            player = ser.PopUnsignedChar();
         }
-        /// Destruktor von @p GameMessage.
-        virtual ~GameMessage(void) {};
 
         /// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
         virtual void Run(MessageInterface* callback) = 0;
 
         virtual void run(MessageInterface* callback, unsigned int id)
         {
-            player = PopUnsignedChar();
             if(id != 0xFFFFFFFF)
                 player = static_cast<unsigned char>(id);
             Run(callback);
         }
-
-        /// Gibt Netto-Länge der Message zurück ohne zusätzliche Daten (Player usw)
-        unsigned GetNetLength() const { return GetLength() - 1; }
 
         static Message* create_game(unsigned short id);
         virtual Message* create(unsigned short id) const { return create_game(id); }

@@ -83,15 +83,15 @@ GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(G
 GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
 {
     Serializer ser;
-    ggs.Serialize(&ser);
-    Deserialize(&ser);
+    ggs.Serialize(ser);
+    Deserialize(ser);
 }
 
 void GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 {
     Serializer ser;
-    ggs.Serialize(&ser);
-    Deserialize(&ser);
+    ggs.Serialize(ser);
+    Deserialize(ser);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -201,24 +201,23 @@ void GlobalGameSettings::SaveSettings() const
  *
  *  @author FloSoft
  */
-void GlobalGameSettings::Serialize(Serializer* ser) const
+void GlobalGameSettings::Serialize(Serializer& ser) const
 {
     LOG.write(">>> Addon Status:\n");
 
+    ser.PushUnsignedChar(static_cast<unsigned char>(game_speed));
+    ser.PushUnsignedChar(static_cast<unsigned char>(game_objective));
+    ser.PushUnsignedChar(static_cast<unsigned char>(start_wares));
+    ser.PushBool(lock_teams);
+    ser.PushUnsignedChar(static_cast<unsigned char>(exploration));
+    ser.PushBool(team_view);
+    ser.PushBool(random_location);
 
-    ser->PushUnsignedChar(static_cast<unsigned char>(game_speed));
-    ser->PushUnsignedChar(static_cast<unsigned char>(game_objective));
-    ser->PushUnsignedChar(static_cast<unsigned char>(start_wares));
-    ser->PushBool(lock_teams);
-    ser->PushUnsignedChar(static_cast<unsigned char>(exploration));
-    ser->PushBool(team_view);
-    ser->PushBool(random_location);
-
-    ser->PushUnsignedInt(addons.size());
+    ser.PushUnsignedInt(addons.size());
     for( std::vector<item>::const_iterator it = addons.begin(); it != addons.end(); ++it)
     {
-        ser->PushUnsignedInt(it->addon->getId());
-        ser->PushUnsignedInt(it->status);
+        ser.PushUnsignedInt(it->addon->getId());
+        ser.PushUnsignedInt(it->status);
 
         LOG.write("\t0x%08X=%d\n", it->addon->getId(), it->status);
     }
@@ -230,17 +229,17 @@ void GlobalGameSettings::Serialize(Serializer* ser) const
  *
  *  @author FloSoft
  */
-void GlobalGameSettings::Deserialize(Serializer* ser)
+void GlobalGameSettings::Deserialize(Serializer& ser)
 {
-    game_speed = static_cast<GameSpeed>(ser->PopUnsignedChar());
-    game_objective = static_cast<GameObjective>(ser->PopUnsignedChar());
-    start_wares = static_cast<StartWares>(ser->PopUnsignedChar());
-    lock_teams = ser->PopBool();
-    exploration = static_cast<Exploration>(ser->PopUnsignedChar());
-    team_view = ser->PopBool();
-    random_location = ser->PopBool();
+    game_speed = static_cast<GameSpeed>(ser.PopUnsignedChar());
+    game_objective = static_cast<GameObjective>(ser.PopUnsignedChar());
+    start_wares = static_cast<StartWares>(ser.PopUnsignedChar());
+    lock_teams = ser.PopBool();
+    exploration = static_cast<Exploration>(ser.PopUnsignedChar());
+    team_view = ser.PopBool();
+    random_location = ser.PopBool();
 
-    unsigned int count = ser->PopUnsignedInt();
+    unsigned int count = ser.PopUnsignedInt();
 
     reset();
 
@@ -248,8 +247,8 @@ void GlobalGameSettings::Deserialize(Serializer* ser)
 
     for(unsigned int i = 0; i < count; ++i)
     {
-        AddonId addon = AddonId(ser->PopUnsignedInt());
-        unsigned int status = ser->PopUnsignedInt();
+        AddonId addon = AddonId(ser.PopUnsignedInt());
+        unsigned int status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
         LOG.write("\t0x%08X=%d\n", addon, status);

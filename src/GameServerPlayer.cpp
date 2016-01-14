@@ -46,7 +46,7 @@ GameServerPlayer::GameServerPlayer(const unsigned playerid)
 {
 }
 
-GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer* ser)
+GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer& ser)
     : GamePlayerInfo(playerid, ser),
       connecttime(0),
       last_command_timeout(0),

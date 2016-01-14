@@ -50,19 +50,19 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
 }
 
 /// Deserialisierungskonstruktor
-GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer* ser) :
+GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     playerid(playerid),
-    ps(PlayerState(ser->PopUnsignedChar())),
+    ps(PlayerState(ser.PopUnsignedChar())),
     aiInfo(),
-    name(ser->PopString()),
-    origin_name(ser->PopString()),
-    is_host(ser->PopBool()),
-    nation(Nation(ser->PopUnsignedChar())),
-    team(Team(ser->PopUnsignedChar())),
-    color(ser->PopUnsignedChar()),
-    ping(ser->PopUnsignedInt()),
-    rating(ser->PopUnsignedInt()),
-    ready(ser->PopBool())
+    name(ser.PopString()),
+    origin_name(ser.PopString()),
+    is_host(ser.PopBool()),
+    nation(Nation(ser.PopUnsignedChar())),
+    team(Team(ser.PopUnsignedChar())),
+    color(ser.PopUnsignedChar()),
+    ping(ser.PopUnsignedInt()),
+    rating(ser.PopUnsignedInt()),
+    ready(ser.PopBool())
 {
 }
 
@@ -85,18 +85,18 @@ void GamePlayerInfo::clear(void)
 }
 
 /// serialisiert die Daten.
-void GamePlayerInfo::serialize(Serializer* ser) const
+void GamePlayerInfo::serialize(Serializer& ser) const
 {
-    ser->PushUnsignedChar(static_cast<unsigned char>(ps));
-    ser->PushString(name);
-    ser->PushString(origin_name);
-    ser->PushBool(is_host);
-    ser->PushUnsignedChar(static_cast<unsigned char>(nation));
-    ser->PushUnsignedChar(team);
-    ser->PushUnsignedChar(color);
-    ser->PushUnsignedInt(ping);
-    ser->PushUnsignedInt(rating);
-    ser->PushBool(ready);
+    ser.PushUnsignedChar(static_cast<unsigned char>(ps));
+    ser.PushString(name);
+    ser.PushString(origin_name);
+    ser.PushBool(is_host);
+    ser.PushUnsignedChar(static_cast<unsigned char>(nation));
+    ser.PushUnsignedChar(team);
+    ser.PushUnsignedChar(color);
+    ser.PushUnsignedInt(ping);
+    ser.PushUnsignedInt(rating);
+    ser.PushBool(ready);
 }
 
 void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)

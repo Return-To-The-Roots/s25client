@@ -57,9 +57,11 @@ void GameClient::ExecuteGameFrame_Replay()
         else if(rc == Replay::RC_GAME)
         {
             std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
+            Serializer ser(&gcData.front(), gcData.size());
+            GameMessage_GameCommand msg;
+            msg.Deserialize(ser);
             // Nächsten Zeitpunkt lesen
             replayinfo.replay.ReadGF(&replayinfo.next_gf);
-            GameMessage_GameCommand msg(&gcData.front(), gcData.size());
 
             // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
             ExecuteAllGCs(msg);

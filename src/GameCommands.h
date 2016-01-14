@@ -23,11 +23,11 @@ namespace gc{
     class Coords : public GameCommand
     {
         GC_FRIEND_DECL;
-        private: MapPoint PopMapPoint(Serializer* ser)
+        private: MapPoint PopMapPoint(Serializer& ser)
                  {
                      MapPoint pt;
-                     pt.x = ser->PopUnsignedShort();
-                     pt.y = ser->PopUnsignedShort();
+                     pt.x = ser.PopUnsignedShort();
+                     pt.y = ser.PopUnsignedShort();
                      return pt;
                  }
         protected:
@@ -35,14 +35,14 @@ namespace gc{
             const MapPoint pt_;
             Coords(const Type gst, const MapPoint pt)
                 : GameCommand(gst), pt_(pt) {}
-            Coords(const Type gst, Serializer* ser)
+            Coords(const Type gst, Serializer& ser)
                 : GameCommand(gst), pt_(PopMapPoint(ser)){}
 
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushUnsignedShort(pt_.x);
-                ser->PushUnsignedShort(pt_.y);
+                ser.PushUnsignedShort(pt_.x);
+                ser.PushUnsignedShort(pt_.y);
             }
 
     };
@@ -54,7 +54,7 @@ namespace gc{
         protected:
             SetFlag(const MapPoint pt)
                 : Coords(SETFLAG, pt) {}
-            SetFlag(Serializer* ser)
+            SetFlag(Serializer& ser)
                 : Coords(SETFLAG, ser) {}
         public:
 
@@ -69,7 +69,7 @@ namespace gc{
         protected:
             DestroyFlag(const MapPoint pt)
                 : Coords(DESTROYFLAG, pt) {}
-            DestroyFlag(Serializer* ser)
+            DestroyFlag(Serializer& ser)
                 : Coords(DESTROYFLAG, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -87,24 +87,24 @@ namespace gc{
         protected:
             BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<unsigned char>& route)
                 : Coords(BUILDROAD, pt), boat_road(boat_road), route(route) {}
-            BuildRoad(Serializer* ser)
+            BuildRoad(Serializer& ser)
                 : Coords(BUILDROAD, ser),
-                  boat_road(ser->PopBool()),
-                  route(ser->PopUnsignedInt())
+                  boat_road(ser.PopBool()),
+                  route(ser.PopUnsignedInt())
             {
                 for(unsigned i = 0; i < route.size(); ++i)
-                    route[i] = ser->PopUnsignedChar();
+                    route[i] = ser.PopUnsignedChar();
             }
         public:
 
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushBool(boat_road);
-                ser->PushUnsignedInt(route.size());
+                ser.PushBool(boat_road);
+                ser.PushUnsignedInt(route.size());
                 for(unsigned i = 0; i < route.size(); ++i)
-                    ser->PushUnsignedChar(route[i]);
+                    ser.PushUnsignedChar(route[i]);
             }
 
             /// Führt das GameCommand aus
@@ -120,15 +120,15 @@ namespace gc{
         protected:
             DestroyRoad(const MapPoint pt, const unsigned char start_dir)
                 : Coords(DESTROYROAD, pt), start_dir(start_dir) {}
-            DestroyRoad(Serializer* ser)
+            DestroyRoad(Serializer& ser)
                 : Coords(DESTROYROAD, ser),
-                  start_dir(ser->PopUnsignedChar()) {}
+                  start_dir(ser.PopUnsignedChar()) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushUnsignedChar(start_dir);
+                ser.PushUnsignedChar(start_dir);
             }
 
             /// Führt das GameCommand aus
@@ -144,13 +144,13 @@ namespace gc{
         protected:
             UpgradeRoad(const MapPoint pt, const unsigned char start_dir)
                 : Coords(UPGRADEROAD, pt), start_dir(start_dir) {}
-            UpgradeRoad(Serializer* ser)
-                : Coords(UPGRADEROAD, ser), start_dir(ser->PopUnsignedChar()) {}
+            UpgradeRoad(Serializer& ser)
+                : Coords(UPGRADEROAD, ser), start_dir(ser.PopUnsignedChar()) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
-                ser->PushUnsignedChar(start_dir);
+                ser.PushUnsignedChar(start_dir);
             }
 
             /// Führt das GameCommand aus
@@ -168,17 +168,17 @@ namespace gc{
         protected:
             ChangeDistribution(const Distributions& data)
                 : GameCommand(CHANGEDISTRIBUTION), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
-            ChangeDistribution(Serializer* ser)
+            ChangeDistribution(Serializer& ser)
                 : GameCommand(CHANGEDISTRIBUTION)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    data[i] = ser->PopUnsignedChar();
+                    data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    ser->PushUnsignedChar(data[i]);
+                    ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
@@ -198,18 +198,18 @@ namespace gc{
         protected:
             ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 31>& data)
                 : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
-            ChangeBuildOrder(Serializer* ser)
-                : GameCommand(CHANGEBUILDORDER), order_type(ser->PopUnsignedChar())
+            ChangeBuildOrder(Serializer& ser)
+                : GameCommand(CHANGEBUILDORDER), order_type(ser.PopUnsignedChar())
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    data[i] = ser->PopUnsignedChar();
+                    data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushUnsignedChar(order_type);
+                ser.PushUnsignedChar(order_type);
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    ser->PushUnsignedChar(data[i]);
+                    ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
@@ -226,15 +226,15 @@ namespace gc{
         protected:
             SetBuildingSite(const MapPoint pt, const BuildingType bt)
                 : Coords(SETBUILDINGSITE, pt), bt(bt) {}
-            SetBuildingSite(Serializer* ser)
+            SetBuildingSite(Serializer& ser)
                 : Coords(SETBUILDINGSITE, ser),
-                  bt(BuildingType(ser->PopUnsignedChar())) {}
+                  bt(BuildingType(ser.PopUnsignedChar())) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushUnsignedChar(static_cast<unsigned char>(bt));
+                ser.PushUnsignedChar(static_cast<unsigned char>(bt));
             }
 
             /// Führt das GameCommand aus
@@ -248,7 +248,7 @@ namespace gc{
         protected:
             DestroyBuilding(const MapPoint pt)
                 : Coords(DESTROYBUILDING, pt) {}
-            DestroyBuilding(Serializer* ser)
+            DestroyBuilding(Serializer& ser)
                 : Coords(DESTROYBUILDING, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -262,7 +262,7 @@ namespace gc{
         protected:
             SendSoldiersHome(const MapPoint pt)
                 : Coords(SENDSOLDIERSHOME, pt) {}
-            SendSoldiersHome(Serializer* ser)
+            SendSoldiersHome(Serializer& ser)
                 : Coords(SENDSOLDIERSHOME, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -276,7 +276,7 @@ namespace gc{
         protected:
             OrderNewSoldiers(const MapPoint pt)
                 : Coords(ORDERNEWSOLDIERS, pt) {}
-            OrderNewSoldiers(Serializer* ser)
+            OrderNewSoldiers(Serializer& ser)
                 : Coords(ORDERNEWSOLDIERS, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -295,17 +295,17 @@ namespace gc{
         protected:
             ChangeTransport(const TransportOrders& data)
                 : GameCommand(CHANGETRANSPORT), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
-            ChangeTransport(Serializer* ser)
+            ChangeTransport(Serializer& ser)
                 : GameCommand(CHANGETRANSPORT)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    data[i] = ser->PopUnsignedChar();
+                    data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    ser->PushUnsignedChar(data[i]);
+                    ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
@@ -323,17 +323,17 @@ namespace gc{
         protected:
             ChangeMilitary(const  boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
                 : GameCommand(CHANGEMILITARY), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
-            ChangeMilitary(Serializer* ser)
+            ChangeMilitary(Serializer& ser)
                 : GameCommand(CHANGEMILITARY)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    data[i] = ser->PopUnsignedChar();
+                    data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    ser->PushUnsignedChar(data[i]);
+                    ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
@@ -368,23 +368,23 @@ namespace gc{
                 }
             }
 
-            ChangeTools(Serializer* ser)
+            ChangeTools(Serializer& ser)
                 : GameCommand(CHANGETOOLS)
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    data[i] = ser->PopUnsignedChar();
+                    data[i] = ser.PopUnsignedChar();
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
-                    orders[i] = (signed char)ser->PopSignedChar();
+                    orders[i] = (signed char)ser.PopSignedChar();
             }
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
-                    ser->PushUnsignedChar(data[i]);
+                    ser.PushUnsignedChar(data[i]);
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
-                    ser->PushSignedChar(orders[i]);
+                    ser.PushSignedChar(orders[i]);
             }
 
             /// Führt das GameCommand aus
@@ -398,7 +398,7 @@ namespace gc{
         protected:
             CallGeologist(const MapPoint pt)
                 : Coords(CALLGEOLOGIST, pt) {}
-            CallGeologist(Serializer* ser)
+            CallGeologist(Serializer& ser)
                 : Coords(CALLGEOLOGIST, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -412,7 +412,7 @@ namespace gc{
         protected:
             CallScout(const MapPoint pt)
                 : Coords(CALLSCOUT, pt) {}
-            CallScout(Serializer* ser)
+            CallScout(Serializer& ser)
                 : Coords(CALLSCOUT, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -432,16 +432,16 @@ namespace gc{
         protected:
             BaseAttack(const Type gst, const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
                 : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers) {}
-            BaseAttack(const Type gst, Serializer* ser)
+            BaseAttack(const Type gst, Serializer& ser)
                 : Coords(gst, ser),
-                  soldiers_count(ser->PopUnsignedInt()), strong_soldiers(ser->PopBool()) {}
+                  soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool()) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushUnsignedInt(soldiers_count);
-                ser->PushBool(strong_soldiers);
+                ser.PushUnsignedInt(soldiers_count);
+                ser.PushBool(strong_soldiers);
             }
 
     };
@@ -454,7 +454,7 @@ namespace gc{
         protected:
             Attack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
                 : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers) {}
-            Attack(Serializer* ser)
+            Attack(Serializer& ser)
                 : BaseAttack(ATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -468,7 +468,7 @@ namespace gc{
         protected:
             SeaAttack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
                 : BaseAttack(SEAATTACK, pt, soldiers_count, strong_soldiers) {}
-            SeaAttack(Serializer* ser)
+            SeaAttack(Serializer& ser)
                 : BaseAttack(SEAATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -486,12 +486,12 @@ namespace gc{
         protected:
             SwitchPlayer(const unsigned char new_player_id)
                 : GameCommand(SWITCHPLAYER), new_player_id(new_player_id) {}
-            SwitchPlayer(Serializer* ser)
-                : GameCommand(SWITCHPLAYER), new_player_id(ser->PopUnsignedChar()) {}
+            SwitchPlayer(Serializer& ser)
+                : GameCommand(SWITCHPLAYER), new_player_id(ser.PopUnsignedChar()) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushUnsignedChar(new_player_id);
+                ser.PushUnsignedChar(new_player_id);
             }
 
             unsigned GetNewPlayerId() const { return new_player_id; }
@@ -507,7 +507,7 @@ namespace gc{
         protected:
             ToggleCoins(const MapPoint pt)
                 : Coords(TOGGLECOINS, pt) {}
-            ToggleCoins(Serializer* ser)
+            ToggleCoins(Serializer& ser)
                 : Coords(TOGGLECOINS, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -521,7 +521,7 @@ namespace gc{
         protected:
             ToggleProduction(const MapPoint pt)
                 : Coords(TOGGLEPRODUCTION, pt) {}
-            ToggleProduction(Serializer* ser)
+            ToggleProduction(Serializer& ser)
                 : Coords(TOGGLEPRODUCTION, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -535,7 +535,7 @@ namespace gc{
         protected:
             NotifyAlliesOfLocation(const MapPoint pt)
                 : Coords(NOTIFYALLIESOFLOCATION, pt) {}
-            NotifyAlliesOfLocation(Serializer* ser)
+            NotifyAlliesOfLocation(Serializer& ser)
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -553,20 +553,20 @@ namespace gc{
         protected:
             ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type)
                 : Coords(CHANGEINVENTORYSETTING, pt), category(category), state(state), type(type) {}
-            ChangeInventorySetting(Serializer* ser)
+            ChangeInventorySetting(Serializer& ser)
                 : Coords(CHANGEINVENTORYSETTING, ser),
-                  category(ser->PopUnsignedChar()),
-                  state(static_cast<InventorySetting>(ser->PopUnsignedChar())),
-                  type(ser->PopUnsignedChar())
+                  category(ser.PopUnsignedChar()),
+                  state(static_cast<InventorySetting>(ser.PopUnsignedChar())),
+                  type(ser.PopUnsignedChar())
             {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushUnsignedChar(category);
-                ser->PushUnsignedChar(state);
-                ser->PushUnsignedChar(type);
+                ser.PushUnsignedChar(category);
+                ser.PushUnsignedChar(state);
+                ser.PushUnsignedChar(type);
             }
 
             /// Führt das GameCommand aus
@@ -583,18 +583,18 @@ namespace gc{
         protected:
             ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state)
                 : Coords(CHANGEALLINVENTORYSETTINGS, pt), category(category), state(state) {}
-            ChangeAllInventorySettings(Serializer* ser)
+            ChangeAllInventorySettings(Serializer& ser)
                 : Coords(CHANGEALLINVENTORYSETTINGS, ser),
-                  category(ser->PopUnsignedChar()),
-                  state(static_cast<InventorySetting>(ser->PopUnsignedChar()))
+                  category(ser.PopUnsignedChar()),
+                  state(static_cast<InventorySetting>(ser.PopUnsignedChar()))
             {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushUnsignedChar(category);
-                ser->PushUnsignedChar(state);
+                ser.PushUnsignedChar(category);
+                ser.PushUnsignedChar(state);
             }
 
             /// Führt das GameCommand aus
@@ -612,18 +612,18 @@ namespace gc{
         protected:
             ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count)
                 : Coords(CHANGERESERVE, pt), rank(rank), count(count) {}
-            ChangeReserve(Serializer* ser)
+            ChangeReserve(Serializer& ser)
                 : Coords(CHANGERESERVE, ser),
-                  rank(ser->PopUnsignedChar()),
-                  count(ser->PopUnsignedChar())
+                  rank(ser.PopUnsignedChar()),
+                  count(ser.PopUnsignedChar())
             {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushUnsignedChar(rank);
-                ser->PushUnsignedChar(count);
+                ser.PushUnsignedChar(rank);
+                ser.PushUnsignedChar(count);
             }
 
             /// Führt das GameCommand aus
@@ -637,10 +637,10 @@ namespace gc{
         protected:
             CheatArmageddon()
                 : GameCommand(CHEAT_ARMAGEDDON) {}
-            CheatArmageddon(Serializer* ser)
+            CheatArmageddon(Serializer& ser)
                 : GameCommand(CHEAT_ARMAGEDDON) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {}
 
             /// Führt das GameCommand aus
@@ -654,10 +654,10 @@ namespace gc{
         protected:
             Surrender()
                 : GameCommand(SURRENDER) {}
-            Surrender(Serializer* ser)
+            Surrender(Serializer& ser)
                 : GameCommand(SURRENDER) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {}
 
             /// Führt das GameCommand aus
@@ -671,10 +671,10 @@ namespace gc{
         protected:
             DestroyAll()
                 : GameCommand(DESTROYALL) {}
-            DestroyAll(Serializer* ser)
+            DestroyAll(Serializer& ser)
                 : GameCommand(DESTROYALL) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {}
 
             /// Führt das GameCommand aus
@@ -695,15 +695,15 @@ namespace gc{
         protected:
             SuggestPact(const unsigned char player, const PactType pt, const unsigned duration) : GameCommand(SUGGESTPACT),
                 player(player), pt(pt), duration(duration) {}
-            SuggestPact(Serializer* ser) : GameCommand(SUGGESTPACT),
-                player(ser->PopUnsignedChar()), pt(PactType(ser->PopUnsignedChar())), duration(ser->PopUnsignedInt()) {}
+            SuggestPact(Serializer& ser) : GameCommand(SUGGESTPACT),
+                player(ser.PopUnsignedChar()), pt(PactType(ser.PopUnsignedChar())), duration(ser.PopUnsignedInt()) {}
         public:
 
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushUnsignedChar(player);
-                ser->PushUnsignedChar(static_cast<unsigned char>(pt));
-                ser->PushUnsignedInt(duration);
+                ser.PushUnsignedChar(player);
+                ser.PushUnsignedChar(static_cast<unsigned char>(pt));
+                ser.PushUnsignedInt(duration);
             }
 
             /// Führt das GameCommand aus
@@ -727,16 +727,16 @@ namespace gc{
         protected:
             AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player) : GameCommand(ACCEPTPACT),
                 accepted(accepted), id(id), pt(pt), player(player) {}
-            AcceptPact(Serializer* ser) : GameCommand(ACCEPTPACT),
-                accepted(ser->PopBool()), id(ser->PopUnsignedInt()), pt(PactType(ser->PopUnsignedChar())), player(ser->PopUnsignedChar()) {}
+            AcceptPact(Serializer& ser) : GameCommand(ACCEPTPACT),
+                accepted(ser.PopBool()), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), player(ser.PopUnsignedChar()) {}
         public:
 
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushBool(accepted);
-                ser->PushUnsignedInt(id);
-                ser->PushUnsignedChar(static_cast<unsigned char>(pt));
-                ser->PushUnsignedChar(player);
+                ser.PushBool(accepted);
+                ser.PushUnsignedInt(id);
+                ser.PushUnsignedChar(static_cast<unsigned char>(pt));
+                ser.PushUnsignedChar(player);
             }
 
             /// Führt das GameCommand aus
@@ -756,14 +756,14 @@ namespace gc{
         protected:
             CancelPact(const PactType pt, const unsigned char player) : GameCommand(CANCELPACT),
                 pt(pt), player(player) {}
-            CancelPact(Serializer* ser) : GameCommand(CANCELPACT),
-                pt(PactType(ser->PopUnsignedChar())), player(ser->PopUnsignedChar()) {}
+            CancelPact(Serializer& ser) : GameCommand(CANCELPACT),
+                pt(PactType(ser.PopUnsignedChar())), player(ser.PopUnsignedChar()) {}
         public:
 
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushUnsignedChar(static_cast<unsigned char>(pt));
-                ser->PushUnsignedChar(player);
+                ser.PushUnsignedChar(static_cast<unsigned char>(pt));
+                ser.PushUnsignedChar(player);
             }
 
             /// Führt das GameCommand aus
@@ -777,7 +777,7 @@ namespace gc{
         protected:
             ToggleShipYardMode(const MapPoint pt)
                 : Coords(TOGGLESHIPYARDMODE, pt) {}
-            ToggleShipYardMode(Serializer* ser)
+            ToggleShipYardMode(Serializer& ser)
                 : Coords(TOGGLESHIPYARDMODE, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -791,7 +791,7 @@ namespace gc{
         protected:
             StartExpedition(const MapPoint pt)
                 : Coords(STARTEXPEDITION, pt) {}
-            StartExpedition(Serializer* ser)
+            StartExpedition(Serializer& ser)
                 : Coords(STARTEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -805,7 +805,7 @@ namespace gc{
         protected:
             StartExplorationExpedition(const MapPoint pt)
                 : Coords(STARTEXPLORATIONEXPEDITION, pt) {}
-            StartExplorationExpedition(Serializer* ser)
+            StartExplorationExpedition(Serializer& ser)
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
@@ -834,15 +834,15 @@ namespace gc{
             ExpeditionCommand(const Action action, const unsigned ship_id)
                 : GameCommand(EXPEDITION_COMMAND), action(action), ship_id(ship_id) {}
 
-            ExpeditionCommand(Serializer* ser)
+            ExpeditionCommand(Serializer& ser)
                 : GameCommand(EXPEDITION_COMMAND),
-                  action(Action(ser->PopUnsignedChar())),
-                  ship_id(ser->PopUnsignedInt()) {}
+                  action(Action(ser.PopUnsignedChar())),
+                  ship_id(ser.PopUnsignedInt()) {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
-                ser->PushUnsignedChar(static_cast<unsigned char>(action));
-                ser->PushUnsignedInt(ship_id);
+                ser.PushUnsignedChar(static_cast<unsigned char>(action));
+                ser.PushUnsignedInt(ship_id);
             }
 
             /// Führt das GameCommand aus
@@ -870,22 +870,22 @@ namespace gc{
         protected:
             TradeOverLand(const MapPoint pt, const bool ware_figure, const GoodType gt, const Job job, const unsigned count)
                 : Coords(TRADEOVERLAND, pt), ware_figure(ware_figure), gt(gt), job(job), count(count) {}
-            TradeOverLand(Serializer* ser)
+            TradeOverLand(Serializer& ser)
                 : Coords(TRADEOVERLAND, ser),
-                  ware_figure(ser->PopBool()),
-                  gt( ware_figure ? GD_NOTHING : GoodType(ser->PopUnsignedChar())),
-                  job( ware_figure ? Job(ser->PopUnsignedChar()) : JOB_NOTHING),
-                  count(ser->PopUnsignedInt())
+                  ware_figure(ser.PopBool()),
+                  gt( ware_figure ? GD_NOTHING : GoodType(ser.PopUnsignedChar())),
+                  job( ware_figure ? Job(ser.PopUnsignedChar()) : JOB_NOTHING),
+                  count(ser.PopUnsignedInt())
             {}
         public:
-            virtual void Serialize(Serializer* ser) const
+            virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser->PushBool(ware_figure);
-                if(!ware_figure) ser->PushUnsignedChar(static_cast<unsigned char>(gt));
-                else ser->PushUnsignedChar(static_cast<unsigned char>(job));
-                ser->PushUnsignedInt(count);
+                ser.PushBool(ware_figure);
+                if(!ware_figure) ser.PushUnsignedChar(static_cast<unsigned char>(gt));
+                else ser.PushUnsignedChar(static_cast<unsigned char>(job));
+                ser.PushUnsignedInt(count);
             }
 
             /// Führt das GameCommand aus

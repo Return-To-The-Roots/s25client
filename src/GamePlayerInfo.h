@@ -64,7 +64,7 @@ class GamePlayerInfo
     public:
         GamePlayerInfo(const unsigned playerid);
         /// Deserialisierungskonstruktor
-        GamePlayerInfo(const unsigned playerid, Serializer* ser);
+        GamePlayerInfo(const unsigned playerid, Serializer& ser);
 
         virtual ~GamePlayerInfo();
 
@@ -77,7 +77,7 @@ class GamePlayerInfo
         bool isDefeated() const { return defeated; }
 
         /// serialisiert die Daten.
-        void serialize(Serializer* ser) const;
+        void serialize(Serializer& ser) const;
 
         unsigned getPlayerID() const { return playerid; }
 

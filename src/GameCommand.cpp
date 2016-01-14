@@ -24,7 +24,7 @@
 
 using namespace gc;
 
-GameCommand* GameCommand::Deserialize(const Type gst, Serializer* ser)
+GameCommand* GameCommand::Deserialize(const Type gst, Serializer& ser)
 {
     switch(gst)
     {

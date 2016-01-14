@@ -148,7 +148,7 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
 void SavedFile::WriteGGS(BinaryFile& file)
 {
     Serializer ser;
-    ggs.Serialize(&ser);
+    ggs.Serialize(ser);
 
     file.WriteUnsignedInt(ser.GetLength());
     file.WriteRawData(ser.GetData(), ser.GetLength());
@@ -168,6 +168,6 @@ void SavedFile::ReadGGS(BinaryFile& file)
     file.ReadRawData(buffer.get(), length);
     Serializer ser(buffer.get(), length);
 
-    ggs.Deserialize(&ser);
+    ggs.Deserialize(ser);
 }
 

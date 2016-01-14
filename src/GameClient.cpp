@@ -486,7 +486,7 @@ void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
     for(unsigned int i = 0; i < players.getCount(); ++i)
     {
         GameClientPlayer& player = players[i];
-        const GameServerPlayer& msgPlayer = msg.gpl[i];
+        const GamePlayerInfo& msgPlayer = msg.gpl[i];
         player.ps = msgPlayer.ps;
         player.name = msgPlayer.name;
         player.origin_name = msgPlayer.origin_name;
@@ -1037,10 +1037,10 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
 {
-    LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.GetNetLength());
+    LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.map_data.size());
 
-    std::copy(msg.map_data, msg.map_data + msg.GetDataLength(), mapinfo.zipdata.get() + msg.offset);
-    if(msg.offset + msg.GetDataLength() == mapinfo.ziplength)
+    std::copy(msg.map_data.begin(), msg.map_data.end(), mapinfo.zipdata.get() + msg.offset);
+    if(msg.offset + msg.map_data.size() == mapinfo.ziplength)
     {
         FILE* map_f = fopen(clientconfig.mapfilepath.c_str(), "wb");
 
@@ -1244,6 +1244,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
             framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
             framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
         }
+        RTTR_Assert(framesinfo.gf_length == msg.gf_length);
         state = CS_GAME; // zu gamestate wechseln
         RealStart();
     }else
@@ -1937,7 +1938,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char player)
 unsigned GameClient::SaveToFile(const std::string& filename)
 {
     GameMessage_System_Chat saveAnnouncement = GameMessage_System_Chat(playerId_, "Saving game...");
-    saveAnnouncement.send(socket);
+    send_queue.sendMessage(socket, saveAnnouncement);
 
     // Mond malen
     LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);

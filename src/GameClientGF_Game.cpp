@@ -43,8 +43,10 @@ void GameClient::ExecuteNWF()
             if(!msg.gcs.empty() && !replay_mode)
             {
                 // Aktuelle Checksumme reinschreiben
-                GameMessage_GameCommand tmp(msg.player, checksum, msg.gcs);
-                replayinfo.replay.AddGameCommand(framesinfo.gf_nr, tmp.GetLength(), tmp.GetData());
+                msg.checksum = checksum;
+                Serializer ser;
+                msg.Serialize(ser);
+                replayinfo.replay.AddGameCommand(framesinfo.gf_nr, ser.GetLength(), ser.GetData());
             }
 
             // Das ganze Zeug soll die andere Funktion ausführen
