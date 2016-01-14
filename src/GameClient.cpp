@@ -1161,8 +1161,11 @@ void GameClient::OnNMSGGSChange(const GameMessage_GGSChange& msg)
 void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
     if(msg.player != 0xFF)
+    {
         // Nachricht in Queue einhängen
         players[msg.player].gc_queue.push(msg);
+        RTTR_Assert(msg.player != playerId_ || players[msg.player].gc_queue.size() == 1);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

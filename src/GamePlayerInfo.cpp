@@ -97,18 +97,18 @@ void GamePlayerInfo::serialize(Serializer* ser) const
     ser->PushUnsignedInt(ping);
     ser->PushUnsignedInt(rating);
     ser->PushBool(ready);
-
 }
 
 void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
 {
-    std::swap(ps, two.ps);
-    std::swap(aiInfo, two.aiInfo);
-    std::swap(defeated, two.defeated);
-    std::swap(name, two.name);
-    std::swap(is_host, two.is_host);
-    std::swap(ping, two.ping);
-    std::swap(rating, two.rating);
-    std::swap(ready, two.ready);
+    using std::swap;
+    swap(ps, two.ps);
+    swap(aiInfo, two.aiInfo);
+    swap(defeated, two.defeated);
+    swap(name, two.name);
+    swap(is_host, two.is_host);
+    swap(ping, two.ping);
+    swap(rating, two.rating);
+    swap(ready, two.ready);
 }
 

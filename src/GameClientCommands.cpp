@@ -160,11 +160,13 @@ void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char ne
         GetVisualSettings();
 
         //// zum HQ hinscrollen
-        //gw->MoveToMapObject(player->hqPos.x,player->hqy);
-        //GameClientPlayer *player = players[playerid]; // wegen GCC-Fehlermeldung auskommentiert
+        GameClientPlayer& player = players[playerId_];
+        if(player.hqPos.isValid())
+            gw->MoveToMapObject(player.hqPos);
     }
 	//swap command que
-    std::swap(players[old_id].gc_queue, players[new_id].gc_queue);
+    using std::swap;
+    swap(players[old_id].gc_queue, players[new_id].gc_queue);
 
     // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
     if(ci)

@@ -1649,6 +1649,9 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
     players[new_id].ps = PS_OCCUPIED;
     using std::swap;
     swap(players[new_id].so, players[old_id].so);
+    swap(players[new_id].send_queue, players[old_id].send_queue);
+    swap(players[new_id].recv_queue, players[old_id].recv_queue);
+    swap(players[new_id].aiInfo, players[old_id].aiInfo);
 
     // Alte KI löschen
     delete ai_players[new_id];

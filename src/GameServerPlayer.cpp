@@ -136,19 +136,20 @@ unsigned GameServerPlayer::GetTimeOut() const
 /// Tauscht Spieler
 void GameServerPlayer::SwapPlayer(GameServerPlayer& two)
 {
+    using std::swap;
     GamePlayerInfo::SwapPlayer(two);
 
-    std::swap(this->connecttime, two.connecttime);
-    std::swap(this->last_command_timeout, two.last_command_timeout);
+    swap(this->connecttime, two.connecttime);
+    swap(this->last_command_timeout, two.last_command_timeout);
 
-    std::swap(this->so, two.so);
-    std::swap(this->pinging, two.pinging);
+    swap(this->so, two.so);
+    swap(this->pinging, two.pinging);
 
-    std::swap(this->send_queue, two.send_queue);
-    std::swap(this->recv_queue, two.recv_queue);
-    std::swap(this->gc_queue, two.gc_queue);
+    swap(this->send_queue, two.send_queue);
+    swap(this->recv_queue, two.recv_queue);
+    swap(this->gc_queue, two.gc_queue);
 
-    std::swap(this->lastping, two.lastping);
+    swap(this->lastping, two.lastping);
 }
 
 /// Spieler laggt

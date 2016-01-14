@@ -27,8 +27,8 @@ void GameClient::ExecuteNWF()
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
     // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
-    gw->switchedPlayers.oldPlayer = 255;
-    gw->switchedPlayers.newPlayer = 255;
+    gw->switchedPlayers.oldPlayer = 0xFF;
+    gw->switchedPlayers.newPlayer = 0xFF;
 
     int checksum = RANDOM.GetCurrentRandomValue();
 
@@ -55,13 +55,18 @@ void GameClient::ExecuteNWF()
         }
     }
 
+    // Evtl Spieler wechseln?
+    if(gw->switchedPlayers.newPlayer != 0xFF)
+    {
+        if(gw->switchedPlayers.oldPlayer == playerId_)
+            gameCommands_.clear(); // If we were switched, don't execute our GCs
+        ChangePlayer(gw->switchedPlayers.oldPlayer, gw->switchedPlayers.newPlayer);
+    }
+
     // Send GC message for this NWF
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, gameCommands_));
 
     // alles gesendet --> Liste löschen
     gameCommands_.clear();
 
-    // Evtl Spieler wechseln?
-    if(gw->switchedPlayers.newPlayer != 255)
-        ChangePlayer(gw->switchedPlayers.oldPlayer, gw->switchedPlayers.newPlayer);
 }
