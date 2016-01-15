@@ -388,8 +388,8 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     ShowWindow(screen, SW_HIDE);
 
     // Fensterstyle ggf. ändern
-    LONG_PTR wStyle   = fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
-    LONG_PTR wExStyle = fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+    DWORD wStyle   = fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
+    DWORD wExStyle = fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
     SetWindowLongPtr(screen, GWL_STYLE, wStyle);
     SetWindowLongPtr(screen, GWL_EXSTYLE, wExStyle);
     //SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);

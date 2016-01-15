@@ -419,7 +419,8 @@ struct RandomFunctor
 {
     ptrdiff_t operator()(ptrdiff_t max) const
     {
-        return(RANDOM.Rand(__FILE__, __LINE__, 0, max));
+        RTTR_Assert(max < std::numeric_limits<int>::max());
+        return RANDOM.Rand(__FILE__, __LINE__, 0, static_cast<int>(max));
     }
 };
 
