@@ -20,7 +20,7 @@
 #include "GameClientPlayer.h"
 #include "GameServerPlayer.h"
 
-typedef public SerializableArray<GamePlayerInfo> GamePlayerList;
+typedef SerializableArray<GamePlayerInfo> GamePlayerList;
 
 class GameClientPlayerList : public SerializableArray<GameClientPlayer>{};
 class GameServerPlayerList : public SerializableArray<GameServerPlayer>{};

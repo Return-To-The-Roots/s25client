@@ -991,8 +991,8 @@ class GameMessage_Pause : public GameMessage
 {
 public:
 	/// Pausiert?
+    bool paused;
 	unsigned int nr; // GF
-	bool paused;
 
 	GameMessage_Pause(): GameMessage(NMS_PAUSE) { }
 	GameMessage_Pause(const bool paused, const unsigned nr): GameMessage(NMS_PAUSE, 0xFF), paused(paused), nr(nr)
@@ -1074,7 +1074,7 @@ public:
     void Deserialize(Serializer& ser) override
 	{
 		GameMessage::Deserialize(ser);
-        bool last =  ser.PopBool();
+        last = ser.PopBool();
         unsigned cnt = ser.PopUnsignedInt();
         recved_log.clear();
         recved_log.reserve(cnt);
