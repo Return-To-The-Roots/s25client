@@ -577,7 +577,7 @@ void GameServer::CancelCountdown()
 {
     // Countdown-Stop allen mitteilen
     countdown.Clear();
-    SendToAll(GameMessage_Server_CancelCountdown(true));
+    SendToAll(GameMessage_Server_CancelCountdown());
     LOG.write("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
 }
 
@@ -1193,7 +1193,7 @@ void GameServer::WaitForClients(void)
             }
 
             GameMessage_Player_Id msg(playerid);
-            msg.send(socket);
+            MessageHandler::send(socket, msg);
 
             // war kein platz mehr frei, wenn ja dann verbindung trennen?
             if(playerid == 0xFF)

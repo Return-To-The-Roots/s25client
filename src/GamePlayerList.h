@@ -20,16 +20,9 @@
 #include "GameClientPlayer.h"
 #include "GameServerPlayer.h"
 
-class GamePlayerList : public SerializableArray<unsigned>
-{
-};
+typedef public SerializableArray<GamePlayerInfo> GamePlayerList;
 
-class GameClientPlayerList : public SerializableArray<GameClientPlayer>
-{
-};
-
-class GameServerPlayerList : public SerializableArray<GameServerPlayer>
-{
-};
+class GameClientPlayerList : public SerializableArray<GameClientPlayer>{};
+class GameServerPlayerList : public SerializableArray<GameServerPlayer>{};
 
 #endif // GAMEPLAYERLIST_H_INCLUDED

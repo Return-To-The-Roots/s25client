@@ -67,13 +67,16 @@ void MapNode::Deserialize(SerializedGameData& sgd)
     for(unsigned z = 0; z < roads.size(); ++z)
     {
         roads[z] = sgd.PopUnsignedChar();
+        RTTR_Assert(roads[z] < 4);
         roads_real[z] = roads[z] ? true : false;
     }
 
     altitude = sgd.PopUnsignedChar();
     shadow = sgd.PopUnsignedChar();
     t1 = TerrainType(sgd.PopUnsignedChar());
+    RTTR_Assert(t1 < TT_COUNT);
     t2 = TerrainType(sgd.PopUnsignedChar());
+    RTTR_Assert(t2 < TT_COUNT);
     resources = sgd.PopUnsignedChar();
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();

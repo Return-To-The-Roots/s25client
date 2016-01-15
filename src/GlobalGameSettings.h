@@ -36,8 +36,8 @@ class GlobalGameSettings
         void operator=(const GlobalGameSettings& ggs);
 
         /// Serialisierung und Deserialisierung
-        void Serialize(Serializer* ser) const;
-        void Deserialize(Serializer* ser);
+        void Serialize(Serializer& ser) const;
+        void Deserialize(Serializer& ser);
 
     public:
         enum GameSpeed { GS_VERYSLOW = 0, GS_SLOW , GS_NORMAL, GS_FAST, GS_VERYFAST } game_speed;
