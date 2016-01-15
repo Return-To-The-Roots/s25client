@@ -592,11 +592,9 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
                 else
                 {
                     // ansonsten muss das Wort zwangsläufig auf mehrere Zeilen verteilt werden
-                    for(size_t z = 0; text[word_start + z] != ' ' && text[word_start + z]; ++z)
+                    for(unsigned z = word_start; z < i; ++z)
                     {
-                        unsigned int zz = word_start + z;
-                        unsigned short letter_width = CharWidth(Utf8_to_Unicode(text, zz));
-                        z = zz - word_start;
+                        unsigned short letter_width = CharWidth(Utf8_to_Unicode(text, z));
 
                         // passt der neue Buchstabe noch mit drauf?
                         if(line_width + letter_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
@@ -606,8 +604,9 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
                             // wenn nicht, muss hier ein Umbruch erfolgen
 
                             // neue Zeile anfangen mit diesem Buchstaben
-                            wi.positions.push_back(word_start + z);
+                            wi.positions.push_back(z);
                             line_width = letter_width;
+                            word_start = z + 1;
                         }
                     }
 
@@ -624,8 +623,10 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
             }
             // Bei Newline immer neue Zeile anfangen, aber erst jetzt
             // und nicht schon oben in diesem if-Zweig
-            if(text[i] == '\n' && i < length - 1)
+            if(text[i] == '\n')
             {
+                if(i + 1 >= length)
+                    break; // Reached end
                 word_start = i + 1;
                 word_width = 0;
                 line_width = 0;
@@ -642,7 +643,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
     }
 
     // Ignore trailing newline
-    if(wi.positions.back() == length - 1)
+    if(wi.positions.back() + 1 >= length)
         wi.positions.pop_back();
 }
 
