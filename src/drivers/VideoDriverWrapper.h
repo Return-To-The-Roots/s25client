@@ -91,6 +91,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         unsigned int GetTickCount();
 
         const char* GetName(void) const { if(videodriver) return videodriver->GetName();    return NULL; }
+        bool IsLoaded() const { return videodriver != NULL; }
 
     private:
         // Viewpoint und Co initialisieren

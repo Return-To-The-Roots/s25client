@@ -76,11 +76,21 @@ bool Settings::LoadDefaults()
 
     // video
     // {
-    video.fullscreen_width  = VIDEODRIVER.GetScreenWidth();
-    video.fullscreen_height = VIDEODRIVER.GetScreenHeight();
-    video.windowed_width    = VIDEODRIVER.IsFullscreen() ? 800 : video.fullscreen_width;
-    video.windowed_height   = VIDEODRIVER.IsFullscreen() ? 600 : video.fullscreen_height;
-    video.fullscreen        = VIDEODRIVER.IsFullscreen();
+    if (VIDEODRIVER.IsLoaded())
+    {
+        video.fullscreen_width = VIDEODRIVER.GetScreenWidth();
+        video.fullscreen_height = VIDEODRIVER.GetScreenHeight();
+        video.windowed_width = VIDEODRIVER.IsFullscreen() ? 800 : video.fullscreen_width;
+        video.windowed_height = VIDEODRIVER.IsFullscreen() ? 600 : video.fullscreen_height;
+        video.fullscreen = VIDEODRIVER.IsFullscreen();
+    }else
+    {
+        video.fullscreen_width = 800;
+        video.fullscreen_height = 600;
+        video.windowed_width = video.fullscreen_width;
+        video.windowed_height = video.fullscreen_height;
+        video.fullscreen = false;
+    }
     video.vsync             = 0;
     video.vbo               = false;
     video.shared_textures   = true;
