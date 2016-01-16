@@ -96,6 +96,8 @@ public:
     /// Returns whether the object with the given id was already serialized (only valid during writing)
     bool IsObjectSerialized(const unsigned obj_id) const;
 
+    bool debugMode;
+
 private:
     /// Stores the ids of all written objects (-> only valid during writing)
     std::set<unsigned> writtenObjIds;

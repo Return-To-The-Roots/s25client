@@ -189,7 +189,7 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
     }
 }
 
-SerializedGameData::SerializedGameData() : objectsCount(0), expectedObjectsReadCount(0), em(NULL), isReading(false)
+SerializedGameData::SerializedGameData() : debugMode(false), objectsCount(0), expectedObjectsReadCount(0), em(NULL), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)
@@ -247,41 +247,51 @@ void SerializedGameData::ReadFromFile(BinaryFile& file)
 void SerializedGameData::PushObject(const GameObject* go, const bool known)
 {
     RTTR_Assert(!isReading);
-    if(go)
-    {
-        //RTTR_Assert(go->GetObjId() < GameObject::GetObjIDCounter());
-        if(go->GetObjId() >= GameObject::GetObjIDCounter())
-        {
-            LOG.lprintf("%s\n", _("An error occured while saving which was suppressed!"));
-            go = NULL;
-        }
-    }
 
     // Gibts das Objekt gar nich?
-    if(!go)
+    if (!go)
     {
         // Null draufschreiben
         PushUnsignedInt(0);
         return;
     }
 
-    PushUnsignedInt(go->GetObjId());
+    const unsigned objId = go->GetObjId();
+
+    RTTR_Assert(objId < GameObject::GetObjIDCounter());
+    if(objId >= GameObject::GetObjIDCounter())
+    {
+        LOG.lprintf("%s\n", _("An error occured while saving which was suppressed!"));
+        PushUnsignedInt(0);
+        return;
+    }
+
+    PushUnsignedInt(objId);
 
     // If the object was already serialized skip the data
-    if(IsObjectSerialized(go->GetObjId()))
+    if(IsObjectSerialized(objId))
+    {
+        if (debugMode)
+            LOG.write("Saved known objId %u\n", objId);
         return;
+    }
+
+    if (debugMode)
+        LOG.write("Saving objId %u, obj#=%u\n", objId, objectsCount);
+
+    // Objekt merken
+    writtenObjIds.insert(objId);
+
+    objectsCount++;
+    RTTR_Assert(objectsCount <= GameObject::GetObjCount());
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
         PushUnsignedShort(go->GetGOT());
 
-    // Objekt merken
-    writtenObjIds.insert(go->GetObjId());
-
-    objectsCount++;
-    RTTR_Assert(objectsCount <= GameObject::GetObjCount());
-
     // Objekt serialisieren
+    if (debugMode)
+        LOG.write("Start serializing %u\n", objId);
     go->Serialize(*this);
 
     // Sicherheitscode reinschreiben

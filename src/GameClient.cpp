@@ -1958,6 +1958,9 @@ unsigned GameClient::SaveToFile(const std::string& filename)
 
     save.start_gf = framesinfo.gf_nr;
 
+    // Enable/Disable debugging of savegames
+    save.sgd.debugMode = SETTINGS.global.debugMode;
+
     // Spiel serialisieren
     save.sgd.MakeSnapshot(*gw, *em);
 

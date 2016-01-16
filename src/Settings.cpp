@@ -71,6 +71,7 @@ bool Settings::LoadDefaults()
     // 0 = ask user at start,1 = enabled, 2 = disabled
     global.submit_debug_data = 0;
     global.use_upnp = 2;
+    global.debugMode = false;
     // }
 
     // video
@@ -198,6 +199,7 @@ bool Settings::Load(void)
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
+    global.debugMode = (iniVideo->getValueI("debugMode") ? true : false);
 
     // };
 
@@ -350,6 +352,7 @@ void Settings::Save(void)
     iniGlobal->setValue("gameversion", GetWindowRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);
+    iniGlobal->setValue("debugMode", global.debugMode);
     // };
 
     // video
