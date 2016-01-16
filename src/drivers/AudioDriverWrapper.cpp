@@ -40,7 +40,8 @@ AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 AudioDriverWrapper::~AudioDriverWrapper()
 {
     PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance = pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
-    FreeAudioInstance(audiodriver);
+    if(FreeAudioInstance)
+        FreeAudioInstance(audiodriver);
 }
 
 /// Spielt Midi ab

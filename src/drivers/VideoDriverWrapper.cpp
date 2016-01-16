@@ -65,7 +65,8 @@ VideoDriverWrapper::~VideoDriverWrapper()
 {
     CleanUp();
     PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
-    FreeVideoInstance(videodriver);
+    if(FreeVideoInstance)
+        FreeVideoInstance(videodriver);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
