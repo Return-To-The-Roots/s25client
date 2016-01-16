@@ -209,7 +209,7 @@ bool Settings::Load(void)
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
-    global.debugMode = (iniVideo->getValueI("debugMode") ? true : false);
+    global.debugMode = (iniGlobal->getValueI("debugMode") ? true : false);
 
     // };
 
@@ -362,7 +362,7 @@ void Settings::Save(void)
     iniGlobal->setValue("gameversion", GetWindowRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);
-    iniGlobal->setValue("debugMode", global.debugMode);
+    iniGlobal->setValue("debugMode", global.debugMode ? 1 : 0);
     // };
 
     // video
