@@ -934,7 +934,7 @@ public:
 	void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        LOG.write(">>> NMS_SERVER_SPEED(%d)\n", gf_length);
+        ser.PushUnsignedInt(gf_length);
     }
 
     void Deserialize(Serializer& ser) override
