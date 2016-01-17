@@ -247,6 +247,34 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
 			   postinstall.sh @ONLY)
 
 ################################################################################
+# Create symlinks
+
+MACRO(symlinkFolder dst symLinkPath)
+	IF(NOT EXISTS "${symLinkPath}")
+		IF(EXISTS "${dst}")
+			set(symlink_failed)
+			message(STATUS "Creating symlink: '${symLinkPath}' -> '${dst}'")
+			execute_process(COMMAND ln -vs "${dst}" "${symLinkPath}" RESULT_VARIABLE symlink_failed)
+			if(symlink_failed)
+				message(FATAL_ERROR "Creating symlink failed")
+			endif(symlink_failed)
+		ELSE()
+			message(WARNING "Directory '${dst}' missing!")
+		ENDIF()
+	ENDIF()
+ENDMACRO(symlinkFolder)
+
+IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	symlinkFolder("${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")
+	symlinkFolder("${CMAKE_BINARY_DIR}" "${CMAKE_BINARY_DIR}/bin")
+	symlinkFolder("${CMAKE_BINARY_DIR}" "${CMAKE_BINARY_DIR}/share")
+	symlinkFolder("${CMAKE_BINARY_DIR}" "${CMAKE_BINARY_DIR}/s25rttr")
+	symlinkFolder("${CMAKE_SOURCE_DIR}/S2" "${CMAKE_BINARY_DIR}/S2")
+ELSE()
+	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
+ENDIF()
+
+################################################################################
 
 ADD_SUBDIRECTORY(version)
 

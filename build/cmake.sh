@@ -25,41 +25,6 @@ mecho()
 
 ###############################################################################
 
-if [ ! -e bin ] ; then
-	mecho --blue "Creating symlink 'bin' ..."
-	ln -vs . bin
-fi
-
-if [ ! -e RTTR ] ; then
-	if [ -e "${SRCDIR}/RTTR" ] ; then
-		mecho --blue "Creating symlink 'RTTR' ..."
-		ln -vs "${SRCDIR}/RTTR" RTTR
-	else
-		mecho --red "Directory 'RTTR' missing!"
-		exit 1
-	fi
-fi
-
-if [ ! -e share ] ; then
-	mecho --blue "Creating symlink 'share' ..."
-	ln -vs . share
-fi
-
-if [ ! -e s25rttr ] ; then
-	mecho --blue "Creating symlink 's25rttr' ..."
-	ln -vs . s25rttr
-fi
-
-if [ ! -e S2 ] ; then
-	if [ -e "${SRCDIR}/S2" ] ; then
-		mecho --blue "Creating symlink 'S2' ..."
-		ln -vs "${SRCDIR}/S2" S2
-	else
-		mecho --red "Directory 'S2' missing!"
-		mecho --yellow "Direct debugging from this directory will not work then!"
-	fi
-fi
-
 if [ ! -f cleanup.sh ] && [ -f "${SRCDIR}/build/cleanup.sh" ] ; then
 	mecho --blue "Creating symlink 'cleanup.sh' ..."
 	ln -vs $SRCDIR/build/cleanup.sh cleanup.sh
