@@ -28,47 +28,59 @@ class GameClientPlayer;
 class GlobalGameSettings;
 class GameClientPlayerList;
 
-
-
-/// Basisklasse für sämtliche KI-Spieler
+/// Base class for all AI player. The AIBase class provides an interface which may be implemented by different AI
+/// players. 
 class AIBase
 {
     protected:
-        /// Eigene PlayerID, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
+
+		/// Unique player ID an AI player needs, e.g. to inspect the map. 
         const unsigned char playerid;
-        /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
+
+		/// Reference to the game world to get information for strategic planning
         const GameWorldBase& gwb;
-        /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
+
+		/// Reference to its own GameClientPlayer to get additional information. e.g. about economy
         const GameClientPlayer& player;
-        /// Verweis auf etwaige andere Spieler, bspw. um deren Bündnisse zu überprüfen etc.
+
+		/// Reference to a list of all player, e.g. to check for possible alliances
         const GameClientPlayerList& players;
-        /// Queue der GameCommands, die noch bearbeitet werden müssen
-        std::vector<gc::GameCommandPtr> gcs;
-        /// Stärke der KI
+
+		/// Queue of game comments to process
+		std::vector<gc::GameCommandPtr> gcs;
+
+		/// AI difficulty level
         const AI::Level level;
-        /// Abstrahiertes Interfaces, leitet Befehle weiter an
-        AIInterface* aii;
+
+		/// Abstract interface to forward commands (???)
+		AIInterface* aii;
 
     public:
 
+		/// Creates a new instance of AIBase initializes the members with the specified 
+		/// information (game world, client player, player list, etc.).
         AIBase(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level)
             : playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(new AIInterface(gwb, player, players, gcs, playerid)), ggs(ggs) {}
 
+		/// Destroys the current instance of AIBase and releases its memory. 
         virtual ~AIBase() {}
 
-        /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-        virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
+		/// Executes one AI move based on the current state of the game world. 
+		/// This method shell be called once per frame to adapt AI actions regularily.
+		virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
 
-        /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
-        /// (beispielsweise Siegesbedingungen, FOW usw.)
-        const GlobalGameSettings& ggs;
+		/// Reference to the global game settings. Those settings may be influencing the decision 
+		/// making process of the AI player (e.g. special behaviour if FOW is activated).
+		const GlobalGameSettings& ggs;
 
-        /// Zugriff auf die GameCommands, um diese abarbeiten zu können
-        const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
-        /// Markiert die GameCommands als abgearbeitet
-        void FetchGameCommands() { gcs.clear(); }
+		/// Provides access to the GameCommands which are enqueued to be executed
+		const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
+        
+		/// Marks all GameCommands in the queue as executed
+		void FetchGameCommands() { gcs.clear(); }
 
+		/// Sends an AI event (???)
         virtual void SendAIEvent(AIEvent::Base* ev) { delete ev; }
 };
 
