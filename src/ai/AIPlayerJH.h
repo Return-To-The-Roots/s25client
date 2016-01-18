@@ -132,8 +132,10 @@ class AIPlayerJH : public AIBase
 
         /// Executes a job form the job queue
         void ExecuteAIJob();
-        void AddBuildJob(AIJH::BuildJob* job, bool front = false);
-        void AddBuildJob(BuildingType type, const MapPoint pt, bool front = false);
+        /// Tries to build a bld of the given type at that point.
+        /// If front is true, then the job is enqueued at the front, else the back
+        /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point is taken
+        void AddBuildJob(BuildingType type, const MapPoint pt, bool front = false, bool searchPosition = true);
 		//adds buildjobs for a buildingtype around every warehouse or military building
 		void AddBuildJobAroundEvery(BuildingType bt, bool warehouse);
 

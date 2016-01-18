@@ -31,6 +31,8 @@
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
 bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
 
+const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS }};
+
 AIConstruction::AIConstruction(AIInterface* aii, AIPlayerJH* aijh)
     : aii(aii), aijh(aijh)
 {
@@ -429,6 +431,15 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
         return false;
 }
 
+BuildingType AIConstruction::GetSmallestAllowedMilBuilding() const
+{
+    for(unsigned i = 0; i < millitaryBuildings.size(); i++)
+        if(aii->CanBuildBuildingtype(millitaryBuildings[i]))
+            return millitaryBuildings[i];
+    return BLD_NOTHING;
+}
+
+
 BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 {
 	//default : 2 barracks for each guardhouse
@@ -437,7 +448,10 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 	//enemy nearby? -> tower or fortress 
 	//to do: important location or an area with a very low amount of buildspace? -> try large buildings
 	//buildings with requirement > small have a chance to be replaced with small buildings to avoid getting stuck if there are no places for medium/large buildings
-    BuildingType bld = BLD_BARRACKS;
+    BuildingType bld = GetSmallestAllowedMilBuilding();
+    // If we are not allowed to build a military building, return early
+    if(bld == BLD_NOTHING)
+        return BLD_NOTHING;
 
     const Goods& inventory = aii->GetInventory();
     if (((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15) && (inventory.goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))

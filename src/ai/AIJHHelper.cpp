@@ -175,12 +175,22 @@ void AIJH::BuildJob::TryToBuild()
             case BLD_WATCHTOWER:
             case BLD_FORTRESS:
                 foundPos = aijh->FindBestPosition(bPos, AIJH::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
-				//could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal buildings (probably important map part)
-				if(aii->GetBuildingQuality(bPos)!=BQ_MINE && aii->GetBuildingQuality(bPos)>BUILDING_SIZE[type] && aijh->BQsurroundcheck(bPos,6,true,10)<10)
-				{
-					//more than 80% is unbuildable in range 7 -> upgrade
-					type=type<BLD_WATCHTOWER?BLD_WATCHTOWER:BLD_FORTRESS;
-				}
+                //could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal buildings (probably important map part)
+                if(type != BLD_FORTRESS && aii->GetBuildingQuality(bPos)!=BQ_MINE && aii->GetBuildingQuality(bPos)>BUILDING_SIZE[type] && aijh->BQsurroundcheck(bPos,6,true,10)<10)
+                {
+                    //more than 80% is unbuildable in range 7 -> upgrade
+                    if(type == BLD_WATCHTOWER)
+                    {
+                        if(aii->CanBuildBuildingtype(BLD_FORTRESS))
+                            type = BLD_FORTRESS;
+                    }else
+                    {
+                        if(aii->CanBuildBuildingtype(BLD_WATCHTOWER))
+                            type = BLD_WATCHTOWER;
+                        else if(aii->CanBuildBuildingtype(BLD_FORTRESS))
+                            type = BLD_FORTRESS;
+                    }
+                }
                 break;
             case BLD_GOLDMINE:
                 foundPos = aijh->FindBestPosition(bPos, AIJH::GOLD, BQ_MINE, 11, true);
@@ -278,7 +288,7 @@ void AIJH::BuildJob::BuildMainRoad()
             std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh->nodes[aii->GetIdx(target)].bq = bq;
-            aijh->AddBuildJob(new AIJH::BuildJob(aijh, type, around));
+            aijh->AddBuildJob(type, around);
             return;
         }
         return;
@@ -307,7 +317,7 @@ void AIJH::BuildJob::BuildMainRoad()
             aijh->nodes[aii->GetIdx(target)].reachable = false;
             aii->DestroyBuilding(target);
             aii->DestroyFlag(houseFlag->GetPos());
-            aijh->AddBuildJob(new AIJH::BuildJob(aijh, type, around));
+            aijh->AddBuildJob(type, around);
             return;
         }
         else
@@ -327,7 +337,7 @@ void AIJH::BuildJob::BuildMainRoad()
         case BLD_WOODCUTTER:
             break;
         case BLD_FORESTER:
-            aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_WOODCUTTER, target));
+            aijh->AddBuildJob(BLD_WOODCUTTER, target);
             break;
         case BLD_QUARRY:
             break;
@@ -356,15 +366,15 @@ void AIJH::BuildJob::BuildMainRoad()
             aijh->SetFarmedNodes(target, true);
             break;
         case BLD_MILL:
-            aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_BAKERY, target));
+            aijh->AddBuildJob(BLD_BAKERY, target);
             break;
         case BLD_PIGFARM:
-            aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_SLAUGHTERHOUSE, target));
+            aijh->AddBuildJob(BLD_SLAUGHTERHOUSE, target);
             break;
         case BLD_BAKERY:
         case BLD_SLAUGHTERHOUSE:
         case BLD_BREWERY:
-            aijh->AddBuildJob(new AIJH::BuildJob(aijh, BLD_WELL, target));
+            aijh->AddBuildJob(BLD_WELL, target);
             break;
 
         default:
@@ -399,7 +409,7 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
 #ifdef DEBUG_AI
         std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
 #endif
-        aijh->AddBuildJob(new AIJH::BuildJob(aijh, type, around));
+        aijh->AddBuildJob(type, around);
         return;
     }
 
@@ -610,7 +620,7 @@ void AIJH::SearchJob::ExecuteJob()
     else
     {
         status = JOB_FINISHED;
-        aijh->AddBuildJob(new BuildJob(aijh, search->bld, search->result, SEARCHMODE_NONE), true);
+        aijh->AddBuildJob(search->bld, search->result, true, false);
     }
 }
 

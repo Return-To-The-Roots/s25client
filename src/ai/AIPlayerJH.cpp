@@ -304,11 +304,10 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 	return wh;
 }
 
-void AIPlayerJH::AddBuildJob(AIJH::BuildJob* job, bool front /*= false*/){ construction->AddBuildJob(job, front); }
-
-void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front)
+void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, bool searchPosition)
 {
-    construction->AddBuildJob(new AIJH::BuildJob(this, type, pt), front);
+    if(type != BLD_NOTHING)
+        construction->AddBuildJob(new AIJH::BuildJob(this, type, pt, searchPosition ? AIJH::SEARCHMODE_RADIUS : AIJH::SEARCHMODE_NONE), front);
 }
 
 void AIPlayerJH::AddBuildJobAroundEvery(BuildingType bt, bool warehouse)
@@ -317,14 +316,14 @@ void AIPlayerJH::AddBuildJobAroundEvery(BuildingType bt, bool warehouse)
 	{
 		for(std::list<nobBaseWarehouse*>::const_iterator it=aii->GetStorehouses().begin();it!=aii->GetStorehouses().end();++it)
 		{
-			construction->AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetPos()),false);
+			AddBuildJob(bt, (*it)->GetPos(), false);
 		}
 	}
 	else
 	{
 		for(std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();++it)
 		{
-			construction->AddBuildJob(new AIJH::BuildJob(this,bt,(*it)->GetPos()),false);
+			AddBuildJob(bt, (*it)->GetPos(), false);
 		}
 	}
 }

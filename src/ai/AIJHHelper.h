@@ -111,9 +111,10 @@ namespace AIJH
             friend class iwAIDebug;
         public:
             BuildJob(AIPlayerJH* aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
-                : Job(aijh), type(type), around(around), searchMode(searchMode) { }
-            /*BuildJob(AIPlayerJH* aijh, BuildingType type, SearchMode searchMode = SEARCHMODE_RADIUS)
-                : Job(aijh), type(type), target_x(0xFFFF), target_y(0xFFFF), around_x(0xFFFF), around_y(0xFFFF), searchMode(searchMode) { }*/
+                : Job(aijh), type(type), around(around), searchMode(searchMode)
+            {
+                RTTR_Assert(type != BLD_NOTHING);
+            }
 
             ~BuildJob() { }
             virtual void ExecuteJob();

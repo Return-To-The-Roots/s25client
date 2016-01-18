@@ -180,8 +180,8 @@ class GameClientPlayer : public GamePlayerInfo
 
         void EnableBuilding(BuildingType type) {building_enabled[type] = true;}
         void DisableBuilding(BuildingType type) {building_enabled[type] = false;}
-        bool IsBuildingEnabled(BuildingType type) {return(building_enabled[type]);}
-        std::vector< MapPoint > &GetRestrictedArea() {return(restricted_area);}
+        bool IsBuildingEnabled(BuildingType type) const {return(building_enabled[type]);}
+        std::vector< MapPoint >& GetRestrictedArea() {return(restricted_area);}
 
     private:
 
@@ -329,8 +329,6 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Darf der andere Spieler von mir angegriffen werden?
         bool IsPlayerAttackable(const unsigned char player) const;
-		/// Am I allowed to construct this building?
-		bool IsBuildingEnabled(BuildingType type) const {return(building_enabled[type]);}
         /// Ist ein anderer Spieler ein richtiger Verbündeter von uns, d.h. Teamsicht, Unterstützung durch aggressive Verteidiger usw.?
         bool IsAlly(const unsigned char player) const;
         /// Truppen bestellen

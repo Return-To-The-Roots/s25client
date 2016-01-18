@@ -19,11 +19,12 @@
 
 #pragma once
 
-#include <limits>
-#include <vector>
 #include "AIJHHelper.h"
 #include "nodeObjs/noFlag.h"
 #include "AIInterface.h"
+#include <boost/array.hpp>
+#include <limits>
+#include <vector>
 
 class AIPlayerJH;
 
@@ -31,6 +32,8 @@ namespace gc { class GameCommand; }
 
 class AIConstruction
 {
+    static const boost::array<BuildingType, 4> millitaryBuildings;
+
     public:
         AIConstruction(AIInterface* aii, AIPlayerJH* aijh);
         ~AIConstruction(void);
@@ -65,6 +68,8 @@ class AIConstruction
 
         /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
         bool IsConnectedToRoadSystem(const noFlag* flag);
+
+        BuildingType GetSmallestAllowedMilBuilding() const;
 
         /// Randomly chooses a military building, prefering bigger buildings if enemy nearby
         BuildingType ChooseMilitaryBuilding(const MapPoint pt);
