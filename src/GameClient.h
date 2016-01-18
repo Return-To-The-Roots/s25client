@@ -248,7 +248,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         const std::list<PostMsg*>& GetPostMessages() { return postMessages; }
         void DeletePostMessage(PostMsg* msg);
 
-        void SendAIEvent(AIEvent::Base* ev, unsigned receiver);
+        bool SendAIEvent(AIEvent::Base* ev, unsigned receiver);
 
     private:
         std::list<PostMsg*> postMessages;

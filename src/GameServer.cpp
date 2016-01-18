@@ -1714,10 +1714,15 @@ void GameServer::SetAIName(const unsigned player_id)
 }
 
 
-void GameServer::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
+bool GameServer::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {
-    if (ai_players[receiver])
+    if(ai_players[receiver])
+    {
         ai_players[receiver]->SendAIEvent(ev);
-    else
+        return true;
+    }else
+    {
         delete ev;
+        return false;
+    }
 }

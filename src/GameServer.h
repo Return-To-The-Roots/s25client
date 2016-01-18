@@ -201,7 +201,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
     public:
         AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
-        void SendAIEvent(AIEvent::Base* ev, unsigned receiver);
+        bool SendAIEvent(AIEvent::Base* ev, unsigned receiver);
 		unsigned int skiptogf;
 
 };

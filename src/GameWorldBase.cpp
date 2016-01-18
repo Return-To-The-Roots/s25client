@@ -2566,7 +2566,8 @@ int GameWorldBase::LUA_AIConstructionOrder(lua_State *L)
     unsigned id = (unsigned) luaL_checknumber(L, 4);
 	BuildingType bt=static_cast<BuildingType>(id);    
     
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, MapPoint(x, y), bt), pn);  
+    if(!GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, MapPoint(x, y), bt), pn))
+        LOG.lprintf("Sending AIConstructionOrder to player %u failed", pn);
     
     lua_pushnumber(L, 1);
     return(1);

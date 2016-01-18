@@ -2159,18 +2159,21 @@ void GameClient::DeletePostMessage(PostMsg* msg)
     }
 }
 
-void GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
+bool GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {
     if (human_ai && playerId_ == receiver)
     {
         human_ai->SendAIEvent(ev);
-        return;
+        return true;
     }
     
     if (IsHost())
-        GAMESERVER.SendAIEvent(ev, receiver);
+        return GAMESERVER.SendAIEvent(ev, receiver);
     else
+    {
         delete ev;
+        return true;
+    }
 }
 
 /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
