@@ -225,8 +225,11 @@ void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)
 
 void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
 {
+    if(!GetPlayer(player).IsBuildingEnabled(type))
+        return;
+
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    BuildingQuality bq = CalcBQ(pt, player, false, false);
+    const BuildingQuality bq = CalcBQ(pt, player, false, false);
 
     switch(BUILDING_SIZE[type])
     {
@@ -235,7 +238,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
         case BQ_CASTLE: if(!( bq == BQ_CASTLE || bq == BQ_HARBOR)) return; break;
         case BQ_HARBOR: if(bq != BQ_HARBOR) return; break;
         case BQ_MINE: if(bq != BQ_MINE) return; break;
-        default: break;
+        default: RTTR_Assert(false); break;
     }
 
     // TODO: Verzögerungsbugabfrage, kann später ggf. weg
@@ -269,8 +272,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
 void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char player)
 {
     // Steht da auch ein Gebäude oder eine Baustelle, nicht dass wir aus Verzögerung Feuer abreißen wollen, das geht schief
-    if(GetNO(pt)->GetType() == NOP_BUILDING ||
-            GetNO(pt)->GetType() == NOP_BUILDINGSITE)
+    if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
     {
 
         noBaseBuilding* nbb  = GetSpecObj<noBaseBuilding>(pt);
@@ -287,7 +289,6 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
                 // Nein, darf nicht abgerissen werden
                 return;
         }
-
 
         nbb->Destroy();
         delete nbb;
