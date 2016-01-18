@@ -26,6 +26,7 @@
 #include "buildings/nobUsual.h"
 #include "AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
+#include <algorithm>
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
@@ -231,21 +232,19 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
     //const unsigned short maxSearchRadius = 10;
 
 	//flag of a military building? -> check if we really want to connect this right now
-	if (aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
+    const MapPoint bldPos = aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
+	if (aii->IsMilitaryBuildingOnNode(bldPos))
 	{
-		MapPoint m = aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
-		unsigned listpos=0;
-		for (std::list<nobMilitary*>::const_iterator it=aii->GetMilitaryBuildings().begin();it!=aii->GetMilitaryBuildings().end();++it)
+        unsigned listpos = 0;
+        const std::list<nobMilitary*>& militaryBuildings = aii->GetMilitaryBuildings();
+        for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it, ++listpos)
 		{
-			if((*it)->GetPos() == m) 
+			if((*it)->GetPos() == bldPos) 
 			{
-				if(!MilitaryBuildingWantsRoad((*it),listpos))
-				{
+                if(!MilitaryBuildingWantsRoad(*it, listpos))
 					return false;
-				}
 				break;
 			}
-			listpos++;
 		}
 	}
     // Ziel, das möglichst schnell erreichbar sein soll
@@ -282,23 +281,23 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
             continue;
 
         // Wenn ja, dann gucken ob dieser Pfad möglichst kurz zum "höheren" Ziel (allgemeines Lager im Moment) ist
-        unsigned size = 0;
+        unsigned maxNonFlagPts = 0;
         //check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid path
-        unsigned temp = 0;
-        MapPoint t = flag->GetPos();
+        unsigned curNonFlagPts = 0;
+        MapPoint tmpPos = flag->GetPos();
         for(unsigned j = 0; j < tmpRoute.size(); ++j)
         {
-            t = aii->GetNeighbour(t, Direction::fromInt(tmpRoute[j]));
-            if(aii->GetBuildingQuality(t) < 1)
-                temp++;
+            tmpPos = aii->GetNeighbour(tmpPos, Direction::fromInt(tmpRoute[j]));
+            if(aii->GetBuildingQuality(tmpPos) == BQ_NOTHING)
+                curNonFlagPts++;
             else
             {
-                if(size < temp)
-                    size = temp;
-                temp = 0;
+                if(maxNonFlagPts < curNonFlagPts)
+                    maxNonFlagPts = curNonFlagPts;
+                curNonFlagPts = 0;
             }
         }
-        if(size > 2)
+        if(maxNonFlagPts > 2)
             continue;
 
         // Find path from current flag to target. If the current flag IS the target then we have already a path with distance=0
@@ -318,10 +317,10 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
 
         // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
-        if (2 * length + distance + 10 * size < shortestLength)
+        if (2 * length + distance + 10 * maxNonFlagPts < shortestLength)
         {
             shortest = flagIt;
-            shortestLength = 2 * length + distance + 10 * size;
+            shortestLength = 2 * length + distance + 10 * maxNonFlagPts;
             route = tmpRoute;
         }
     }
@@ -439,6 +438,13 @@ BuildingType AIConstruction::GetSmallestAllowedMilBuilding() const
     return BLD_NOTHING;
 }
 
+BuildingType AIConstruction::GetBiggestAllowedMilBuilding() const
+{
+    for(unsigned i = millitaryBuildings.size(); i > 0; i--)
+        if(aii->CanBuildBuildingtype(millitaryBuildings[i-1]))
+            return millitaryBuildings[i-1];
+    return BLD_NOTHING;
+}
 
 BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 {
@@ -453,19 +459,29 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     if(bld == BLD_NOTHING)
         return BLD_NOTHING;
 
+    const BuildingType biggestBld = GetBiggestAllowedMilBuilding();
+
     const Goods& inventory = aii->GetInventory();
     if (((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15) && (inventory.goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
 	if (aijh->HarborPosClose(pt,20) && rand()%10!=0 && aijh->ggs.getSelection(ADDON_SEA_ATTACK) != 2)
 	{
-		bld = BLD_WATCHTOWER;
-		return bld;
+        if(aii->CanBuildBuildingtype(BLD_WATCHTOWER))
+		    return BLD_WATCHTOWER;
+		return GetBiggestAllowedMilBuilding();
 	}
-	if(aijh->UpdateUpgradeBuilding()<0 && buildingCounts.building_site_counts[BLD_FORTRESS]<1 && (inventory.goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand()%10!=0)
-	{
-		bld = BLD_FORTRESS;
-		return bld;
-	}
+    if(biggestBld == BLD_WATCHTOWER || biggestBld == BLD_FORTRESS)
+    {
+        if(aijh->UpdateUpgradeBuilding() < 0 && buildingCounts.building_site_counts[biggestBld] < 1 && (inventory.goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand() % 10 != 0)
+        {
+            return biggestBld;
+        }
+    }
+
+    // avoid to build catapults in the beginning (no expansion)
+    const unsigned  militaryBuildingCount = GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
+
+
     sortedMilitaryBlds military = aii->GetMilitaryBuildings(pt, 3);
     for(sortedMilitaryBlds::iterator it = military.begin(); it != military.end(); ++it)
     {
@@ -476,9 +492,6 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
         {
             int randmil = rand();
 
-            // avoid to build catapults in the beginning (no expansion)
-            unsigned  militaryBuildingCount = GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE)
-                                              + GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
             //another catapult within "min" radius? ->dont build here!
             unsigned min = 16;
             nobBaseWarehouse* wh = (*aii->GetStorehouses().begin());
@@ -504,13 +517,20 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
             else
             {
                 if (randmil % 2 == 0)
-                    bld = BLD_FORTRESS;
-                else
+                    bld = biggestBld; // BLD_FORTRESS
+                else if(aii->CanBuildBuildingtype(BLD_WATCHTOWER))
                     bld = BLD_WATCHTOWER;
+                else
+                    bld = biggestBld;
             }
             //slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if there are no big building spots in that direction
             if(randmil % 10 == 0)
-                bld = BLD_GUARDHOUSE;
+            {
+                if(aii->CanBuildBuildingtype(BLD_GUARDHOUSE))
+                    bld = BLD_GUARDHOUSE;
+                else
+                    bld = GetSmallestAllowedMilBuilding();
+            }
             break;
         }
     }

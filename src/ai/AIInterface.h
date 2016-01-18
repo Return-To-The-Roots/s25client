@@ -144,7 +144,13 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool IsBuildingOnNode(const MapPoint pt, BuildingType bld) const { return (gwb.GetNO(pt)->GetType() == NOP_BUILDING || gwb.GetNO(pt)->GetType() == NOP_BUILDINGSITE) ? (gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == bld) : false; }
 
 		/// test whether there is a military building on a position
-		bool IsMilitaryBuildingOnNode(const MapPoint pt) const {return ((gwb.GetNO(pt)->GetType()==NOP_BUILDING || gwb.GetNO(pt)->GetType() == NOP_BUILDINGSITE) ? (gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() >= BLD_BARRACKS && gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() <= BLD_FORTRESS) : false); }
+		bool IsMilitaryBuildingOnNode(const MapPoint pt) const {
+            const NodalObjectType noType = gwb.GetNO(pt)->GetType();
+            if(noType != NOP_BUILDING && noType != NOP_BUILDINGSITE)
+                return false;
+            const BuildingType bldType = gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType();
+            return (bldType >= BLD_BARRACKS && bldType <= BLD_FORTRESS);
+        }
 
         /// Tests whether the ai player can see a point
         bool IsVisible(const MapPoint pt) const { return gwb.CalcWithAllyVisiblity(pt, playerID_) == VIS_VISIBLE; }

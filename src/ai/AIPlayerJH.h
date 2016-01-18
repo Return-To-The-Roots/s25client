@@ -309,7 +309,7 @@ class AIPlayerJH : public AIBase
     protected:
         void SetResourceMap(AIJH::Resource res, const MapPoint pt, int newvalue) {resourceMaps[res][pt] = newvalue;}
 		
-		MapCoord UpgradeBldX,UpgradeBldY;		
+		MapPoint UpgradeBldPos;		
 
         /// The current job the AI is working on
         boost::interprocess::unique_ptr<AIJH::Job, Deleter<AIJH::Job> > currentJob;

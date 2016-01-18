@@ -70,6 +70,7 @@ class AIConstruction
         bool IsConnectedToRoadSystem(const noFlag* flag);
 
         BuildingType GetSmallestAllowedMilBuilding() const;
+        BuildingType GetBiggestAllowedMilBuilding() const;
 
         /// Randomly chooses a military building, prefering bigger buildings if enemy nearby
         BuildingType ChooseMilitaryBuilding(const MapPoint pt);

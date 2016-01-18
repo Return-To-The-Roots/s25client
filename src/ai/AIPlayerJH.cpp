@@ -2195,8 +2195,7 @@ void AIPlayerJH::InitStoreAndMilitarylists()
         SetFarmedNodes((*it)->GetPos(), true);
     }
 	//find the upgradebuilding
-	UpgradeBldX=0;
-	UpgradeBldY=0;
+    UpgradeBldPos = MapPoint(0, 0);
 	UpdateUpgradeBuilding();
 }
 int AIPlayerJH::UpdateUpgradeBuilding()
@@ -2213,8 +2212,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 				if (construction->IsConnectedToRoadSystem((*it)->GetFlag()))
 				{
 					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerid, count);
-					UpgradeBldX=(*it)->GetX();
-					UpgradeBldY=(*it)->GetY();
+                    UpgradeBldPos = (*it)->GetPos();
 					UpgradeBldListNumber=count;
 					return count;
 				}
@@ -2229,8 +2227,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 	{
 		construction->AddConnectFlagJob((*it)->GetFlag());
 	}
-	UpgradeBldX=0;
-	UpgradeBldY=0;
+    UpgradeBldPos = MapPoint(0, 0);
 	UpgradeBldListNumber=-1;
 	return -1;
 }
