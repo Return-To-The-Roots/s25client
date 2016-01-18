@@ -48,6 +48,7 @@
 #   undef PlaySound
     typedef int socklen_t;
 #else
+#   include <csignal>
 #   define BREAKPOINT raise(SIGTRAP)
 #   define SOCKET int
 #   define INVALID_SOCKET -1
