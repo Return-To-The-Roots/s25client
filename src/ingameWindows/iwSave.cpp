@@ -50,11 +50,11 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-const unsigned AUTO_SAVE_INTERVALS_COUNT = 6;
+const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;
 
 const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] =
 {
-    500, 1000, 5000, 10000, 50000, 100000
+    500, 1000, 5000, 10000, 50000, 100000, 1
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -201,9 +201,12 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
+    
+    // Last entry is only for debugging
+    const unsigned numIntervalls = SETTINGS.global.debugMode ? AUTO_SAVE_INTERVALS_COUNT : AUTO_SAVE_INTERVALS_COUNT - 1;
 
     // Die Intervalle
-    for(unsigned i = 0; i < AUTO_SAVE_INTERVALS_COUNT; ++i)
+    for(unsigned i = 0; i < numIntervalls; ++i)
     {
         char str[64];
         sprintf(str, "%u GF", AUTO_SAVE_INTERVALS[i]);
@@ -212,7 +215,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     // Richtigen Eintrag auswählen
     bool found = false;
-    for(unsigned i = 0; i < AUTO_SAVE_INTERVALS_COUNT; ++i)
+    for(unsigned i = 0; i < numIntervalls; ++i)
     {
         if(SETTINGS.interface.autosave_interval == AUTO_SAVE_INTERVALS[i])
         {
