@@ -684,33 +684,38 @@ void nofAttacker::ReachedDestination()
 /// Versucht, eine aggressiven Verteidiger für uns zu bestellen
 void nofAttacker::TryToOrderAggressiveDefender()
 {
+    RTTR_Assert(state == STATE_ATTACKING_WALKINGTOGOAL);
     // Haben wir noch keinen Gegner?
     // Könnte mir noch ein neuer Verteidiger entgegenlaufen?
-    if(should_haunted && state >= STATE_ATTACKING_WALKINGTOGOAL)
+    if(!should_haunted)
+        return;
+
+    // 20%ige Chance, dass wirklich jemand angreift
+    if(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10) >= 2)
+        return;
+
+    // Militärgebäude in der Nähe abgrasen
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 2);
+    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        // 20%ige Chance, dass wirklich jemand angreift
-        if(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10) < 2)
+        // darf kein HQ sein, außer, das HQ wird selbst angegriffen,
+        if((*it)->GetBuildingType() == BLD_HEADQUARTERS && (*it) != attacked_goal)
+            continue;
+        // darf nicht weiter weg als 15 sein
+        if(gwg->CalcDistance(pos, (*it)->GetPos()) >= 15)
+            continue;
+        // und es muss natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
+        // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
+        if(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer())  &&
+           GAMECLIENT.GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
         {
-            // Militärgebäude in der Nähe abgrasen
-            sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 2);
-            for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            // ggf. Verteidiger rufen
+            nofAggressiveDefender* defender = (*it)->SendDefender(this);
+            if(defender)
             {
-                // darf kein HQ sein, außer, das HQ wird selbst angegriffen, darf nicht weiter weg als 15 sein
-                // und es darf natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
-                // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
-                if(((*it)->GetBuildingType() != BLD_HEADQUARTERS || (*it) == attacked_goal)
-                        && gwg->CalcDistance(pos, (*it)->GetPos()) < 15
-                        && GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer())  &&
-                        GAMECLIENT.GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
-                {
-                    // ggf. Verteidiger rufen
-                    if( ((*it)->SendDefender(this)))
-                    {
-                        // nun brauchen wir keinen Verteidiger mehr
-                        should_haunted = false;
-                        break;
-                    }
-                }
+                // nun brauchen wir keinen Verteidiger mehr
+                should_haunted = false;
+                break;
             }
         }
     }

@@ -1003,7 +1003,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
 
     // Wenn kein Soldat mehr da ist --> 0 zurückgeben
     if(!rank)
-        return 0;
+        return NULL;
 
     // Dann den Stärksten rausschicken
     nofAggressiveDefender* soldier = new nofAggressiveDefender(pos, player, this, rank - 1, attacker);
