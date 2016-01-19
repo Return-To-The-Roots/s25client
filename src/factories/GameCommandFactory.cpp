@@ -133,12 +133,6 @@ bool GameCommandFactory<T_Handler>::SeaAttack(const MapPoint pt, const unsigned 
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SwitchPlayer(const unsigned char new_player_id)
-{
-    return AddGC_Virt( new gc::SwitchPlayer(new_player_id) );
-}
-
-template<class T_Handler>
 bool GameCommandFactory<T_Handler>::ToggleCoins(const MapPoint pt)
 {
     return AddGC_Virt( new gc::ToggleCoins(pt) );

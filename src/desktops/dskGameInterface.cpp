@@ -652,13 +652,13 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             unsigned playerIdx = ke.c - '1';
             if(GAMECLIENT.IsReplayModeOn())
             {
-                GAMECLIENT.ChangeReplayPlayer(playerIdx);
+                GAMECLIENT.ChangePlayerIngame(GAMECLIENT.GetPlayerID(), playerIdx);
             }
             else if(playerIdx < GAMECLIENT.GetPlayerCount())
             {
                 GameClientPlayer& player = GAMECLIENT.GetPlayer(playerIdx);
                 if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
-                    GAMECLIENT.SwitchPlayer(ke.c - '1');
+                    GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
         } return true;
 
@@ -1163,19 +1163,25 @@ void dskGameInterface::LC_Status_Error(const std::string& error)
 void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
     // Meldung anzeigen
-    char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' switched to player '%s'"), GAMECLIENT.GetPlayer(player1).name.c_str()
-             , GAMECLIENT.GetPlayer(player2).name.c_str());
+    std::string text = "Player '" + GAMECLIENT.GetPlayer(player1).name + "' switched to player '" + GAMECLIENT.GetPlayer(player2).name + "'";
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
-
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
-    if(player1 == GAMECLIENT.GetPlayerID() || player2 == GAMECLIENT.GetPlayerID())
+    const unsigned char localPlayerID = GAMECLIENT.GetPlayerID();
+    if(player1 == localPlayerID || player2 == localPlayerID)
     {
+        // Set visual settings back to the actual ones
+        GAMECLIENT.ResetVisualSettings();
+
+        // BQ überall neu berechnen
+        for(unsigned y = 0; y < gwv->GetHeight(); ++y)
+        {
+            for(unsigned x = 0; x < gwv->GetWidth(); ++x)
+                gwv->CalcAndSetBQ(MapPoint(x, y), localPlayerID);
+        }
         minimap.UpdateAll();
         gwv->RecalcAllColors();
     }
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////

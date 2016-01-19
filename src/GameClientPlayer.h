@@ -201,9 +201,6 @@ class GameClientPlayer : public GamePlayerInfo
         // Deserialisieren
         void Deserialize(SerializedGameData& sgd);
 
-        /// Tauscht Spieler
-        void SwapPlayer(GameClientPlayer& two);
-
         /// Setzt GameWorld
         void SetGameWorldPointer(GameWorldGame* const gwg) { this->gwg = gwg; }
 

@@ -52,7 +52,6 @@
 
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
-#include "GameCommands.h"
 
 #include "files.h"
 #include <bzlib.h>
@@ -1006,10 +1005,6 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
     // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier
     framesinfo.lastTime += framesinfo.gf_length;
 
-    // Bei evtl. Spielerwechsel die IDs speichern, die "gewechselt" werden sollen
-    // TODO: Better solution without using the GameCommands include?
-    unsigned char player_switch_old_id = 255, player_switch_new_id = 255;
-
     // We take the checksum of the first human player as the reference
     unsigned char referencePlayerIdx = 0xFF;
     struct AsyncChecksum{
@@ -1029,6 +1024,7 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         // Befehle der KI senden
         if(player.ps == PS_KI)
         {
+            LOG.write("SERVER >>> GC %u\n", client);
             SendToAll(GameMessage_GameCommand(client, 0, ai_players[client]->GetGameCommands()));
             ai_players[client]->FetchGameCommands();
             RTTR_Assert(player.gc_queue.empty());
@@ -1055,16 +1051,6 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
         {
             referenceChecksum = curChecksum;
             referencePlayerIdx = client;
-        }
-
-        for(std::vector<gc::GameCommandPtr>::const_iterator it = frontGC.gcs.begin(); it != frontGC.gcs.end(); ++it)
-        {
-            if((*it)->GetType() == gc::SWITCHPLAYER)
-            {
-                // Dann merken und NACH der Schleife erst wechseln!
-                player_switch_old_id = client;
-                player_switch_new_id = dynamic_cast<gc::SwitchPlayer*>(it->get())->GetNewPlayerId();
-            }
         }
 
         player.gc_queue.pop_front();
@@ -1103,10 +1089,6 @@ void GameServer::ExecuteNWF(const unsigned currentTime)
             }
         }
     }
-
-    // Evtl den Spieler wechseln?
-    if(player_switch_old_id != 255)
-        ChangePlayer(player_switch_old_id, player_switch_new_id);
 
     if(framesinfo.gfLenghtNew != framesinfo.gf_length)
     {
@@ -1425,7 +1407,6 @@ inline void GameServer::OnNMSPlayerReady(const GameMessage_Player_Ready& msg)
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n", msg.player, (player.ready ? "true" : "false"));
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Checksumme
 inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
@@ -1498,6 +1479,7 @@ void GameServer::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
 void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
     GameServerPlayer& player = players[msg.player];
+    LOG.write("SERVER <<< GC %u\n", msg.player);
 
     // Only valid from humans (for now)
     if(player.ps != PS_OCCUPIED)
@@ -1639,15 +1621,24 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     KickPlayer(msg.player, NP_ASYNC, 0);
 }
 
+void GameServer::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
+{
+    if(status != SS_GAME)
+        return;
+    if(msg.player == msg.player2)
+        return;
+    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
+    if(players[msg.player].ps != PS_OCCUPIED || players[msg.player2].ps != PS_KI)
+        return;
+    SendToAll(msg);
+    ChangePlayer(msg.player, msg.player2);
+}
+
 void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
     LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
-    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
-    if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
-        return;    
-    players[old_id].ps = PS_KI;
-    players[new_id].ps = PS_OCCUPIED;
     using std::swap;
+    swap(players[new_id].ps, players[old_id].ps);
     swap(players[new_id].so, players[old_id].so);
     swap(players[new_id].send_queue, players[old_id].send_queue);
     swap(players[new_id].recv_queue, players[old_id].recv_queue);
@@ -1659,11 +1650,9 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 
     ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id);
 
-    //swap the gamecommand que
+    //swap the gamecommand queue
     swap(players[old_id].gc_queue, players[new_id].gc_queue);
 }
-
-
 
 bool GameServer::TogglePause()
 {
@@ -1673,13 +1662,12 @@ bool GameServer::TogglePause()
     return framesinfo.isPaused;
 }
 
-
 void GameServer::SwapPlayer(const unsigned char player1, const unsigned char player2)
 {
     // Message verschicken
     SendToAll(GameMessage_Player_Swap(player1, player2));
     // Spieler vertauschen
-    players[player1].SwapPlayer(players[player2]);
+    players[player1].SwapInfo(players[player2]);
 }
 
 void GameServer::SetAIName(const unsigned player_id)

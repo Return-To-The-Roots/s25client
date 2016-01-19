@@ -360,7 +360,7 @@ void GameClient::StartGame(const unsigned int random_init)
             }
         }
         // Visuelle Einstellungen ableiten
-        GetVisualSettings();
+        ResetVisualSettings();
     }
     else
     {
@@ -774,17 +774,23 @@ inline void GameClient::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
 {
     LOG.write("<<< NMS_PLAYER_SWAP(%u, %u)\n", msg.player, msg.player2);
 
-    players[msg.player].SwapPlayer(players[msg.player2]);
+    if(state == CS_GAME)
+    {
+        ChangePlayerIngame(msg.player, msg.player2);
+    }else
+    {
+        // We are in preparation steps -> switch player info
+        players[msg.player].SwapInfo(players[msg.player2]);
 
-    // Evtl. sind wir betroffen?
-    if(playerId_ == msg.player)
-        playerId_ = msg.player2;
-    else if(playerId_ == msg.player2)
-        playerId_ = msg.player;
+        // Evtl. sind wir betroffen?
+        if(playerId_ == msg.player)
+            playerId_ = msg.player2;
+        else if(playerId_ == msg.player2)
+            playerId_ = msg.player;
 
-
-    if(ci)
-        ci->CI_PlayersSwapped(msg.player, msg.player2);
+        if(ci)
+            ci->CI_PlayersSwapped(msg.player, msg.player2);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1162,6 +1168,7 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 {
     if(msg.player != 0xFF)
     {
+        LOG.write("CLIENT <<< GC %u\n", msg.player);
         // Nachricht in Queue einhängen
         players[msg.player].gc_queue.push(msg);
         RTTR_Assert(msg.player != playerId_ || players[msg.player].gc_queue.size() == 1);
@@ -1971,7 +1978,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
         return 0;
 }
 
-void GameClient::GetVisualSettings()
+void GameClient::ResetVisualSettings()
 {
     GameClientPlayer& player = GetLocalPlayer();
     //visual_settings.transport_order[0] = player.transport[GD_COINS];
@@ -2243,3 +2250,11 @@ void GameClient::ToggleHumanAIPlayer()
     }
 }
 
+void GameClient::RequestSwapToPlayer(const unsigned char newId)
+{
+    if(state != CS_GAME)
+        return;
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(newId);
+    if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
+        send_queue.push(new GameMessage_Player_Swap(playerId_, newId));
+}

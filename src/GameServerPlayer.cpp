@@ -134,10 +134,10 @@ unsigned GameServerPlayer::GetTimeOut() const
 }
 
 /// Tauscht Spieler
-void GameServerPlayer::SwapPlayer(GameServerPlayer& two)
+void GameServerPlayer::SwapInfo(GameServerPlayer& two)
 {
     using std::swap;
-    GamePlayerInfo::SwapPlayer(two);
+    GamePlayerInfo::SwapInfo(two);
 
     swap(this->connecttime, two.connecttime);
     swap(this->last_command_timeout, two.last_command_timeout);

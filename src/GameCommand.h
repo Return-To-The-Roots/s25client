@@ -59,7 +59,7 @@ namespace gc
         CALLGEOLOGIST,
         CALLSCOUT,
         ATTACK,
-        SWITCHPLAYER,
+        UNUSED,
         TOGGLECOINS,
         TOGGLEPRODUCTION,
         CHANGEINVENTORYSETTING,

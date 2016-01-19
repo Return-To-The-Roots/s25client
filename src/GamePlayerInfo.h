@@ -81,9 +81,8 @@ class GamePlayerInfo
 
         unsigned getPlayerID() const { return playerid; }
 
-    protected:
         /// Wechselt Spieler
-        void SwapPlayer(GamePlayerInfo& two);
+        void SwapInfo(GamePlayerInfo& two);
 
     protected:
         /// Player-ID

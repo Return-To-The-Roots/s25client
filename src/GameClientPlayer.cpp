@@ -458,16 +458,6 @@ void GameClientPlayer::Deserialize(SerializedGameData& sgd)
     emergency = sgd.PopBool();
 }
 
-void GameClientPlayer::SwapPlayer(GameClientPlayer& two)
-{
-    GamePlayerInfo::SwapPlayer(two);
-
-    using std::swap;
-
-    swap(this->is_lagging, two.is_lagging);
-    swap(this->gc_queue, two.gc_queue);
-}
-
 nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*),
         const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length, bool record) const
 {

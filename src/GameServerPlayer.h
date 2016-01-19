@@ -45,7 +45,7 @@ class GameServerPlayer : public GamePlayerInfo
         void clear();
 
         /// Tauscht Spieler
-        void SwapPlayer(GameServerPlayer& two);
+        void SwapInfo(GameServerPlayer& two);
 
         /// Spieler laggt
         void Lagging();
