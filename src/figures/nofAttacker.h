@@ -34,6 +34,8 @@ class nofAttacker : public nofActiveSoldier
         /// Soll er von nem Verteidiger gejagt werden? (wenn nicht wurde er schon gejagt oder er soll
         /// wegen den Militäreinstellungen nicht gejagt werden
         bool should_haunted;
+        /// Defender who is currently chasing after this soldier
+        nofAggressiveDefender* huntingDefender;
         /// In welchem Radius steht der Soldat, wenn er um eine Fahne herum wartet?
         unsigned short radius;
         /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
@@ -65,6 +67,7 @@ class nofAttacker : public nofActiveSoldier
 
         /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
         void CancelAtShip();
+        void CancelAtHuntingDefender();
         /// Behandelt das Laufen zurück zum Schiff
         void HandleState_SeaAttack_ReturnToShip();
 
@@ -80,8 +83,7 @@ class nofAttacker : public nofActiveSoldier
         /// Normaler Konstruktor für Angreifer
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal);
         /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
-        nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal,
-                    const nobHarborBuilding* const harbor);
+        nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor);
         nofAttacker(SerializedGameData& sgd, const unsigned obj_id);
         ~nofAttacker();
 
@@ -94,6 +96,7 @@ class nofAttacker : public nofActiveSoldier
     public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofAttacker(sgd); }
 
         GO_Type GetGOT() const { return GOT_NOF_ATTACKER; }
+        const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }
 
         void HandleDerivedEvent(const unsigned int id);
         /// Blockt der Angreifer noch?

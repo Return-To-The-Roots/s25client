@@ -41,6 +41,8 @@ class nofAggressiveDefender : public nofActiveSoldier
         /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
         void InformTargetsAboutCancelling();
 
+        void CancelAtAttacker();
+
         /// The derived classes regain control after a fight of nofActiveSoldier
         void FreeFightEnded();
 

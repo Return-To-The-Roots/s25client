@@ -121,8 +121,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
     building = NULL;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
-    CancelAtAttackedBld();
-
+    InformTargetsAboutCancelling();
 
     state = STATE_FIGUREWORK;
 
@@ -146,25 +145,23 @@ void nofAggressiveDefender::WonFighting()
 	//addon BattlefieldPromotion active? -> increase rank!
 	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
 		IncreaseRank();
-    // Angreifer tot
-    attacker  = NULL;
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
     {
+        // Ziel Bescheid sagen
+        InformTargetsAboutCancelling();
+
         // Rumirren
         state = STATE_FIGUREWORK;
         StartWandering();
         Wander();
 
-        // Ziel Bescheid sagen
-        CancelAtAttackedBld();
-
         return;
     }
 
-    // Angreifer ist tot, nach anderen suchen, die in meiner Nähe sind und mich evtl noch mit denen kloppen
-    MissionAggressiveDefendingLookForNewAggressor();
+    // Continue walking to our attacker
+    MissAggressiveDefendingContinueWalking();
 }
 
 /// Wenn ein Kampf verloren wurde (Tod)
@@ -175,13 +172,13 @@ void nofAggressiveDefender::LostFighting()
     AbrogateWorkplace();
 
     // Ziel Bescheid sagen, das ich verteidigt hatte
-    CancelAtAttackedBld();
-    attacker = NULL;
+    InformTargetsAboutCancelling();
 }
 
 
 void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 {
+    RTTR_Assert(!attacker);
     // Wenns das Zielgebäude nich mehr gibt, gleich nach Hause gehen!
     if(!attacked_goal)
     {
@@ -198,10 +195,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     if(attacker)
     {
         // zum Angreifer gehen und mit ihm kämpfen
-        if(state == STATE_MEETENEMY)
-            MeetingEnemy();
-        else
-            MissAggressiveDefendingWalk();
+        MissAggressiveDefendingWalk();
     }
     else
     {
@@ -212,7 +206,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 
 void nofAggressiveDefender::AttackedGoalDestroyed()
 {
-    attacker = NULL;
+    CancelAtAttacker();
     attacked_goal = NULL;
 
     /*// Stehen wir? Dann losgehen
@@ -232,10 +226,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
     {
-        attacker = NULL;
-
-        // Ziel Bescheid sagen
-        CancelAtAttackedBld();
+        InformTargetsAboutCancelling();
 
         // Rumirren
         state = STATE_FIGUREWORK;
@@ -263,14 +254,19 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     if(!attacker->IsReadyForFight())
     {
         // Look for a new one
+        CancelAtAttacker();
         MissionAggressiveDefendingLookForNewAggressor();
         return;
     }
 
     // Look for enemies
-    if(FindEnemiesNearby())
+    if(FindEnemiesNearby()){
         // Enemy found -> abort, because nofActiveSoldier handles all things now
+        // Note it is ok, if the enemy is our attacker.
+        // If we win, we will either see, that the attacker is busy or be notified because he did
+        // If we loose, we will tell him later
         return;
+    }
 
     RTTR_Assert(pos != attacker->GetPos()); // If so, why was it not found?
 
@@ -281,6 +277,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     {
         // No route found
         // Look for new attacker
+        CancelAtAttacker();
         MissionAggressiveDefendingLookForNewAggressor();
     }
     else
@@ -300,11 +297,8 @@ void nofAggressiveDefender::ReturnHomeMissionAggressiveDefending()
 
 void nofAggressiveDefender::AttackerLost()
 {
+    RTTR_Assert(attacker);
     attacker = NULL;
-
-    // Wenn wir auf die gewartet hatten, müssen wir uns einen neuen Angreifer suchen
-    if(state == STATE_WAITINGFORFIGHT)
-        MissionAggressiveDefendingLookForNewAggressor();
 }
 
 
@@ -318,11 +312,20 @@ void nofAggressiveDefender::InformTargetsAboutCancelling()
 {
     nofActiveSoldier::InformTargetsAboutCancelling();
     // Angreifer Bescheid sagen
-    attacker = NULL;
+    CancelAtAttacker();
     // Ziel Bescheid sagen
     CancelAtAttackedBld();
 }
 
+void nofAggressiveDefender::CancelAtAttacker()
+{
+    if(attacker)
+    {
+        RTTR_Assert(attacker->GetHuntingDefender() == this);
+        attacker->AggressiveDefenderLost();
+        attacker = NULL;
+    }
+}
 
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofAggressiveDefender::FreeFightEnded()

@@ -166,10 +166,11 @@ void nobBaseMilitary::AddLeavingFigure(noFigure* fig)
 
 nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 {
-    // Look for other attackers on this building that are clos and ready to fight
+    // Look for other attackers on this building that are close and ready to fight
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
-        if(!(*it)->IsReadyForFight())
+        // The attacker must be ready to fight and must not already have another hunting defender
+        if(!(*it)->IsReadyForFight() || (*it)->GetHuntingDefender())
             continue;
 
         const MapPoint attackerPos = (*it)->GetPos();
@@ -181,7 +182,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
             return (*it);
         }
         // Check roughly the distance
-        if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) < 5)
+        if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) <= 5)
         {
             // Check it further (e.g. if they have to walk around a river...)
             if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)

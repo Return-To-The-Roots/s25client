@@ -51,7 +51,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(NULL),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
       harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -63,9 +63,8 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 }
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
-    : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR),
-      attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), blocking_event(NULL),
+    : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal),
+      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
       harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -86,6 +85,7 @@ void nofAttacker::Destroy_nofAttacker()
 {
     RTTR_Assert(!attacked_goal);
     RTTR_Assert(!ship_obj_id);
+    RTTR_Assert(!huntingDefender);
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
@@ -100,6 +100,7 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
     {
         sgd.PushObject(attacked_goal, false);
         sgd.PushBool(should_haunted);
+        sgd.PushObject(huntingDefender, true);
         sgd.PushUnsignedShort(radius);
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
@@ -108,20 +109,28 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
         sgd.PushMapPoint(harborPos);
         sgd.PushMapPoint(shipPos);
         sgd.PushUnsignedInt(ship_obj_id);
+    }else
+    {
+        RTTR_Assert(!attacked_goal);
+        RTTR_Assert(!huntingDefender);
+        RTTR_Assert(!blocking_event);
     }
 }
 
 nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
-    blocking_event = NULL;
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
         should_haunted = sgd.PopBool();
+        huntingDefender = sgd.PopObject<nofAggressiveDefender>(GOT_NOF_AGGRESSIVEDEFENDER);
+
         radius = sgd.PopUnsignedShort();
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
             blocking_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+        else
+            blocking_event = NULL;
 
         harborPos = sgd.PopMapPoint();
         shipPos = sgd.PopMapPoint();
@@ -131,7 +140,11 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     {
         attacked_goal = NULL;
         should_haunted = false;
+        huntingDefender = NULL;
         radius = 0;
+        blocking_event = NULL;
+        harborPos = MapPoint::Invalid();
+        shipPos = MapPoint::Invalid();
         ship_obj_id = 0;
     }
 
@@ -158,7 +171,6 @@ void nofAttacker::Walked()
             {
                 // Nach Hause gehen
                 ReturnHomeMissionAttacking();
-
                 return;
             }
 
@@ -224,7 +236,6 @@ void nofAttacker::Walked()
             {
                 // Nach Hause gehen
                 ReturnHomeMissionAttacking();
-
                 return;
             }
 
@@ -249,6 +260,7 @@ void nofAttacker::Walked()
                     // Meinem Heimatgebäude Bescheid sagen, dass ich nicht mehr komme (falls es noch eins gibt)
                     if(building)
                         building->SoldierLost(this);
+                    CancelAtHuntingDefender();
                     // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
                     if(ship_obj_id)
                         CancelAtShip();
@@ -369,7 +381,7 @@ void nofAttacker::HomeDestroyed()
 
             // Angreifer muss zusätzlich seinem Ziel Bescheid sagen
             nobBaseMilitary* curGoal = attacked_goal; // attacked_goal gets reset
-            RemoveFromAttackedGoal();
+            InformTargetsAboutCancelling();
 
             // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
             if(ship_obj_id)
@@ -383,7 +395,6 @@ void nofAttacker::HomeDestroyed()
 
             // und evtl einen Nachrücker für diesen Platz suchen
             curGoal->SendSuccessor(pos, radius, GetCurMoveDir());
-            attacked_goal = NULL;
         } break;
         default:
         {
@@ -418,8 +429,7 @@ void nofAttacker::WonFighting()
     if(!building && state != STATE_ATTACKING_FIGHTINGVSDEFENDER)
     {
         // Dann dem Ziel Bescheid sagen, falls es existiert (evtl. wurdes zufällig zur selben Zeit zerstört)
-        if(attacked_goal)
-            RemoveFromAttackedGoal();
+        InformTargetsAboutCancelling();
 
         // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
         if(ship_obj_id)
@@ -484,8 +494,7 @@ void nofAttacker::LostFighting()
     AbrogateWorkplace();
 
     // Angreifer müssen zusätzlich ihrem Ziel Bescheid sagen
-    if(attacked_goal)
-        RemoveFromAttackedGoal();
+    InformTargetsAboutCancelling();
 
     // Ggf. Schiff Bescheid sagen
     if(ship_obj_id)
@@ -514,8 +523,7 @@ void nofAttacker::MissAttackingWalk()
     if(!building)
     {
         // Dann dem Ziel Bescheid sagen, falls es existiert (evtl. wurdes zufällig zur selben Zeit zerstört)
-        if(attacked_goal)
-            RemoveFromAttackedGoal();
+        InformTargetsAboutCancelling();
 
         // Ggf. Schiff Bescheid sagen (Schiffs-Angreifer)
         if(ship_obj_id)
@@ -710,8 +718,8 @@ void nofAttacker::TryToOrderAggressiveDefender()
            GAMECLIENT.GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
         {
             // ggf. Verteidiger rufen
-            nofAggressiveDefender* defender = (*it)->SendDefender(this);
-            if(defender)
+            huntingDefender = (*it)->SendDefender(this);
+            if(huntingDefender)
             {
                 // nun brauchen wir keinen Verteidiger mehr
                 should_haunted = false;
@@ -808,6 +816,7 @@ void nofAttacker::CapturingWalking()
         // Meinem alten Heimatgebäude Bescheid sagen (falls es noch existiert)
         if(building)
             building->SoldierLost(this);
+        CancelAtHuntingDefender();
         if(ship_obj_id)
             CancelAtShip();
         // mich von der Karte tilgen-
@@ -942,25 +951,16 @@ void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_ra
 
 void nofAttacker::LetsFight(nofAggressiveDefender* other)
 {
+    RTTR_Assert(!huntingDefender);
     // wir werden jetzt "gejagt"
     should_haunted = false;
-
-    // wenn ich stehe (z.B. vor der Hütte warte), hinlaufen
-    if(state == STATE_ATTACKING_WAITINGAROUNDBUILDING)
-    {
-        state = STATE_ATTACKING_WALKINGTOGOAL;
-        MissAttackingWalk();
-    }
+    huntingDefender = other;
 }
 
 void nofAttacker::AggressiveDefenderLost()
 {
-    // Wenn wir auf die gewartet hatten, müssen wir uns nun bewegen
-    if(state == STATE_WAITINGFORFIGHT)
-    {
-        state = STATE_ATTACKING_WALKINGTOGOAL;
-        MissAttackingWalk();
-    }
+    RTTR_Assert(huntingDefender);
+    huntingDefender = NULL;
 }
 
 void nofAttacker::SwitchStateAttackingWaitingForDefender()
@@ -999,6 +999,8 @@ bool nofAttacker::IsBlockingRoads() const
 void nofAttacker::InformTargetsAboutCancelling()
 {
     nofActiveSoldier::InformTargetsAboutCancelling();
+    CancelAtHuntingDefender();
+
     // Ziel Bescheid sagen, falls es das noch gibt
     if(attacked_goal)
         RemoveFromAttackedGoal();
@@ -1033,6 +1035,7 @@ void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigne
 void nofAttacker::SeaAttackFailedBeforeLaunch()
 {
     InformTargetsAboutCancelling();
+    RTTR_Assert(!huntingDefender);
     AbrogateWorkplace();
     goal_ = NULL;
     state = STATE_FIGUREWORK;
@@ -1085,6 +1088,16 @@ void nofAttacker::CancelAtShip()
         }
     }
     ship_obj_id = 0;
+}
+
+void nofAttacker::CancelAtHuntingDefender()
+{
+    if(huntingDefender)
+    {
+        RTTR_Assert(huntingDefender->GetAttacker() == this);
+        huntingDefender->AttackerLost();
+        huntingDefender = NULL;
+    }
 }
 
 /// Behandelt das Laufen zurück zum Schiff
@@ -1152,6 +1165,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
 void nofAttacker::CancelSeaAttack()
 {
     InformTargetsAboutCancelling();
+    RTTR_Assert(!huntingDefender);
     Abrogate();
 }
 
