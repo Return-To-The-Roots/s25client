@@ -46,7 +46,7 @@ public:
 
     T pop()
     {
-        assert(!empty());
+        RTTR_Assert(!empty());
         const int size = static_cast<int>(elements.size());
         if (size == 1)
         {

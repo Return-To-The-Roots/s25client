@@ -416,7 +416,7 @@ MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
 unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
-    assert(dir < 3);
+    RTTR_Assert(dir < 3);
 
     const MapNode& node = GetNode(pt);
     // Entweder muss es eine richtige Straße sein oder es müssen auch visuelle Straßen erlaubt sein
@@ -444,7 +444,7 @@ unsigned char GameWorldBase::GetPointRoad(const MapPoint pt, unsigned char dir, 
 
 unsigned char GameWorldBase::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
 
     if(dir >= 3)
         dir = dir - 3;
@@ -1069,7 +1069,7 @@ MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) con
             res.y = 0;
         break;
     default:
-        assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
+        RTTR_Assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
         res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
         res.y = pt.y + 1;
         if(res.y == height_)
@@ -1141,7 +1141,7 @@ TerrainType GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char dir
  */
 TerrainType GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
     return (dir == 0) ? GetTerrainAround(pt, 5) : GetTerrainAround(pt, dir - 1);
 }
 
@@ -1154,7 +1154,7 @@ TerrainType GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char d
  */
 TerrainType GameWorldBase::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
-    assert(dir < 6);
+    RTTR_Assert(dir < 6);
     return GetTerrainAround(pt, dir);
 }
 

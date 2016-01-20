@@ -59,8 +59,8 @@ unsigned char TradeRoute::GetNextDir()
             return nextDir; // If not, bail out
     }
 
-    assert(nextDir < 6);
-    assert(nextDir == path.route[curRouteIdx]);
+    RTTR_Assert(nextDir < 6);
+    RTTR_Assert(nextDir == path.route[curRouteIdx]);
     curRouteIdx++;
     curPos = gwg.GetNeighbour(curPos, nextDir);
     return nextDir;

@@ -1575,7 +1575,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     if(job == JOB_NOTHING)
     {
         // Diminish the goods in the warehouse
-        assert(gt != GD_NOTHING);
+        RTTR_Assert(gt != GD_NOTHING);
         real_goods.goods[gt] -= count;
         owner.DecreaseInventoryWare(gt, count);
         //now that we have removed the goods lets remove the donkeys
@@ -1584,7 +1584,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     }
     else
     {
-        assert(gt == GD_NOTHING);
+        RTTR_Assert(gt == GD_NOTHING);
         //remove the jobs & the helpers
         real_goods.people[job] -= count;
         owner.DecreaseInventoryJob(job, count);

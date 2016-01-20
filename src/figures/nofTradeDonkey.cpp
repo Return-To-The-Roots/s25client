@@ -47,7 +47,7 @@ void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 
 void nofTradeDonkey::GoalReached()
 {
-    assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
+    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
     successor = NULL;
     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
     GameClientPlayer& player = gwg->GetPlayer(wh->GetPlayer());

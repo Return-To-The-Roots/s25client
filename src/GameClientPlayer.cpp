@@ -2475,7 +2475,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const 
         if(gt != GD_NOTHING)
             available = (*it)->GetAvailableWaresForTrading(gt);
         else{
-            assert(job != JOB_NOTHING);
+            RTTR_Assert(job != JOB_NOTHING);
             available = (*it)->GetAvailableFiguresForTrading(job);
         }
         if(available == 0)

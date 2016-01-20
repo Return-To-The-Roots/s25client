@@ -23,7 +23,7 @@
 
 bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player)
 {
-    assert(start != goal);
+    RTTR_Assert(start != goal);
 
     unsigned entryIdx = FindEntry(gwg, start, goal, player);
     if(entryIdx < curSize)
@@ -32,7 +32,7 @@ bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start,
         MapPoint checkedGoal;
         if(gwg.CheckTradeRoute(pathes[entryIdx].path.start, pathes[entryIdx].path.route, 0, player, &checkedGoal))
         {
-            assert(checkedGoal == start || checkedGoal == goal);
+            RTTR_Assert(checkedGoal == start || checkedGoal == goal);
             pathes[entryIdx].lastUse = GAMECLIENT.GetGFNumber();
             return true;
         }else

@@ -147,21 +147,21 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::top() const
 template<typename T, class T_GetKey, class GetPosMarker>
 inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::push(T* newEl)
 {
-    assert(isHeap());
-    assert(arePositionsValid());
+    RTTR_Assert(isHeap());
+    RTTR_Assert(arePositionsValid());
     GetPos(newEl) = this->size();
     this->elements.push_back(Element(GetKey(newEl), newEl));
     decreasedKey(newEl);
-    assert(isHeap());
+    RTTR_Assert(isHeap());
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
 inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
 {
-    assert(arePositionsValid());
+    RTTR_Assert(arePositionsValid());
     size_type i = GetPos(el);
     unsigned elVal = this->elements[i].key = GetKey(el);
-    assert(i < size());
+    RTTR_Assert(i < size());
     while(i > 0)
     {
         const unsigned parentPos = ParentPos(i);
@@ -173,16 +173,16 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
         i = parentPos;
     }
     GetPos(el) = i;
-    assert(isHeap());
-    assert(arePositionsValid());
+    RTTR_Assert(isHeap());
+    RTTR_Assert(arePositionsValid());
 }
 
 template<typename T, class T_GetKey, class GetPosMarker>
 inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
 {
-    assert(arePositionsValid());
-    assert(isHeap());
-    assert(!empty());
+    RTTR_Assert(arePositionsValid());
+    RTTR_Assert(isHeap());
+    RTTR_Assert(!empty());
 
     // Return value is the current minimum element
     T* const result = top();
@@ -205,11 +205,11 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     do{
         // Now check if the heap condition is violated for the current position
         const size_type left = LeftChildPos(i);
-        assert(isHeap(left));
+        RTTR_Assert(isHeap(left));
         if(left >= size)
             break; // No child? -> All ok
         const size_type right = RightChildPos(i);
-        assert(isHeap(right));
+        RTTR_Assert(isHeap(right));
         const unsigned leftVal = this->elements[left].key;
         if(leftVal < el.key) // left < i
         {
@@ -235,8 +235,8 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     this->elements[i] = el;
     GetPos(el.el) = i;
 
-    assert(isHeap());
-    assert(arePositionsValid());
+    RTTR_Assert(isHeap());
+    RTTR_Assert(arePositionsValid());
     return result;
 }
 

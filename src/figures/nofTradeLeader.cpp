@@ -57,7 +57,7 @@ void nofTradeLeader::GoalReached()
     }
 
     noBase* nob = gwg->GetNO(goalPos);
-    assert(dynamic_cast<nobBaseWarehouse*>(nob));
+    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(nob));
     gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
     gwg->RemoveFigure(this, pos);
     static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
@@ -82,7 +82,7 @@ void nofTradeLeader::Walked()
         GoalReached();
     else
     {
-        assert(pos == tr.GetCurPos());
+        RTTR_Assert(pos == tr.GetCurPos());
         unsigned char next_dir = tr.GetNextDir();
         if(next_dir == INVALID_DIR)
         {

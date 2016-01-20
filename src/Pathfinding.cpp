@@ -146,7 +146,7 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
     if(owner != 0 && !GetPlayer(player).IsAlly(owner -1))
         return INVALID_DIR;
     
-    assert(GetNO(dest)->GetType() == NOP_FLAG); // Goal should be the flag of a wh
+    RTTR_Assert(GetNO(dest)->GetType() == NOP_FLAG); // Goal should be the flag of a wh
 
     if(!IsNodeForFigures(dest))
         return INVALID_DIR;

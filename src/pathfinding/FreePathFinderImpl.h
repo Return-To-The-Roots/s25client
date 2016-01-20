@@ -59,7 +59,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
               const TNodeChecker& nodeChecker,
               const bool record)
 {
-    assert(start != dest);
+    RTTR_Assert(start != dest);
 
     // increase currentVisit, so we don't have to clear the visited-states at every run
     IncreaseCurrentVisit();
@@ -110,7 +110,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                 curNode = curNode->prev;
             }
 
-            assert(curNode == &startNode);
+            RTTR_Assert(curNode == &startNode);
 
             // Fertig, es wurde ein Pfad gefunden
             return true;
@@ -184,7 +184,7 @@ template<class TNodeChecker>
 bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, 
                                 const TNodeChecker& nodeChecker, MapPoint* dest) const
 {
-    assert(pos < route.size());
+    RTTR_Assert(pos < route.size());
 
     MapPoint curPt(start);
     // Check all but last step
