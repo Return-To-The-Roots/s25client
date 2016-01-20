@@ -2466,9 +2466,9 @@ void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const 
 
     const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
-    std::list<nobBaseWarehouse*> whs(warehouses);
-    whs.sort(WarehouseDistanceComparator(*goalWh, *gwg));
-    for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
+    std::vector<nobBaseWarehouse*> whs(warehouses.begin(), warehouses.end());
+    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, *gwg));
+    for(std::vector<nobBaseWarehouse*>::const_iterator it = whs.begin(); it != whs.end(); ++it)
     {
         // Get available wares
         unsigned available = 0;
