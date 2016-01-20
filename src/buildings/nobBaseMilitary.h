@@ -137,9 +137,10 @@ class nobBaseMilitary : public noBuilding
         bool IsUnderAttack() const {return(aggressors.size() > 0);};
 
         /// Debugging
-        bool IsAggressor(nofAttacker* attacker);
-        bool IsAggressiveDefender(nofAggressiveDefender* soldier);
-        bool IsOnMission(nofActiveSoldier* soldier);
+        bool IsAggressor(nofAttacker* attacker) const;
+        bool IsAggressiveDefender(nofAggressiveDefender* soldier) const;
+        bool IsOnMission(nofActiveSoldier* soldier) const;
+        const std::list<nofAggressiveDefender*>& GetAggresiveDefenders() const { return aggressive_defenders; }
 
         // Vergleicht Gebäude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
         struct Comparer{

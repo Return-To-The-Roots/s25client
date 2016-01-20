@@ -366,17 +366,17 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 }
 
 
-bool nobBaseMilitary::IsAggressor(nofAttacker* attacker)
+bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const
 {
     return helpers::contains(aggressors, attacker);
 }
 
-bool nobBaseMilitary::IsAggressiveDefender(nofAggressiveDefender* soldier)
+bool nobBaseMilitary::IsAggressiveDefender(nofAggressiveDefender* soldier) const
 {
     return helpers::contains(aggressive_defenders, soldier);
 }
 
-bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier)
+bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier) const
 {
     return helpers::contains(troops_on_mission, soldier);
 }

@@ -29,12 +29,6 @@ class noShip;
 /// Angreifender Soldat
 class nofAttacker : public nofActiveSoldier
 {
-        // Unsere Feind-Freunde ;)
-        friend class nofAggressiveDefender;
-        friend class nofDefender;
-
-    private:
-
         /// Building which is attacked by the soldier
         nobBaseMilitary* attacked_goal;
         /// Soll er von nem Verteidiger gejagt werden? (wenn nicht wurde er schon gejagt oder er soll
@@ -52,8 +46,6 @@ class nofAttacker : public nofActiveSoldier
         /// ggf. wieder nach Hause fahren kann
         MapPoint shipPos;
         unsigned ship_obj_id;
-
-    private:
 
         /// wenn man gelaufen ist
         void Walked();
@@ -167,8 +159,6 @@ class nofAttacker : public nofActiveSoldier
         bool IsSeaAttackCompleted() const { return (state != STATE_SEAATTACKING_ONSHIP); }
         /// Bricht einen Seeangriff ab
         void CancelSeaAttack();
-
-
 };
 
 

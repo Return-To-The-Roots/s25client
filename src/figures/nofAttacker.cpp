@@ -1007,6 +1007,12 @@ void nofAttacker::InformTargetsAboutCancelling()
 
 void nofAttacker::RemoveFromAttackedGoal()
 {
+    // If state == STATE_ATTACKING_FIGHTINGVSDEFENDER then we probably just lost the fight against the defender, otherwise there must either be no defender or he is not waiting for us
+    RTTR_Assert(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || !attacked_goal->GetDefender() ||
+        (attacked_goal->GetDefender()->GetAttacker() != this && attacked_goal->GetDefender()->GetEnemy() != this));
+    // No defender should be chasing us at this point
+    for(std::list<nofAggressiveDefender*>::const_iterator it = attacked_goal->GetAggresiveDefenders().begin(); it != attacked_goal->GetAggresiveDefenders().end(); ++it)
+        RTTR_Assert((*it)->GetAttacker() != this);
     attacked_goal->UnlinkAggressor(this);
     attacked_goal = NULL;
 }
