@@ -60,7 +60,15 @@ public:
     //////////////////////////////////////////////////////////////////////////
 
     /// Objekt(referenzen) kopieren
-    void PushObject(const GameObject* go, const bool known);
+    template<class T>
+    void PushObject(const T* go, const bool known)
+    {
+        /* The assert below basically checks the virtual function table.
+           If the dynamic_cast failes, we tried to push an object of another type or it was deleted */
+        const GameObject* goTmp = static_cast<const GameObject*>(go);
+        RTTR_Assert(dynamic_cast<const T*>(goTmp) == go);
+        PushObject_(goTmp, known);
+    }
 
     /// Copies a container of GameObjects
     template <typename T>
@@ -120,6 +128,7 @@ private:
     /// Erzeugt FOWObject
     FOWObject* Create_FOWObject(const FOW_Type fowtype);
 
+    void PushObject_(const GameObject* go, const bool known);
     /// Objekt(referenzen) lesen
     GameObject* PopObject_(GO_Type got);
 

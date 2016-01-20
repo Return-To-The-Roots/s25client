@@ -244,7 +244,7 @@ void SerializedGameData::ReadFromFile(BinaryFile& file)
     Serializer::ReadFromFile(file);
 }
 
-void SerializedGameData::PushObject(const GameObject* go, const bool known)
+void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 {
     RTTR_Assert(!isReading);
 

@@ -68,7 +68,7 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
         // -> RoadSegment will set these later
         for (unsigned i = 0; i < 6; ++i)
         {
-            sgd.PushObject(NULL, true);
+            sgd.PushObject(static_cast<GameObject*>(NULL), true);
         }
     }
     else
