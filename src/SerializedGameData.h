@@ -107,6 +107,8 @@ public:
     bool debugMode;
 
 private:
+    static unsigned short GetSafetyCode(const GameObject& go);
+
     /// Stores the ids of all written objects (-> only valid during writing)
     std::set<unsigned> writtenObjIds;
     /// Maps already read object ids to GameObjects (-> only valid during reading)
