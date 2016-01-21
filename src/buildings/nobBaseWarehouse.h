@@ -76,9 +76,9 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         unsigned reserve_soldiers_claimed_real[5]; /// geforderte Soldaten zur Reserve - real
 
         /// Waren bzw. Menschenanzahl im Gebäude, real_goods ist die tatsächliche Anzahl und wird zum berechnen verwendet, goods ist nur die, die auch angezeigt wird
-        Goods goods_, real_goods;
-        InventorySettings inventory_settings_visual; ///< die Inventar-Einstellungen, visuell
-        InventorySettings inventory_settings_real; ///< die Inventar-Einstellungen, real
+        Goods inventoryVisual, inventory;
+        InventorySettings inventorySettingsVisual; ///< die Inventar-Einstellungen, visuell
+        InventorySettings inventorySettings; ///< die Inventar-Einstellungen, real
 
     private:
 
@@ -144,10 +144,10 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
 
         /// Gibt Anzahl der Waren bzw. Figuren zurück
-        unsigned GetRealWaresCount(GoodType type) const { return real_goods.goods[type]; }
-        unsigned GetRealFiguresCount(Job type) const { return real_goods.people[type]; }
-        unsigned GetVisualWaresCount(GoodType type) const { return goods_.goods[type]; }
-        unsigned GetVisualFiguresCount(Job type) const { return goods_.people[type]; }
+        unsigned GetRealWaresCount(GoodType type) const { return inventory.goods[type]; }
+        unsigned GetRealFiguresCount(Job type) const { return inventory.people[type]; }
+        unsigned GetVisualWaresCount(GoodType type) const { return inventoryVisual.goods[type]; }
+        unsigned GetVisualFiguresCount(Job type) const { return inventoryVisual.people[type]; }
 
 
         /// Gibt Ein/Auslagerungseinstellungen zurück
@@ -217,8 +217,8 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
         unsigned GetSoldiersCount() const
         {
-            return real_goods.people[JOB_PRIVATE] + real_goods.people[JOB_PRIVATEFIRSTCLASS] +
-                   real_goods.people[JOB_SERGEANT] + real_goods.people[JOB_OFFICER] + real_goods.people[JOB_GENERAL];
+            return inventory.people[JOB_PRIVATE] + inventory.people[JOB_PRIVATEFIRSTCLASS] +
+                   inventory.people[JOB_SERGEANT] + inventory.people[JOB_OFFICER] + inventory.people[JOB_GENERAL];
         }
         /// Bestellt Soldaten
         void OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst=false);
