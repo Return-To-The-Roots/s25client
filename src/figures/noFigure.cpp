@@ -181,10 +181,11 @@ void noFigure::ActAtFirst()
             if(goal_->GetPos() == pos)
             {
                 gwg->RemoveFigure(this, pos);
-                RTTR_Assert(static_cast<nobBaseWarehouse*>(goal_));
+                RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
                 nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
                 goal_ = NULL;
+                cur_rs = NULL;
                 wh->AddFigure(this);
             }
             else
@@ -339,7 +340,7 @@ void noFigure::WalkToGoal()
         bool reachedGoal;
         if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
         {
-            RTTR_Assert(static_cast<nofCarrier*>(this));
+            RTTR_Assert(dynamic_cast<nofCarrier*>(this));
             nofCarrier* carrier = static_cast<nofCarrier*>(this);
             noRoadNode* flag = carrier->GetFirstFlag();
             if (flag && flag->GetPos() == pos)
@@ -507,7 +508,7 @@ void noFigure::GoHome(noRoadNode* goal)
     else if(!goal)
     {
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
-        if(cur_rs == 0)
+        if(cur_rs == NULL)
         {
             RTTR_Assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
                    gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
