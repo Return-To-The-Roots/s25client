@@ -73,9 +73,11 @@ public:
     /// Stops/starts production of a producer
     bool ToggleProduction(const MapPoint pt);
     bool NotifyAlliesOfLocation(const MapPoint pt);
-    /// changes inventory settings for a warehouse by XOR with old settings (self fixing stupid settings)
-    bool ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type);
-    bool ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state);
+    /// Sets inventory settings for a warehouse
+    bool SetInventorySetting(const MapPoint pt, const bool isJob, const unsigned char type, const InventorySetting state);
+    bool SetInventorySetting(const MapPoint pt, Job job, const InventorySetting state){ return SetInventorySetting(pt, true, job, state); }
+    bool SetInventorySetting(const MapPoint pt, GoodType good, const InventorySetting state){ return SetInventorySetting(pt, false, good, state); }
+    bool SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states);
     bool ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count);
     bool CheatArmageddon();
     /// Simply surrenders...

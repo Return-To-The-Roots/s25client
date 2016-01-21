@@ -223,8 +223,8 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
         if (ggs.GetMaxMilitaryRank() > 0) //there is more than 1 rank available -> distribute
             DistributeMaxRankSoldiersByBlocking(5,wh);
         //unlimited when every warehouse has at least that amount
-        DistributeGoodsByBlocking(23, 30); //30 boards for each warehouse - block after that - should speed up expansion
-        DistributeGoodsByBlocking(24, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
+        DistributeGoodsByBlocking(GD_BOARDS, 30); //30 boards for each warehouse - block after that - should speed up expansion
+        DistributeGoodsByBlocking(GD_STONES, 50); //50 stones for each warehouse - block after that - should limit losses in case a warehouse is destroyed
         //go to the picked random warehouse and try to build around it
         std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin();
         std::advance(it, randomStore);
@@ -337,39 +337,45 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
         const MapPoint whPos = (*it)->GetPos();
 		if(upgradewarehouse->GetPos()!=whPos)
 		{
-			if((*it)->CheckRealInventorySettings(0, INV_SET_COLLECT, GD_BEER)) //collecting beer? -> stop it
-				aii->ChangeInventorySetting(whPos, 0, INV_SET_COLLECT, GD_BEER);
+            if((*it)->IsInventorySetting(GD_BEER, EInventorySetting::COLLECT)) //collecting beer? -> stop it
+                aii->SetInventorySetting(whPos, GD_BEER, InventorySetting());
 
-			if((*it)->CheckRealInventorySettings(0, INV_SET_COLLECT, GD_SWORD)) //collecting swords? -> stop it
-				aii->ChangeInventorySetting(whPos, 0, INV_SET_COLLECT, GD_SWORD);
+            if((*it)->IsInventorySetting(GD_SWORD, EInventorySetting::COLLECT)) //collecting swords? -> stop it
+                aii->SetInventorySetting(whPos, GD_SWORD, InventorySetting());
 
-			if((*it)->CheckRealInventorySettings(0, INV_SET_COLLECT, GD_SHIELDROMANS)) //collecting shields? -> stop it
-				aii->ChangeInventorySetting(whPos, 0, INV_SET_COLLECT, GD_SHIELDROMANS);
+            if((*it)->IsInventorySetting(GD_SHIELDROMANS, EInventorySetting::COLLECT)) //collecting shields? -> stop it
+                aii->SetInventorySetting(whPos, GD_SHIELDROMANS, InventorySetting());
 
-			if((*it)->CheckRealInventorySettings(1, INV_SET_COLLECT, JOB_PRIVATE)) //collecting privates? -> stop it
-				aii->ChangeInventorySetting(whPos, 1, INV_SET_COLLECT, JOB_PRIVATE);
+            if((*it)->IsInventorySetting(JOB_PRIVATE, EInventorySetting::COLLECT)) //collecting privates? -> stop it
+                aii->SetInventorySetting(whPos, JOB_PRIVATE, InventorySetting());
 
-			if((*it)->CheckRealInventorySettings(1, INV_SET_COLLECT, JOB_HELPER)) //collecting helpers? -> stop it
-				aii->ChangeInventorySetting(whPos, 1, INV_SET_COLLECT, JOB_HELPER);
+            if((*it)->IsInventorySetting(JOB_HELPER, EInventorySetting::COLLECT)) //collecting helpers? -> stop it
+                aii->SetInventorySetting(whPos, JOB_HELPER, InventorySetting());
 		}
 		else//activate gathering in the closest warehouse
 		{
-			if(!(*it)->CheckRealInventorySettings(0, INV_SET_COLLECT, GD_BEER)) //not collecting beer? -> start it
-				aii->ChangeInventorySetting(whPos, 0, INV_SET_COLLECT, GD_BEER);
+            if(!(*it)->IsInventorySetting(GD_BEER, EInventorySetting::COLLECT)) //not collecting beer? -> start it
+                aii->SetInventorySetting(whPos, GD_BEER, EInventorySetting::COLLECT);
 
-			if(!(*it)->CheckRealInventorySettings(0, INV_SET_COLLECT, GD_SWORD)) //not collecting swords? -> start it
-				aii->ChangeInventorySetting(whPos, 0, INV_SET_COLLECT, GD_SWORD);
+            if(!(*it)->IsInventorySetting(GD_SWORD, EInventorySetting::COLLECT)) //not collecting swords? -> start it
+                aii->SetInventorySetting(whPos, GD_SWORD, EInventorySetting::COLLECT);
 
-			if(!(*it)->CheckRealInventorySettings(0, INV_SET_COLLECT, GD_SHIELDROMANS)) //not collecting shields? -> start it
-				aii->ChangeInventorySetting(whPos, 0, INV_SET_COLLECT, GD_SHIELDROMANS);
+            if(!(*it)->IsInventorySetting(GD_SHIELDROMANS, EInventorySetting::COLLECT)) //not collecting shields? -> start it
+                aii->SetInventorySetting(whPos, GD_SHIELDROMANS, EInventorySetting::COLLECT);
 
-			if(!(*it)->CheckRealInventorySettings(1, INV_SET_COLLECT, JOB_PRIVATE) && ggs.GetMaxMilitaryRank() > 0) //not collecting privates AND we can actually upgrade soldiers? -> start it
-				aii->ChangeInventorySetting(whPos, 1, INV_SET_COLLECT, JOB_PRIVATE);
+            if(!(*it)->IsInventorySetting(JOB_PRIVATE, EInventorySetting::COLLECT) && ggs.GetMaxMilitaryRank() > 0) //not collecting privates AND we can actually upgrade soldiers? -> start it
+                aii->SetInventorySetting(whPos, JOB_PRIVATE, EInventorySetting::COLLECT);
 
-			if(((*it)->CheckRealInventorySettings(1, INV_SET_COLLECT, JOB_HELPER) && ((*it)->GetInventory().people[JOB_HELPER] > 50)) || (!(*it)->CheckRealInventorySettings(1, INV_SET_COLLECT, JOB_HELPER) && ((*it)->GetInventory().people[JOB_HELPER] <= 50)))
-			{
-				aii->ChangeInventorySetting(whPos, 1, INV_SET_COLLECT, JOB_HELPER); //less than 50 helpers - collect them: more than 50 stop collecting
-			}
+            //less than 50 helpers - collect them: more than 50 stop collecting
+            if((*it)->GetInventory().people[JOB_HELPER] < 50)
+            {
+                if(!(*it)->IsInventorySetting(JOB_HELPER, EInventorySetting::COLLECT))
+                    aii->SetInventorySetting(whPos, JOB_HELPER, EInventorySetting::COLLECT);
+            } else
+            {
+                if((*it)->IsInventorySetting(JOB_HELPER, EInventorySetting::COLLECT))
+                    aii->SetInventorySetting(whPos, JOB_HELPER, InventorySetting());
+            }
 		}
 	}
 }
@@ -940,7 +946,7 @@ void AIPlayerJH::CheckNewMilitaryBuildings()
 {
 }
 
-void AIPlayerJH::DistributeGoodsByBlocking(unsigned char goodnumber, unsigned limit)
+void AIPlayerJH::DistributeGoodsByBlocking(const GoodType good, unsigned limit)
 {
     bool validgoalexists = false;
     const std::list<nobBaseWarehouse*>& storehouses = aii->GetStorehouses();
@@ -948,7 +954,7 @@ void AIPlayerJH::DistributeGoodsByBlocking(unsigned char goodnumber, unsigned li
     {
         for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
         {
-            if ((*it)->GetInventory().goods[goodnumber] <= limit)
+            if ((*it)->GetInventory().goods[good] <= limit)
             {
                 validgoalexists = true;
                 break;
@@ -959,25 +965,23 @@ void AIPlayerJH::DistributeGoodsByBlocking(unsigned char goodnumber, unsigned li
     {
         for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
         {
-            if((*it)->CheckRealInventorySettings(0, INV_SET_STOP, goodnumber)) //page,setting,goodnumber - not unblocked then issue command to unblock
-                aii->ChangeInventorySetting((*it)->GetPos(), 0, INV_SET_STOP, goodnumber); //page,setting,goodnumber (settings: 0 nothing,2 block,8collect)
+            if((*it)->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
+                aii->SetInventorySetting((*it)->GetPos(), good, (*it)->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
         }
     }
     else // valid goal exists -> block where at least limit goods are stored and unblock the others
     {
         for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
         {
-            if((*it)->GetInventory().goods[goodnumber] <= limit) //not at limit - unblock it
+            if((*it)->GetInventory().goods[good] <= limit) //not at limit - unblock it
             {
-                if((*it)->CheckRealInventorySettings(0, INV_SET_STOP, goodnumber)) //page,setting,goodnumber - not unblocked then issue command to unblock
-                {
-                    aii->ChangeInventorySetting((*it)->GetPos(), 0, INV_SET_STOP, goodnumber); //page,setting,goodnumber (settings: 2 block,8collect)
-                }
+                if((*it)->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
+                    aii->SetInventorySetting((*it)->GetPos(), good, (*it)->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
             }
             else // at limit - block it
             {
-                if(!(*it)->CheckRealInventorySettings(0, INV_SET_STOP, goodnumber)) //already blocked?
-                    aii->ChangeInventorySetting((*it)->GetPos(), 0, INV_SET_STOP, goodnumber);
+                if(!(*it)->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
+                    aii->SetInventorySetting((*it)->GetPos(), good, (*it)->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
             }
         }
     }
@@ -990,12 +994,12 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	if(numCompleteWh<1) //no warehouses -> no job
 		return;
 
-	unsigned char maxRankJobNr=JOB_PRIVATE + ggs.GetMaxMilitaryRank(); //private + general - max rank limiter
+	Job maxRankJob = static_cast<Job>(JOB_PRIVATE + ggs.GetMaxMilitaryRank()); //private + general - max rank limiter
 	
 	if(numCompleteWh==1 ) //only 1 warehouse? dont block max ranks here
 	{
-		if (storehouses.front()->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr))
-			aii->ChangeInventorySetting(storehouses.front()->GetPos(),1,INV_SET_STOP,maxRankJobNr);
+		if (storehouses.front()->IsInventorySetting(maxRankJob, EInventorySetting::STOP))
+			aii->SetInventorySetting(storehouses.front()->GetPos(), maxRankJob, storehouses.front()->GetInventorySetting(maxRankJob).Toggle(EInventorySetting::STOP));
 		return;
 	}
 	//rest applies for at least 2 complete warehouses!
@@ -1026,7 +1030,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		//check if there is at least one with less than limit first
 		for (std::list<nobBaseWarehouse*>::const_iterator it=frontierWhs.begin();it!=frontierWhs.end();++it)
 		{
-			if((*it)->GetInventory().people[maxRankJobNr]<limit)
+			if((*it)->GetInventory().people[maxRankJob]<limit)
 			{
 				hasUnderstaffedWh=true;
 				break;
@@ -1035,32 +1039,23 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		//if understaffed was found block in all with >=limit else unblock in all
 		for (std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin();it!=storehouses.end();++it)
 		{
-			if(helpers::contains(frontierWhs, (*it))) //frontier wh?
+            const nobBaseWarehouse& wh = **it;
+            bool shouldBlock;
+			if(helpers::contains(frontierWhs, *it)) //frontier wh?
 			{
 				if(hasUnderstaffedWh)
 				{
-					if((*it)->GetInventory().people[maxRankJobNr]<limit)
-					{
-						if ((*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks blocked? -> unblock
-							aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-					}
+					if(wh.GetInventory().people[maxRankJob]<limit)
+                        shouldBlock = false;
 					else //more than limit
-					{
-						if (!(*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks not blocked -> block
-							aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-					}					
+                        shouldBlock = true;				
 				}
 				else //no understaffedwh
-				{
-					if ((*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks blocked? -> unblock
-							aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-				}
-			}
-			else //not frontier wh! block it
-			{
-				if (!(*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks not blocked -> block
-							aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-			}
+                    shouldBlock = false;
+			}else //not frontier wh! block it
+                shouldBlock = true;
+            if(shouldBlock != wh.IsInventorySetting(maxRankJob, EInventorySetting::STOP))
+                aii->SetInventorySetting(wh.GetPos(), maxRankJob, wh.GetInventorySetting(maxRankJob).Toggle(EInventorySetting::STOP));
 		}
 	}
 	else //there are no frontier whs!
@@ -1071,7 +1066,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		//check if there is at least one with less than limit first
 		for (std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin();it!=storehouses.end();++it)
 		{
-			if((*it)->GetInventory().people[maxRankJobNr]<limit && (*it)->GetPos() != upwh->GetPos()) // warehouse next to upgradebuilding is special case
+			if((*it)->GetInventory().people[maxRankJob]<limit && (*it)->GetPos() != upwh->GetPos()) // warehouse next to upgradebuilding is special case
 			{
 				hasUnderstaffedWh=true;
 				break;
@@ -1079,33 +1074,24 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 		}
 		for (std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin();it!=storehouses.end();++it)
 		{
-			if((*it)->GetPos() == upwh->GetPos()) // warehouse next to upgradebuilding should block when there is more than 1 wh
+            const nobBaseWarehouse& wh = **it;
+            bool shouldBlock;
+			if(wh.GetPos() == upwh->GetPos()) // warehouse next to upgradebuilding should block when there is more than 1 wh
 			{
 				//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerid);
-				if (!(*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr))
-					aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-				continue;
-			}
-			if(hasUnderstaffedWh)
-			{
-				
-				if((*it)->GetInventory().people[maxRankJobNr]<limit )
-				{
-					if ((*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks blocked? -> unblock
-						aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-				}
-				else //more than limit
-				{
-					if (!(*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks not blocked -> block
-						aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-				}					
-			}
-			else //no understaffedwh
-			{
-				if ((*it)->CheckRealInventorySettings(1,INV_SET_STOP,maxRankJobNr)) //maxranks blocked? -> unblock
-						aii->ChangeInventorySetting((*it)->GetPos(),1,INV_SET_STOP,maxRankJobNr);
-			}
-		}
+                shouldBlock = true;
+            } else if(hasUnderstaffedWh)
+            {
+
+                if(wh.GetInventory().people[maxRankJob] < limit)
+                    shouldBlock = false;
+                else //more than limit
+                    shouldBlock = true;
+            } else //no understaffedwh
+                shouldBlock = false;
+            if(shouldBlock != wh.IsInventorySetting(maxRankJob, EInventorySetting::STOP))
+                aii->SetInventorySetting(wh.GetPos(), maxRankJob, wh.GetInventorySetting(maxRankJob).Toggle(EInventorySetting::STOP));
+        }
 	}
 }
 bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius)

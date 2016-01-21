@@ -155,16 +155,16 @@ namespace gc{
             gwg.GetSpecObj<nobUsual>(pt_)->ToggleProduction();
     }
 
-    void ChangeInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+    void SetInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->ChangeRealInventorySetting(category, state, type);
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->SetInventorySetting(isJob, type, state);
     }
 
-    void ChangeAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+    void SetAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->ChangeAllRealInventorySettings(category, state);
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->SetAllInventorySettings(isJob, states);
     }
 
     void ChangeReserve::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

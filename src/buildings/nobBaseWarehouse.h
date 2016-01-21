@@ -33,14 +33,16 @@ class noFigure;
 class Ware;
 class nobMilitary;
 class TradeRoute;
+namespace gc{
+    class SetInventorySetting;
+    class SetAllInventorySettings;
+}
 
 /// Ein/Auslagereinstellungsstruktur
 struct InventorySettings
 {
     boost::array<InventorySetting, WARE_TYPES_COUNT> wares;
     boost::array<InventorySetting, JOB_TYPES_COUNT> figures;
-
-    InventorySettings();
 };
 
 /// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen) wichtig sind.
@@ -91,9 +93,17 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void CheckUsesForNewWare(const GoodType gt);
         /// Prüft verschiedene Sachen, falls ein neuer Mensch das Haus betreten hat
         void CheckJobsForNewFigure(const Job job);
-        /// Called after the inventory setting(s) was changed to check e.g. for events
-        void OnInventorySettingChange(InventorySetting state, unsigned char category, unsigned char type);
 
+        friend class gc::SetInventorySetting;
+        friend class gc::SetAllInventorySettings;
+        /// Verändert Ein/Auslagerungseinstellungen
+        void SetInventorySetting(const bool isJob, const unsigned char type, InventorySetting state);
+
+        /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
+        void SetAllInventorySettings(const bool isJob, const std::vector<InventorySetting>& states);
+
+        /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
+        void CheckOuthousing(const bool isJob, unsigned job_ware_id);
     protected:
 
         /// Stellt Verteidiger zur Verfügung
@@ -140,22 +150,18 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         unsigned GetVisualFiguresCount(Job type) const { return goods_.people[type]; }
 
 
-        /// Verändert Ein/Auslagerungseinstellungen (visuell)
-        void ChangeVisualInventorySettings(unsigned char category, InventorySetting state, unsigned char type);
-        /// Gibt Ein/Auslagerungseinstellungen zurück (visuell)
-        bool CheckVisualInventorySettings(unsigned char category, InventorySetting state, unsigned char type) const;
+        /// Gibt Ein/Auslagerungseinstellungen zurück
+        InventorySetting GetInventorySettingVisual(const Job job) const;
+        InventorySetting GetInventorySettingVisual(const GoodType ware) const;
+        InventorySetting GetInventorySetting(const Job job) const;
+        InventorySetting GetInventorySetting(const GoodType ware) const;
+        // Convenience functions
+        bool IsInventorySettingVisual(const Job job, const EInventorySetting setting) const { return GetInventorySettingVisual(job).IsSet(setting); }
+        bool IsInventorySettingVisual(const GoodType ware, const EInventorySetting setting) const { return GetInventorySettingVisual(ware).IsSet(setting); }
+        bool IsInventorySetting(const Job job, const EInventorySetting setting) const { return GetInventorySetting(job).IsSet(setting); }
+        bool IsInventorySetting(const GoodType ware, const EInventorySetting setting) const { return GetInventorySetting(ware).IsSet(setting); }
 
-        /// Verändert Ein/Auslagerungseinstellungen (real)
-        void ChangeRealInventorySetting(unsigned char category, InventorySetting state, unsigned char type);
-
-        /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
-        void ChangeAllRealInventorySettings(unsigned char category, InventorySetting state);
-        /// Gibt Ein/Auslagerungseinstellungen zurück (real), cannot check for state 0
-        bool CheckRealInventorySettings(unsigned char category, InventorySetting state, unsigned char type) const;
-
-        /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
-        void CheckOuthousing(unsigned char category, unsigned job_ware_id);
-
+        void SetInventorySettingVisual(const bool isJob, const unsigned char type, InventorySetting state);
 
         /// Bestellt einen Träger
         void OrderCarrier(noRoadNode* const goal, RoadSegment* workplace);

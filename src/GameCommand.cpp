@@ -45,8 +45,8 @@ GameCommand* GameCommand::Deserialize(const Type gst, Serializer& ser)
     case SEAATTACK: return new SeaAttack(ser);
     case TOGGLECOINS: return new ToggleCoins(ser);
     case TOGGLEPRODUCTION: return new ToggleProduction(ser);
-    case CHANGEINVENTORYSETTING: return new ChangeInventorySetting(ser);
-    case CHANGEALLINVENTORYSETTINGS: return new ChangeAllInventorySettings(ser);
+    case SET_INVENTORY_SETTING: return new SetInventorySetting(ser);
+    case SET_ALL_INVENTORY_SETTINGS: return new SetAllInventorySettings(ser);
     case CHANGERESERVE: return new ChangeReserve(ser);
     case SUGGESTPACT: return new SuggestPact(ser);
     case ACCEPTPACT: return new AcceptPact(ser);

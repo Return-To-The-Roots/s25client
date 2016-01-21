@@ -151,15 +151,15 @@ bool GameCommandFactory<T_Handler>::NotifyAlliesOfLocation(const MapPoint pt)
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type)
+bool GameCommandFactory<T_Handler>::SetInventorySetting(const MapPoint pt, const bool isJob, const unsigned char type, const InventorySetting state)
 {
-    return AddGC_Virt( new gc::ChangeInventorySetting(pt, category, state, type) );
+    return AddGC_Virt( new gc::SetInventorySetting(pt, isJob, type, state) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state)
+bool GameCommandFactory<T_Handler>::SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states)
 {
-    return AddGC_Virt( new gc::ChangeAllInventorySettings(pt, category, state) );
+    return AddGC_Virt( new gc::SetAllInventorySettings(pt, isJob, states) );
 }
 
 template<class T_Handler>
