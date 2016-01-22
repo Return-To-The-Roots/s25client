@@ -86,11 +86,12 @@ void AudioDriverWrapper::SetMasterMusicVolume(unsigned char volume)
         audiodriver->SetMasterMusicVolume(volume);
 }
 
-const char* AudioDriverWrapper::GetName(void) const
+std::string AudioDriverWrapper::GetName(void) const
 {
     if(audiodriver)
         return audiodriver->GetName();
-    return EMPTY_STR;
+    else
+        return "";
 }
 
 /// Lädt den Treiber

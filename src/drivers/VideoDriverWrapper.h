@@ -71,12 +71,9 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
         void* GetMapPointer() const;
 
-        unsigned short GetScreenWidth()  const
-        { const unsigned short w = videodriver->GetScreenWidth(); return (w < 800 ? 800 : w); }
-        unsigned short GetScreenHeight() const
-        { const unsigned short h = videodriver->GetScreenHeight(); return (h < 600 ? 600 : h); }
-        bool IsFullscreen() const
-        { return videodriver->IsFullscreen(); }
+        unsigned short GetScreenWidth()  const { const unsigned short w = videodriver->GetScreenWidth(); return (w < 800 ? 800 : w); }
+        unsigned short GetScreenHeight() const { const unsigned short h = videodriver->GetScreenHeight(); return (h < 600 ? 600 : h); }
+        bool IsFullscreen() const { return videodriver->IsFullscreen(); }
 
         bool IsLeftDown();
         bool IsRightDown();
@@ -90,7 +87,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
 
         unsigned int GetTickCount();
 
-        const char* GetName(void) const { if(videodriver) return videodriver->GetName();    return NULL; }
+        std::string GetName(void) const { return (videodriver) ? videodriver->GetName() : ""; }
         bool IsLoaded() const { return videodriver != NULL; }
 
     private:

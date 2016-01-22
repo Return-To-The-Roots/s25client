@@ -27,7 +27,6 @@ class IAudioDriver;
 class Sound;
 
 #define MAX_DRIVER_COUNT 20
-const char* const EMPTY_STR = "";
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -69,7 +68,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
 
         void SetMasterMusicVolume(unsigned char volume);
 
-        const char* GetName(void) const;
+        std::string GetName(void) const;
 
     private:
 
