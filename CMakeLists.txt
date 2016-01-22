@@ -69,10 +69,10 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
 
-OPTION(USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" YES)
-IF((NOT "${Boost_USE_STATIC_LIBS}" AND ${USE_STATIC_BOOST}) OR
-   ("${Boost_USE_STATIC_LIBS}" AND NOT ${USE_STATIC_BOOST}))
-    set(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
+OPTION(RTTR_USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" YES)
+IF((NOT "${Boost_USE_STATIC_LIBS}" AND ${RTTR_USE_STATIC_BOOST}) OR
+   ("${Boost_USE_STATIC_LIBS}" AND NOT ${RTTR_USE_STATIC_BOOST}))
+    set(Boost_USE_STATIC_LIBS ${RTTR_USE_STATIC_BOOST})
     unset(Boost_INCLUDE_DIR CACHE)
     unset(Boost_LIBRARY_DIRS CACHE)
 ENDIF()
@@ -86,14 +86,14 @@ endif(Boost_USE_STATIC_LIBS)
 SET(Boost_ADDITIONAL_VERSIONS "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
 
 IF (MSVC)
-	IF(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" OR NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010")
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc2010.rar to contrib/full-contrib-msvc2010 first!")
+	SET(RTTR_CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
+	IF(NOT EXISTS ${RTTR_CONTRIB_DIR} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR})
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR} first!")
 	ENDIF()
-	SET(CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc2010" CACHE PATH "Path to base dir from contrib package")
 	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
-		SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CONTRIB_DIR}/VS2015")
+		SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${RTTR_CONTRIB_DIR}/VS2015")
 	ENDIF()
-	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CONTRIB_DIR})		
+	SET(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${RTTR_CONTRIB_DIR} ${RTTR_CONTRIB_DIR}/buildTools)		
 
 	IF("${PLATFORM_ARCH}" STREQUAL "i386")
 		SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "")
