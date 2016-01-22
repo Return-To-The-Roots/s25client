@@ -133,15 +133,15 @@ bool GameCommandFactory<T_Handler>::SeaAttack(const MapPoint pt, const unsigned 
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ToggleCoins(const MapPoint pt)
+bool GameCommandFactory<T_Handler>::SetCoinsAllowed(const MapPoint pt, const bool enabled)
 {
-    return AddGC_Virt( new gc::ToggleCoins(pt) );
+    return AddGC_Virt( new gc::SetCoinsAllowed(pt, enabled) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ToggleProduction(const MapPoint pt)
+bool GameCommandFactory<T_Handler>::SetProductionEnabled(const MapPoint pt, const bool enabled)
 {
-    return AddGC_Virt( new gc::ToggleProduction(pt) );
+    return AddGC_Virt( new gc::SetProductionEnabled(pt, enabled) );
 }
 
 template<class T_Handler>

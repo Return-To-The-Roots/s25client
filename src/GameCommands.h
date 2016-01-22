@@ -476,29 +476,35 @@ namespace gc{
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
-    class ToggleCoins : public Coords
+    class SetCoinsAllowed : public Coords
     {
         GC_FRIEND_DECL;
+        const bool enabled;
         protected:
-            ToggleCoins(const MapPoint pt)
-                : Coords(TOGGLECOINS, pt) {}
-            ToggleCoins(Serializer& ser)
-                : Coords(TOGGLECOINS, ser) {}
+            SetCoinsAllowed(const MapPoint pt, const bool enabled): Coords(SET_COINS_ALLOWED, pt), enabled(enabled) {}
+            SetCoinsAllowed(Serializer& ser): Coords(SET_COINS_ALLOWED, ser), enabled(ser.PopBool()) {}
         public:
+            void Serialize(Serializer& ser) const override
+            {
+                ser.PushBool(enabled);
+            }
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
-    class ToggleProduction : public Coords
+    class SetProductionEnabled : public Coords
     {
         GC_FRIEND_DECL;
+        const bool enabled;
         protected:
-            ToggleProduction(const MapPoint pt)
-                : Coords(TOGGLEPRODUCTION, pt) {}
-            ToggleProduction(Serializer& ser)
-                : Coords(TOGGLEPRODUCTION, ser) {}
+            SetProductionEnabled(const MapPoint pt, const bool enabled): Coords(SET_PRODUCTION_ENABLED, pt), enabled(enabled) {}
+            SetProductionEnabled(Serializer& ser): Coords(SET_PRODUCTION_ENABLED, ser), enabled(ser.PopBool()) {}
         public:
+            void Serialize(Serializer& ser) const override
+            {
+                ser.PushBool(enabled);
+            }
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };

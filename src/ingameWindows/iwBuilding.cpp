@@ -194,7 +194,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             // Produktion einstellen/fortführen
             // NC senden
-            if(GAMECLIENT.ToggleProduction(building->GetPos()))
+            if(GAMECLIENT.SetProductionEnabled(building->GetPos(), building->IsProductionDisabledVirtual()))
             {
                 // visuell anzeigen, falls erfolgreich
                 building->ToggleProductionVirtual();

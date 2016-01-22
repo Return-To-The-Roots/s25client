@@ -1169,13 +1169,13 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
     {
         if ((mil->GetBuildingType() == BLD_BARRACKS || mil->GetBuildingType() == BLD_GUARDHOUSE) && mil->GetFrontierDistance() == 0 && !mil->IsGoldDisabled())
         {
-            aii->ToggleCoins(pt);
+            aii->SetCoinsAllowed(pt, false);
         }
 
         // if near border and gold disabled (by addon): enable it
         if (mil->GetFrontierDistance() && mil->IsGoldDisabled())
         {
-            aii->ToggleCoins(pt);
+            aii->SetCoinsAllowed(pt, true);
         }
     }
 
@@ -1506,7 +1506,7 @@ void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
             }
         }
         if(shipyard && mindist < 12)//might have been destroyed by now and anything further away than 12 should be wrong anyways
-            aii->ToggleProduction( shipyard->GetPos() );
+            aii->SetProductionEnabled(shipyard->GetPos(), false);
     }
 }
 
@@ -1519,7 +1519,7 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
     {
         if (mil->GetFrontierDistance() != 0 && mil->IsGoldDisabled())
         {
-            aii->ToggleCoins(pt);
+            aii->SetCoinsAllowed(pt, true);
         }
         if (mil->GetBuildingType() == BLD_BARRACKS || mil->GetBuildingType() == BLD_GUARDHOUSE)
         {
@@ -1542,7 +1542,7 @@ void AIPlayerJH::MilUpgradeOptim()
 			{
 				if(!(*it)->IsGoldDisabled()) // deactivate gold for all other buildings
 				{
-					aii->ToggleCoins((*it)->GetPos());
+					aii->SetCoinsAllowed((*it)->GetPos(), false);
 				}
 				if ((*it)->GetFrontierDistance()==0 && (((unsigned)count+PlannedConnectedInlandMilitary()) < militaryBuildings.size()) ) //send out troops until 1 private is left, then cancel road
 				{
@@ -1564,7 +1564,7 @@ void AIPlayerJH::MilUpgradeOptim()
 			{
 				if((*it)->IsGoldDisabled() && (*it)->GetFrontierDistance()>0) 
 				{
-					aii->ToggleCoins((*it)->GetPos());
+					aii->SetCoinsAllowed((*it)->GetPos(), true);
 				}
 			}
 		}
@@ -1577,7 +1577,7 @@ void AIPlayerJH::MilUpgradeOptim()
 			}
 			if((*it)->IsGoldDisabled()) // activate gold
 			{
-				aii->ToggleCoins((*it)->GetPos());
+				aii->SetCoinsAllowed((*it)->GetPos(), true);
 			}
 			if((*it)->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
 				aii->SendSoldiersHome((*it)->GetPos());
@@ -1631,12 +1631,12 @@ void AIPlayerJH::CheckForester()
         //stop the forester
     {
         if(!(*foresters.begin())->IsProductionDisabled())
-            aii->ToggleProduction(foresters.front()->GetPos());
+            aii->SetProductionEnabled(foresters.front()->GetPos(), false);
     }
     else //activate the forester 
     {
-        if(foresters.size()>0 && (*foresters.begin())->IsProductionDisabled())
-            aii->ToggleProduction(foresters.front()->GetPos());
+        if(!foresters.empty() && (*foresters.begin())->IsProductionDisabled())
+            aii->SetProductionEnabled(foresters.front()->GetPos(), true);
     }
 }
 
@@ -1649,7 +1649,7 @@ void AIPlayerJH::CheckGranitMine()
         for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();++it)
         {
             if((*it)->IsProductionDisabled())
-                aii->ToggleProduction((*it)->GetPos());
+                aii->SetProductionEnabled((*it)->GetPos(), true);
         }
     }
     else //deactivate
@@ -1657,7 +1657,7 @@ void AIPlayerJH::CheckGranitMine()
         for(std::list<nobUsual*>::const_iterator it=aii->GetBuildings(BLD_GRANITEMINE).begin();it!=aii->GetBuildings(BLD_GRANITEMINE).end();++it)
         {
             if(!(*it)->IsProductionDisabled())
-                aii->ToggleProduction((*it)->GetPos());
+                aii->SetProductionEnabled((*it)->GetPos(), false);
         }
     }
 }
