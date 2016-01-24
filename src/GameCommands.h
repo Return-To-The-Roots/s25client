@@ -486,6 +486,7 @@ namespace gc{
         public:
             void Serialize(Serializer& ser) const override
             {
+                Coords::Serialize(ser);
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
@@ -503,6 +504,7 @@ namespace gc{
         public:
             void Serialize(Serializer& ser) const override
             {
+                Coords::Serialize(ser);
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
