@@ -233,8 +233,8 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Tests whether there is a possibility to start a expedtion in a given direction from a given position, assuming a given starting harbor
         bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const;
 
-        void ToggleCoins(const nobMilitary* building);
-        using GC_Factory::ToggleCoins;
+        void SetCoinsAllowed(const nobMilitary* building, const bool enabled);
+        using GC_Factory::SetCoinsAllowed;
 
 		///getnation
 		unsigned GetNation() {return player_.nation;}

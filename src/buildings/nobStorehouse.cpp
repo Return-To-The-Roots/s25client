@@ -39,8 +39,8 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)
 {
     // Alle Waren 0, außer 100 Träger
-    goods_.clear();
-    real_goods.clear();
+    inventoryVisual.clear();
+    inventory.clear();
 
     // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
     AddToInventory();

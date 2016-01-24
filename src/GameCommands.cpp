@@ -122,12 +122,12 @@ namespace gc{
         gwg.AttackViaSea(playerid, pt_, soldiers_count, strong_soldiers);
     }
 
-    void ToggleCoins::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+    void SetCoinsAllowed::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_MILITARY)
         {
             if(gwg.GetSpecObj<nobMilitary>(pt_)->GetPlayer() == playerid)
-                gwg.GetSpecObj<nobMilitary>(pt_)->ToggleCoins();
+                gwg.GetSpecObj<nobMilitary>(pt_)->SetCoinsAllowed(enabled);
         }
     }
 
@@ -149,22 +149,22 @@ namespace gc{
         }
     }
 
-    void ToggleProduction::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+    void SetProductionEnabled::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_USUAL || gwg.GetNO(pt_)->GetGOT() == GOT_NOB_SHIPYARD)
-            gwg.GetSpecObj<nobUsual>(pt_)->ToggleProduction();
+            gwg.GetSpecObj<nobUsual>(pt_)->SetProductionEnabled(enabled);
     }
 
-    void ChangeInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+    void SetInventorySetting::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->ChangeRealInventorySetting(category, state, type);
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->SetInventorySetting(isJob, type, state);
     }
 
-    void ChangeAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
+    void SetAllInventorySettings::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetType() == NOP_BUILDING)
-            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->ChangeAllRealInventorySettings(category, state);
+            gwg.GetSpecObj<nobBaseWarehouse>(pt_)->SetAllInventorySettings(isJob, states);
     }
 
     void ChangeReserve::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

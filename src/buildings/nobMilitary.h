@@ -193,7 +193,7 @@ class nobMilitary : public nobBaseMilitary
         /// Stoppt/Erlaubt Goldzufuhr (visuell)
         void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }
         /// Stoppt/Erlaubt Goldzufuhr (real)
-        void ToggleCoins();
+        void SetCoinsAllowed(const bool enabled);
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (visuell)
         bool IsGoldDisabledVirtual() const { return coinsDisabledVirtual; }
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)

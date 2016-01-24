@@ -476,29 +476,35 @@ namespace gc{
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
-    class ToggleCoins : public Coords
+    class SetCoinsAllowed : public Coords
     {
         GC_FRIEND_DECL;
+        const bool enabled;
         protected:
-            ToggleCoins(const MapPoint pt)
-                : Coords(TOGGLECOINS, pt) {}
-            ToggleCoins(Serializer& ser)
-                : Coords(TOGGLECOINS, ser) {}
+            SetCoinsAllowed(const MapPoint pt, const bool enabled): Coords(SET_COINS_ALLOWED, pt), enabled(enabled) {}
+            SetCoinsAllowed(Serializer& ser): Coords(SET_COINS_ALLOWED, ser), enabled(ser.PopBool()) {}
         public:
+            void Serialize(Serializer& ser) const override
+            {
+                ser.PushBool(enabled);
+            }
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
-    class ToggleProduction : public Coords
+    class SetProductionEnabled : public Coords
     {
         GC_FRIEND_DECL;
+        const bool enabled;
         protected:
-            ToggleProduction(const MapPoint pt)
-                : Coords(TOGGLEPRODUCTION, pt) {}
-            ToggleProduction(Serializer& ser)
-                : Coords(TOGGLEPRODUCTION, ser) {}
+            SetProductionEnabled(const MapPoint pt, const bool enabled): Coords(SET_PRODUCTION_ENABLED, pt), enabled(enabled) {}
+            SetProductionEnabled(Serializer& ser): Coords(SET_PRODUCTION_ENABLED, ser), enabled(ser.PopBool()) {}
         public:
+            void Serialize(Serializer& ser) const override
+            {
+                ser.PushBool(enabled);
+            }
             /// Führt das GameCommand aus
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
@@ -518,30 +524,30 @@ namespace gc{
     };
 
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
-    class ChangeInventorySetting : public Coords
+    class SetInventorySetting : public Coords
     {
         GC_FRIEND_DECL;
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
-            const unsigned char category;
-            const InventorySetting state;
+            const bool isJob;
             const unsigned char type;
+            const InventorySetting state;
         protected:
-            ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type)
-                : Coords(CHANGEINVENTORYSETTING, pt), category(category), state(state), type(type) {}
-            ChangeInventorySetting(Serializer& ser)
-                : Coords(CHANGEINVENTORYSETTING, ser),
-                  category(ser.PopUnsignedChar()),
-                  state(static_cast<InventorySetting>(ser.PopUnsignedChar())),
-                  type(ser.PopUnsignedChar())
-            {}
+            SetInventorySetting(const MapPoint pt, const bool isJob, const unsigned char type, const InventorySetting state)
+                : Coords(SET_INVENTORY_SETTING, pt), isJob(isJob), type(type), state(state) {}
+            SetInventorySetting(Serializer& ser)
+                : Coords(SET_INVENTORY_SETTING, ser),
+                  isJob(ser.PopBool()),
+                  type(ser.PopUnsignedChar()),
+                  state(static_cast<InventorySetting>(ser.PopUnsignedChar()))
+                {}
         public:
             virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser.PushUnsignedChar(category);
-                ser.PushUnsignedChar(state);
+                ser.PushBool(isJob);
                 ser.PushUnsignedChar(type);
+                ser.PushUnsignedChar(state.ToUnsignedChar());
             }
 
             /// Führt das GameCommand aus
@@ -549,27 +555,32 @@ namespace gc{
     };
 
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
-    class ChangeAllInventorySettings : public Coords
+    class SetAllInventorySettings : public Coords
     {
         GC_FRIEND_DECL;
             /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
-            const unsigned char category;
-            const InventorySetting state;
+            const bool isJob;
+            std::vector<InventorySetting> states;
         protected:
-            ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state)
-                : Coords(CHANGEALLINVENTORYSETTINGS, pt), category(category), state(state) {}
-            ChangeAllInventorySettings(Serializer& ser)
-                : Coords(CHANGEALLINVENTORYSETTINGS, ser),
-                  category(ser.PopUnsignedChar()),
-                  state(static_cast<InventorySetting>(ser.PopUnsignedChar()))
-            {}
+            SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states)
+                : Coords(SET_ALL_INVENTORY_SETTINGS, pt), isJob(isJob), states(states) {}
+            SetAllInventorySettings(Serializer& ser): Coords(SET_ALL_INVENTORY_SETTINGS, ser),
+                isJob(ser.PopBool())
+            {
+                const unsigned numStates = (isJob ? JOB_TYPES_COUNT : WARE_TYPES_COUNT);
+                states.reserve(numStates);
+                for(unsigned i = 0; i < numStates; i++)
+                    states.push_back(static_cast<InventorySetting>(ser.PopUnsignedChar()));
+            }
         public:
             virtual void Serialize(Serializer& ser) const
             {
                 Coords::Serialize(ser);
 
-                ser.PushUnsignedChar(category);
-                ser.PushUnsignedChar(state);
+                ser.PushBool(isJob);
+                RTTR_Assert(states.size() == (isJob ? JOB_TYPES_COUNT : WARE_TYPES_COUNT));
+                for(std::vector<InventorySetting>::const_iterator it = states.begin(); it != states.end(); ++it)
+                    ser.PushUnsignedChar(it->ToUnsignedChar());
             }
 
             /// Führt das GameCommand aus

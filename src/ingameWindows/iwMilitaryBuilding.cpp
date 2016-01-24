@@ -173,15 +173,17 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             if(!GAMECLIENT.IsReplayModeOn() && !GAMECLIENT.IsPaused())
             {
-                // visuell anzeigen
-                building->ToggleCoinsVirtual();
                 // NC senden
-                GAMECLIENT.ToggleCoins(building->GetPos());
-                // anderes Bild auf dem Button
-                if(building->IsGoldDisabledVirtual())
-                    GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));
-                else
-                    GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 227));
+                if(GAMECLIENT.SetCoinsAllowed(building->GetPos(), building->IsGoldDisabledVirtual()))
+                {
+                    // visuell anzeigen
+                    building->ToggleCoinsVirtual();
+                    // anderes Bild auf dem Button
+                    if(building->IsGoldDisabledVirtual())
+                        GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 226));
+                    else
+                        GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 227));
+                }
             }
         } break;
         case 7: // "Gehe Zu Ort"

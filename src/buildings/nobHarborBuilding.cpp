@@ -88,8 +88,8 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
 
     // Alle Waren 0, außer 100 Träger
-    goods_.clear();
-    real_goods.clear();
+    inventoryVisual.clear();
+    inventory.clear();
 
     // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
     AddToInventory();
@@ -128,14 +128,14 @@ void nobHarborBuilding::Destroy()
 
         // Und Bauarbeiter (später) rausschicken
         if(expedition.builder)
-            ++real_goods.people[JOB_BUILDER];
+            ++inventory.people[JOB_BUILDER];
         else
             owner.OneJobNotWanted(JOB_BUILDER, this);
     }
     //cancel order for scouts
     if (exploration_expedition.active)
     {
-		real_goods.people[JOB_SCOUT] += exploration_expedition.scouts;
+		inventory.people[JOB_SCOUT] += exploration_expedition.scouts;
         for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
         {
             owner.OneJobNotWanted(JOB_SCOUT, this);
@@ -349,15 +349,15 @@ void nobHarborBuilding::StartExpedition()
         expedition.active = false;
 
         // Waren zurücktransferieren
-        real_goods.goods[GD_BOARDS] += expedition.boards;
-        goods_.goods[GD_BOARDS] += expedition.boards;
-        real_goods.goods[GD_STONES] += expedition.stones;
-        goods_.goods[GD_STONES] += expedition.stones;
+        inventory.goods[GD_BOARDS] += expedition.boards;
+        inventoryVisual.goods[GD_BOARDS] += expedition.boards;
+        inventory.goods[GD_STONES] += expedition.stones;
+        inventoryVisual.goods[GD_STONES] += expedition.stones;
 
         if(expedition.builder)
         {
-            ++real_goods.people[JOB_BUILDER];
-            ++goods_.people[JOB_BUILDER];
+            ++inventory.people[JOB_BUILDER];
+            ++inventoryVisual.people[JOB_BUILDER];
             // Evtl. Abnehmer für die Figur wieder finden
             gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_BUILDER);
         }
@@ -374,18 +374,18 @@ void nobHarborBuilding::StartExpedition()
 
     // In unseren Warenbestand gucken und die erforderlichen Bretter und Steine sowie den
     // Bauarbeiter holen, falls vorhanden
-    expedition.boards = std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), real_goods.goods[GD_BOARDS]);
-    expedition.stones = std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), real_goods.goods[GD_STONES]);
-    real_goods.goods[GD_BOARDS] -= expedition.boards;
-    goods_.goods[GD_BOARDS] -= expedition.boards;
-    real_goods.goods[GD_STONES] -= expedition.stones;
-    goods_.goods[GD_STONES] -= expedition.stones;
+    expedition.boards = std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), inventory.goods[GD_BOARDS]);
+    expedition.stones = std::min(unsigned(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), inventory.goods[GD_STONES]);
+    inventory.goods[GD_BOARDS] -= expedition.boards;
+    inventoryVisual.goods[GD_BOARDS] -= expedition.boards;
+    inventory.goods[GD_STONES] -= expedition.stones;
+    inventoryVisual.goods[GD_STONES] -= expedition.stones;
 
-    if(real_goods.people[JOB_BUILDER])
+    if(inventory.people[JOB_BUILDER])
     {
         expedition.builder = true;
-        --real_goods.people[JOB_BUILDER];
-        --goods_.people[JOB_BUILDER];
+        --inventory.people[JOB_BUILDER];
+        --inventoryVisual.people[JOB_BUILDER];
     }
     else
     {
@@ -401,13 +401,13 @@ void nobHarborBuilding::StartExpedition()
                 break;
             }
         }
-        if(convert && real_goods.goods[GD_HAMMER] && real_goods.people[JOB_HELPER] > 1) //maybe have a hammer & helper to create our own builder?
+        if(convert && inventory.goods[GD_HAMMER] && inventory.people[JOB_HELPER] > 1) //maybe have a hammer & helper to create our own builder?
         {
-            --real_goods.goods[GD_HAMMER];
-            --goods_.goods[GD_HAMMER];
+            --inventory.goods[GD_HAMMER];
+            --inventoryVisual.goods[GD_HAMMER];
             owner.DecreaseInventoryWare(GD_HAMMER, 1);
-            --real_goods.people[JOB_HELPER];
-            --goods_.people[JOB_HELPER];
+            --inventory.people[JOB_HELPER];
+            --inventoryVisual.people[JOB_HELPER];
             owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
             owner.IncreaseInventoryJob(JOB_BUILDER, 1);
@@ -442,7 +442,7 @@ void nobHarborBuilding::StartExplorationExpedition()
         // Erkunder zurücktransferieren
         if(exploration_expedition.scouts)
         {
-            real_goods.people[JOB_SCOUT] += exploration_expedition.scouts;
+            inventory.people[JOB_SCOUT] += exploration_expedition.scouts;
             // Evtl. Abnehmer für die Figur wieder finden
             gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_SCOUT);
         }
@@ -455,11 +455,11 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // In unseren Warenbestand gucken und die erforderlichen Erkunder rausziehen
-    if(real_goods.people[JOB_SCOUT])
+    if(inventory.people[JOB_SCOUT])
     {
-        exploration_expedition.scouts = std::min(real_goods.people[JOB_SCOUT], SCOUTS_EXPLORATION_EXPEDITION);
+        exploration_expedition.scouts = std::min(inventory.people[JOB_SCOUT], SCOUTS_EXPLORATION_EXPEDITION);
 
-        real_goods.people[JOB_SCOUT] -= exploration_expedition.scouts;
+        inventory.people[JOB_SCOUT] -= exploration_expedition.scouts;
     }
     if(exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION)
     {
@@ -475,16 +475,16 @@ void nobHarborBuilding::StartExplorationExpedition()
                     break;
             }
         }
-        while(missing && real_goods.goods[GD_BOW] && real_goods.people[JOB_HELPER] > 1) //maybe have bows & helpers to create our own scouts?
+        while(missing && inventory.goods[GD_BOW] && inventory.people[JOB_HELPER] > 1) //maybe have bows & helpers to create our own scouts?
         {
-            --real_goods.goods[GD_BOW];
-            --goods_.goods[GD_BOW];
+            --inventory.goods[GD_BOW];
+            --inventoryVisual.goods[GD_BOW];
             owner.DecreaseInventoryWare(GD_BOW, 1);
-            --real_goods.people[JOB_HELPER];
-            --goods_.people[JOB_HELPER];
+            --inventory.people[JOB_HELPER];
+            --inventoryVisual.people[JOB_HELPER];
             owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
-            ++goods_.people[JOB_SCOUT];
+            ++inventoryVisual.people[JOB_SCOUT];
             owner.IncreaseInventoryJob(JOB_SCOUT, 1);
             missing--;
             exploration_expedition.scouts++;
@@ -591,7 +591,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         {
             if(it->dest == ship_dest)
             {
-                --goods_.people[it->attacker->GetJobType()];
+                --inventoryVisual.people[it->attacker->GetJobType()];
                 attackers.push_back(it->attacker);
                 it = soldiers_for_ships.erase(it);
             }
@@ -620,8 +620,8 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         exploration_expedition.active = false;
         // Expedition starten
         ship->StartExplorationExpedition(GetHarborPosID());
-        RTTR_Assert(goods_.people[JOB_SCOUT] >= exploration_expedition.scouts);
-        goods_.people[JOB_SCOUT] -= exploration_expedition.scouts;
+        RTTR_Assert(inventoryVisual.people[JOB_SCOUT] >= exploration_expedition.scouts);
+        inventoryVisual.people[JOB_SCOUT] -= exploration_expedition.scouts;
         return;
 
     }
@@ -664,7 +664,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 {
                     figures.push_back(it->fig);
                     it->fig->StartShipJourney();
-                    --goods_.people[it->fig->GetJobType()];
+                    --inventoryVisual.people[it->fig->GetJobType()];
                     it = figures_for_ships.erase(it);
                 }
                 else
@@ -680,7 +680,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 {
                     wares.push_back(*it);
                     (*it)->StartShipJourney();
-                    --goods_.goods[ConvertShields((*it)->type)];
+                    --inventoryVisual.goods[ConvertShields((*it)->type)];
                     it = wares_for_ships.erase(it);
                 }
                 else
@@ -767,7 +767,7 @@ void nobHarborBuilding::AddFigure(noFigure* figure, const bool increase_visual_c
         em->AddToKillList(figure);
 
         ++exploration_expedition.scouts;
-        ++goods_.people[JOB_SCOUT];
+        ++inventoryVisual.people[JOB_SCOUT];
         // Ggf. ist jetzt alles benötigte da
         CheckExplorationExpeditionReady();
     }
@@ -816,9 +816,9 @@ void nobHarborBuilding::CheckExpeditionReady()
 /// Prüft, ob eine Expedition von den Spähern her vollständig ist und ruft ggf. das Schiff
 void nobHarborBuilding::CheckExplorationExpeditionReady()
 {
-    if ((exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION) && (exploration_expedition.scouts + real_goods.people[JOB_SCOUT] >= SCOUTS_EXPLORATION_EXPEDITION))
+    if ((exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION) && (exploration_expedition.scouts + inventory.people[JOB_SCOUT] >= SCOUTS_EXPLORATION_EXPEDITION))
     {
-        real_goods.people[JOB_SCOUT] -= SCOUTS_EXPLORATION_EXPEDITION - exploration_expedition.scouts;
+        inventory.people[JOB_SCOUT] -= SCOUTS_EXPLORATION_EXPEDITION - exploration_expedition.scouts;
         exploration_expedition.scouts = SCOUTS_EXPLORATION_EXPEDITION;
     }
 
@@ -927,7 +927,7 @@ void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
     figures_for_ships.push_back(ffs);
     OrderShip();
     // Anzahl visuell erhöhen
-    ++goods_.people[fig->GetJobType()];
+    ++inventoryVisual.people[fig->GetJobType()];
 }
 
 /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
@@ -935,7 +935,7 @@ void nobHarborBuilding::AddWareForShip(Ware*& ware)
 {
     wares_for_ships.push_back(ware);
     // Anzahl visuell erhöhen
-    ++goods_.goods[ConvertShields(ware->type)];
+    ++inventoryVisual.goods[ConvertShields(ware->type)];
     ware->WaitForShip(this);
     OrderShip();
     // Take ownership
@@ -1061,7 +1061,7 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
     {
         // Reduce ware count because wares don't go through the house leaving process
         // And therefore the visual count reducement
-        goods_.goods[ware->type]--;
+        inventoryVisual.goods[ware->type]--;
         // Dann fügen wir die mal bei uns hinzu
         AddWareForShip(ware);
 
@@ -1086,7 +1086,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
     {
         // Reduce figure count because figues don't go through the house leaving process
         // And therefore the visual count reducement
-        goods_.people[fig->GetJobType()]--;
+        inventoryVisual.people[fig->GetJobType()]--;
         // Dann fügen wir die mal bei uns hinzu
         AddFigureForShip(fig, next_harbor);
         return true;
@@ -1116,11 +1116,11 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
                 // Increase visual count
                 if((*it)->GetJobType() == JOB_BOATCARRIER)
                 {
-                    ++goods_.people[JOB_HELPER];
-                    ++goods_.goods[GD_BOAT];
+                    ++inventoryVisual.people[JOB_HELPER];
+                    ++inventoryVisual.goods[GD_BOAT];
                 }
                 else
-                    ++goods_.people[(*it)->GetJobType()];
+                    ++inventoryVisual.people[(*it)->GetJobType()];
                 AddLeavingFigure(*it);
                 (*it)->ShipJourneyEnded();
             }
@@ -1158,7 +1158,7 @@ void nobHarborBuilding::CancelWareForShip(Ware* ware)
     wares_for_ships.remove(ware);
     // Ware zur Inventur hinzufügen
     // Anzahl davon wieder hochsetzen
-    ++real_goods.goods[ConvertShields(ware->type)];
+    ++inventory.goods[ConvertShields(ware->type)];
 }
 
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
@@ -1298,7 +1298,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     soldiers_for_ships.push_back(sfs);
 
     OrderShip();
-    ++goods_.people[attacker->GetJobType()];
+    ++inventoryVisual.people[attacker->GetJobType()];
 }
 
 ///////////////////////////////////////////////////////////////////////////////

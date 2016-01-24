@@ -122,7 +122,7 @@ protected:
         /// Stoppt/Erlaubt Produktion (visuell)
         void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
         /// Stoppt/Erlaubt Produktion (real)
-        void ToggleProduction();
+        void SetProductionEnabled(const bool enabled);
         /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
         bool IsProductionDisabledVirtual() { return disable_production_virtual; }
         /// Fragt ab, ob Produktion ausgeschaltet ist (real)

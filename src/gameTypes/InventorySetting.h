@@ -19,23 +19,78 @@
 #define InventorySetting_h__
 
 /// Setting for each item in a warehouses inventory
-/// These are bit flags!
-enum InventorySetting{
-    INV_SET_NONE = 0,
-    INV_SET_STOP = 2,
-    INV_SET_SEND = 4,
-    INV_SET_STOP_AND_SEND = 6,
-    INV_SET_COLLECT = 8
+struct EInventorySetting
+{
+    enum Type
+    {
+        STOP = 0,
+        SEND = 1,
+        COLLECT = 2
+    };
+    static const int COUNT = COLLECT + 1;
+
+    Type t_;
+    EInventorySetting(): t_(STOP){}
+    EInventorySetting(Type t): t_(t) { RTTR_Assert(t_ >= STOP && t_ < COUNT); }
+    operator Type() const { return t_; }
 };
 
-inline InventorySetting operator~(const InventorySetting a){ return static_cast<InventorySetting>(~static_cast<int>(a)); }
+struct InventorySetting
+{
+    InventorySetting(): state(0){}
+    InventorySetting(const EInventorySetting::Type state): state(static_cast<unsigned char>(state)){}
+    InventorySetting(const EInventorySetting state): state(static_cast<unsigned char>(state)){}
+    explicit InventorySetting(unsigned char state): state(state){ MakeValid(); }
+    inline bool IsSet(const EInventorySetting setting) const;
+    inline InventorySetting Toggle(const EInventorySetting setting);
+    inline void MakeValid();
+    unsigned char ToUnsignedChar() const { return state; }
+private:
+    inline static unsigned char MakeBitField(const EInventorySetting setting);
+    // Current state as a bitfield!
+    unsigned char state;
+};
 
-inline InventorySetting operator|(const InventorySetting a, const InventorySetting b){ return static_cast<InventorySetting>(static_cast<int>(a) | static_cast<int>(b)); }
-inline InventorySetting operator&(const InventorySetting a, const InventorySetting b){ return static_cast<InventorySetting>(static_cast<int>(a) & static_cast<int>(b)); }
-inline InventorySetting operator^(const InventorySetting a, const InventorySetting b){ return static_cast<InventorySetting>(static_cast<int>(a) ^ static_cast<int>(b)); }
+//////////////////////////////////////////////////////////////////////////
+// Implementation
+//////////////////////////////////////////////////////////////////////////
 
-inline InventorySetting& operator|=(InventorySetting& a, const InventorySetting b){ return a = a | b; }
-inline InventorySetting& operator&=(InventorySetting& a, const InventorySetting b){ return a = a & b; }
-inline InventorySetting& operator^=(InventorySetting& a, const InventorySetting b){ return a = a ^ b; }
+bool InventorySetting::IsSet(const EInventorySetting setting) const
+{
+    return (state & MakeBitField(setting)) != 0;
+}
+
+InventorySetting InventorySetting::Toggle(const EInventorySetting setting)
+{
+    state ^= MakeBitField(setting);
+    // If we changed collect, then allow only collect to be set
+    // Else clear collect (Collect with anything else makes no sense)
+    if(setting == EInventorySetting::COLLECT)
+        state &= MakeBitField(EInventorySetting::COLLECT);
+    else
+        state &= ~MakeBitField(EInventorySetting::COLLECT);
+    return *this;
+}
+
+unsigned char InventorySetting::MakeBitField(const EInventorySetting setting)
+{
+    return static_cast<unsigned char>(1 << static_cast<unsigned>(setting));
+}
+
+void InventorySetting::MakeValid()
+{
+    static const boost::array<unsigned char, 4> validStates = { {
+            MakeBitField(EInventorySetting::STOP),
+            MakeBitField(EInventorySetting::SEND),
+            MakeBitField(EInventorySetting::COLLECT),
+            static_cast<unsigned char>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND))
+        }};
+    for(unsigned i = 0; i < validStates.size(); i++)
+    {
+        if(state == validStates[i])
+            return;
+    }
+    state = 0;
+}
 
 #endif // InventorySetting_h__

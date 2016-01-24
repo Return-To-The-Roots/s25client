@@ -46,7 +46,7 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
     protected:
 
         /// Overlay ändern
-        void ChangeOverlay(unsigned int i, InventorySetting what);
+        void UpdateOverlay(unsigned int i);
         void UpdateOverlays();
 
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);

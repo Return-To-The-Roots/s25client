@@ -110,21 +110,28 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
         case 100: // Waren
         case 101: // Figuren
         {
+            if(GAMECLIENT.IsReplayModeOn())
+                return;
+            RTTR_Assert(page < 2);
             ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
 
-            InventorySetting data;
+            EInventorySetting setting;
             switch(optiongroup->GetSelection())
             {
-                case 0: data = INV_SET_COLLECT; break;
-                case 1: data = INV_SET_SEND; break;
-                case 2: data = INV_SET_STOP; break;
-                default:
-                    throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
+            case 0: setting = EInventorySetting::COLLECT; break;
+            case 1: setting = EInventorySetting::SEND; break;
+            case 2: setting = EInventorySetting::STOP; break;
+            default:
+                throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            // Nicht bei Replays setzen
-            if(GAMECLIENT.ChangeInventorySetting(wh->GetPos(), page, data, ctrl_id - 100))
+            InventorySetting state = page == 0 ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) : wh->GetInventorySettingVisual(Job(ctrl_id - 100));
+            state.Toggle(setting);
+            if(GAMECLIENT.SetInventorySetting(wh->GetPos(), page != 0, ctrl_id - 100, state))
+            {
                 // optisch schonmal setzen
-                ChangeOverlay(ctrl_id - 100, data);
+                wh->SetInventorySettingVisual(page != 0, ctrl_id - 100, state);
+                UpdateOverlay(ctrl_id - 100);
+            }
         } break;
     }
 }
@@ -141,32 +148,63 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 11: // "Alle auswählen"
         {
-            if(this->page < 2)
+            if(GAMECLIENT.IsReplayModeOn())
+                return;
+            if(page >= 2)
+                return;
+            ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
+            EInventorySetting data;
+            switch(optiongroup->GetSelection())
             {
-                ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
-                InventorySetting data;
-                switch(optiongroup->GetSelection())
+            case 0: data = EInventorySetting::COLLECT; break;
+            case 1: data = EInventorySetting::SEND; break;
+            case 2: data = EInventorySetting::STOP; break;
+            default:
+                throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
+            }
+            const unsigned count = (page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
+            std::vector<InventorySetting> states;
+            states.reserve(count);
+            if(page == 0)
+            {
+                for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+                    states.push_back(wh->GetInventorySettingVisual(i == GD_WATEREMPTY ? GD_WATER : GoodType(i)));
+            } else
+            {
+                for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+                    states.push_back(wh->GetInventorySettingVisual(Job(i)));
+            }
+            // Check if we need to enable all or disable all
+            // If at least 1 disabled is found, enable all
+            bool enable = false;
+            for(unsigned i = 0; i < count; i++)
+            {
+                if(!states[i].IsSet(data))
                 {
-                    case 0: data = INV_SET_COLLECT; break;
-                    case 1: data = INV_SET_SEND; break;
-                    case 2: data = INV_SET_STOP; break;
-                    default:
-                        throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
+                    enable = true;
+                    break;
                 }
-                // Nicht bei Replays setzen
-                if(GAMECLIENT.ChangeAllInventorySettings(wh->GetPos(), page, data))
+            }
+            for(unsigned i = 0; i < count; i++)
+            {
+                if(states[i].IsSet(data) != enable)
+                    states[i].Toggle(data);
+            }
+
+            if(GAMECLIENT.SetAllInventorySettings(wh->GetPos(), page != 0, states))
+            {
+                // optisch setzen
+                for(unsigned char i = 0; i < count; ++i)
                 {
-                    // optisch setzen
-                    unsigned short count = ((page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT);
-                    for(unsigned char i = 0; i < count; ++i)
-                        ChangeOverlay(i, data);
+                    // Status ändern
+                    wh->SetInventorySettingVisual(page != 0, i, states[i]);
                 }
+                UpdateOverlays();
             }
         } break;
         case 12: // "Hilfe"
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + wh->GetBuildingType()), _(BUILDING_NAMES[wh->GetBuildingType()]),
-                                                  _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + wh->GetBuildingType()), _(BUILDING_NAMES[wh->GetBuildingType()]), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
         } break;
         case 13: // "Gehe Zu Ort"
         {
@@ -226,53 +264,33 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author FloSoft
  */
-void iwBaseWarehouse::ChangeOverlay(unsigned int i, InventorySetting what)
+void iwBaseWarehouse::UpdateOverlay(unsigned int i)
 {
-    // Status ändern
-    wh->ChangeVisualInventorySettings(page, what, i);
-
     // Einlagern verbieten-Bild (de)aktivieren
     ctrlImage* image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(400 + i);
     if(image)
-        image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_STOP, i));
+        image->SetVisible(page == 0 ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::STOP) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::STOP));
 
     // Auslagern-Bild (de)aktivieren
     image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(500 + i);
     if(image)
-        image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_SEND, i));
+        image->SetVisible(page == 0 ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::SEND) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::SEND));
 
     // Einlagern-Bild (de)aktivieren
     image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(700 + i);
     if(image)
-        image->SetVisible(wh->CheckVisualInventorySettings(page, INV_SET_COLLECT, i));
+        image->SetVisible(page == 0 ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::COLLECT) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::COLLECT));
 }
 
 void iwBaseWarehouse::UpdateOverlays()
 {
     // Ein/Auslager Overlays entsprechend setzen
-    // bei Replays die reellen Einstellungen nehmen, weils die visuellen da logischweise nich gibt!
-    const bool replayModeOn = GAMECLIENT.IsReplayModeOn();
     for(unsigned char category = 0; category < 2; ++category)
     {
         unsigned count = (category == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
         for(unsigned i = 0; i < count; ++i)
         {
-            // Einlagern verbieten-Bild (de)aktivieren
-            ctrlImage* image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(400 + i);
-            if(image)
-            {
-                image->SetVisible(replayModeOn ? wh->CheckRealInventorySettings(category, INV_SET_STOP, i) : wh->CheckVisualInventorySettings(category, INV_SET_STOP, i));
-            }
-
-            // Auslagern-Bild (de)aktivieren
-            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(500 + i);
-            if(image)
-                image->SetVisible(replayModeOn ? wh->CheckRealInventorySettings(category, INV_SET_SEND, i) : wh->CheckVisualInventorySettings(category, INV_SET_SEND, i));
-
-            // Einlagern-Bild (de)aktivieren
-            image = GetCtrl<ctrlGroup>(100 + category)->GetCtrl<ctrlImage>(700 + i);
-            if(image)
-                image->SetVisible(replayModeOn ? wh->CheckRealInventorySettings(category, INV_SET_COLLECT, i) : wh->CheckVisualInventorySettings(category, INV_SET_COLLECT, i));
+            UpdateOverlay(i);
         }
     }
 }

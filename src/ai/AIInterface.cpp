@@ -232,7 +232,7 @@ bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int
     return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID_) > 0;
 }
 
-void AIInterface::ToggleCoins(const nobMilitary* building) { ToggleCoins(building->GetPos()); }
+void AIInterface::SetCoinsAllowed(const nobMilitary* building, const bool enabled) { SetCoinsAllowed(building->GetPos(), enabled); }
 void AIInterface::StartExpedition(const nobHarborBuilding* harbor) { StartExpedition(harbor->GetPos()); }
 void AIInterface::ToggleShipYardMode(const nobShipYard* yard) { ToggleShipYardMode(yard->GetPos()); }
 void AIInterface::DestroyBuilding(const noBuilding* building) { DestroyBuilding(building->GetPos()); }

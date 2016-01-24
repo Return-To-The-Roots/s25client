@@ -1113,13 +1113,16 @@ void nobMilitary::NeedOccupyingTroops()
     }
 }
 
-void nobMilitary::ToggleCoins()
+void nobMilitary::SetCoinsAllowed(const bool enabled)
 {
+    if(coinsDisabled == !enabled)
+        return;
+
     // Umstellen
-    coinsDisabled = !coinsDisabled;
+    coinsDisabled = !enabled;
     // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
     if(GAMECLIENT.GetPlayerID() != player || GAMECLIENT.IsReplayModeOn())
-        coinsDisabledVirtual = !coinsDisabledVirtual;
+        coinsDisabledVirtual = coinsDisabled;
 
     if(!coinsDisabled)
         SearchCoins(); // Order coins if we just enabled it

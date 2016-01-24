@@ -659,13 +659,15 @@ void nobUsual::WorkerArrived()
  *
  *  @author OLiver
  */
-void nobUsual::ToggleProduction()
+void nobUsual::SetProductionEnabled(const bool enabled)
 {
+    if(disable_production == !enabled)
+        return;
     // Umstellen
-    disable_production = !disable_production;
+    disable_production = !enabled;
     // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
     if(GAMECLIENT.GetPlayerID() != player || GAMECLIENT.IsReplayModeOn())
-        disable_production_virtual = !disable_production_virtual;
+        disable_production_virtual = disable_production;
 
     if(disable_production)
     {

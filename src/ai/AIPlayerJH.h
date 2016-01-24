@@ -143,9 +143,7 @@ class AIPlayerJH : public AIBase
         void CheckNewMilitaryBuildings();
 
         /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
-        void DistributeGoodsByBlocking(unsigned char goodnumber, unsigned limit);
-		/// blocks people in each warehouse that has at least limit amount of that job - if all warehouses have enough they unblock
-        void DistributePeopleByBlocking(unsigned char jobnumber, unsigned limit);
+        void DistributeGoodsByBlocking(const GoodType good, unsigned limit);
 
 		/// blocks max rank soldiers in warehouse 1 (hq most often), then balances soldiers among frontier warehouses - if there are no frontier warehouses just pick anything but 1 if there is just 1 then dont block
         void DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWarehouse* upwh);

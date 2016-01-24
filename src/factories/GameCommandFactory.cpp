@@ -133,15 +133,15 @@ bool GameCommandFactory<T_Handler>::SeaAttack(const MapPoint pt, const unsigned 
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ToggleCoins(const MapPoint pt)
+bool GameCommandFactory<T_Handler>::SetCoinsAllowed(const MapPoint pt, const bool enabled)
 {
-    return AddGC_Virt( new gc::ToggleCoins(pt) );
+    return AddGC_Virt( new gc::SetCoinsAllowed(pt, enabled) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ToggleProduction(const MapPoint pt)
+bool GameCommandFactory<T_Handler>::SetProductionEnabled(const MapPoint pt, const bool enabled)
 {
-    return AddGC_Virt( new gc::ToggleProduction(pt) );
+    return AddGC_Virt( new gc::SetProductionEnabled(pt, enabled) );
 }
 
 template<class T_Handler>
@@ -151,15 +151,15 @@ bool GameCommandFactory<T_Handler>::NotifyAlliesOfLocation(const MapPoint pt)
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeInventorySetting(const MapPoint pt, const unsigned char category, const InventorySetting state, const unsigned char type)
+bool GameCommandFactory<T_Handler>::SetInventorySetting(const MapPoint pt, const bool isJob, const unsigned char type, const InventorySetting state)
 {
-    return AddGC_Virt( new gc::ChangeInventorySetting(pt, category, state, type) );
+    return AddGC_Virt( new gc::SetInventorySetting(pt, isJob, type, state) );
 }
 
 template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeAllInventorySettings(const MapPoint pt, const unsigned char category, const InventorySetting state)
+bool GameCommandFactory<T_Handler>::SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states)
 {
-    return AddGC_Virt( new gc::ChangeAllInventorySettings(pt, category, state) );
+    return AddGC_Virt( new gc::SetAllInventorySettings(pt, isJob, states) );
 }
 
 template<class T_Handler>
