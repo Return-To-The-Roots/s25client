@@ -150,11 +150,11 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         void SkipGF(unsigned int gf);
 
-        /// Wechselt den aktuellen Spieler (nur zu Debugzwecken !!)
-        void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
+        /// Changes the player ingame (for replay or debugging)
+        void ChangePlayerIngame(const unsigned char player1, const unsigned char player2);
+        /// Sends a request to swap places with the requested player. Only for debugging!
+        void RequestSwapToPlayer(const unsigned char newId);
 
-        /// Wechselt den aktuellen Spieler im Replaymodus
-        void ChangeReplayPlayer(const unsigned new_id);
         /// Laggt ein bestimmter Spieler gerade?
         bool IsLagging(const unsigned int id) { return GetPlayer(id).is_lagging; }
         /// Spiel pausiert?
@@ -162,7 +162,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Schreibt Header der Save-Datei
         unsigned SaveToFile(const std::string& filename);
         /// Visuelle Einstellungen aus den richtigen ableiten
-        void GetVisualSettings();
+        void ResetVisualSettings();
 
         /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
         void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor);

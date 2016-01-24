@@ -69,9 +69,6 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void TogglePlayerState(unsigned char client);
         void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
 
-        /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
-        void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
-
         /// Tauscht Spieler(positionen) bei Savegames in dskHostGame
         void SwapPlayer(const unsigned char player1, const unsigned char player2);
 
@@ -82,6 +79,9 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         unsigned short GetPort() const { return serverconfig.port; }
 
     protected:
+
+        /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
+        void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
         void SendToAll(const GameMessage& msg);
         void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
@@ -112,6 +112,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
         void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;
         void OnNMSPlayerReady(const GameMessage_Player_Ready& msg) override;
+        void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg) override;
         void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg) override;
         void OnNMSGameCommand(const GameMessage_GameCommand& msg) override;
         void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;

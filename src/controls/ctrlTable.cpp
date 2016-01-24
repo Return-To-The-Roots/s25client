@@ -337,9 +337,6 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
         SetSelection((mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos());
         if(parent_)
             parent_->Msg_TableLeftButton(this->id_, row_l_selection);
-        // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent_)
-            parent_->Msg_TableChooseItem(this->id_, row_l_selection);
 
         return true;
     }
@@ -413,7 +410,15 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
  */
 bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
+    {
+        if(mc.dbl_click && parent_)
+            parent_->Msg_TableChooseItem(this->id_, row_l_selection);
+
+        return true;
+    }
+    else
+        return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

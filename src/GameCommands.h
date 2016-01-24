@@ -475,31 +475,6 @@ namespace gc{
             void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
     };
 
-/// Spielerwechsel
-    class SwitchPlayer : public GameCommand
-    {
-        GC_FRIEND_DECL;
-            friend class GameServer;
-            /// ID des Spielers, zu den hingewechselt werden soll
-            const unsigned new_player_id;
-
-        protected:
-            SwitchPlayer(const unsigned char new_player_id)
-                : GameCommand(SWITCHPLAYER), new_player_id(new_player_id) {}
-            SwitchPlayer(Serializer& ser)
-                : GameCommand(SWITCHPLAYER), new_player_id(ser.PopUnsignedChar()) {}
-        public:
-            virtual void Serialize(Serializer& ser) const
-            {
-                ser.PushUnsignedChar(new_player_id);
-            }
-
-            unsigned GetNewPlayerId() const { return new_player_id; }
-
-            /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
-    };
-
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
     class ToggleCoins : public Coords
     {

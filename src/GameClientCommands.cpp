@@ -126,80 +126,52 @@ void GameClient::Command_ToggleColor()
  *  @author OLiver
  *  @author FloSoft
  */
-void GameClient::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
+void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned char player2)
 {
-	LOG.lprintf("GameClient::ChangePlayer %i - %i \n",old_id, new_id); 
-    // ID auch innerhalb der Spielerzahl?
-    if(new_id >= players.getCount())
-        return;
-
+	LOG.lprintf("GameClient::ChangePlayer %i - %i \n",player1, player2); 
     // Gleiche ID - wäre unsinnig zu wechseln
-    if(old_id == new_id)
+    if(player1 == player2)
         return;
 
-    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
-    if( !(players[old_id].ps == PS_OCCUPIED && players[new_id].ps == PS_KI) )
+    // ID auch innerhalb der Spielerzahl?
+    if(player2 >= players.getCount() || player1 >= players.getCount())
         return;
 
-    players[old_id].ps = PS_KI;
-    players[new_id].ps = PS_OCCUPIED;
+    // old_id must be a player unless its a replay
+    if(players[player1].ps != PS_OCCUPIED || IsReplayModeOn())
+        return;
+    // new_id must be ab AI. For replays it can also be another player
+    if(players[player2].ps != PS_KI && (!IsReplayModeOn() || players[player2].ps != PS_OCCUPIED))
+        return;
 
-    // Wenn wir betroffen waren, unsere ID neu setzen und BQ neu berechnen
-    if(playerId_ == old_id)
+    // In replay mode we don't touch the player
+    if(!IsReplayModeOn())
     {
-        playerId_ = new_id;
+        players[player1].ps = PS_KI;
+        players[player2].ps = PS_OCCUPIED;
+    }else
+        RTTR_Assert(player1 == playerId_);
 
-        // BQ überall neu berechnen
-        for(unsigned y = 0; y < gw->GetHeight(); ++y)
+    // Wenn wir betroffen waren, unsere ID neu setzen
+    if(playerId_ == player1)
+    {
+        playerId_ = player2;
+
+        if(!IsReplayModeOn())
         {
-            for(unsigned x = 0; x < gw->GetWidth(); ++x)
-                gw->CalcAndSetBQ(MapPoint(x, y), new_id);
+            // Our currently accumulated gamecommands are invalid after the change, as they would modify the old player
+            gameCommands_.clear();
+            // zum HQ hinscrollen
+            GameClientPlayer& player = players[playerId_];
+            if(player.hqPos.isValid())
+                gw->MoveToMapObject(player.hqPos);
         }
-
-        // Visuelle Einstellungen vom Spieler wieder holen
-        GetVisualSettings();
-
-        //// zum HQ hinscrollen
-        GameClientPlayer& player = players[playerId_];
-        if(player.hqPos.isValid())
-            gw->MoveToMapObject(player.hqPos);
     }
-	//swap command que
+
     using std::swap;
-    swap(players[old_id].gc_queue, players[new_id].gc_queue);
+    swap(players[player1].gc_queue, players[player2].gc_queue);
 
-    // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
     if(ci)
-        ci->CI_PlayersSwapped(old_id, new_id);
-}
-
-void GameClient::ChangeReplayPlayer(const unsigned new_id)
-{
-    unsigned old_id = playerId_;
-
-    if(old_id == new_id)
-        // Unsinn auf den selben Spieler zu wechseln
-        return;
-    // Auch innerhalb der gültigen Spieler?
-    if(new_id >= GAMECLIENT.GetPlayerCount())
-        return;
-    // Und ein richtiger ehemaliger Spieler?
-    if(GAMECLIENT.GetPlayer(new_id).ps != PS_KI &&
-            GAMECLIENT.GetPlayer(new_id).ps != PS_OCCUPIED)
-        return;
-
-
-    playerId_ = new_id;
-
-    // BQ überall neu berechnen
-    for(unsigned y = 0; y < gw->GetHeight(); ++y)
-    {
-        for(unsigned x = 0; x < gw->GetWidth(); ++x)
-            gw->CalcAndSetBQ(MapPoint(x, y), new_id);
-    }
-
-    // GUI Bescheid sagen (um z.B. Schatten neu zu berechnen)
-    if(ci)
-        ci->CI_PlayersSwapped(old_id, new_id);
+        ci->CI_PlayersSwapped(player1, player2);
 }
 

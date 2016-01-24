@@ -99,7 +99,7 @@ void GamePlayerInfo::serialize(Serializer& ser) const
     ser.PushBool(ready);
 }
 
-void GamePlayerInfo::SwapPlayer(GamePlayerInfo& two)
+void GamePlayerInfo::SwapInfo(GamePlayerInfo& two)
 {
     using std::swap;
     swap(ps, two.ps);

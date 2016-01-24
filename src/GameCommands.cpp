@@ -122,12 +122,6 @@ namespace gc{
         gwg.AttackViaSea(playerid, pt_, soldiers_count, strong_soldiers);
     }
 
-    void SwitchPlayer::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
-    {
-        gwg.switchedPlayers.oldPlayer = playerid;
-        gwg.switchedPlayers.newPlayer = new_player_id;
-    }
-
     void ToggleCoins::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)
     {
         if(gwg.GetNO(pt_)->GetGOT() == GOT_NOB_MILITARY)

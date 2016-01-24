@@ -72,11 +72,6 @@ public:
     GameWorldGame();
     virtual ~GameWorldGame();
 
-    /// Set by the playerSwitch GC
-    struct{
-        unsigned char oldPlayer, newPlayer;
-    } switchedPlayers;
-
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     inline GameInterface* GetGameInterface() const { return gi; }
 

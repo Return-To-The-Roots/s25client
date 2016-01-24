@@ -68,7 +68,6 @@ public:
     bool Attack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers);
     /// Sea-Attacks an enemy building
     bool SeaAttack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers);
-    bool SwitchPlayer(const unsigned char new_player_id);
     /// Toggles coin delivery on/off for a military building
     bool ToggleCoins(const MapPoint pt);
     /// Stops/starts production of a producer
