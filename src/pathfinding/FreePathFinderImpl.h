@@ -142,6 +142,10 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                 // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
                 if(best.curDistance + 1 < neighbour.curDistance)
                 {
+                    // Check if we can use this transition
+                    if(!nodeChecker.IsEdgeOk(best.mapPt, dir))
+                        continue;
+
                     neighbour.curDistance  = best.curDistance + 1;
                     neighbour.estimatedDistance = neighbour.curDistance + neighbour.targetDistance;
                     neighbour.prev = &best;
@@ -150,16 +154,15 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                 }
             }else
             {
-                // Das Ziel wollen wir auf jedenfall erreichen lassen, daher nur diese zusätzlichen
-                // Bedingungen, wenn es nicht das Ziel ist
+                // Check node for all but the goal (goal is assumed to be ok)
                 if(&neighbour != &destNode)
                 {
-                    if(!nodeChecker.IsNodeOk(neighbourPos, dir))
+                    if(!nodeChecker.IsNodeOk(neighbourPos))
                         continue;
                 }
 
-                // Zusätzliche Bedingungen, auch die das letzte Stück zum Ziel betreffen
-                if(!nodeChecker.IsNodeToDestOk(neighbourPos, dir))
+                // Check if we can use this transition
+                if(!nodeChecker.IsEdgeOk(best.mapPt, dir))
                     continue;
 
                 // Alles in Ordnung, Knoten kann gebildet werden
@@ -191,18 +194,19 @@ bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned
     unsigned sizeM1 = route.size() - 1;
     for(unsigned i = pos; i < sizeM1; ++i)
     {
+        if(!nodeChecker.IsEdgeOk(curPt, route[i]))
+            return false;
         curPt = gwb_.GetNeighbour(curPt, route[i]);
-        if(!nodeChecker.IsNodeOk(curPt, route[i]) || !nodeChecker.IsNodeToDestOk(curPt, route[i]))
+        if(!nodeChecker.IsNodeOk(curPt))
             return false;
     }
 
     // Last step
-    curPt = gwb_.GetNeighbour(curPt, route.back());
-    if(!nodeChecker.IsNodeToDestOk(curPt, route.back()))
+    if(!nodeChecker.IsEdgeOk(curPt, route.back()))
         return false;
 
     if(dest)
-        *dest = curPt;
+        *dest = gwb_.GetNeighbour(curPt, route.back());
 
     return true;
 }

@@ -437,7 +437,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     // test on maximal water way length
                     if(rb.mode != RM_BOAT || rb.route.size() < max_length || max_length == 0 )
                     {
-                        if( ( (gwv->RoadAvailable(rb.mode == RM_BOAT, t, i)
+                        if( ( (gwv->RoadAvailable(rb.mode == RM_BOAT, t)
                                 && gwv->GetNode(t).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
                                 || (gwv->GetNode(t).bq == BQ_FLAG) )
                                 && gwv->IsPlayerTerritory(t) )

@@ -322,14 +322,14 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
     // TODO: Verzögerungsbugabfrage, kann später ggf. weg
     // Gucken, ob der Weg überhaupt noch gebaut werden kann
-    MapPoint test(start);
+    MapPoint curPt(start);
     RTTR_Assert(route.size() > 1);
     for(unsigned i = 0; i + 1 < route.size(); ++i)
     {
-        test = GetNeighbour(test, route[i]);
+        curPt = GetNeighbour(curPt, route[i]);
 
         // Feld bebaubar und auf unserem Gebiet
-        if(!RoadAvailable(boat_road, test, i, false) || !IsPlayerTerritory(test))
+        if(!RoadAvailable(boat_road, curPt, false) || !IsPlayerTerritory(curPt))
         {
             // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist und ansonsten den visuellen wieder zurückbauen
             if (RoadAlreadyBuilt(boat_road, start, route))
@@ -347,13 +347,13 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         }
     }
 
-    test = GetNeighbour(test, route[route.size() - 1]);
+    curPt = GetNeighbour(curPt, route[route.size() - 1]);
 
     // Prüfen, ob am Ende auch eine Flagge steht oder eine gebaut werden kann
-    if(GetNO(test)->GetGOT() == GOT_FLAG)
+    if(GetNO(curPt)->GetGOT() == GOT_FLAG)
     {
         // Falscher Spieler?
-        if(GetSpecObj<noFlag>(test)->GetPlayer() != playerid)
+        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerid)
         {
             // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
             RemoveVisualRoad(start, route);
@@ -366,7 +366,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     {
         // Es ist keine Flagge dort, dann muss getestet werden, ob da wenigstens eine gebaut werden kann
         //Test ob wir evtl genau auf der Grenze sind (zählt zum eigenen Land kann aber nix gebaut werden egal was bq is!)
-        if(GetNode(test).boundary_stones[0])
+        if(GetNode(curPt).boundary_stones[0])
         {
             RemoveVisualRoad(start, route);
             // tell ai: road construction failed
@@ -375,7 +375,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         }
         // TODO: Verzögerungsbugabfrage, kann später ggf. weg
         // kann Flagge hier nicht gebaut werden?
-        if(CalcBQ(test, playerid, true, false) != BQ_FLAG)
+        if(CalcBQ(curPt, playerid, true, false) != BQ_FLAG)
         {
             // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
             RemoveVisualRoad(start, route);
@@ -386,7 +386,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
         // TODO: Verzögerungsbugabfrage, kann später ggf. weg
         // Abfragen, ob evtl ein Baum gepflanzt wurde, damit der nicht überschrieben wird
-        if(GetNO(test)->GetType() == NOP_TREE)
+        if(GetNO(curPt)->GetType() == NOP_TREE)
         {
             // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
             RemoveVisualRoad(start, route);
@@ -395,7 +395,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
             return;
         }
         //keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
-        SetFlag(test, playerid, (route[route.size() - 1] + 3) % 6);
+        SetFlag(curPt, playerid, (route[route.size() - 1] + 3) % 6);
     }
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)

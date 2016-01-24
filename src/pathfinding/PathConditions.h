@@ -27,22 +27,14 @@ struct PathConditionRoad
 
     PathConditionRoad(const GameWorldBase& gwb, const bool isBoatRoad): gwb(gwb), isBoatRoad(isBoatRoad){}
 
-    // Called first for every node but the goal
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
+    // Called for every node but the start & goal and should return true, if this point is usable
+    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
-        // Auch auf unserem Territorium?
-        if(!gwb.IsPlayerTerritory(pt))
-            return false;
-
-        // Feld bebaubar?
-        if(!gwb.RoadAvailable(isBoatRoad, pt, dir))
-            return false;
-
-        return true;
+        return gwb.IsPlayerTerritory(pt) && gwb.RoadAvailable(isBoatRoad, pt);
     }
 
-    // Called for every node
-    FORCE_INLINE bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    // Called for every edge (node to other node)
+    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
         return true;
     }
@@ -54,8 +46,8 @@ struct PathConditionHuman
 
     PathConditionHuman(const GameWorldBase& gwb): gwb(gwb){}
 
-    // Called first for every node but the goal
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
+    // Called for every node but the start & goal and should return true, if this point is usable
+    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
         // Feld passierbar?
         noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
@@ -66,14 +58,11 @@ struct PathConditionHuman
     }
 
     // Called for every node
-    FORCE_INLINE bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
         // Feld passierbar?
         // Nicht über Wasser, Lava, Sümpfe gehen
-        if(!gwb.IsNodeToNodeForFigure(pt, (dir + 3) % 6))
-            return false;
-
-        return true;
+        return gwb.IsNodeToNodeForFigure(fromPt, dir);
     }
 };
 
@@ -83,10 +72,10 @@ struct PathConditionTrade: public PathConditionHuman
 
     PathConditionTrade(const GameWorldBase& gwb, const unsigned char player): PathConditionHuman(gwb), player(gwb.GetPlayer(player)){}
 
-    // Called for every node
-    FORCE_INLINE bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    // Called for every node but the start & goal and should return true, if this point is usable
+    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
-        if(!PathConditionHuman::IsNodeToDestOk(pt, dir))
+        if(!PathConditionHuman::IsNodeOk(pt))
             return false;
 
         unsigned char owner = gwb.GetNode(pt).owner;
@@ -101,8 +90,8 @@ struct PathConditionShip
 
     PathConditionShip(const GameWorldBase& gwb): gwb(gwb){}
 
-    // Called first for every node but the goal
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt, const unsigned char dir) const
+    // Called for every node but the start & goal and should return true, if this point is usable
+    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
         // Ein Meeresfeld?
         for(unsigned i = 0; i < 6; ++i)
@@ -115,12 +104,11 @@ struct PathConditionShip
     }
 
     // Called for every node
-    FORCE_INLINE bool IsNodeToDestOk(const MapPoint& pt, const unsigned char dir) const
+    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
         // Der Übergang muss immer aus Wasser sein zu beiden Seiten
-        const unsigned char reverseDir = (dir + 3) % 6;
-        return TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(pt, reverseDir)) &&
-               TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(pt, reverseDir));
+        return TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(fromPt, dir)) &&
+               TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(fromPt, dir));
     }
 };
 #endif // PathConditions_h__

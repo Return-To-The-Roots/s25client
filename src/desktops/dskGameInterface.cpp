@@ -327,7 +327,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
-            if(gwv->RoadAvailable(road.mode == RM_BOAT, cSel, 0xFF) && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
+            if(gwv->RoadAvailable(road.mode == RM_BOAT, cSel) && gwv->GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
                     gwv->IsPlayerTerritory(cSel))
             {
                 if(!BuildRoadPart(cSel, false))

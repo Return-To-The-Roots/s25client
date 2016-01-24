@@ -350,7 +350,7 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
             MapPoint t(pStart);
             t = aii->GetNeighbour(t, Direction::fromInt(route[i + 1]));
             pStart = aii->GetNeighbour(pStart, Direction::fromInt(route[i]));
-            if(aii->RoadAvailable(t, route[i + 1]) && aii->IsOwnTerritory(t)) //can the alternative road be build?
+            if(aii->RoadAvailable(t) && aii->IsOwnTerritory(t)) //can the alternative road be build?
             {
                 if(aii->CalcBQSumDifference(pStart, t)) //does the alternative road block a lower buildingquality point than the normal planned route?
                 {

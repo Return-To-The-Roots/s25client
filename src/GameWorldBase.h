@@ -211,8 +211,9 @@ public:
     /// liefert FOW-Straßen-Wert um den punkt X,Y
     unsigned char GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const;
 
-    /// Kann dorthin eine Straße gebaut werden?
-    bool RoadAvailable(const bool boat_road, const MapPoint pt, unsigned char to_dir, const bool visual = true) const;
+    /// Kann a node be used for a road (no flag/bld, no other road, no danger...)
+    /// Should only be used for the points between the 2 flags of a road
+    bool RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual = true) const;
     /// Prüft ob exakt die gleiche Straße schon gebaut wurde
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
     /// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist

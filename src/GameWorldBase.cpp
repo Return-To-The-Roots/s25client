@@ -468,7 +468,7 @@ bool GameWorldBase::IsPlayerTerritory(const MapPoint pt) const
     return true;
 }
 
-bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsigned char to_dir, const bool visual) const
+bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual) const
 {
     // Hindernisse
     if(GetNode(pt).obj)
@@ -515,18 +515,6 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
 
         if(!flagPossible)
             return false;
-
-        // Richtung übergeben? Dann auch das zwischen den beiden Punkten beachten, damit
-        // man nicht über ein Wasser oder so hüpft
-        if(to_dir != 0xFF)
-        {
-            // Richtung genau entgegengesetzt, da das ja hier der Zielpunkt ist, wir müssen wieder zurück zum Quellpunkt
-            to_dir = (to_dir + 3) % 6;
-
-            //// Nicht über Wasser, Lava, Sümpfe gehen
-            //if(!IsNodeToNodeForFigure(x, y, to_dir, boat_road))
-            //  return false;
-        }
 
         return true;
     }
