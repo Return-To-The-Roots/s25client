@@ -67,7 +67,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Verarbeitung des Drückens der Linken Maustaste.
         void Msg_LeftDown(MouseCoords mc);
         /// Verarbeitung des Loslassens der Linken Maustaste.
-        void Msg_LeftUp(const MouseCoords& mc);
+        void Msg_LeftUp(MouseCoords mc);
         /// Verarbeitung des Drückens der Rechten Maustaste.
         void Msg_RightUp(const MouseCoords& mc);
         /// Verarbeitung des Loslassens der Rechten Maustaste.

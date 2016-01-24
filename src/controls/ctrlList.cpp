@@ -114,8 +114,6 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
         selection_ = mouseover + scrollbar->GetPos();
 
         if(parent_) parent_->Msg_ListSelectItem(id_, selection_);
-        // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent_) parent_->Msg_ListChooseItem(id_, selection_);
 
         return true;
     }
@@ -160,6 +158,16 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
 bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+
+    // Wenn Maus in der Liste
+    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
+    {
+        // Doppelklick? Dann noch einen extra Eventhandler aufrufen
+        if(mc.dbl_click && parent_)
+            parent_->Msg_ListChooseItem(id_, selection_);
+
+        return true;
+    }
 
     // Für die Scrollbar weiterleiten
     return scrollbar->Msg_LeftUp(mc);

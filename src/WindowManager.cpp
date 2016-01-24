@@ -323,16 +323,6 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     // Sound abspielen
     LOADER.GetSoundN("sound", 112)->Play(255, false);
 
-    // Ggf. Doppelklick untersuche
-    unsigned time_now = VIDEODRIVER.GetTickCount();
-    if((time_now - last_left_click_time) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
-            && Point<int>(mc.x, mc.y) == last_left_click_point)
-        mc.dbl_click = true;
-
-    // Werte wieder erneut speichern
-    last_left_click_point = Point<int>(mc.x, mc.y);
-    last_left_click_time = time_now;
-
     // haben wir überhaupt fenster?
     if(windows.empty())
     {
@@ -427,11 +417,21 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
  *
  *  @author OLiver
  */
-void WindowManager::Msg_LeftUp(const MouseCoords& mc)
+void WindowManager::Msg_LeftUp(MouseCoords mc)
 {
     // ist unser Desktop gültig?
     if(!curDesktop)
         return;
+
+    // Ggf. Doppelklick untersuche
+    unsigned time_now = VIDEODRIVER.GetTickCount();
+    if((time_now - last_left_click_time) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
+        && Point<int>(mc.x, mc.y) == last_left_click_point)
+        mc.dbl_click = true;
+
+    // Werte wieder erneut speichern
+    last_left_click_point = Point<int>(mc.x, mc.y);
+    last_left_click_time = time_now;
 
     // ist der Maus-Klick-Fix aktiv?
     if(!disable_mouse)

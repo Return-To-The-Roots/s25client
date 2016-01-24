@@ -28,7 +28,7 @@ class VideoDriverLoaderInterface
         virtual ~VideoDriverLoaderInterface() {};
 
         virtual void Msg_LeftDown(MouseCoords mc) = 0;
-        virtual void Msg_LeftUp(const MouseCoords& mc) = 0;
+        virtual void Msg_LeftUp(MouseCoords mc) = 0;
         virtual void Msg_RightDown(const MouseCoords& mc) = 0;
         virtual void Msg_RightUp(const MouseCoords& mc) = 0;
         virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
