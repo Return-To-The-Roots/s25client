@@ -129,7 +129,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     // We need this doubled up here
     // - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI implementation)
     // - With SDL in the fullscreen case
-    if(!videodriver->CreateScreen(800, 600, false))
+    if(!videodriver->CreateScreen(screen_width, screen_height, false))
     {
         fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;
