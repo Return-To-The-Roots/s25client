@@ -76,7 +76,7 @@ void nofDefender::Walked()
             // Mit Angreifer den Kampf beginnen
             gwg->AddFigure(new noFighting(attacker, this), pos);
             state = STATE_FIGHTING;
-            attacker->state = STATE_ATTACKING_FIGHTINGVSDEFENDER;
+            attacker->FightVsDefenderStarted();
 
         } break;
         case STATE_DEFENDING_WALKINGFROM:

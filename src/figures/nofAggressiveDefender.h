@@ -25,17 +25,10 @@ class nofPassiveSoldier;
 /// Aggressiv-verteidigender Soldat (jemand, der den Angreifer auf offenem Feld entgegenläuft)
 class nofAggressiveDefender : public nofActiveSoldier
 {
-        // Unser Feind-Freund ;)
-        friend class nofAttacker;
-
-    private:
-
         /// Soldaten, der er entgegenrennen soll
         nofAttacker* attacker;
         /// Militärgebäude, das angegriffen wird
         nobBaseMilitary* attacked_goal;
-
-    private:
 
         /// wenn man gelaufen ist
         void Walked();
@@ -48,6 +41,8 @@ class nofAggressiveDefender : public nofActiveSoldier
         /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
         void InformTargetsAboutCancelling();
 
+        void CancelAtAttacker();
+
         /// The derived classes regain control after a fight of nofActiveSoldier
         void FreeFightEnded();
 
@@ -59,8 +54,6 @@ class nofAggressiveDefender : public nofActiveSoldier
         nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id);
 
         ~nofAggressiveDefender();
-
-
 
         /// Aufräummethoden
     protected:  void Destroy_nofAggressiveDefender();
@@ -95,6 +88,8 @@ class nofAggressiveDefender : public nofActiveSoldier
         /// Mission muss also abgebrochen werden
         void NeedForHomeDefence();
 
+        //Debugging
+        const nofAttacker* GetAttacker() const { return attacker; }
 };
 
 

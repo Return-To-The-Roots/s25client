@@ -816,7 +816,7 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
         return defender;
     }
     else
-        return 0;
+        return NULL;
 }
 
 /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen

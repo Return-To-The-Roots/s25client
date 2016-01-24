@@ -25,15 +25,8 @@ class nofPassiveSoldier;
 /// Verteidiger, der rauskommt, wenn ein Angreifer an die Flagge kommt
 class nofDefender : public nofActiveSoldier
 {
-        // Unser Feind-Freund ;)
-        friend class nofAttacker;
-
-    private:
-
         /// angreifender Soldat an der Flagge
         nofAttacker* attacker;
-
-    private:
 
         /// wenn man gelaufen ist
         void Walked();
@@ -79,7 +72,8 @@ class nofDefender : public nofActiveSoldier
         /// Informs the defender that a fight between him and an attacker has started
         void FightStarted() { state = STATE_FIGHTING; }
 
-
+        //Debugging
+        const nofAttacker* GetAttacker() const { return attacker; }
 };
 
 

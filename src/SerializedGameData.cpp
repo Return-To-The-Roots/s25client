@@ -94,6 +94,7 @@
 #include "buildings/BurnedWarehouse.h"
 
 #include "helpers/containerUtils.h"
+#include "helpers/converters.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -107,7 +108,6 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
 {
     switch(got)
     {
-        default: return NULL;
         case GOT_NOB_HQ: return new nobHQ(*this, obj_id);
         case GOT_NOB_MILITARY: return new nobMilitary(*this, obj_id);
         case GOT_NOB_STOREHOUSE: return new nobStorehouse(*this, obj_id);
@@ -172,8 +172,12 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_SHIP: return new noShip(*this, obj_id);
         case GOT_SHIPBUILDINGSITE: return new noShipBuildingSite(*this, obj_id);
         case GOT_CHARBURNERPILE: return new noCharburnerPile(*this, obj_id);
-
+        case GOT_NOTHING:
+        case GOT_UNKNOWN:
+            RTTR_Assert(false);
+            break;
     }
+    throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id) + " found!");
 }
 
 FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
@@ -244,7 +248,7 @@ void SerializedGameData::ReadFromFile(BinaryFile& file)
     Serializer::ReadFromFile(file);
 }
 
-void SerializedGameData::PushObject(const GameObject* go, const bool known)
+void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 {
     RTTR_Assert(!isReading);
 
@@ -295,7 +299,7 @@ void SerializedGameData::PushObject(const GameObject* go, const bool known)
     go->Serialize(*this);
 
     // Sicherheitscode reinschreiben
-    PushUnsignedShort(0xFFFF);
+    PushUnsignedShort(GetSafetyCode(*go));
 }
 
 /// FoW-Objekt
@@ -333,13 +337,13 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
 {
     RTTR_Assert(isReading);
     // Obj-ID holen
-    unsigned obj_id = PopUnsignedInt();
+    const unsigned objId = PopUnsignedInt();
 
     // Obj-ID = 0 ? Dann Null-Pointer zurueckgeben
-    if(!obj_id)
+    if(!objId)
         return NULL;
 
-    GameObject* go = GetReadGameObject(obj_id);
+    GameObject* go = GetReadGameObject(objId);
 
     // Schon vorhanden?
     if(go)
@@ -351,18 +355,23 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
         got = GO_Type(PopUnsignedShort());
 
     // und erzeugen
-    go = Create_GameObject(got, obj_id);
+    go = Create_GameObject(got, objId);
 
     // Sicherheitscode auslesen
     unsigned short safety_code = PopUnsignedShort();
 
-    if(safety_code != 0xFFFF)
+    if(safety_code != GetSafetyCode(*go))
     {
-        LOG.lprintf("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n", obj_id, got);
+        LOG.lprintf("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n", objId, got);
         throw Error("Invalid safety code after PopObject");
     }
 
     return go;
+}
+
+unsigned short SerializedGameData::GetSafetyCode(const GameObject& go)
+{
+    return 0xFFFF ^ go.GetGOT() ^ go.GetObjId();
 }
 
 void SerializedGameData::PushMapPoint(const MapPoint p)

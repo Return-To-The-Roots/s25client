@@ -67,8 +67,6 @@ nofActiveSoldier::nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_i
     fightSpot_ = sgd.PopMapPoint();
 }
 
-
-
 void nofActiveSoldier::GoalReached()
 {
     // We reached the military building
