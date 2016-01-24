@@ -237,7 +237,8 @@ dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
     this->itCurEntry = entries.begin();
     startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
 
-    GetMusic(sng_lst, 8)->Play(0);
+    if(GetMusic(sng_lst, 8))
+        GetMusic(sng_lst, 8)->Play(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

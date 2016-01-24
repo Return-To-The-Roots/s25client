@@ -295,9 +295,6 @@ bool Loader::LoadSounds(void)
         sng_lst.setC(i++, *sng.get(0));
     }
 
-    // Siedler I MIDI-Musik
-    //sng_lst.pushC(sound_lst.get(0));
-
     return true;
 }
 
