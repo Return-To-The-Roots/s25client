@@ -161,7 +161,7 @@ inline void OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::decreasedKey(T* el)
     RTTR_Assert(arePositionsValid());
     size_type i = GetPos(el);
     unsigned elVal = this->elements[i].key = GetKey(el);
-    RTTR_Assert(i < size());
+    RTTR_Assert(i < this->size());
     while(i > 0)
     {
         const unsigned parentPos = ParentPos(i);
@@ -182,7 +182,7 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
 {
     RTTR_Assert(arePositionsValid());
     RTTR_Assert(isHeap());
-    RTTR_Assert(!empty());
+    RTTR_Assert(!this->empty());
 
     // Return value is the current minimum element
     T* const result = top();
