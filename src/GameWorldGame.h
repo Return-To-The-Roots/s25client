@@ -29,10 +29,6 @@ class nobBaseWarehouse;
 /// "Interface-Klasse" für das Spiel
 class GameWorldGame : public virtual GameWorldBase
 {
-protected:
-    /// trade graphs, one for each player
-    std::vector<TradeGraph*> tgs;
-private:
     /// vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
     /// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
     void AdjustNodes(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
@@ -73,6 +69,7 @@ protected:
 
 public:
 
+    GameWorldGame();
     virtual ~GameWorldGame();
 
     /// Set by the playerSwitch GC
@@ -208,11 +205,6 @@ public:
 
     /// Returns true, if the given (map)-resource is available at that node
     bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
-
-    /// Creates a Trade Route from one point to another
-    TradeRoute CreateTradeRoute(const nobBaseWarehouse& start, const nobBaseWarehouse& dest, const unsigned char player);
-    /// Retrieves a trade graph
-    TradeGraph* GetTradeGraph(const unsigned char player) const { return tgs[player]; }
 };
 
 #endif // GameWorldGame_h__

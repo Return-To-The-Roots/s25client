@@ -48,8 +48,7 @@
 #include "MapGeometry.h"
 #include "figures/nofScout_Free.h"
 #include "nodeObjs/noShip.h"
-#include "TradeGraph.h"
-#include "TradeRoute.h"
+#include "TradePathCache.h"
 
 #include "WindowManager.h"
 #include "GameInterface.h"
@@ -61,11 +60,13 @@
 #include <algorithm>
 #include <stdexcept>
 
-GameWorldGame::~GameWorldGame()
+GameWorldGame::GameWorldGame()
 {
-    for(unsigned i = 0; i < tgs.size(); ++i)
-        delete tgs[i];
+    TradePathCache::inst().Clear();
 }
+
+GameWorldGame::~GameWorldGame()
+{}
 
 std::list<nobBaseMilitary*>& GameWorldGame::GetMilitarySquare(const MapPoint pt)
 {
@@ -659,7 +660,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                     // BQ neu berechnen
                     CalcAndSetBQ(tt, GAMECLIENT.GetPlayerID());
                     // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
-                    if(GetNodeAround(tt, 1).bq)
+                    if(GetNeighbourNode(tt, 1).bq)
                         CalcAndSetBQ(GetNeighbour(tt, 1), GAMECLIENT.GetPlayerID());
                 }
 
@@ -707,7 +708,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                 for(unsigned i = 0; i < 6; ++i)
                 {
                     neighbors[y - (y1 - 3)][x - (x1 - 3)] = 0;
-                    if(GetNodeAround(c, i).boundary_stones[0] == owner)
+                    if(GetNeighbourNode(c, i).boundary_stones[0] == owner)
                         ++neighbors[y - (y1 - 3)][x - (x1 - 3)];
                 }
             }
@@ -718,7 +719,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding* const building, const 
                     GetNode(c).boundary_stones[i] = 0;
 
                 //for(unsigned i = 0;i<3;++i)
-                //  GetNodeAround(x, y, 3+i).boundary_stones[i+1] = 0;
+                //  GetNeighbourNode(x, y, 3+i).boundary_stones[i+1] = 0;
             }
 
 
@@ -2022,29 +2023,5 @@ void GameWorldGame::CreateTradeGraphs()
     if(!GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
         return;
 
-    unsigned tt = VIDEODRIVER.GetTickCount();
-
-
-    for(unsigned i = 0; i < tgs.size(); ++i)
-        delete tgs[i];
-    tgs.resize(GAMECLIENT.GetPlayerCount());
-    for(unsigned i = 0; i < tgs.size(); ++i)
-        tgs[i] = new TradeGraph(i, this);
-
-    // Calc the graph for the first player completely
-    tgs[0]->Create();
-
-    printf("first: %u ms;\n", VIDEODRIVER.GetTickCount() - tt);
-
-
-    // And use this one for the others
-    for(unsigned i = 1; i < GAMECLIENT.GetPlayerCount(); ++i)
-        tgs[i]->CreateWithHelpOfAnotherPlayer(*tgs[0], *players);
-    printf("others: %u ms;\n", VIDEODRIVER.GetTickCount() - tt);
-}
-
-/// Creates a Trade Route from one point to another
-TradeRoute GameWorldGame::CreateTradeRoute(const nobBaseWarehouse& start, const nobBaseWarehouse& dest, const unsigned char player)
-{
-    return TradeRoute(tgs[player], start.GetFlag()->GetPos(), dest.GetFlag()->GetPos());
+    TradePathCache::inst().Clear();
 }

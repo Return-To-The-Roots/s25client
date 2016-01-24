@@ -177,7 +177,7 @@ class noFigure : public noMovable
         /// Auf Straßen(!) nach Hause laufen
         void GoHome(noRoadNode* goal = NULL);
         /// Aktuellen Weg, auf dem er läuft, fr ungültig erklären
-        void CutCurrentRoad() { cur_rs = 0; }
+        void CutCurrentRoad() { cur_rs = NULL; }
         /// Auf Straßen zur Zielflagge laufen
         void WalkToGoal();
         /// Gibt die Straße zurück, auf der man gerade läuft
@@ -225,9 +225,12 @@ class noFigure : public noMovable
         bool IsWalkingOnRoad() const
         {
             // Nur Träger arbeiten richtig auf Straßen
-            if(fs == FS_JOB) return (GetGOT() == GOT_NOF_CARRIER);
-            else if(fs == FS_GOHOME || fs == FS_GOTOGOAL) return true;
-            else return false;
+            if(fs == FS_JOB)
+                return (GetGOT() == GOT_NOF_CARRIER);
+            else if(fs == FS_GOHOME || fs == FS_GOTOGOAL)
+                return true;
+            else
+                return false;
         }
 
         /// Examines the route (maybe harbor, road destroyed?) before start shipping

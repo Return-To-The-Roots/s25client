@@ -228,6 +228,8 @@ class GameClientPlayer : public GamePlayerInfo
         void AddWarehouse(nobBaseWarehouse* wh) { warehouses.push_back(wh); }
         /// Warenhaus aus Warenhausliste entfernen
         void RemoveWarehouse(nobBaseWarehouse* wh) { RTTR_Assert(helpers::contains(warehouses, wh)); warehouses.remove(wh); TestDefeat(); }
+        /// Returns true if the given wh does still exist and hence the ptr is valid
+        bool IsWarehouseValid(nobBaseWarehouse* wh) const{ return helpers::contains(warehouses, wh); }
         /// Hafen zur Warenhausliste hinzufügen
         void AddHarbor(nobHarborBuilding* hb);
         /// Hafen aus Warenhausliste entfernen
@@ -424,8 +426,9 @@ class GameClientPlayer : public GamePlayerInfo
         /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
         void TestPacts();
 
-        /// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse goalWh
-        unsigned GetAvailableWaresForTrading(nobBaseWarehouse* goalWh, const GoodType gt, const Job job) const;
+        /// Returns all warehouses that can trade with the given goal
+        /// IMPORTANT: Warehouses can be destroyed. So check them first before using!
+        std::vector<nobBaseWarehouse*> GetWarehousesForTrading(nobBaseWarehouse* goalWh) const;
         /// Send wares to warehouse wh
         void Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const;
 

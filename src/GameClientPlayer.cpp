@@ -43,6 +43,7 @@
 #include "SerializedGameData.h"
 #include "GameMessages.h"
 #include "pathfinding/RoadPathFinder.h"
+#include "TradePathCache.h"
 
 #include <stdint.h>
 #include <limits>
@@ -2415,29 +2416,24 @@ bool GameClientPlayer::IsDependentFigure(noFigure* fig)
     return false;
 }
 
-/// Get available wares/figures which can THIS player (usually ally of wh->player) send to warehouse wh
-unsigned GameClientPlayer::GetAvailableWaresForTrading(nobBaseWarehouse* goalWh, const GoodType gt, const Job job) const
+std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse* goalWh) const
 {
-    unsigned count = 0;
+    std::vector<nobBaseWarehouse*> result;
+
+    // Don't try to trade with us!
+    if(goalWh->GetPlayer() == playerid)
+        return result;
+
+    const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
-        // Find a trade path from this warehouse to wh? (Start from flag of wh)
-        TradeRoute tr = gwg->CreateTradeRoute(**it, *goalWh, playerid);
-
-        // Found a path?
-        if(tr.IsValid())
-        {
-            // Then consider this warehouse
-            if(gt != GD_NOTHING)
-                count += (*it)->GetAvailableWaresForTrading(gt);
-            else if(job != JOB_NOTHING)
-                count += (*it)->GetAvailableFiguresForTrading(job);
-        }
+        // Is there a trade path from this warehouse to wh? (flag to flag)
+        if(TradePathCache::inst().PathExists(*gwg, (*it)->GetFlag()->GetPos(), goalFlagPos, playerid))
+            result.push_back(*it);
     }
 
-    return count;
-
+    return result;
 }
 
 struct WarehouseDistanceComparator
@@ -2459,35 +2455,48 @@ struct WarehouseDistanceComparator
 };
 
 /// Send wares to warehouse wh
-void GameClientPlayer::Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const
+void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job job, unsigned count) const
 {
-    if(count < 1) //block trolling player who wants to send empty tradecaravan, sending packdonkeys is forbidden because it crashes the game
+    if(count == 0)
         return;
-    std::list<nobBaseWarehouse*> whs(warehouses);
-    whs.sort(WarehouseDistanceComparator(*wh, *gwg));
-    for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
+
+    // Don't try to trade with us!
+    if(goalWh->GetPlayer() == playerid)
+        return;
+
+    const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
+
+    std::vector<nobBaseWarehouse*> whs(warehouses.begin(), warehouses.end());
+    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, *gwg));
+    for(std::vector<nobBaseWarehouse*>::const_iterator it = whs.begin(); it != whs.end(); ++it)
     {
-        // Find a trade path from this warehouse to wh?
-        TradeRoute tr = gwg->CreateTradeRoute(**it, *wh, playerid);
+        // Get available wares
+        unsigned available = 0;
+        if(gt != GD_NOTHING)
+            available = (*it)->GetAvailableWaresForTrading(gt);
+        else{
+            RTTR_Assert(job != JOB_NOTHING);
+            available = (*it)->GetAvailableFiguresForTrading(job);
+        }
+        if(available == 0)
+            continue;
+
+        available = std::min(available, count);
+
+        // Find a trade path from flag to flag
+        TradeRoute tr(*gwg, playerid, (*it)->GetFlag()->GetPos(), goalFlagPos);
 
         // Found a path?
         if(tr.IsValid())
         {
-            unsigned available = 0;
-            // Then consider this warehouse
-            if(gt != GD_NOTHING)
-                available = (*it)->GetAvailableWaresForTrading(gt);
-            else if(job != JOB_NOTHING)
-                available = (*it)->GetAvailableFiguresForTrading(job);
+            // Add to cache for future searches
+            TradePathCache::inst().AddEntry(*gwg, tr.GetTradePath(), playerid);
 
-            available = std::min(available, count);
+            (*it)->StartTradeCaravane(gt, job, available, tr, goalWh);
             count -= available;
-            if(available > 0) //we dont have anything to send .. so dont start a new traderoute from here!
-                (*it)->StartTradeCaravane(gt, job, available, tr, wh);
+            if(count == 0)
+                return;
         }
-
-        if(!count)
-            return;
     }
 
 }

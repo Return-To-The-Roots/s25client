@@ -17,9 +17,10 @@ class iwTrade : public IngameWindow
         std::vector<GoodType> wares;
         /// Possible figures
         std::vector<Job> jobs;
+        /// Warehouses that can potentially deliver something to the selected wh
+        std::vector<nobBaseWarehouse*> possibleSrcWarehouses;
 
     public:
-        /// Konstruktor von @p iwBuilding.
         iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* const wh);
 
     private:
@@ -28,6 +29,8 @@ class iwTrade : public IngameWindow
         void Msg_PaintAfter();
         void Msg_ButtonClick(const unsigned int ctrl_id);
         void Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection);
+        unsigned GetPossibleTradeAmount(const Job job) const;
+        unsigned GetPossibleTradeAmount(const GoodType good) const;
 };
 
 #endif // !IW_TRADE_H_

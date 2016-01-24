@@ -32,7 +32,6 @@
 #include "CatapultStone.h"
 #include "buildings/noBuildingSite.h"
 #include "Random.h"
-#include "TradeGraph.h"
 #include "gameData/MapConsts.h"
 #include "SerializedGameData.h"
 #include "Log.h"
@@ -491,16 +490,6 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     // Obj-ID-Counter reinschreiben
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
-    /// Serialize trade graphs first if they exist
-    // Only if trade is enabled
-    if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
-    {
-        sgd.PushUnsignedChar(static_cast<unsigned char>(tgs.size()));
-        for(unsigned i = 0; i < tgs.size(); ++i)
-            tgs[i]->Serialize(sgd);
-    }
-
-
     // Alle Weltpunkte serialisieren
     for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
@@ -549,15 +538,6 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
 
     // Obj-ID-Counter setzen
     GameObject::SetObjIDCounter(sgd.PopUnsignedInt());
-
-    // Trade graphs
-    // Only if trade is enabled
-    if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
-    {
-        tgs.resize(sgd.PopUnsignedChar());
-        for(unsigned i = 0; i < tgs.size(); ++i)
-            tgs[i] = new TradeGraph(sgd, this);
-    }
 
     // Alle Weltpunkte
     MapPoint curPos(0,0);

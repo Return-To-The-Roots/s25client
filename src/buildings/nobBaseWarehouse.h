@@ -164,9 +164,6 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Bestellt einen Esel
         nofCarrier* OrderDonkey(RoadSegment* road, noRoadNode* const goal_flag);
 
-        /// Reiht einen Beruf sofort in die Warteschlange zum Rausgehen rein, wenn er da ist und gibt den Pointer auf
-        /// ihn zurück, wenn keiner da ist, wird 0 zurückgegeben
-        noFigure* OrderDefender();
         /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück
         Ware* OrderWare(const GoodType good, noBaseBuilding* const goal);
         /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen konnten
@@ -183,7 +180,6 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Eine Figur geht ins Lagerhaus
         virtual void AddFigure(noFigure* figure, const bool increase_visual_counts = true);
 
-        void CarryOutWare();
         /// Eine bestellte Ware konnte doch nicht kommen
         virtual void WareLost(Ware* ware);
         /// Bestellte Ware, die sich noch hier drin befindet, storniert ihre Auslieferung

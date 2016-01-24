@@ -24,18 +24,16 @@
 #include "GameClientPlayer.h"
 #include "gameData/GameConsts.h"
 
-nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint  start, const MapPoint goal)
-    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), start(start), goal_(goal), fails(0)
-{
-}
+nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos)
+    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), homePos(homePos), goalPos(goalPos)
+{}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id),
-      tr(sgd, gwg, player),
+      tr(sgd, *gwg, player),
       successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
-      start(sgd.PopMapPoint()),
-      goal_(sgd.PopMapPoint()),
-      fails(sgd.PopUnsignedChar())
+      homePos(sgd.PopMapPoint()),
+      goalPos(sgd.PopMapPoint())
 {
 }
 
@@ -47,72 +45,60 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
     tr.Serialize(sgd);
 
     sgd.PushObject(successor, true);
-    sgd.PushMapPoint(start);
-    sgd.PushMapPoint(goal_);
-    sgd.PushUnsignedChar(fails);
+    sgd.PushMapPoint(homePos);
+    sgd.PushMapPoint(goalPos);
 }
 
 void nofTradeLeader::GoalReached()
 {
+    if(successor){
+        successor->AddNextDir(REACHED_GOAL);
+        successor = NULL;
+    }
+
+    noBase* nob = gwg->GetNO(goalPos);
+    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(nob));
+    gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
+    gwg->RemoveFigure(this, pos);
+    static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
 }
 
 void nofTradeLeader::Walked()
 {
-    // Exception handling: goal destroyed or sth. like this
-    if(fails > 1)
-    {
-        WanderFailedTrade();
-        return;
-    }
-    bool invalid_goal = false;
+    noBase* nob = gwg->GetNO(goalPos);
 
-    noBase* nob = gwg->GetNO(goal_);
-    if(nob->GetType() != NOP_BUILDING)
-        invalid_goal = true;
-    if(!static_cast<noBuilding*>(nob)->IsWarehouse())
-        invalid_goal = true;
-
-    unsigned char next_dir;
-    if(invalid_goal)
+    // Does target still exist?
+    if(nob->GetType() != NOP_BUILDING || !static_cast<noBuilding*>(nob)->IsWarehouse())
     {
-        TryToGoHome();
-        next_dir = tr.GetNextDir();
-        StartWalking(next_dir);
-    }
-    else
-    {
-
-        next_dir = tr.GetNextDir();
-        // Are we now at the goal?
-        if(next_dir == REACHED_GOAL)
-        {
-            gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
-            gwg->RemoveFigure(this, pos);
-            static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
-        }
-        else if(next_dir != INVALID_DIR)
-            StartWalking(next_dir);
+        if(TryToGoHome())
+            Walked();
         else
         {
-            TryToGoHome();
-            next_dir = tr.GetNextDir();
-            if(next_dir == INVALID_DIR)
+            CancelTradeCaravane();
+            WanderFailedTrade();
+        }
+        return;
+    }else if(pos == goalPos)
+        GoalReached();
+    else
+    {
+        RTTR_Assert(pos == tr.GetCurPos());
+        unsigned char next_dir = tr.GetNextDir();
+        if(next_dir == INVALID_DIR)
+        {
+            if(TryToGoHome())
+                Walked();
+            else
             {
                 CancelTradeCaravane();
-                next_dir = GetCurMoveDir();
-                //StartWanderingFailedTrade();
+                WanderFailedTrade();
             }
-            StartWalking(next_dir);
-            //next_dir=tr.GetNextDir();
-            //next_dir = dir;
-        }
-
-    }
-
-    //if(successor&&next_dir!=INVALID_DIR)
-    if(successor)
-    {
-        successor->AddNextDir(next_dir);
+            return;
+        }else if(next_dir == REACHED_GOAL)
+            next_dir = 1; // Walk into building
+        StartWalking(next_dir);
+        if(successor)
+            successor->AddNextDir(next_dir);
     }
 }
 
@@ -133,20 +119,24 @@ void nofTradeLeader::LostWork()
 }
 
 /// Tries to go to the home ware house, otherwise start wandering
-void nofTradeLeader::TryToGoHome()
+bool nofTradeLeader::TryToGoHome()
 {
-    fails++;
-    //if(fails>1)
-    //CancelTradeCaravane();
+    if(goalPos == homePos)
+        return false; // Already going home
+
+    goalPos = homePos;
+
+    noBase* homeWh = gwg->GetNO(goalPos);
+    // Does target still exist?
+    if(homeWh->GetType() != NOP_BUILDING || !static_cast<noBuilding*>(homeWh)->IsWarehouse())
+        return false;
 
     // Find a way back home
-    tr.AssignNewGoal(gwg->GetNeighbour(start, 4), this->GetPos());
-    if(!tr.IsValid())
-        CancelTradeCaravane();
-
+    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, 4);
+    tr.AssignNewGoal(this->GetPos(), homeFlagPos);
+    return tr.IsValid();
 }
 
-/// Start wandering and informs the other successors about this
 void nofTradeLeader::CancelTradeCaravane()
 {
     if(successor)
@@ -154,7 +144,4 @@ void nofTradeLeader::CancelTradeCaravane()
         successor->CancelTradeCaravane();
         successor = NULL;
     }
-    //StartWanderingFailedTrade();
-    //DieFailedTrade();
-    //WanderFailedTrade();
 }

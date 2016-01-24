@@ -24,6 +24,7 @@
 #include "Serializer.h"
 #include "helpers/ReserveElements.hpp"
 #include "helpers/GetInsertIterator.hpp"
+#include <boost/static_assert.hpp>
 #include <set>
 #include <map>
 #include <stdexcept>
@@ -66,6 +67,10 @@ public:
     template <typename T>
     void PushObjectContainer(const T& gos, const bool known);
 
+    /// Pushes a container of values
+    template <typename T>
+    void PushContainer(const T& container);
+
     /// FoW-Objekt
     void PushFOWObject(const FOWObject* fowobj);
 
@@ -86,6 +91,10 @@ public:
     /// Liest einen Vektor von GameObjects
     template <typename T>
     void PopObjectContainer(T& gos, GO_Type got);
+
+    /// Reads a container of values, param NOT used. Only for automatic type deduction
+    template <typename T>
+    T PopContainer(const T& = T());
 
     /// Point of map coords
     MapPoint PopMapPoint();
@@ -153,6 +162,58 @@ void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
     typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(gos);
     for (unsigned i = 0; i < size; ++i)
         *it = PopObject<Object>(got);
+}
+
+template <typename T>
+void SerializedGameData::PushContainer(const T& container)
+{
+    typedef typename T::value_type Type;
+    BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
+    BOOST_STATIC_ASSERT_MSG(boost::is_same<Type, signed char>::value ||
+                            boost::is_same<Type, unsigned char>::value ||
+                            boost::is_same<Type, int>::value ||
+                            boost::is_same<Type, unsigned>::value,
+        "Unimplemented type for PushContainer");
+    PushUnsignedInt(container.size());
+    for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    {
+        if(boost::is_same<Type, signed char>::value)
+            PushSignedChar(*it);
+        else if(boost::is_same<Type, unsigned char>::value)
+            PushUnsignedChar(*it);
+        else if(boost::is_same<Type, int>::value)
+            PushSignedInt(*it);
+        else if(boost::is_same<Type, unsigned>::value)
+            PushUnsignedInt(*it);
+        else
+            throw Error("Unsupported type for container");
+    }
+}
+
+template <typename T>
+T SerializedGameData::PopContainer(const T&)
+{
+    typedef typename T::value_type Type;
+    BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
+
+    T result;
+    unsigned size = PopUnsignedInt();
+    helpers::ReserveElements<T>::reserve(result, size);
+    typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(result);
+    for (unsigned i = 0; i < size; ++i)
+    {
+        if(boost::is_same<Type, signed char>::value)
+            *it = PopSignedChar();
+        else if(boost::is_same<Type, signed char>::value)
+            *it = PopUnsignedChar();
+        else if(boost::is_same<Type, int>::value)
+            *it = PopSignedInt();
+        else if(boost::is_same<Type, unsigned>::value)
+            *it = PopUnsignedInt();
+        else
+            throw Error("Unsupported type for container");
+    }
+    return result;
 }
 
 #endif // !SERIALIZED_GAME_DATA_H_

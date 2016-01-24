@@ -18,24 +18,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
-#include "Node.h"
-
-#include "nodeObjs/noRoadNode.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "Random.h"
-#include "MapGeometry.h"
-#include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
-#include "gameData/TerrainData.h"
-#include "gameData/GameConsts.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
-
-#include <set>
-#include <vector>
-#include <limits>
-
-#include <iostream>
+#include "pathfinding/FreePathFinderImpl.h"
+#include "pathfinding/PathConditions.h"
+#include "gameData/GameConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -89,58 +77,9 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 /// Straßenbau-Pathfinding
 bool GameWorldViewer::FindRoadPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>& route, const bool boat_road)
 {
-    Param_RoadPath prp = { boat_road };
-    return GetFreePathFinder().FindPath(start, dest, false, 100, &route, NULL, NULL, IsPointOK_RoadPath, NULL, &prp, false);
+    return GetFreePathFinder().FindPath(start, dest, false, 100, &route, NULL, NULL, PathConditionRoad(*this, boat_road), false);
 }
 
-/// Abbruch-Bedingungen für freien Pfad für Menschen
-bool IsPointOK_HumanPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
-{
-    // Feld passierbar?
-    noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
-    if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
-        return false;
-
-    return true;
-}
-
-
-
-/// Zusätzliche Abbruch-Bedingungen für freien Pfad für Menschen, die auch bei der letzen Kante
-/// zum Ziel eingehalten werden müssen
-bool IsPointToDestOK_HumanPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
-{
-    // Feld passierbar?
-    // Nicht über Wasser, Lava, Sümpfe gehen
-    if(!gwb.IsNodeToNodeForFigure(pt, (dir + 3) % 6))
-        return false;
-
-    return true;
-}
-
-/// Abbruch-Bedingungen für freien Pfad für Schiffe
-bool IsPointOK_ShipPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
-{
-    // Ein Meeresfeld?
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        if(!TerrainData::IsUsableByShip(gwb.GetTerrainAround(pt, i)))
-            return false;
-    }
-
-    return true;
-}
-
-/// Zusätzliche Abbruch-Bedingungen für freien Pfad für Schiffe, die auch bei der letzen Kante
-/// zum Ziel eingehalten werden müssen
-bool IsPointToDestOK_ShipPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
-{
-    // Der Übergang muss immer aus Wasser sein zu beiden Seiten
-    if(TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(pt, (dir + 3) % 6)) && TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(pt, (dir + 3) % 6)))
-        return true;
-    else
-        return false;
-}
 
 /// Findet einen Weg für Figuren
 unsigned char GameWorldBase::FindHumanPath(const MapPoint start, 
@@ -155,8 +94,7 @@ unsigned char GameWorldBase::FindHumanPath(const MapPoint start,
     }
 
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, NULL, length, &first_dir, IsPointOK_HumanPath, 
-                 IsPointToDestOK_HumanPath, NULL, record);
+    GetFreePathFinder().FindPath(start, dest, random_route, max_route, NULL, length, &first_dir, PathConditionHuman(*this), record);
 
     if(!random_route)
         GAMECLIENT.AddPathfindingResult(first_dir, length, NULL);
@@ -172,7 +110,7 @@ unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const
     if(GetRoadPathFinder().FindPath(start, goal, true, false, std::numeric_limits<unsigned>::max(), forbidden, length, &first_dir, firstPt))
         return first_dir;
     else
-        return 0xFF;
+        return INVALID_DIR;
 }
 
 /// Wegfindung für Waren im Straßennetz
@@ -182,64 +120,21 @@ unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, con
     if(GetRoadPathFinder().FindPath(start, goal, true, true, max, NULL, length, &first_dir, firstPt))
         return first_dir;
     else
-        return 0xFF;
+        return INVALID_DIR;
 }
-
 
 /// Wegfindung für Schiffe auf dem Wasser
 bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length, const unsigned max_length, 
                                  GameWorldBase::CrossBorders* cb)
 {
-    return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, IsPointOK_ShipPath, IsPointToDestOK_ShipPath, NULL, false);
+    return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, PathConditionShip(*this), false);
 }
 
 /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
 bool GameWorldGame::CheckShipRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, MapPoint* dest)
 {
-    return GetFreePathFinder().CheckRoute(start, route, pos, IsPointOK_ShipPath, IsPointToDestOK_ShipPath, dest, NULL);
+    return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionShip(*this), dest);
 }
-
-
-/// Abbruch-Bedingungen für freien Pfad für Menschen
-bool IsPointOK_TradePath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
-{
-    // Feld passierbar?
-    noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
-    if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
-        return false;
-
-
-    unsigned char player = gwb.GetNode(pt).owner;
-    // Ally or no player? Then ok
-    if(player == 0 || gwb.GetPlayer(*((unsigned char*)param)).IsAlly(player - 1))
-        return true;
-    else
-        return false;
-}
-
-bool IsPointToDestOK_TradePath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
-{
-    // Feld passierbar?
-    // Nicht über Wasser, Lava, Sümpfe gehen
-    if(!gwb.IsNodeToNodeForFigure(pt, (dir + 3) % 6))
-        return false;
-
-    // Not trough hostile territory?
-    unsigned char old_player = gwb.GetNode(gwb.GetNeighbour(pt, (dir + 3) % 6)).owner, 
-                  new_player = gwb.GetNode(pt).owner;
-    // Ally or no player? Then ok
-    if(new_player == 0 || gwb.GetPlayer(*((unsigned char*)param)).IsAlly(new_player - 1))
-        return true;
-    else
-    {
-        // Old player also evil?
-        if(old_player != 0 && !gwb.GetPlayer(*((unsigned char*)param)).IsAlly(old_player - 1))
-            return true;
-        else
-            return false;
-    }
-}
-
 
 /// Find a route for trade caravanes
 unsigned char GameWorldGame::FindTradePath(const MapPoint start, 
@@ -247,29 +142,17 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
         std::vector<unsigned char>* route, unsigned* length, 
         const bool record) const
 {
-    //unsigned tt = GetTickCount();
-    //static unsigned cc = 0;
-    //++cc;
+    unsigned char owner = GetNode(dest).owner;
+    if(owner != 0 && !GetPlayer(player).IsAlly(owner -1))
+        return INVALID_DIR;
+    
+    RTTR_Assert(GetNO(dest)->GetType() == NOP_FLAG); // Goal should be the flag of a wh
 
-    unsigned char pp = GetNode(dest).owner;
-    if(!(pp == 0 || GetPlayer(player).IsAlly(pp - 1)))
-        return 0xff;
-    bool is_warehouse_at_goal = false;
-    if(GetNO(dest)->GetType() == NOP_BUILDING)
-    {
-        if(GetSpecObj<noBuilding>(dest)->IsWarehouse())
-            is_warehouse_at_goal = true;
-    }
-
-    if(!IsNodeForFigures(dest) && !is_warehouse_at_goal )
-        return 0xff;
+    if(!IsNodeForFigures(dest))
+        return INVALID_DIR;
 
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, IsPointOK_TradePath, 
-                 IsPointToDestOK_TradePath, &player, record);
-
-    //if(GetTickCount()-tt > 100)
-    //  printf("%u: %u ms; (%u, %u) to (%u, %u)\n", cc, GetTickCount()-tt, start.x, start.y, dest.x, dest.y);
+    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, PathConditionTrade(*this, player), record);
 
     return first_dir;
 }
@@ -279,5 +162,5 @@ bool GameWorldGame::CheckTradeRoute(const MapPoint start, const std::vector<unsi
                                     const unsigned pos, const unsigned char player, 
                                     MapPoint* dest) const
 {
-    return GetFreePathFinder().CheckRoute(start, route, pos, IsPointOK_TradePath, IsPointToDestOK_HumanPath, dest, &player);
+    return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionTrade(*this, player), dest);
 }

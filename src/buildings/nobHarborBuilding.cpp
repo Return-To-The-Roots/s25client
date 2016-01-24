@@ -1210,7 +1210,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->GetFreePathFinder().FindPath((*it)->GetPos(), pos, false, MAX_ATTACKING_RUN_DISTANCE, NULL, NULL, NULL, NULL, NULL, NULL, false))
+        if(!gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false))
             continue;
         //neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this , 0};

@@ -23,120 +23,8 @@
 #include "nodeObjs/noRoadNode.h"
 #include "Log.h"
 #include "gameData/GameConsts.h"
-
-#include <queue>
-
-template<
-    class _Ty, 
-    class _Container = std::vector<_Ty>, 
-    class _Pr = std::less<typename _Container::value_type>
->
-class OpenListPrioQueue : public std::priority_queue<_Ty,  _Container, _Pr>
-{
-    typedef std::priority_queue<_Ty,  _Container, _Pr> Parent;
-public:
-    typedef typename std::vector<_Ty>::iterator iterator;
-
-    OpenListPrioQueue(): Parent()
-    {
-        Parent::c.reserve(255);
-    }
-
-    void rearrange(const _Ty& target)
-    {
-        iterator it = std::find(Parent::c.begin(), Parent::c.end(), target);
-        rearrange(it);
-    }
-
-    void rearrange(iterator it)
-    {
-        std::push_heap(Parent::c.begin(), it + 1, Parent::comp);
-    }
-
-    iterator find(const _Ty& target)
-    {
-        return std::find(Parent::c.begin(), Parent::c.end(), target);
-    }
-
-    void clear()
-    {
-        Parent::c.clear();
-    }
-
-    /// Removes and returns the first element
-    _Ty pop()
-    {
-        _Ty result = Parent::top();
-        Parent::pop();
-        return result;
-    }
-};
-
-template<class T>
-class OpenListVector
-{
-    std::vector<T> elements;
-public:
-    typedef typename std::vector<T>::iterator iterator;
-
-    OpenListVector()
-    {
-        elements.reserve(255);
-    }
-
-    T pop()
-    {
-        RTTR_Assert(!empty());
-        const int size = static_cast<int>(elements.size());
-        if (size == 1)
-        {
-            T best = elements.front();
-            elements.clear();
-            return best;
-        }
-        int bestIdx = 0;
-        unsigned bestEstimate = elements.front()->estimate;
-        for (int i = 1; i < size; i++)
-        {
-            // Note that this check does not consider nodes with the same value
-            // However this is a) correct (same estimate = same quality so no preference from the algorithm)
-            // and b) still fully deterministic as the entries are NOT sorted and the insertion-extraction-pattern
-            // is completely pre-determined by the graph-structur
-            const unsigned estimate = elements[i]->estimate;
-            if (estimate < bestEstimate)
-            {
-                bestEstimate = estimate;
-                bestIdx = i;
-            }
-        }
-        T best = elements[bestIdx];
-        elements[bestIdx] = elements[size - 1];
-        elements.resize(size - 1);
-        return best;
-    }
-
-    void clear()
-    {
-        elements.clear();
-    }
-
-    bool empty()
-    {
-        return elements.empty();
-    }
-
-    void push(T el)
-    {
-        elements.push_back(el);
-    }
-
-    size_t size() const
-    {
-        return elements.size();
-    }
-
-    void rearrange(const T& target) {}
-};
+#include "pathfinding/OpenListPrioQueue.h"
+#include "pathfinding/OpenListVector.h"
 
 /// Comparison operator for road nodes that returns true if lhs > rhs (descending order)
 struct RoadNodeComperatorGreater
@@ -154,7 +42,7 @@ struct RoadNodeComperatorGreater
     }
 };
 
-typedef OpenListPrioQueue<const noRoadNode*, std::vector<const noRoadNode*>, RoadNodeComperatorGreater> QueueImpl;
+typedef OpenListPrioQueue<const noRoadNode*, RoadNodeComperatorGreater> QueueImpl;
 typedef OpenListVector<const noRoadNode*> VecImpl;
 VecImpl todo;
 

@@ -416,15 +416,12 @@ MapPoint GameWorldBase::MakeMapPoint(Point<int> pt) const
 unsigned char GameWorldBase::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
+    RTTR_Assert(dir < 3);
 
-    unsigned pos = GetIdx(pt);
-
-    if(dir >= 3)
-    	throw std::out_of_range("Dir");
-
+    const MapNode& node = GetNode(pt);
     // Entweder muss es eine richtige Straße sein oder es müssen auch visuelle Straßen erlaubt sein
-	if(nodes[pos].roads_real[(unsigned)dir] || all)
-		return nodes[pos].roads[(unsigned)dir];
+	if(all || node.roads_real[(unsigned)dir])
+		return node.roads[(unsigned)dir];
 
     return 0;
 }
@@ -440,31 +437,31 @@ unsigned char GameWorldBase::GetPointRoad(const MapPoint pt, unsigned char dir, 
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        return GetRoad(pt, dir % 3, all);
+        return GetRoad(pt, dir - 3, all);
     else
         return GetRoad(GetNeighbour(pt, dir), dir, all);
 }
 
 unsigned char GameWorldBase::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
 {
+    RTTR_Assert(dir < 6);
+
     if(dir >= 3)
         dir = dir - 3;
     else
-    {
         pt = GetNeighbour(pt, dir);
-    }
 
     return GetNode(pt).fow[viewing_player].roads[dir];
 }
 
 bool GameWorldBase::IsPlayerTerritory(const MapPoint pt) const
 {
-    unsigned char owner = GetNode(pt).owner;
+    const unsigned char owner = GetNode(pt).owner;
 
     // Umliegende Punkte dürfen keinem anderen gehören
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetNodeAround(pt, i).owner != owner)
+        if(GetNeighbourNode(pt, i).owner != owner)
             return false;
     }
 
@@ -493,10 +490,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
 
         // Other roads at this point?
         if(GetPointRoad(pt, z, visual))
-        {
-//            (void) GetPointRoad(pt, z, visual);
             return false;
-        }
     }
 
     for(unsigned char i = 3; i < 6; ++i)
@@ -508,18 +502,18 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, unsig
     // Terrain (unterscheiden, ob Wasser und Landweg)
     if(!boat_road)
     {
-        unsigned flag_hits = 0;
+        bool flagPossible = false;
 
         for(unsigned char i = 0; i < 6; ++i)
         {
             BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
             if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG)
-                ++flag_hits;
+                flagPossible = true;
             else if(bq == BQ_DANGER)
-                return 0;
+                return false;
         }
 
-        if(!flag_hits)
+        if(!flagPossible)
             return false;
 
         // Richtung übergeben? Dann auch das zwischen den beiden Punkten beachten, damit
@@ -773,7 +767,7 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     if(val == BQ_CASTLE)
     {
 
-        if((th = GetNodeAround(pt, 4).altitude) > ph)
+        if((th = GetNeighbourNode(pt, 4).altitude) > ph)
         {
             if(th - ph > 1)
                 val =   BQ_FLAG;
@@ -804,20 +798,20 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
         // 1. Auäcnschale ( käcnen Flaggen werden ab Steigung 4)
         for(unsigned i = 0; i < 6; ++i)
         {
-            if((th = GetNodeAround(pt, i).altitude) > ph)
+            if((th = GetNeighbourNode(pt, i).altitude) > ph)
             {
                 if(th - ph > 3)
                     val = BQ_FLAG;
             }
 
-            if((th = GetNodeAround(pt, i).altitude) < ph)
+            if((th = GetNeighbourNode(pt, i).altitude) < ph)
             {
                 if(ph - th > 3)
                     val = BQ_FLAG;
             }
         }
     }
-    else if ((th = GetNodeAround(pt, 4).altitude) > ph)
+    else if ((th = GetNeighbourNode(pt, 4).altitude) > ph)
     {
         if(th - ph > 3)
             val = BQ_FLAG;
@@ -883,9 +877,9 @@ BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const unsigned char pla
     {
         for(unsigned char i = 0; i < 3; ++i)
         {
-            if(GetNodeAround(pt, i).obj)
+            if(GetNeighbourNode(pt, i).obj)
             {
-                if(GetNodeAround(pt, i).obj->GetBM() == noBase::BM_FLAG)
+                if(GetNeighbourNode(pt, i).obj->GetBM() == noBase::BM_FLAG)
                     val = BQ_HOUSE;
             }
         }
@@ -1036,38 +1030,53 @@ MapCoord GameWorldBase::GetYA(const MapCoord x, const MapCoord y, unsigned dir) 
 
 MapPoint GameWorldBase::GetNeighbour(const MapPoint pt, const Direction dir) const
 {
+    /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
+        Modifications for the dirs:
+        current row:    Even    Odd   
+                     W  -1|0   -1|0
+        D           NW  -1|-1   0|-1
+        I           NE   0|-1   1|-1
+        R            E   1|0    1|0
+                    SE   0|1    1|1
+                    SW  -1|1    0|1
+     */
+
     MapPoint res;
-    
     switch (static_cast<Direction::Type>(dir))
     {
-    case Direction::WEST:
-        res.x = (pt.x == 0) ? width_ - 1 : pt.x - 1;
+    case Direction::WEST: // -1|0   -1|0
+        res.x = ((pt.x == 0) ? width_ : pt.x) - 1;
         res.y = pt.y;
         break;
-    case Direction::NORTHWEST:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
-        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+    case Direction::NORTHWEST: // -1|-1   0|-1
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
+        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
         break;
-    case Direction::NORTHEAST:
+    case Direction::NORTHEAST: // 0|-1  -1|-1
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == 0) ? height_ - 1 : pt.y - 1;
+        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
         break;
-    case Direction::EAST:
-        res.x = (pt.x == width_ - 1) ? 0 : pt.x + 1;
+    case Direction::EAST: // 1|0    1|0
+        res.x = pt.x + 1;
+        if(res.x == width_)
+            res.x = 0;
         res.y = pt.y;
         break;
-    case Direction::SOUTHEAST:
+    case Direction::SOUTHEAST: // 1|1    0|1
         res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
-        break;
-    case Direction::SOUTHWEST:
-        res.x = (pt.y & 1) ? pt.x : ((pt.x == 0) ? width_ - 1 : pt.x - 1);
-        res.y = (pt.y == height_ - 1) ? 0 : pt.y + 1;
+        res.y = pt.y + 1;
+        if(res.y == height_)
+            res.y = 0;
         break;
     default:
-        throw std::logic_error("Invalid direction!");
+        RTTR_Assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
+        res.y = pt.y + 1;
+        if(res.y == height_)
+            res.y = 0;
+        break;
     }
-    
+
     return res;
 }
 
@@ -1111,12 +1120,12 @@ TerrainType GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char dir
 {
     switch(dir)
     {
-        case 0: return GetNodeAround(pt, 1).t1;
-        case 1: return GetNodeAround(pt, 1).t2;
-        case 2: return GetNodeAround(pt, 2).t1;
+        case 0: return GetNeighbourNode(pt, 1).t1;
+        case 1: return GetNeighbourNode(pt, 1).t2;
+        case 2: return GetNeighbourNode(pt, 2).t1;
         case 3: return GetNode(pt).t2;
         case 4: return GetNode(pt).t1;
-        case 5: return GetNodeAround(pt, 0).t2;
+        case 5: return GetNeighbourNode(pt, 0).t2;
     }
 
     throw std::logic_error("Invalid direction");
@@ -1132,17 +1141,8 @@ TerrainType GameWorldBase::GetTerrainAround(const MapPoint pt, unsigned char dir
  */
 TerrainType GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
-    switch(dir)
-    {
-        case 0: return GetTerrainAround(pt, 5);
-        case 1: return GetTerrainAround(pt, 0);
-        case 2: return GetTerrainAround(pt, 1);
-        case 3: return GetTerrainAround(pt, 2);
-        case 4: return GetTerrainAround(pt, 3);
-        case 5: return GetTerrainAround(pt, 4);
-    }
-
-    throw std::logic_error("Invalid direction");
+    RTTR_Assert(dir < 6);
+    return (dir == 0) ? GetTerrainAround(pt, 5) : GetTerrainAround(pt, dir - 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1154,17 +1154,8 @@ TerrainType GameWorldBase::GetWalkingTerrain1(const MapPoint pt, unsigned char d
  */
 TerrainType GameWorldBase::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
-    switch(dir)
-    {
-        case 0: return GetTerrainAround(pt, 0);
-        case 1: return GetTerrainAround(pt, 1);
-        case 2: return GetTerrainAround(pt, 2);
-        case 3: return GetTerrainAround(pt, 3);
-        case 4: return GetTerrainAround(pt, 4);
-        case 5: return GetTerrainAround(pt, 5);
-    }
-
-    throw std::logic_error("Invalid direction");
+    RTTR_Assert(dir < 6);
+    return GetTerrainAround(pt, dir);
 }
 
 /// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
@@ -1205,7 +1196,7 @@ void GameWorldBase::ChangeAltitude(const MapPoint pt, const unsigned char altitu
 void GameWorldBase::RecalcShadow(const MapPoint pt)
 {
     int altitude = GetNode(pt).altitude;
-    int A = GetNodeAround(pt, 2).altitude - altitude;
+    int A = GetNeighbourNode(pt, 2).altitude - altitude;
     int B = GetNode(GetNeighbour2(pt, 0)).altitude - altitude;
     int C = GetNode(GetNeighbour(pt, 0)).altitude - altitude;
     int D = GetNode(GetNeighbour2(pt, 7)).altitude - altitude;
@@ -1253,7 +1244,7 @@ unsigned short GameWorldBase::IsCoastalPoint(const MapPoint pt) const
     // Um den Punkt herum muss ein gültiger Meeres Punkt sein
     for(unsigned i = 0; i < 6; ++i)
     {
-        unsigned short sea_id = GetNodeAround(pt, i).sea_id;
+        unsigned short sea_id = GetNeighbourNode(pt, i).sea_id;
         if(sea_id)
         {
             // Dieses Meer schiffbar (todo: andere Kritierien wie Hafenplätze etc.)?

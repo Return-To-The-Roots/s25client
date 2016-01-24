@@ -171,8 +171,8 @@ public:
     const MapNode& GetNode(const MapPoint pt) const { RTTR_Assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
     MapNode& GetNode(const MapPoint pt) { RTTR_Assert(pt.x < width_ && pt.y < height_); return nodes[GetIdx(pt)]; }
     /// Gibt MapKnotenpunkt darum zurück
-    const MapNode& GetNodeAround(const MapPoint pt, const unsigned i) const { return GetNode(GetNeighbour(pt, i));  }
-    MapNode& GetNodeAround(const MapPoint pt, const unsigned i) { return GetNode(GetNeighbour(pt, i));  }
+    const MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) const { return GetNode(GetNeighbour(pt, i));  }
+    MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) { return GetNode(GetNeighbour(pt, i));  }
 
     // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
     noBase* GetNO(const MapPoint pt);

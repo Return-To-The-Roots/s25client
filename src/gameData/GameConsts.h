@@ -18,6 +18,7 @@
 #ifndef GAMECONSTS_H_
 #define GAMECONSTS_H_
 
+#include <boost/array.hpp>
 #include <limits>
 
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms

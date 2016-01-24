@@ -19,49 +19,45 @@
 #define TradeRoute_h__
 
 #include "gameTypes/MapTypes.h"
-#include <vector>
+#include "TradePath.h"
 
 class TradeGraph;
 class SerializedGameData;
 class GameWorldGame;
 
 /// Constants used for Pathfinding
-const unsigned char REACHED_GOAL = 0xdd;
+const unsigned char REACHED_GOAL = 0xDD;
 
+/// active route for trading. Has a state and supports automatic recalculation of the path
 class TradeRoute
 {
-    /// Reference to the trade graph
-    const TradeGraph* const tg;
+    const GameWorldGame& gwg;
+    const unsigned char player;
+    TradePath path;
+    MapPoint curPos;
+    unsigned curRouteIdx;
 
-    /// Start and goal, current posistion in usual map coordinates and TG coordinates
-    MapPoint start, goal, current_pos, current_pos_tg;
-    /// Current "global" route on the trade graph
-    std::vector<unsigned char> global_route;
-    unsigned global_pos;
-    /// Current "local" route from one main point to another main point
-    std::vector<unsigned char> local_route;
-    unsigned local_pos;
-private:
-
-    /// Recalc local route and returns next direction
-    unsigned char RecalcLocalRoute();
-    /// Recalc the whole route and returns next direction
-    unsigned char RecalcGlobalRoute();
+    unsigned char RecalcRoute();
 
 public:
 
-    TradeRoute(const TradeGraph* const tg, const MapPoint start, const MapPoint goal) :
-        tg(tg), start(start), goal(goal), current_pos(start), global_pos(0), local_pos(0) { RecalcGlobalRoute(); }
-    TradeRoute(SerializedGameData& sgd, const GameWorldGame* const gwg, const unsigned char player);
+    TradeRoute(const GameWorldGame& gwg, const unsigned char player, const MapPoint& start, const MapPoint& goal);
+    TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player);
 
     void Serialize(SerializedGameData& sgd) const;
 
-    /// Was a route found?
-    bool IsValid() const { return !local_route.empty(); }
     /// Gets the next direction the caravane has to take
     unsigned char GetNextDir();
+    /// Returns the current position. This is assumed to be the position currently walking to and reached by the time GetNextDir should be called
+    MapPoint GetCurPos() const { return curPos; }
+
+    /// Returns true, if this is a valid route
+    bool IsValid() const { return !path.route.empty() || path.start == path.goal; }
+
     /// Assigns new start and goal positions and hence, a new route
-    void AssignNewGoal(const MapPoint new_goal, const MapPoint current);
+    void AssignNewGoal(const MapPoint& start, const MapPoint& newGoal);
+
+    const TradePath& GetTradePath() const { return path; }
 };
 
 #endif // TradeRoute_h__

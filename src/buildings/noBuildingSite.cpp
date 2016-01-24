@@ -62,7 +62,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
             if(i != 4)
             {
                 // Gibt es da Differenzen?
-                if(altitude - gwg->GetNodeAround(pos, i).altitude != 0)
+                if(altitude - gwg->GetNeighbourNode(pos, i).altitude != 0)
                     state = STATE_PLANING;
             }
         }

@@ -21,15 +21,11 @@
 #include "gameTypes/GoodTypes.h"
 #include <deque>
 
-class nofTradeLeader;
-
 /// For wares: donkey who carry the wares and follow the leader
 /// Can also be the other people following the leader!
 class nofTradeDonkey : public noFigure
 {
-        /// Leader of the caravane
-        nofTradeLeader* leader;
-        /// Successor (NULL if this is the one behind the leader)
+        /// Successor (NULL if this is the last one)
         nofTradeDonkey* successor;
         /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
         GoodType gt;
@@ -48,11 +44,10 @@ class nofTradeDonkey : public noFigure
 
     public:
 
-        nofTradeDonkey(const MapPoint pt, const unsigned char player,
-                       nofTradeLeader* const leader, const GoodType gt, const Job job);
+        nofTradeDonkey(const MapPoint pt, const unsigned char player, const GoodType gt, const Job job);
         nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy() override { RTTR_Assert(!leader); RTTR_Assert(!successor); noFigure::Destroy(); }
+        void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }
 
         void Serialize(SerializedGameData& sgd) const;
 
@@ -63,7 +58,6 @@ class nofTradeDonkey : public noFigure
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
         void LostWork();
 
-
         /// Adds the next direction, this is usually done by the predecessor
         void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
 
@@ -71,10 +65,9 @@ class nofTradeDonkey : public noFigure
         GoodType GetCarriedWare() const { return gt; }
 
         /// Sets the sucessor in the caravane
-        void SetSuccessor(nofTradeDonkey* const successor)
-        { this->successor = successor; }
+        void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 
-        /// Start wandering and informs the other successors about this
+        /// Inform successor that the caravane is canceled
         void CancelTradeCaravane();
 };
 
