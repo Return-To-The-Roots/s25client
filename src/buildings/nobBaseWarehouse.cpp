@@ -1566,13 +1566,12 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
             tl->SetSuccessor(next);
 
         last = next;
-
         AddLeavingFigure(next);
     }
 
     GameClientPlayer& owner = gwg->GetPlayer(player);
     // Remove leader
-    --real_goods.people[JOB_HELPER];
+    --inventory.people[JOB_HELPER];
     owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
     // Also diminish the count of donkeys
