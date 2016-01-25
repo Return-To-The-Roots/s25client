@@ -192,12 +192,6 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
     return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
 }
 
-/// player.FindWarehouse
-nobBaseWarehouse* AIInterface::FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*), const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length)
-{
-    return player_.FindWarehouse(start, IsWarehouseGood, forbidden, to_wh, param, use_boat_roads, length, false);
-}
-
 bool AIInterface::CalcBQSumDifference(const MapPoint pt, const MapPoint t)
 {
     unsigned s1 = 0, s2 = 0;

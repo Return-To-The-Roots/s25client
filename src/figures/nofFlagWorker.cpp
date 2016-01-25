@@ -93,7 +93,8 @@ void nofFlagWorker::GoToFlag()
     if(pos == flag->GetPos())
     {
         // nach Hause gehen
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*flag, FW::Condition_StoreFigure, 0, true, &job_, false))
+        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false);
+        if(wh)
         {
             GoHome(wh);
             // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
@@ -113,11 +114,8 @@ void nofFlagWorker::GoToFlag()
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
         gwg->GetPlayer(player).RemoveFlagWorker(this);
-
         state = STATE_FIGUREWORK;
-
         flag = NULL;
-
     }
     else
     {

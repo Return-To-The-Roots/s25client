@@ -26,27 +26,79 @@ class nobBaseWarehouse;
 /// Vorgefertigte Bedingungsfunktionen für FindWarehouse, param jeweils Pointer auf die einzelnen Strukturen
 namespace FW
 {
-    struct Param_Ware { GoodType type; unsigned count; };
-    bool Condition_Ware(nobBaseWarehouse* wh, const void* param);
-    struct Param_Job { Job type; unsigned count; };
-    bool Condition_Job(nobBaseWarehouse* wh, const void* param);
-    struct Param_WareAndJob { Param_Ware ware; Param_Job job; };
-    bool Condition_WareAndJob(nobBaseWarehouse* wh, const void* param);
+    struct HasMinWares
+    {
+        const GoodType type;
+        const unsigned count;
+        HasMinWares(const GoodType type, const unsigned count = 1): type(type), count(count){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
 
-    bool Condition_Troops(nobBaseWarehouse* wh, const void* param);   // param = &unsigned --> count
-    bool Condition_StoreWare(nobBaseWarehouse* wh, const void* param);   // param = &GoodType -> Warentyp
-    bool Condition_StoreFigure(nobBaseWarehouse* wh, const void* param);   // param = &Job -> Jobtyp
+    struct HasFigure
+    {
+        const Job type;
+        HasFigure(const Job type): type(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
 
-                                                                           // Die Lagerhäuser lagern die jeweiligen Waren ein
-    bool Condition_WantStoreWare(nobBaseWarehouse* wh, const void* param);   // param = &GoodType -> Warentyp
-    bool Condition_WantStoreFigure(nobBaseWarehouse* wh, const void* param);   // param = &Job -> Jobtyp
+    struct HasWareAndFigure: protected HasMinWares, protected HasFigure
+    {
+        HasWareAndFigure(const GoodType good, const Job job): HasMinWares(good, 1), HasFigure(job){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
 
-                                                                               // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
-    bool Condition_StoreAndDontWantWare(nobBaseWarehouse* wh, const void* param);   // param = &GoodType -> Warentyp
-    bool Condition_StoreAndDontWantFigure(nobBaseWarehouse* wh, const void* param);   // param = &Job -> Jobtyp
+    struct HasMinSoldiers
+    {
+        const unsigned count;
+        HasMinSoldiers(const unsigned count): count(count){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
 
+    struct AcceptsWare
+    {
+        const GoodType type;
+        AcceptsWare(const GoodType type): type(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
 
-    bool NoCondition(nobBaseWarehouse* wh, const void* param);
+    struct AcceptsFigure
+    {
+        const Job type;
+        AcceptsFigure(const Job type): type(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
+    struct CollectsWare
+    {
+        const GoodType type;
+        CollectsWare(const GoodType type): type(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
+    struct CollectsFigure
+    {
+        const Job type;
+        CollectsFigure(const Job type): type(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
+    // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
+    struct HasWareButNoCollect: protected HasMinWares, protected CollectsWare
+    {
+        HasWareButNoCollect(const GoodType type): HasMinWares(type, 1), CollectsWare(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
+    struct HasFigureButNoCollect: protected HasFigure, protected CollectsFigure
+    {
+        HasFigureButNoCollect(const Job type): HasFigure(type), CollectsFigure(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
+    struct NoCondition
+    {
+        bool operator()(const nobBaseWarehouse& wh) const { return true; }
+    };
 }
 
 #endif // FindWhConditions_h__

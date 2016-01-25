@@ -598,7 +598,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 // Figur
                 selectedId -= WARE_TYPES_COUNT;
 
-                nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreFigure, 0, true, &selectedId, false);
+                nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(Job(selectedId)), true, false);
                 nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
 
                 if(wh)
@@ -641,7 +641,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                 storing_wanted = true;
 
                 // Lagerhaus suchen, das diese Ware enthält
-                nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantWare, NULL, false, (void*)&i, false);
+                nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasWareButNoCollect(GoodType(i)), false, false);
                 // Gefunden?
                 if(wh)
                 {
@@ -668,7 +668,7 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
                     storing_wanted = true;
 
                     // Lagerhaus suchen, das diesen Job enthält
-                    nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_StoreAndDontWantFigure, NULL, false, (void*)&i, false);
+                    nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(Job(i)), false, false);
                     // Gefunden?
                     if(wh)
                     {

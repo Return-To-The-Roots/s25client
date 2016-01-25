@@ -24,97 +24,81 @@
 namespace FW
 {
 
-    bool Condition_WareAndJob(nobBaseWarehouse* wh, const void* param)
+    bool HasMinWares::operator()(const nobBaseWarehouse& wh) const
     {
-        return (Condition_Ware(wh, &static_cast<const Param_WareAndJob*>(param)->ware) &&
-            Condition_Job(wh, &static_cast<const Param_WareAndJob*>(param)->job));
+        return wh.GetRealWaresCount(type) >= count;
     }
 
-    bool Condition_Troops(nobBaseWarehouse* wh, const void* param)
+    bool HasFigure::operator()(const nobBaseWarehouse& wh) const
     {
-        return (wh->GetSoldiersCount() >= *static_cast<const unsigned*>(param));
-    }
-
-    bool NoCondition(nobBaseWarehouse* wh, const void* param)
-    {
-        return true;
-    }
-
-    bool Condition_StoreWare(nobBaseWarehouse* wh, const void* param)
-    {
-        // Einlagern darf nicht verboten sein
-        // Schilder beachten!
-        const GoodType good = ConvertShields(*static_cast<const GoodType*>(param));
-        return !wh->GetInventorySetting(good).IsSet(EInventorySetting::STOP);
-    }
-
-
-    bool Condition_StoreFigure(nobBaseWarehouse* wh, const void* param)
-    {
-        // Einlagern darf nicht verboten sein, Bootstypen zu normalen Trägern machen
-        Job job = *static_cast<const Job*>(param);
-        if(job == JOB_BOATCARRIER)
-            job = JOB_HELPER;
-
-        return (!wh->GetInventorySetting(job).IsSet(EInventorySetting::STOP));
-    }
-
-    bool Condition_WantStoreFigure(nobBaseWarehouse* wh, const void* param)
-    {
-        // Einlagern muss gewollt sein
-        Job job = *static_cast<const Job*>(param);
-        if(job == JOB_BOATCARRIER)
-            job = JOB_HELPER;
-        return (wh->GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
-    }
-
-    bool Condition_WantStoreWare(nobBaseWarehouse* wh, const void* param)
-    {
-        // Einlagern muss gewollt sein
-        // Schilder beachten!
-        GoodType gt = ConvertShields(*static_cast<const GoodType*>(param));
-        return (wh->GetInventorySetting(gt).IsSet(EInventorySetting::COLLECT));
-    }
-
-    // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
-    bool Condition_StoreAndDontWantWare(nobBaseWarehouse* wh, const void* param)
-    {
-        Param_Ware pw = { *static_cast<const GoodType*>(param), 1 };
-        return (Condition_Ware(wh, &pw) && !Condition_WantStoreWare(wh, param));
-    }// param = &GoodType -> Warentyp
-
-     // Warehouse does not collect the job and has job in store
-    bool Condition_StoreAndDontWantFigure(nobBaseWarehouse* wh, const void* param)
-    {
-        Job job = *static_cast<const Job*>(param);
-        return ((wh->GetRealFiguresCount(job) >= 1) && !Condition_WantStoreFigure(wh, param));
-    }
-    // param = &Job -> Jobtyp
-
-    bool Condition_Ware(nobBaseWarehouse* wh, const void* param)
-    {
-        return (wh->GetRealWaresCount(static_cast<const Param_Ware*>(param)->type) >= static_cast<const Param_Ware*>(param)->count);
-    }
-
-    bool Condition_Job(nobBaseWarehouse* wh, const void* param)
-    {
-        if(wh->GetRealFiguresCount(static_cast<const Param_Job*>(param)->type) >= static_cast<const Param_Job*>(param)->count)
+        if(wh.GetRealFiguresCount(type) > 0)
             return true;
-        else
+        else if(type != JOB_PACKDONKEY)
         {
             // die entsprechende Figur ist nicht vorhanden, wenn das Werkzeug der Figur und ein Mann (Träger) zum Rekrutieren
             // da ist, geht das auch, nur bei Eseln nicht !!
-            bool tool_available = (JOB_CONSTS[static_cast<const Param_Job*>(param)->type].tool != GD_NOTHING) ?
-                (wh->GetRealWaresCount(JOB_CONSTS[static_cast<const Param_Job*>(param)->type].tool) > 0) : true;
+            bool tool_available = JOB_CONSTS[type].tool == GD_NOTHING || wh.GetRealWaresCount(JOB_CONSTS[type].tool);
 
-            if(static_cast<const Param_Job*>(param)->type == JOB_PACKDONKEY)
-                tool_available = false;
-
-            if(wh->GetRealFiguresCount(JOB_HELPER) && tool_available)
+            if(wh.GetRealFiguresCount(JOB_HELPER) && tool_available)
                 return true;
-
-            return false;
         }
+
+        return false;
+    }
+
+    bool HasWareAndFigure::operator()(const nobBaseWarehouse& wh) const
+    {
+        return HasMinWares::operator()(wh) && HasFigure::operator()(wh);
+    }
+
+    bool HasMinSoldiers::operator()(const nobBaseWarehouse& wh) const
+    {
+        return wh.GetSoldiersCount() >= count;
+    }
+
+    bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const
+    {
+        // Einlagern darf nicht verboten sein
+        // Schilder beachten!
+        const GoodType good = ConvertShields(type);
+        return !wh.GetInventorySetting(good).IsSet(EInventorySetting::STOP);
+    }
+
+    bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
+    {
+        // Einlagern darf nicht verboten sein, Bootstypen zu normalen Trägern machen
+        Job job = type;
+        if(job == JOB_BOATCARRIER)
+            job = JOB_HELPER;
+
+        return !wh.GetInventorySetting(job).IsSet(EInventorySetting::STOP);
+    }
+
+    bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
+    {
+        // Einlagern muss gewollt sein
+        // Schilder beachten!
+        GoodType gt = ConvertShields(type);
+        return (wh.GetInventorySetting(gt).IsSet(EInventorySetting::COLLECT));
+    }
+
+    bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
+    {
+        // Einlagern muss gewollt sein
+        Job job = type;
+        if(job == JOB_BOATCARRIER)
+            job = JOB_HELPER;
+        return (wh.GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
+    }
+
+    bool HasWareButNoCollect::operator()(const nobBaseWarehouse& wh) const
+    {
+        return HasMinWares::operator()(wh) && !CollectsWare::operator()(wh);
+    }
+
+    bool HasFigureButNoCollect::operator()(const nobBaseWarehouse& wh) const
+    {
+        return HasFigure::operator()(wh) && !CollectsFigure::operator()(wh);
     }
 
 } // namespace FW

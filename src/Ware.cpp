@@ -308,7 +308,7 @@ bool Ware::FindRouteToWarehouse()
 {
     RTTR_Assert(location);
     RTTR_Assert(!goal); // Goal should have been notified and therefore reset
-    SetGoal(gwg->GetPlayer(location->GetPlayer()).FindWarehouse(*location, FW::Condition_StoreWare, 0, true, &type, true));
+    SetGoal(gwg->GetPlayer(location->GetPlayer()).FindWarehouse(*location, FW::AcceptsWare(type), true, true));
 
     if(goal)
     {

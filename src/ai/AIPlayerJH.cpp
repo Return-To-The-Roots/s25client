@@ -294,7 +294,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 		std::list<nobMilitary*>::const_iterator upgradeBldIt=aii->GetMilitaryBuildings().begin();
 		std::advance(upgradeBldIt,uub);
 		//which warehouse is closest to the upgrade building? -> train troops there and block max ranks			
-		wh = aii->FindWarehouse(**upgradeBldIt, FW::NoCondition, 0, false, NULL, false);
+		wh = aii->FindWarehouse(**upgradeBldIt, FW::NoCondition(), false, false);
 		if(!wh)
 		{
 			wh = storehouses.front();

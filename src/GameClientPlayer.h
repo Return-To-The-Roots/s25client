@@ -204,15 +204,14 @@ class GameClientPlayer : public GamePlayerInfo
         /// Setzt GameWorld
         void SetGameWorldPointer(GameWorldGame* const gwg) { this->gwg = gwg; }
 
-        /*/// liefert das aktuelle (komplette) inventar.
-        void GetInventory(unsigned int *wares, unsigned int *figures);*/
-
-        /// Sucht ein nächstgelegenes Warenhaus für den Punkt 'start', das die Bedingung der Übergebenen Funktion
-        /// IsWarehouseGood erfüllt, als letzen Parameter erhält jene Funktion param
-        /// - forbidden ist ein optionales Straßenstück, das nicht betreten werden darf,
-        /// - to_wh muss auf true gesetzt werden, wenn es zum Lagerhaus geht, ansonsten auf false, in length wird die Wegeslänge zurückgegeben
-        nobBaseWarehouse* FindWarehouse(const noRoadNode& start, bool (*IsWarehouseGood)(nobBaseWarehouse*, const void*),
-            const RoadSegment* const forbidden, const bool to_wh, const void* param, const bool use_boat_roads, unsigned* const length = 0, bool record = true) const;
+        /// Looks for the closes warehouse for the point 'start' (including it) that matches the conditions by the functor
+        /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be considered
+        /// - to_wh true if path to wh is searched, false for path from wh
+        /// - length is optional for the path length
+        /// - forbidden optional roadSegment that must not be used
+        template<class T_IsWarehouseGood>
+        nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh, const bool use_boat_roads,
+            unsigned* const length = 0, const RoadSegment* const forbidden = NULL, bool record = true) const;
         /// Gibt dem Spieler bekannt, das eine neue Straße gebaut wurde
         void NewRoad(RoadSegment* const rs);
         /// Neue Straße hinzufügen

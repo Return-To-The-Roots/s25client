@@ -483,7 +483,7 @@ void nobMilitary::RegulateTroops()
         }
 
         // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(owner.FindWarehouse(*this, FW::NoCondition, 0, true, 0, false))
+        if(owner.FindWarehouse(*this, FW::NoCondition(), true, false))
         {
             // Dann den Rest (einer muss immer noch drinbleiben!)
             // erst die schwachen Soldaten raus
@@ -547,7 +547,7 @@ void nobMilitary::SendSoldiersHome()
     if(diff < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
 	{
 		// Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
-        if(!gwg->GetPlayer(player).FindWarehouse(*this, FW::NoCondition, 0, true, 0, false))
+        if(!gwg->GetPlayer(player).FindWarehouse(*this, FW::NoCondition(), true, false))
             return;
         int mrank=-1;
         for(SortedTroops::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
@@ -1181,8 +1181,8 @@ void nobMilitary::SearchCoins()
     if(WantCoins() && !goldorder_event)
     {
         // Lagerhaus mit Goldmünzen suchen
-        FW::Param_Ware p = {GD_COINS, 1};
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::Condition_Ware, 0, false, &p, false))
+        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GD_COINS), false, false);
+        if(wh)
         {
             // Wenns eins gibt, dort eine Goldmünze bestellen
             Ware* ware = wh->OrderWare(GD_COINS, this);
@@ -1191,7 +1191,7 @@ void nobMilitary::SearchCoins()
             {
                 RTTR_Assert(false);
                 // Ware dürfte nicht 0 werden, da ja ein Lagerhaus MIT GOLDMÜNZEN bereits gesucht wird
-                LOG.lprintf("nobMilitary::SearchCoins: WARNING: ware = 0. Bug alarm!\n");
+                LOG.lprintf("nobMilitary::SearchCoins: WARNING: ware = NULL. Bug alarm!\n");
                 return;
             }
 

@@ -519,7 +519,7 @@ void noFigure::GoHome(noRoadNode* goal)
             return;
         }
         else
-            this->goal_ = gwg->GetPlayer(player).FindWarehouse((rs_dir) ? *cur_rs->GetF1() : *cur_rs->GetF2(), FW::Condition_StoreFigure, 0, true, &job_, false);
+            this->goal_ = gwg->GetPlayer(player).FindWarehouse((rs_dir) ? *cur_rs->GetF1() : *cur_rs->GetF2(), FW::AcceptsFigure(job_), true, false);
     }
     else
         this->goal_ = goal;
@@ -640,7 +640,7 @@ void noFigure::Wander()
                 if(way == 0 || gwg->FindHumanPath(pos, (*it)->GetPos(), wander_radius, false, &way) != 0xFF)
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
-                    if(gwg->GetPlayer(player).FindWarehouse(**it, FW::Condition_StoreFigure, 0, true, &job_, false))
+                    if(gwg->GetPlayer(player).FindWarehouse(**it, FW::AcceptsFigure(job_), true, false))
                     {
                         // dann nehmen wir die doch glatt
                         best_way = way;
@@ -740,8 +740,7 @@ void noFigure::WanderToFlag()
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
         RTTR_Assert(gwg->GetSpecObj<noRoadNode>(pos));
-        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(
-                                      *gwg->GetSpecObj<noRoadNode>(pos), FW::Condition_StoreFigure, 0, true, &job_, false))
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*gwg->GetSpecObj<noRoadNode>(pos), FW::AcceptsFigure(job_), true, false))
         {
             // ja, dann können wir ja hingehen
             goal_ = wh;
