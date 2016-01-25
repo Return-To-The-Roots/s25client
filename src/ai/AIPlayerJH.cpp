@@ -35,7 +35,7 @@
 #include "MapGeometry.h"
 #include "AIConstruction.h"
 #include "gameData/TerrainData.h"
-
+#include "FindWhConditions.h"
 #include "GameMessages.h"
 #include "GameServer.h"
 
@@ -294,8 +294,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 		std::list<nobMilitary*>::const_iterator upgradeBldIt=aii->GetMilitaryBuildings().begin();
 		std::advance(upgradeBldIt,uub);
 		//which warehouse is closest to the upgrade building? -> train troops there and block max ranks			
-		unsigned param_count = 0; //at least 0 soldiers
-		wh = aii->FindWarehouse(**upgradeBldIt, FW::Condition_Troops, 0, false, &param_count, false);
+		wh = aii->FindWarehouse(**upgradeBldIt, FW::NoCondition, 0, false, NULL, false);
 		if(!wh)
 		{
 			wh = storehouses.front();

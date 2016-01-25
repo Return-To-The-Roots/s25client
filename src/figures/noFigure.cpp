@@ -28,7 +28,7 @@
 #include "gameData/MapConsts.h"
 #include "nofCarrier.h"
 #include "nodeObjs/noSkeleton.h"
-
+#include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "gameData/DoorConsts.h"

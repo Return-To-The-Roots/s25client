@@ -16,9 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 ///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 
 #include "defines.h"
 #include "nobBaseWarehouse.h"
@@ -33,6 +30,7 @@
 #include "figures/nofDefender.h"
 #include "nobMilitary.h"
 #include "Random.h"
+#include "FindWhConditions.h"
 #include "gameData/JobConsts.h"
 #include "BurnedWarehouse.h"
 #include "SerializedGameData.h"
@@ -774,11 +772,7 @@ void nobBaseWarehouse::AddWare(Ware*& ware)
         RTTR_Assert(!IsWareDependent(ware));
 
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
-    GoodType type;
-    if(ware->type == GD_SHIELDAFRICANS || ware->type == GD_SHIELDJAPANESE || ware->type == GD_SHIELDVIKINGS)
-        type = GD_SHIELDROMANS;
-    else
-        type = ware->type;
+    GoodType type = ConvertShields(ware->type);
 
     gwg->GetPlayer(player).RemoveWare(ware);
     deletePtr(ware);
@@ -1164,104 +1158,6 @@ void nobBaseWarehouse::TryStopRecruiting()
         }
     }
 }
-
-
-bool FW::Condition_Ware(nobBaseWarehouse* wh, const void* param)
-{
-    return (wh->GetRealWaresCount(static_cast<const Param_Ware*>(param)->type) >= static_cast<const Param_Ware*>(param)->count);
-}
-
-bool FW::Condition_Job(nobBaseWarehouse* wh, const void* param)
-{
-    if(wh->GetRealFiguresCount(static_cast<const Param_Job*>(param)->type) >= static_cast<const Param_Job*>(param)->count)
-        return true;
-    else
-    {
-        // die entsprechende Figur ist nicht vorhanden, wenn das Werkzeug der Figur und ein Mann (Träger) zum Rekrutieren
-        // da ist, geht das auch, nur bei Eseln nicht !!
-        bool tool_available = (JOB_CONSTS[static_cast<const Param_Job*>(param)->type].tool != GD_NOTHING) ?
-                              (wh->GetRealWaresCount(JOB_CONSTS[static_cast<const Param_Job*>(param)->type].tool) > 0) : true;
-
-        if(static_cast<const Param_Job*>(param)->type == JOB_PACKDONKEY)
-            tool_available = false;
-
-        if( wh->GetRealFiguresCount(JOB_HELPER) && tool_available)
-            return true;
-
-        return false;
-    }
-}
-
-
-
-bool FW::Condition_WareAndJob(nobBaseWarehouse* wh, const void* param)
-{
-    return (Condition_Ware(wh, &static_cast<const Param_WareAndJob*>(param)->ware) &&
-            Condition_Job(wh, &static_cast<const Param_WareAndJob*>(param)->job));
-}
-
-bool FW::Condition_Troops(nobBaseWarehouse* wh, const void* param)
-{
-    return (wh->GetSoldiersCount() >= *static_cast<const unsigned*>(param));
-}
-
-bool FW::NoCondition(nobBaseWarehouse* wh, const void* param)
-{
-    return true;
-}
-
-bool FW::Condition_StoreWare(nobBaseWarehouse* wh, const void* param)
-{
-    // Einlagern darf nicht verboten sein
-    // Schilder beachten!
-    const GoodType good = ConvertShields(*static_cast<const GoodType*>(param));
-    return !wh->GetInventorySetting(good).IsSet(EInventorySetting::STOP);
-}
-
-
-bool FW::Condition_StoreFigure(nobBaseWarehouse* wh, const void* param)
-{
-    // Einlagern darf nicht verboten sein, Bootstypen zu normalen Trägern machen
-    Job job = *static_cast<const Job*>(param);
-    if(job == JOB_BOATCARRIER)
-        job = JOB_HELPER;
-   
-    return (!wh->GetInventorySetting(job).IsSet(EInventorySetting::STOP));
-}
-
-bool FW::Condition_WantStoreFigure(nobBaseWarehouse* wh, const void* param)
-{
-    // Einlagern muss gewollt sein
-    Job job = *static_cast<const Job*>(param);
-    if(job == JOB_BOATCARRIER)
-        job = JOB_HELPER;
-    return (wh->GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
-}
-
-bool FW::Condition_WantStoreWare(nobBaseWarehouse* wh, const void* param)
-{
-    // Einlagern muss gewollt sein
-    // Schilder beachten!
-    GoodType gt = ConvertShields(*static_cast<const GoodType*>(param));
-    return (wh->GetInventorySetting(gt).IsSet(EInventorySetting::COLLECT));
-}
-
-// Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
-bool FW::Condition_StoreAndDontWantWare(nobBaseWarehouse* wh, const void* param)
-{
-    Param_Ware pw = { *static_cast<const GoodType*>(param), 1 };
-    return (Condition_Ware(wh, &pw) && !Condition_WantStoreWare(wh, param));
-}// param = &GoodType -> Warentyp
-
-// Warehouse does not collect the job and has job in store
-bool FW::Condition_StoreAndDontWantFigure(nobBaseWarehouse* wh, const void* param)
-{
-    Job job = *static_cast<const Job*>(param);
-    return ((wh->GetRealFiguresCount(job) >= 1) && !Condition_WantStoreFigure(wh, param));
-}
-// param = &Job -> Jobtyp
-
-
 
 const Goods& nobBaseWarehouse::GetInventory() const
 {

@@ -23,6 +23,7 @@
 #include "nodeObjs/noFlag.h"
 #include "GameClientPlayer.h"
 #include "SerializedGameData.h"
+#include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
 
 ///////////////////////////////////////////////////////////////////////////////

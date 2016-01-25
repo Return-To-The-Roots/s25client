@@ -34,6 +34,7 @@
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/ShieldConsts.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "gameData/JobConsts.h"
 
@@ -76,7 +77,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
         // Only add one shield type
-        if(i == GD_SHIELDVIKINGS || i == GD_SHIELDAFRICANS || i == GD_SHIELDJAPANESE)
+        if(i != ConvertShields(GoodType(i)))
             continue;
         // Don't add nothing or empty water
         if(i == GD_NOTHING || i == GD_WATEREMPTY)

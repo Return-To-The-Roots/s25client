@@ -19,13 +19,12 @@
 // Header
 #include "defines.h"
 #include "iwWares.h"
-
 #include "Loader.h"
 #include "controls/controls.h"
 #include "WindowManager.h"
-
 #include "GameClient.h"
 #include "gameData/JobConsts.h"
+#include "gameData/ShieldConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -78,8 +77,6 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
         }, // 0xFFFF = unused
     };
 
-    static const unsigned short shield_INVENTORY_IDS[5] = { GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE };
-
     // Warenseite hinzufügen
     ctrlGroup* wares = AddGroup(100);
     // Figurenseite hinzufügen
@@ -131,7 +128,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
             figures->AddImage(200 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 53 + y * 42, LOADER.GetMapImageN(2299));
 
         // die jeweilige Ware
-        wares->AddImage(300 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, LOADER.GetMapImageN(2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? shield_INVENTORY_IDS[player.nation] : INVENTORY_IDS[0][ware_id])));
+        wares->AddImage(300 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, LOADER.GetMapImageN(2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? SHIELD_TYPES[player.nation] : INVENTORY_IDS[0][ware_id])));
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
             glArchivItem_Bitmap* image;

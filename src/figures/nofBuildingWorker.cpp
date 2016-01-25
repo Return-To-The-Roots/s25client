@@ -36,6 +36,7 @@
 #include "SerializedGameData.h"
 #include "ai/AIEventManager.h"
 #include "gameData/GameConsts.h"
+#include "gameData/ShieldConsts.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
@@ -194,8 +195,7 @@ void nofBuildingWorker::WorkingReady()
             // Ware erzeugen
             Ware* real_ware = new Ware(ware, 0, flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
-            GoodType ware_type = (real_ware->type == GD_SHIELDVIKINGS || real_ware->type == GD_SHIELDAFRICANS ||
-                                  real_ware->type == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : real_ware->type;
+            GoodType ware_type = ConvertShields(real_ware->type);
             gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
             real_ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(real_ware));

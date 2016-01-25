@@ -35,7 +35,7 @@
 #include "EventManager.h"
 #include "Random.h"
 #include "nobBaseWarehouse.h"
-
+#include "FindWhConditions.h"
 #include "WindowManager.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"

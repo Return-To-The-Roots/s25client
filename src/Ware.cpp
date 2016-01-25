@@ -27,6 +27,7 @@
 #include "SerializedGameData.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
+#include "FindWhConditions.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/GameConsts.h"
 #include "Log.h"

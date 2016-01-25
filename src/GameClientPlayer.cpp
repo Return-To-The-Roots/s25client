@@ -34,7 +34,7 @@
 #include "nodeObjs/noShip.h"
 #include "buildings/nobHarborBuilding.h"
 #include "figures/nofTradeLeader.h"
-
+#include "FindWhConditions.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
 
