@@ -907,7 +907,7 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
     // 1. Flagge des Weges
     best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(JOB_PACKDONKEY), false, false, &length[0], road);
     // 2. Flagge des Weges
-    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(JOB_PACKDONKEY), false, false, &length[1], road);
+    best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(JOB_PACKDONKEY), false, false, &length[1], road);
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?

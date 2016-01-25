@@ -268,10 +268,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
 
 
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
-    if(goal->GetType() == NOP_FLAG)
-    {
-    }
-    else
+    if(goal->GetType() != NOP_FLAG)
     {
         RTTR_Assert(dynamic_cast<noBaseBuilding*>(goal));
         static_cast<noBaseBuilding*>(goal)->GotWorker(job, fig);
@@ -307,12 +304,12 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
 
 nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const goal_flag)
 {
-    // Überhaupos ein Esel vorhanden?
+    // Überhaupt ein Esel vorhanden?
     if(!inventory.people[JOB_PACKDONKEY])
-        return 0;
+        return NULL;
 
-    nofCarrier* donkey;
-    AddLeavingFigure(donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, goal_flag));
+    nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, goal_flag);
+    AddLeavingFigure(donkey);
     --inventory.people[JOB_PACKDONKEY];
 
     return donkey;
@@ -463,7 +460,11 @@ void nobBaseWarehouse::HandleSendoutEvent()
             // Evtl. kein Schwert/Schild/Bier mehr da, sodass das Rekrutieren gestoppt werden muss
             TryStopRecruiting();
         } else
-            delete ware;
+        {
+            gwg->GetPlayer(player).RemoveWare(ware);
+            ware->Destroy();
+            deletePtr(ware);
+        }
     } else
     {
         // Figur
