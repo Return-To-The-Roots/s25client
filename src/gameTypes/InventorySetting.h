@@ -38,8 +38,8 @@ struct EInventorySetting
 struct InventorySetting
 {
     InventorySetting(): state(0){}
-    InventorySetting(const EInventorySetting::Type state): state(static_cast<unsigned char>(state)){}
-    InventorySetting(const EInventorySetting state): state(static_cast<unsigned char>(state)){}
+    InventorySetting(const EInventorySetting::Type setting): state(MakeBitField(setting)){}
+    InventorySetting(const EInventorySetting setting): state(MakeBitField(setting)){}
     explicit InventorySetting(unsigned char state): state(state){ MakeValid(); }
     inline bool IsSet(const EInventorySetting setting) const;
     inline InventorySetting Toggle(const EInventorySetting setting);
