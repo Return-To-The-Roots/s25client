@@ -259,8 +259,10 @@ class GameClientPlayer : public GamePlayerInfo
         /// Sucht für eine (neuproduzierte) Ware einen Abnehmer (wenns keinen gibt, wird ein Lagerhaus gesucht, wenn
         /// es auch dorthin keinen Weg gibt, wird 0 zurückgegeben
         noBaseBuilding* FindClientForWare(Ware* ware);
+        nobBaseWarehouse* FindWarehouseForWare(const Ware& ware) const;
+
         /// Sucht einen Abnehmer (sprich Militärgebäude), wenn es keinen findet, wird ein Warenhaus zurückgegeben bzw. 0
-        nobBaseMilitary* FindClientForCoin(Ware* ware);
+        nobBaseMilitary* FindClientForCoin(Ware* ware) const;
 
         /// Speichert Baustellen Gebäude etc, erklärt sich von selbst
         void AddBuildingSite(noBuildingSite* building_site);

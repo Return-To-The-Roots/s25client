@@ -446,40 +446,47 @@ void nobBaseWarehouse::HandleSendoutEvent()
     if(selectedId < WARE_TYPES_COUNT)
     {
         // Ware
-
         Ware* ware = new Ware(GoodType(selectedId), NULL, this);
-        ware->SetGoal(gwg->GetPlayer(player).FindClientForWare(ware));
+        noBaseBuilding* wareGoal = gwg->GetPlayer(player).FindClientForWare(ware);
+        if(wareGoal != this)
+        {
+            ware->SetGoal(wareGoal);
 
-        // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
-        waiting_wares.push_back(ware);
+            // Ware zur Liste hinzufügen, damit sie dann rausgetragen wird
+            waiting_wares.push_back(ware);
 
-        AddLeavingEvent();
+            AddLeavingEvent();
 
-        // Ware aus Inventar entfernen
-        --(inventory.goods[selectedId]);
+            // Ware aus Inventar entfernen
+            --(inventory.goods[selectedId]);
 
-        // Evtl. kein Schwert/Schild/Bier mehr da, sodass das Rekrutieren gestoppt werden muss
-        TryStopRecruiting();
+            // Evtl. kein Schwert/Schild/Bier mehr da, sodass das Rekrutieren gestoppt werden muss
+            TryStopRecruiting();
+        } else
+            delete ware;
     } else
     {
         // Figur
         selectedId -= WARE_TYPES_COUNT;
 
-        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigure(Job(selectedId)), true, false);
-        nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
+        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(Job(selectedId)), true, false);
+        if(wh != this)
+        {
+            nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
 
-        if(wh)
-            fig->GoHome(wh);
-        else
-            fig->StartWandering();
+            if(wh)
+                fig->GoHome(wh);
+            else
+                fig->StartWandering();
 
-        AddLeavingFigure(fig);
+            AddLeavingFigure(fig);
 
-        // Person aus Inventar entfernen
-        --(inventory.people[selectedId]);
+            // Person aus Inventar entfernen
+            --(inventory.people[selectedId]);
 
-        // Evtl. kein Gehilfe mehr da, sodass das Rekrutieren gestoppt werden muss
-        TryStopRecruiting();
+            // Evtl. kein Gehilfe mehr da, sodass das Rekrutieren gestoppt werden muss
+            TryStopRecruiting();
+        }
     }
 
     // Weitere Waren/Figuren zum Auslagern?

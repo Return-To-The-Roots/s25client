@@ -109,6 +109,7 @@ class Ware : public GameObject
 		void SetNewGoalForLostWare(noBaseBuilding* newgoal);
         /// Gibt Ort der Ware zurück
         noRoadNode* GetLocation() { return location; }
+        const noRoadNode* GetLocation() const { return location; }
         /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?
         bool IsLostWare() const { return ((goal ? false : true) && state != STATE_ONSHIP); }
         /// Informiert Ware, dass eine Schiffsreise beginnt

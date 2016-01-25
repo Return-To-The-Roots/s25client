@@ -1033,7 +1033,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
     if(gt_clients == GD_STONES || gt_clients == GD_BOARDS)
     {
-        for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+        for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
         {
             points = (*it)->CalcDistributionPoints(gt);
 
@@ -1047,13 +1047,13 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
         }
     }
 
-    for(std::list<BuildingType>::iterator it = distribution[gt_clients].client_buildings.begin(); it != distribution[gt_clients].client_buildings.end(); ++it)
+    for(std::list<BuildingType>::const_iterator it = distribution[gt_clients].client_buildings.begin(); it != distribution[gt_clients].client_buildings.end(); ++it)
     {
         // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
         if(*it == BLD_HEADQUARTERS)
         {
             // Bei Baustellen die Extraliste abfragen
-            for(std::list<noBuildingSite*>::iterator i = building_sites.begin(); i != building_sites.end(); ++i)
+            for(std::list<noBuildingSite*>::const_iterator i = building_sites.begin(); i != building_sites.end(); ++i)
             {
                 points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
 
@@ -1069,7 +1069,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
         else
         {
             // Für übrige Gebäude
-            for(std::list<nobUsual*>::iterator i = buildings[*it - 10].begin(); i != buildings[*it - 10].end(); ++i)
+            for(std::list<nobUsual*>::const_iterator i = buildings[*it - 10].begin(); i != buildings[*it - 10].end(); ++i)
             {
                 points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
 
@@ -1139,24 +1139,34 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bb)
-    {
-        // Zuerst Einlagernde Lagerhäuser durchgehen
-        bb = FindWarehouse(*ware->GetLocation(), FW::CollectsWare(gt), true, true);
-        // Wenn das nichts wurde, dann auch restliche Lagerhäuser mit einbeziehen
-        if(!bb)
-            bb = FindWarehouse(*ware->GetLocation(), FW::AcceptsWare(gt), true, true);
-    }
+        bb = FindWarehouseForWare(*ware);
 
     return bb;
 }
 
-nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
+nobBaseWarehouse* GameClientPlayer::FindWarehouseForWare(const Ware& ware) const
+{
+    // Check whs that collect this ware
+    nobBaseWarehouse* wh = FindWarehouse(*ware.GetLocation(), FW::CollectsWare(ware.type), true, true);
+    // If there is none, check those that accept it
+    if(!wh)
+    {
+        // First find the ones, that do not send it right away (IMPORTANT: This avoids sending a ware to the wh that is sending the ware out)
+        wh = FindWarehouse(*ware.GetLocation(), FW::AcceptsWareButNoSend(ware.type), true, true);
+        // The others only if this fails
+        if(!wh)
+            wh = FindWarehouse(*ware.GetLocation(), FW::AcceptsWare(ware.type), true, true);
+    }
+    return wh;
+}
+
+nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware) const
 {
     nobBaseMilitary* bb = NULL;
     unsigned best_points = 0, points;
 
     // Militärgebäude durchgehen
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
+    for(std::list<nobMilitary*>::const_iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
     {
         unsigned way_points;
 
@@ -1182,7 +1192,7 @@ nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware)
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bb)
-        bb = FindWarehouse(*ware->GetLocation(), FW::AcceptsWare(ware->type), true, true);
+        bb = FindWarehouseForWare(*ware);
 
     return bb;
 }
@@ -2498,6 +2508,7 @@ INSTANTIATE_FINDWH(FW::CollectsWare);
 INSTANTIATE_FINDWH(FW::CollectsFigure);
 INSTANTIATE_FINDWH(FW::HasWareButNoCollect);
 INSTANTIATE_FINDWH(FW::HasFigureButNoCollect);
+INSTANTIATE_FINDWH(FW::AcceptsFigureButNoSend);
 INSTANTIATE_FINDWH(FW::NoCondition);
 
 #undef INSTANTIATE_FINDWH

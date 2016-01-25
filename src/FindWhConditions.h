@@ -95,6 +95,18 @@ namespace FW
         bool operator()(const nobBaseWarehouse& wh) const;
     };
 
+    struct AcceptsWareButNoSend: protected AcceptsWare
+    {
+        AcceptsWareButNoSend(const GoodType type): AcceptsWare(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
+    struct AcceptsFigureButNoSend: protected AcceptsFigure
+    {
+        AcceptsFigureButNoSend(const Job type): AcceptsFigure(type){}
+        bool operator()(const nobBaseWarehouse& wh) const;
+    };
+
     struct NoCondition
     {
         bool operator()(const nobBaseWarehouse& wh) const { return true; }

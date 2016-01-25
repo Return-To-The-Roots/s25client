@@ -101,4 +101,19 @@ namespace FW
         return HasFigure::operator()(wh) && !CollectsFigure::operator()(wh);
     }
 
+    bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
+    {
+        const GoodType good = ConvertShields(type);
+        return AcceptsWare::operator()(wh) && !wh.GetInventorySetting(good).IsSet(EInventorySetting::SEND);
+    }
+
+    bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
+    {
+        Job job = type;
+        if(job == JOB_BOATCARRIER)
+            job = JOB_HELPER;
+
+        return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::SEND);
+    }
+
 } // namespace FW

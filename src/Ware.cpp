@@ -27,7 +27,6 @@
 #include "SerializedGameData.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
-#include "FindWhConditions.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/GameConsts.h"
 #include "Log.h"
@@ -308,7 +307,7 @@ bool Ware::FindRouteToWarehouse()
 {
     RTTR_Assert(location);
     RTTR_Assert(!goal); // Goal should have been notified and therefore reset
-    SetGoal(gwg->GetPlayer(location->GetPlayer()).FindWarehouse(*location, FW::AcceptsWare(type), true, true));
+    SetGoal(gwg->GetPlayer(location->GetPlayer()).FindWarehouseForWare(*this));
 
     if(goal)
     {
