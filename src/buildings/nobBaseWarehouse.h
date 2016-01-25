@@ -104,12 +104,19 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
         /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
         void CheckOuthousing(const bool isJob, unsigned job_ware_id);
+        void HandleCollectEvent();
+        void HandleSendoutEvent();
+        void HandleRecrutingEvent();
+        void HandleProduceHelperEvent();
+        void HandleLeaveEvent();
+
     protected:
 
         /// Stellt Verteidiger zur Verfügung
         virtual nofDefender* ProvideDefender(nofAttacker* const attacker);
 
         void HandleBaseEvent(const unsigned int id);
+
         /// Versucht ein Rekrutierungsevent anzumelden, falls ausreichend Waffen und Bier sowie genügend Gehilfen
         /// vorhanden sind (je nach Militäreinstellungen)
         void TryRecruiting();
