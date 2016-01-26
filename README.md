@@ -15,6 +15,10 @@ see more information on http://www.rttr.info
 - cmake
 - git
 - boost / libboost1.55-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- libsdl1.2-dev
+- libsdl-mixer1.2-dev
+- licurl-dev (in libcurl4-openssl-dev)
+- libbz2-dev
 - libminiupnpc-dev (linux)
 - liblua5.2-dev (linux, i.e from contrib)   
 Most of them can be installed with the package manager.
@@ -35,7 +39,7 @@ Note that due to the use of submodules you always need to `git pull && git submo
 ### Prerequisites:
 - cmake (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.cmake.org/download/)
 - boost (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
-- Visual Studio (at least 2010)
+- Visual Studio (at least 2010, you can get 2015 community for free)
 - Git Client (i.e TortoiseGit)
 
 ### Steps:
@@ -53,8 +57,8 @@ Note that due to the use of submodules you always need to `git pull && git submo
      - Rightclick on the newly created folder -> TortoiseGit-> Submodule Update
      - Make sure all modules are selected and "Initialize submodules (--init)" is checked
      - press OK
-- Extract contrib/full-contrib-msvc2010.rar to contrib 
-  (so that contrib/full-contrib-msvc2010/bin, contrib/full-contrib-msvc2010/include and contrib/full-contrib-msvc2010/lib exist)
+- Extract contrib/full-contrib-msvc.rar to contrib 
+  (so that contrib/full-contrib-msvc/bin, contrib/full-contrib-msvc/include and contrib/full-contrib-msvc/lib exist)
 - If you havent installed boost, install boost
   Fast Way:
   - extract boost-1.55.zip (i.e to contrib/boost, so that contrib/boost/bootstrap.bat exist)
