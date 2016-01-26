@@ -71,7 +71,7 @@ while test $# != 0 ; do
 	esac
 
 	case $ac_option in
-		-RTTR_PREFIX | --RTTR_PREFIX)
+		-RTTR_PREFIX | --RTTR_PREFIX | -prefix | --prefix)
 			$ac_shift
 			RTTR_PREFIX=$ac_optarg
 		;;
