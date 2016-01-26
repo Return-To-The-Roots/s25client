@@ -470,8 +470,8 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, const
     for(std::list<nobBaseWarehouse*>::const_iterator itWh = warehouses.begin(); itWh != warehouses.end(); ++itWh)
     {
         // Lagerhaus geeignet?
+        RTTR_Assert(*itWh);
         nobBaseWarehouse& wh = **itWh;
-        RTTR_Assert(wh);
         if(!isWarehouseGood(wh))
             continue;
 

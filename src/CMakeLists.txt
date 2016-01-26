@@ -268,6 +268,6 @@ IF (MSVC)
 	CREATE_DEFAULT_TARGET_LAUNCHER(s25client WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/..")
 ENDIF()
 
-INSTALL(TARGETS s25client RUNTIME DESTINATION ${BINDIR})
+INSTALL(TARGETS s25client RUNTIME DESTINATION ${RTTR_BINDIR})
 
 ################################################################################

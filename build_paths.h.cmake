@@ -28,26 +28,26 @@
 //	Other Configuration
 
 //	set global prefix (normal /usr/local)
-//#define PREFIX "/usr/local"
-#cmakedefine PREFIX "${PREFIX}"
+//#define RTTR_PREFIX "/usr/local"
+#cmakedefine RTTR_PREFIX "${RTTR_PREFIX}"
 
 //	set binary directory (normal $(prefix)/bin)
-//#define BINDIR PREFIX"/bin"
-#cmakedefine BINDIR "${BINDIR}"
+//#define RTTR_BINDIR RTTR_PREFIX"/bin"
+#cmakedefine RTTR_BINDIR "${RTTR_BINDIR}"
 
 //	set data directory (normal $(datadir)/s25rttr)
-//#define DATADIR PREFIX"/share/s25rttr"
-#cmakedefine DATADIR "${DATADIR}"
+//#define RTTR_DATADIR RTTR_PREFIX"/share/s25rttr"
+#cmakedefine RTTR_DATADIR "${RTTR_DATADIR}"
 
 //	set game directory (normal $(datadir)/s25rttr/S2)
-//#define GAMEDIR DATADIR"/S2"
+//#define RTTR_GAMEDIR RTTR_DATADIR"/S2"
 
 //	set driver directory (normal $(libdir)/driver)
-//#define DRIVERDIR LIBDIR"/driver"
-#cmakedefine DRIVERDIR "${DRIVERDIR}"
+//#define RTTR_DRIVERDIR RTTR_LIBDIR"/driver"
+#cmakedefine RTTR_DRIVERDIR "${RTTR_DRIVERDIR}"
 
 //	set settings directory (normal $HOME/.s25rttr)
-//#define SETTINGSDIR "~/.s25rttr"
+//#define RTTR_SETTINGSDIR "~/.s25rttr"
 
 //
 ///////////////////////////////////////////////////////////////////////////////

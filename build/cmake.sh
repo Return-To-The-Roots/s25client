@@ -10,8 +10,8 @@ if [ -z "$($CMAKE_COMMAND) --version" ] ; then
 	exit 1
 fi
 
-if [ -z "$SRCDIR" ] ; then
-	SRCDIR="$(dirname "$0")/.."
+if [ -z "$RTTR_SRCDIR" ] ; then
+	RTTR_SRCDIR="$(dirname "$0")/.."
 fi
 
 ###############################################################################
@@ -25,24 +25,24 @@ mecho()
 
 ###############################################################################
 
-if [ ! -f cleanup.sh ] && [ -f "${SRCDIR}/build/cleanup.sh" ] ; then
+if [ ! -f cleanup.sh ] && [ -f "${RTTR_SRCDIR}/build/cleanup.sh" ] ; then
 	mecho --blue "Creating symlink 'cleanup.sh' ..."
-	ln -vs $SRCDIR/build/cleanup.sh cleanup.sh
+	ln -vs $RTTR_SRCDIR/build/cleanup.sh cleanup.sh
 fi
 
-if [ ! -f cmake.sh ] && [ -f "${SRCDIR}/build/cmake.sh" ] ; then
+if [ ! -f cmake.sh ] && [ -f "${RTTR_SRCDIR}/build/cmake.sh" ] ; then
 	mecho --blue "Creating symlink 'cmake.sh' ..."
-	ln -vs $SRCDIR/build/cmake.sh cmake.sh
+	ln -vs $RTTR_SRCDIR/build/cmake.sh cmake.sh
 fi
 
 ###############################################################################
 
-PREFIX=/usr/local
-BINDIR=
-DATADIR=
-LIBDIR=
-TOOL_CHAIN=
-NOARCH=
+RTTR_PREFIX=/usr/local
+RTTR_BINDIR=
+RTTR_DATADIR=
+RTTR_LIBDIR=
+RTTR_TOOL_CHAIN=
+RTTR_NOARCH=
 GENERATOR=
 PARAMS=""
 as_cr_letters='abcdefghijklmnopqrstuvwxyz'
@@ -71,29 +71,29 @@ while test $# != 0 ; do
 	esac
 
 	case $ac_option in
-		-prefix | --prefix)
+		-RTTR_PREFIX | --RTTR_PREFIX)
 			$ac_shift
-			PREFIX=$ac_optarg
+			RTTR_PREFIX=$ac_optarg
 		;;
-		-bindir | --bindir)
+		-RTTR_BINDIR | --RTTR_BINDIR)
 			$ac_shift
-			BINDIR=$ac_optarg
+			RTTR_BINDIR=$ac_optarg
 		;;
-		-datadir | --datadir)
+		-RTTR_DATADIR | --RTTR_DATADIR)
 			$ac_shift
-			DATADIR=$ac_optarg
+			RTTR_DATADIR=$ac_optarg
 		;;
-		-libdir | --libdir)
+		-RTTR_LIBDIR | --RTTR_LIBDIR)
 			$ac_shift
-			LIBDIR=$ac_optarg
+			RTTR_LIBDIR=$ac_optarg
 		;;
 		-arch | --arch | -target | --target | -toolchain | --toolchain)
 			$ac_shift
-			TOOL_CHAIN=$ac_optarg
+			RTTR_TOOL_CHAIN=$ac_optarg
 		;;
 		-no-arch | --no-arch)
 			$ac_shift
-			NOARCH="$NOARCH $ac_optarg"
+			RTTR_NOARCH="$RTTR_NOARCH $ac_optarg"
 		;;
 		-generator | --generator)
 			#$ac_shift
@@ -143,50 +143,50 @@ if [ -z "$GENERATOR" ] && [ "$(uname -s)" = "Darwin" ] ; then
 	GENERATOR="Xcode"
 fi
 
-if [ -z "$BINDIR" ] ; then
-	BINDIR=$PREFIX/bin
+if [ -z "$RTTR_BINDIR" ] ; then
+	RTTR_BINDIR=$RTTR_PREFIX/bin
 fi
 
-if [ -z "$DATADIR" ] ; then
-	DATADIR=$PREFIX/share/s25rttr
+if [ -z "$RTTR_DATADIR" ] ; then
+	RTTR_DATADIR=$RTTR_PREFIX/share/s25rttr
 fi
 
-if [ -z "$LIBDIR" ] ; then
-	LIBDIR=$DATADIR
+if [ -z "$RTTR_LIBDIR" ] ; then
+	RTTR_LIBDIR=$RTTR_DATADIR
 fi
 
 ###############################################################################
 
-echo "Setting Path-Prefix to \"$PREFIX\""
-PARAMS="$PARAMS -DPREFIX=$PREFIX"
+echo "Setting Path-RTTR_PREFIX to \"$RTTR_PREFIX\""
+PARAMS="$PARAMS -DRTTR_PREFIX=$RTTR_PREFIX"
 
-case "$TOOL_CHAIN" in
+case "$RTTR_TOOL_CHAIN" in
 	*local*)
-		TOOL_CHAIN=
+		RTTR_TOOL_CHAIN=
 		;;
 esac
 
-if [ ! -z "$TOOL_CHAIN" ] ; then
-    echo "Using toolchain \"$TOOL_CHAIN\""
-    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=${SRCDIR}/cmake/toolchains/$TOOL_CHAIN.cmake"	
+if [ ! -z "$RTTR_TOOL_CHAIN" ] ; then
+    echo "Using toolchain \"$RTTR_TOOL_CHAIN\""
+    PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=${RTTR_SRCDIR}/cmake/toolchains/$RTTR_TOOL_CHAIN.cmake"	
 fi
 
-echo "Setting Binary Dir to \"$BINDIR\""
-PARAMS="$PARAMS -DBINDIR=$BINDIR"
+echo "Setting Binary Dir to \"$RTTR_BINDIR\""
+PARAMS="$PARAMS -DRTTR_BINDIR=$RTTR_BINDIR"
 
-echo "Setting Data Dir to \"$DATADIR\""
-PARAMS="$PARAMS -DDATADIR=$DATADIR"
+echo "Setting Data Dir to \"$RTTR_DATADIR\""
+PARAMS="$PARAMS -DRTTR_DATADIR=$RTTR_DATADIR"
 
-echo "Setting Library Dir to \"$LIBDIR\""
-PARAMS="$PARAMS -DLIBDIR=$LIBDIR"
+echo "Setting Library Dir to \"$RTTR_LIBDIR\""
+PARAMS="$PARAMS -DRTTR_LIBDIR=$RTTR_LIBDIR"
 
-echo "Disabling build of \"$NOARCH\""
+echo "Disabling build of \"$RTTR_NOARCH\""
 if [ ! -z "$disable_arch" ] ; then
-	NOARCH="$disable_arch $NOARCH"
+	RTTR_NOARCH="$disable_arch $RTTR_NOARCH"
 fi
-for I in $NOARCH ; do
+for I in $RTTR_NOARCH ; do
 	if [ ! -z "$I" ] ; then
-		PARAMS="$PARAMS -DNO$I=$I"
+		PARAMS="$PARAMS -DRTTR_NO$I=$I"
 	fi
 done
 
@@ -226,8 +226,8 @@ else
 	GENERATOR="Unix Makefiles"
 fi
 
-mecho --blue "Running \"cmake -G '$GENERATOR' -DCMAKE_INSTALL_PREFIX= ${PARAMS} '${SRCDIR}'\""
-$CMAKE_COMMAND -G "$GENERATOR" -DCMAKE_INSTALL_PREFIX= $PARAMS "${SRCDIR}"
+mecho --blue "Running \"cmake -G '$GENERATOR' -DCMAKE_INSTALL_PREFIX= ${PARAMS} '${RTTR_SRCDIR}'\""
+$CMAKE_COMMAND -G "$GENERATOR" -DCMAKE_INSTALL_PREFIX= $PARAMS "${RTTR_SRCDIR}"
 
 if [ $? != 0 ] ; then
 	mecho --red "An error occured - please check above!"

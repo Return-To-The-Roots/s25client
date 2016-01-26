@@ -10,12 +10,12 @@ if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
 	exit 1
 fi
 
-if [ ! -z "@SRCDIR@" ] ; then
-	SRCDIR=@SRCDIR@
+if [ ! -z "@RTTR_SRCDIR@" ] ; then
+	RTTR_SRCDIR=@RTTR_SRCDIR@
 fi
 
-if [ -z "$SRCDIR" ] ; then
-	SRCDIR="$(dirname "$0")/.."
+if [ -z "$RTTR_SRCDIR" ] ; then
+	RTTR_SRCDIR="$(dirname "$0")/.."
 fi
 
 ###############################################################################
@@ -30,50 +30,50 @@ mecho()
 ###############################################################################
 
 SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
-PREFIX=@PREFIX@
-BINDIR=@BINDIR@
-DATADIR=@DATADIR@
-LIBDIR=@LIBDIR@
+RTTR_PREFIX=@RTTR_PREFIX@
+RTTR_BINDIR=@RTTR_BINDIR@
+RTTR_DATADIR=@RTTR_DATADIR@
+RTTR_LIBDIR=@RTTR_LIBDIR@
 
 ###############################################################################
 
 echo "## Installing for \"${SYSTEM_NAME}\""
-echo "## Using Path-Prefix \"${PREFIX}\""
-echo "## Using Binary Dir \"${BINDIR}\""
-echo "## Using Data Dir \"${DATADIR}\""
-echo "## Using Library Dir \"${LIBDIR}\""
+echo "## Using Path-Prefix \"${RTTR_PREFIX}\""
+echo "## Using Binary Dir \"${RTTR_BINDIR}\""
+echo "## Using Data Dir \"${RTTR_DATADIR}\""
+echo "## Using Library Dir \"${RTTR_LIBDIR}\""
 
 ###############################################################################
 
-# strip ending slash from $DESTDIR
-DESTDIR=${DESTDIR%/}
+# strip ending slash from $RTTR_DESTDIR
+RTTR_DESTDIR=${RTTR_DESTDIR%/}
 
-# adding the slash again if DESTDIR is not empty
-if [ ! -z "$DESTDIR" ] ; then
-	DESTDIR=${DESTDIR}/
-	mecho --red "## Using Destination Dir \"${DESTDIR}\""
+# adding the slash again if RTTR_DESTDIR is not empty
+if [ ! -z "$RTTR_DESTDIR" ] ; then
+	RTTR_DESTDIR=${RTTR_DESTDIR}/
+	mecho --red "## Using Destination Dir \"${RTTR_DESTDIR}\""
 fi
 
 ###############################################################################
 
 mecho --blue "## Creating directories"
-mkdir -vp ${DESTDIR}${BINDIR} || exit 1
-mkdir -vp ${DESTDIR}${DATADIR} || exit 1
-mkdir -vp ${DESTDIR}${DATADIR}/S2 || exit 1
-mkdir -vp ${DESTDIR}${DATADIR}/RTTR || exit 1
-mkdir -vp ${DESTDIR}${LIBDIR} || exit 1
-mkdir -vp ${DESTDIR}${LIBDIR}/driver/video || exit 1
-mkdir -vp ${DESTDIR}${LIBDIR}/driver/audio || exit 1
-mkdir -vp ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_BINDIR} || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_DATADIR} || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_DATADIR}/S2 || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_DATADIR}/RTTR || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_LIBDIR} || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_LIBDIR}/driver/video || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_LIBDIR}/driver/audio || exit 1
+mkdir -vp ${RTTR_DESTDIR}${RTTR_DATADIR}/../doc/s25rttr || exit 1
 
 mecho --blue "## Installing binaries"
 
 case "$SYSTEM_NAME" in
 	Windows)
-		cp -v ${SRCDIR}/release/bin/rttr.bat ${DESTDIR}${BINDIR} || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/rttr.bat ${RTTR_DESTDIR}${RTTR_BINDIR} || exit 1
 	;;
 	Linux|FreeBSD)
-		cp -v ${SRCDIR}/release/bin/rttr.sh ${DESTDIR}${BINDIR} || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/rttr.sh ${RTTR_DESTDIR}${RTTR_BINDIR} || exit 1
 	;;
 	Darwin)
 	;;
@@ -84,27 +84,27 @@ case "$SYSTEM_NAME" in
 esac
 
 mecho --blue "## Installing RTTR directory"
-if [ -d ${SRCDIR}/RTTR/.svn ] ; then
-	LANG=C svn --force --non-interactive export ${SRCDIR}/RTTR ${DESTDIR}${DATADIR}/RTTR || exit 1
-elif [ -d ${SRCDIR}/RTTR/.bzr ] ; then
-	LANG=C bzr export ${SRCDIR}/RTTR ${DESTDIR}${DATADIR}/RTTR || exit 1
+if [ -d ${RTTR_SRCDIR}/RTTR/.svn ] ; then
+	LANG=C svn --force --non-interactive export ${RTTR_SRCDIR}/RTTR ${RTTR_DESTDIR}${RTTR_DATADIR}/RTTR || exit 1
+elif [ -d ${RTTR_SRCDIR}/RTTR/.bzr ] ; then
+	LANG=C bzr export ${RTTR_SRCDIR}/RTTR ${RTTR_DESTDIR}${RTTR_DATADIR}/RTTR || exit 1
 else
-	cp -rv ${SRCDIR}/RTTR/* ${DESTDIR}${DATADIR}/RTTR || exit 1
+	cp -rv ${RTTR_SRCDIR}/RTTR/* ${RTTR_DESTDIR}${RTTR_DATADIR}/RTTR || exit 1
 fi
-rm -f ${DESTDIR}${DATADIR}/RTTR/languages/*.po
+rm -f ${RTTR_DESTDIR}${RTTR_DATADIR}/RTTR/languages/*.po
 
 mecho --blue "## Installing language files"
-cp -v ${SRCDIR}/RTTR/languages/*.mo ${DESTDIR}${DATADIR}/RTTR/languages/ || exit 1
+cp -v ${RTTR_SRCDIR}/RTTR/languages/*.mo ${RTTR_DESTDIR}${RTTR_DATADIR}/RTTR/languages/ || exit 1
 
 mecho --blue "## Installing additional documents"
 case "$SYSTEM_NAME" in
 	Windows)
-		cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR} || exit 1
-		cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR} || exit 1
+		cp -v ${RTTR_SRCDIR}/RTTR/texte/readme.txt ${RTTR_DESTDIR} || exit 1
+		cp -v ${RTTR_SRCDIR}/RTTR/texte/keyboardlayout.txt ${RTTR_DESTDIR} || exit 1
 	;;
 	*)
-		cp -v ${SRCDIR}/RTTR/texte/readme.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
-		cp -v ${SRCDIR}/RTTR/texte/keyboardlayout.txt ${DESTDIR}${DATADIR}/../doc/s25rttr || exit 1
+		cp -v ${RTTR_SRCDIR}/RTTR/texte/readme.txt ${RTTR_DESTDIR}${RTTR_DATADIR}/../doc/s25rttr || exit 1
+		cp -v ${RTTR_SRCDIR}/RTTR/texte/keyboardlayout.txt ${RTTR_DESTDIR}${RTTR_DATADIR}/../doc/s25rttr || exit 1
 	;;
 esac
 
@@ -112,12 +112,12 @@ mecho --blue "## Installing S2 placeholder"
 
 case "$SYSTEM_NAME" in
 	Windows)
-		echo "creating ${DESTDIR}put\ your\ S2-Installation\ in\ here"
-		echo "put your S2-Installation in here" > ${DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
+		echo "creating ${RTTR_DESTDIR}put\ your\ S2-Installation\ in\ here"
+		echo "put your S2-Installation in here" > ${RTTR_DESTDIR}put\ your\ S2-Installation\ in\ here || exit 1
 	;;
 	*)
-		echo "creating ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
-		echo "put your S2-Installation in here" > ${DESTDIR}${DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
+		echo "creating ${RTTR_DESTDIR}${RTTR_DATADIR}/S2/put\ your\ S2-Installation\ in\ here"
+		echo "put your S2-Installation in here" > ${RTTR_DESTDIR}${RTTR_DATADIR}/S2/put\ your\ S2-Installation\ in\ here || exit 1
 	;;
 esac
 
