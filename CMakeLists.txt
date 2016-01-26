@@ -68,8 +68,14 @@ MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
-
-OPTION(RTTR_USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" YES)
+# Default boost libs are static on self-build msvc versions and dynamic in the linux package repos
+IF(MSVC)
+	SET(RTTR_USE_STATIC_BOOST_DEFAULT ON)
+ELSE()
+	SET(RTTR_USE_STATIC_BOOST_DEFAULT OFF)
+ENDIF()
+	
+OPTION(RTTR_USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" ${RTTR_USE_STATIC_BOOST_DEFAULT})
 IF((NOT "${Boost_USE_STATIC_LIBS}" AND ${RTTR_USE_STATIC_BOOST}) OR
    ("${Boost_USE_STATIC_LIBS}" AND NOT ${RTTR_USE_STATIC_BOOST}))
     set(Boost_USE_STATIC_LIBS ${RTTR_USE_STATIC_BOOST})
