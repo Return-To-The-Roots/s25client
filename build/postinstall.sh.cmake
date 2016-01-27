@@ -45,20 +45,20 @@ echo "## Using Library Dir \"${RTTR_LIBDIR}\""
 
 ###############################################################################
 
-# strip ending slash from $RTTR_DESTDIR
-RTTR_DESTDIR=${RTTR_DESTDIR%/}
+# strip ending slash from $DESTDIR
+DESTDIR=${DESTDIR%/}
 
-# adding the slash again if RTTR_DESTDIR is not empty
-if [ ! -z "$RTTR_DESTDIR" ] ; then
-	RTTR_DESTDIR=${RTTR_DESTDIR}/
-	mecho --red "## Using Destination Dir \"${RTTR_DESTDIR}\""
+# adding the slash again if DESTDIR is not empty
+if [ ! -z "$DESTDIR" ] ; then
+	DESTDIR=${DESTDIR}/
+	mecho --red "## Using Destination Dir \"${DESTDIR}\""
 fi
 
 ###############################################################################
 
 mecho --blue "## Removing files which are unused (but installed by cmake)"
-rm -vf ${RTTR_DESTDIR}${RTTR_LIBDIR}/driver/video/libvideo*.{a,lib}
-rm -vf ${RTTR_DESTDIR}${RTTR_LIBDIR}/driver/audio/libaudio*.{a,lib}
+rm -vf ${DESTDIR}${RTTR_LIBDIR}/driver/video/libvideo*.{a,lib}
+rm -vf ${DESTDIR}${RTTR_LIBDIR}/driver/audio/libaudio*.{a,lib}
 
 extract_debug_symbols()
 {
@@ -114,7 +114,7 @@ extract_debug_symbols()
 		objcopy="${objcopyArch}${objcopyTarget}-objcopy"
 	fi
 
-	pushd ${RTTR_DESTDIR}
+	pushd ${DESTDIR}
 	mkdir -vp dbg/$(dirname $FILE)
 	echo "${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg"
 	${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg
@@ -131,12 +131,12 @@ mecho --blue "## Extracting debug info from files and saving them into dbg"
 case "$SYSTEM_NAME" in
 	Darwin)
 		echo "extraction of debug symbols for Apple currently not supported" >&2
-		i686-apple-darwin10-strip -S ${RTTR_DESTDIR}bin/s25client
-		i686-apple-darwin10-strip -S ${RTTR_DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
-		i686-apple-darwin10-strip -S ${RTTR_DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
-		i686-apple-darwin10-strip -S ${RTTR_DESTDIR}share/s25rttr/RTTR/s25update
-		i686-apple-darwin10-strip -S ${RTTR_DESTDIR}share/s25rttr/RTTR/sound-convert
-		i686-apple-darwin10-strip -S ${RTTR_DESTDIR}share/s25rttr/RTTR/s-c_resample
+		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
+		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
 	;;
 	Windows)
 		extract_debug_symbols s25client.exe
@@ -167,23 +167,23 @@ case "$SYSTEM_NAME" in
 	Darwin)
 		# create app-bundle for apple
 		# app anlegen
-		mkdir -vp ${RTTR_DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
+		mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
 
 		# frameworks kopieren
-		mkdir -vp ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-		mkdir -vp ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
 
 		if [ -d /Library/Frameworks ] ; then
-			cp -r /Library/Frameworks/SDL.framework ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-			cp -r /Library/Frameworks/SDL_mixer.framework ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+			cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+			cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 		else
-			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
 		fi
 
 		# remove headers and additional libraries from the frameworks
-		find ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
-		find ${RTTR_DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
+		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
+		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
 
 		SDK=/Developer/SDKs/MacOSX10.5.sdk
 		if [ ! -d $SDK ] ; then
@@ -193,31 +193,31 @@ case "$SYSTEM_NAME" in
 		# copy libs
 		for LIB in /usr/lib/libminiupnpc.5.dylib /usr/lib/libboost_system.dylib /usr/lib/libboost_filesystem.dylib /usr/lib/libboost_iostreams.dylib ; do
 			if [ -f $SDK$LIB ] ; then
-				cp -rv $SDK$LIB ${RTTR_DESTDIR}s25client.app/Contents/MacOS || exit 1
+				cp -rv $SDK$LIB ${DESTDIR}s25client.app/Contents/MacOS || exit 1
 			else
 				echo "$LIB was not found in $SDK" >&2
 				exit 1
 			fi
 		done
 
-		mkdir -vp ${RTTR_DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
 
 		# binaries und paketdaten kopieren
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${RTTR_DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.terminal ${RTTR_DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/icon.icns ${RTTR_DESTDIR}s25client.app/Contents/Resources/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${RTTR_DESTDIR}s25client.app/Contents/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${RTTR_DESTDIR}s25client.app/Contents/ || exit 1
-		mv -v ${RTTR_DESTDIR}bin/* ${RTTR_DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.terminal ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/icon.icns ${DESTDIR}s25client.app/Contents/Resources/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
+		mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
 		
-		chmod +x ${RTTR_DESTDIR}s25client.app/Contents/MacOS/* || exit 1
+		chmod +x ${DESTDIR}s25client.app/Contents/MacOS/* || exit 1
 
 		# remove dirs if empty
-		rmdir ${RTTR_DESTDIR}bin
-		rmdir ${RTTR_DESTDIR}lib
+		rmdir ${DESTDIR}bin
+		rmdir ${DESTDIR}lib
 
 		# RTTR-Ordner kopieren
-		mv -v ${RTTR_DESTDIR}share ${RTTR_DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+		mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
 	;;
 	Windows)
 		mingw=/usr
@@ -241,22 +241,22 @@ case "$SYSTEM_NAME" in
 			;;
 		esac
 		
-		cp -v ${RTTR_SRCDIR}/contrib/lua/${lua}/lua52.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libminiupnpc-5.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libiconv-2.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libintl-8.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libogg-0.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/SDL_mixer.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/SDL.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libvorbis-0.dll ${RTTR_DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libvorbisfile-3.dll ${RTTR_DESTDIR} || exit 1
+		cp -v ${RTTR_SRCDIR}/contrib/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
 		
-		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${RTTR_DESTDIR}RTTR || exit 1
-		cp -v ${mingw}/bin/libcurl-4.dll ${RTTR_DESTDIR}RTTR || exit 1
-		cp -v ${mingw}/bin/zlib1.dll ${RTTR_DESTDIR}RTTR || exit 1
+		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
+		cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
+		cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 
-		rmdir --ignore-fail-on-non-empty -v ${RTTR_DESTDIR}S2
+		rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
 	;;
 	Linux)
 		miniupnpc=/usr/lib/libminiupnpc.so
@@ -280,8 +280,8 @@ case "$SYSTEM_NAME" in
 		esac
 
 		if [ -f $miniupnpc ] ; then
-			mkdir -p ${RTTR_DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
-			cp -rv $miniupnpc* ${RTTR_DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
+			mkdir -p ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
+			cp -rv $miniupnpc* ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
 		else
 			echo "libminiupnpc.so not found at $miniupnpc" >&2
 			echo "will not bundle it in your installation" >&2
@@ -291,8 +291,8 @@ case "$SYSTEM_NAME" in
 	FreeBSD)
 		miniupnpc=/usr/local/lib/libminiupnpc.so
 		if [ -f $miniupnpc ] ; then
-			mkdir -p ${RTTR_DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
-			cp -rv ${miniupnpc}* ${RTTR_DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
+			mkdir -p ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
+			cp -rv ${miniupnpc}* ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
 		else
 			echo "libminiupnpc.so not found at $miniupnpc" >&2
 			echo "will not bundle it in your installation" >&2
