@@ -35,7 +35,7 @@ class AIConstruction
     static const boost::array<BuildingType, 4> millitaryBuildings;
 
     public:
-        AIConstruction(AIInterface* aii, AIPlayerJH* aijh);
+        AIConstruction(AIInterface& aii, AIPlayerJH& aijh);
         ~AIConstruction(void);
 
         /// Adds a build job to the queue
@@ -130,8 +130,8 @@ class AIConstruction
         std::deque<AIJH::BuildJob*> buildJobs;
 		std::deque<AIJH::ConnectJob*> connectJobs;
 
-        AIInterface* aii;
-        AIPlayerJH* aijh;
+        AIInterface& aii;
+        AIPlayerJH& aijh;
 
         /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
         BuildingCount buildingCounts;

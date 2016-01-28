@@ -32,16 +32,14 @@
 #include <iostream>
 
 
-AIJH::Job::Job(AIPlayerJH* aijh)
+AIJH::Job::Job(AIPlayerJH& aijh)
     : aijh(aijh), status(AIJH::JOB_WAITING)
-{
-    aii = aijh->GetInterface();
-}
+{}
 
 void AIJH::BuildJob::ExecuteJob()
 {
 	//are we allowed to plan construction work in the area in this nwf?
-	if(!aijh->GetConstruction()->CanStillConstructHere(around))
+	if(!aijh.GetConstruction()->CanStillConstructHere(around))
 		return;
 
     if (status == AIJH::JOB_WAITING)
@@ -69,7 +67,7 @@ void AIJH::BuildJob::ExecuteJob()
         case AIJH::JOB_EXECUTING_ROAD2_2:
         {
             // evtl noch prüfen ob auch dieser Straßenbau erfolgreich war?
-            aijh->RecalcGround(target, route);
+            aijh.RecalcGround(target, route);
             status = AIJH::JOB_FINISHED;
         }
         break;
@@ -84,18 +82,18 @@ void AIJH::BuildJob::ExecuteJob()
     // Evil harbour-hack
     //if (type == BLD_HARBORBUILDING && status == AIJH::JOB_FINISHED && target_x != 0xFFFF)
     //{
-    //  aijh->AddBuildJob(BLD_SHIPYARD, target, true);
+    //  aijh.AddBuildJob(BLD_SHIPYARD, target, true);
     //}
 
     // Fertig?
     if (status == AIJH::JOB_FAILED || status == AIJH::JOB_FINISHED)
         return;
 
-    if ((target.x != 0xFFFF) && aii->IsMilitaryBuildingNearNode(target, aijh->GetPlayerID()) && type >= BLD_BARRACKS && type <= BLD_FORTRESS)
+    if ((target.x != 0xFFFF) && aijh.GetInterface().IsMilitaryBuildingNearNode(target, aijh.GetPlayerID()) && type >= BLD_BARRACKS && type <= BLD_FORTRESS)
     {
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: Military building too near for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Military building too near for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
         return;
     }
@@ -104,9 +102,9 @@ void AIJH::BuildJob::ExecuteJob()
 void AIJH::BuildJob::TryToBuild()
 {
     MapPoint bPos = around;
-    AIConstruction& aiConstruction = *aijh->GetConstruction();
+    AIConstruction& aiConstruction = *aijh.GetConstruction();
 
-    if (aii->GetBuildingSites().size() > 40)
+    if (aijh.GetInterface().GetBuildingSites().size() > 40)
     {
         return;
     }
@@ -126,9 +124,9 @@ void AIJH::BuildJob::TryToBuild()
         if (type == BLD_WOODCUTTER)
         {          
             
-            PositionSearch *search = aijh->CreatePositionSearch(bPos, AIJH::WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
+            PositionSearch *search = aijh.CreatePositionSearch(bPos, AIJH::WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
             SearchJob *job = new SearchJob(aijh, search);
-            aijh->AddJob(job, true);
+            aijh.AddJob(job, true);
             status = AIJH::JOB_FINISHED;
             return;
         }*/
@@ -143,30 +141,30 @@ void AIJH::BuildJob::TryToBuild()
             case BLD_WOODCUTTER:
             {
                 unsigned numWoodcutter = aiConstruction.GetBuildingCount(BLD_WOODCUTTER);
-                foundPos = aijh->FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aiConstruction.GetBuildingCount(BLD_WOODCUTTER) * 10, 11);
-                if(foundPos && !aijh->ValidTreeinRange(bPos))
+                foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aiConstruction.GetBuildingCount(BLD_WOODCUTTER) * 10, 11);
+                if(foundPos && !aijh.ValidTreeinRange(bPos))
                     foundPos = false;
                 break;
             }
             case BLD_FORESTER:
-				if ((aiConstruction.GetBuildingCount(BLD_FORESTER)<2 || !aiConstruction.OtherUsualBuildingInRadius(bPos, 35, BLD_FORESTER)) && (aijh->GetDensity(bPos, AIJH::PLANTSPACE, 7) > 30 || (aijh->GetDensity(bPos, AIJH::PLANTSPACE, 7) > 15 && aiConstruction.GetBuildingCount(BLD_FORESTER) < 2)))
-                    foundPos = aijh->FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 0, 11);
+				if ((aiConstruction.GetBuildingCount(BLD_FORESTER)<2 || !aiConstruction.OtherUsualBuildingInRadius(bPos, 35, BLD_FORESTER)) && (aijh.GetDensity(bPos, AIJH::PLANTSPACE, 7) > 30 || (aijh.GetDensity(bPos, AIJH::PLANTSPACE, 7) > 15 && aiConstruction.GetBuildingCount(BLD_FORESTER) < 2)))
+                    foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 0, 11);
                 break;
             case BLD_HUNTER:
             {
                 //check if there are any animals in range
-                if(aijh->HuntablesinRange(bPos, (2 << aiConstruction.GetBuildingCount(BLD_HUNTER))))
-                    foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
+                if(aijh.HuntablesinRange(bPos, (2 << aiConstruction.GetBuildingCount(BLD_HUNTER))))
+                    foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
                 break;
             }
             case BLD_QUARRY:
             {
                 unsigned numQuarries = aiConstruction.GetBuildingCount(BLD_QUARRY);
-                foundPos = aijh->FindBestPosition(bPos, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aiConstruction.GetBuildingCount(BLD_QUARRY) * 10, 11);
-                if(foundPos && !aijh->ValidStoneinRange(bPos))
+                foundPos = aijh.FindBestPosition(bPos, AIJH::STONES, BQ_HUT, (numQuarries > 4) ? 40 : 1 + aiConstruction.GetBuildingCount(BLD_QUARRY) * 10, 11);
+                if(foundPos && !aijh.ValidStoneinRange(bPos))
                 {
                     foundPos = false;
-                    aijh->SetResourceMap(AIJH::STONES, bPos, 0);
+                    aijh.SetResourceMap(AIJH::STONES, bPos, 0);
                 }
                 break;
             }
@@ -174,72 +172,72 @@ void AIJH::BuildJob::TryToBuild()
             case BLD_GUARDHOUSE:
             case BLD_WATCHTOWER:
             case BLD_FORTRESS:
-                foundPos = aijh->FindBestPosition(bPos, AIJH::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIJH::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
                 //could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal buildings (probably important map part)
-                if(type != BLD_FORTRESS && aii->GetBuildingQuality(bPos)!=BQ_MINE && aii->GetBuildingQuality(bPos)>BUILDING_SIZE[type] && aijh->BQsurroundcheck(bPos,6,true,10)<10)
+                if(type != BLD_FORTRESS && aijh.GetInterface().GetBuildingQuality(bPos)!=BQ_MINE && aijh.GetInterface().GetBuildingQuality(bPos)>BUILDING_SIZE[type] && aijh.BQsurroundcheck(bPos,6,true,10)<10)
                 {
                     //more than 80% is unbuildable in range 7 -> upgrade
                     if(type == BLD_WATCHTOWER)
                     {
-                        if(aii->CanBuildBuildingtype(BLD_FORTRESS))
+                        if(aijh.GetInterface().CanBuildBuildingtype(BLD_FORTRESS))
                             type = BLD_FORTRESS;
                     }else
                     {
-                        if(aii->CanBuildBuildingtype(BLD_WATCHTOWER))
+                        if(aijh.GetInterface().CanBuildBuildingtype(BLD_WATCHTOWER))
                             type = BLD_WATCHTOWER;
-                        else if(aii->CanBuildBuildingtype(BLD_FORTRESS))
+                        else if(aijh.GetInterface().CanBuildBuildingtype(BLD_FORTRESS))
                             type = BLD_FORTRESS;
                     }
                 }
                 break;
             case BLD_GOLDMINE:
-                foundPos = aijh->FindBestPosition(bPos, AIJH::GOLD, BQ_MINE, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIJH::GOLD, BQ_MINE, 11, true);
                 break;
             case BLD_COALMINE:
-                foundPos = aijh->FindBestPosition(bPos, AIJH::COAL, BQ_MINE, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIJH::COAL, BQ_MINE, 11, true);
                 break;
             case BLD_IRONMINE:
-                foundPos = aijh->FindBestPosition(bPos, AIJH::IRONORE, BQ_MINE, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIJH::IRONORE, BQ_MINE, 11, true);
                 break;
             case BLD_GRANITEMINE:
-                if(!aijh->ggs.isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
-                    foundPos = aijh->FindBestPosition(bPos, AIJH::GRANITE, BQ_MINE, 11, true);
+                if(!aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
+                    foundPos = aijh.FindBestPosition(bPos, AIJH::GRANITE, BQ_MINE, 11, true);
                 else
-                    foundPos = aijh->SimpleFindPosition(bPos, BQ_MINE, 11);
+                    foundPos = aijh.SimpleFindPosition(bPos, BQ_MINE, 11);
                 break;
 
             case BLD_FISHERY:
-                foundPos = aijh->FindBestPosition(bPos, AIJH::FISH, BQ_HUT, 11, true);
-                if(foundPos && !aijh->ValidFishInRange(bPos))
+                foundPos = aijh.FindBestPosition(bPos, AIJH::FISH, BQ_HUT, 11, true);
+                if(foundPos && !aijh.ValidFishInRange(bPos))
                 {
-                    aijh->SetResourceMap(AIJH::FISH, bPos, 0);
+                    aijh.SetResourceMap(AIJH::FISH, bPos, 0);
                     foundPos = false;
                 }
                 break;
             case BLD_STOREHOUSE:
                 if(!aiConstruction.OtherStoreInRadius(bPos, 15))
-                    foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[BLD_STOREHOUSE], 11);
+                    foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[BLD_STOREHOUSE], 11);
                 break;
             case BLD_HARBORBUILDING:
-                foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && !aijh->HarborPosRelevant(aijh->gwb.GetHarborPointID(bPos))) //bad harborspot detected DO NOT USE
+                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
+                if(foundPos && !aijh.HarborPosRelevant(aijh.gwb.GetHarborPointID(bPos))) //bad harborspot detected DO NOT USE
                     foundPos = false;
                 break;
             case BLD_SHIPYARD:
-                foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && aijh->IsInvalidShipyardPosition(bPos))
+                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
+                if(foundPos && aijh.IsInvalidShipyardPosition(bPos))
                     foundPos = false;
                 break;
             case BLD_FARM:
-                foundPos = aijh->FindBestPosition(bPos, AIJH::PLANTSPACE, BQ_CASTLE, 85, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIJH::PLANTSPACE, BQ_CASTLE, 85, 11, true);
                 break;
             case BLD_CATAPULT:
-                foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && aijh->BuildingNearby(bPos, BLD_CATAPULT, 8))
+                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
+                if(foundPos && aijh.BuildingNearby(bPos, BLD_CATAPULT, 8))
                     foundPos = false;
                 break;
             default:
-                foundPos = aijh->SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
+                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
                 break;
         }
     }
@@ -255,17 +253,17 @@ void AIJH::BuildJob::TryToBuild()
     {
         status = JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: No Position found for " << BUILDING_NAMES[type] << " around " << bPos.x << "/" << bPos.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: No Position found for " << BUILDING_NAMES[type] << " around " << bPos.x << "/" << bPos.y << "." << std::endl;
 #endif
         return;
     }
 
 #ifdef DEBUG_AI
     if (type == BLD_FARM)
-        std::cout << " Player " << (unsigned)aijh->GetPlayerID() << " built farm at " << bPos.x << "/" << bPos.y << " on value of " << aijh->resourceMaps[AIJH::PLANTSPACE][aii->GetIdx(bPos)] << std::endl;
+        std::cout << " Player " << (unsigned)aijh.GetPlayerID() << " built farm at " << bPos.x << "/" << bPos.y << " on value of " << aijh.resourceMaps[AIJH::PLANTSPACE][aii->GetIdx(bPos)] << std::endl;
 #endif
 
-    aii->SetBuildingSite(bPos, type);
+    aijh.GetInterface().SetBuildingSite(bPos, type);
     target = bPos;
     status = AIJH::JOB_EXECUTING_ROAD1;
 	aiConstruction.constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nwf
@@ -275,20 +273,20 @@ void AIJH::BuildJob::TryToBuild()
 
 void AIJH::BuildJob::BuildMainRoad()
 {
-    const noBuildingSite* bld = aii->GetSpecObj<noBuildingSite>(target);
+    const noBuildingSite* bld = aijh.GetInterface().GetSpecObj<noBuildingSite>(target);
     if (!bld)
     {
         // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
-        BuildingQuality bq = aii->GetBuildingQuality(target);
+        BuildingQuality bq = aijh.GetInterface().GetBuildingQuality(target);
         if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Gebäude
                 && !(bq == BUILDING_SIZE[type]))    // auch Bergwerke
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-            std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
+            std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
-            aijh->nodes[aii->GetIdx(target)].bq = bq;
-            aijh->AddBuildJob(type, around);
+            aijh.nodes[aijh.GetInterface().GetIdx(target)].bq = bq;
+            aijh.AddBuildJob(type, around);
             return;
         }
         return;
@@ -297,14 +295,14 @@ void AIJH::BuildJob::BuildMainRoad()
     if (bld->GetBuildingType() != type)
     {
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: Wrong Builingsite found for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Wrong Builingsite found for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
         status = AIJH::JOB_FAILED;
         return;
     }
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHEAST));
+    const noFlag* houseFlag = aijh.GetInterface().GetSpecObj<noFlag>(aijh.GetInterface().GetNeighbour(target, Direction::SOUTHEAST));
     // Gucken noch nicht ans Wegnetz angeschlossen
-    AIConstruction& aiConstruction = *aijh->GetConstruction();
+    AIConstruction& aiConstruction = *aijh.GetConstruction();
     if (!aiConstruction.IsConnectedToRoadSystem(houseFlag))
     {
         // Bau unmöglich?
@@ -312,12 +310,12 @@ void AIJH::BuildJob::BuildMainRoad()
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-            std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
+            std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
 #endif
-            aijh->nodes[aii->GetIdx(target)].reachable = false;
-            aii->DestroyBuilding(target);
-            aii->DestroyFlag(houseFlag->GetPos());
-            aijh->AddBuildJob(type, around);
+            aijh.nodes[aijh.GetInterface().GetIdx(target)].reachable = false;
+            aijh.GetInterface().DestroyBuilding(target);
+            aijh.GetInterface().DestroyFlag(houseFlag->GetPos());
+            aijh.AddBuildJob(type, around);
             return;
         }
         else
@@ -329,15 +327,15 @@ void AIJH::BuildJob::BuildMainRoad()
     }
 
     // Wir sind angeschlossen, BQ für den eben gebauten Weg aktualisieren
-    //aijh->RecalcBQAround(target);
-    //aijh->RecalcGround(target, route);
+    //aijh.RecalcBQAround(target);
+    //aijh.RecalcGround(target, route);
 
     switch(type)
     {
         case BLD_WOODCUTTER:
             break;
         case BLD_FORESTER:
-            aijh->AddBuildJob(BLD_WOODCUTTER, target);
+            aijh.AddBuildJob(BLD_WOODCUTTER, target);
             break;
         case BLD_QUARRY:
             break;
@@ -351,7 +349,7 @@ void AIJH::BuildJob::BuildMainRoad()
         case BLD_COALMINE:
             break;
         case BLD_IRONMINE:
-            //if(!(aijh->ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+            //if(!(aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
             break;
         case BLD_GRANITEMINE:
             break;
@@ -363,18 +361,18 @@ void AIJH::BuildJob::BuildMainRoad()
             break;
         case BLD_CHARBURNER:
         case BLD_FARM:
-            aijh->SetFarmedNodes(target, true);
+            aijh.SetFarmedNodes(target, true);
             break;
         case BLD_MILL:
-            aijh->AddBuildJob(BLD_BAKERY, target);
+            aijh.AddBuildJob(BLD_BAKERY, target);
             break;
         case BLD_PIGFARM:
-            aijh->AddBuildJob(BLD_SLAUGHTERHOUSE, target);
+            aijh.AddBuildJob(BLD_SLAUGHTERHOUSE, target);
             break;
         case BLD_BAKERY:
         case BLD_SLAUGHTERHOUSE:
         case BLD_BREWERY:
-            aijh->AddBuildJob(BLD_WELL, target);
+            aijh.AddBuildJob(BLD_WELL, target);
             break;
 
         default:
@@ -384,7 +382,7 @@ void AIJH::BuildJob::BuildMainRoad()
     // Just 4 Fun Gelehrten rufen
     if (BUILDING_SIZE[type] == BQ_MINE)
     {
-        aii->CallGeologist(houseFlag->GetPos());
+        aijh.GetInterface().CallGeologist(houseFlag->GetPos());
     }
 	if(type > BLD_FORTRESS)//not a military building? -> build secondary road now 
 	{
@@ -400,23 +398,23 @@ void AIJH::BuildJob::BuildMainRoad()
 
 void AIJH::BuildJob::TryToBuildSecondaryRoad()
 {
-    const noFlag* houseFlag = aii->GetSpecObj<noFlag>(aii->GetNeighbour(target, Direction::SOUTHEAST));
+    const noFlag* houseFlag = aijh.GetInterface().GetSpecObj<noFlag>(aijh.GetInterface().GetNeighbour(target, Direction::SOUTHEAST));
 
     if (!houseFlag)
     {
         // Baustelle wurde wohl zerstört, oh schreck!
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
 #endif
-        aijh->AddBuildJob(type, around);
+        aijh.AddBuildJob(type, around);
         return;
     }
 
-    if (aijh->GetConstruction()->BuildAlternativeRoad(houseFlag, route))
+    if (aijh.GetConstruction()->BuildAlternativeRoad(houseFlag, route))
 	{
         status = AIJH::JOB_EXECUTING_ROAD2_2;
-		aijh->GetConstruction()->constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nw
+		aijh.GetConstruction()->constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nw
 	}
     else
         status = AIJH::JOB_FINISHED;
@@ -430,14 +428,14 @@ void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be 
         case AIEvent::BuildingConquered:
         {
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-            aijh->HandleNewMilitaryBuilingOccupied(evb->GetPos());
+            aijh.HandleNewMilitaryBuilingOccupied(evb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingLost:
         {
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-            aijh->HandleMilitaryBuilingLost(evb->GetPos());
+            aijh.HandleMilitaryBuilingLost(evb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
@@ -447,77 +445,77 @@ void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be 
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
             //at least for farms ai has to remove "farmed"
             if(evb->GetBuildingType() == BLD_FARM || evb->GetBuildingType() == BLD_HARBORBUILDING)
-                aijh->HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
+                aijh.HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::NoMoreResourcesReachable:
         {
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-            aijh->HandleNoMoreResourcesReachable(evb->GetPos(), evb->GetBuildingType());
+            aijh.HandleNoMoreResourcesReachable(evb->GetPos(), evb->GetBuildingType());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::BorderChanged:
         {
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-            aijh->HandleBorderChanged(evb->GetPos());
+            aijh.HandleBorderChanged(evb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingFinished:
         {
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-            aijh->HandleBuildingFinished(evb->GetPos(), evb->GetBuildingType());
+            aijh.HandleBuildingFinished(evb->GetPos(), evb->GetBuildingType());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::ExpeditionWaiting:
         {
             AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
-            aijh->HandleExpedition(lvb->GetPos());
+            aijh.HandleExpedition(lvb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::TreeChopped:
         {
             AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
-            aijh->HandleTreeChopped(lvb->GetPos());
+            aijh.HandleTreeChopped(lvb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::NewColonyFounded:
         {
             AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
-            aijh->HandleNewColonyFounded(lvb->GetPos());
+            aijh.HandleNewColonyFounded(lvb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::ShipBuilt:
         {
             AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
-            aijh->HandleShipBuilt(lvb->GetPos());
+            aijh.HandleShipBuilt(lvb->GetPos());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionComplete:
         {
             AIEvent::Direction* dvb = dynamic_cast<AIEvent::Direction*>(ev);
-            aijh->HandleRoadConstructionComplete(dvb->GetPos(), dvb->GetDirection());
+            aijh.HandleRoadConstructionComplete(dvb->GetPos(), dvb->GetDirection());
             status = AIJH::JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionFailed:
         {
             AIEvent::Direction* dvb = dynamic_cast<AIEvent::Direction*>(ev);
-            aijh->HandleRoadConstructionFailed(dvb->GetPos(), dvb->GetDirection());
+            aijh.HandleRoadConstructionFailed(dvb->GetPos(), dvb->GetDirection());
             status = AIJH::JOB_FINISHED;
         }
         break;
 		case AIEvent::LuaConstructionOrder:
         {
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-			aijh->ExecuteLuaConstructionOrder(evb->GetPos(),evb->GetBuildingType(),true);           
+			aijh.ExecuteLuaConstructionOrder(evb->GetPos(),evb->GetBuildingType(),true);           
             status = AIJH::JOB_FINISHED;
         }
         break;
@@ -534,15 +532,15 @@ void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be 
 void AIJH::ConnectJob::ExecuteJob()
 {
 #ifdef DEBUG_AI
-    std::cout << "Player " << (unsigned)aijh->GetPlayerID() << ", ConnectJob executed..." << std::endl;
+    std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", ConnectJob executed..." << std::endl;
 #endif
 	
 	//can the ai still construct here? else return and try again later
-    AIConstruction& construction = *aijh->GetConstruction();
+    AIConstruction& construction = *aijh.GetConstruction();
 	if (!construction.CanStillConstructHere(flagPos))
 		return; 
 
-    const noFlag* flag = aii->GetSpecObj<noFlag>(flagPos);
+    const noFlag* flag = aijh.GetInterface().GetSpecObj<noFlag>(flagPos);
 	
     if (!flag)
     {
@@ -554,7 +552,7 @@ void AIJH::ConnectJob::ExecuteJob()
     }
 
 	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
-	if(aii->IsMilitaryBuildingOnNode(aii->GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
+	if(aijh.GetInterface().IsMilitaryBuildingOnNode(aijh.GetInterface().GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
 	{
 		for(unsigned i=2;i<7;i++)
 		{
@@ -596,7 +594,7 @@ void AIJH::ConnectJob::ExecuteJob()
 #ifdef DEBUG_AI
         std::cout << "Flag is connected." << std::endl;
 #endif
-        aijh->RecalcGround(flagPos, route);
+        aijh.RecalcGround(flagPos, route);
         status = AIJH::JOB_FINISHED;
 		
         return;
@@ -607,7 +605,7 @@ void AIJH::ConnectJob::ExecuteJob()
 void AIJH::SearchJob::ExecuteJob()
 {
     status = JOB_FAILED;
-    PositionSearchState state = aijh->FindGoodPosition(search, true);
+    PositionSearchState state = aijh.FindGoodPosition(search, true);
 
     if (state == SEARCH_IN_PROGRESS)
     {
@@ -620,7 +618,7 @@ void AIJH::SearchJob::ExecuteJob()
     else
     {
         status = JOB_FINISHED;
-        aijh->AddBuildJob(search->bld, search->result, true, false);
+        aijh.AddBuildJob(search->bld, search->result, true, false);
     }
 }
 

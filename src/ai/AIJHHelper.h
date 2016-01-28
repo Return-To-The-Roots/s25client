@@ -84,14 +84,13 @@ namespace AIJH
     {
             friend class iwAIDebug;
         public:
-            Job(AIPlayerJH* aijh);
+            Job(AIPlayerJH& aijh);
             virtual ~Job() { }
             virtual void ExecuteJob() { return; }
             JobStatus GetStatus() { return status; }
 			void SetStatus(JobStatus s) {status=s;}
         protected:
-            AIPlayerJH* aijh;
-            AIInterface* aii;
+            AIPlayerJH& aijh;
             JobStatus status;
     };
 
@@ -110,7 +109,7 @@ namespace AIJH
     {
             friend class iwAIDebug;
         public:
-            BuildJob(AIPlayerJH* aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
+            BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
                 : Job(aijh), type(type), around(around), searchMode(searchMode)
             {
                 RTTR_Assert(type != BLD_NOTHING);
@@ -136,7 +135,7 @@ namespace AIJH
     {
             friend class iwAIDebug;
         public:
-            ConnectJob(AIPlayerJH* aijh, MapPoint flagPos)
+            ConnectJob(AIPlayerJH& aijh, MapPoint flagPos)
                 : Job(aijh), flagPos(flagPos) { }
             ~ConnectJob() { }
             virtual void ExecuteJob();
@@ -150,7 +149,7 @@ namespace AIJH
     {
             friend class iwAIDebug;
         public:
-            EventJob(AIPlayerJH* aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) { }
+            EventJob(AIPlayerJH& aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) { }
             ~EventJob() { delete ev; }
             void ExecuteJob();
             inline AIEvent::Base* GetEvent() const { return ev; }
@@ -163,7 +162,7 @@ namespace AIJH
     {
             friend class iwAIDebug;
         public:
-            SearchJob(AIPlayerJH* aijh, PositionSearch* search) : Job(aijh), search(search) { }
+            SearchJob(AIPlayerJH& aijh, PositionSearch* search) : Job(aijh), search(search) { }
             ~SearchJob();
             void ExecuteJob();
 

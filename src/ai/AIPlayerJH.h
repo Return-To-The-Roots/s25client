@@ -103,7 +103,7 @@ class AIPlayerJH : public AIBase
         ~AIPlayerJH();
 
 		int initgfcomplete;
-        AIInterface* GetInterface() { return aii; }
+        AIInterface& GetInterface() { return aii; }
 
         /// Test whether the player should resign or not
         bool TestDefeat();
@@ -338,7 +338,7 @@ class AIPlayerJH : public AIBase
         inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
 		unsigned GetJobNum() const;
 		int UpgradeBldListNumber;
-		unsigned PlannedConnectedInlandMilitary() {return aii->GetMilitaryBuildings().size()/5<6 ? 6:aii->GetMilitaryBuildings().size()/5;}
+        unsigned PlannedConnectedInlandMilitary() { return aii.GetMilitaryBuildings().size() / 5 < 6 ? 6 : aii.GetMilitaryBuildings().size() / 5; }
         /// checks distance to all harborpositions
         bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);
 		/// returns the percentage*100 of possible normal building places

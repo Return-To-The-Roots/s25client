@@ -47,13 +47,13 @@ class AIBase
         /// Stärke der KI
         const AI::Level level;
         /// Abstrahiertes Interfaces, leitet Befehle weiter an
-        AIInterface* aii;
+        AIInterface aii;
 
     public:
 
         AIBase(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level)
-            : playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(new AIInterface(gwb, player, players, gcs, playerid)), ggs(ggs) {}
+            : playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(gwb, player, players, gcs, playerid), ggs(ggs) {}
 
         virtual ~AIBase() {}
 
