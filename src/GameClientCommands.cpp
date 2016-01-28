@@ -138,9 +138,9 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
         return;
 
     // old_id must be a player unless its a replay
-    if(players[player1].ps != PS_OCCUPIED || IsReplayModeOn())
+    if(players[player1].ps != PS_OCCUPIED && !IsReplayModeOn())
         return;
-    // new_id must be ab AI. For replays it can also be another player
+    // new_id must be an AI. For replays it can also be another player
     if(players[player2].ps != PS_KI && (!IsReplayModeOn() || players[player2].ps != PS_OCCUPIED))
         return;
 
