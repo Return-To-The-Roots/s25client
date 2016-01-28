@@ -26,6 +26,8 @@ AIEventManager::AIEventManager(void)
 
 AIEventManager::~AIEventManager(void)
 {
+    while(AIEvent::Base* ev = GetEvent())
+        deletePtr(ev);
 }
 
 AIEvent::Base* AIEventManager::GetEvent()

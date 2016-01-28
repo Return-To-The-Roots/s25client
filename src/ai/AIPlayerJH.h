@@ -353,8 +353,6 @@ class AIPlayerJH : public AIBase
     protected:
         AIEventManager eventManager;
         AIConstruction* construction;
-
-
 };
 
 

@@ -19,90 +19,8 @@
 
 #pragma once
 
-#include "defines.h"
-#include "gameTypes/MapTypes.h"
-#include "gameTypes/BuildingTypes.h"
-#include "gameTypes/Resource.h"
+#include "AIEvents.h"
 #include <queue>
-
-namespace AIEvent
-{
-    enum AIEventType
-    {
-        BuildingDestroyed,
-        BuildingConquered,
-        BuildingLost,
-        BuildingOccupied,
-        BorderChanged,
-        TerritoryLost,
-        NoMoreResourcesReachable,
-        BuildingFinished,
-        ExpeditionWaiting,
-        TreeChopped,
-        ShipBuilt,
-        ResourceUsed,
-        RoadConstructionComplete,
-        RoadConstructionFailed,
-        NewColonyFounded,
-		LuaConstructionOrder,
-        ResourceFound
-    };
-
-
-    class Base
-    {
-        public:
-            Base(AIEventType type) : type(type) { }
-            virtual ~Base() { }
-            AIEventType GetType() const { return type; }
-
-        protected:
-            AIEventType type;
-    };
-
-
-    class Location : public Base
-    {
-        public:
-            Location(AIEventType type, const MapPoint pt) : Base(type), pos(pt) { }
-            ~Location() { }
-            MapCoord GetX() const { return pos.x; }
-            MapCoord GetY() const { return pos.y; }
-            MapPoint GetPos() const { return pos; }
-
-        protected:
-            MapPoint pos;
-    };
-
-    class Direction : public Location
-    {
-        public:
-            Direction(AIEventType type, const MapPoint pt, unsigned char direction) : Location(type, pt), direction(direction) { }
-            ~Direction() { }
-            unsigned char GetDirection() const { return direction; }
-
-        protected:
-            unsigned char direction;
-    };
-
-    class Building : public Location
-    {
-        public:
-            Building(AIEventType type, const MapPoint pt, BuildingType building) : Location(type, pt), building(building) { }
-            ~Building() { }
-            BuildingType GetBuildingType() const { return building; }
-
-        protected:
-            BuildingType building;
-    };
-
-    class Resource: public Location
-    {
-    public:
-        const ::Resource resType;
-        Resource(AIEventType type, const MapPoint& pt, ::Resource resType): Location(type, pt), resType(resType){}
-    };
-}
 
 class AIEventManager
 {
@@ -111,7 +29,7 @@ class AIEventManager
         ~AIEventManager(void);
         void AddAIEvent(AIEvent::Base* ev) { events.push(ev); }
         AIEvent::Base* GetEvent();
-        bool EventAvailable() const { return events.size() > 0; }
+        bool EventAvailable() const { return !events.empty(); }
         unsigned GetEventNum() const { return events.size(); }
 
     protected:

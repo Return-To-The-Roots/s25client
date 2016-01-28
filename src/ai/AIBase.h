@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "AIEventManager.h"
+#include "AIEvents.h"
 #include "AIInterface.h"
 #include "GameCommand.h"
 
