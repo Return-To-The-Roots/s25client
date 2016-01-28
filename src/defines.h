@@ -22,7 +22,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // System-Header
 
-#define _CRTDBG_MAP_ALLOC
+#ifndef _CRTDBG_MAP_ALLOC
+#   define _CRTDBG_MAP_ALLOC
+#endif
 #ifndef NOMINMAX
 #   define NOMINMAX
 #endif
