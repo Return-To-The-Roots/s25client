@@ -171,57 +171,55 @@ bool GameManager::Run()
     GAMECLIENT.Run();
     GAMESERVER.Run();
 
-    unsigned int current_time = VIDEODRIVER.GetTickCount();
+    unsigned current_time = VIDEODRIVER.GetTickCount();
 
-    unsigned long vsync_wanted = ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 60 : SETTINGS.video.vsync;
+    const bool skipping = GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber();
 
-    // SW-VSync (mit 4% Toleranz)
-    if(vsync_wanted > 1)
+    //only draw if we dont skip ahead right now
+    if(!skipping)
     {
-    	static unsigned long vsync = vsync_wanted;
-    	
-        // immer 10% dazu/weg bis man über der Framerate liegt
-        if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
-            vsync = (1100 * vsync) / 1000;
-        else if(vsync > vsync_wanted)
-            vsync = (900 * vsync) / 1000;
-        else
-            vsync = vsync_wanted;
+        const unsigned long vsync_wanted = ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 60 : SETTINGS.video.vsync;
 
-        unsigned long goal_ticks = 960 * 1000 * 1000 / vsync;
-#ifdef _WIN32
-        if(goal_ticks < 13 * 1000 * 1000) // timer resolutions < 13ms do not work for windows correctly
-            goal_ticks = 0;
-#endif // !_WIN32
-
-        if(goal_ticks > 0 && (current_time - last_time) * 1000 * 1000 < goal_ticks && (current_time >= last_time))
+        // SW-VSync (mit 4% Toleranz)
+        if(vsync_wanted > 1)
         {
-            struct timespec req;
-            req.tv_sec  = 0;
-            req.tv_nsec = goal_ticks - (current_time - last_time) * 1000 * 1000 ;
+    	    static unsigned long vsync = vsync_wanted;
+    	
+            // immer 10% dazu/weg bis man über der Framerate liegt
+            if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
+                vsync = (1100 * vsync) / 1000;
+            else if(vsync > vsync_wanted)
+                vsync = (900 * vsync) / 1000;
+            else
+                vsync = vsync_wanted;
 
-            while(nanosleep(&req, &req) == -1)
-                continue;
+            unsigned long goal_ticks = 960 * 1000 * 1000 / vsync;
+    #ifdef _WIN32
+            if(goal_ticks < 13 * 1000 * 1000) // timer resolutions < 13ms do not work for windows correctly
+                goal_ticks = 0;
+    #endif // !_WIN32
 
-            current_time = VIDEODRIVER.GetTickCount();
+            if(goal_ticks > 0 && (current_time - last_time) * 1000 * 1000 < goal_ticks && (current_time >= last_time))
+            {
+                struct timespec req;
+                req.tv_sec  = 0;
+                req.tv_nsec = goal_ticks - (current_time - last_time) * 1000 * 1000 ;
+
+                while(nanosleep(&req, &req) == -1)
+                    continue;
+
+                current_time = VIDEODRIVER.GetTickCount();
+            }
         }
-    }
-	//only draw if we dont skip ahead right now
-	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
-	{
 		WINDOWMANAGER.Draw();
 		if ((GAMECLIENT.GetState() == GameClient::CS_GAME) && (GAMECLIENT.GetGFLength() < 30))
-		{
 			LOADER.GetImageN("io", 164)->Draw(VIDEODRIVER.GetScreenWidth() - 55, 35, 0, 0, 0, 0);
-		}
 
 		DrawCursor();
-	}
-
-	//if we skip drawing write a comment every 5k gf
-	if(GAMECLIENT.skiptogf && GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber() && GAMECLIENT.GetGFNumber()%5000==0)
+    } else if(GAMECLIENT.GetGFNumber() % 5000 == 0)
 	{
-		if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
+        //if we skip drawing write a comment every 5k gf
+        if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
 		{
 			if(skipgf_last_time)
 				LOG.lprintf("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber(),double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/5000);
@@ -265,7 +263,7 @@ bool GameManager::Run()
 
     // und zeichnen
 	//only draw if we dont skip ahead right now
-	if(!GAMECLIENT.skiptogf || GAMECLIENT.skiptogf < GAMECLIENT.GetGFNumber())
+	if(!skipping)
 	{
 		char frame_str[64];
 		sprintf(frame_str, "%u fps", framerate);
