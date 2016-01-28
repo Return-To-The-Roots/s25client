@@ -237,7 +237,7 @@ void InitProgram()
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
     // Enable Memory-Leak-Detection
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_1024_DF);
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
 #ifdef _WIN32
@@ -352,6 +352,7 @@ int main(int argc, char* argv[])
 
         // Spiel beenden
         GAMEMANAGER.Stop();
+        libsiedler2::setAllocator(NULL);
     }catch(RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too
