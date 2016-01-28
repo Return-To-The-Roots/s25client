@@ -896,7 +896,7 @@ public:
 	GlobalGameSettings ggs;
 
 	GameMessage_GGSChange(): GameMessage(NMS_GGS_CHANGE) {}
-	GameMessage_GGSChange(const GlobalGameSettings& ggs): GameMessage(NMS_GGS_CHANGE, player), ggs(ggs)
+	GameMessage_GGSChange(const GlobalGameSettings& ggs): GameMessage(NMS_GGS_CHANGE, 0xFF), ggs(ggs)
 	{
 		LOG.write(">>> NMS_GGS_CHANGE\n");
 	}
@@ -926,7 +926,7 @@ public:
 	unsigned int gf_length; // new speed
 
 	GameMessage_Server_Speed(): GameMessage(NMS_SERVER_SPEED) { }
-	GameMessage_Server_Speed(const unsigned int gf_length): GameMessage(NMS_SERVER_SPEED, player), gf_length(gf_length)
+	GameMessage_Server_Speed(const unsigned int gf_length): GameMessage(NMS_SERVER_SPEED, 0xFF), gf_length(gf_length)
 	{
 		LOG.write(">>> NMS_SERVER_SPEED(%d)\n", gf_length);
 	}
