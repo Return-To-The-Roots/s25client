@@ -85,7 +85,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);
-    gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
+    gwg->RecalcTerritory(*this, false, true);
 
     // Alle Waren 0, außer 100 Träger
     inventoryVisual.clear();
@@ -182,7 +182,7 @@ void nobHarborBuilding::Destroy()
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
-    gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
+    gwg->RecalcTerritory(*this, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
     RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));

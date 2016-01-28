@@ -43,7 +43,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquare(pos).push_back(this);
-    gwg->RecalcTerritory(this, GetMilitaryRadius(), false, true);
+    gwg->RecalcTerritory(*this, false, true);
 
 
     // StartWaren setzen ( provisorisch )
@@ -348,7 +348,7 @@ void nobHQ::Destroy_nobHQ()
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
-    gwg->RecalcTerritory(this, MILITARY_RADIUS[GetSize()], true, false);
+    gwg->RecalcTerritory(*this, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
     RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));

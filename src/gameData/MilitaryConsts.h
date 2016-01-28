@@ -19,6 +19,7 @@
 #define MILITARY_CONSTS_H_
 
 #include "gameData/NationConsts.h"
+#include <boost/array.hpp>
 
 /// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
 const unsigned short MILITARY_SQUARE_SIZE = 20;
@@ -62,12 +63,11 @@ const unsigned short GOLD_COUNT[NAT_COUNT][4] =
     {1, 2, 4, 6}
 };
 
-/// Radien der Militärgebäude ( die letzten beiden sind HQ und Hafen!)
-const unsigned MILITARY_RADIUS[6] =
-{ 8, 9, 10, 11, 9, 4 };
-
+/// Radien der Militärgebäude
+const boost::array<unsigned, 6> MILITARY_RADIUS = {{ 8, 9, 10, 11 }};
 // Radius für einzelne Hafen(baustellen)
-const unsigned HARBOR_ALONE_RADIUS = 8;
+const unsigned HARBOR_RADIUS = 8;
+const unsigned HQ_RADIUS = 9;
 
 /// Fahnenpositionen bei den Militärgebäuden
 

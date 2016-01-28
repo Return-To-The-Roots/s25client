@@ -35,27 +35,27 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase* const gwb)
+TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb)
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), gwb(gwb)
 {
     RTTR_Assert(x1 <= x2);
     RTTR_Assert(y1 <= y2);
     // Feld erzeugen
-    nodes.resize((x2 - x1) * (y2 - y1));
+    nodes.resize(width * height);
 }
 
 TerritoryRegion::~TerritoryRegion()
 {}
 
-bool TerritoryRegion::IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt)
+bool TerritoryRegion::IsPointInPolygon(const std::vector<MapPoint>& polygon, const MapPoint pt)
 {
 // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 // The site contains a lot of details and information.
 
     bool ret = false;
 
-    std::vector< MapPoint >::iterator it = polygon.begin();
-    std::vector< MapPoint >::iterator prev = polygon.end() - 1;
+    std::vector<MapPoint>::const_iterator it = polygon.begin();
+    std::vector<MapPoint>::const_iterator prev = polygon.end() - 1;
 
     for (; it < polygon.end(); prev = it, ++it)
     {
@@ -68,55 +68,55 @@ bool TerritoryRegion::IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint
     return(ret);
 }
 
-bool TerritoryRegion::IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt)
+bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt)
 {
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
-    MapPoint pt2 = MapPoint(pt.x + gwb->GetWidth(), pt.y),
-             pt3 = MapPoint(pt.x, pt.y + gwb->GetHeight()),
-             pt4 = MapPoint(pt.x + gwb->GetWidth(), pt.y + gwb->GetHeight());
+    MapPoint pt2 = MapPoint(pt.x + gwb.GetWidth(), pt.y),
+             pt3 = MapPoint(pt.x, pt.y + gwb.GetHeight()),
+             pt4 = MapPoint(pt.x + gwb.GetWidth(), pt.y + gwb.GetHeight());
     return(polygon.empty() ||
-           IsPointInPolygon(gwb, polygon, pt) ||
-           IsPointInPolygon(gwb, polygon, pt2) ||
-           IsPointInPolygon(gwb, polygon, pt3) ||
-           IsPointInPolygon(gwb, polygon, pt4));
+           IsPointInPolygon(polygon, pt) ||
+           IsPointInPolygon(polygon, pt2) ||
+           IsPointInPolygon(polygon, pt3) ||
+           IsPointInPolygon(polygon, pt4));
 }
 
-void TerritoryRegion::TestNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
+void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
 {
     int x = static_cast<int>(pt.x), y = static_cast<int>(pt.y);
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
     if(x < x1)
-        x += gwb->GetWidth();
+        x += gwb.GetWidth();
     else if(x >= x2)
-        x -= gwb->GetWidth();
+        x -= gwb.GetWidth();
     // Check the (possibly) adjusted point
     if(x < x1 || x >= x2)
         return;
 
     // Apply wrap-around if on either side
     if(y < y1)
-        y += gwb->GetHeight();
+        y += gwb.GetHeight();
     else if(y >= y2)
-        y -= gwb->GetHeight();
+        y -= gwb.GetHeight();
     // Check the (possibly) adjusted point
     if(y < y1 || y >= y2)
         return;
 
-    // check whether his node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(gwb, gwb->GetPlayer(player).GetRestrictedArea(), pt))
+    // check whether this node is within the area we may have territory in
+    if (check_barriers && !IsPointValid(gwb, gwb.GetPlayer(player).GetRestrictedArea(), pt))
         return;
 
     /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
-    unsigned idx = (y - y1) * (x2 - x1) + (x - x1);
+    TRNode& node = GetNode(x, y);
 
-    if(radius < nodes[idx].radius || !nodes[idx].owner)
+    if(radius < node.radius || !node.owner)
     {
-        nodes[idx].owner = player + 1;
-        nodes[idx].radius = radius;
+        node.owner = player + 1;
+        node.radius = radius;
     }
 }
 
@@ -130,27 +130,27 @@ struct GetMapPointWithRadius
     }
 };
 
-void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding* const building)
+void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {
     bool check_barriers = true;
     unsigned short radius;
 
-    if(building->GetBuildingType() == BLD_HARBORBUILDING)
-        radius = HARBOR_ALONE_RADIUS;
+    if(building.GetBuildingType() == BLD_HARBORBUILDING)
+        radius = HARBOR_RADIUS;
     else
-        radius = static_cast<const nobBaseMilitary*>(building)->GetMilitaryRadius();
+        radius = static_cast<const nobBaseMilitary&>(building).GetMilitaryRadius();
 
-    if (building->GetGOT() == GOT_NOB_MILITARY)
+    if (building.GetGOT() == GOT_NOB_MILITARY)
     {
         // we don't check barriers for captured buildings
-        check_barriers = !(static_cast<const nobMilitary*>(building)->WasCapturedOnce());
+        check_barriers = !static_cast<const nobMilitary&>(building).WasCapturedOnce();
     }
 
     // Punkt, auf dem das Militärgebäude steht
-    MapPoint pt = building->GetPos();
-    TestNode(pt, building->GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
+    MapPoint pt = building.GetPos();
+    AdjustNode(pt, building.GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 
-    std::vector<GetMapPointWithRadius::result_type> pts = gwb->GetPointsInRadius(pt, radius, GetMapPointWithRadius());
+    std::vector<GetMapPointWithRadius::result_type> pts = gwb.GetPointsInRadius(pt, radius, GetMapPointWithRadius());
     for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-        TestNode(it->first, building->GetPlayer(), it->second, check_barriers);
+        AdjustNode(it->first, building.GetPlayer(), it->second, check_barriers);
 }

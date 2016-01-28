@@ -114,7 +114,7 @@ class nobMilitary : public nobBaseMilitary
         bool IsNewBuilt() const { return new_built; }
 
         /// Liefert Militärradius des Gebäudes
-        MapCoord GetMilitaryRadius() const;
+        unsigned GetMilitaryRadius() const override;
 
         /// Sucht feindliche Miitärgebäude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
         /// auch von den feindlichen Gebäuden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen

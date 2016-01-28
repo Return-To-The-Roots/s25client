@@ -138,7 +138,7 @@ void nobMilitary::Destroy_nobMilitary()
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     if(!new_built)
-        gwg->RecalcTerritory(this, MILITARY_RADIUS[size], true, false);
+        gwg->RecalcTerritory(*this, true, false);
 
     GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), player);
 
@@ -341,7 +341,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
     }
 }
 
-unsigned short nobMilitary::GetMilitaryRadius() const
+unsigned int nobMilitary::GetMilitaryRadius() const
 {
     return MILITARY_RADIUS[size];
 }
@@ -600,11 +600,8 @@ void nobMilitary::OrderNewSoldiers()
 bool nobMilitary::IsUseless() const
 {
     if(frontier_distance || new_built)
-    {
         return false;
-    }
-    return(gwg->TerritoryChange(this, MILITARY_RADIUS[size], true, false));
-
+    return !gwg->DoesTerritoryChange(*this, true, false);
 }
 
 void nobMilitary::TakeWare(Ware* ware)
@@ -713,7 +710,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
-        gwg->RecalcTerritory(this, MILITARY_RADIUS[size], false, true);
+        gwg->RecalcTerritory(*this, false, true);
         // Tür zumachen
         CloseDoor();
         // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
@@ -968,7 +965,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     GetFlag()->Capture(new_owner);
 
     // Territorium neu berechnen
-    gwg->RecalcTerritory(this, MILITARY_RADIUS[size], false, false);
+    gwg->RecalcTerritory(*this, false, false);
 
     // Sichtbarkeiten berechnen für alten Spieler
     gwg->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, NULL);

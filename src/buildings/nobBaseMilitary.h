@@ -76,8 +76,8 @@ class nobBaseMilitary : public noBuilding
         /// Figur hinzufügen, die rausgehen will (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)
         void AddLeavingFigure(noFigure* fig);
 
-        /// Liefert Militärradius des Gebäudes (falls es ein Militärgebäude ist)
-        virtual MapCoord GetMilitaryRadius() const { return 0; }
+        /// Liefert Militärradius des Gebäudes
+        virtual unsigned GetMilitaryRadius() const = 0;
 
         /// Gibt Verteidiger zurück
         nofDefender* GetDefender() const { return defender_; }

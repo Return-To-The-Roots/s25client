@@ -107,7 +107,7 @@ class nobHarborBuilding : public nobBaseWarehouse
         nobHarborBuilding(SerializedGameData& sgd, const unsigned obj_id);
 public:
 
-        MapCoord GetMilitaryRadius() const { return HARBOR_ALONE_RADIUS; }
+        unsigned GetMilitaryRadius() const override { return HARBOR_RADIUS; }
 
         /// Aufräummethoden
         void Destroy();

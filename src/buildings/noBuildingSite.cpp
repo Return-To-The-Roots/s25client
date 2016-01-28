@@ -146,7 +146,7 @@ void noBuildingSite::Destroy_noBuildingSite()
     if(expeditionharbor)
     {
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
-        gwg->RecalcTerritory(this, HARBOR_ALONE_RADIUS, true, false);
+        gwg->RecalcTerritory(*this, true, false);
     }
 }
 

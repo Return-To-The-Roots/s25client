@@ -42,7 +42,7 @@ class nobHQ : public nobBaseWarehouse
 
         void Draw(int x, int y);
 
-        MapCoord GetMilitaryRadius() const { return MILITARY_RADIUS[4]; }
+        unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
 
         void HandleEvent(const unsigned int id);
 

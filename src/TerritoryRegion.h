@@ -29,59 +29,48 @@ class GameWorldBase;
 
 class TerritoryRegion
 {
-        /// Lage des Ausschnittes in der Karte
-        const int x1, y1, x2, y2;
-        /// Größe der Karte (wird aus x1,y1...) berechnet
-        const unsigned short width, height;
+    /// Beschreibung eines Knotenpunktes
+    struct TRNode
+    {
+        /// Spieler-index (+1, da 0 = besitzlos!)
+        unsigned char owner;
+        /// Entfernung vom Militärgebäude
+        unsigned char radius;
 
-        /// Beschreibung eines Knotenpunktes
-        struct TRNode
-        {
-            /// Spieler-index (+1, da 0 = besitzlos!)
-            unsigned char owner;
-            /// Entfernung vom Militärgebäude
-            unsigned char radius;
+        TRNode(): owner(0), radius(0){}
+    };
 
-            TRNode(): owner(0), radius(0){}
-        };
+public:
+    /// Position of the region on the map
+    const int x1, y1, x2, y2;
+    /// Size of the region (calculated from x2-x1, y2-y1)
+    const unsigned width, height;
 
-        std::vector<TRNode> nodes;
-        GameWorldBase* const gwb;
+private:
+    const GameWorldBase& gwb;
+    std::vector<TRNode> nodes;
 
-    private:
-        /// Check whether the point x, y is part of the polygon
-        static bool IsPointInPolygon(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
+    /// Check whether the point x, y is part of the polygon
+    static bool IsPointInPolygon(const std::vector<MapPoint>& polygon, const MapPoint pt);
+    /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
+    void AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
+    TRNode& GetNode(const int x, const int y) { return nodes[GetIdx(x, y)]; }
+    const TRNode& GetNode(const int x, const int y) const { return nodes[GetIdx(x, y)]; }
 
-        /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
-        void TestNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
+public:
+    TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb);
+    ~TerritoryRegion();
 
-        /// Unterfunktionen von AdjustBorders, vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
-        /// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
-        void AdjustNodes(const unsigned short x1, const unsigned short y1, const unsigned short x2, const unsigned short y2);
-        void AdjustNodes2(const unsigned short x1, const unsigned short y1, const unsigned short x2, const unsigned short y2);
+    static bool IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt);
 
-    public:
+    /// Berechnet ein Militärgebäude mit ein
+    void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
-
-        TerritoryRegion(const int x1, const int y1, const int x2, const int y2, GameWorldBase* const gwb);
-        ~TerritoryRegion();
-
-        static bool IsPointValid(GameWorldBase* gwb, std::vector< MapPoint > &polygon, const MapPoint pt);
-
-        /// Berechnet ein Militärgebäude mit ein
-        void CalcTerritoryOfBuilding(const noBaseBuilding* const building);
-
-        // Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
-        unsigned char GetOwner(const int x, const int y)
-        { return nodes[(y - y1) * (x2 - x1) + (x - x1)].owner; }
-        /// Liefert Radius mit dem der Punkt besetzt wurde
-        unsigned char GetRadius(const int x, const int y) const
-        { return nodes[(y - y1) * (x2 - x1) + (x - x1)].radius; }
-
-        // Korrigiert die Grenzen (schneidet vom aktuellen Territorium immer noch die äußeren Punkte ab für die Grenzpfähle)
-        void AdjustBorders();
-
-
+    unsigned GetIdx(const int x, const int y) const { return (y - y1) * width + (x - x1); }
+    /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
+    unsigned char GetOwner(const int x, const int y) const { return GetNode(x, y).owner; }
+    /// Liefert Radius mit dem der Punkt besetzt wurde
+    unsigned char GetRadius(const int x, const int y) const { return GetNode(x, y).radius; }
 };
 
 #endif
