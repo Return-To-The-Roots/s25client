@@ -15,31 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-#include "defines.h"
-#include "noNothing.h"
-
-// Include last!
-#include "DebugNew.h"
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p noBase.
- *
- *  @author OLiver
- */
-noNothing::noNothing(void) : noBase(NOP_NOTHING)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  An x,y zeichnen.
- *
- *  @author OLiver
- */
-void noNothing::Draw(int x, int y)
-{
-}
-
+#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
+#   define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#   define new DEBUG_NEW
+#endif

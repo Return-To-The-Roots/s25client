@@ -96,13 +96,8 @@
 #include "helpers/containerUtils.h"
 #include "helpers/converters.h"
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {

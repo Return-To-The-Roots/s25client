@@ -21,13 +21,8 @@
 #include "VideoDriver.h"
 #include <algorithm>
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 // Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
 IVideoDriver::~IVideoDriver(){}

@@ -30,13 +30,8 @@
 #include "SerializedGameData.h"
 #include "ogl/glSmartBitmap.h"
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
     : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)

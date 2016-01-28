@@ -27,13 +27,8 @@
 #include "iwMsgbox.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer* const gwv, const noBaseBuilding* building, const bool flag)
     : IngameWindow(building->CreateGUIID(), 0xFFFE, 0xFFFE, 200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)

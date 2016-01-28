@@ -31,13 +31,8 @@
 #include "gameData/GameConsts.h"
 #include "Log.h"
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),

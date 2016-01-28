@@ -27,13 +27,8 @@
 #include "GameWorldBase.h"
 #include <stdexcept>
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb)
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), gwb(gwb)

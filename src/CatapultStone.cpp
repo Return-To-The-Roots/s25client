@@ -31,13 +31,8 @@
 
 #include <cmath>
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                              const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :

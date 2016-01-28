@@ -27,13 +27,8 @@
 #include "nodeObjs/noBase.h"
 #include "GameClient.h"
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER
-#define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// Include last!
+#include "DebugNew.h"
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(0)
 {
