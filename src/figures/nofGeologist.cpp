@@ -28,6 +28,7 @@
 #include "GameClient.h"
 #include "nodeObjs/noSign.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "gameData/GameConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 
@@ -184,7 +185,6 @@ void nofGeologist::GoalReached()
     LookForNewNodes();
 
     // ersten Punkt suchen
-    /*dir = GetNextNode();*/
     GoToNextNode();
 }
 
@@ -215,22 +215,10 @@ void nofGeologist::Walked()
             unsigned char dir = gwg->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
-            if(dir == 0xFF)
-            {
-                // alten Punkt wieder freigeben
-                gwg->GetNode(node_goal).reserved = false;
-                // dann neuen Punkt suchen
-                dir = GetNextNode();
-                // falls es keinen gibt, dann zurück zur Flagge gehen und es übernimmt der andere "Walked"-Zweig
-                if(dir == 0xFF)
-                {
-                    state = STATE_GOTOFLAG;
-                    Walked();
-                    return;
-                }
-            }
-            
-            StartWalking(dir);
+            if(dir == INVALID_DIR)
+                GoToNextNode();
+            else
+                StartWalking(dir);
         }
     }
     else if(state == STATE_GOTOFLAG)
@@ -336,7 +324,11 @@ unsigned char nofGeologist::GetNextNode()
 {
     // Überhaupt noch Schilder zum Aufstellen
     if(!signs)
-        return 0xFF;
+    {
+        node_goal = MapPoint::Invalid();
+        return INVALID_DIR;
+    }
+
     do
     {
         // Sind überhaupt Punkte verfügbar?
@@ -348,22 +340,29 @@ unsigned char nofGeologist::GetNextNode()
             // und aus der Liste entfernen
             available_nodes.erase(available_nodes.begin() + randNode);
             // Gucken, ob er gut ist und ob man hingehen kann und ob er noch nicht reserviert wurde!
+            if(!IsNodeGood(node_goal) || gwg->GetNode(node_goal).reserved)
+                continue;
+            
             unsigned char ret_dir;
-            if(IsNodeGood(node_goal) && (ret_dir = gwg->FindHumanPath(pos, node_goal, 20)) != 0xFF && !gwg->GetNode(node_goal).reserved)
+            if(pos == node_goal)
+                ret_dir = INVALID_DIR;
+            else
             {
-                // Reservieren
-                gwg->GetNode(node_goal).reserved = true;;
-                return ret_dir;
+                ret_dir = gwg->FindHumanPath(pos, node_goal, 20);
+                if(ret_dir == INVALID_DIR)
+                    continue;
             }
+            // Reservieren
+            gwg->GetNode(node_goal).reserved = true;
+            return ret_dir;
         }
-
 
         // Nach neuen Punkten sucehn
         LookForNewNodes();
-    }
-    while(!available_nodes.empty());
+    }while(!available_nodes.empty());
 
-    return 0xFF;
+    node_goal = MapPoint::Invalid();
+    return INVALID_DIR;
 }
 
 void nofGeologist::GoToNextNode()
@@ -386,8 +385,13 @@ void nofGeologist::GoToNextNode()
         state = STATE_GEOLOGIST_GOTONEXTNODE;
         StartWalking(dir);
         --signs;
-    }
-    else
+    }else if(node_goal == pos)
+    {
+        // Already there
+        state = STATE_GEOLOGIST_GOTONEXTNODE;
+        --signs;
+        Walked();
+    }else
     {
         // ansonsten zur Flagge zurückgehen
         state = STATE_GOTOFLAG;
