@@ -81,4 +81,5 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 --
 
-for advanced info or help see INSTALL file or http://www.rttr.info 
+for advanced info or help see INSTALL file the [FAQ in the wiki](
+ https://github.com/Return-To-The-Roots/s25client/wiki/%5BFAQ%5D-Compiling) or http://www.rttr.info 
