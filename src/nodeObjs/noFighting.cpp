@@ -61,6 +61,12 @@ noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) :
     gwg->SetVisibilitiesAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
 }
 
+noFighting::~noFighting()
+{
+    deletePtr(soldiers[0]);
+    deletePtr(soldiers[1]);
+}
+
 void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);
@@ -222,13 +228,13 @@ void noFighting::HandleEvent(const unsigned int id)
                 {
                     if(--soldiers[!turn]->hitpoints == 0)
                     {
+                        // Besitzer merken für die Sichtbarkeiten am Ende dann
+                        player_won = soldiers[turn]->GetPlayer();
                         // Soldat Bescheid sagen, dass er stirbt
                         soldiers[!turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
                         gwg->AddFigure(soldiers[turn], soldiers[turn]->GetPos());
                         soldiers[turn]->WonFighting();
-                        // Besitzer merken für die Sichtbarkeiten am Ende dann
-                        player_won = soldiers[turn]->GetPlayer();
                         soldiers[turn] = NULL;
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         turn = 3 + (!turn);

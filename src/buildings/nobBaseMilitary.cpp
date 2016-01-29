@@ -43,14 +43,12 @@
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
                                  const unsigned char player, const Nation nation)
     : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender_(0)
-{
-
-}
+{}
 
 nobBaseMilitary::~nobBaseMilitary()
 {
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
-        delete (*it);
+        delete *it;
 }
 
 void nobBaseMilitary::Destroy_nobBaseMilitary()

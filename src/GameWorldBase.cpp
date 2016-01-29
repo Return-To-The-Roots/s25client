@@ -229,7 +229,7 @@ void GameWorldBase::Unload()
 {
     // Straßen sammeln und alle dann vernichten
     std::set<RoadSegment*> roadsegments;
-     for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         if(!it->obj || it->obj->GetGOT() != GOT_FLAG)
             continue;

@@ -47,6 +47,7 @@ class noFighting : public noBase
 
         noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
         noFighting(SerializedGameData& sgd, const unsigned obj_id);
+        ~noFighting();
 
         /// Aufräummethoden
     protected:  void Destroy_noFighting();
