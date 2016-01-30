@@ -185,7 +185,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
 
     RenewViewport();
 
-    WINDOWMANAGER.Msg_ScreenResize(screenWidth, screenHeight);
+    WINDOWMANAGER.Msg_ScreenResize(videodriver->GetScreenWidth(), videodriver->GetScreenHeight());
 
     return result;
 }

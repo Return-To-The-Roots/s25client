@@ -113,7 +113,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *
  *  @author FloSoft
  */
-VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0)
+VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), isWindowResizable(false)
 {
     memset(&dm_prev, 0, sizeof(DEVMODE));
     dm_prev.dmSize = sizeof(DEVMODE);
@@ -374,7 +374,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
  */
 bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
-    if(!initialized)
+    if(!initialized || !isWindowResizable)
         return false;
 
     if(this->isFullscreen_ && !fullscreen)
@@ -395,8 +395,14 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
         wRect.left = 0;
         wRect.top  = 0;
     }else{
-        wRect.left = (GetSystemMetrics(SM_CXSCREEN) - width)  / 2;
-        wRect.top  = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+        RECT workArea;
+        SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+        unsigned short waWidth = workArea.right - workArea.left;
+        unsigned short waHeight = workArea.bottom - workArea.top;
+        width = std::min(width, waWidth);
+        height = std::min(height, waHeight);
+        wRect.left = (waWidth - width)  / 2;
+        wRect.top  = (waHeight - height) / 2;
     }
     wRect.right  = wRect.left + width;
     wRect.bottom = wRect.top  + height;
@@ -404,7 +410,13 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     AdjustWindowRectEx(&wRect, wStyle, false, wExStyle);
 
     // Fenstergröße ändern
-    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED);
+    UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
+
+    this->screenWidth = width;
+    this->screenHeight = height;
+    this->isFullscreen_ = fullscreen;
+
+    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, flags);
 
     // Bei Vollbild Auflösung umstellen
     if(fullscreen)
@@ -418,10 +430,6 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
 
         ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
     }
-
-    this->screenWidth  = width;
-    this->screenHeight = height;
-    this->isFullscreen_ = fullscreen;
 
     // Das Fenster anzeigen
     ShowWindow(screen, SW_SHOW);
@@ -750,6 +758,19 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             PostQuitMessage(0);
             return 0;
         } break;
+        case WM_SIZE:
+            if(wParam != SIZE_MAXIMIZED && wParam != SIZE_RESTORED)
+                break;
+            if(pVideoWinAPI->screenWidth != LOWORD(lParam) || pVideoWinAPI->screenHeight != HIWORD(lParam))
+            {
+                pVideoWinAPI->screenWidth = LOWORD(lParam);
+                pVideoWinAPI->screenHeight = HIWORD(lParam);
+
+                pVideoWinAPI->isWindowResizable = false;
+                pVideoWinAPI->CallBack->ScreenResized(pVideoWinAPI->screenWidth, pVideoWinAPI->screenHeight);
+                pVideoWinAPI->isWindowResizable = true;
+            }
+            break;
         case WM_ACTIVATE:
         {
             switch(wParam)
