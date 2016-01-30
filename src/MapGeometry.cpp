@@ -22,9 +22,10 @@
 #include <cassert>
 #include <cstdlib>
 
+// Include last!
+#include "DebugNew.h"
 
-unsigned CalcRawDistance(const int x1, const int y1,
-                         const int x2, const int y2)
+unsigned CalcRawDistance(const int x1, const int y1, const int x2, const int y2)
 {
     int dx = std::abs(((x1 - x2) * 2) + (y1 & 1) - (y2 & 1));
     int dy = std::abs(y1 - y2) * 2;

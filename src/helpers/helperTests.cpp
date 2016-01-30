@@ -24,6 +24,9 @@
 #include <boost/static_assert.hpp>
 #include <vector>
 
+// Include last!
+#include "DebugNew.h"
+
 // Use unnamed namespace
 namespace{
 

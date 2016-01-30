@@ -21,6 +21,8 @@
 #include "noExtension.h"
 #include "SerializedGameData.h"
 
+// Include last!
+#include "DebugNew.h"
 
 void noExtension::Serialize_noExtension(SerializedGameData& sgd) const
 {

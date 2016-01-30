@@ -19,6 +19,9 @@
 #include "TradePath.h"
 #include "SerializedGameData.h"
 
+// Include last!
+#include "DebugNew.h"
+
 TradePath::TradePath(SerializedGameData& sgd): start(sgd.PopMapPoint()), goal(sgd.PopMapPoint()), route(sgd.PopContainer(route)){}
 
 void TradePath::Serialize(SerializedGameData& sgd) const

@@ -26,6 +26,9 @@
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListVector.h"
 
+// Include last!
+#include "DebugNew.h"
+
 /// Comparison operator for road nodes that returns true if lhs > rhs (descending order)
 struct RoadNodeComperatorGreater
 {

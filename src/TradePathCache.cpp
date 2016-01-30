@@ -21,6 +21,9 @@
 #include "GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
+// Include last!
+#include "DebugNew.h"
+
 bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player)
 {
     RTTR_Assert(start != goal);

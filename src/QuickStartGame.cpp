@@ -25,6 +25,9 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include <boost/array.hpp>
 
+// Include last!
+#include "DebugNew.h"
+
 bool QuickStartGame(const std::string& filePath)
 {
     CreateServerInfo csi;

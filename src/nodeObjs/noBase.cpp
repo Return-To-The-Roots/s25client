@@ -21,6 +21,9 @@
 #include "noBase.h"
 #include "SerializedGameData.h"
 
+// Include last!
+#include "DebugNew.h"
+
 noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
 {
     nop = NodalObjectType(sgd.PopUnsignedChar());

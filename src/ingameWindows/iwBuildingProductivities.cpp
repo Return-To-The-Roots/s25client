@@ -23,6 +23,8 @@
 #include "GameClient.h"
 #include "files.h"
 
+// Include last!
+#include "DebugNew.h"
 
 /// Anzahl der angezeigten Gebäude
 const unsigned BUILDINGS_COUNT = 24;

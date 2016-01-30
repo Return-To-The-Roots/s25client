@@ -19,3 +19,6 @@
 // Header
 #include "defines.h"
 #include "GameMessages.h"
+
+// Include last!
+#include "DebugNew.h"

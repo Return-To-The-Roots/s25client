@@ -18,7 +18,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-
 #include "defines.h"
 #include "noShip.h"
 #include "Loader.h"
@@ -35,6 +34,9 @@
 #include "figures/nofAttacker.h"
 #include "gameData/GameConsts.h"
 #include "Log.h"
+
+// Include last!
+#include "DebugNew.h"
 
 const unsigned int ship_count = 55;
 

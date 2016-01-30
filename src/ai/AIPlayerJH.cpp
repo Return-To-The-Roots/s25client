@@ -45,6 +45,9 @@
 #include <set>
 #include <algorithm>
 
+// Include last!
+#include "DebugNew.h"
+
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
 

@@ -19,6 +19,9 @@
 #include "DataChangedObservable.h"
 #include "IDataChangedListener.h"
 
+// Include last!
+#include "DebugNew.h"
+
 void DataChangedObservable::AddListener(IDataChangedListener* listener)
 {
     listeners.push_back(listener);

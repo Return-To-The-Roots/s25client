@@ -18,6 +18,9 @@
 #include "defines.h"
 #include "LanDiscoveryCfg.h"
 
+// Include last!
+#include "DebugNew.h"
+
 static LANDiscoveryBase::Config makeDiscoveryConfig()
 {
     LANDiscoveryBase::Config cfg;

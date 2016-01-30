@@ -21,6 +21,9 @@
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"
 
+// Include last!
+#include "DebugNew.h"
+
 namespace FW
 {
 

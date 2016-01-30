@@ -26,6 +26,9 @@
 #include <ctime>
 #include <cstdio>
 
+// Include last!
+#include "DebugNew.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sleep at least some number of microseconds

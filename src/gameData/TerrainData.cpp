@@ -19,6 +19,9 @@
 #include "TerrainData.h"
 #include <boost/array.hpp>
 
+// Include last!
+#include "DebugNew.h"
+
 TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
 {
     // Unset bit 0x40 (harbour) and 0x80 (unknown)

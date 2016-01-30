@@ -64,6 +64,9 @@
 #include <stdexcept>
 #include "helpers/converters.h"
 
+// Include last!
+#include "DebugNew.h"
+
 noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player, noRoadNode* const goal){
     switch(job_id)
     {

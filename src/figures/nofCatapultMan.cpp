@@ -28,6 +28,9 @@
 #include "gameData/MapConsts.h"
 #include "SerializedGameData.h"
 
+// Include last!
+#include "DebugNew.h"
+
 const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())

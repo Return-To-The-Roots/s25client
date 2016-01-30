@@ -23,6 +23,8 @@
 #include "Loader.h"
 #include "controls/ctrlButton.h"
 
+// Include last!
+#include "DebugNew.h"
 
 /// (maximale) Größe des Minimapfensters normal
 const unsigned short MINIMAP_WINDOW_WIDTH = 200;

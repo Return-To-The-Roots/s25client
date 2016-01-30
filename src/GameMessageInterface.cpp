@@ -20,6 +20,9 @@
 #include "defines.h"
 #include "GameMessageInterface.h"
 
+// Include last!
+#include "DebugNew.h"
+
 void GameMessageInterface::OnNMSPing(const GameMessage_Ping& msg) {}
 void GameMessageInterface::OnNMSPong(const GameMessage_Pong& msg) {}
 

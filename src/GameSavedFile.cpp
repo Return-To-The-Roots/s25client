@@ -28,6 +28,9 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
 
+// Include last!
+#include "DebugNew.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *

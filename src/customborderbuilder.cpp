@@ -47,11 +47,10 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 #include "../libsiedler2/src/ArchivItem_Palette.h"
 #include "../libsiedler2/src/ArchivInfo.h"
 
-using namespace libsiedler2;
+// Include last!
+#include "DebugNew.h"
 
-/*--- CustomBorderBuilder-Klasse *********************************************/
-
-CustomBorderBuilder::CustomBorderBuilder(const ArchivItem_Palette* const palette) : palette(palette)
+CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette* const palette) : palette(palette)
 {
     edgesLoaded = false;
 }
@@ -80,7 +79,7 @@ CustomBorderBuilder::~CustomBorderBuilder()
     }
 }
 
-int CustomBorderBuilder::loadEdges(const ArchivInfo* archiveInfo)
+int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo* archiveInfo)
 {
     // simples Fehlerabfangen
     if (archiveInfo->size() != 57)
@@ -89,8 +88,7 @@ int CustomBorderBuilder::loadEdges(const ArchivInfo* archiveInfo)
     // Musterstücke einladen
     /* Evtl. könnte man hier nur den größten Rahmen laden und alle Teile aus diesem rauskopieren, um das Ganze etwas schneller zu machen.
        Allerdings sind die einander entsprechenden Stücke teilweise nicht in jeder Auflösung tatsächlich gleich, sodass man das für jedes vorher prüfen müsste.*/
-    BdrBitmap* tempBMP;
-    tempBMP = new BdrBitmap(1280, 1024);
+    BdrBitmap* tempBMP = new BdrBitmap(1280, 1024);
     //palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo->get(4))->getPalette();
     // 640x480
     {
@@ -142,16 +140,14 @@ int CustomBorderBuilder::loadEdges(const ArchivInfo* archiveInfo)
     }
     // 1280x1024 links
     {
-        BdrBitmap* pic1;
-        pic1 = new BdrBitmap(640, 1024);
+        BdrBitmap* pic1 = new BdrBitmap(640, 1024);
         BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(13)), pic1);
         tempBMP->put(0, 0, pic1);
         delete pic1;
     }
     // und rechts
     {
-        BdrBitmap* pic2;
-        pic2 = new BdrBitmap(640, 1024);
+        BdrBitmap* pic2 = new BdrBitmap(640, 1024);
         BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(14)), pic2);
         tempBMP->put(640, 0, pic2);
         delete pic2;
@@ -167,8 +163,7 @@ int CustomBorderBuilder::loadEdges(const ArchivInfo* archiveInfo)
     return 0;
 }
 
-int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned int height,
-                                     ArchivInfo* borderInfo)
+int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned int height, libsiedler2::ArchivInfo* borderInfo)
 {
     // simples Fehlerabfangen
     if (width < 640 || height < 480)

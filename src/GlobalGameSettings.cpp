@@ -69,6 +69,9 @@
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
 
+// Include last!
+#include "DebugNew.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *

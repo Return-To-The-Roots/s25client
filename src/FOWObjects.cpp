@@ -23,8 +23,8 @@
 #include "GameClient.h"
 #include "gameData/BuildingConsts.h"
 
-
-
+// Include last!
+#include "DebugNew.h"
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(const unsigned color)

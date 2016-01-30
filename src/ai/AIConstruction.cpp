@@ -28,9 +28,8 @@
 #include "buildings/noBuildingSite.h"
 #include <algorithm>
 
-// from Pathfinding.cpp
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
+// Include last!
+#include "DebugNew.h"
 
 const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS }};
 

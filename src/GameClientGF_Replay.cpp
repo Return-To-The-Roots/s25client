@@ -28,6 +28,9 @@
 #include "ClientInterface.h"
 #include "GameMessages.h"
 
+// Include last!
+#include "DebugNew.h"
+
 void GameClient::ExecuteGameFrame_Replay()
 {
     randcheckinfo.rand = RANDOM.GetCurrentRandomValue();

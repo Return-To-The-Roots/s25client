@@ -19,6 +19,9 @@
 #include "FramesInfo.h"
 #include "helpers/mathFuncs.h"
 
+// Include last!
+#include "DebugNew.h"
+
 FramesInfo::FramesInfo()
 {
     Clear();

@@ -20,6 +20,9 @@
 #include "defines.h"
 #include "AIEventManager.h"
 
+// Include last!
+#include "DebugNew.h"
+
 AIEventManager::AIEventManager(void)
 {
 }

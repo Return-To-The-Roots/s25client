@@ -47,6 +47,9 @@
 #include <queue>
 #include <algorithm>
 
+// Include last!
+#include "DebugNew.h"
+
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& filename)
 {

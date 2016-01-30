@@ -22,6 +22,9 @@
 #include "Random.h"
 #include "GameMessages.h"
 
+// Include last!
+#include "DebugNew.h"
+
 void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen

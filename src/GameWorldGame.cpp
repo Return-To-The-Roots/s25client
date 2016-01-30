@@ -60,6 +60,9 @@
 #include <algorithm>
 #include <stdexcept>
 
+// Include last!
+#include "DebugNew.h"
+
 GameWorldGame::GameWorldGame()
 {
     TradePathCache::inst().Clear();

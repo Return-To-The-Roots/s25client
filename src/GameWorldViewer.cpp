@@ -38,6 +38,9 @@
 
 #include "driver/src/MouseCoords.h"
 
+// Include last!
+#include "DebugNew.h"
+
 GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {
     view.SetGameWorldViewer(this);

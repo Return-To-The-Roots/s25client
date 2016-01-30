@@ -17,7 +17,7 @@
 #ifndef CTRL_MINIMAP_H_
 #define CTRL_MINIMAP_H_
 
-#include "ctrlRectangle.h"
+#include "Window.h"
 #include "gameTypes/MapTypes.h"
 
 class Minimap;

@@ -34,6 +34,8 @@
 
 #include "files.h"
 
+// Include last!
+#include "DebugNew.h"
 
 const unsigned BUILDINGS_COUNT = 32;
 

@@ -17,7 +17,7 @@
 #ifndef CTRL_MULTILINE_H_INCLUDED
 #define CTRL_MULTILINE_H_INCLUDED
 
-#include "ctrlRectangle.h"
+#include "Window.h"
 #include <vector>
 
 class ctrlMultiline : public Window

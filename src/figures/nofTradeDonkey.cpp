@@ -23,6 +23,9 @@
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 
+// Include last!
+#include "DebugNew.h"
+
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
     : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)
 {

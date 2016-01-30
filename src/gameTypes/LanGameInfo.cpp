@@ -18,6 +18,9 @@
 #include "LanGameInfo.h"
 #include "Serializer.h"
 
+// Include last!
+#include "DebugNew.h"
+
 bool LanGameInfo::Serialize(Serializer& serializer)
 {
     if (name.size() > 64)

@@ -19,6 +19,9 @@
 #include "helpers/mathFuncs.h"
 #include <algorithm>
 
+// Include last!
+#include "DebugNew.h"
+
 namespace helpers{
     int gcd(int a, int b)
     {

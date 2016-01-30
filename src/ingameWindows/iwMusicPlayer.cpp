@@ -35,6 +35,9 @@
 #include "Settings.h"
 #include <boost/filesystem.hpp>
 
+// Include last!
+#include "DebugNew.h"
+
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, 0xFFFE, 0xFFFE,
                    300, 100, title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)

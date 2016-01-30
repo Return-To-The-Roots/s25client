@@ -31,6 +31,8 @@
 
 #include <iostream>
 
+// Include last!
+#include "DebugNew.h"
 
 AIJH::Job::Job(AIPlayerJH& aijh)
     : aijh(aijh), status(AIJH::JOB_WAITING)

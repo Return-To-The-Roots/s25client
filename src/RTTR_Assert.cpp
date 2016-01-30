@@ -24,6 +24,9 @@
 #   include <windows.h>
 #endif
 
+// Include last!
+#include "DebugNew.h"
+
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)
 {
     static const std::string thisFilePath = __FILE__;

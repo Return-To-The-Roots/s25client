@@ -43,6 +43,9 @@
 #include "ogl/glSmartBitmap.h"
 #include <stdexcept>
 
+// Include last!
+#include "DebugNew.h"
+
 GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned short height):
 	selPt(0, 0),
 	show_coordinates(false),

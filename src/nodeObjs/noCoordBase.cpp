@@ -22,6 +22,9 @@
 #include "GameWorldGame.h"
 #include "SerializedGameData.h"
 
+// Include last!
+#include "DebugNew.h"
+
 void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);

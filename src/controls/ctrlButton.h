@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "ctrlRectangle.h"
+#include "ColorControlInterface.h"
 #include "ctrlText.h"
 
 #include <string>

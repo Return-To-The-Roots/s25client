@@ -18,7 +18,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-
 #include "defines.h"
 #include "noAnimal.h"
 #include "Loader.h"
@@ -32,6 +31,9 @@
 #include "gameData/TerrainData.h"
 
 #include "ogl/glSmartBitmap.h"
+
+// Include last!
+#include "DebugNew.h"
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)

@@ -20,6 +20,9 @@
 #include "GameClient.h"
 #include "SerializedGameData.h"
 
+// Include last!
+#include "DebugNew.h"
+
 void MapNode::Serialize(SerializedGameData& sgd) const
 {
     for(unsigned z = 0; z < roads.size(); ++z)

@@ -19,6 +19,9 @@
 #include "gameData/JobConsts.h"
 #include "mygettext.h"
 
+// Include last!
+#include "DebugNew.h"
+
 const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES =
 {{
     gettext_noop("Helper"),

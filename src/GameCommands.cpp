@@ -29,6 +29,9 @@
 
 #include <cstdlib>
 
+// Include last!
+#include "DebugNew.h"
+
 namespace gc{
 
     void SetFlag::Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid)

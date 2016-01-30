@@ -20,7 +20,7 @@
 #pragma once
 
 #include "ctrlText.h"
-#include "ctrlRectangle.h"
+#include "ColorControlInterface.h"
 
 class ctrlDeepening : public ctrlText
 {
