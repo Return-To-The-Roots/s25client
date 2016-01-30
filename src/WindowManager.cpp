@@ -28,6 +28,7 @@
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
 #include "drivers/ScreenResizeEvent.h"
+#include "Log.h"
 
 #include <ctime>
 #include <algorithm>
@@ -782,6 +783,7 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 
     // Und los
     VIDEODRIVER.ResizeScreen(newWidth, newHeight, VIDEODRIVER.IsFullscreen());
+    LOG.write("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
