@@ -46,7 +46,7 @@ struct InventorySettings
 };
 
 /// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen) wichtig sind.
-/// Change events: 0=InventorySettings
+/// Change events: 1=InventorySettings
 class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 {
     protected:

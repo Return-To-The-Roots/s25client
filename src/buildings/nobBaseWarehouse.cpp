@@ -1221,7 +1221,7 @@ void nobBaseWarehouse::SetInventorySettingVisual(const bool isJob, const unsigne
     else
         inventorySettingsVisual.wares[type] = state;
 
-    NotifyListeners(0);
+    NotifyListeners(1);
 }
 
 /// Verändert Ein/Auslagerungseinstellungen (real)
@@ -1261,7 +1261,7 @@ void nobBaseWarehouse::SetInventorySetting(const bool isJob, const unsigned char
         if(!store_event)
             store_event = em->AddEvent(this, STORE_INTERVAL, 4);
     }
-    NotifyListeners(0);
+    NotifyListeners(1);
 }
 
 /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)

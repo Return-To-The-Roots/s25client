@@ -22,6 +22,11 @@
 // Include last!
 #include "DebugNew.h"
 
+DataChangedObservable::~DataChangedObservable()
+{
+    NotifyListeners(0);
+}
+
 void DataChangedObservable::AddListener(IDataChangedListener* listener)
 {
     listeners.push_back(listener);

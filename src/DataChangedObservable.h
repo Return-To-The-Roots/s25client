@@ -29,7 +29,9 @@ public:
     void AddListener(IDataChangedListener* listener);
     void RemoveListener(IDataChangedListener* listener);
 protected:
+    virtual ~DataChangedObservable();
     /// Notifies all registered listeners
+    /// ID=0 means, this is removed and should no longer be referenced
     void NotifyListeners(unsigned changeId);
 };
 

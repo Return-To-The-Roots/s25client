@@ -91,7 +91,8 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* c
 
 iwBaseWarehouse::~iwBaseWarehouse()
 {
-    wh->RemoveListener(this);
+    if(wh)
+        wh->RemoveListener(this);
 }
 
 void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
@@ -293,5 +294,9 @@ void iwBaseWarehouse::UpdateOverlays()
 void iwBaseWarehouse::OnChange(unsigned changeId)
 {
     if(changeId == 0)
+    {
+        wh = NULL;
+        Close();
+    }else if(changeId == 1)
         UpdateOverlays();
 }
