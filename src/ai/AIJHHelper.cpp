@@ -143,14 +143,13 @@ void AIJH::BuildJob::TryToBuild()
             case BLD_WOODCUTTER:
             {
                 unsigned numWoodcutter = aiConstruction.GetBuildingCount(BLD_WOODCUTTER);
-                foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, (numWoodcutter > 2) ? 20 : 1 + aiConstruction.GetBuildingCount(BLD_WOODCUTTER) * 10, 11);
-                if(foundPos && !aijh.ValidTreeinRange(bPos))
-                    foundPos = false;
+                foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 20, 11);                
                 break;
             }
             case BLD_FORESTER:
-				if ((aiConstruction.GetBuildingCount(BLD_FORESTER)<2 || !aiConstruction.OtherUsualBuildingInRadius(bPos, 35, BLD_FORESTER)) && (aijh.GetDensity(bPos, AIJH::PLANTSPACE, 7) > 30 || (aijh.GetDensity(bPos, AIJH::PLANTSPACE, 7) > 15 && aiConstruction.GetBuildingCount(BLD_FORESTER) < 2)))
-                    foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 0, 11);
+                // ensure some distance to other foresters and an minimal amount of plantspace
+                if (!aiConstruction.OtherUsualBuildingInRadius(bPos, 12, BLD_FORESTER) && (aijh.GetDensity(bPos, AIJH::PLANTSPACE, 7) > 15))
+                    foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 0, 11);                
                 break;
             case BLD_HUNTER:
             {
@@ -262,7 +261,7 @@ void AIJH::BuildJob::TryToBuild()
 
 #ifdef DEBUG_AI
     if (type == BLD_FARM)
-        std::cout << " Player " << (unsigned)aijh.GetPlayerID() << " built farm at " << bPos.x << "/" << bPos.y << " on value of " << aijh.resourceMaps[AIJH::PLANTSPACE][aii->GetIdx(bPos)] << std::endl;
+        std::cout << " Player " << (unsigned)aijh.GetPlayerID() << " built farm at " << bPos.x << "/" << bPos.y << " on value of " << aijh.resourceMaps[AIJH::PLANTSPACE][bPos] << std::endl;
 #endif
 
     aijh.GetInterface().SetBuildingSite(bPos, type);
@@ -312,7 +311,7 @@ void AIJH::BuildJob::BuildMainRoad()
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-            std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
+std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.nodes[aijh.GetInterface().GetIdx(target)].reachable = false;
             aijh.GetInterface().DestroyBuilding(target);
@@ -407,7 +406,7 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
         // Baustelle wurde wohl zerstört, oh schreck!
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target_x << "/" << target_y << ". Retrying..." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
         aijh.AddBuildJob(type, around);
         return;

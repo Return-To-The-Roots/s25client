@@ -573,8 +573,6 @@ bool AIConstruction::MilitaryBuildingSitesLimit()
 
 void AIConstruction::RefreshBuildingCount()
 {
-    unsigned resourcelimit = 0; //variables to make this more readable for humans
-    unsigned bonuswant = 0;
 	//max processing
     unsigned foodusers=GetBuildingCount(BLD_CHARBURNER)+GetBuildingCount(BLD_MILL)+GetBuildingCount(BLD_BREWERY)+GetBuildingCount(BLD_PIGFARM)+GetBuildingCount(BLD_DONKEYBREEDER);
 	
@@ -587,7 +585,7 @@ void AIConstruction::RefreshBuildingCount()
     {
         buildingsWanted[BLD_FORESTER] = 1;
         buildingsWanted[BLD_SAWMILL] = 2; //probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very quickly
-        buildingsWanted[BLD_WOODCUTTER] = 1;
+        buildingsWanted[BLD_WOODCUTTER] = 2;
         buildingsWanted[BLD_QUARRY] = 2;
         buildingsWanted[BLD_GRANITEMINE] = 0;
         buildingsWanted[BLD_COALMINE] = 0;
@@ -605,21 +603,24 @@ void AIConstruction::RefreshBuildingCount()
         const Goods& inventory = aii.GetInventory();
 
         //foresters
-        resourcelimit = inventory.people[JOB_FORESTER] + inventory.goods[GD_SHOVEL] + 1; //bonuswant for foresters depends on addon settings for mines,wells,charburner
-        bonuswant = GetBuildingCount(BLD_CHARBURNER) + ((!aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES) && ((GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_COALMINE) + GetBuildingCount(BLD_GOLDMINE)) > 6)) ? 1 : 0) + ((aijh.ggs.isEnabled(ADDON_EXHAUSTIBLE_WELLS) && GetBuildingCount(BLD_WELL) > 3) ? 1 : 0);
-        buildingsWanted[BLD_FORESTER] = max<int>((min<int>((militaryBuildings.size() > 29 ? 5 : (militaryBuildings.size() / 6) + 1) + bonuswant, resourcelimit)), 1);
-		
+        unsigned max_available_forester = inventory.people[JOB_FORESTER] + inventory.goods[GD_SHOVEL];
+        unsigned additional_forester = GetBuildingCount(BLD_CHARBURNER);
+
+        // 1 mil -> 1 forester, 2 mil -> 2 forester, 4 mil -> 3 forester, 8 mil -> 4 forester, 16 mil -> 5 forester, ... wanted
+        if (!militaryBuildings.empty())
+            buildingsWanted[BLD_FORESTER] = (unsigned) (1.45 * log(militaryBuildings.size()) + 1);
+
+        buildingsWanted[BLD_FORESTER] += additional_forester;
+        buildingsWanted[BLD_FORESTER] = min<int>(max_available_forester, buildingsWanted[BLD_FORESTER]);
 
 		//earlygame: limit board use so limited to militarybuildingcount
         //woodcutters
-		buildingsWanted[BLD_WOODCUTTER] = (inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER] + 1)>(militaryBuildings.size()+1)?(militaryBuildings.size()+1):(inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER] + 1);
-		
-		//on maps with many trees the ai will build woodcutters all over the place which means the foresters are not really required
-		if((buildingsWanted[BLD_FORESTER]>1 && militaryBuildings.size()<10 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+3) || (buildingsWanted[BLD_FORESTER]>1 && buildingsWanted[BLD_WOODCUTTER]<GetBuildingCount(BLD_WOODCUTTER)+2) )
-		{
-			buildingsWanted[BLD_FORESTER]=1;
-		}
+        unsigned max_available_woodcutter = inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER];
+        buildingsWanted[BLD_WOODCUTTER] = buildingsWanted[BLD_FORESTER] * 3; // two per forester + 1 for 'natural' forest
+        buildingsWanted[BLD_WOODCUTTER] = min<int>(max_available_woodcutter, buildingsWanted[BLD_WOODCUTTER]);
 
+		////on maps with many trees the ai will build woodcutters all over the place which means the foresters are not really required 
+        // TODO: get number of trees in own territory. use it relatively to total size of own territory to adapt number of foresters (less) and woodcutters (more)
 
         //fishery & hunter
         buildingsWanted[BLD_FISHERY] = (inventory.goods[GD_RODANDLINE] + inventory.people[JOB_FISHER])>(militaryBuildings.size()+1)?(militaryBuildings.size()+1):(inventory.goods[GD_RODANDLINE] + inventory.people[JOB_FISHER]);
@@ -638,7 +639,7 @@ void AIConstruction::RefreshBuildingCount()
 				buildingsWanted[BLD_QUARRY] = militaryBuildings.size();
 		}
         //sawmills limited by woodcutters and carpenter+saws reduced by charburners minimum of 2
-        resourcelimit = inventory.people[JOB_CARPENTER] + inventory.goods[GD_SAW];
+        unsigned resourcelimit = inventory.people[JOB_CARPENTER] + inventory.goods[GD_SAW];
         buildingsWanted[BLD_SAWMILL] = max<int>(min<int>((GetBuildingCount(BLD_WOODCUTTER) - (GetBuildingCount(BLD_CHARBURNER) * 2)) / 2, resourcelimit), 3); //min 2
 
         //ironsmelters limited by ironmines or crucibles

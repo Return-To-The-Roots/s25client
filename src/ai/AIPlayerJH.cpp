@@ -126,7 +126,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     if (!gfisnwf) //try to complete a job on the list
     {
 		//LOG.lprintf("ai doing stuff %i \n",playerid);
-        construction->RefreshBuildingCount();
+        if (gf % 100 == 0)
+            construction->RefreshBuildingCount();
         ExecuteAIJob();
     }
 
@@ -795,6 +796,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
     return false;
 }
 
+// TODO: this totally ignores existing buildings of the same type. It should not. Re-introduce the resource maps?
 bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
     if(res == AIJH::IRONORE || res == AIJH::COAL || res == AIJH::GOLD || res == AIJH::GRANITE || res == AIJH::STONES || res == AIJH::FISH)
