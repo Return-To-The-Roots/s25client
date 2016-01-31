@@ -397,8 +397,8 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     }else{
         RECT workArea;
         SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
-        unsigned short waWidth = workArea.right - workArea.left;
-        unsigned short waHeight = workArea.bottom - workArea.top;
+        unsigned short waWidth  = static_cast<unsigned short>(workArea.right - workArea.left);
+        unsigned short waHeight = static_cast<unsigned short>(workArea.bottom - workArea.top);
         width = std::min(width, waWidth);
         height = std::min(height, waHeight);
         wRect.left = (waWidth - width)  / 2;
