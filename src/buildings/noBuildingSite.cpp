@@ -127,22 +127,20 @@ void noBuildingSite::Destroy_noBuildingSite()
 
     // und Feld wird leer
     gwg->SetNO(pos, NULL);
-    // Anbauten drumrum ggf. zerstören
-    DestroyBuildingExtensions();
-
-    gwg->RecalcBQAroundPointBig(pos);
 
     // Baustelle wieder aus der Liste entfernen - dont forget about expedition harbor status
     bool expeditionharbor = IsHarborBuildingSiteFromSea();
     gwg->GetPlayer(player).RemoveBuildingSite(this);
 
     Destroy_noBaseBuilding();
+
     // Hafenbaustelle?
     if(expeditionharbor)
     {
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
         gwg->RecalcTerritory(*this, true, false);
     }
+    gwg->RecalcBQAroundPointBig(pos);
 }
 
 void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const

@@ -45,7 +45,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     // Evtl Flagge setzen, wenn noch keine da ist
     if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
     {
-        gwg->DestroyNO(flagPt);
+        gwg->DestroyNO(flagPt, false);
         gwg->SetNO(flagPt, new noFlag(flagPt, player));
     }
 
