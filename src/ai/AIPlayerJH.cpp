@@ -32,7 +32,7 @@
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noAnimal.h"
 
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "AIConstruction.h"
 #include "gameData/TerrainData.h"
 #include "FindWhConditions.h"

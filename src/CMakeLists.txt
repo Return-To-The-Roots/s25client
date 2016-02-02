@@ -47,6 +47,7 @@ AddDirectory(ingameWindows)
 AddDirectory(nodeObjs)
 AddDirectory(ogl)
 AddDirectory(pathfinding)
+AddDirectory(world)
 
 ################################################################################
 

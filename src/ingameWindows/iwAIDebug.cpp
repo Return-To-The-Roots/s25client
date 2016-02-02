@@ -165,7 +165,7 @@ void iwAIDebug::Msg_PaintBefore()
             case AIEvent::BuildingLost: ss << "BuildingLost" << std::endl; break;
             case AIEvent::BuildingOccupied: ss << "BuildingOccupied" << std::endl; break;
             case AIEvent::BorderChanged: ss << "BorderChanged" << std::endl; break;
-            case AIEvent::TerritoryLost: ss << "TerritoryLost" << std::endl; break;
+            case AIEvent::TerritoryLost: ss << "world/TerritoryLost" << std::endl; break;
             case AIEvent::NoMoreResourcesReachable: ss << "NoMoreResourcesReachable" << std::endl; break;
             case AIEvent::BuildingFinished: ss << "BuildingFinished" << std::endl; break;
             case AIEvent::ExpeditionWaiting: ss << "ExpeditionWaiting" << std::endl; break;

@@ -23,7 +23,7 @@
 #include "GameMessageInterface.h"
 
 #include "GamePlayerList.h"
-#include "GameWorld.h"
+#include "world/GameWorld.h"
 #include "EventManager.h"
 #include "GameReplay.h"
 #include "GlobalGameSettings.h"

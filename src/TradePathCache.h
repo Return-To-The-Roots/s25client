@@ -18,7 +18,7 @@
 #ifndef TradePathCache_h__
 #define TradePathCache_h__
 
-#include "TradePath.h"
+#include "world/TradePath.h"
 #include "gameData/MapConsts.h"
 #include "Singleton.h"
 #include <boost/array.hpp>

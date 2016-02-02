@@ -24,7 +24,7 @@
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "CatapultStone.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
 #include "SerializedGameData.h"
 
@@ -280,9 +280,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
             int worldHeight = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Point<int> start = Point<int>(gwg->GetTerrain(pos)) + Point<int>(STONE_STARTS[shooting_dir * 2], STONE_STARTS[shooting_dir * 2 + 1]);
+            Point<int> start = Point<int>(gwg->GetNodePos(pos)) + Point<int>(STONE_STARTS[shooting_dir * 2], STONE_STARTS[shooting_dir * 2 + 1]);
             // (Visuellen) Aufschlagpunkt bestimmen
-            Point<int> dest = Point<int>(gwg->GetTerrain(destMap));
+            Point<int> dest = Point<int>(gwg->GetNodePos(destMap));
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen

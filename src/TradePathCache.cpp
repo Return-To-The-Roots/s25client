@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "TradePathCache.h"
 #include "GameClient.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
 // Include last!

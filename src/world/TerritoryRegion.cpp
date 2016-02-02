@@ -18,13 +18,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h"
-#include "TerritoryRegion.h"
+#include "world/TerritoryRegion.h"
 
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobMilitary.h"
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
-#include "GameWorldBase.h"
+#include "world/GameWorldBase.h"
 #include <stdexcept>
 
 // Include last!

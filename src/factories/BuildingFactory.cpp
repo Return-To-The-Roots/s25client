@@ -17,7 +17,7 @@
 
 #include "defines.h"
 #include "BuildingFactory.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"

@@ -125,10 +125,6 @@ public:
     MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const { return GetNeighbour(pt, Direction::fromInt(dir)); }
     /// Returns neighbouring point (2nd layer: dir 0-11)
     MapPoint GetNeighbour2(const MapPoint, unsigned dir) const;
-    /// Berechnet die Differenz zweier Koordinaten von x1 zu x2, wenn man berücksichtigt, dass man über den
-    /// Rand weitergehen kann
-    MapCoord CalcDistanceAroundBorderX(const MapCoord x1, const MapCoord x2) const;
-    MapCoord CalcDistanceAroundBorderY(const MapCoord y1, const MapCoord y2) const;
     
     /// Returns all points in a radius around pt (excluding pt) that satisfy a given condition. 
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
@@ -164,8 +160,7 @@ public:
     // Erzeugt eindeutige ID aus gegebenen X und Y-Werten
 
     // Returns the linear index for a map point
-    unsigned GetIdx(const MapPoint pt) const
-    { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
+    unsigned GetIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
 
     /// Gibt Map-Knotenpunkt zurück
     const MapNode& GetNode(const MapPoint pt) const { RTTR_Assert(pt.x < width_ && pt.y < height_);  return nodes[GetIdx(pt)]; }
@@ -278,9 +273,7 @@ public:
     /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width_ * pt.y + pt.x; }
     /// Gibt Terrainkoordinaten zurück
-    Point<float> GetTerrain(const MapPoint pt){ return tr.GetTerrain(pt); }
-    float GetTerrainX(const MapPoint pt){ return GetTerrain(pt).x; }
-    float GetTerrainY(const MapPoint pt){ return GetTerrain(pt).y; }
+    Point<float> GetNodePos(const MapPoint pt){ return tr.GetNodePos(pt); }
 
     /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);

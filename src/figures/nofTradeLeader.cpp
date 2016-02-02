@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"

@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "RoadPathFinder.h"
 #include "GameClient.h"
-#include "GameWorldBase.h"
+#include "world/GameWorldBase.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noRoadNode.h"
 #include "Log.h"

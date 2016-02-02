@@ -22,7 +22,7 @@
 #include "defines.h"
 #include "nobBaseMilitary.h"
 #include "Loader.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "nodeObjs/noFire.h"
 #include "EventManager.h"
 #include "figures/nofSoldier.h"
@@ -32,7 +32,7 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofDefender.h"
 #include "SerializedGameData.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 

@@ -167,7 +167,7 @@ class TerrainRenderer
         /// mit 0 <= x_out < width und 0 <= y_out < height
         MapPoint ConvertCoords(const PointI pt, Point<int>* offset = 0) const;
         /// liefert den XY-Vertex an der Stelle X,Y
-        PointF GetTerrain(const MapPoint pt) { return GetVertex(pt).pos; }
+        PointF GetNodePos(const MapPoint pt) { return GetVertex(pt).pos; }
         /// liefert XY-Vertex drumherum, korrigiert Koordinaten nicht
         PointF GetTerrainAround(MapPoint pt, const unsigned dir);
 

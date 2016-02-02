@@ -18,9 +18,9 @@
 #ifndef GameWorldGame_h__
 #define GameWorldGame_h__
 
-#include "GameWorldBase.h"
+#include "world/GameWorldBase.h"
 #include "gameTypes/MapTypes.h"
-#include "TradeRoute.h"
+#include "world/TradeRoute.h"
 #include <vector>
 
 class TradeGraph;

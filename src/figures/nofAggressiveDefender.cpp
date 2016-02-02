@@ -29,7 +29,7 @@
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "buildings/nobBaseWarehouse.h"
 
 // Include last!

@@ -24,7 +24,7 @@
 #include "gameData/MapConsts.h"
 #include "Settings.h"
 #include "GameClient.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "gameData/TerrainData.h"
 #include "helpers/roundToNextPow2.h"
 #include <boost/scoped_array.hpp>
@@ -75,7 +75,7 @@ TerrainRenderer::PointF TerrainRenderer::GetTerrainAround(MapPoint pt, const uns
     PointI offset;
     MapPoint t = ConvertCoords(ptNb, &offset);
 
-    return GetTerrain(t) + PointF(offset);
+    return GetNodePos(t) + PointF(offset);
 }
 
 TerrainRenderer::PointF TerrainRenderer::GetBAround(const MapPoint pt, const unsigned char triangle, const unsigned char dir)
@@ -166,10 +166,10 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewe
 {
     /// @todo GetTerrainX und Co durch GetTerrainXA ausdrücken
     Vertex& vertex = GetVertex(pt);
-    vertex.borderPos[0] = ( GetTerrainAround(pt, 5) + GetTerrain(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
+    vertex.borderPos[0] = ( GetTerrainAround(pt, 5) + GetNodePos(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
     vertex.borderColor[0] = ( GetColor(gwv.GetNeighbour(pt, 5)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, 4)) ) / 3.0f;
 
-    vertex.borderPos[1] = ( GetTerrainAround(pt, 3) + GetTerrain(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
+    vertex.borderPos[1] = ( GetTerrainAround(pt, 3) + GetNodePos(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
     vertex.borderColor[1] = ( GetColor(gwv.GetNeighbour(pt, 3)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, 4)) ) / 3.0f;
 }
 
@@ -287,12 +287,12 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer
     unsigned int pos = GetTriangleIdx(pt);
 
     gl_vertices[pos][0] = GetTerrainAround(pt, 4);
-    gl_vertices[pos][1] = GetTerrain(pt);
+    gl_vertices[pos][1] = GetNodePos(pt);
     gl_vertices[pos][2] = GetTerrainAround(pt, 5);
 
     ++pos;
 
-    gl_vertices[pos][0] = GetTerrain(pt);
+    gl_vertices[pos][0] = GetNodePos(pt);
     gl_vertices[pos][1] = GetTerrainAround(pt, 4);
     gl_vertices[pos][2] = GetTerrainAround(pt, 3);
 
@@ -429,7 +429,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorld
         if(!first_offset)
             first_offset = offset;
 
-        gl_vertices[offset][i ? 0 : 2] = GetTerrain(pt);
+        gl_vertices[offset][i ? 0 : 2] = GetNodePos(pt);
         gl_vertices[offset][1        ] = GetTerrainAround(pt, 4);
         gl_vertices[offset][i ? 2 : 0] = GetB(pt, i);
 
@@ -921,7 +921,7 @@ struct GL_T2F_C3F_V3F_Struct
 
 void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, const PointI& offset)
 {
-    PointI startPos = PointI(GetTerrain(t)) - gwv.GetOffset() + offset;
+    PointI startPos = PointI(GetNodePos(t)) - gwv.GetOffset() + offset;
 
     GameWorldViewer& gwViewer = gwv.GetGameWorldViewer();
     Visibility visibility = gwViewer.GetVisibility(t);
@@ -937,7 +937,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
             continue;
         MapPoint ta = gwViewer.GetNeighbour(t, 3 + dir);
 
-        PointI endPos = PointI(GetTerrain(ta)) - gwv.GetOffset() + offset;
+        PointI endPos = PointI(GetNodePos(ta)) - gwv.GetOffset() + offset;
         PointI diff = startPos - endPos;
 
         // Gehen wir über einen Kartenrand (horizontale Richung?)

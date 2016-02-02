@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h"
-#include "TradePath.h"
+#include "world/TradePath.h"
 #include "SerializedGameData.h"
 
 // Include last!

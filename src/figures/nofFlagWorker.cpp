@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "nofFlagWorker.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "GameClientPlayer.h"
 #include "SerializedGameData.h"

@@ -18,7 +18,7 @@
 #ifndef AIINTERFACE_H_
 #define AIINTERFACE_H_
 
-#include "GameWorldBase.h"
+#include "world/GameWorldBase.h"
 #include "GameClientPlayer.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/Direction.h"

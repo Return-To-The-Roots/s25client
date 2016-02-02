@@ -83,10 +83,6 @@ public:
     void ShowNamesAndProductivity();
 
     void Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb);
-    /*
-        void PrepareRendering(const unsigned char player, const bool draw_selected, const MapCoord selected_x, const MapCoord selected_y,const RoadsBuilding& rb);
-        void Render();
-    */
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);

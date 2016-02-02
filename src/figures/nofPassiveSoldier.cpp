@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "nofPassiveSoldier.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "buildings/nobMilitary.h"
 #include "Loader.h"
 #include "Random.h"

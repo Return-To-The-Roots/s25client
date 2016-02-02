@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "nofPassiveWorker.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 
 // Include last!

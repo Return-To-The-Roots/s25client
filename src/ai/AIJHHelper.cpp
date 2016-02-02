@@ -26,7 +26,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"
 #include "buildings/noBuildingSite.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "AIInterface.h"
 
 #include <iostream>

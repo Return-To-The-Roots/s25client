@@ -19,7 +19,7 @@
 // Header
 
 #include "defines.h"
-#include "GameWorldView.h"
+#include "world/GameWorldView.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Map.h"
 #include "nodeObjs/noTree.h"
@@ -29,7 +29,7 @@
 #include "CatapultStone.h"
 #include "GameClient.h"
 #include "SoundManager.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
 #include "desktops/dskGameInterface.h"
 #include "FOWObjects.h"
@@ -113,7 +113,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
         {
             Point<int> curOffset;
             MapPoint t = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-            Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
+            Point<int> curPos = Point<int>(gwv->GetNodePos(t)) - offset + curOffset;
 
             if(std::abs(VIDEODRIVER.GetMouseX() - curPos.x) + std::abs(VIDEODRIVER.GetMouseY() - curPos.y) < shortest_len)
             {
@@ -267,7 +267,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 // Coordinate transform
                 Point<int> curOffset;
                 MapPoint t = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-                Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
+                Point<int> curPos = Point<int>(gwv->GetNodePos(t)) - offset + curOffset;
 
                 // Name bzw Produktivität anzeigen
                 GO_Type got = gwv->GetNO(t)->GetGOT();
@@ -390,7 +390,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             // Coordinates transform
             Point<int> curOffset;
             MapPoint t = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-            Point<int> curPos = Point<int>(gwv->GetTerrain(t)) - offset + curOffset;
+            Point<int> curPos = Point<int>(gwv->GetNodePos(t)) - offset + curOffset;
 
             /// Current point indicated by Mouse
             if(selPt == t)
@@ -510,7 +510,7 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
         {
             if(boundary_stones[i + 1])
             {
-                Point<int> tmp = curPos - Point<int>( (gwv->GetTerrain(t) - gwv->GetTerrainRenderer()->GetTerrainAround(t, 3 + i)) / 2.0f );
+                Point<int> tmp = curPos - Point<int>( (gwv->GetNodePos(t) - gwv->GetTerrainRenderer()->GetTerrainAround(t, 3 + i)) / 2.0f );
 
                 LOADER.boundary_stone_cache[nation].draw(
                     tmp.x, tmp.y,
@@ -560,10 +560,9 @@ void GameWorldView::MoveTo(int x, int y, bool absolute)
 void GameWorldView::MoveToMapObject(const MapPoint pt)
 {
     lastOffset = offset;
+    Point<int> nodePos = static_cast<Point<int> >(gwv->GetNodePos(pt));
 
-    MoveTo(static_cast<int>(gwv->GetTerrainX(pt))
-           - width  / 2, static_cast<int>(gwv->GetTerrainY(pt))
-           - height / 2, true);
+    MoveTo(nodePos.x - width / 2, nodePos.y - height / 2, true);
 }
 
 /// Springt zur letzten Position, bevor man "weggesprungen" ist

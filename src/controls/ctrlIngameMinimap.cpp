@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "ctrlIngameMinimap.h"
-#include "GameWorldViewer.h"
+#include "world/GameWorldViewer.h"
 #include "Minimap.h"
 #include "driver/src/MouseCoords.h"
 

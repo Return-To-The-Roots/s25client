@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "nofWarehouseWorker.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "Ware.h"
 #include "GameClientPlayer.h"

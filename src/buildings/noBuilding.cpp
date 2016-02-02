@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "noBuilding.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "nodeObjs/noFire.h"
 #include "Loader.h"
 #include "SerializedGameData.h"

@@ -39,7 +39,7 @@
 #include "WindowManager.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "ai/AIEventManager.h"
 #include "Point.h"
 #include "Log.h"

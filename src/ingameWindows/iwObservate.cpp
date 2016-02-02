@@ -20,7 +20,7 @@
 
 #include "defines.h"
 #include "iwObservate.h"
-#include "GameWorldViewer.h"
+#include "world/GameWorldViewer.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"

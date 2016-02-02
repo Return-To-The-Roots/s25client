@@ -18,8 +18,8 @@
 #ifndef GameWorldViewer_h__
 #define GameWorldViewer_h__
 
-#include "GameWorldBase.h"
-#include "GameWorldView.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
 #include "gameTypes/MapTypes.h"
 
 class MouseCoords;

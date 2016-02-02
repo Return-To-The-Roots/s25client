@@ -24,7 +24,7 @@
 #include "Loader.h"
 #include "nodeObjs/noRoadNode.h"
 #include "EventManager.h"
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
 #include "nofCarrier.h"
 #include "nodeObjs/noSkeleton.h"
@@ -208,8 +208,8 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
 
 Point<int> noFigure::CalcFigurRelative() const
 {
-    Point<int> curPt  = Point<int>(gwg->GetTerrain(pos));
-    Point<int> nextPt = Point<int>(gwg->GetTerrain(gwg->GetNeighbour(pos, GetCurMoveDir())));
+    Point<int> curPt  = Point<int>(gwg->GetNodePos(pos));
+    Point<int> nextPt = Point<int>(gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir())));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
     const int mapWidth = gwg->GetWidth() * TR_W;

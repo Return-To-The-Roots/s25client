@@ -19,7 +19,7 @@
 // Header
 #include "defines.h"
 #include "noSkeleton.h"
-#include "GameWorldGame.h"
+#include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "macros.h"
 #include "EventManager.h"

@@ -16,8 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h"
-#include "TradeRoute.h"
-#include "GameWorldGame.h"
+#include "world/TradeRoute.h"
+#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 

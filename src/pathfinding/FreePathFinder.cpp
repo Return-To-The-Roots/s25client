@@ -19,7 +19,7 @@
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/NewNode.h"
-#include "GameWorldBase.h"
+#include "world/GameWorldBase.h"
 #include "GameClient.h"
 #include "Log.h"
 #include <set>

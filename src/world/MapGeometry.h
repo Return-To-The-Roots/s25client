@@ -14,30 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef MAP_GEOMETRY_H_
+#define MAP_GEOMETRY_H_
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-#include "defines.h"
-#include "noCoordBase.h"
-#include "world/GameWorldGame.h"
-#include "SerializedGameData.h"
+#include "gameTypes/MapTypes.h"
+#include "Point.h"
 
-// Include last!
-#include "DebugNew.h"
+/// Ermittelt Abstand zwischen 2 Punkten auf der Map
+unsigned CalcRawDistance(const int x1, const int y1,
+                         const int x2, const int y2);
 
-void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
-{
-    Serialize_noBase(sgd);
 
-    sgd.PushMapPoint(pos);
-}
+Point<int> GetPointAround(const Point<int>& p, unsigned dir);
 
-noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    pos(sgd.PopMapPoint())
-{
-}
-
-unsigned noCoordBase::CreateGUIID() const
-{
-    return gwg->CreateGUIID(pos);
-}
+#endif //!MAP_GEOMETRY_H_

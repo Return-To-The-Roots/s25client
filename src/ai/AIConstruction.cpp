@@ -20,7 +20,7 @@
 #include "defines.h"
 #include "AIConstruction.h"
 
-#include "MapGeometry.h"
+#include "world/MapGeometry.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
