@@ -397,17 +397,10 @@ void nofGeologist::GoToNextNode()
 void nofGeologist::SetSign(const unsigned char resources)
 {
     // Bestimmte Objekte können gelöscht werden
-    noBase* no = gwg->GetNO(pos);
-
-    if(no->GetType() != NOP_NOTHING && no->GetType() != NOP_ENVIRONMENT)
+    NodalObjectType noType = gwg->GetNO(pos)->GetType();
+    if(noType != NOP_NOTHING && noType != NOP_ENVIRONMENT)
         return;
-
-    // Zierobjekte löschen
-    if(no->GetType() == NOP_ENVIRONMENT)
-    {
-        no->Destroy();
-        delete no;
-    }
+    gwg->DestroyNO(pos, false);
 
     // Schildtyp und -häufigkeit herausfinden
     unsigned char quantity;
@@ -475,7 +468,7 @@ void nofGeologist::SetSign(const unsigned char resources)
     gwg->LUA_EventResourceFound(this->player, pos, type, quantity);
 
     // Schild setzen
-    gwg->SetNO(new noSign(pos, type, quantity), pos);
+    gwg->SetNO(pos, new noSign(pos, type, quantity));
 }
 
 void nofGeologist::LostWork()

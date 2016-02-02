@@ -146,7 +146,7 @@ void noCharburnerPile::HandleEvent(const unsigned int id)
 	{
 		//selfdestruct!
 		event = NULL;
-		gwg->SetNO(new noFire(pos, 0), pos);
+		gwg->SetNO(pos, new noFire(pos, 0), true);
 		gwg->RecalcBQAroundPoint(pos);
 		em->AddToKillList(this);
 	}
@@ -213,7 +213,7 @@ void noCharburnerPile::NextStep()
                 if(step == 6)
                 {
                     // Add an empty pile as environmental object
-                    gwg->SetNO(new noEnvObject(pos, 40, 6), pos);
+                    gwg->SetNO(pos, new noEnvObject(pos, 40, 6), true);
                     em->AddToKillList(this);
 
                     // BQ drumrum neu berechnen

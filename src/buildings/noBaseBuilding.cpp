@@ -35,7 +35,6 @@
 #include "Log.h"
 #include <iostream>
 
-
 // Include last!
 #include "DebugNew.h"
 
@@ -46,14 +45,8 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     // Evtl Flagge setzen, wenn noch keine da ist
     if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
     {
-        // ggf. vorherige Objekte löschen
-        noBase* no = gwg->GetSpecObj<noBase>(flagPt);
-        if(no)
-        {
-            no->Destroy();
-            delete no;
-        }
-        gwg->SetNO(new noFlag(flagPt, player), flagPt);
+        gwg->DestroyNO(flagPt);
+        gwg->SetNO(flagPt, new noFlag(flagPt, player));
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
@@ -77,7 +70,6 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         RTTR_Assert(flag->routes[1]);
         routes[4] = flag->routes[1];
         routes[4]->SetF2(this);
-
     }
 
     // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden
@@ -86,14 +78,8 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         for(unsigned i = 0; i < 3; ++i)
         {
             MapPoint pos2 = gwg->GetNeighbour(pos, i);
-
-            noBase* no = gwg->GetSpecObj<noBase>(pos2);
-            if(no)
-            {
-                no->Destroy();
-                delete no;
-            }
-            gwg->SetNO(new noExtension(this), pos2);
+            gwg->DestroyNO(pos2, false);
+            gwg->SetNO(pos2, new noExtension(this));
         }
     }
 }
@@ -262,18 +248,9 @@ void noBaseBuilding::DestroyBuildingExtensions()
     // Nur bei großen Gebäuden gibts diese Anbauten
     if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
-
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint nb = gwg->GetNeighbour(pos, i);
-
-            noBase* no = gwg->GetSpecObj<noBase>(nb);
-            if(no)
-            {
-                no->Destroy();
-                delete no;
-                gwg->SetNO(NULL, nb);
-            }
+            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
         }
 
     }

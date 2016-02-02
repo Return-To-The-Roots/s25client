@@ -267,16 +267,11 @@ void noFighting::HandleEvent(const unsigned int id)
                 gwg->RemoveFigure(this, pt);
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
-                noBase* no = gwg->GetNO(pt);
-                if(no->GetType() == NOP_NOTHING || no->GetType() == NOP_ENVIRONMENT)
+                NodalObjectType noType = gwg->GetNO(pt)->GetType();
+                if(noType == NOP_NOTHING || noType == NOP_ENVIRONMENT)
                 {
-                    if(no->GetType() != NOP_NOTHING)
-                    {
-                        no->Destroy();
-                        delete no;
-                    }
-
-                    gwg->SetNO(new noSkeleton(pt), pt);
+                    gwg->DestroyNO(pt, false);
+                    gwg->SetNO(pt, new noSkeleton(pt));
                 }
 
                 // Umstehenden Figuren Bescheid sagen

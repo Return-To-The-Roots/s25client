@@ -384,7 +384,7 @@ void MapLoader::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
             if(player.ps == PS_OCCUPIED || player.ps == PS_KI)
             {
                 nobHQ* hq = new nobHQ(player.hqPos, i, player.nation);
-                world.SetNO(hq, player.hqPos);
+                world.SetNO(player.hqPos, hq);
                 player.AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
             }
         }

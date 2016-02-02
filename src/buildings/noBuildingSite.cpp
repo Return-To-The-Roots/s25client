@@ -126,7 +126,7 @@ void noBuildingSite::Destroy_noBuildingSite()
     ordered_stones.clear();
 
     // und Feld wird leer
-    gwg->SetNO(0, pos);
+    gwg->SetNO(pos, NULL);
     // Anbauten drumrum ggf. zerstören
     DestroyBuildingExtensions();
 

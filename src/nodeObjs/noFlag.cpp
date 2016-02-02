@@ -122,7 +122,7 @@ noFlag::~noFlag()
 void noFlag::Destroy_noFlag()
 {
     /// Da ist dann nichts
-    gwg->SetNO(0, pos);
+    gwg->SetNO(pos, NULL);
 
     // Waren vernichten
     for(unsigned i = 0; i < wares.size(); ++i)

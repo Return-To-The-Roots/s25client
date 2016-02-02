@@ -42,7 +42,7 @@ noSkeleton::~noSkeleton()
 
 void noSkeleton::Destroy_noSkeleton()
 {
-    gwg->SetNO(NULL, pos);
+    gwg->SetNO(pos, NULL);
 
     // ggf Event abmelden
     if(current_event)

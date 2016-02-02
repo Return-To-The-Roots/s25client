@@ -114,15 +114,9 @@ void nofCharburner::WorkFinished()
 
         if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
         {
-            no = gwg->GetSpecObj<noBase>(pos);
-            if(no)
-            {
-                no->Destroy();
-                delete no;
-            }
-
+            gwg->DestroyNO(pos, false);
             // Plant charburner pile
-            gwg->SetNO(new noCharburnerPile(pos), pos);
+            gwg->SetNO(pos, new noCharburnerPile(pos));
 
             // BQ drumrum neu berechnen
             gwg->RecalcBQAroundPointBig(pos);

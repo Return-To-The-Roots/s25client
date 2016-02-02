@@ -101,15 +101,8 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const
     // Gucken, nicht, dass schon eine Flagge dasteht
     if(GetNO(pt)->GetType() != NOP_FLAG)
     {
-        noBase* no = GetSpecObj<noBase>(pt);
-        if(no)
-        {
-            no->Destroy();
-            delete no;
-        }
-
-        SetNO(NULL, pt);
-        SetNO(new noFlag(pt, player, dis_dir), pt);
+        DestroyNO(pt, false);
+        SetNO(pt, new noFlag(pt, player, dis_dir));
 
         RecalcBQAroundPointBig(pt);
     }
@@ -134,13 +127,9 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
 
 
         // Demolish, also the building
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        GetSpecObj<noFlag>(pt)->DestroyAttachedBuilding();
 
-        SetNO(NULL, pt);
-        flag->DestroyAttachedBuilding();
-        flag->Destroy();
-        delete flag;
-
+        DestroyNO(pt);
         RecalcBQAroundPointBig(pt);
     }
 
@@ -215,16 +204,10 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
     if (type == BLD_CATAPULT && !GetPlayer(player).CanBuildCatapult())
         return;
 
-    // ggf. vorherige Objekte löschen
-    noBase* no = GetSpecObj<noBase>(pt);
-    if(no)
-    {
-        no->Destroy();
-        delete no;
-    }
+    DestroyNO(pt, false);
 
     // Baustelle setzen
-    SetNO(new noBuildingSite(type, pt, player), pt);
+    SetNO(pt, new noBuildingSite(type, pt, player));
     gi->GI_UpdateMinimap(pt);
 
     // Bauplätze drumrum neu berechnen
@@ -260,10 +243,8 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
 }
 
 
-void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road, 
-                              const MapPoint start, const std::vector<unsigned char>& route)
+void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
 {
-    // TODO: Verzögerungsbugabfrage, kann später ggf. weg
     if(!GetSpecObj<noFlag>(start))
     {
         RemoveVisualRoad(start, route);
@@ -281,7 +262,6 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         return;
     }
 
-    // TODO: Verzögerungsbugabfrage, kann später ggf. weg
     // Gucken, ob der Weg überhaupt noch gebaut werden kann
     MapPoint curPt(start);
     RTTR_Assert(route.size() > 1);
@@ -334,7 +314,6 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
             GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
             return;
         }
-        // TODO: Verzögerungsbugabfrage, kann später ggf. weg
         // kann Flagge hier nicht gebaut werden?
         if(CalcBQ(curPt, playerid, true, false) != BQ_FLAG)
         {
@@ -345,7 +324,6 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
             return;
         }
 
-        // TODO: Verzögerungsbugabfrage, kann später ggf. weg
         // Abfragen, ob evtl ein Baum gepflanzt wurde, damit der nicht überschrieben wird
         if(GetNO(curPt)->GetType() == NOP_TREE)
         {
@@ -361,12 +339,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)
     if(IsObjectionableForRoad(start))
-    {
-        noBase* obj = GetSpecObj<noBase>(start);
-        obj->Destroy();
-        delete obj;
-        SetNO(0, start);
-    }
+        DestroyNO(start);
 
     MapPoint end(start);
     for(unsigned i = 0; i < route.size(); ++i)
@@ -377,12 +350,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
         // Evtl Zierobjekte abreißen
         if(IsObjectionableForRoad(end))
-        {
-            noBase* obj = GetSpecObj<noBase>(end);
-            obj->Destroy();
-            delete obj;
-            SetNO(0, end);
-        }
+            DestroyNO(end);
     }
 
     /*if(GetNO(start_x, start_y)->GetType() != NOP_FLAG)
@@ -1188,9 +1156,7 @@ void GameWorldGame::Armageddon()
             if(flag)
             {
                 flag->DestroyAttachedBuilding();
-                flag->Destroy();
-                delete flag;
-                SetNO(NULL, pt);
+                DestroyNO(pt);
             }
         }
 }
@@ -1205,9 +1171,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
             if(flag && flag->GetPlayer() == player)
             {
                 flag->DestroyAttachedBuilding();
-                flag->Destroy();
-                delete flag;
-                SetNO(NULL, pt);
+                DestroyNO(pt);
             }
         }
 }
@@ -1677,18 +1641,11 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
         return false;
 
     MapPoint pos(GetHarborPoint(harbor_point));
-
-    noBase* no = GetSpecObj<noBase>(pos);
-
-    if(no)
-    {
-        no->Destroy();
-        deletePtr(no);
-    }
+    DestroyNO(pos, false);
 
     // Hafenbaustelle errichten
     noBuildingSite* bs = new noBuildingSite(pos, player);
-    SetNO(bs, pos);
+    SetNO(pos, bs);
     AddHarborBuildingSiteFromSea(bs);
 
     gi->GI_UpdateMinimap(pos);

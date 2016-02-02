@@ -932,7 +932,7 @@ void noFigure::Die()
     em->AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
-        gwg->SetNO(new noSkeleton(pos), pos);
+        gwg->SetNO(pos, new noSkeleton(pos));
 
     RemoveFromInventory();
 
@@ -960,9 +960,7 @@ void noFigure::DieFailedTrade()
     em->AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
-        gwg->SetNO(new noSkeleton(pos), pos);
-    // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
-    //CalcVisibilities(x,y);
+        gwg->SetNO(pos, new noSkeleton(pos));
 }
 
 void noFigure::NodeFreed(const MapPoint pt)

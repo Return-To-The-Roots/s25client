@@ -295,6 +295,23 @@ const noBase* World::GetNO(const MapPoint pt) const
         return noNodeObj;
 }
 
+void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)
+{
+    RTTR_Assert(replace ||obj == NULL || GetNode(pt).obj == NULL);
+    GetNode(pt).obj = obj;
+}
+
+void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
+{
+    noBase*& obj = GetNode(pt).obj;
+    if(obj)
+    {
+        obj->Destroy();
+        deletePtr(obj);
+    }else
+        RTTR_Assert(!checkExists);
+}
+
 const FOWObject* World::GetFOWObject(const MapPoint pt, const unsigned spectator_player) const
 {
     if(GetNode(pt).fow[spectator_player].object)

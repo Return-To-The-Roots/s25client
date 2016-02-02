@@ -53,7 +53,7 @@ void noBuilding::Destroy_noBuilding()
 {
     // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
     // Feuer setzen
-    gwg->SetNO(new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), pos);
+    gwg->SetNO(pos, new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), true);
 
     Destroy_noBaseBuilding();
 }

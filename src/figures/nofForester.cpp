@@ -80,8 +80,6 @@ void nofForester::WorkStarted()
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofForester::WorkFinished()
 {
-    noBase* no = gwg->GetNO(pos);
-
     // Wenn irgendwo ne Straße schon ist, NICHT einsetzen!
     for(unsigned i = 0; i < 6; ++i)
     {
@@ -89,14 +87,11 @@ void nofForester::WorkFinished()
             return;
     }
 
+    NodalObjectType noType = gwg->GetNO(pos)->GetType();
     // Wenn Objekt ein Zierobjekt ist, dann löschen, ansonsten den Baum NICHT einsetzen!
-    if(no->GetType() == NOP_ENVIRONMENT || no->GetType() == NOP_NOTHING)
+    if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
     {
-        if(no->GetType() == NOP_ENVIRONMENT)
-        {
-            no->Destroy();
-            delete no;
-        }
+        gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
         const unsigned char AVAILABLE_TREES_COUNT[3] =
@@ -111,8 +106,8 @@ void nofForester::WorkFinished()
         };
 
         // jungen Baum einsetzen
-        gwg->SetNO(new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
-                              [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0), pos);
+        gwg->SetNO(pos, new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
+                              [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0));
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);

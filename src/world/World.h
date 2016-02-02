@@ -141,13 +141,16 @@ public:
     inline const MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) const;
     inline MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i);
 
-    inline void SetNO(noBase* obj, const MapPoint pt) { GetNode(pt).obj = obj; }
     void AddFigure(noBase* fig, const MapPoint pt);
     void RemoveFigure(noBase* fig, const MapPoint pt);
     // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
     noBase* GetNO(const MapPoint pt);
     // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
     const noBase* GetNO(const MapPoint pt) const;
+    /// Places a nodeobject at a given position. If replace is true, the old object is replace, else it is assumed as non-existant
+    void SetNO(const MapPoint pt, noBase* obj, const bool replace = false);
+    /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if there is no obj
+    void DestroyNO(const MapPoint pt, const bool checkExists = true);
     /// Gibt ein FOW-Objekt zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
     const FOWObject* GetFOWObject(const MapPoint pt, const unsigned spectator_player) const;
     /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert

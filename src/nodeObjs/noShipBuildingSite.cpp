@@ -44,7 +44,7 @@ noShipBuildingSite::~noShipBuildingSite()
 
 void noShipBuildingSite::Destroy()
 {
-    gwg->SetNO(NULL, pos);
+    gwg->SetNO(pos, NULL);
 
     Destroy_noCoordBase();
 }
@@ -119,7 +119,7 @@ void noShipBuildingSite::MakeBuildStep()
     {
         // Mich vernichten
         em->AddToKillList(this);
-        gwg->SetNO(NULL, pos);
+        gwg->SetNO(pos, NULL);
         // ein fertiges Schiff stattdessen hinsetzen
         new noShip(pos, player);
         // BQ neu berechnen, da Schiff nicht mehr blockiert

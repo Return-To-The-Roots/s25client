@@ -110,11 +110,9 @@ void nofFarmer::WorkFinished()
         // Check if there is still a grain field at this position
         if(nob->GetGOT() != GOT_GRAINFIELD)
             return;
-        noGrainfield* gf = static_cast<noGrainfield*>(nob);
-        //unsigned env_obj_id = gf->GetHarvestMapLstID();
-        gwg->SetNO(new noEnvObject(pos, gf->GetHarvestMapLstID()), pos);
-        gf->Destroy();
-        delete gf;
+        unsigned mapLstId = static_cast<noGrainfield*>(nob)->GetHarvestMapLstID();
+        gwg->DestroyNO(pos);
+        gwg->SetNO(pos, new noEnvObject(pos, mapLstId));
 
         // Getreide, was wir geerntet haben, in die Hand nehmen
         ware = GD_GRAIN;
@@ -134,15 +132,9 @@ void nofFarmer::WorkFinished()
         // Nur Zierobjekte und Schilder dürfen weggerissen werden
         if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
         {
-            // ggf. vorher wegreißen
-            noBase* no = gwg->GetSpecObj<noBase>(pos);
-            if(no)
-            {
-                no->Destroy();
-                delete no;
-            }
+            gwg->DestroyNO(pos, false);
             // neues Getreidefeld setzen
-            gwg->SetNO(new noGrainfield(pos), pos);
+            gwg->SetNO(pos, new noGrainfield(pos));
         }
 
         // Wir haben nur gesäht (gar nichts in die Hand nehmen)

@@ -169,8 +169,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned int id)
                 // ggf. Baustellenfenster schließen
                 gwg->ImportantObjectDestroyed(building_site->GetPos());
 
-                // Baustelle kommt in den Bytehimmel
-                gwg->SetNO(NULL, building_site->GetPos());
+                // Remove buildingsite, but don't destroy!
+                gwg->SetNO(building_site->GetPos(), NULL);
                 deletePtr(building_site);
 
                 // KI-Event schicken

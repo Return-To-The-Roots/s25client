@@ -51,14 +51,8 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
         for(unsigned i = 0; i < 3; ++i)
         {
             MapPoint nb = gwg->GetNeighbour(pos, i);
-
-            noBase* no = gwg->GetSpecObj<noBase>(nb);
-            if(no)
-            {
-                no->Destroy();
-                delete no;
-            }
-            gwg->SetNO(new noExtension(this), nb);
+            gwg->DestroyNO(nb, false);
+            gwg->SetNO(nb, new noExtension(this));
         }
     }
 }
@@ -136,18 +130,9 @@ void noStaticObject::Destroy_noStaticObject(void)
     // waren wir ein "Schloss" Objekt?
     if(GetSize() == 2)
     {
-
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint nb = gwg->GetNeighbour(pos, i);
-
-            noBase* no = gwg->GetSpecObj<noBase>(nb);
-            if(no)
-            {
-                no->Destroy();
-                delete no;
-                gwg->SetNO(NULL, nb);
-            }
+            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
         }
     }
 

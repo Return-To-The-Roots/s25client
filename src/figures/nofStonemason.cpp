@@ -75,9 +75,7 @@ void nofStonemason::WorkFinished()
     if(gwg->GetSpecObj<noGranite>(pos)->IsSmall())
     {
         // Granitklötzchen löschen
-        gwg->GetSpecObj<noGranite>(pos)->Destroy();
-        delete gwg->GetSpecObj<noGranite>(pos);
-        gwg->SetNO(0, pos);
+        gwg->DestroyNO(pos);
 
         // Minimap Bescheid geben (Granitglötzchen muss weg)
         if(gwg->GetGameInterface())

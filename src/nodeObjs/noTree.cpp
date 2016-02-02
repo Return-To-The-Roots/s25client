@@ -208,7 +208,7 @@ void noTree::HandleEvent(const unsigned int id)
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
             event = 0;
             em->AddToKillList(this);
-            gwg->SetNO(new noDisappearingMapEnvObject(pos, 531), pos);
+            gwg->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
             gwg->RecalcBQAroundPoint(pos);
 
             // Minimap Bescheid geben (Baum gefallen)

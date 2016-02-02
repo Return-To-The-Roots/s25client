@@ -300,12 +300,11 @@ void nofShipWright::WorkFinished()
                 // Mittlerweile wurde anderes Objekt hierhin gesetzt --> können kein Schiff mehr bauen
                 return;
 
-            obj->Destroy();
-            delete obj;
+            gwg->DestroyNO(pos);
         }
 
         // Baustelle setzen
-        gwg->SetNO(new noShipBuildingSite(pos, player), pos);
+        gwg->SetNO(pos, new noShipBuildingSite(pos, player));
         // Bauplätze drumrum neu berechnen
         gwg->RecalcBQAroundPointBig(pos);
     }

@@ -45,7 +45,7 @@ noFire::~noFire()
 void noFire::Destroy_noFire()
 {
     // nix mehr hier
-    gwg->SetNO(0, pos);
+    gwg->SetNO(pos, NULL);
     // Bauplätze drumrum neu berechnen
     gwg->RecalcBQAroundPoint(pos);
 

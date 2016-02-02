@@ -51,7 +51,7 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingTy
         bld = new nobUsual(type, pt, player, nation);
         break;
     }
-    gwg->SetNO(bld, pt);
+    gwg->SetNO(pt, bld);
     if(type == BLD_HARBORBUILDING)
     {
         // For harbors tell the economics about the new harbor
