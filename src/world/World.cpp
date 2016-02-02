@@ -297,17 +297,20 @@ const noBase* World::GetNO(const MapPoint pt) const
 
 void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)
 {
-    RTTR_Assert(replace ||obj == NULL || GetNode(pt).obj == NULL);
+    RTTR_Assert(replace || obj == NULL || GetNode(pt).obj == NULL);
     GetNodeInt(pt).obj = obj;
 }
 
 void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
 {
-    noBase*& obj = GetNodeInt(pt).obj;
+    noBase* obj = GetNodeInt(pt).obj;
     if(obj)
     {
+        // Destroy may remove the NO already from the map. This might not be what we want
+        // -> TODO: Check if the reset in Destroy can be removed
         obj->Destroy();
         deletePtr(obj);
+        GetNodeInt(pt).obj = NULL;
     }else
         RTTR_Assert(!checkExists);
 }
