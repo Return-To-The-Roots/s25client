@@ -1460,10 +1460,9 @@ void GameClientPlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 
 void GameClientPlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
-    /// Flagge rausfinden
     noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
-    /// Lagerhaus mit Geologen finden
-    nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(JOB_GEOLOGIST), false, false);
+    /// Find wh with given job type (e.g. geologist, scout, ...)
+    nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job), false, false);
 
     /// Wenns eins gibt, dann rufen
     if(wh)
