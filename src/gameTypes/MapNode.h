@@ -38,7 +38,7 @@ struct MapNode
     unsigned char altitude;
     /// Schattierung
     unsigned char shadow;
-    /// Terrain
+    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side of the pt)
     TerrainType t1, t2;
     /// Ressourcen
     unsigned char resources;

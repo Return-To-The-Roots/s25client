@@ -119,8 +119,7 @@ unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, con
 }
 
 /// Wegfindung für Schiffe auf dem Wasser
-bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length, const unsigned max_length, 
-                                 GameWorldBase::CrossBorders* cb)
+bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length, const unsigned max_length)
 {
     return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, PathConditionShip(*this), false);
 }

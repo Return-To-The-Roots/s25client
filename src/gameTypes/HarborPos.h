@@ -18,6 +18,9 @@
 #ifndef HarborPos_h__
 #define HarborPos_h__
 
+#include "gameTypes/MapTypes.h"
+#include <vector>
+
 struct HarborPos
 {
     MapPoint pos;

@@ -539,7 +539,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
     {
         for(int x = region.x1; x < region.x2; ++x)
         {
-            const MapPoint curPt = ConvertCoords(x, y);
+            const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
             const unsigned char oldOwner = GetNode(curPt).owner;
             const unsigned char newOwner = region.GetOwner(x, y);
 
@@ -586,7 +586,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
     {
         for(int x = region.x1; x < region.x2; ++x)
         {
-            MapPoint curPt = ConvertCoords(x, y);
+            MapPoint curPt = MakeMapPoint(Point<int>(x, y));
             if(GetNode(curPt).owner != 0)
             {
                 /// Grenzsteine, die alleine "rausragen" und nicht mit einem richtigen Territorium verbunden sind, raushauen
@@ -665,7 +665,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
         for(int x = x1; x < x2; ++x)
         {
             // Korrigierte X-Koordinaten
-            const MapPoint curPt = ConvertCoords(x, y);
+            const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
             const unsigned char owner = GetNode(curPt).owner;
 
             // Grenzstein direkt auf diesem Punkt?
@@ -757,7 +757,7 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
     {
         for(int x = region.x1; x < region.x2; ++x)
         {
-            MapPoint curPt = ConvertCoords(x, y);
+            MapPoint curPt = MakeMapPoint(Point<int>(x, y));
             if(GetNode(curPt).owner != region.GetOwner(x, y))
             {
                 // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
