@@ -2412,27 +2412,24 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
         RTTR_Assert(false);
         return false;
     }
-    //get sea ids of harbor id given - is there at least 1 sea id? if so check for other harbors with the same id!
-    unsigned short sea_ids[6];
-    gwb.GetSeaIDs(harborid, sea_ids);
+
     for(unsigned r = 0; r < 6; r++)
     {
-        if(sea_ids[r] > 0) //there is a sea id? -> check all other harbors to find if there is another at the same id!
+        const unsigned short seaId = gwb.GetSeaId(harborid, Direction::fromInt(r));
+        if(!seaId)
+            continue;
+
+        for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++) //start at 1 harbor dummy yadayada :>
         {
-            for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++) //start at 1 harbor dummy yadayada :>
+            if(i != harborid && gwb.IsAtThisSea(i, seaId))
             {
-                if(i != harborid && gwb.IsAtThisSea(i, sea_ids[r]))
+                if(onlyempty) //check if the spot is actually free for colonization?
                 {
-                    if(onlyempty) //check if the spot is actually free for colonization?
-                    {
-                        if(gwb.IsHarborPointFree(i, playerid, sea_ids[r]))
-                        {
-                            return true;
-                        }
-                    }
-                    else
+                    if(gwb.IsHarborPointFree(i, playerid, seaId))
                         return true;
                 }
+                else
+                    return true;
             }
         }
     }
@@ -2503,29 +2500,27 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
 {
     std::list<unsigned short>validseaids;
     std::list<unsigned short>onetimeuseseaids;
-    unsigned short sea_ids[6];
     for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
     {
-        //get sea ids of harbor id given
-        gwb.GetSeaIDs(i, sea_ids);
         for(unsigned r = 0; r < 6; r++)
         {
-            if(sea_ids[r] > 0) //there is a sea id? -> check if it is already a validid or a once found id
+            const unsigned short seaId = gwb.GetSeaId(i, Direction::fromInt(r));
+            if(!seaId)
+                continue;
+            //there is a sea id? -> check if it is already a validid or a once found id
+            if(!helpers::contains(validseaids, seaId)) //not yet in validseas?
             {
-                if(!helpers::contains(validseaids, sea_ids[r])) //not yet in validseas?
-                {
-                    if(!helpers::contains(onetimeuseseaids, sea_ids[r])) //not yet in onetimeuseseaids?
-                        onetimeuseseaids.push_back(sea_ids[r]);
-                    else
-                    {
-                        //LOG.lprintf("found a second harbor at sea id %i \n",sea_ids[r]);
-                        onetimeuseseaids.remove(sea_ids[r]);
-                        validseaids.push_back(sea_ids[r]);
-                    }
-                }
+                if(!helpers::contains(onetimeuseseaids, seaId)) //not yet in onetimeuseseaids?
+                    onetimeuseseaids.push_back(seaId);
                 else
-                    continue;
+                {
+                    //LOG.lprintf("found a second harbor at sea id %i \n",sea_ids[r]);
+                    onetimeuseseaids.remove(seaId);
+                    validseaids.push_back(seaId);
+                }
             }
+            else
+                continue;
         }
     }
     return validseaids.size();

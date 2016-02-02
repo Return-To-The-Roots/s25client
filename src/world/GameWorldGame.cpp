@@ -71,17 +71,17 @@ GameWorldGame::GameWorldGame()
 GameWorldGame::~GameWorldGame()
 {}
 
-std::list<nobBaseMilitary*>& GameWorldGame::GetMilitarySquare(const MapPoint pt)
+MilitarySquares& GameWorldGame::GetMilitarySquares()
 {
-    return military_squares[(pt.y / MILITARY_SQUARE_SIZE) * (width_ / MILITARY_SQUARE_SIZE + 1) + pt.x / MILITARY_SQUARE_SIZE];
+    return militarySquares;
 }
 
 void GameWorldGame::RecalcBQAroundPoint(const MapPoint pt)
 {
     // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-    GetNode(pt).bq = CalcBQ(pt, GAMECLIENT.GetPlayerID());
+    CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
     for(unsigned char i = 0; i < 6; ++i)
-        GetNode(GetNeighbour(pt, i)).bq = CalcBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
+        CalcAndSetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
 }
 
 void GameWorldGame::RecalcBQAroundPointBig(const MapPoint pt)
@@ -90,26 +90,13 @@ void GameWorldGame::RecalcBQAroundPointBig(const MapPoint pt)
 
     // 2. Außenschale
     for(unsigned i = 0; i < 12; ++i)
-        GetNode(GetNeighbour2(pt, i)).bq = CalcBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
+        CalcAndSetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
 }
 
 void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir)
 {
-    // TODO: Verzögerungsbugabfrage, kann später ggf. weg
     if(CalcBQ(pt, player, true, false) != BQ_FLAG)
         return;
-    //
-    //// Abfragen, ob schon eine Flagge in der Nähe ist (keine Mini-1-Wege)
-    //for(unsigned char i = 0;i<6;++i)
-    //{
-    //  if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_FLAG)
-    //      return;
-    //}
-
-    //// TODO: Verzögerungsbugabfrage, kann später ggf. weg
-    //// Abfragen, ob evtl ein Baum gepflanzt wurde, damit der nicht überschrieben wird
-    //if(GetNO(x, y)->GetType() == NOP_TREE)
-    //  return;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
     if(GetNO(pt)->GetType() != NOP_FLAG)
@@ -164,7 +151,6 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
 /**
  *  setzt den echten Straßen-Wert an der Stelle X, Y (berichtigt).
  *
- * Bit 0-6 jeweils 2 Bit für jede Richtung jeweils der Typ, Bit 7
  *  @author OLiver
  */
 void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char type)
@@ -174,14 +160,11 @@ void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char 
     // Virtuelle Straße setzen
     SetVirtualRoad(pt, dir, type);
 
-    unsigned pos = GetIdx(pt);
-
-
     // Flag nullen wenn nur noch das real-flag da ist oder es setzen
-    if(!nodes[pos].roads[dir])
-        nodes[pos].roads_real[dir] = false;
+    if(!GetNode(pt).roads[dir])
+        GetNode(pt).roads_real[dir] = false;
     else
-        nodes[pos].roads_real[dir] = true;
+        GetNode(pt).roads_real[dir] = true;
 
     if(gi)
         gi->GI_UpdateMinimap(pt);
@@ -203,30 +186,6 @@ void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned 
         SetRoad(GetNeighbour(pt, dir), dir, type);
 }
 
-void GameWorldGame::AddFigure(noBase* fig, const MapPoint pt)
-{
-    if(!fig)
-        return;
-
-    std::list<noBase*>& figures = GetNode(pt).figures;
-    RTTR_Assert(!helpers::contains(figures, fig));
-    figures.push_back(fig);
-
-#if RTTR_ENABLE_ASSERTS
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        MapPoint nb = GetNeighbour(pt, i);
-        RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
-    }
-#endif
-}
-
-void GameWorldGame::RemoveFigure(noBase* fig, const MapPoint pt)
-{
-    RTTR_Assert(helpers::contains(GetNode(pt).figures, fig));
-    GetNode(pt).figures.remove(fig);
-}
-
 void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
 {
     if(!GetPlayer(player).IsBuildingEnabled(type))
@@ -245,7 +204,6 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
         default: RTTR_Assert(false); break;
     }
 
-    // TODO: Verzögerungsbugabfrage, kann später ggf. weg
     // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut werden
     if(type >= BLD_BARRACKS && type <= BLD_FORTRESS)
     {
@@ -878,9 +836,8 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
 bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
 {
     // Nicht über die Kante gehen!
-    if(pt.x >= width_ || pt.y >= height_)
+    if(pt.x >= GetWidth() || pt.y >= GetHeight())
         return false;
-
 
     // Irgendwelche Objekte im Weg?
     noBase::BlockingManner bm = GetNO(pt)->GetBM();
@@ -1223,35 +1180,36 @@ void GameWorldGame::RemoveCatapultStone(CatapultStone* cs)
 
 void GameWorldGame::Armageddon()
 {
-     for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        if(it->obj && it->obj->GetGOT() == GOT_FLAG)
+    MapPoint pt(0, 0);
+    for(pt.y = 0; pt.y < GetHeight(); pt.y++)
+        for(pt.x = 0; pt.x < GetWidth(); pt.x++)
         {
-            noFlag* flag = static_cast<noFlag*>(it->obj);
-            it->obj = NULL;
-            flag->DestroyAttachedBuilding();
-            flag->Destroy();
-            delete flag;
+            noFlag* flag = GetSpecObj<noFlag>(pt);
+            if(flag)
+            {
+                flag->DestroyAttachedBuilding();
+                flag->Destroy();
+                delete flag;
+                SetNO(NULL, pt);
+            }
         }
-    }
 }
 
 void GameWorldGame::Armageddon(const unsigned char player)
 {
-     for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        if(it->obj && it->obj->GetGOT() == GOT_FLAG)
+    MapPoint pt(0, 0);
+    for(pt.y = 0; pt.y < GetHeight(); pt.y++)
+        for(pt.x = 0; pt.x < GetWidth(); pt.x++)
         {
-            noFlag* flag = static_cast<noFlag*>(it->obj);
-            if (flag->GetPlayer() == player)
+            noFlag* flag = GetSpecObj<noFlag>(pt);
+            if(flag && flag->GetPlayer() == player)
             {
-                it->obj = NULL;
                 flag->DestroyAttachedBuilding();
                 flag->Destroy();
                 delete flag;
+                SetNO(NULL, pt);
             }
         }
-    }
 }
 
 bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center)
@@ -1513,7 +1471,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
                 {
                     GetNode(pt).fow[player].visibility = VIS_FOW;
 
-                    SaveFOWNode(pt, player);
+                    SaveFOWNode(pt, player, GAMECLIENT.GetGFNumber());
                 }
                 break;
             default:
@@ -1555,10 +1513,6 @@ void GameWorldGame::SetVisibility(const MapPoint pt,  const unsigned char player
             (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
         VisibilityChanged(pt);
 }
-
-
-
-
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception)
 {
@@ -1678,33 +1632,6 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
 
 }
 
-
-void GameWorldGame::SaveFOWNode(const MapPoint pt, const unsigned player)
-{
-    MapNode::FoWData& fow = GetNode(pt).fow[player];
-    fow.last_update_time = GAMECLIENT.GetGFNumber();
-
-    // FOW-Objekt erzeugen
-    noBase* obj = GetNO(pt);
-    delete fow.object;
-    fow.object = obj->CreateFOWObject();
-
-
-    // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
-    for(unsigned i = 0; i < 3; ++i)
-    {
-        if(GetNode(pt).roads_real[i])
-            fow.roads[i] = GetNode(pt).roads[i];
-        else
-            fow.roads[i] = 0;
-    }
-
-    // Besitzverhältnisse speichern, damit auch die Grenzsteine im FoW gezeichnet werden können
-    fow.owner = GetNode(pt).owner;
-    // Grenzsteine merken
-    fow.boundary_stones = GetNode(pt).boundary_stones;
-}
-
 /// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)
 bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) const
 {
@@ -1731,8 +1658,8 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
 
     //LOG.lprintf("Convert map resources from %i to %i\n", from, to);
     // Alle Punkte durchgehen
-    for (MapCoord x = 0; x < width_; ++x)
-        for (MapCoord y = 0; y < height_; ++y)
+    for (MapCoord x = 0; x < GetWidth(); ++x)
+        for (MapCoord y = 0; y < GetHeight(); ++y)
         {
             resources = &(GetNode(MapPoint(x, y)).resources);
             // Gibt es Ressourcen dieses Typs?
@@ -1741,162 +1668,6 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
                 *resources -= ((to != 0xFF) ?  from * 8 - to * 8 : *resources);
         }
 }
-
-/// Prüfen, ob zu einem bestimmten Küsenpunkt ein Hafenpunkt gehört und wenn ja, wird dieser zurückgegeben
-unsigned short GameWorldGame::GetHarborPosID(const MapPoint pt)
-{
-    for(unsigned d = 0; d < 6; ++d)
-    {
-        for(unsigned i = 1; i < harbor_pos.size(); ++i)
-        {
-            if(harbor_pos[i].pos == GetNeighbour(pt, d))
-            {
-                return i;
-            }
-        }
-    }
-
-    return 0;
-}
-
-/// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
-unsigned char GameWorldGame::GetShipDir(Point<int> pos1, Point<int> pos2)
-{
-    // Richtung bestimmen, in der dieser Punkt relativ zum Ausgangspunkt steht
-    unsigned char exp_dir = 0xff;
-
-    unsigned diff = SafeDiff<int>(pos1.y, pos2.y);
-    if(!diff)
-        diff = 1;
-    // Oben?
-    bool marginal_x = ((SafeDiff<int>(pos1.x, pos2.x) * 1000 / diff) < 180);
-    if(pos2.y < pos1.y)
-    {
-        if(marginal_x)
-            exp_dir = 0;
-        else if(pos2.x < pos1.x)
-            exp_dir = 5;
-        else
-            exp_dir = 1;
-    }
-    else
-    {
-        if(marginal_x)
-            exp_dir = 3;
-        else if(pos2.x < pos1.x)
-            exp_dir = 4;
-        else
-            exp_dir = 2;
-    }
-
-    return exp_dir;
-
-}
-
-// class for finding harbor neighbors
-class CalcHarborPosNeighborsNode
-{
-    public:
-        CalcHarborPosNeighborsNode() {}
-        CalcHarborPosNeighborsNode(const MapPoint pt, unsigned way) : pos(pt), way(way) {}
-
-        MapPoint pos;
-        unsigned way;
-};
-
-/// Calculate the distance from each harbor to the others
-void GameWorldGame::CalcHarborPosNeighbors()
-{
-    // A high performance open list:
-    // - open list is sorted through the way we insert points (we always only add score + 1 to the end of the list)
-    // - completed points are just skipped (todo_offset)
-    size_t todo_offset = 0;
-    size_t todo_length = 0;
-    std::vector<CalcHarborPosNeighborsNode> todo_list(width_ * height_);
-
-    // pre-calculate sea-points, as IsSeaPoint is rather expensive
-    std::vector<unsigned int> flags_init(width_ * height_);
-
-    for (MapPoint p(0, 0); p.y < height_; p.y++)
-        for (p.x = 0; p.x < width_; p.x++)
-            flags_init[GetIdx(p)] = IsSeaPoint(p) ? 1 : 0;
-
-    for (size_t i = 1; i < harbor_pos.size(); ++i)
-    {
-        todo_offset = 0;
-        todo_length = 0;
-
-        // Copy sea points to working flags. Possible values are
-        // 0 - visited or no sea point
-        // 1 - sea point, not already visited
-        // n - harbor_pos[n - 1]
-        std::vector<unsigned int> flags(flags_init);
-
-        // add another entry, so that we can use the value from 'flags' directly.
-        std::vector<bool> found(harbor_pos.size() + 1, false);
-
-        // mark points around harbors
-        for (size_t nr = 1; nr < harbor_pos.size(); ++nr)
-        {
-            /* Mark sea points belonging to harbor_pos[nr]:
-
-            As sea points are only those fully surrounded by sea, we have to go two
-            steps away from a harbor point to find them -> GetXA2/GetYA2.
-            */
-            for (size_t d = 0; d < 12; ++d)
-            {
-                MapPoint pa = GetNeighbour2(harbor_pos[nr].pos, d);
-
-                if (flags[GetIdx(pa)] == 1)
-                {
-                    if (nr == i)
-                    {
-                        // This is our start harbor. Add the sea points around it to our todo list.
-                        todo_list[todo_length++] = CalcHarborPosNeighborsNode(pa, 0);
-                        flags[GetIdx(pa)] = 0; // Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
-                    }
-                    else
-                    {
-                        flags[GetIdx(pa)] = nr + 1;
-                    }
-                }
-            }
-        }
-
-        while (todo_length) // as long as there are sea points on our todo list...
-        {
-            CalcHarborPosNeighborsNode p = todo_list[todo_offset];
-            todo_offset++;
-            todo_length--;
-
-            for (size_t d = 0; d < 6; ++d)
-            {
-                MapPoint pa = GetNeighbour(p.pos, d);
-                size_t idx = GetIdx(pa);
-
-                if ((flags[idx] > 1) && !found[flags[idx]]) // found harbor we haven't already found
-                {
-                    harbor_pos[i].neighbors[GetShipDir(Point<int>(harbor_pos[i].pos), Point<int>(pa))].push_back(HarborPos::Neighbor(flags[idx] - 1, p.way + 1));
-
-                    todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(pa, p.way + 1);
-                    todo_length++;
-
-                    found[flags[idx]] = 1;
-
-                    flags[idx] = 0; // mark as visited, so we do not go here again
-                }
-                else if (flags[idx])    // this detects any sea point plus harbors we already visited
-                {
-                    todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(pa, p.way + 1);
-                    todo_length++;
-
-                    flags[idx] = 0; // mark as visited, so we do not go here again
-                }
-            }
-        }
-    }
-}
-
 
 /// Gründet vom Schiff aus eine neue Kolonie
 bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id)
@@ -1949,7 +1720,7 @@ bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_s
 std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned hp) const
 {
     std::vector<unsigned> hps;
-    for(unsigned i = 1; i < harbor_pos.size(); ++i)
+    for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
     {
         if(i == hp)
             continue;

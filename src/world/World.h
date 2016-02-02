@@ -18,6 +18,7 @@
 #ifndef World_h__
 #define World_h__
 
+#include "world/MilitarySquares.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapNode.h"
 #include "gameTypes/HarborPos.h"
@@ -33,20 +34,10 @@ class noBuildingSite;
 class noNothing;
 class fowNothing;
 class CatapultStone;
-class nobBaseMilitary;
 
 /// Base class representing the world itself, no algorithms, handlers etc!
 class World
 {
-protected:
-    /// Breite und Höhe der Karte in Kontenpunkten
-    unsigned short width_, height_;
-    /// Landschafts-Typ
-    LandscapeType lt;
-
-    /// Eigenschaften von einem Punkt auf der Map
-    std::vector<MapNode> nodes;
-
     /// Informationen über die Weltmeere
     struct Sea
     {
@@ -56,6 +47,18 @@ protected:
         Sea(): nodes_count(0) {}
         Sea(const unsigned nodes_count): nodes_count(nodes_count) {}
     };
+
+    friend class MapLoader;
+    friend class MapSerializer;
+
+    /// Size of the map in nodes
+    unsigned short width_, height_;
+    /// Landschafts-Typ
+    LandscapeType lt;
+
+    /// Eigenschaften von einem Punkt auf der Map
+    std::vector<MapNode> nodes;
+
     std::vector<Sea> seas;
 
     /// Alle Hafenpositionen
@@ -67,14 +70,13 @@ protected:
 public:
     /// Currently flying catapultstones
     std::list<CatapultStone*> catapult_stones; 
-    /// military buildings (including HQs and harbors) per military square
-    std::vector< std::list<nobBaseMilitary*> > military_squares;
+    MilitarySquares militarySquares;
 
     World();
     virtual ~World();
 
     // Grundlegende Initialisierungen
-    virtual void Init();
+    virtual void Init(const unsigned short width, const unsigned short height, LandscapeType lt);
     /// Aufräumen
     virtual void Unload();
 
@@ -123,6 +125,8 @@ public:
     /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
+    /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
+    unsigned char GetShipDir(Point<int> pos1, Point<int> pos2);
 
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Point<int> pt) const;
@@ -137,6 +141,9 @@ public:
     inline const MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) const;
     inline MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i);
 
+    inline void SetNO(noBase* obj, const MapPoint pt) { GetNode(pt).obj = obj; }
+    void AddFigure(noBase* fig, const MapPoint pt);
+    void RemoveFigure(noBase* fig, const MapPoint pt);
     // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
     noBase* GetNO(const MapPoint pt);
     // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
@@ -145,6 +152,15 @@ public:
     const FOWObject* GetFOWObject(const MapPoint pt, const unsigned spectator_player) const;
     /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
     GO_Type GetGOT(const MapPoint pt) const;
+
+    /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
+    bool IsPlayerTerritory(const MapPoint pt) const;
+    /// Ist eine Flagge irgendwo um x,y ?
+    bool FlagNear(const MapPoint pt) const;
+    /// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist
+    BuildingQuality CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true, const bool ignore_player = false) const;
+    /// Setzt die errechnete BQ gleich mit
+    void CalcAndSetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true);
 
     /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
     /// nicht bei laufenden Figuren oder
@@ -162,8 +178,26 @@ public:
     TerrainType GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
     /// Returns the terrain to the right when walking from the point in the given direction (backward direction?)
     TerrainType GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
+    /// Erzeugt FOW-Objekte, -Straßen und -Grensteine von aktuellen Punkt für einen bestimmten Spieler
+    void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
+    unsigned GetNumSeas() const { return seas.size(); }
     /// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
     bool IsSeaPoint(const MapPoint pt) const;
+    inline const unsigned GetSeaSize(const unsigned seaId) const;
+    /// Is the harbor at the given sea
+    bool IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const;
+    /// Returns the coast pt for a given harbor (where ships can land) if any
+    MapPoint GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const;
+    inline unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
+    /// Gibt die Anzahl an Hafenpunkten zurück
+    unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
+    /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
+    MapPoint GetHarborPoint(const unsigned harbor_id) const;
+    /// Gibt die ID eines Hafenpunktes zurück
+    unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
+    const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const Direction dir) const { return harbor_pos[harborId].neighbors[dir.toUInt()]; }
+    /// Returns the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
+    unsigned short IsCoastalPoint(const MapPoint pt) const;
 
     /// liefert den Straßen-Wert an der Stelle X,Y
     unsigned char GetRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
@@ -177,22 +211,10 @@ public:
     /// setzt den virtuellen Straßen-Wert um den Punkt X,Y.
     void SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
-    /// Gibt die Anzahl an Hafenpunkten zurück
-    unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
-    /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
-    MapPoint GetHarborPoint(const unsigned harbor_id) const;
-    /// Gibt die ID eines Hafenpunktes zurück
-    unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
-
 protected:
 
     /// Berechnet die Schattierung eines Punktes neu
     void RecalcShadow(const MapPoint pt);
-
-    /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
-    virtual void AltitudeChanged(const MapPoint pt) = 0;
-    /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
-    virtual void VisibilityChanged(const MapPoint pt) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -228,6 +250,17 @@ const MapNode& World::GetNeighbourNode(const MapPoint pt, const unsigned i) cons
 MapNode& World::GetNeighbourNode(const MapPoint pt, const unsigned i)
 {
     return GetNode(GetNeighbour(pt, i));
+}
+
+const unsigned World::GetSeaSize(const unsigned seaId) const
+{
+    RTTR_Assert(seaId < seas.size());
+    return seas[seaId].nodes_count;
+}
+
+unsigned short World::GetSeaId(const unsigned harborId, const Direction dir) const
+{
+    return harbor_pos[harborId].cps[dir.toUInt()].sea_id;
 }
 
 template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>

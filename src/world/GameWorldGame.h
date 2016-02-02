@@ -30,10 +30,6 @@ class TerritoryRegion;
 /// "Interface-Klasse" für das Spiel
 class GameWorldGame : public virtual GameWorldBase
 {
-    /// vergleicht 2 Punkte, ob sie von unterschiedlichen Spielern sind und setzt
-    /// Punkt ggf. zu gar keinem Spieler, 2. Funktion wird für Punkte im 2er Abstand verwendet, da es dort ein bisschen anders läuft!
-    void AdjustNodes(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
-    void AdjustNodes2(const MapCoord x1, const MapCoord y1, const MapCoord x2, const MapCoord y2);
     /// Zerstört Spielerteile auf einem Punkt, wenn der Punkt dem Spieler nun nich mehr gehört
     void DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
 
@@ -52,10 +48,6 @@ class GameWorldGame : public virtual GameWorldBase
     /// Setzt Punkt auf jeden Fall auf sichtbar
     void SetVisibility(const MapPoint pt,  const unsigned char player);
 
-    /// Prüfen, ob zu einem bestimmten Küsenpunkt ein Hafenpunkt gehört und wenn ja, wird dieser zurückgegeben
-    unsigned short GetHarborPosID(const MapPoint pt);
-    /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
-    unsigned char GetShipDir(Point<int> pos1, Point<int> pos2);
     /// Creates a region with territories marked around a building with the given radius
     TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, const unsigned short radius, const bool destroyed) const;
     /// Recalculates where border stones should be after a change in the given region
@@ -63,11 +55,6 @@ class GameWorldGame : public virtual GameWorldBase
 
 protected:
 
-    /// Erzeugt FOW-Objekte, -Straßen und -Grensteine von aktuellen Punkt für einen bestimmten Spieler
-    void SaveFOWNode(const MapPoint pt, const unsigned player);
-    /// Berechnet für alle Hafenpunkt jeweils die Richtung und Entfernung zu allen anderen Hafenpunkten
-    /// über die Kartenränder hinweg
-    void CalcHarborPosNeighbors();
     /// Create Trade graphs
     void CreateTradeGraphs();
 
@@ -78,10 +65,6 @@ public:
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     inline GameInterface* GetGameInterface() const { return gi; }
-
-    inline void SetNO(noBase* obj, const MapPoint pt) { GetNode(pt).obj = obj; }
-    void AddFigure(noBase* fig, const MapPoint pt);
-    void RemoveFigure(noBase* fig, const MapPoint pt);
 
     /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
     void RecalcBQAroundPoint(const MapPoint pt);
@@ -150,12 +133,11 @@ public:
     void Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);
     /// Greift ein Militäregebäude mit Schiffen an
     void AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);
-    // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
-    std::list<nobBaseMilitary*>& GetMilitarySquare(const MapPoint pt);
 
     /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
     void AddCatapultStone(CatapultStone* cs);
     void RemoveCatapultStone(CatapultStone* cs);
+    MilitarySquares& GetMilitarySquares();
 
     /// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstört
     void Armageddon();
@@ -178,8 +160,6 @@ public:
     void RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception);
     /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
     void SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player);
-    /// Berechet die ganzen Sichtbarkeiten der Karte neu
-    void RecalcAllVisibilities();
     /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an
     /// den Rändern neu
     void RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,

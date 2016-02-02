@@ -35,11 +35,9 @@
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation)
 {
-
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(pos).push_back(this);
+    gwg->GetMilitarySquares().Add(this);
     gwg->RecalcTerritory(*this, false, true);
-
 
     // StartWaren setzen ( provisorisch )
     switch(GAMECLIENT.GetGGS().start_wares)
@@ -346,8 +344,7 @@ void nobHQ::Destroy_nobHQ()
     gwg->RecalcTerritory(*this, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
-    gwg->GetMilitarySquare(pos).remove(this);
+    gwg->GetMilitarySquares().Remove(this);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
@@ -357,8 +354,7 @@ void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
 
 nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
 {
-    // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(pos).push_back(this);
+    gwg->GetMilitarySquares().Add(this);
 
     // Startpos setzen
     GAMECLIENT.GetPlayer(player).hqPos = this->pos;

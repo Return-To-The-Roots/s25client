@@ -79,7 +79,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(NULL)
 {
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(pos).push_back(this);
+    gwg->GetMilitarySquares().Add(this);
     gwg->RecalcTerritory(*this, false, true);
 
     // Alle Waren 0, außer 100 Träger
@@ -180,8 +180,7 @@ void nobHarborBuilding::Destroy()
     gwg->RecalcTerritory(*this, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
-    RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
-    gwg->GetMilitarySquare(pos).remove(this);
+    gwg->GetMilitarySquares().Remove(this);
 }
 
 void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
@@ -214,7 +213,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
       orderware_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT))
 {
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(pos).push_back(this);
+    gwg->GetMilitarySquares().Add(this);
 
     for(unsigned i = 0; i < 6; ++i)
         sea_ids[i] = sgd.PopUnsignedShort();

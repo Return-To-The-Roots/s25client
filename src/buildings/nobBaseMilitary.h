@@ -150,7 +150,7 @@ class nobBaseMilitary : public noBuilding
         };
 };
 
-typedef boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer> sortedMilitaryBlds;
-
+class sortedMilitaryBlds: public boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer>
+{};
 
 #endif //! NOB_BASEMILITARY_H_

@@ -41,7 +41,7 @@ struct Direction
     static Direction fromInt(int t){ return Type(t); }
     operator Type() const { return t_; }
     /// Returns the Direction as an UInt (for legacy code)
-    unsigned toUInt(){ return t_; }
+    unsigned toUInt() const { return t_; }
     Direction operator+(unsigned i) const { return Direction(t_ + i); }
     // TODO: Add iterator to iterate over all values from a given value
 private:

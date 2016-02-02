@@ -62,7 +62,7 @@ public:
     virtual ~GameWorldBase();
 
     // Grundlegende Initialisierungen
-    void Init() override;
+    void Init(const unsigned short width, const unsigned short height, LandscapeType lt) override;
 
     /// Setzt GameInterface
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
@@ -76,18 +76,9 @@ public:
     bool RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual = true) const;
     /// Prüft ob exakt die gleiche Straße schon gebaut wurde
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
-    /// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist
-    BuildingQuality CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true, const bool ignore_player = false) const;
-    /// Setzt die errechnete BQ gleich mit
-    void CalcAndSetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true)
-    { GetNode(pt).bq = CalcBQ(pt, player, flagonly, visual); }
 
-    /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
-    bool IsPlayerTerritory(const MapPoint pt) const;
     /// Berechnet BQ bei einer gebauten Straße
     void CalcRoad(const MapPoint pt, const unsigned char player);
-    /// Ist eine Flagge irgendwo um x,y ?
-    bool FlagNear(const MapPoint pt) const;
     /// Prüft, ob sich in unmittelbarer Nähe (im Radius von 4) Militärgebäude befinden
     bool IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const;
 
@@ -119,7 +110,7 @@ public:
     noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i = 255);
 
     /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-    unsigned CreateGUIID(const MapPoint pt) const { return 1000 + width_ * pt.y + pt.x; }
+    unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
     /// Gibt Terrainkoordinaten zurück
     Point<float> GetNodePos(const MapPoint pt){ return tr.GetNodePos(pt); }
 
@@ -129,26 +120,14 @@ public:
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
     Visibility CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const;
 
-    /// Gibt die Anzahl an Hafenpunkten zurück
-    unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
     bool IsHarborPointFree(const unsigned harbor_id, const unsigned char player,
         const unsigned short sea_id) const;
-    /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
-    /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
-    unsigned short IsCoastalPoint(const MapPoint pt) const;
     /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1 Hafenplatz liegt, hat
     /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
     unsigned short IsCoastalPointToSeaWithHarbor(const MapPoint pt) const;
-    /// Grenzt der Hafen an ein bestimmtes Meer an?
-    bool IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const;
-    /// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren können
-    MapPoint GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const;
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir,
-        const unsigned char player) const;
-    /// Gibt die angrenzenden Sea-IDs eines Hafenpunktes zurück
-    void GetSeaIDs(const unsigned harbor_id, unsigned short* sea_ids) const;
+    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir, const unsigned char player) const;
     /// Berechnet die Entfernung zwischen 2 Hafenpunkten
     unsigned CalcHarborDistance(const unsigned habor_id1, const unsigned harbor_id2) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt

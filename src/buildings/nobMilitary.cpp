@@ -56,7 +56,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetPlayer(player).AddMilitaryBuilding(this);
-    gwg->GetMilitarySquare(pos).push_back(this);
+    gwg->GetMilitarySquares().Add(this);
 
     // Größe ermitteln
     switch(type)
@@ -104,8 +104,7 @@ void nobMilitary::Destroy_nobMilitary()
 {
     // Remove from military square and buildings first, to avoid e.g. sending canceled soldiers back to this building
     gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
-    RTTR_Assert(helpers::contains(gwg->GetMilitarySquare(pos), this));
-    gwg->GetMilitarySquare(pos).remove(this);
+    gwg->GetMilitarySquares().Remove(this);
 
     // Bestellungen stornieren
     CancelOrders();
@@ -201,7 +200,7 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
     sgd.PopObjectContainer(far_away_capturers, GOT_NOF_ATTACKER);
 
     // ins Militärquadrat einfügen
-    gwg->GetMilitarySquare(pos).push_back(this);
+    gwg->GetMilitarySquares().Add(this);
 
     if(capturing && capturing_soldiers == 0 && aggressors.empty())
     {
