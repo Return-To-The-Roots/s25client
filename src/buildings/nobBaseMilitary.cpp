@@ -32,7 +32,6 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofDefender.h"
 #include "SerializedGameData.h"
-#include "world/MapGeometry.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 

@@ -29,7 +29,6 @@
 #include "macros.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "world/MapGeometry.h"
 
 #include <stdexcept>
 

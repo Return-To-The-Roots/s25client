@@ -17,13 +17,7 @@
 #ifndef MAP_GEOMETRY_H_
 #define MAP_GEOMETRY_H_
 
-#include "gameTypes/MapTypes.h"
 #include "Point.h"
-
-/// Ermittelt Abstand zwischen 2 Punkten auf der Map
-unsigned CalcRawDistance(const int x1, const int y1,
-                         const int x2, const int y2);
-
 
 Point<int> GetPointAround(const Point<int>& p, unsigned dir);
 

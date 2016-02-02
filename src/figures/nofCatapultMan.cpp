@@ -24,7 +24,6 @@
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "CatapultStone.h"
-#include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
 #include "SerializedGameData.h"
 

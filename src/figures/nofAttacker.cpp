@@ -31,7 +31,6 @@
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "world/MapGeometry.h"
 #include "PostMsg.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"

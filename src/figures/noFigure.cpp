@@ -24,7 +24,6 @@
 #include "Loader.h"
 #include "nodeObjs/noRoadNode.h"
 #include "EventManager.h"
-#include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
 #include "nofCarrier.h"
 #include "nodeObjs/noSkeleton.h"

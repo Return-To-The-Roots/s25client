@@ -25,33 +25,23 @@
 // Include last!
 #include "DebugNew.h"
 
-unsigned CalcRawDistance(const int x1, const int y1, const int x2, const int y2)
-{
-    int dx = std::abs(((x1 - x2) * 2) + (y1 & 1) - (y2 & 1));
-    int dy = std::abs(y1 - y2) * 2;
-
-    if (dy > 8)
-        dy = (8 * 2) - dy;
-
-    if (dx > 7)
-        dx = (7  * 2) - dx;
-
-    dx -= dy / 2;
-
-    return((dy + (dx > 0 ? dx : 0)) / 2);
-}
-
 Point<int> GetPointAround(const Point<int>& p, unsigned dir)
 {
     switch(dir)
     {
-        case 0: return Point<int>(p.x - 1, p.y);
-        case 1: return Point<int>(p.x - !(p.y&1), p.y-1);
-        case 2: return Point<int>(p.x + (p.y&1), p.y-1); break;
-        case 3: return Point<int>(p.x + 1, p.y); break;
-        case 4: return Point<int>(p.x + (p.y&1), p.y+1); break;
-        case 5: return Point<int>(p.x - !(p.y&1), p.y+1); break;
-        default: RTTR_Assert(false); return Point<int>(0xffffff, 0xffffff);
+        case 0:
+            return Point<int>(p.x - 1, p.y);
+        case 1:
+            return Point<int>(p.x - !(p.y&1), p.y-1);
+        case 2:
+            return Point<int>(p.x + (p.y&1), p.y-1);
+        case 3:
+            return Point<int>(p.x + 1, p.y);
+        case 4:
+            return Point<int>(p.x + (p.y&1), p.y+1);
+        default:
+            RTTR_Assert(dir == 5);
+            return Point<int>(p.x - !(p.y & 1), p.y + 1);
     }
 }
 
