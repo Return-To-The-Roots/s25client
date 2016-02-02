@@ -250,32 +250,29 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Overlay ändern.
- *
- *  @param[in] i    Item-Nr (0-29)
- *  @param[in] what Welcher Status soll geändert werden (2 = Einlagern verbieten, 4 = Auslagern)
- *
- *  @author FloSoft
- */
-void iwBaseWarehouse::UpdateOverlay(unsigned int i)
+void iwBaseWarehouse::UpdateOverlay(unsigned i)
 {
+    UpdateOverlay(i, this->page == 0);
+}
+
+void iwBaseWarehouse::UpdateOverlay(unsigned int i, bool isWare)
+{
+    ctrlGroup* group = GetCtrl<ctrlGroup>(isWare ? 100 : 101);
     // Einlagern verbieten-Bild (de)aktivieren
-    ctrlImage* image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(400 + i);
+    ctrlImage* image = group->GetCtrl<ctrlImage>(400 + i);
     if(image)
-        image->SetVisible(page == 0 ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::STOP) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::STOP));
+        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::STOP) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::STOP));
 
     // Auslagern-Bild (de)aktivieren
-    image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(500 + i);
+    image = group->GetCtrl<ctrlImage>(500 + i);
     if(image)
-        image->SetVisible(page == 0 ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::SEND) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::SEND));
+        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::SEND) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::SEND));
 
     // Einlagern-Bild (de)aktivieren
-    image = GetCtrl<ctrlGroup>(100 + this->page)->GetCtrl<ctrlImage>(700 + i);
+    image = group->GetCtrl<ctrlImage>(700 + i);
     if(image)
-        image->SetVisible(page == 0 ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::COLLECT) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::COLLECT));
+        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::COLLECT) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::COLLECT));
+
 }
 
 void iwBaseWarehouse::UpdateOverlays()
@@ -286,7 +283,7 @@ void iwBaseWarehouse::UpdateOverlays()
         unsigned count = (category == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
         for(unsigned i = 0; i < count; ++i)
         {
-            UpdateOverlay(i);
+            UpdateOverlay(i, category == 0);
         }
     }
 }

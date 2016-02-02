@@ -45,8 +45,10 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
 
     protected:
 
-        /// Overlay ändern
-        void UpdateOverlay(unsigned int i);
+        /// Update displayed overlay (e.g. stop symbol) for the item at the current page
+        void UpdateOverlay(unsigned i);
+        /// Update displayed overlay (e.g. stop symbol) for the item of the given type
+        void UpdateOverlay(unsigned i, bool isWare);
         void UpdateOverlays();
 
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
