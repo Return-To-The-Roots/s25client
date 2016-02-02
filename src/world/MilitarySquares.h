@@ -39,7 +39,7 @@ public:
     void Clear();
     void Add(nobBaseMilitary* const bld);
     void Remove(nobBaseMilitary* const bld);
-    sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsigned short radius) const;
+    sortedMilitaryBlds GetBuildingsInRange(const MapPoint pt, unsigned short radius) const;
 };
 
 #endif // MilitarySquares_h__
