@@ -47,7 +47,8 @@ struct MapNode
     /// Eigentümer (Spieler)
     unsigned char owner;
     /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
-    boost::array<unsigned char, 4> boundary_stones;
+    typedef boost::array<unsigned char, 4> BoundaryStones;
+    BoundaryStones boundary_stones;
     /// Bauqualität
     BuildingQuality bq;
     /// Visuelle Sachen für alle Spieler, die in Zusammenhang mit dem FoW stehen

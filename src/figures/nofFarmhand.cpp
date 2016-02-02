@@ -69,7 +69,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
             // fertig mit Arbeiten --> dann müssen die "Folgen des Arbeitens" ausgeführt werden
             WorkFinished();
             // Objekt wieder freigeben
-            gwg->GetNode(pos).reserved = false;
+            gwg->SetReserved(pos, false);
             // Wieder nach Hause gehen
             StartWalkingHome();
 
@@ -165,7 +165,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int id)
                 workplace->is_working = true;
 
                 // Punkt für uns reservieren
-                gwg->GetNode(dest).reserved = true;;
+                gwg->SetReserved(dest, true);
 
                 // Anfangen zu laufen (erstmal aus dem Haus raus!)
                 StartWalking(4);
@@ -264,7 +264,7 @@ void nofFarmhand::WalkToWorkpoint()
     if(dir == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
     {
         // Punkt freigeben
-        gwg->GetNode(dest).reserved = false;
+        gwg->SetReserved(dest, false);
         // Kein Weg führt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
         StartWalkingHome();
     }
@@ -316,7 +316,7 @@ void nofFarmhand::WorkAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if(state == STATE_WORK || state == STATE_WALKTOWORKPOINT)
-        gwg->GetNode(dest).reserved = false;
+        gwg->SetReserved(dest, false);
 
     WorkAborted_Farmhand();
 }

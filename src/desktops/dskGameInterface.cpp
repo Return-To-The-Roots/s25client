@@ -416,7 +416,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         action_tabs.watch = true;
         // Unser Land
-        MapNode& selNode = gwv->GetNode(cSel);
+        const MapNode& selNode = gwv->GetNode(cSel);
         if(selNode.owner == GAMECLIENT.GetPlayerID() + 1)
         {
             // Kann hier was gebaut werden?

@@ -122,6 +122,7 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
 // Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
 void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
+    GameWorldBase::AltitudeChanged(pt);
     tr.AltitudeChanged(pt, *this);
 }
 

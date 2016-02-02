@@ -399,9 +399,8 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     if(found)
     {
         // Minen / Brunnen unerschöpflich?
-        if( (type == 4 && settings.isEnabled(ADDON_EXHAUSTIBLE_WELLS)) ||
-                (type != 4 && !settings.isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
-            --gwg->GetNode(mP).resources;
+        if( (type == 4 && settings.isEnabled(ADDON_EXHAUSTIBLE_WELLS)) || (type != 4 && !settings.isEnabled(ADDON_INEXHAUSTIBLE_MINES)) )
+            gwg->ReduceResource(mP);
         return true;
     }
 

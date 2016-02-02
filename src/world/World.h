@@ -67,6 +67,9 @@ class World
     noNothing* noNodeObj;
     fowNothing* noFowObj;
 
+    /// Internal method for access to nodes with write access
+    inline MapNode& GetNodeInt(const MapPoint pt);
+    inline MapNode& GetNeighbourNodeInt(const MapPoint pt, const unsigned i);
 public:
     /// Currently flying catapultstones
     std::list<CatapultStone*> catapult_stones; 
@@ -136,10 +139,8 @@ public:
 
     /// Gibt Map-Knotenpunkt zurück
     inline const MapNode& GetNode(const MapPoint pt) const;
-    inline MapNode& GetNode(const MapPoint pt);
     /// Gibt MapKnotenpunkt darum zurück
     inline const MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) const;
-    inline MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i);
 
     void AddFigure(noBase* fig, const MapPoint pt);
     void RemoveFigure(noBase* fig, const MapPoint pt);
@@ -155,6 +156,13 @@ public:
     const FOWObject* GetFOWObject(const MapPoint pt, const unsigned spectator_player) const;
     /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
     GO_Type GetGOT(const MapPoint pt) const;
+    void ReduceResource(const MapPoint pt);
+    void SetResource(const MapPoint pt, const unsigned char newResource){ GetNodeInt(pt).resources = newResource; }
+    void SetOwner(const MapPoint pt, const unsigned char newOwner){ GetNodeInt(pt).owner = newOwner; }
+    void SetReserved(const MapPoint pt, const bool reserved);
+    void SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime);
+
+    void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
 
     /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
     bool IsPlayerTerritory(const MapPoint pt) const;
@@ -215,6 +223,11 @@ public:
     void SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
 protected:
+    /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
+    virtual void AltitudeChanged(const MapPoint pt) = 0;
+    /// Sets the real road to whether a virtual road for this pt and direction exists
+    void ApplyRoad(const MapPoint pt, unsigned char dir);
+    MapNode::BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
 
     /// Berechnet die Schattierung eines Punktes neu
     void RecalcShadow(const MapPoint pt);
@@ -240,7 +253,7 @@ const MapNode& World::GetNode(const MapPoint pt) const
     RTTR_Assert(pt.x < width_ && pt.y < height_);
     return nodes[GetIdx(pt)];
 }
-MapNode& World::GetNode(const MapPoint pt)
+MapNode& World::GetNodeInt(const MapPoint pt)
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
     return nodes[GetIdx(pt)];
@@ -250,9 +263,9 @@ const MapNode& World::GetNeighbourNode(const MapPoint pt, const unsigned i) cons
 {
     return GetNode(GetNeighbour(pt, i));
 }
-MapNode& World::GetNeighbourNode(const MapPoint pt, const unsigned i)
+MapNode& World::GetNeighbourNodeInt(const MapPoint pt, const unsigned i)
 {
-    return GetNode(GetNeighbour(pt, i));
+    return GetNodeInt(GetNeighbour(pt, i));
 }
 
 const unsigned World::GetSeaSize(const unsigned seaId) const

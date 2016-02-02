@@ -191,7 +191,7 @@ void nofGeologist::Walked()
         if(!IsNodeGood(node_goal))
         {
             // alten Punkt wieder freigeben
-            gwg->GetNode(node_goal).reserved = false;;
+            gwg->SetReserved(node_goal, false);
             // wenn nicht, dann zu einem neuen Punkt gehen
             GoToNextNode();
             return;
@@ -248,7 +248,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
                 SetSign(resources);
                 GoToNextNode();
                 /// Punkt wieder freigeben
-                gwg->GetNode(pos).reserved = false;;
+                gwg->SetReserved(pos, false);
             }
 
         } break;
@@ -259,7 +259,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
             // Und weiterlaufen
             GoToNextNode();
             /// Punkt wieder freigeben
-            gwg->GetNode(pos).reserved = false;;
+            gwg->SetReserved(pos, false);
             /// Sounds evtl löschen
             SOUNDMANAGER.WorkingFinished(this);
         } break;
@@ -348,7 +348,7 @@ unsigned char nofGeologist::GetNextNode()
                     continue;
             }
             // Reservieren
-            gwg->GetNode(node_goal).reserved = true;
+            gwg->SetReserved(node_goal, true);
             return ret_dir;
         }
 
@@ -493,7 +493,7 @@ void nofGeologist::LostWork()
         case STATE_GEOLOGIST_DIG:
         case STATE_GEOLOGIST_CHEER:
         {
-            gwg->GetNode(node_goal).reserved = false;;
+            gwg->SetReserved(node_goal, false);
         } break;
     }
 }

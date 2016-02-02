@@ -80,7 +80,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
     {
         for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
         {
-            MapNode& node = world.GetNode(pt);
+            MapNode& node = world.GetNodeInt(pt);
 
             std::fill(node.roads.begin(), node.roads.end(), 0);
             std::fill(node.roads_real.begin(), node.roads_real.end(), false);
@@ -307,7 +307,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 break;
             }
 
-            world.GetNode(pt).obj = obj;
+            world.GetNodeInt(pt).obj = obj;
         }
     }
     return headquarter_positions;
@@ -542,7 +542,7 @@ unsigned MapLoader::MeasureSea(const MapPoint start, const unsigned short sea_id
         todo.pop();
 
         RTTR_Assert(visited[world.GetIdx(p)]);
-        world.GetNode(p).sea_id = sea_id;
+        world.GetNodeInt(p).sea_id = sea_id;
 
         for(unsigned i = 0; i < 6; ++i)
         {

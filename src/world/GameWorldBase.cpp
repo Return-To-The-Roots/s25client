@@ -405,16 +405,8 @@ noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned las
 }
 
 /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
-void GameWorldBase::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
+void GameWorldBase::AltitudeChanged(const MapPoint pt)
 {
-    // Höhe verändern
-    GetNode(pt).altitude = altitude;
-
-    // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
-    RecalcShadow(pt);
-    for(unsigned i = 0; i < 6; ++i)
-        RecalcShadow(GetNeighbour(pt, i));
-
     // Baumöglichkeiten neu berechnen
     // Direkt drumherum
     for(unsigned i = 0; i < 6; ++i)
@@ -422,9 +414,6 @@ void GameWorldBase::ChangeAltitude(const MapPoint pt, const unsigned char altitu
     // noch eine Schale weiter außen
     for(unsigned i = 0; i < 12; ++i)
         CalcAndSetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
-
-    // Abgeleiteter Klasse Bescheid sagen
-    AltitudeChanged(pt);
 }
 
 Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const
@@ -1586,14 +1575,15 @@ int GameWorldBase::LUA_AddStaticObject(lua_State *L)
         }
     }
     
-    MapNode& node = gwg->GetNode(pt);
+    const MapNode& node = gwg->GetNode(pt);
     if (node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
     
-    node.obj = new noStaticObject(pt, id, file, size);
+    gwg->DestroyNO(pt, false);
+    gwg->SetNO(pt, new noStaticObject(pt, id, file, size));
     gwg->RecalcBQAroundPoint(pt);
        
     lua_pushnumber(L, 1);
@@ -1630,14 +1620,15 @@ int GameWorldBase::LUA_AddEnvObject(lua_State *L)
         file = (unsigned) luaL_checknumber(L, 4);
     }
     
-    MapNode& node = gwg->GetNode(pt);
+    const MapNode& node = gwg->GetNode(pt);
     if (node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
     
-    node.obj = new noEnvObject(pt, id, file);
+    gwg->DestroyNO(pt, false);
+    gwg->SetNO(pt, new noEnvObject(pt, id, file));
     gwg->RecalcBQAroundPoint(pt);   
     
     lua_pushnumber(L, 1);

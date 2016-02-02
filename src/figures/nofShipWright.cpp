@@ -145,7 +145,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int id)
                 // fertig mit Arbeiten --> dann müssen die "Folgen des Arbeitens" ausgeführt werden
                 WorkFinished();
                 // Objekt wieder freigeben
-                gwg->GetNode(pos).reserved = false;
+                gwg->SetReserved(pos, false);
                 // Wieder nach Hause gehen
                 StartWalkingHome();
 
@@ -191,7 +191,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char first_dir)
     // Waren verbrauchen
     workplace->ConsumeWares();
     // Punkt für uns reservieren
-    gwg->GetNode(dest).reserved = true;;
+    gwg->SetReserved(dest, true);
     // Anfangen zu laufen (erstmal aus dem Haus raus!)
     StartWalking(4);
 
@@ -231,7 +231,7 @@ void nofShipWright::WalkToWorkpoint()
     if(dir == 0xFF || (!IsPointGood(dest) && gwg->GetGOT(dest) != GOT_SHIPBUILDINGSITE))
     {
         // Punkt freigeben
-        gwg->GetNode(dest).reserved = false;;
+        gwg->SetReserved(dest, false);
         // Kein Weg führt mehr zum Ziel oder Punkt ist nich mehr in Ordnung --> wieder nach Hause gehen
         StartWalkingHome();
     }
@@ -282,7 +282,7 @@ void nofShipWright::WorkAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if((state == STATE_WORK && workplace->GetPos() != pos) || state == STATE_WALKTOWORKPOINT) //&& static_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::SHIPS)
-        gwg->GetNode(dest).reserved = false;
+        gwg->SetReserved(dest, true);
 }
 
 

@@ -136,14 +136,14 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                 // Draw objects and people
 
                 // Draw objects - buildings, trees, stones, decoration sprites, etc.
-                MapNode& mn = gwv->GetNode(t);
-                if(mn.obj)
+                const MapNode& mapNode = gwv->GetNode(t);
+                if(mapNode.obj)
                 {
-                    mn.obj->Draw(curPos.x, curPos.y);
+                    mapNode.obj->Draw(curPos.x, curPos.y);
                     if (false) //TODO: military aid - display icon overlay of attack possibility
                     {
                         noBuilding* building = gwv->GetSpecObj<noBuilding>(t);
-                        if (mn.owner != GAMECLIENT.GetPlayerID() + 1 //not belonging to current player
+                        if (mapNode.owner != GAMECLIENT.GetPlayerID() + 1 //not belonging to current player
                                 && gwv->GetNO(t)->GetType() == NOP_BUILDING //is a building
                                 && !GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())) //not an ally
                         {
@@ -161,9 +161,9 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
 
 
                 // People
-                if(!mn.figures.empty())
+                if(!mapNode.figures.empty())
                 {
-                    for(std::list<noBase*>::iterator it = mn.figures.begin(); it != mn.figures.end(); ++it)
+                    for(std::list<noBase*>::const_iterator it = mapNode.figures.begin(); it != mapNode.figures.end(); ++it)
                     {
                         // Bewegt er sich oder ist es ein Schiff?
                         if((*it)->IsMoving() || (*it)->GetGOT() == GOT_SHIP)
@@ -494,9 +494,9 @@ void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t
         // schwarz/unsichtbar, nichts zeichnen
         return;
 
-    bool fow = !(vis == VIS_VISIBLE);
+    bool fow = vis != VIS_VISIBLE;
 
-    boost::array<unsigned char, 4>& boundary_stones = fow ? gwv->GetNode(t).fow[gwv->GetYoungestFOWNodePlayer(MapPoint(t))].boundary_stones : gwv->GetNode(t).boundary_stones;
+    const MapNode::BoundaryStones& boundary_stones = fow ? gwv->GetNode(t).fow[gwv->GetYoungestFOWNodePlayer(MapPoint(t))].boundary_stones : gwv->GetNode(t).boundary_stones;
     unsigned char owner = boundary_stones[0];
 
     if(owner)

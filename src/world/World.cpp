@@ -260,7 +260,7 @@ void World::AddFigure(noBase* fig, const MapPoint pt)
     if(!fig)
         return;
 
-    std::list<noBase*>& figures = GetNode(pt).figures;
+    std::list<noBase*>& figures = GetNodeInt(pt).figures;
     RTTR_Assert(!helpers::contains(figures, fig));
     figures.push_back(fig);
 
@@ -276,7 +276,7 @@ void World::AddFigure(noBase* fig, const MapPoint pt)
 void World::RemoveFigure(noBase* fig, const MapPoint pt)
 {
     RTTR_Assert(helpers::contains(GetNode(pt).figures, fig));
-    GetNode(pt).figures.remove(fig);
+    GetNodeInt(pt).figures.remove(fig);
 }
 
 noBase* World::GetNO(const MapPoint pt)
@@ -298,12 +298,12 @@ const noBase* World::GetNO(const MapPoint pt) const
 void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)
 {
     RTTR_Assert(replace ||obj == NULL || GetNode(pt).obj == NULL);
-    GetNode(pt).obj = obj;
+    GetNodeInt(pt).obj = obj;
 }
 
 void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
 {
-    noBase*& obj = GetNode(pt).obj;
+    noBase*& obj = GetNodeInt(pt).obj;
     if(obj)
     {
         obj->Destroy();
@@ -328,6 +328,44 @@ GO_Type World::GetGOT(const MapPoint pt) const
         return obj->GetGOT();
     else
         return GOT_NOTHING;
+}
+
+void World::ReduceResource(const MapPoint pt)
+{
+    RTTR_Assert(GetNodeInt(pt).resources > 0);
+    GetNodeInt(pt).resources--;
+}
+
+void World::SetReserved(const MapPoint pt, const bool reserved)
+{
+    RTTR_Assert(GetNodeInt(pt).reserved != reserved);
+    GetNodeInt(pt).reserved = reserved;
+}
+
+void World::SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime)
+{
+    if(GetNodeInt(pt).fow[player].visibility == vis)
+        return;
+
+    GetNodeInt(pt).fow[player].visibility = vis;
+    if(vis == VIS_VISIBLE)
+        deletePtr(GetNodeInt(pt).fow[player].object);  // Etwaige FOW-Objekte zerstören
+    else if(vis == VIS_FOW)
+        SaveFOWNode(pt, player, curTime);
+}
+
+void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
+{
+    // Höhe verändern
+    GetNodeInt(pt).altitude = altitude;
+
+    // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
+    RecalcShadow(pt);
+    for(unsigned i = 0; i < 6; ++i)
+        RecalcShadow(GetNeighbour(pt, i));
+
+    // Abgeleiteter Klasse Bescheid sagen
+    AltitudeChanged(pt);
 }
 
 bool World::IsPlayerTerritory(const MapPoint pt) const
@@ -613,7 +651,7 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const unsigned char player, con
 
 void World::CalcAndSetBQ(const MapPoint pt, const unsigned char player, const bool flagonly/* = false*/, const bool visual/* = true*/)
 {
-    GetNode(pt).bq = CalcBQ(pt, player, flagonly, visual);
+    GetNodeInt(pt).bq = CalcBQ(pt, player, flagonly, visual);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -667,7 +705,7 @@ TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  con
 
 void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
 {
-    MapNode::FoWData& fow = GetNode(pt).fow[player];
+    MapNode::FoWData& fow = GetNodeInt(pt).fow[player];
     fow.last_update_time = curTime;
 
     // FOW-Objekt erzeugen
@@ -790,7 +828,7 @@ void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char t
 {
     RTTR_Assert(dir < 3);
 
-    GetNode(pt).roads[dir] = type;
+    GetNodeInt(pt).roads[dir] = type;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -839,6 +877,11 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
     return 0;
 }
 
+void World::ApplyRoad(const MapPoint pt, unsigned char dir)
+{
+    GetNodeInt(pt).roads_real[dir] = GetNode(pt).roads[dir] != 0;
+}
+
 void World::RecalcShadow(const MapPoint pt)
 {
     int altitude = GetNode(pt).altitude;
@@ -852,5 +895,5 @@ void World::RecalcShadow(const MapPoint pt)
         shadingS2 = 128;
     else if(shadingS2 < 0)
         shadingS2 = 0;
-    GetNode(pt).shadow = shadingS2;
+    GetNodeInt(pt).shadow = shadingS2;
 }

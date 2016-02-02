@@ -134,7 +134,7 @@ void nofFisher::WorkFinished()
     if(successful)
     {
         if(!GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
-            --(gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources);
+            gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
     }
     else

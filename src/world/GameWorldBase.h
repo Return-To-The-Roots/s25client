@@ -115,7 +115,7 @@ public:
     Point<float> GetNodePos(const MapPoint pt){ return tr.GetNodePos(pt); }
 
     /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
-    void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
+    void AltitudeChanged(const MapPoint pt) override;
 
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
     Visibility CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const;
@@ -179,8 +179,6 @@ public:
 
 protected:
 
-    /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
-    virtual void AltitudeChanged(const MapPoint pt) = 0;
     /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
     virtual void VisibilityChanged(const MapPoint pt) = 0;
 

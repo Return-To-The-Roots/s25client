@@ -46,7 +46,7 @@ class GameWorldGame : public virtual GameWorldBase
     /// werden soll, z.b. weil es abgerissen wird
     void RecalcVisibility(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception);
     /// Setzt Punkt auf jeden Fall auf sichtbar
-    void SetVisibility(const MapPoint pt,  const unsigned char player);
+    void MakeVisible(const MapPoint pt,  const unsigned char player);
 
     /// Creates a region with territories marked around a building with the given radius
     TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, const unsigned short radius, const bool destroyed) const;

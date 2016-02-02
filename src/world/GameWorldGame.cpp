@@ -148,12 +148,7 @@ void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char 
 
     // Virtuelle Straße setzen
     SetVirtualRoad(pt, dir, type);
-
-    // Flag nullen wenn nur noch das real-flag da ist oder es setzen
-    if(!GetNode(pt).roads[dir])
-        GetNode(pt).roads_real[dir] = false;
-    else
-        GetNode(pt).roads_real[dir] = true;
+    ApplyRoad(pt, dir);
 
     if(gi)
         gi->GI_UpdateMinimap(pt);
@@ -486,7 +481,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                 if((ownerOfTriggerBld == oldOwner && oldOwner > 0 && newBuilt) || (newOwnerOfTriggerBld == oldOwner && !destroyed && !newBuilt))
 					continue;
 			}
-            GetNode(curPt).owner = newOwner;
+            SetOwner(curPt, newOwner);
             ownerChanged[region.GetIdx(x, y)] = true;
             if (newOwner != 0)
                 sizeChanges[newOwner - 1]++;
@@ -528,7 +523,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
                 // Wenn kein Land angrenzt, dann nicht nehmen
                 if(!isPlayerTerritoryNear)
-                    GetNode(curPt).owner = 0;
+                    SetOwner(curPt, 0);
             }
 
             // Drumherum (da ja Grenzen mit einberechnet werden ins Gebiet, da darf trotzdem nichts stehen) alles vom Spieler zerstören
@@ -568,7 +563,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
         SetVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }
 
-//#define PREVENT_BORDER_STONE_BLOCKING
+#define PREVENT_BORDER_STONE_BLOCKING
 
 void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 {
@@ -593,19 +588,20 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
             // Korrigierte X-Koordinaten
             const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
             const unsigned char owner = GetNode(curPt).owner;
+            MapNode::BoundaryStones& boundaryStones = GetBoundaryStones(curPt);
 
             // Grenzstein direkt auf diesem Punkt?
             if(owner && IsBorderNode(curPt, owner))
             {
-                GetNode(curPt).boundary_stones[0] = owner;
+                boundaryStones[0] = owner;
 
                 // Grenzsteine prüfen auf den Zwischenstücken in die 3 Richtungen nach unten und nach rechts
                 for(unsigned i = 0; i < 3; ++i)
                 {
                     if(IsBorderNode(GetNeighbour(curPt, 3 + i), owner))
-                        GetNode(curPt).boundary_stones[i + 1] = owner;
+                        boundaryStones[i + 1] = owner;
                     else
-                        GetNode(curPt).boundary_stones[i + 1] = 0;
+                        boundaryStones[i + 1] = 0;
 
                 }
 
@@ -622,7 +618,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
             {
                 // Kein Grenzstein --> etwaige vorherige Grenzsteine löschen
                 for(unsigned i = 0; i < 4; ++i)
-                    GetNode(curPt).boundary_stones[i] = 0;
+                    boundaryStones[i] = 0;
 
                 //for(unsigned i = 0;i<3;++i)
                 //  GetNeighbourNode(x, y, 3+i).boundary_stones[i+1] = 0;
@@ -637,7 +633,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
     {
         for(int x = x1; x < x2; ++x)
         {
-            const MapPoint curPt = ConvertCoords(x, y);
+            const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
 
             // Steht auch hier ein Grenzstein?
             unsigned char owner = GetNode(curPt).boundary_stones[0];
@@ -650,9 +646,9 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
             for(unsigned dir = 0; dir < 3 && neighbors[(y - y1)*width + (x - x1)] > 2; ++dir)
             {
                 // Da ein Grenzstein vom selben Besitzer?
-                MapNode& curNb = GetNeighbourNode(curPt, dir + 3);
+                MapNode::BoundaryStones& nbBoundStones = GetBoundaryStones(GetNeighbour(curPt, dir + 3));
 
-                if(curNb.boundary_stones[0] != owner)
+                if(nbBoundStones[0] != owner)
                     continue;
 
                 Point<int> pa = GetPointAround(Point<int>(x, y), dir + 3);
@@ -660,7 +656,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
                 if(neighbors[(pa.y - y1)*width + (pa.x - x1)] > 2)
                 {
                     // Dann löschen wir hier einfach die Verbindung
-                    curNb.boundary_stones[dir + 1] = 0;
+                    nbBoundStones[dir + 1] = 0;
                     --neighbors[(y - y1)*width + (x - x1)];
                     --neighbors[(pa.y - y1)*width + (pa.x - x1)];
                 }
@@ -1407,15 +1403,8 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     if(visible)
     {
         if (visibility_before != VIS_VISIBLE)
-        {
             LUA_EventExplored(player, pt);
-        }
-
-        GetNode(pt).fow[player].visibility = VIS_VISIBLE; //-V807
-
-        // Etwaige FOW-Objekte zerstören
-        delete GetNode(pt).fow[player].object;
-        GetNode(pt).fow[player].object = NULL;
+        SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
     }
     else
     {
@@ -1433,9 +1422,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
                 if(visibility_before == VIS_VISIBLE)
                 {
-                    GetNode(pt).fow[player].visibility = VIS_FOW;
-
-                    SaveFOWNode(pt, player, GAMECLIENT.GetGFNumber());
+                    SetVisibility(pt, player, VIS_FOW, GAMECLIENT.GetGFNumber());
                 }
                 break;
             default:
@@ -1454,19 +1441,13 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
         VisibilityChanged(pt);
 }
 
-void GameWorldGame::SetVisibility(const MapPoint pt,  const unsigned char player)
+void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 {
     Visibility visibility_before = GetNode(pt).fow[player].visibility;
-    GetNode(pt).fow[player].visibility = VIS_VISIBLE;
+    SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
 
     if (visibility_before != VIS_VISIBLE)
-    {
         LUA_EventExplored(player, pt);
-    }
-    
-    // Etwaige FOW-Objekte zerstören
-    delete GetNode(pt).fow[player].object;
-    GetNode(pt).fow[player].object = NULL;
 
     // Minimap Bescheid sagen
     if(gi && visibility_before != GetNode(pt).fow[player].visibility)
@@ -1496,7 +1477,7 @@ void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCo
 /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
 void GameWorldGame::SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
 {
-    SetVisibility(pt, player);
+    MakeVisible(pt, player);
 
     for(MapCoord tx = GetXA(pt, 0), r = 1; r <= radius; tx = GetXA(tx, pt.y, 0), ++r)
     {
@@ -1504,7 +1485,7 @@ void GameWorldGame::SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord
         for(unsigned i = 2; i < 8; ++i)
         {
             for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, i % 6), ++r2)
-                SetVisibility(t2, player);
+                MakeVisible(t2, player);
         }
     }
 }
@@ -1521,7 +1502,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         t = GetNeighbour(t, moving_dir);
 
     // Und zu beiden Abzweigungen weiter gehen und Punkte auf visible setzen
-    SetVisibility(t, player);
+    MakeVisible(t, player);
     MapPoint tt(t);
     unsigned char dir = (moving_dir + 2) % 6;
     for(MapCoord i = 0; i < radius; ++i)
@@ -1531,7 +1512,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
         Visibility old_vis = CalcWithAllyVisiblity(tt, player);
         unsigned char old_owner = GetNode(tt).fow[player].owner;
-        SetVisibility(tt, player);
+        MakeVisible(tt, player);
         // Neues feindliches Gebiet entdeckt?
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
@@ -1555,7 +1536,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
         Visibility old_vis = CalcWithAllyVisiblity(tt, player);
         unsigned char old_owner = GetNode(tt).fow[player].owner;
-        SetVisibility(tt, player);
+        MakeVisible(tt, player);
         // Neues feindliches Gebiet entdeckt?
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
@@ -1617,19 +1598,17 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
     from = RESOURCES_MINE_TO_MAP[from];
     to = ((to != 0xFF) ? RESOURCES_MINE_TO_MAP[to] : 0xFF);
 
-    // Zeiger auf zu veränderte Daten
-    unsigned char* resources;
-
     //LOG.lprintf("Convert map resources from %i to %i\n", from, to);
     // Alle Punkte durchgehen
-    for (MapCoord x = 0; x < GetWidth(); ++x)
-        for (MapCoord y = 0; y < GetHeight(); ++y)
+    MapPoint pt(0, 0);
+    for(pt.y = 0; pt.y < GetHeight(); ++pt.y)
+        for (pt.x = 0; pt.x < GetWidth(); ++pt.x)
         {
-            resources = &(GetNode(MapPoint(x, y)).resources);
+            unsigned char resources = GetNode(pt).resources;
             // Gibt es Ressourcen dieses Typs?
             // Wenn ja, dann umwandeln bzw löschen
-            if (*resources >= 0x40 + from * 8 && *resources < 0x48 + from * 8)
-                *resources -= ((to != 0xFF) ?  from * 8 - to * 8 : *resources);
+            if (resources >= 0x40 + from * 8 && resources < 0x48 + from * 8)
+                SetResource(pt, (to != 0xFF) ?  resources - (from * 8 - to * 8) : 0);
         }
 }
 

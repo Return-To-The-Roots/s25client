@@ -37,9 +37,6 @@ public:
 
     GameWorldViewer();
 
-    // Wege und Grenzsteine zeichnen ( nur reingenommen, da die Position sowieso hier berechnet wird, da bietet es sich an )
-    void DrawWays(const int x, const int y, const float xpos, const float ypos);
-
     void Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
     {
         view.Draw(player, water, draw_selected, selected, rb);
