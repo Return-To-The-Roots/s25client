@@ -5,7 +5,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your oposion) any later version.
+// (at your option) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -237,7 +237,7 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workpla
     if((workplace->GetRoadType() == RoadSegment::RT_BOAT))
         --inventory.goods[GD_BOAT];
 
-    // Evtl. kein Gehilfe mehr, sodass das Rekrutieren gestoppos werden muss
+    // Evtl. kein Gehilfe mehr, sodass das Rekrutieren gestoppt werden muss
     TryStopRecruiting();
 }
 
@@ -291,7 +291,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     }
 
 
-    // Evtl. kein Gehilfe mehr da, sodass das Rekrutieren gestoppos werden muss
+    // Evtl. kein Gehilfe mehr da, sodass das Rekrutieren gestoppt werden muss
     TryStopRecruiting();
 
     return true;
@@ -719,7 +719,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     AddLeavingEvent();
 
-    // Evtl. keine Waffen/Bier mehr da, sodass das Rekrutieren gestoppos werden muss
+    // Evtl. keine Waffen/Bier mehr da, sodass das Rekrutieren gestoppt werden muss
     TryStopRecruiting();
 
     return ware;
@@ -745,7 +745,7 @@ bool nobBaseWarehouse::FreePlaceAtFlag()
     }
     else
     {
-        // Evtl. war die Flagge voll und das Auslagern musste gestoppos werden
+        // Evtl. war die Flagge voll und das Auslagern musste gestoppt werden
         // Weitere Waren/Figuren zum Auslagern und kein Event angemeldet?
         if(AreWaresToEmpty() && !empty_event)
             // --> Nächstes Event

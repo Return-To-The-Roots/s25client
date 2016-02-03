@@ -333,7 +333,7 @@ void nobHarborBuilding::HandleEvent(const unsigned int id)
     }
 }
 
-/// Startet eine Expedition oder stoppos sie, wenn bereits eine stattfindet
+/// Startet eine Expedition oder stoppt sie, wenn bereits eine stattfindet
 void nobHarborBuilding::StartExpedition()
 {
     // Schon eine Expedition gestartet?
@@ -420,7 +420,7 @@ void nobHarborBuilding::StartExpedition()
     CheckExpeditionReady();
 }
 
-/// Startet eine Erkundungs-Expedition oder stoppos sie, wenn bereits eine stattfindet
+/// Startet eine Erkundungs-Expedition oder stoppt sie, wenn bereits eine stattfindet
 void nobHarborBuilding::StartExplorationExpedition()
 {
     // Schon eine Expedition gestartet?

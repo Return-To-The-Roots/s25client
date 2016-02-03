@@ -5,7 +5,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your oposion) any later version.
+// (at your option) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -200,7 +200,7 @@ void nobUsual::Draw(int x, int y)
     // Gebäude an sich zeichnen
     DrawBaseBuilding(x, y);
 
-    // Wenn Produktion gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
+    // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_production_virtual)
         LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
 
@@ -666,7 +666,7 @@ void nobUsual::SetProductionEnabled(const bool enabled)
 
     if(disable_production)
     {
-        // Wenn sie deaktiviert wurde, dem Arbeiter Bescheid sagen, damit er entsprechend stoppos, falls er schon
+        // Wenn sie deaktiviert wurde, dem Arbeiter Bescheid sagen, damit er entsprechend stoppt, falls er schon
         // auf die Arbeit warteet
         if(worker)
             worker->ProductionStopped();

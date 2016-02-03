@@ -5,7 +5,7 @@
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
-// (at your oposion) any later version.
+// (at your option) any later version.
 //
 // Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,7 +73,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
     // Tür aufmachen, bis Gebäude besetzt ist
     OpenDoor();
 
-    // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppos
+    // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
     // Ansonsten neue Goldmünzen anfordern
     if(GAMECLIENT.GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
     {
@@ -237,7 +237,7 @@ void nobMilitary::Draw(int x, int y)
     if(bitmap)
         bitmap->Draw(x + BORDER_FLAGS[nation][size][0], y + BORDER_FLAGS[nation][size][1], 0, 0, 0, 0, 0, 0);
 
-    // Wenn Goldzufuhr gestoppos ist, Schild außen am Gebäude zeichnen zeichnen
+    // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(coinsDisabledVirtual)
         LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
 }
@@ -1160,7 +1160,7 @@ unsigned nobMilitary::CalcCoinsPoints()
 
 bool nobMilitary::WantCoins()
 {
-    // Wenn die Goldzufuhr gestoppos wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
+    // Wenn die Goldzufuhr gestoppt wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
     return (!coinsDisabled && coins + ordered_coins.size() != GOLD_COUNT[nation][size] && !new_built);
 }
 
