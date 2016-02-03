@@ -437,6 +437,7 @@ void AIPlayerJH::InitReachableNodes()
         {
             unsigned i = gwb.GetIdx(pt);
             nodes[i].reachable = false;
+            nodes[i].failed_penalty = 0;
             const noFlag* myFlag = aii.GetSpecObj<noFlag>(pt);
             if (myFlag)
             {
@@ -476,8 +477,15 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
             // Test whether point is reachable; yes->add to check list
             if (IsPointOK_RoadPath(gwb, n, (dir + 3) % 6, (void*) &boat))
             {
-                nodes[ni].reachable = true;
-                toCheck.push(n);
+                if (nodes[ni].failed_penalty == 0)
+                {
+                    nodes[ni].reachable = true;
+                    toCheck.push(n);
+                }
+                else
+                {
+                    nodes[ni].failed_penalty--;
+                }
             }
         }
         toCheck.pop();

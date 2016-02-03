@@ -313,6 +313,9 @@ void AIJH::BuildJob::BuildMainRoad()
 std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.nodes[aijh.GetInterface().GetIdx(target)].reachable = false;
+            // We thought this had be reachable, but it is not (might be blocked by building site itself): 
+            // It has to be reachable in a check for 20x times, to avoid retrying it too often.
+            aijh.nodes[aijh.GetInterface().GetIdx(target)].failed_penalty = 20;
             aijh.GetInterface().DestroyBuilding(target);
             aijh.GetInterface().DestroyFlag(houseFlag->GetPos());
             aijh.AddBuildJob(type, around);

@@ -782,6 +782,10 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
 		// the flag should not be at a military building!		
 		if (aii.IsMilitaryBuildingOnNode(aii.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST)))
 			continue;
+
+        if (!IsConnectedToRoadSystem(&curFlag))
+            continue;
+
         // Gibts überhaupt einen Pfad zu dieser Flagge
         if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag.GetPos(), &route, &newLength))
             continue;
