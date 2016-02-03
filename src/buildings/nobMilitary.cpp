@@ -134,7 +134,6 @@ void nobMilitary::Destroy_nobMilitary()
         gwg->RecalcTerritory(*this, true, false);
 
     GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), player);
-
 }
 
 void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
@@ -1237,17 +1236,13 @@ void nobMilitary::HitOfCatapultStone()
         deletePtr(soldier);
     }
 
-    // Kein Soldat mehr da? Haus abfackeln
-    if(troops.empty())
-        Destroy();
-    else
-        // ansonsten noch neue Soldaten ggf. bestellen
+    // If there are troops left, order some more, else this will be destroyed
+    if(!troops.empty())
         RegulateTroops();
 
     // Post verschicken
     if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(
-            new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
+        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

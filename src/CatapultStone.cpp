@@ -135,7 +135,12 @@ void CatapultStone::HandleEvent(const unsigned int id)
             // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
             nobMilitary* milBld = gwg->GetSpecObj<nobMilitary>(dest_building);
             if(milBld)
+            {
                 milBld->HitOfCatapultStone();
+                // If there are no troops left, destroy it
+                if(milBld->troops.empty())
+                    gwg->DestroyNO(milBld->GetPos());
+            }
         }
         else
         {

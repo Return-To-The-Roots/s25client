@@ -121,10 +121,8 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
         {
             // Maybe demolition of the building is not allowed?
             if(!static_cast<nobMilitary*>(building)->IsDemolitionAllowed())
-                // Abort the whole thing
-                return;
+                return; // Abort the whole thing
         }
-
 
         // Demolish, also the building
         GetSpecObj<noFlag>(pt)->DestroyAttachedBuilding();
@@ -214,7 +212,6 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
     // Steht da auch ein Gebäude oder eine Baustelle, nicht dass wir aus Verzögerung Feuer abreißen wollen, das geht schief
     if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
     {
-
         noBaseBuilding* nbb  = GetSpecObj<noBaseBuilding>(pt);
 
         // Ist das Gebäude auch von dem Spieler, der es abreißen will?
@@ -226,12 +223,10 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
         {
             // Darf das Gebäude abgerissen werden?
             if(!static_cast<nobMilitary*>(nbb)->IsDemolitionAllowed())
-                // Nein, darf nicht abgerissen werden
                 return;
         }
 
-        nbb->Destroy();
-        delete nbb;
+        DestroyNO(pt);
         // Bauplätze drumrum neu berechnen
         RecalcBQAroundPointBig(pt);
     }

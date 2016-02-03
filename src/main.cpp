@@ -64,7 +64,7 @@
 #   include <eh.h>
 #endif
 
-//#include <vld.h> 
+#include <vld.h> 
 
 #include <boost/filesystem.hpp>
 #include <ctime>
