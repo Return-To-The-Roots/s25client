@@ -142,7 +142,6 @@ void AIJH::BuildJob::TryToBuild()
         {
             case BLD_WOODCUTTER:
             {
-                unsigned numWoodcutter = aiConstruction.GetBuildingCount(BLD_WOODCUTTER);
                 foundPos = aijh.FindBestPosition(bPos, AIJH::WOOD, BQ_HUT, 20, 11);                
                 break;
             }
