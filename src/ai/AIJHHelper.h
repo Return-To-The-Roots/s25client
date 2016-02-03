@@ -58,7 +58,7 @@ namespace AIJH
         Resource res;
         bool owned;
         bool reachable;
-        int8_t failed_penalty;  // when a node was marked reachable, but building failed, this field is >0
+        char failed_penalty;  // when a node was marked reachable, but building failed, this field is >0
         bool border;
         bool farmed;
     };
