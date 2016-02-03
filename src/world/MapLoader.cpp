@@ -409,7 +409,7 @@ void MapLoader::InitSeasAndHarbors()
     }
 
     /// Die Meere herausfinden, an die die Hafenpunkte grenzen
-    for(unsigned i = 0; i < world.harbor_pos.size(); ++i)
+    for(unsigned i = 1; i < world.harbor_pos.size(); ++i)
     {
         for(unsigned z = 0; z < 6; ++z)
             world.harbor_pos[i].cps[z].sea_id = world.IsCoastalPoint(world.GetNeighbour(world.harbor_pos[i].pos, z));
