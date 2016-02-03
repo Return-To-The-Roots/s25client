@@ -105,6 +105,6 @@ void noFire::Draw(int x, int y)
 void noFire::HandleEvent(const unsigned int id)
 {
     // Todesevent --> uns vernichten
-    dead_event = 0;
+    dead_event = NULL;
     em->AddToKillList(this);
 }

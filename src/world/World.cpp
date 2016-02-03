@@ -306,11 +306,11 @@ void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
     noBase* obj = GetNodeInt(pt).obj;
     if(obj)
     {
-        // Destroy may remove the NO already from the map. This might not be what we want
-        // -> TODO: Check if the reset in Destroy can be removed
+        // Destroy may remove the NO already from the map or replace it (e.g. building -> fire)
+        // So remove from map, then destroy and free
+        GetNodeInt(pt).obj = NULL;
         obj->Destroy();
         deletePtr(obj);
-        GetNodeInt(pt).obj = NULL;
     }else
         RTTR_Assert(!checkExists);
 }
