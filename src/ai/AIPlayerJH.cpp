@@ -1677,19 +1677,18 @@ void AIPlayerJH::TryToAttack()
     std::vector<const nobBaseMilitary*> potentialTargets;
 
     // use own military buildings (except inland buildings) to search for enemy military buildings
-    unsigned skip = 0; //when the ai has many buildings the ai will not check the complete list every time
-    unsigned limit = 40;
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
-    if(militaryBuildings.size() > 40)
+    const unsigned numMilBlds = militaryBuildings.size();
+    //when the ai has many buildings the ai will not check the complete list every time
+    BOOST_CONSTEXPR_OR_CONST unsigned limit = 40;
+    for (std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
     {
-        skip = max<unsigned>((rand() % ((militaryBuildings.size() / 40) + 1)) * 40, 1) - 1;
-    }
-    for (std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); limit > 0 && it != militaryBuildings.end(); ++it)
-    {
-        limit--;
-        if(skip > 0)
-            std::advance(it, skip);
-        skip = 0;
+        // We skip the current building with a probability of limit/numMilBlds
+        // -> For twice the number of blds as the limit we will most likely skip every 2nd building
+        // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
+        if(rand() % numMilBlds < limit)
+            continue;
+
         const nobMilitary* mil = (*it);
         if (mil->GetFrontierDistance() == 0)  //inland building? -> skip it  
             continue;
