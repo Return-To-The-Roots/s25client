@@ -347,12 +347,13 @@ void World::SetReserved(const MapPoint pt, const bool reserved)
 
 void World::SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime)
 {
-    if(GetNodeInt(pt).fow[player].visibility == vis)
+    MapNode& node = GetNodeInt(pt);
+    if(node.fow[player].visibility == vis)
         return;
 
-    GetNodeInt(pt).fow[player].visibility = vis;
+    node.fow[player].visibility = vis;
     if(vis == VIS_VISIBLE)
-        deletePtr(GetNodeInt(pt).fow[player].object);  // Etwaige FOW-Objekte zerstören
+        deletePtr(node.fow[player].object);  // Etwaige FOW-Objekte zerstören
     else if(vis == VIS_FOW)
         SaveFOWNode(pt, player, curTime);
 }

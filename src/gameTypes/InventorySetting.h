@@ -34,6 +34,7 @@ struct EInventorySetting
     EInventorySetting(Type t): t_(t) { RTTR_Assert(t_ >= STOP && t_ < COUNT); }
     operator Type() const { return t_; }
 };
+//-V:EInventorySetting:801 
 
 struct InventorySetting
 {

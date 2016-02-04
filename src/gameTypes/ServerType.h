@@ -29,5 +29,6 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType) //-V730
     LAN
 }
 BOOST_SCOPED_ENUM_DECLARE_END(ServerType)
+//-V:ServerType:801 
 
 #endif // ServerType_h__

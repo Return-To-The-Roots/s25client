@@ -278,7 +278,7 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
         cbVideoModes.AddString(str.str());
 
         // Ist das die aktuelle Auflösung? Dann selektieren
-        if(*it == VideoMode(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height))
+        if(*it == VideoMode(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height)) //-V807
             cbVideoModes.SetSelection(cbVideoModes.GetCount() - 1);
     }
 
@@ -582,7 +582,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
 
             // Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
-            if(SETTINGS.video.fullscreen_width  != VIDEODRIVER.GetScreenWidth() || 
+            if(SETTINGS.video.fullscreen_width  != VIDEODRIVER.GetScreenWidth() ||  //-V807
                SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight() || 
                SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {

@@ -55,12 +55,13 @@ nobUsual::nobUsual(BuildingType type,
         ordered_wares.clear();
 
     // Arbeiter bestellen
-    gwg->GetPlayer(player).AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
+    GameClientPlayer& owner = gwg->GetPlayer(player);
+    owner.AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
 
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
 
-    const std::list<nobUsual*>& otherBlds = gwg->GetPlayer(player).GetBuildings(type);
+    const std::list<nobUsual*>& otherBlds = owner.GetBuildings(type);
     if(otherBlds.empty())
         productivity = 0;
     else
@@ -76,7 +77,7 @@ nobUsual::nobUsual(BuildingType type,
 
     // Gebäude in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     // Do this AFTER the productivity calculation or we will get this building too!
-    gwg->GetPlayer(player).AddUsualBuilding(this);
+    owner.AddUsualBuilding(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

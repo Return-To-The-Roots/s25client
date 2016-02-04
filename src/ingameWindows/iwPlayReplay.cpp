@@ -195,13 +195,14 @@ void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
     for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
     {
         // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
-        if(replay.GetPlayer(i).ps == PS_OCCUPIED || replay.GetPlayer(i).ps == PS_KI)
+        const SavedFile::Player& curPlayer = replay.GetPlayer(i);
+        if(curPlayer.ps == PS_OCCUPIED || curPlayer.ps == PS_KI)
         {
             // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
             if(!tmp_players.empty())
                 tmp_players += ", ";
 
-            tmp_players += replay.GetPlayer(i).name;
+            tmp_players += curPlayer.name;
         }
     }
 

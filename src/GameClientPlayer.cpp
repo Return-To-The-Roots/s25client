@@ -1769,13 +1769,13 @@ void GameClientPlayer::StatisticStep()
 }
 
 GameClientPlayer::Pact::Pact(SerializedGameData& sgd)
-    : accepted(sgd.PopBool()), duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), want_cancel (sgd.PopBool()) { }
+    : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel (sgd.PopBool()) { }
 
 void GameClientPlayer::Pact::Serialize(SerializedGameData& sgd)
 {
-    sgd.PushBool(accepted);
     sgd.PushUnsignedInt(duration);
     sgd.PushUnsignedInt(start);
+    sgd.PushBool(accepted);
     sgd.PushBool(want_cancel);
 }
 

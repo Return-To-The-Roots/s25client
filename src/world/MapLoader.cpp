@@ -34,7 +34,7 @@ MapLoader::MapLoader(World& world): world(world)
 
 void MapLoader::Load(const glArchivItem_Map& map)
 {
-    world.Init(map.getHeader().getWidth(), map.getHeader().getHeight(), LandscapeType(map.getHeader().getGfxSet()));
+    world.Init(map.getHeader().getWidth(), map.getHeader().getHeight(), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
     InitNodes(map);
     std::vector<MapPoint> headquarter_positions = PlaceObjects(map);

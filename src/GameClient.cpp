@@ -2008,12 +2008,12 @@ void GameClient::ResetVisualSettings()
 
 
 
-    visual_settings.distribution[0] = player.distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE];
+    visual_settings.distribution[0] = player.distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE]; //-V807
     visual_settings.distribution[1] = player.distribution[GD_FISH].percent_buildings[BLD_COALMINE];
     visual_settings.distribution[2] = player.distribution[GD_FISH].percent_buildings[BLD_IRONMINE];
     visual_settings.distribution[3] = player.distribution[GD_FISH].percent_buildings[BLD_GOLDMINE];
 
-    visual_settings.distribution[4] = player.distribution[GD_GRAIN].percent_buildings[BLD_MILL];
+    visual_settings.distribution[4] = player.distribution[GD_GRAIN].percent_buildings[BLD_MILL]; //-V807
     visual_settings.distribution[5] = player.distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM];
     visual_settings.distribution[6] = player.distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER];
     visual_settings.distribution[7] = player.distribution[GD_GRAIN].percent_buildings[BLD_BREWERY];
@@ -2022,18 +2022,18 @@ void GameClient::ResetVisualSettings()
     visual_settings.distribution[9] = player.distribution[GD_IRON].percent_buildings[BLD_ARMORY];
     visual_settings.distribution[10] = player.distribution[GD_IRON].percent_buildings[BLD_METALWORKS];
 
-    visual_settings.distribution[11] = player.distribution[GD_COAL].percent_buildings[BLD_ARMORY];
+    visual_settings.distribution[11] = player.distribution[GD_COAL].percent_buildings[BLD_ARMORY]; //-V807
     visual_settings.distribution[12] = player.distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER];
     visual_settings.distribution[13] = player.distribution[GD_COAL].percent_buildings[BLD_MINT];
 
     visual_settings.distribution[14] = player.distribution[GD_WOOD].percent_buildings[BLD_SAWMILL];
     visual_settings.distribution[15] = player.distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER];
 
-    visual_settings.distribution[16] = player.distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS];
+    visual_settings.distribution[16] = player.distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS]; //-V807
     visual_settings.distribution[17] = player.distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS];
     visual_settings.distribution[18] = player.distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD];
 
-    visual_settings.distribution[19] = player.distribution[GD_WATER].percent_buildings[BLD_BAKERY];
+    visual_settings.distribution[19] = player.distribution[GD_WATER].percent_buildings[BLD_BAKERY]; //-V807
     visual_settings.distribution[20] = player.distribution[GD_WATER].percent_buildings[BLD_BREWERY];
     visual_settings.distribution[21] = player.distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
     visual_settings.distribution[22] = player.distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];

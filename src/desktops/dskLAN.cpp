@@ -120,7 +120,7 @@ void dskLAN::ReadOpenGames()
     const LANDiscoveryClient::ServiceMap& services = discovery.GetServices();
     for (LANDiscoveryClient::ServiceMap::const_iterator it = services.begin(); it != services.end(); ++it)
     {
-        Serializer ser(&it->second.info.GetPayload().front(), it->second.info.GetPayload().size());
+        Serializer ser(&it->second.info.GetPayload().front(), it->second.info.GetPayload().size()); //-V807
         GameInfo info;
         info.ip = it->second.ip;
         info.info.Deserialize(ser);
@@ -147,7 +147,7 @@ void dskLAN::UpdateServerList()
     for(std::vector<GameInfo>::const_iterator it = openGames.begin(); it != openGames.end(); ++it)
     {
         std::string id = boost::lexical_cast<std::string>(curId++);
-        std::string name = (it->info.hasPwd ? "(pwd) " : "") + it->info.name;
+        std::string name = (it->info.hasPwd ? "(pwd) " : "") + it->info.name; //-V807
         std::string player = boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.curPlayer)) + "/"+
                              boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.maxPlayer));
         servertable->AddRow(0, id.c_str(), name.c_str(), it->info.map.c_str(), player.c_str(), it->info.version.c_str());

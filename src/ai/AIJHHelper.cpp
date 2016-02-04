@@ -172,21 +172,24 @@ void AIJH::BuildJob::TryToBuild()
             case BLD_GUARDHOUSE:
             case BLD_WATCHTOWER:
             case BLD_FORTRESS:
-                foundPos = aijh.FindBestPosition(bPos, AIJH::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
-                //could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal buildings (probably important map part)
-                if(type != BLD_FORTRESS && aijh.GetInterface().GetBuildingQuality(bPos)!=BQ_MINE && aijh.GetInterface().GetBuildingQuality(bPos)>BUILDING_SIZE[type] && aijh.BQsurroundcheck(bPos,6,true,10)<10)
                 {
-                    //more than 80% is unbuildable in range 7 -> upgrade
-                    if(type == BLD_WATCHTOWER)
+                    foundPos = aijh.FindBestPosition(bPos, AIJH::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
+                    //could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal buildings (probably important map part)
+                    AIInterface& aiInterface = aijh.GetInterface();
+                    if(type != BLD_FORTRESS && aiInterface.GetBuildingQuality(bPos) != BQ_MINE && aiInterface.GetBuildingQuality(bPos) > BUILDING_SIZE[type] && aijh.BQsurroundcheck(bPos, 6, true, 10) < 10)
                     {
-                        if(aijh.GetInterface().CanBuildBuildingtype(BLD_FORTRESS))
-                            type = BLD_FORTRESS;
-                    }else
-                    {
-                        if(aijh.GetInterface().CanBuildBuildingtype(BLD_WATCHTOWER))
-                            type = BLD_WATCHTOWER;
-                        else if(aijh.GetInterface().CanBuildBuildingtype(BLD_FORTRESS))
-                            type = BLD_FORTRESS;
+                        //more than 80% is unbuildable in range 7 -> upgrade
+                        if(type == BLD_WATCHTOWER)
+                        {
+                            if(aiInterface.CanBuildBuildingtype(BLD_FORTRESS))
+                                type = BLD_FORTRESS;
+                        } else
+                        {
+                            if(aiInterface.CanBuildBuildingtype(BLD_WATCHTOWER))
+                                type = BLD_WATCHTOWER;
+                            else if(aiInterface.CanBuildBuildingtype(BLD_FORTRESS))
+                                type = BLD_FORTRESS;
+                        }
                     }
                 }
                 break;
@@ -273,11 +276,12 @@ void AIJH::BuildJob::TryToBuild()
 
 void AIJH::BuildJob::BuildMainRoad()
 {
-    const noBuildingSite* bld = aijh.GetInterface().GetSpecObj<noBuildingSite>(target);
+    AIInterface& aiInterface = aijh.GetInterface();
+    const noBuildingSite* bld = aiInterface.GetSpecObj<noBuildingSite>(target);
     if (!bld)
     {
         // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
-        BuildingQuality bq = aijh.GetInterface().GetBuildingQuality(target);
+        BuildingQuality bq = aiInterface.GetBuildingQuality(target);
         if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Gebäude
                 && !(bq == BUILDING_SIZE[type]))    // auch Bergwerke
         {
@@ -285,7 +289,7 @@ void AIJH::BuildJob::BuildMainRoad()
 #ifdef DEBUG_AI
             std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
-            aijh.nodes[aijh.GetInterface().GetIdx(target)].bq = bq;
+            aijh.nodes[aiInterface.GetIdx(target)].bq = bq;
             aijh.AddBuildJob(type, around);
             return;
         }
@@ -300,7 +304,7 @@ void AIJH::BuildJob::BuildMainRoad()
         status = AIJH::JOB_FAILED;
         return;
     }
-    const noFlag* houseFlag = aijh.GetInterface().GetSpecObj<noFlag>(aijh.GetInterface().GetNeighbour(target, Direction::SOUTHEAST));
+    const noFlag* houseFlag = aiInterface.GetSpecObj<noFlag>(aiInterface.GetNeighbour(target, Direction::SOUTHEAST));
     // Gucken noch nicht ans Wegnetz angeschlossen
     AIConstruction& aiConstruction = *aijh.GetConstruction();
     if (!aiConstruction.IsConnectedToRoadSystem(houseFlag))
@@ -312,12 +316,12 @@ void AIJH::BuildJob::BuildMainRoad()
 #ifdef DEBUG_AI
 std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
-            aijh.nodes[aijh.GetInterface().GetIdx(target)].reachable = false;
+            aijh.nodes[aiInterface.GetIdx(target)].reachable = false;
             // We thought this had be reachable, but it is not (might be blocked by building site itself): 
             // It has to be reachable in a check for 20x times, to avoid retrying it too often.
-            aijh.nodes[aijh.GetInterface().GetIdx(target)].failed_penalty = 20;
-            aijh.GetInterface().DestroyBuilding(target);
-            aijh.GetInterface().DestroyFlag(houseFlag->GetPos());
+            aijh.nodes[aiInterface.GetIdx(target)].failed_penalty = 20;
+            aiInterface.DestroyBuilding(target);
+            aiInterface.DestroyFlag(houseFlag->GetPos());
             aijh.AddBuildJob(type, around);
             return;
         }
@@ -385,7 +389,7 @@ std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot 
     // Just 4 Fun Gelehrten rufen
     if (BUILDING_SIZE[type] == BQ_MINE)
     {
-        aijh.GetInterface().CallGeologist(houseFlag->GetPos());
+        aiInterface.CallGeologist(houseFlag->GetPos());
     }
 	if(type > BLD_FORTRESS)//not a military building? -> build secondary road now 
 	{
@@ -543,7 +547,8 @@ void AIJH::ConnectJob::ExecuteJob()
 	if (!construction.CanStillConstructHere(flagPos))
 		return; 
 
-    const noFlag* flag = aijh.GetInterface().GetSpecObj<noFlag>(flagPos);
+    AIInterface& aiInterface = aijh.GetInterface();
+    const noFlag* flag = aiInterface.GetSpecObj<noFlag>(flagPos);
 	
     if (!flag)
     {
@@ -555,7 +560,7 @@ void AIJH::ConnectJob::ExecuteJob()
     }
 
 	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
-	if(aijh.GetInterface().IsMilitaryBuildingOnNode(aijh.GetInterface().GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
+	if(aiInterface.IsMilitaryBuildingOnNode(aiInterface.GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
 	{
 		for(unsigned i=2;i<7;i++)
 		{

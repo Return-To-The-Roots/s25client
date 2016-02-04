@@ -42,17 +42,18 @@ void MapSerializer::Serialize(const World& world, SerializedGameData& sgd)
     sgd.PushUnsignedInt(world.harbor_pos.size());
     for(unsigned i = 0; i < world.harbor_pos.size(); ++i)
     {
-        sgd.PushMapPoint(world.harbor_pos[i].pos);
+        const HarborPos& curHarborPos = world.harbor_pos[i];
+        sgd.PushMapPoint(curHarborPos.pos);
         for(unsigned z = 0; z < 6; ++z)
-            sgd.PushUnsignedShort(world.harbor_pos[i].cps[z].sea_id);
+            sgd.PushUnsignedShort(curHarborPos.cps[z].sea_id);
         for(unsigned z = 0; z < 6; ++z)
         {
-            sgd.PushUnsignedInt(world.harbor_pos[i].neighbors[z].size());
+            sgd.PushUnsignedInt(curHarborPos.neighbors[z].size());
 
-            for(unsigned c = 0; c < world.harbor_pos[i].neighbors[z].size(); ++c)
+            for(unsigned c = 0; c < curHarborPos.neighbors[z].size(); ++c)
             {
-                sgd.PushUnsignedInt(world.harbor_pos[i].neighbors[z][c].id);
-                sgd.PushUnsignedInt(world.harbor_pos[i].neighbors[z][c].distance);
+                sgd.PushUnsignedInt(curHarborPos.neighbors[z][c].id);
+                sgd.PushUnsignedInt(curHarborPos.neighbors[z][c].distance);
             }
         }
     }
@@ -92,16 +93,17 @@ void MapSerializer::Deserialize(World& world, SerializedGameData& sgd)
     world.harbor_pos.resize(sgd.PopUnsignedInt());
     for(unsigned i = 0; i < world.harbor_pos.size(); ++i)
     {
-        world.harbor_pos[i].pos = sgd.PopMapPoint();
+        HarborPos& curHarborPos = world.harbor_pos[i];
+        curHarborPos.pos = sgd.PopMapPoint();
         for(unsigned z = 0; z < 6; ++z)
-            world.harbor_pos[i].cps[z].sea_id = sgd.PopUnsignedShort();
+            curHarborPos.cps[z].sea_id = sgd.PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)
         {
-            world.harbor_pos[i].neighbors[z].resize(sgd.PopUnsignedInt());
-            for(unsigned c = 0; c < world.harbor_pos[i].neighbors[z].size(); ++c)
+            curHarborPos.neighbors[z].resize(sgd.PopUnsignedInt());
+            for(unsigned c = 0; c < curHarborPos.neighbors[z].size(); ++c)
             {
-                world.harbor_pos[i].neighbors[z][c].id = sgd.PopUnsignedInt();
-                world.harbor_pos[i].neighbors[z][c].distance = sgd.PopUnsignedInt();
+                curHarborPos.neighbors[z][c].id = sgd.PopUnsignedInt();
+                curHarborPos.neighbors[z][c].distance = sgd.PopUnsignedInt();
             }
         }
     }

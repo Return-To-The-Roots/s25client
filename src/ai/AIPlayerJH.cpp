@@ -1010,8 +1010,9 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	
 	if(numCompleteWh==1 ) //only 1 warehouse? dont block max ranks here
 	{
-		if (storehouses.front()->IsInventorySetting(maxRankJob, EInventorySetting::STOP))
-			aii.SetInventorySetting(storehouses.front()->GetPos(), maxRankJob, storehouses.front()->GetInventorySetting(maxRankJob).Toggle(EInventorySetting::STOP));
+        nobBaseWarehouse& wh = *storehouses.front();
+		if (wh.IsInventorySetting(maxRankJob, EInventorySetting::STOP))
+			aii.SetInventorySetting(wh.GetPos(), maxRankJob, wh.GetInventorySetting(maxRankJob).Toggle(EInventorySetting::STOP));
 		return;
 	}
 	//rest applies for at least 2 complete warehouses!
@@ -1288,35 +1289,31 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
     if(!(flag = aii.GetSpecObj<noFlag>(pt)))
         return;
     //does the roadsegment still exist?
-    if(!flag->routes[dir])
+    RoadSegment* const roadSeg = flag->routes[dir];
+    if(!roadSeg)
         return;
-	if(flag->routes[dir]->GetLength()<4) //road too short to need flags
+	if(roadSeg->GetLength()<4) //road too short to need flags
 		return;
     //check if this road leads to a warehouseflag and if it does start setting flags from the warehouseflag else from the new flag
     //goal is to move roadsegments with a length of more than 2 away from the warehouse
-    MapPoint t = flag->routes[dir]->GetOtherFlag(flag)->GetPos();
-    t = gwb.GetNeighbour(t, 1);
+    MapPoint t = gwb.GetNeighbour(roadSeg->GetOtherFlag(flag)->GetPos(), 1);
 	construction->constructionlocations.push_back(t);
     if(aii.IsBuildingOnNode(t, BLD_STOREHOUSE) || aii.IsBuildingOnNode(t, BLD_HARBORBUILDING) || aii.IsBuildingOnNode(t, BLD_HEADQUARTERS))
     {
         t = gwb.GetNeighbour(t, 4);
-        for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
+        for(unsigned i = 0; i < roadSeg->GetLength(); ++i)
         {
-            t = aii.GetNeighbour(t, Direction::fromInt(flag->routes[dir]->GetDir(true, i)));
-            {
-                aii.SetFlag(t);
-            }
+            t = aii.GetNeighbour(t, Direction::fromInt(roadSeg->GetDir(true, i)));
+            aii.SetFlag(t);
         }
     }
     else
     {
         //set flags on our new road starting from the new flag
-        for(unsigned i = 0; i < flag->routes[dir]->GetLength(); ++i)
+        for(unsigned i = 0; i < roadSeg->GetLength(); ++i)
         {
-            pt = aii.GetNeighbour(pt, Direction::fromInt(flag->routes[dir]->GetDir(false, i)));
-            {
-                aii.SetFlag(pt);
-            }
+            pt = aii.GetNeighbour(pt, Direction::fromInt(roadSeg->GetDir(false, i)));
+            aii.SetFlag(pt);
         }
     }
 }

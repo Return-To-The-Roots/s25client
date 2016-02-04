@@ -49,17 +49,17 @@
 
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
-    active(sgd.PopBool()),
     boards(sgd.PopUnsignedInt()),
     stones(sgd.PopUnsignedInt()),
+    active(sgd.PopBool()),
     builder(sgd.PopBool())
 {}
 
 void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushBool(active);
     sgd.PushUnsignedInt(boards);
     sgd.PushUnsignedInt(stones);
+    sgd.PushBool(active);
     sgd.PushBool(builder);
 }
 

@@ -30,7 +30,7 @@ struct Direction
         SOUTHEAST, // 4
         SOUTHWEST  // 5
     };
-    static const int COUNT = SOUTHWEST + 1;
+    static BOOST_CONSTEXPR_OR_CONST int COUNT = SOUTHWEST + 1;
 
     Type t_;
     Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && t_ < COUNT); }
@@ -49,5 +49,6 @@ private:
     template<typename T>
     operator T() const;
 };
+//-V:Direction:801 
 
 #endif // Direction_h__
