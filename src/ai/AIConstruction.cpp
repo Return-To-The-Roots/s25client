@@ -581,7 +581,7 @@ void AIConstruction::RefreshBuildingCount()
     //no military buildings -> usually start only
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
 
-    if(militaryBuildings.size() < 1 && aii.GetStorehouses().size() < 2)
+    if(militaryBuildings.empty() && aii.GetStorehouses().size() < 2)
     {
         buildingsWanted[BLD_FORESTER] = 1;
         buildingsWanted[BLD_SAWMILL] = 2; //probably only has 1 saw+carpenter but if that is the case the ai will try to produce 1 additional saw very quickly

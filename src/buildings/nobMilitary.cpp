@@ -507,7 +507,7 @@ void nobMilitary::RegulateTroops()
 
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (aggressors.size() > 0 && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -578,7 +578,7 @@ void nobMilitary::OrderNewSoldiers()
 		// Zu wenig Truppen
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (aggressors.size() > 0 && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }

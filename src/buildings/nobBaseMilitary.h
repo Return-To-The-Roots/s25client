@@ -134,7 +134,7 @@ class nobBaseMilitary : public noBuilding
         /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
         virtual bool DefendersAvailable() const = 0;
 
-        bool IsUnderAttack() const {return(aggressors.size() > 0);};
+        bool IsUnderAttack() const {return !aggressors.empty();};
 
         /// Debugging
         bool IsAggressor(nofAttacker* attacker) const;

@@ -49,7 +49,7 @@ class AIConstruction
 
         void AddConnectFlagJob(const noFlag* flag);
 
-        bool BuildJobAvailable() const { return buildJobs.size() > 0;}
+        bool BuildJobAvailable() const { return !buildJobs.empty();}
 
         /// Finds flags in the area around pt
         std::vector<const noFlag*> FindFlags(const MapPoint pt, unsigned short radius);

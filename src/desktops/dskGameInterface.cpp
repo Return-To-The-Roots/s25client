@@ -116,7 +116,7 @@ dskGameInterface::dskGameInterface()
                     VIDEODRIVER.GetScreenHeight(), &borders);
 
     // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
-    if (GAMECLIENT.GetPostMessages().size() > 0)
+    if (!GAMECLIENT.GetPostMessages().empty())
         CI_NewPostMessage(GAMECLIENT.GetPostMessages().size());
 }
 

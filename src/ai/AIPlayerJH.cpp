@@ -115,7 +115,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if (gf == 100)
     {
-        if(aii.GetMilitaryBuildings().size() < 1 && aii.GetStorehouses().size() < 2)
+        if(aii.GetMilitaryBuildings().empty() && aii.GetStorehouses().size() < 2)
         {
             Chat(_("Hi, I'm an artifical player and I'm not very good yet!"));
             // AI doesn't usually crash the game any more :)
@@ -288,8 +288,8 @@ unsigned AIPlayerJH::GetJobNum() const { return eventManager.GetEventNum() + con
 nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 {
     const std::list<nobBaseWarehouse*>& storehouses = aii.GetStorehouses();
-	if(storehouses.size()<1)
-		return 0;
+	if(storehouses.empty())
+		return NULL;
 	nobBaseWarehouse* wh=(*storehouses.begin());
 	int uub=UpdateUpgradeBuilding();
 	
@@ -300,9 +300,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 		//which warehouse is closest to the upgrade building? -> train troops there and block max ranks			
 		wh = aii.FindWarehouse(**upgradeBldIt, FW::NoCondition(), false, false);
 		if(!wh)
-		{
 			wh = storehouses.front();
-		}
 	}
 	return wh;
 }
@@ -458,7 +456,7 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
     // TODO auch mal bootswege bauen können
     //Param_RoadPath prp = { false };
 
-    while(toCheck.size() > 0)
+    while(!toCheck.empty())
     {
         // Reachable coordinate
         MapPoint r = toCheck.front();
@@ -1636,7 +1634,7 @@ void AIPlayerJH::CheckExpeditions()
 void AIPlayerJH::CheckForester()
 {
     const std::list<nobUsual*>& foresters = aii.GetBuildings(BLD_FORESTER);
-    if(foresters.size()>0 && foresters.size()<2 && aii.GetMilitaryBuildings().size()<3 && aii.GetBuildingSites().size()<3)
+    if(!foresters.empty() && foresters.size()<2 && aii.GetMilitaryBuildings().size()<3 && aii.GetBuildingSites().size()<3)
         //stop the forester
     {
         if(!(*foresters.begin())->IsProductionDisabled())
@@ -1764,7 +1762,7 @@ void AIPlayerJH::TrySeaAttack()
 {
     if(aii.GetShipCount() < 1)
         return;
-    if(aii.GetHarbors().size() < 1)
+    if(aii.GetHarbors().empty())
         return;
     std::vector<unsigned short>seaidswithattackers;
     std::vector<unsigned int>attackersatseaid;
@@ -1790,7 +1788,7 @@ void AIPlayerJH::TrySeaAttack()
             }
         }
     }
-    if(seaidswithattackers.size() < 1) //no sea ids with attackers? skip the rest
+    if(seaidswithattackers.empty()) //no sea ids with attackers? skip the rest
         return;
     /*else
     {
@@ -1833,7 +1831,7 @@ void AIPlayerJH::TrySeaAttack()
         }
     }
     //any undefendedTargets? -> pick one by random
-    if(undefendedTargets.size() > 0)
+    if(!undefendedTargets.empty())
     {
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
@@ -1882,7 +1880,7 @@ void AIPlayerJH::TrySeaAttack()
     }
     //now we have a deque full of available and maybe undefended targets that are available for attack -> shuffle and attack the first one we can attack("should" be the first we check...)
     //any undefendedTargets? -> pick one by random
-    if(undefendedTargets.size() > 0)
+    if(!undefendedTargets.empty())
     {
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
@@ -1900,7 +1898,7 @@ void AIPlayerJH::TrySeaAttack()
     {
         std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
         gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerid); //test only if we should have attackers from one of our valid sea ids
-        if(testseaidswithattackers.size() > 0) //only do the final check if it will probably be a good result
+        if(!testseaidswithattackers.empty()) //only do the final check if it will probably be a good result
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos()); //now get a final list of attackers and attack it
             if(!attackers.empty())
@@ -2029,7 +2027,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
             reconnectflags.push_back(flags[i]);
     }
     UpdateNodesAroundNoBorder(pt, 25);
-    while(reconnectflags.size() > 0)
+    while(!reconnectflags.empty())
     {
         construction->AddConnectFlagJob(reconnectflags.front());
         reconnectflags.pop_front();

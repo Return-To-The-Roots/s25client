@@ -948,7 +948,7 @@ unsigned nobHarborBuilding::GetNeededShipsCount() const
     if(IsExplorationExpeditionReady())
         ++count;
     // Evtl. Waren und Figuren -> noch ein Schiff pro Ziel
-    if ((figures_for_ships.size() > 0) || (wares_for_ships.size() > 0))
+    if (!figures_for_ships.empty() || !wares_for_ships.empty())
     {
         // Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
         std::vector< MapPoint > destinations;
@@ -1010,19 +1010,15 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
         else
             --ships_coming;
     }
-    if ((figures_for_ships.size() > 0) || (wares_for_ships.size() > 0))
+    if (!figures_for_ships.empty() || !wares_for_ships.empty())
     {
         if (ships_coming)
-        {
             --ships_coming;
-        }
         else
-        {
             points += (figures_for_ships.size() + wares_for_ships.size()) * 5;
-        }
     }
 
-    if(soldiers_for_ships.size() > 0 && ships_coming == 0)
+    if(!soldiers_for_ships.empty() && ships_coming == 0)
         points += (soldiers_for_ships.size() * 10);
 
     return points;

@@ -57,7 +57,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
     }
 
     // Wenn keine KI-Spieler, schließen
-    if (ais.size() == 0)
+    if (ais.empty())
     {
         Close();
         return;
