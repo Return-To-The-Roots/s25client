@@ -18,6 +18,8 @@
 #define CUSTOMBORDERBUILDER_H_INCLUDED
 
 #pragma once
+#include <boost/array.hpp>
+#include <vector>
 
 class glArchivItem_Bitmap_RLE;
 namespace libsiedler2{
@@ -39,7 +41,6 @@ class CustomBorderBuilder
         {
             public:
                 BdrBitmap(const unsigned int width, const unsigned int height);
-                ~BdrBitmap();
                 BdrBitmap* get(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height) const;
                 inline unsigned char get(const unsigned int x, const unsigned int y) const;
                 void put(const unsigned int x, const unsigned int y, BdrBitmap* pic, bool picGetted = false); // mit true wird das übergebene BdrBitmap wieder zerstört. Das ist genau dann sinnvoll, wenn es mit BdrBitmap::get() erstellt wurde, da der Zeiger ja außeralb von BdrBitmap::put() nicht mehr verfügbar ist.
@@ -49,39 +50,39 @@ class CustomBorderBuilder
 
             private:
                 inline const unsigned int getpos(const unsigned int x, const unsigned int y) const;
-                unsigned char* value;
+                std::vector<unsigned char> values;
         };
 
         void BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE* bitmapRLE, BdrBitmap* bdrBitmap);
         void BdrBitmap2BitmapRLE2(BdrBitmap* bdrBitmap, glArchivItem_Bitmap_RLE* bitmapRLE);
 
-        void FindEdgeDistribution(unsigned int toFill, unsigned short lengths[3], unsigned char (counts)[3]);
+        void FindEdgeDistribution(unsigned int toFill, boost::array<unsigned short, 3>& lengths, boost::array<unsigned char, 3>& counts);
+        template<size_t T_numEdges, size_t T_numFillers>
         void WriteEdgeDistribution(const unsigned int x,
                                    const unsigned int y,
                                    const unsigned int toFill,
                                    const bool direction, // false = waagerecht, true = senkrecht
-                                   const unsigned short edgeLengths[3],
-                                   unsigned char edgeCounts[3], // wird verändert, nicht weiterbenutzen
-                                   BdrBitmap* edges[],
-                                   const unsigned char numFillers,
-                                   BdrBitmap* fillers[],
+                                   const boost::array<unsigned short, 3>& edgeLengths,
+                                   boost::array<unsigned char, 3>& edgeCounts, // wird verändert, nicht weiterbenutzen
+                                   boost::array<BdrBitmap*, T_numEdges> edges,
+                                   boost::array<BdrBitmap*, T_numFillers> fillers,
                                    BdrBitmap* outBorder);
 
         bool edgesLoaded;
-        static const unsigned char numCorners = 9;
-        BdrBitmap* corners[numCorners];
-        BdrBitmap* edgesTop[3]; // edges sind die "großen" Stücke, die jeweils zwischen zwei Auflösungen dazukommen.
-        BdrBitmap* edgesBottom[3];
-        BdrBitmap* edgesLeft[3];
-        BdrBitmap* edgesRight[3];
-        static const unsigned char numFillersTop = 4; // fillers sind zusammengesuchte "kleine" Stücke, die aneinandergereiht werden können
-        BdrBitmap* fillersTop[numFillersTop];
-        static const unsigned char numFillersBottom = 5;
-        BdrBitmap* fillersBottom[numFillersBottom];
-        static const unsigned char numFillersLeft = 5;
-        BdrBitmap* fillersLeft[numFillersLeft];
-        static const unsigned char numFillersRight = 6;
-        BdrBitmap* fillersRight[numFillersRight];
+        static BOOST_CONSTEXPR_OR_CONST unsigned numCorners = 9;
+        boost::array<BdrBitmap*, numCorners> corners;
+        boost::array<BdrBitmap*, 3> edgesTop; // edges sind die "großen" Stücke, die jeweils zwischen zwei Auflösungen dazukommen.
+        boost::array<BdrBitmap*, 3> edgesBottom;
+        boost::array<BdrBitmap*, 3> edgesLeft;
+        boost::array<BdrBitmap*, 3> edgesRight;
+        static BOOST_CONSTEXPR_OR_CONST unsigned numFillersTop = 4; // fillers sind zusammengesuchte "kleine" Stücke, die aneinandergereiht werden können
+        boost::array<BdrBitmap*, numFillersTop> fillersTop;
+        static BOOST_CONSTEXPR_OR_CONST unsigned numFillersBottom = 5;
+        boost::array<BdrBitmap*, numFillersBottom> fillersBottom;
+        static BOOST_CONSTEXPR_OR_CONST unsigned numFillersLeft = 5;
+        boost::array<BdrBitmap*, numFillersLeft> fillersLeft;
+        static BOOST_CONSTEXPR_OR_CONST unsigned numFillersRight = 6;
+        boost::array<BdrBitmap*, numFillersRight> fillersRight;
 };
 
 #endif // CUSTOMBORDER_H_INCLUDED

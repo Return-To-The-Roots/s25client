@@ -52,7 +52,7 @@ const unsigned short Settings::SCREEN_REFRESH_RATES[] =
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
-Settings::Settings(void)
+Settings::Settings(void) //-V730
 {
 }
 

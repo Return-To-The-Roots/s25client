@@ -22,13 +22,7 @@
 #include "RoadSegment.h"
 #include <boost/array.hpp>
 
-class noFigure;
 class Ware;
-// Enumforwarddeklaration bei VC nutzen
-#ifdef _MSC_VER
-enum Job;
-#else
-#endif
 
 // Basisklasse für Gebäude und Flagge (alles, was als "Straßenknoten" dient
 class noRoadNode : public noCoordBase
@@ -43,16 +37,14 @@ class noRoadNode : public noCoordBase
 
 // For Pathfinding
         // cost from start
-        mutable unsigned cost;
+        mutable unsigned cost; //-V730_NOINIT
         // distance to target
-        mutable unsigned targetDistance;
+        mutable unsigned targetDistance; //-V730_NOINIT
         // estimated total distance (cost + distance)
-        mutable unsigned estimate;
-
+        mutable unsigned estimate; //-V730_NOINIT
         mutable unsigned last_visit;
-
-        mutable const noRoadNode* prev;
-        mutable unsigned dir_;
+        mutable const noRoadNode* prev; //-V730_NOINIT
+        mutable unsigned dir_; //-V730_NOINIT
     public:
 
         noRoadNode(const NodalObjectType nop, const MapPoint pt, const unsigned char player);

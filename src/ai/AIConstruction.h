@@ -120,6 +120,9 @@ class AIConstruction
 		void ExecuteJobs(unsigned limit);
 
     private:
+        AIInterface& aii;
+        AIPlayerJH& aijh;
+
         /// Contains how many buildings of every type is wanted
         std::vector<unsigned> buildingsWanted;
 
@@ -129,9 +132,6 @@ class AIConstruction
         /// Contains the build jobs the AI should try to execute
         std::deque<AIJH::BuildJob*> buildJobs;
 		std::deque<AIJH::ConnectJob*> connectJobs;
-
-        AIInterface& aii;
-        AIPlayerJH& aijh;
 
         /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
         BuildingCount buildingCounts;

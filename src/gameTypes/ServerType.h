@@ -21,7 +21,7 @@
 #include <boost/detail/scoped_enum_emulation.hpp>
 
 // Servertypen
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType) //-V730
 {
     LOBBY = 0,
     DIRECT,

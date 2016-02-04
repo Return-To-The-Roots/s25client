@@ -35,7 +35,7 @@ class FreePathFinder
     unsigned currentVisit;
     unsigned width_, height_;
 public:
-    FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0) {}
+    FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0), width_(0), height_(0) {}
     void Init(const unsigned mapWidth, const unsigned mapHeight);
 
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h

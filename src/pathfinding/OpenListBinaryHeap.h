@@ -31,7 +31,7 @@ public:
     struct Element {
         key_type key;
         value_type* el;
-        Element() {}
+        Element() {} //-V730
         Element(key_type key, value_type* el) :key(key), el(el) {}
     };
 

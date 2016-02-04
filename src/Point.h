@@ -25,7 +25,7 @@ template <typename T>
 struct Point
 {
     T x, y;
-    Point() {}
+    Point() {} //-V730
     Point(const T x, const T y): x(x), y(y) {}
     template<typename U>
     explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}

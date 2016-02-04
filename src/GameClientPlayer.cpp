@@ -64,8 +64,8 @@ const unsigned char STD_TRANSPORT[35] =
  *  @author OLiver
  */
 GameClientPlayer::GameClientPlayer(const unsigned playerid):
-		GamePlayerInfo(playerid),
-		hqPos(MapPoint::Invalid())
+		GamePlayerInfo(playerid), gwg(NULL), is_lagging(false),
+		hqPos(MapPoint::Invalid()), emergency(false)
 {
     for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {
@@ -195,8 +195,6 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     for(unsigned i = 0; i < 5; ++i)
         defenders[i] = true;
 
-    is_lagging = false;
-
     // Inventur nullen
     global_inventory.clear();
 
@@ -207,9 +205,6 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     memset(&statistic[STAT_16H], 0, sizeof(statistic[STAT_16H]));
     memset(&statisticCurrentData, 0, sizeof(statisticCurrentData));
     memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
-
-    // Initial kein Notfallprogramm
-    emergency = false;
 }
 
 void GameClientPlayer::Serialize(SerializedGameData& sgd)

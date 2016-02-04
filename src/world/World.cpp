@@ -145,7 +145,7 @@ MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
         break;
     default:
         RTTR_Assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
-        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1); //-V537
         res.y = pt.y + 1;
         if(res.y == height_)
             res.y = 0;

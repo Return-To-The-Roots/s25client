@@ -74,6 +74,8 @@ void GameServer::ServerConfig::Clear()
     password.clear();
     mapname.clear();
     port = 0;
+    ipv6 = false;
+    use_upnp = false;
 }
 GameServer::MapInfo::MapInfo()
 {

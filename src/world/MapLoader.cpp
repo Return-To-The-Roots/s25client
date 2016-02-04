@@ -424,7 +424,7 @@ void MapLoader::InitSeasAndHarbors()
 class CalcHarborPosNeighborsNode
 {
 public:
-    CalcHarborPosNeighborsNode() {}
+    CalcHarborPosNeighborsNode() {} //-V730
     CalcHarborPosNeighborsNode(const MapPoint pt, unsigned way): pos(pt), way(way) {}
 
     MapPoint pos;
@@ -442,7 +442,7 @@ void MapLoader::CalcHarborPosNeighbors()
     std::vector<CalcHarborPosNeighborsNode> todo_list(world.nodes.size());
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
-    std::vector<unsigned int> flags_init(world.nodes.size());
+    std::vector<unsigned int> flags_init(world.nodes.size()); //-V656
 
     for(MapPoint p(0, 0); p.y < world.GetHeight(); p.y++)
         for(p.x = 0; p.x < world.GetWidth(); p.x++)

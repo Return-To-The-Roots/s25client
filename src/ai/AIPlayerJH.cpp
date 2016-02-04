@@ -53,10 +53,10 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsig
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                        const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                       const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level), defeated(false)
+                       const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level),
+                        isInitGfCompleted(false), defeated(false), UpgradeBldListNumber(-1), UpgradeBldPos(MapPoint::Invalid())
 {
     construction = new AIConstruction(aii, *this);
-	initgfcomplete=0;
     InitNodes();
     InitResourceMaps();
     SaveResourceMapsToFile();
@@ -95,15 +95,15 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if (TestDefeat())
         return;
-    if (!initgfcomplete)
+    if (!isInitGfCompleted)
     {
         InitStoreAndMilitarylists();		
 		InitDistribution();
 		construction->constructionorders.resize(BUILDING_TYPES_COUNT);
     }
-	if(initgfcomplete<10)
+	if(isInitGfCompleted<10)
 	{
-		initgfcomplete++;
+		isInitGfCompleted++;
 		return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
 	}
 	if (gfisnwf)//nwf -> now the orders have been executed -> new constructions can be started
@@ -271,7 +271,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
 
 bool AIPlayerJH::TestDefeat()
 {		
-    if (initgfcomplete>=10 && aii.GetStorehouses().empty())
+    if (isInitGfCompleted>=10 && aii.GetStorehouses().empty())
     {
 		//LOG.lprintf("ai defeated player %i \n",playerid);
         defeated = true;

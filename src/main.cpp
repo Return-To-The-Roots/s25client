@@ -355,7 +355,7 @@ int main(int argc, char* argv[])
         // Write to log file, but don't throw any errors if this fails too
         try{
             LOG.write(error.what());
-        }catch(...){}
+        }catch(...){} //-V565
         return 42;
     }
 

@@ -196,7 +196,7 @@ public:
 	unsigned int random_init;
 	unsigned int nwf_length;
 
-	GameMessage_Server_Start(): GameMessage(NMS_SERVER_START) { }
+	GameMessage_Server_Start(): GameMessage(NMS_SERVER_START) { } //-V730
 	GameMessage_Server_Start(const unsigned random_init, const unsigned nwf_length): GameMessage(NMS_SERVER_START, 0xFF), random_init(random_init), nwf_length(nwf_length){}
 
 	void Serialize(Serializer& ser) const override
@@ -591,7 +591,7 @@ public:
 	unsigned char cause;
 	unsigned short param;
 
-	GameMessage_Player_Kicked(): GameMessage(NMS_PLAYER_KICKED) { }
+	GameMessage_Player_Kicked(): GameMessage(NMS_PLAYER_KICKED) { } //-V730
 	GameMessage_Player_Kicked(const unsigned char player, const unsigned char cause, const unsigned short param)
 		: GameMessage(NMS_PLAYER_KICKED, player), cause(cause), param(param){}
 
@@ -757,7 +757,7 @@ public:
 	/// LUA script
 	std::string script;
 
-	GameMessage_Map_Info(): GameMessage(NMS_MAP_INFO) { }
+	GameMessage_Map_Info(): GameMessage(NMS_MAP_INFO) { } //-V730
 	GameMessage_Map_Info(const std::string& map_name, const MapType mt, const unsigned ziplength, const unsigned normal_length, const std::string& script)
 		: GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), ziplength(ziplength), normal_length(normal_length), script(script)
 	{
@@ -957,7 +957,7 @@ public:
 	unsigned int gf_length; // new speed
 	bool first;
 
-	GameMessage_Server_NWFDone(): GameMessage(NMS_SERVER_NWF_DONE) { }
+	GameMessage_Server_NWFDone(): GameMessage(NMS_SERVER_NWF_DONE) { } //-V730
 	GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr, const unsigned int gf_length, const bool first = false):
         GameMessage(NMS_SERVER_NWF_DONE, player), nr(nr), gf_length(gf_length), first(first)
 	{
@@ -994,7 +994,7 @@ public:
     bool paused;
 	unsigned int nr; // GF
 
-	GameMessage_Pause(): GameMessage(NMS_PAUSE) { }
+	GameMessage_Pause(): GameMessage(NMS_PAUSE) { } //-V730
 	GameMessage_Pause(const bool paused, const unsigned nr): GameMessage(NMS_PAUSE, 0xFF), paused(paused), nr(nr)
 	{
 		LOG.write(">>> NMS_PAUSE(%d)\n", paused ? 1 : 0);

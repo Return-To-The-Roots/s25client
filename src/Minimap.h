@@ -55,8 +55,7 @@ class Minimap
         unsigned VaryBrightness(const unsigned color, const int range) const;
 
     public:
-
-        Minimap() { };
+        Minimap(): map_width(0), map_height(0){}
         Minimap(const unsigned short map_width, const unsigned short map_height);
         virtual ~Minimap() {}
 

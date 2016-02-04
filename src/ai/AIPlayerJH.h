@@ -92,17 +92,12 @@ class AIPlayerJH : public AIBase
         friend class AIJH::ConnectJob;
         friend class AIJH::SearchJob;
         friend class iwAIDebug;
-    private:
-        unsigned attack_interval;
-        unsigned build_interval;
 
     public:
         AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                   const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                   const AI::Level level);
+                   const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level);
         ~AIPlayerJH();
 
-		int initgfcomplete;
         AIInterface& GetInterface() { return aii; }
 
         /// Test whether the player should resign or not
@@ -127,9 +122,6 @@ class AIPlayerJH : public AIBase
 
         void SendAIEvent(AIEvent::Base* ev);
 		
-        /// resigned yes/no
-        bool defeated;
-
         /// Executes a job form the job queue
         void ExecuteAIJob();
         /// Tries to build a bld of the given type at that point.
@@ -302,18 +294,23 @@ class AIPlayerJH : public AIBase
 
         bool NoEnemyHarbor();
 		
+        void SetResourceMap(AIJH::Resource res, const MapPoint pt, int newvalue) { resourceMaps[res][pt] = newvalue; }
     public:
         int GetResMapValue(const MapPoint pt, AIJH::Resource res);
+
+        int UpgradeBldListNumber;
+    private:
+        unsigned attack_interval;
+        unsigned build_interval;
+        int isInitGfCompleted;
+        /// resigned yes/no
+        bool defeated;
     protected:
-        void SetResourceMap(AIJH::Resource res, const MapPoint pt, int newvalue) {resourceMaps[res][pt] = newvalue;}
 		
-		MapPoint UpgradeBldPos;		
+        MapPoint UpgradeBldPos;
 
         /// The current job the AI is working on
         boost::interprocess::unique_ptr<AIJH::Job, Deleter<AIJH::Job> > currentJob;
-
-        /// Contains the jobs the AI should try to execute, for example build jobs
-        /// std::deque<AIJH::Job*> aiJobs;
 
         /// List of coordinates at which military buildings should be
         std::list<MapPoint> milBuildings;
@@ -337,7 +334,6 @@ class AIPlayerJH : public AIBase
     public:
         inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
 		unsigned GetJobNum() const;
-		int UpgradeBldListNumber;
         unsigned PlannedConnectedInlandMilitary() { return aii.GetMilitaryBuildings().size() / 5 < 6 ? 6 : aii.GetMilitaryBuildings().size() / 5; }
         /// checks distance to all harborpositions
         bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);

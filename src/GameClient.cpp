@@ -2182,7 +2182,7 @@ bool GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor)
 {
     // Sind wir im normalem Spiel?
-    if(!replay_mode || (replay_mode && !replayinfo.replay.pathfinding_results))
+    if(!replay_mode || !replayinfo.replay.pathfinding_results)
     {
         // Dann hinzufügen
         replayinfo.replay.AddPathfindingResult(dir, length, next_harbor);
@@ -2197,7 +2197,7 @@ bool GameClient::ArePathfindingResultsAvailable() const
 
 
     // Replaymodus?
-    if(replay_mode || (!replay_mode && !replayinfo.replay.pathfinding_results))
+    if(replay_mode || !replayinfo.replay.pathfinding_results)
     {
         // Unterstützt das Replay das auch (noch)?
         if(replayinfo.replay.pathfinding_results && !replayinfo.end)

@@ -130,13 +130,17 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
 }
 
 DiplomacyPostQuestion::DiplomacyPostQuestion(SerializedGameData& sgd)
-    : PostMsg(sgd)
+    : PostMsg(sgd), dp_type(Type(sgd.PopUnsignedChar())), id(sgd.PopUnsignedChar()), player(sgd.PopUnsignedChar()), pt(PactType(sgd.PopUnsignedChar()))
 {
 }
 
 void DiplomacyPostQuestion::Serialize(SerializedGameData& sgd)
 {
     PostMsg::Serialize(sgd);
+    sgd.PushUnsignedChar(dp_type);
+    sgd.PushUnsignedInt(id);
+    sgd.PushUnsignedChar(player);
+    sgd.PushUnsignedChar(pt);
 }
 
 

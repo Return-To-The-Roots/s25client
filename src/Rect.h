@@ -23,7 +23,7 @@
 typedef struct Rect
 {
     unsigned short left, top, right, bottom;
-    Rect(){}
+    Rect(): left(0), top(0), right(0), bottom(0){}
     Rect(unsigned short left, unsigned short top, unsigned short width, unsigned short height): left(left), top(top), right(left + width), bottom(top + height){}
     Rect(Point<unsigned short> lt, Point<unsigned short> size): left(lt.x), top(lt.y), right(left + size.x), bottom(top + size.y){}
 } Rect;

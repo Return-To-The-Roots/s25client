@@ -28,7 +28,7 @@ const unsigned INVALID_PREV = 0xFFFFFFFF;
 /// Class for a node used by the free pathfinding
 struct NewNode
 {
-    NewNode() : way(0), dir(0), prev(INVALID_PREV), lastVisited(0) {}
+    NewNode() : way(0), wayEven(0), dir(0), dirEven(0), prev(INVALID_PREV), prevEven(INVALID_PREV), lastVisited(0), lastVisitedEven(0) {}
 
     /// Wegkosten, die vom Startpunkt bis zu diesem Knoten bestehen
     unsigned way;
@@ -40,7 +40,7 @@ struct NewNode
     unsigned prev;
     unsigned prevEven;
     /// Iterator auf Position in der Prioritätswarteschlange (std::set), freies Pathfinding
-    std::set<PathfindingPoint>::iterator it_p;
+    std::set<PathfindingPoint>::iterator it_p; //-V730_NOINIT
     /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
     unsigned lastVisited;
     unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)

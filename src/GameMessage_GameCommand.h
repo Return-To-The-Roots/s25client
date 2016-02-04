@@ -47,7 +47,7 @@ class GameMessage_GameCommand : public GameMessage
 
     public:
 
-        GameMessage_GameCommand(void) : GameMessage(NMS_GAMECOMMANDS) { }
+        GameMessage_GameCommand(void) : GameMessage(NMS_GAMECOMMANDS) { } //-V730
         GameMessage_GameCommand(const unsigned char player, const unsigned checksum, const std::vector<gc::GameCommandPtr>& gcs)
             : GameMessage(NMS_GAMECOMMANDS, player), checksum(checksum), obj_cnt(GameObject::GetObjCount()), obj_id_cnt(GameObject::GetObjIDCounter()), gcs(gcs){}
 

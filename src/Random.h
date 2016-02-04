@@ -44,7 +44,7 @@ struct RandomEntry
 class Random : public Singleton<Random>
 {
         unsigned counter;
-        boost::array<RandomEntry, 1024> async_log;
+        boost::array<RandomEntry, 1024> async_log; //-V730_NOINIT
 
     public:
 

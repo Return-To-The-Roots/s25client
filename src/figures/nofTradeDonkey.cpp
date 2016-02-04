@@ -53,17 +53,17 @@ void nofTradeDonkey::GoalReached()
     RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
     successor = NULL;
     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
-    GameClientPlayer& player = gwg->GetPlayer(wh->GetPlayer());
+    GameClientPlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
 
     if(gt != GD_NOTHING)
     {
         Goods goods;
         goods.goods[gt] = 1;
         wh->AddGoods(goods);
-        player.IncreaseInventoryWare(gt, 1);
+        whOwner.IncreaseInventoryWare(gt, 1);
     }
 
-    player.IncreaseInventoryJob(this->GetJobType(), 1);
+    whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
     gwg->RemoveFigure(this, pos);
     wh->AddFigure(this);
 }

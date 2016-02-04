@@ -138,7 +138,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         radius = 0;
         blocking_event = NULL;
         harborPos = MapPoint::Invalid();
-        shipPos = MapPoint::Invalid();
+        shipPos = MapPoint::Invalid(); //-V656
         ship_obj_id = 0;
     }
 
@@ -1049,7 +1049,7 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
     {
         // If pos is not valid, then we are still on the ship!
         // This can happen, if the ship cannot reach its target
-        RTTR_Assert(state = STATE_SEAATTACKING_ONSHIP);
+        RTTR_Assert(state == STATE_SEAATTACKING_ONSHIP);
         RTTR_Assert(helpers::contains(ship.GetFigures(), this));
         InformTargetsAboutCancelling();
     }
