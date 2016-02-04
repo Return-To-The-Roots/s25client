@@ -1674,7 +1674,7 @@ void AIPlayerJH::CheckGranitMine()
 void AIPlayerJH::TryToAttack()
 {
     unsigned hq_or_harbor_without_soldiers = 0;
-    std::deque<const nobBaseMilitary*> potentialTargets;
+    std::vector<const nobBaseMilitary*> potentialTargets;
 
     // use own military buildings (except inland buildings) to search for enemy military buildings
     unsigned skip = 0; //when the ai has many buildings the ai will not check the complete list every time
@@ -1691,10 +1691,8 @@ void AIPlayerJH::TryToAttack()
             std::advance(it, skip);
         skip = 0;
         const nobMilitary* mil = (*it);
-        if (mil->GetFrontierDistance() == 0)  //inland building? -> skip it
-        {            
+        if (mil->GetFrontierDistance() == 0)  //inland building? -> skip it  
             continue;
-        }
 
         // get nearby enemy buildings and store in set of potential attacking targets
         MapPoint src = (*it)->GetPos();
@@ -1702,27 +1700,21 @@ void AIPlayerJH::TryToAttack()
         sortedMilitaryBlds buildings = aii.GetMilitaryBuildings(src, 2);
         for(sortedMilitaryBlds::iterator target = buildings.begin(); target != buildings.end(); ++target)
         {
-            if ((*target)->GetGOT() == GOT_NOB_MILITARY)
-            {
-                const nobMilitary* enemyTarget = dynamic_cast<const nobMilitary*>((*target));
-
-                if (enemyTarget && enemyTarget->IsNewBuilt())
-                    continue;
-            }
+            if(helpers::contains(potentialTargets, *target))
+                continue;
+            if ((*target)->GetGOT() == GOT_NOB_MILITARY && static_cast<const nobMilitary*>(*target)->IsNewBuilt())
+                continue;
             MapPoint dest = (*target)->GetPos();
-            if (gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE
-                    && aii.IsPlayerAttackable((*target)->GetPlayer()) && aii.IsVisible(dest))
+            if (gwb.CalcDistance(src, dest) < BASE_ATTACKING_DISTANCE && aii.IsPlayerAttackable((*target)->GetPlayer()) && aii.IsVisible(dest))
             {
-                if (((*target)->GetGOT() != GOT_NOB_MILITARY) && (!(*target)->DefendersAvailable()))
+                if ((*target)->GetGOT() != GOT_NOB_MILITARY && !(*target)->DefendersAvailable())
                 {
                     // headquarter or harbor without any troops :)
                     hq_or_harbor_without_soldiers++;
-                    potentialTargets.push_front(*target);
+                    potentialTargets.insert(potentialTargets.begin(), *target);
                 }
                 else
-                {
                     potentialTargets.push_back(*target);
-                }
             }
         }
     }
@@ -1731,7 +1723,7 @@ void AIPlayerJH::TryToAttack()
     std::random_shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end());
 
     // check for each potential attacking target the number of available attacking soldiers
-    for (std::deque<const nobBaseMilitary*>::iterator target = potentialTargets.begin(); target != potentialTargets.end(); ++target)
+    for (std::vector<const nobBaseMilitary*>::iterator target = potentialTargets.begin(); target != potentialTargets.end(); ++target)
     {
         const MapPoint dest = (*target)->GetPos();
 
@@ -1759,16 +1751,12 @@ void AIPlayerJH::TryToAttack()
 
         if ((level == AI::HARD) && ((*target)->GetGOT() == GOT_NOB_MILITARY))
         {
-            const nobMilitary* enemyTarget = dynamic_cast<const nobMilitary*>((*target));
-
-            if (enemyTarget && ((attackersStrength <= enemyTarget->GetSoldiersStrength()) || (enemyTarget->GetTroopsCount() == 0)))
-            {
+            const nobMilitary* enemyTarget = static_cast<const nobMilitary*>(*target);
+            if (attackersStrength <= enemyTarget->GetSoldiersStrength() || enemyTarget->GetTroopsCount() == 0)
                 continue;
-            }
         }
 
         aii.Attack(dest, attackersCount, true);
-
         return;
     }
 }
