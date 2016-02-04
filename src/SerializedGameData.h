@@ -206,6 +206,11 @@ T SerializedGameData::PopContainer(const T&)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
+    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value ||
+        boost::is_same<Type, unsigned char>::value ||
+        boost::is_same<Type, int>::value ||
+        boost::is_same<Type, unsigned>::value),
+        "Unimplemented type for PushContainer");
 
     T result;
     unsigned size = PopUnsignedInt();
@@ -215,7 +220,7 @@ T SerializedGameData::PopContainer(const T&)
     {
         if(boost::is_same<Type, signed char>::value)
             *it = PopSignedChar();
-        else if(boost::is_same<Type, signed char>::value)
+        else if(boost::is_same<Type, unsigned char>::value)
             *it = PopUnsignedChar();
         else if(boost::is_same<Type, int>::value)
             *it = PopSignedInt();

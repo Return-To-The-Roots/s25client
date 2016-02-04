@@ -81,7 +81,7 @@ struct PositionSearch
     bool best;
 
     PositionSearch(const MapPoint pt, AIJH::Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
-        : start(pt), res(res), minimum(minimum), size(size), bld(bld), best(best) { }
+        : start(pt), res(res), minimum(minimum), size(size), nodesPerStep(32), result(MapPoint::Invalid()), resultValue(0), bld(bld), best(best) { }
 };
 
 /// Klasse für die besser JH-KI

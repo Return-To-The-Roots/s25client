@@ -37,18 +37,17 @@ nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noR
 void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const
 {
     Serialize_nofFlagWorker(sgd);
-
     sgd.PushMapPoint(nextPos);
+    sgd.PushUnsignedInt(rest_way);
 }
 
 nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    nextPos(sgd.PopMapPoint())
+    nextPos(sgd.PopMapPoint()), rest_way(sgd.PopUnsignedInt())
 {
 }
 
 void nofScout_Free::Draw(int x, int y)
 {
-    //RTTR_Assert(this->GetObjId()!= 8215505);
     // normales Laufen zeichnen
     DrawWalking(x, y);
 }
@@ -87,7 +86,7 @@ void nofScout_Free::HandleDerivedEvent(const unsigned int id)
 
 void nofScout_Free::LostWork()
 {
-    flag = 0;
+    flag = NULL;
 
     switch(state)
     {

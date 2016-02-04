@@ -57,7 +57,6 @@ protected:
     unsigned short width, height;
 
 public:
-    bool terrain_rerender;
     unsigned int terrain_list;
     Point<int> terrainLastOffset;
     unsigned int terrain_last_global_animation;

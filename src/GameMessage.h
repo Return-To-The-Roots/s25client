@@ -27,7 +27,7 @@ class GameMessage : public Message
         /// Spieler-ID, von dem diese Nachricht stammt
         unsigned char player;
 
-        GameMessage(const unsigned short id) : Message(id) {}
+        GameMessage(const unsigned short id) : Message(id) {} //-V730
         /// Konstruktor von @p GameMessage.
         GameMessage(const unsigned short id, const unsigned char player): Message(id), player(player){}
 

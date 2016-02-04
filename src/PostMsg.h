@@ -142,11 +142,6 @@ class ShipPostMsg : public ImagePostMsgWithLocation
     public:
         ShipPostMsg(const std::string& text, PostMessageCategory cat, Nation senderNation, const MapPoint pt);
         glArchivItem_Bitmap* GetImage_() const;
-        MapCoord GetX() const;
-        MapCoord GetY() const;
-
-    private:
-        noShip* ship;
 
 };
 

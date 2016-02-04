@@ -38,7 +38,7 @@
  *  @author FloSoft
  */
 glArchivItem_Map::glArchivItem_Map()
-    : ArchivItem_Map()
+    : ArchivItem_Map(), header(NULL)
 {
 }
 

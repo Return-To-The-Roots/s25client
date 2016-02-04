@@ -67,7 +67,8 @@ const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
     :   noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(NULL),
         rs_pos(0), rs_dir(0), on_ship(false), goal_(goal), waiting_for_free_node(false),
-        flagPos_(0xFFFF, 0xFFFF), last_id(0xFFFFFFFF)
+        wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF),
+        last_id(0xFFFFFFFF)
 {
     // Haben wir ein Ziel?
     // Gehen wir in ein Lagerhaus? Dann dürfen wir da nicht unsere Arbeit ausführen, sondern
@@ -79,7 +80,9 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
     :   noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(NULL),
-        rs_pos(0), rs_dir(0), on_ship(false), goal_(NULL), waiting_for_free_node(false), last_id(0xFFFFFFFF)
+        rs_pos(0), rs_dir(0), on_ship(false), goal_(NULL), waiting_for_free_node(false),
+        wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), 
+        last_id(0xFFFFFFFF)
 {}
 
 void noFigure::Destroy_noFigure()

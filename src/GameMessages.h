@@ -107,7 +107,7 @@ public:
 	/// Vom Server akzeptiert?
 	unsigned err_code;
 
-	GameMessage_Server_TypeOK(): GameMessage(NMS_SERVER_TYPEOK) { }
+	GameMessage_Server_TypeOK(): GameMessage(NMS_SERVER_TYPEOK) { } //-V730
 	GameMessage_Server_TypeOK(const unsigned err_code): GameMessage(NMS_SERVER_TYPEOK, 0xFF), err_code(err_code){}
 
 	void Serialize(Serializer& ser) const override
@@ -228,7 +228,7 @@ class GameMessage_Server_Countdown : public GameMessage
 public:
 	int countdown;
 
-	GameMessage_Server_Countdown(): GameMessage(NMS_SERVER_COUNTDOWN) { }
+	GameMessage_Server_Countdown(): GameMessage(NMS_SERVER_COUNTDOWN) { } //-V730
 	GameMessage_Server_Countdown(int countdown): GameMessage(NMS_SERVER_COUNTDOWN, 0xFF), countdown(countdown){}
 
 	void Serialize(Serializer& ser) const override
@@ -273,7 +273,7 @@ public:
     ChatDestination destination;
     std::string text;
 
-    GameMessage_Server_Chat(): GameMessage(NMS_SERVER_CHAT) {}
+    GameMessage_Server_Chat(): GameMessage(NMS_SERVER_CHAT) {} //-V730
     GameMessage_Server_Chat(const unsigned char player, const ChatDestination destination, const std::string& text):
         GameMessage(NMS_SERVER_CHAT, player), destination(destination), text(text)
     {
@@ -371,7 +371,7 @@ class GameMessage_Player_Id : public GameMessage
 public:
     unsigned int playerid;
 
-    GameMessage_Player_Id(): GameMessage(NMS_PLAYER_ID) { }
+    GameMessage_Player_Id(): GameMessage(NMS_PLAYER_ID) { } //-V730
     GameMessage_Player_Id(const unsigned int playerid): GameMessage(NMS_PLAYER_ID, 0xFF), playerid(playerid)
     {
         LOG.write(">>> NMS_PLAYER_ID(%d)\n", playerid);
@@ -492,7 +492,7 @@ public:
 	/// Das zu setzende Volk
 	Nation nation;
 
-	GameMessage_Player_Toggle_Nation(): GameMessage(NMS_PLAYER_TOGGLENATION) {}
+	GameMessage_Player_Toggle_Nation(): GameMessage(NMS_PLAYER_TOGGLENATION) {} //-V730
 	GameMessage_Player_Toggle_Nation(const unsigned char player, const Nation nation): GameMessage(NMS_PLAYER_TOGGLENATION, player), nation(nation)
 	{
 		LOG.write(">>> NMS_PLAYER_TOGGLENATION\n");
@@ -525,7 +525,7 @@ public:
 	/// Das zu setzende Team
 	Team team;
 
-	GameMessage_Player_Toggle_Team(): GameMessage(NMS_PLAYER_TOGGLETEAM) { }
+	GameMessage_Player_Toggle_Team(): GameMessage(NMS_PLAYER_TOGGLETEAM) { } //-V730
 	GameMessage_Player_Toggle_Team(const unsigned char player, const Team team): GameMessage(NMS_PLAYER_TOGGLETEAM, player), team(team)
 	{
 		LOG.write(">>> NMS_PLAYER_TOGGLETEAM\n");
@@ -558,7 +558,7 @@ public:
 	/// Das zu setzende Team
 	unsigned char color;
 
-	GameMessage_Player_Toggle_Color(): GameMessage(NMS_PLAYER_TOGGLECOLOR) { }
+	GameMessage_Player_Toggle_Color(): GameMessage(NMS_PLAYER_TOGGLECOLOR) { } //-V730
 	GameMessage_Player_Toggle_Color(const unsigned char player, const unsigned char color): GameMessage(NMS_PLAYER_TOGGLECOLOR, player), color(color)
 	{
 		LOG.write(">>> NMS_PLAYER_TOGGLECOLOR\n");
@@ -623,7 +623,7 @@ class GameMessage_Player_Ping : public GameMessage
 public:
 	unsigned short ping;
 
-	GameMessage_Player_Ping(): GameMessage(NMS_PLAYER_PING) { }
+	GameMessage_Player_Ping(): GameMessage(NMS_PLAYER_PING) { } //-V730
 	GameMessage_Player_Ping(const unsigned char player, const unsigned short ping): GameMessage(NMS_PLAYER_PING, player), ping(ping){}
 
 	void Serialize(Serializer& ser) const override
@@ -686,7 +686,7 @@ public:
 	/// Ist der Spieler bereit?
 	bool ready;
 
-	GameMessage_Player_Ready(): GameMessage(NMS_PLAYER_READY) { }
+	GameMessage_Player_Ready(): GameMessage(NMS_PLAYER_READY) { } //-V730
 	GameMessage_Player_Ready(const unsigned char player, const bool ready): GameMessage(NMS_PLAYER_READY, player), ready(ready)
 	{
 		LOG.write(">>> NMS_PLAYER_READY\n");
@@ -718,7 +718,7 @@ class GameMessage_Player_Swap : public GameMessage
 public:
 	/// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
 	unsigned char player2;
-	GameMessage_Player_Swap(): GameMessage(NMS_PLAYER_SWAP) { }
+	GameMessage_Player_Swap(): GameMessage(NMS_PLAYER_SWAP) { } //-V730
 	GameMessage_Player_Swap(const unsigned char player, const unsigned char player2): GameMessage(NMS_PLAYER_SWAP, player),  player2(player2)
 	{
 		LOG.write(">>> NMS_PLAYER_SWAP\n");
@@ -799,7 +799,7 @@ public:
 	/// Kartendaten
 	std::vector<unsigned char> map_data;
 
-	GameMessage_Map_Data(): GameMessage(NMS_MAP_DATA) { }
+	GameMessage_Map_Data(): GameMessage(NMS_MAP_DATA) { } //-V730
 	GameMessage_Map_Data(const unsigned offset, const unsigned char* const map_data, const unsigned length)
 		: GameMessage(NMS_MAP_DATA, 0xFF), offset(offset), map_data(map_data, map_data + length)
 	{
@@ -835,7 +835,7 @@ public:
 	/// Checksumme, die vom Client berechnt wurde
 	unsigned checksum;
 
-	GameMessage_Map_Checksum(): GameMessage(NMS_MAP_CHECKSUM) { }
+	GameMessage_Map_Checksum(): GameMessage(NMS_MAP_CHECKSUM) { } //-V730
 	GameMessage_Map_Checksum(const unsigned checksum): GameMessage(NMS_MAP_CHECKSUM, 0xFF), checksum(checksum)
 	{
 		LOG.write(">>> NMS_MAP_CHECKSUM\n");
@@ -867,7 +867,7 @@ public:
 	/// Vom Server akzeptiert?
 	bool correct;
 
-	GameMessage_Map_ChecksumOK(): GameMessage(NMS_MAP_CHECKSUMOK) { }
+	GameMessage_Map_ChecksumOK(): GameMessage(NMS_MAP_CHECKSUMOK) { } //-V730
 	GameMessage_Map_ChecksumOK(const bool correct): GameMessage(NMS_MAP_CHECKSUMOK, 0xFF), correct(correct){}
 
 	void Serialize(Serializer& ser) const override
@@ -925,7 +925,7 @@ class GameMessage_Server_Speed : public GameMessage
 public:
 	unsigned int gf_length; // new speed
 
-	GameMessage_Server_Speed(): GameMessage(NMS_SERVER_SPEED) { }
+	GameMessage_Server_Speed(): GameMessage(NMS_SERVER_SPEED) { } //-V730
 	GameMessage_Server_Speed(const unsigned int gf_length): GameMessage(NMS_SERVER_SPEED, 0xFF), gf_length(gf_length)
 	{
 		LOG.write(">>> NMS_SERVER_SPEED(%d)\n", gf_length);
@@ -1046,7 +1046,7 @@ public:
 	std::vector<RandomEntry> recved_log;
     bool last;
 
-	GameMessage_SendAsyncLog(): GameMessage(NMS_SEND_ASYNC_LOG) {}
+	GameMessage_SendAsyncLog(): GameMessage(NMS_SEND_ASYNC_LOG) {} //-V730
 
 	GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last):
         GameMessage(NMS_SEND_ASYNC_LOG, 0xFF), recved_log(async_log), last(last)

@@ -35,7 +35,7 @@
 #include "DebugNew.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_METALWORKER, pos, player, workplace)
+    : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
 {
 }
 

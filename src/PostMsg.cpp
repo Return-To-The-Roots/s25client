@@ -64,7 +64,7 @@ ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, Post
 
 ImagePostMsgWithLocation::ImagePostMsgWithLocation(const std::string& text, PostMessageCategory cat,
         const MapPoint pt, Nation senderNation)
-    : PostMsgWithLocation(text, cat, pt), senderNation(senderNation)
+    : PostMsgWithLocation(text, cat, pt), senderBuilding(BLD_NOTHING), senderNation(senderNation)
 {
     type = PMT_IMAGE_WITH_LOCATION;
 }

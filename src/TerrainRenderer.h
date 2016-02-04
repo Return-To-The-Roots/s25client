@@ -66,7 +66,6 @@ class TerrainRenderer
             boost::array<unsigned char, 2 > terrain; // Terrain der Dreiecke
             boost::array<PointF, 2> borderPos; // Mittelpunkt für Ränder
             boost::array<float, 2>  borderColor;
-            Vertex():color(0){ terrain[0] = 0; terrain[1] = 0; }
         };
 
         struct Color

@@ -109,6 +109,7 @@ GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
     status = SS_STOPPED;
 
     async_player1 = async_player2 = -1;
+    async_player1_done = async_player2_done = false;
     framesinfo.Clear();
     serverconfig.Clear();
     mapinfo.Clear();

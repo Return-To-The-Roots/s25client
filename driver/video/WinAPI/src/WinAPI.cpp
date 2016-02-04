@@ -113,7 +113,9 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *
  *  @author FloSoft
  */
-VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), isWindowResizable(false)
+VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack):
+    VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0),
+    screen(NULL), screen_dc(NULL), screen_rc(NULL), isWindowResizable(false)
 {
     memset(&dm_prev, 0, sizeof(DEVMODE));
     dm_prev.dmSize = sizeof(DEVMODE);

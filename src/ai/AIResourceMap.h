@@ -27,7 +27,7 @@
 class AIResourceMap
 {
     public:
-        AIResourceMap():aii(NULL), nodes(NULL){} // Default ctor to allow storage in arrays
+        AIResourceMap():res(AIJH::NOTHING), aii(NULL), nodes(NULL), resRadius(0){} // Default ctor to allow storage in arrays
         AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes);
         ~AIResourceMap();
 

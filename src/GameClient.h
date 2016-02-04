@@ -271,7 +271,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
             /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
             ToolSettings tools_settings;
 
-        } visual_settings, default_settings;
+        } visual_settings, default_settings; //-V730_NOINIT
 		/// skip ahead how many gf?
 		unsigned int skiptogf;
     private:

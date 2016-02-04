@@ -129,7 +129,7 @@ void GameClient::ReplayInfo::Clear()
  */
 GameClient::GameClient(void)
     : skiptogf(0), gw(NULL), em(NULL), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
-      ci(NULL), human_ai(NULL), game_log(NULL)
+      ci(NULL), human_ai(NULL), replay_mode(false), game_log(NULL)
 {
     clientconfig.Clear();
     framesinfo.Clear();

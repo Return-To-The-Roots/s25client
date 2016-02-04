@@ -47,6 +47,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
 /// Deserialisierungskonstruktor
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     playerid(playerid),
+    defeated(false),
     ps(PlayerState(ser.PopUnsignedChar())),
     aiInfo(),
     name(ser.PopString()),
