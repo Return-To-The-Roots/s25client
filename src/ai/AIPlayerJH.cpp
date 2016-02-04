@@ -54,7 +54,7 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsig
 AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                        const GameClientPlayerList& players, const GlobalGameSettings& ggs,
                        const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level),
-                        isInitGfCompleted(false), defeated(false), UpgradeBldListNumber(-1), UpgradeBldPos(MapPoint::Invalid())
+                        UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false), UpgradeBldPos(MapPoint::Invalid())
 {
     construction = new AIConstruction(aii, *this);
     InitNodes();

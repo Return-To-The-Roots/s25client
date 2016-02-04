@@ -56,7 +56,7 @@
  *
  *  @author FloSoft
  */
-Loader::Loader(void) : lastgfx(0xFF), stp(NULL), map_gfx(NULL), tex_gfx(NULL)
+Loader::Loader(void) : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
 {
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::ArchivInfo*>(NULL));
 }

@@ -72,7 +72,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
         // Only add one shield type
-        if(i != ConvertShields(GoodType(i)))
+        if(GoodType(i) != ConvertShields(GoodType(i)))
             continue;
         // Don't add nothing or empty water
         if(i == GD_NOTHING || i == GD_WATEREMPTY)
