@@ -66,6 +66,7 @@ struct MapNode
         unsigned char owner;
         /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
         boost::array<unsigned char, 4> boundary_stones;
+        FoWData(): object(NULL){}
     };
     boost::array<FoWData, MAX_PLAYERS> fow;
 
@@ -79,6 +80,7 @@ struct MapNode
     /// Figuren, Kämpfe, die sich dort befinden
     std::list<noBase*> figures;
 
+    MapNode(): obj(NULL){}
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);
 };
