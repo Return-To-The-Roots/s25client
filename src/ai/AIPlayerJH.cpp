@@ -1684,7 +1684,7 @@ void AIPlayerJH::TryToAttack()
         // We skip the current building with a probability of limit/numMilBlds
         // -> For twice the number of blds as the limit we will most likely skip every 2nd building
         // This way we check roughly (at most) limit buildings but avoid any preference for one building over an other
-        if(rand() % numMilBlds < limit)
+        if(rand() % numMilBlds > limit)
             continue;
 
         const nobMilitary* mil = (*it);
