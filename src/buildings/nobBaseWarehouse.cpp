@@ -193,18 +193,13 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
 void nobBaseWarehouse::Clear()
 {
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
-    {
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory.goods[i]);
-        inventoryVisual.goods[i] = 0;
-        inventory.goods[i] = 0;
-    }
     
     for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
-    {
         gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), inventory.people[i]);
-        inventoryVisual.people[i] = 0;
-        inventory.people[i] = 0;
-    }
+
+    inventoryVisual.clear();
+    inventory.clear();
     
     for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
     {
@@ -915,7 +910,8 @@ void nobBaseWarehouse::CancelWare(Ware* ware)
 void nobBaseWarehouse::CancelFigure(noFigure* figure)
 {
 	std::list<noFigure *>::iterator it = std::find(leave_house.begin(), leave_house.end(), figure);
-	
+    RTTR_Assert(it != leave_house.end()); // TODO: Is this true in all cases? If yes, remove the check below
+
     // Figure aus den Waiting-Wares entfernen
     if (it != leave_house.end())
 		leave_house.erase(it);
