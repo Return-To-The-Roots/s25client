@@ -27,7 +27,7 @@ extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;
 /// Berufsstruktur
 struct JobConst
 {
-    /// Werkzeug, das der Beruf braucht
+    /// Tool for this job, GD_INVALID if recruiting is not possible
     GoodType tool;
     /// Ob der Beruf dick oder dünn ist
     bool fat;
@@ -61,16 +61,16 @@ const JobConst JOB_CONSTS[JOB_TYPES_COUNT] =
     {GD_HAMMER, true, 4, 940, 170, 5}, //JOB_ARMORER
     {GD_HAMMER, false, 23, 0, 0, 5}, //JOB_BUILDER
     {GD_SHOVEL, false, 22, 130, 0, 5}, //JOB_PLANER
-    {GD_NOTHING, false, 30, 0, 0, 0}, //JOB_PRIVATE
-    {GD_NOTHING, false, 31, 0, 0, 0}, //JOB_PRIVATEFIRSTCLASS
-    {GD_NOTHING, false, 32, 0, 0, 0}, //JOB_SERGEANT
-    {GD_NOTHING, false, 33, 0, 0, 0}, //JOB_OFFICER
-    {GD_NOTHING, false, 34, 0, 0, 0}, //JOB_GENERAL
+    {GD_INVALID, false, 30, 0, 0, 0}, //JOB_PRIVATE
+    {GD_INVALID, false, 31, 0, 0, 0}, //JOB_PRIVATEFIRSTCLASS
+    {GD_INVALID, false, 32, 0, 0, 0}, //JOB_SERGEANT
+    {GD_INVALID, false, 33, 0, 0, 0}, //JOB_OFFICER
+    {GD_INVALID, false, 34, 0, 0, 0}, //JOB_GENERAL
     {GD_HAMMER, false, 26, 0, 0, 0}, //JOB_GEOLOGIST
     {GD_HAMMER, false, 25, 1250, 100, 5}, //JOB_SHIPWRIGHT, Todo: Timing wenn Schiffe bauen möglich
     {GD_BOW, false, 35, 0, 0, 0},    //JOB_SCOUT
-    {GD_NOTHING, false, 37, 0, 0, 0}, //JOB_PACKDONKEY
-    {GD_NOTHING, false, 37, 0, 0, 0}, //JOB_BOATCARRIER
+    {GD_INVALID, false, 37, 0, 0, 0}, //JOB_PACKDONKEY
+    {GD_INVALID, false, 37, 0, 0, 0}, //JOB_BOATCARRIER
     {GD_SHOVEL, false, 37, 117, 106, 5} //JOB_CHARBURNER
 };
 

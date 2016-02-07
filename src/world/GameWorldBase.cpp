@@ -1185,7 +1185,7 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
 
         if (type < WARE_TYPES_COUNT)
         {
-            goods.goods[type] += count;
+            goods.Add(GoodType(type), count);
             player.IncreaseInventoryWare(GoodType(type), count);
         }
     }
@@ -1238,7 +1238,7 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
 
         if (type < JOB_TYPES_COUNT)
         {
-            goods.people[type] += count;
+            goods.Add(Job(type), count);
             player.IncreaseInventoryJob(Job(type), count);
         }
     }

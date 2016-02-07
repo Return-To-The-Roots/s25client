@@ -18,6 +18,8 @@
 #ifndef JobTypes_h__
 #define JobTypes_h__
 
+#include <boost/array.hpp>
+
 enum Job
 {
 	JOB_HELPER            =  0,
@@ -57,5 +59,8 @@ enum Job
 
 // Anzahl an unterschiedlichen Berufstypen
 const unsigned JOB_TYPES_COUNT = JOB_NOTHING;
+/// Job types of soldiers, weak ones first
+static const boost::array<Job, 5> SOLDIER_JOBS = {{ JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS, JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL }};
+
 
 #endif // JobTypes_h__

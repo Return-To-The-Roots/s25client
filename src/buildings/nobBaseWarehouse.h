@@ -24,7 +24,7 @@
 #include "figures/noFigure.h"
 #include "DataChangedObservable.h"
 #include "gameTypes/InventorySetting.h"
-#include "gameTypes/Inventory.h"
+#include "gameTypes/VirtualInventory.h"
 #include <boost/array.hpp>
 #include <list>
 
@@ -76,8 +76,8 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         unsigned reserve_soldiers_claimed_visual[5]; /// geforderte Soldaten zur Reserve - visuell
         unsigned reserve_soldiers_claimed_real[5]; /// geforderte Soldaten zur Reserve - real
 
-        /// Waren bzw. Menschenanzahl im Gebäude, real_goods ist die tatsächliche Anzahl und wird zum berechnen verwendet, goods ist nur die, die auch angezeigt wird
-        Inventory inventoryVisual, inventory;
+        /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
+        VirtualInventory inventory;
         InventorySettings inventorySettingsVisual; ///< die Inventar-Einstellungen, visuell
         InventorySettings inventorySettings; ///< die Inventar-Einstellungen, real
 
@@ -126,6 +126,8 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void TryStopRecruiting();
         /// Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
         void AddToInventory();
+        /// Recruts a worker of the given job if possible
+        bool TryRecruitJob(const Job job);
 
         nobBaseWarehouse(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
         nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id);
@@ -152,10 +154,10 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
 
         /// Gibt Anzahl der Waren bzw. Figuren zurück
-        unsigned GetRealWaresCount(GoodType type) const { return inventory.goods[type]; }
-        unsigned GetRealFiguresCount(Job type) const { return inventory.people[type]; }
-        unsigned GetVisualWaresCount(GoodType type) const { return inventoryVisual.goods[type]; }
-        unsigned GetVisualFiguresCount(Job type) const { return inventoryVisual.people[type]; }
+        unsigned GetRealWaresCount(GoodType type) const { return inventory.real.goods[type]; }
+        unsigned GetRealFiguresCount(Job type) const { return inventory.real.people[type]; }
+        unsigned GetVisualWaresCount(GoodType type) const { return inventory.visual.goods[type]; }
+        unsigned GetVisualFiguresCount(Job type) const { return inventory.visual.people[type]; }
 
 
         /// Gibt Ein/Auslagerungseinstellungen zurück
@@ -225,8 +227,8 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
         unsigned GetSoldiersCount() const
         {
-            return inventory.people[JOB_PRIVATE] + inventory.people[JOB_PRIVATEFIRSTCLASS] +
-                   inventory.people[JOB_SERGEANT] + inventory.people[JOB_OFFICER] + inventory.people[JOB_GENERAL];
+            return GetRealFiguresCount(JOB_PRIVATE) + GetRealFiguresCount(JOB_PRIVATEFIRSTCLASS) + GetRealFiguresCount(JOB_SERGEANT)
+                + GetRealFiguresCount(JOB_OFFICER) + GetRealFiguresCount(JOB_GENERAL);
         }
         /// Bestellt Soldaten
         void OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst=false);

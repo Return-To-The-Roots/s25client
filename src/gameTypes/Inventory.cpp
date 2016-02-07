@@ -19,6 +19,9 @@
 #include "Inventory.h"
 #include <algorithm>
 
+// Include last!
+#include "DebugNew.h"
+
 void Inventory::clear()
 {
     std::fill(goods.begin(), goods.end(), 0);

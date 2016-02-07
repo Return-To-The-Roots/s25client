@@ -313,8 +313,8 @@ class GameClientPlayer : public GamePlayerInfo
         /// Fügt Waren zur Inventur hinzu
         void IncreaseInventoryWare(const GoodType ware, const unsigned count);
         void DecreaseInventoryWare(const GoodType ware, const unsigned count);
-        void IncreaseInventoryJob(const Job job, const unsigned count) { global_inventory.people[job] += count; }
-        void DecreaseInventoryJob(const Job job, const unsigned count) { RTTR_Assert(global_inventory.people[job] >= count); global_inventory.people[job] -= count; }
+        void IncreaseInventoryJob(const Job job, const unsigned count) { global_inventory.Add(job, count); }
+        void DecreaseInventoryJob(const Job job, const unsigned count) { global_inventory.Remove(job, count); }
 
         /// Gibt Inventory-Settings zurück
         const Inventory& GetInventory() const { return global_inventory; }

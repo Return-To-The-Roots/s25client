@@ -58,7 +58,8 @@ enum GoodType
 	/* 32 */GD_MEAT,        // Fleisch
 	/* 33 */GD_HAM,         // Schinken ( Schwein )
 	/* 34 */GD_SHIELDJAPANESE,  // Schild
-	/* 35 */GD_NOTHING      // Nichts
+	/* 35 */GD_NOTHING,      // Nichts
+    /* 36 */GD_INVALID       // Placeholder to show an invalid good (does not count as a good)
 };
 // Anzahl an unterschiedlichen Warentypen
 const unsigned WARE_TYPES_COUNT = GD_NOTHING;

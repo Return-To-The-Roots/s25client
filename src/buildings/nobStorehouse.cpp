@@ -34,7 +34,6 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)
 {
     // Alle Waren 0, außer 100 Träger
-    inventoryVisual.clear();
     inventory.clear();
 
     // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
@@ -45,8 +44,7 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
 
     // Post versenden
     if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
-                                               _("New storehouse finished"), PMC_GENERAL, pos, BLD_STOREHOUSE, nation));
+        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("New storehouse finished"), PMC_GENERAL, pos, BLD_STOREHOUSE, nation));
 }
 
 void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const

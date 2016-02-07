@@ -1972,13 +1972,12 @@ bool GameClientPlayer::IsWareDependent(Ware* ware)
 
 void GameClientPlayer::IncreaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    global_inventory.goods[ConvertShields(ware)] += count;
+    global_inventory.Add(ConvertShields(ware), count);
 }
 
 void GameClientPlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    RTTR_Assert(global_inventory.goods[ConvertShields(ware)] >= count);
-    global_inventory.goods[ConvertShields(ware)] -= count;
+    global_inventory.Remove(ConvertShields(ware), count);
 }
 
 

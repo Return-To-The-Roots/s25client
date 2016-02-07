@@ -132,8 +132,12 @@ public:
 
         /// Startet eine Expedition oder stoppt sie, wenn bereits eine stattfindet
         void StartExpedition();
+        void StopExpedition();
+
         /// Startet eine Erkundungs-Expedition oder stoppt sie, wenn bereits eine stattfindet
         void StartExplorationExpedition();
+        void StopExplorationExpedition();
+
         /// Ist Expedition in Vorbereitung?
         bool IsExpeditionActive() const { return expedition.active; }
         /// Ist Erkundungs-Expedition in Vorbereitung?

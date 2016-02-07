@@ -149,7 +149,6 @@ void nobBaseMilitary::AddLeavingEvent()
     }
 }
 
-
 void nobBaseMilitary::AddLeavingFigure(noFigure* fig)
 {
     AddLeavingEvent();
