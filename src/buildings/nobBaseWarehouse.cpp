@@ -543,6 +543,14 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
 
 void nobBaseWarehouse::HandleLeaveEvent()
 {
+#if RTTR_ENABLE_ASSERTS
+    Inventory should = inventory.real;
+    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
+        should.Add((*it)->GetJobType());
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+        RTTR_Assert(should.people[i] == inventory.visual.people[i]);
+#endif
+
     // Falls eine Bestellung storniert wurde
     if(leave_house.empty() && waiting_wares.empty())
     {
@@ -955,8 +963,11 @@ void nobBaseWarehouse::SoldierLost(nofSoldier* soldier)
 
 void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
 {
-    // Soldat hinzufügen
-    inventory.Add(SOLDIER_JOBS[soldier->GetRank()]);
+    // Add soldier. If he is still in the leave-queue, then don't add him to the visual settings again
+    if(helpers::contains(leave_house, soldier))
+        inventory.real.Add(soldier->GetJobType());
+    else
+        inventory.Add(SOLDIER_JOBS[soldier->GetRank()]);
 
     // Evtl. geht der Soldat wieder in die Reserve
     RefreshReserve(soldier->GetRank());
