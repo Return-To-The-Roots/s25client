@@ -57,7 +57,7 @@ void nofTradeDonkey::GoalReached()
 
     if(gt != GD_NOTHING)
     {
-        Goods goods;
+        Inventory goods;
         goods.goods[gt] = 1;
         wh->AddGoods(goods);
         whOwner.IncreaseInventoryWare(gt, 1);

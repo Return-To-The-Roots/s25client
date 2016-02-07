@@ -20,19 +20,19 @@
 #pragma once
 
 #include "IngameWindow.h"
-
+#include "gameTypes/Inventory.h"
 
 class iwWares : public IngameWindow
 {
     protected:
-        const Goods& inventory;     ///< Warenbestand
+        const Inventory& inventory;     ///< Warenbestand
         unsigned char page;       ///< aktuelle Seite des Inventurfensters.
         unsigned char page_count; ///< maximale Seite des Inventurfensters.
 
     public:
         /// Konstruktor von @p iwInventory.
         iwWares(unsigned int id, unsigned short x, unsigned short y, const unsigned short width, const unsigned short height, const std::string& title, unsigned char page_count,
-                bool allow_outhousing, glArchivItem_Font* font, const Goods& inventory);
+                bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory);
         /// bestimmte Inventurseite zeigen.
         void SetPage(unsigned char page);
         /// setzt die maximale Seitenzahl.

@@ -21,6 +21,7 @@
 #include "GamePlayerInfo.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/StatisticTypes.h"
+#include "gameTypes/Inventory.h"
 #include "PostMsg.h"
 #include "Point.h"
 #include "GameMessage_GameCommand.h"
@@ -123,7 +124,7 @@ class GameClientPlayer : public GamePlayerInfo
         unsigned short defenders_pos;
 
         /// Inventur
-        Goods global_inventory;
+        Inventory global_inventory;
 
         /// Bündnisse mit anderen Spielern
         struct Pact
@@ -316,7 +317,7 @@ class GameClientPlayer : public GamePlayerInfo
         void DecreaseInventoryJob(const Job job, const unsigned count) { RTTR_Assert(global_inventory.people[job] >= count); global_inventory.people[job] -= count; }
 
         /// Gibt Inventory-Settings zurück
-        const Goods& GetInventory() const { return global_inventory; }
+        const Inventory& GetInventory() const { return global_inventory; }
 
         /// Setzt neue Militäreinstellungen
         void ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings);

@@ -24,6 +24,7 @@
 #include "figures/noFigure.h"
 #include "DataChangedObservable.h"
 #include "gameTypes/InventorySetting.h"
+#include "gameTypes/Inventory.h"
 #include <boost/array.hpp>
 #include <list>
 
@@ -76,7 +77,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         unsigned reserve_soldiers_claimed_real[5]; /// geforderte Soldaten zur Reserve - real
 
         /// Waren bzw. Menschenanzahl im Gebäude, real_goods ist die tatsächliche Anzahl und wird zum berechnen verwendet, goods ist nur die, die auch angezeigt wird
-        Goods inventoryVisual, inventory;
+        Inventory inventoryVisual, inventory;
         InventorySettings inventorySettingsVisual; ///< die Inventar-Einstellungen, visuell
         InventorySettings inventorySettings; ///< die Inventar-Einstellungen, real
 
@@ -144,10 +145,10 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
     protected: void Serialize_nobBaseWarehouse(SerializedGameData& sgd) const;
     public: void Serialize(SerializedGameData& sgd) const { Serialize_nobBaseWarehouse(sgd); }
 
-        const Goods& GetInventory() const;
+        const Inventory& GetInventory() const;
 
         /// Fügt einige Güter hinzu
-        void AddGoods(const Goods& goods);
+        void AddGoods(const Inventory& goods);
 
 
         /// Gibt Anzahl der Waren bzw. Figuren zurück

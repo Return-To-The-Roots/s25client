@@ -2110,7 +2110,7 @@ unsigned AIPlayerJH::SoldierAvailable(int rank)
     {
 		if(rank<0 || rank>4)
         {
-            const Goods& inventory = (*it)->GetInventory();
+            const Inventory& inventory = (*it)->GetInventory();
             freeSoldiers += (inventory.people[JOB_PRIVATE] + inventory.people[JOB_PRIVATEFIRSTCLASS] + inventory.people[JOB_SERGEANT] + inventory.people[JOB_OFFICER] + inventory.people[JOB_GENERAL]);
         }
 		else
@@ -2520,7 +2520,7 @@ void AIPlayerJH::AdjustSettings()
 {
 	//update tool creation settings
     ToolSettings toolsettings;
-    const Goods& inventory = aii.GetInventory();
+    const Inventory& inventory = aii.GetInventory();
     toolsettings[2] = (inventory.goods[GD_SAW] + inventory.people[JOB_CARPENTER] < 2) ? 4 : inventory.goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
     toolsettings[3] = (inventory.goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
     toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer

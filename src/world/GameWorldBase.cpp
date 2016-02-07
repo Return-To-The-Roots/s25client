@@ -1175,7 +1175,7 @@ int GameWorldBase::LUA_AddWares(lua_State* L)
         return(1);
     }
 
-    Goods goods;
+    Inventory goods;
 
     unsigned cnt = 2;
     for (argc >>= 1; argc > 0; --argc)
@@ -1228,7 +1228,7 @@ int GameWorldBase::LUA_AddPeople(lua_State* L)
         return(1);
     }
 
-    Goods goods;
+    Inventory goods;
 
     unsigned cnt = 2;
     for (argc >>= 1; argc > 0; --argc)
@@ -1325,7 +1325,7 @@ int GameWorldBase::LUA_GetWareCount(lua_State *L)
         return(0);
     }
 
-    const Goods& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
+    const Inventory& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
     
     lua_pushnumber(L, goods.goods[type]);
     
@@ -1359,7 +1359,7 @@ int GameWorldBase::LUA_GetPeopleCount(lua_State *L)
         return(0);
     }
 
-    const Goods& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
+    const Inventory& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
     
     lua_pushnumber(L, goods.people[type]);
     

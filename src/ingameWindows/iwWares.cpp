@@ -39,7 +39,7 @@
 iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
                  const unsigned short width, const unsigned short height,
                  const std::string& title, unsigned char page_count,
-                 bool allow_outhousing, glArchivItem_Font* font, const Goods& inventory)
+                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory)
     : IngameWindow(id, x, y, width, height, title, LOADER.GetImageN("io", 5)),
       inventory(inventory), page(0), page_count(page_count)
 {

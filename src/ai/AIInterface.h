@@ -217,7 +217,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         void GetBuildingCount(BuildingCount& counts) const { player_.GetBuildingCount(counts); }
 
         // Returns the inventory of the ai player
-        const Goods& GetInventory() const { return player_.GetInventory(); }
+        const Inventory& GetInventory() const { return player_.GetInventory(); }
 
         // Returns the number of ships
         unsigned GetShipCount() const { return player_.GetShipCount(); }

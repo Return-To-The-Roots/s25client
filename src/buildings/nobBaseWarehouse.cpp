@@ -1150,13 +1150,13 @@ void nobBaseWarehouse::TryStopRecruiting()
     }
 }
 
-const Goods& nobBaseWarehouse::GetInventory() const
+const Inventory& nobBaseWarehouse::GetInventory() const
 {
     return inventoryVisual;
 }
 
 /// Fügt einige Güter hinzu
-void nobBaseWarehouse::AddGoods(const Goods& goods)
+void nobBaseWarehouse::AddGoods(const Inventory& goods)
 {
     for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
     {

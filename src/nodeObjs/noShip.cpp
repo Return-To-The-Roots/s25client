@@ -308,7 +308,7 @@ void noShip::HandleEvent(const unsigned int id)
 
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
-                Goods goods;
+                Inventory goods;
                 unsigned char nation = gwg->GetPlayer(player).nation;
                 goods.goods[GD_BOARDS] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
                 goods.goods[GD_STONES] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
@@ -336,7 +336,7 @@ void noShip::HandleEvent(const unsigned int id)
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
                 // Späher wieder entladen
-                Goods goods;
+                Inventory goods;
                 goods.people[JOB_SCOUT] = SCOUTS_EXPLORATION_EXPEDITION;
                 static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
                 // Wieder idlen und ggf. neuen Job suchen

@@ -19,9 +19,6 @@
 #define GoodTypes_h__
 
 #include "mygettext.h"
-#include "JobTypes.h"
-#include <boost/array.hpp>
-#include <algorithm>
 
 // Warentypen
 enum GoodType
@@ -106,21 +103,6 @@ const std::string WARE_NAMES[36] =
 	/* 33 */gettext_noop("Ham"),        // Schinken ( Schwein )
 	/* 34 */"",                         // Schild
 	/* 35 */""
-};
-
-/// Waren- und Berufsstruktur ( für HQs, Lagerhäüser usw )
-struct Goods
-{
-	boost::array<unsigned int, WARE_TYPES_COUNT> goods;
-	boost::array<unsigned int, JOB_TYPES_COUNT> people;
-
-	void clear()
-	{
-        std::fill(goods.begin(), goods.end(), 0);
-        std::fill(people.begin(), people.end(), 0);
-	}
-
-	Goods() { clear(); }
 };
 
 #endif // GoodTypes_h__

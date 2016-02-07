@@ -460,7 +460,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding();
 
-    const Goods& inventory = aii.GetInventory();
+    const Inventory& inventory = aii.GetInventory();
     if (((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15) && (inventory.goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
 	if (aijh.HarborPosClose(pt,20) && rand()%10!=0 && aijh.ggs.getSelection(ADDON_SEA_ATTACK) != 2)
@@ -600,7 +600,7 @@ void AIConstruction::RefreshBuildingCount()
     else //at least some expansion happened -> more buildings wanted
         //building wanted usually limited by profession workers+tool for profession with some arbitrary limit. Some buildings which are linked to others in a chain / profession-tool-rivalry have additional limits.
     {
-        const Goods& inventory = aii.GetInventory();
+        const Inventory& inventory = aii.GetInventory();
 
         //foresters
         unsigned max_available_forester = inventory.people[JOB_FORESTER] + inventory.goods[GD_SHOVEL];
