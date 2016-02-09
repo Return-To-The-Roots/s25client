@@ -215,17 +215,24 @@ void nobBaseWarehouse::Clear()
     }
 }
 
-void nobBaseWarehouse::OrderCarrier(noRoadNode* const goal, RoadSegment* workplace)
+void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
 {
-    RTTR_Assert(workplace);
-    RTTR_Assert(goal);
-    workplace->setCarrier(0, new nofCarrier((workplace->GetRoadType() == RoadSegment::RT_BOAT) ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, workplace, goal));
+    RTTR_Assert(workplace.getCarrier(0) == NULL);
+    const bool isBoatRequired = workplace.GetRoadType() == RoadSegment::RT_BOAT;
 
-    if(!UseFigureAtOnce(workplace->getCarrier(0), *goal))
-        AddLeavingFigure(workplace->getCarrier(0));
+    // We assume, that the caller already checked, if this is possible
+    RTTR_Assert(inventory[JOB_HELPER]);
+    if(isBoatRequired)
+        RTTR_Assert(inventory[GD_BOAT]);
+
+    nofCarrier* carrier = new nofCarrier(isBoatRequired ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, &workplace, &goal);
+    workplace.setCarrier(0, carrier);
+
+    if(!UseFigureAtOnce(carrier, goal))
+        AddLeavingFigure(carrier);
 
     inventory.real.Remove(JOB_HELPER);
-    if(workplace->GetRoadType() == RoadSegment::RT_BOAT)
+    if(isBoatRequired)
         inventory.real.Remove(GD_BOAT);
 
     // Evtl. kein Gehilfe mehr, sodass das Rekrutieren gestoppt werden muss

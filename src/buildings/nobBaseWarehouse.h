@@ -174,7 +174,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void SetInventorySettingVisual(const bool isJob, const unsigned char type, InventorySetting state);
 
         /// Bestellt einen Träger
-        void OrderCarrier(noRoadNode* const goal, RoadSegment* workplace);
+        void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
         /// Bestellt irgendeinen Beruf (ggf. stellt er ihn noch mit einem Werkzeug her)
         bool OrderJob(const Job job, noRoadNode* const goal, const bool allow_recruiting);
         /// Bestellt einen Esel

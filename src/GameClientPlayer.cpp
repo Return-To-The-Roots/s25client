@@ -630,8 +630,9 @@ void GameClientPlayer::AddHarbor(nobHarborBuilding* hb)
 
 bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
 {
-    unsigned length[2];
-    nobBaseWarehouse* best[2];
+    RTTR_Assert(rs->GetF1() != NULL && rs->GetF2() != NULL);
+    boost::array<unsigned, 2> length;
+    boost::array<nobBaseWarehouse*, 2> best;
 
     // Braucht der ein Boot?
     if(rs->GetRoadType() == RoadSegment::RT_BOAT)
@@ -652,12 +653,11 @@ bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (!best[1] || length[0] < length[1]))
-        best[0]->OrderCarrier(rs->GetF1(), rs);
+        best[0]->OrderCarrier(*rs->GetF1(), *rs);
     else if(best[1])
-        best[1]->OrderCarrier(rs->GetF2(), rs);
+        best[1]->OrderCarrier(*rs->GetF2(), *rs);
     else
         return false;
-
     return true;
 }
 
