@@ -37,16 +37,9 @@ namespace FW
         if(wh.GetRealFiguresCount(type) > 0)
             return true;
         else if(type != JOB_PACKDONKEY)
-        {
-            // die entsprechende Figur ist nicht vorhanden, wenn das Werkzeug der Figur und ein Mann (Träger) zum Rekrutieren
-            // da ist, geht das auch, nur bei Eseln nicht !!
-            bool tool_available = JOB_CONSTS[type].tool == GD_NOTHING || wh.GetRealWaresCount(JOB_CONSTS[type].tool);
-
-            if(wh.GetRealFiguresCount(JOB_HELPER) && tool_available)
-                return true;
-        }
-
-        return false;
+            return wh.CanRecruit(type);
+        else
+            return false;
     }
 
     bool HasWareAndFigure::operator()(const nobBaseWarehouse& wh) const

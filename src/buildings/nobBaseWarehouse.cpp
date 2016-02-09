@@ -1149,14 +1149,19 @@ void nobBaseWarehouse::AddToInventory()
         gwg->GetPlayer(player).IncreaseInventoryJob(Job(i), inventory[Job(i)]);
 }
 
-bool nobBaseWarehouse::TryRecruitJob(const Job job)
+bool nobBaseWarehouse::CanRecruit(const Job job) const
 {
-    RTTR_Assert(!helpers::contains(SOLDIER_JOBS, job) && job != JOB_PACKDONKEY);
     if(JOB_CONSTS[job].tool == GD_INVALID)
         return false;
 
     // Do we have a helper and a tool (if required)?
-    if(!inventory[JOB_HELPER] || (JOB_CONSTS[job].tool != GD_NOTHING && inventory[JOB_CONSTS[job].tool] == 0))
+    return inventory[JOB_HELPER] > 0 && (JOB_CONSTS[job].tool == GD_NOTHING || inventory[JOB_CONSTS[job].tool] > 0);
+}
+
+bool nobBaseWarehouse::TryRecruitJob(const Job job)
+{
+    RTTR_Assert(!helpers::contains(SOLDIER_JOBS, job) && job != JOB_PACKDONKEY);
+    if(!CanRecruit(job))
         return false;
 
     // All ok, recruit him
