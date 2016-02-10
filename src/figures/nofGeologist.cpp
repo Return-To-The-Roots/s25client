@@ -187,8 +187,8 @@ void nofGeologist::Walked()
 {
     if(state == STATE_GEOLOGIST_GOTONEXTNODE)
     {
-        // Ist mein Zielpunkt überhaupt noch geeignet zum Graben (kann ja mittlerweile auch was drauf gebaut worden sein)
-        if(!IsNodeGood(node_goal))
+        // Check if the flag still exists (not destroyed) and the goal node is still available (something could be build there)
+        if(!flag || !IsNodeGood(node_goal))
         {
             // alten Punkt wieder freigeben
             gwg->SetReserved(node_goal, false);
@@ -246,9 +246,9 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
             {
                 // leeres Schild hinstecken und ohne Jubel weiterziehen
                 SetSign(resources);
-                GoToNextNode();
                 /// Punkt wieder freigeben
                 gwg->SetReserved(pos, false);
+                GoToNextNode();
             }
 
         } break;
@@ -256,12 +256,12 @@ void nofGeologist::HandleDerivedEvent(const unsigned int id)
         {
             // Schild reinstecken
             SetSign(gwg->GetNode(pos).resources);
-            // Und weiterlaufen
-            GoToNextNode();
             /// Punkt wieder freigeben
             gwg->SetReserved(pos, false);
             /// Sounds evtl löschen
             SOUNDMANAGER.WorkingFinished(this);
+            // Und weiterlaufen
+            GoToNextNode();
         } break;
     }
 }
@@ -473,7 +473,7 @@ void nofGeologist::SetSign(const unsigned char resources)
 
 void nofGeologist::LostWork()
 {
-    flag = 0;
+    flag = NULL;
 
     switch(state)
     {
@@ -488,12 +488,6 @@ void nofGeologist::LostWork()
             // dann sofort rumirren, wenn wir zur Flagge gehen
             StartWandering();
             state = STATE_FIGUREWORK;
-        } break;
-        case STATE_GEOLOGIST_GOTONEXTNODE:
-        case STATE_GEOLOGIST_DIG:
-        case STATE_GEOLOGIST_CHEER:
-        {
-            gwg->SetReserved(node_goal, false);
         } break;
     }
 }
