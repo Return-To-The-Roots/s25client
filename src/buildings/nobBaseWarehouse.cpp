@@ -49,7 +49,7 @@
 /// Intervall für Ausleerung (in gf)
 const unsigned empty_INTERVAL = 25;
 /// Intervall für Einlieferung
-const unsigned STORE_INTERVAL = 50;
+const unsigned STORE_INTERVAL = 80;
 /// Dauer für das Erstellen von Trägern
 const unsigned PRODUCE_HELPERS_GF = 150;
 const unsigned PRODUCE_HELPERS_RANDOM_GF = 20;
