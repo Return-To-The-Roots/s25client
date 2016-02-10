@@ -36,7 +36,7 @@ namespace FW
     {
         if(wh.GetRealFiguresCount(type) > 0)
             return true;
-        else if(type != JOB_PACKDONKEY)
+        else if(recruitingAllowed && type != JOB_PACKDONKEY)
             return wh.CanRecruit(type);
         else
             return false;

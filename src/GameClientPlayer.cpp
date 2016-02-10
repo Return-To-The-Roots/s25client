@@ -638,16 +638,16 @@ bool GameClientPlayer::FindCarrierForRoad(RoadSegment* rs)
     if(rs->GetRoadType() == RoadSegment::RT_BOAT)
     {
         // dann braucht man Träger UND Boot
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER), false, false, &length[0], rs);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[0], rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER), false, false, &length[1], rs);
+        best[1] = FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[1], rs);
     }
     else
     {
         // 1. Flagge des Weges
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(JOB_HELPER), false, false, &length[0], rs);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(JOB_HELPER, false), false, false, &length[0], rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs->GetF2(), FW::HasFigure(JOB_HELPER), false, false, &length[1], rs);
+        best[1] = FindWarehouse(*rs->GetF2(), FW::HasFigure(JOB_HELPER, false), false, false, &length[1], rs);
     }
 
     // überhaupt nen Weg gefunden?
@@ -816,7 +816,7 @@ void GameClientPlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 
 bool GameClientPlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
 {
-    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasFigure(job), false, false);
+    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasFigure(job, true), false, false);
 
     if(wh)
     {
@@ -895,9 +895,9 @@ nofCarrier* GameClientPlayer::OrderDonkey(RoadSegment* road)
     nobBaseWarehouse* best[2];
 
     // 1. Flagge des Weges
-    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(JOB_PACKDONKEY), false, false, &length[0], road);
+    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(JOB_PACKDONKEY, false), false, false, &length[0], road);
     // 2. Flagge des Weges
-    best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(JOB_PACKDONKEY), false, false, &length[1], road);
+    best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(JOB_PACKDONKEY, false), false, false, &length[1], road);
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
@@ -1457,7 +1457,7 @@ void GameClientPlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
     noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
     /// Find wh with given job type (e.g. geologist, scout, ...)
-    nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job), false, false);
+    nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job, true), false, false);
 
     /// Wenns eins gibt, dann rufen
     if(wh)

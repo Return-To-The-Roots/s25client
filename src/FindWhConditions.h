@@ -37,13 +37,14 @@ namespace FW
     struct HasFigure
     {
         const Job type;
-        HasFigure(const Job type): type(type){}
+        const bool recruitingAllowed;
+        HasFigure(const Job type, const bool recruitingAllowed): type(type), recruitingAllowed(recruitingAllowed){}
         bool operator()(const nobBaseWarehouse& wh) const;
     };
 
     struct HasWareAndFigure: protected HasMinWares, protected HasFigure
     {
-        HasWareAndFigure(const GoodType good, const Job job): HasMinWares(good, 1), HasFigure(job){}
+        HasWareAndFigure(const GoodType good, const Job job, const bool recruitingAllowed): HasMinWares(good, 1), HasFigure(job, recruitingAllowed){}
         bool operator()(const nobBaseWarehouse& wh) const;
     };
 
@@ -82,7 +83,7 @@ namespace FW
         bool operator()(const nobBaseWarehouse& wh) const;
     };
 
-    // Lagerhäuser enthalten die jeweilien Waren, liefern sie aber NICHT gleichzeitig ein
+    // Lagerhäuser enthalten die jeweiligen Waren, liefern sie aber NICHT gleichzeitig ein
     struct HasWareButNoCollect: protected HasMinWares, protected CollectsWare
     {
         HasWareButNoCollect(const GoodType type): HasMinWares(type, 1), CollectsWare(type){}
@@ -91,7 +92,7 @@ namespace FW
 
     struct HasFigureButNoCollect: protected HasFigure, protected CollectsFigure
     {
-        HasFigureButNoCollect(const Job type): HasFigure(type), CollectsFigure(type){}
+        HasFigureButNoCollect(const Job type, const bool recruitingAllowed): HasFigure(type, recruitingAllowed), CollectsFigure(type){}
         bool operator()(const nobBaseWarehouse& wh) const;
     };
 

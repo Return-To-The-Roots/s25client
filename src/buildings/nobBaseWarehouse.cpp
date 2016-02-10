@@ -355,7 +355,7 @@ void nobBaseWarehouse::HandleCollectEvent()
             storing_wanted = true;
 
             // Lagerhaus suchen, das diesen Job enthält
-            nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(Job(i)), false, false);
+            nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(Job(i), false), false, false);
             // Gefunden?
             if(wh)
             {
