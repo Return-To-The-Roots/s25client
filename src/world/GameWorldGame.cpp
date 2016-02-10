@@ -127,7 +127,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
         // Demolish, also the building
         GetSpecObj<noFlag>(pt)->DestroyAttachedBuilding();
 
-        DestroyNO(pt);
+        DestroyNO(pt, false);
         RecalcBQAroundPointBig(pt);
     }
 
