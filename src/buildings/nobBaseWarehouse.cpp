@@ -551,11 +551,19 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
 void nobBaseWarehouse::HandleLeaveEvent()
 {
 #if RTTR_ENABLE_ASSERTS
-    Inventory should = inventory.real;
-    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
-        should.Add((*it)->GetJobType());
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
-        RTTR_Assert(should.people[i] == inventory.visual.people[i]);
+    // Harbors have more queues. Ignore for now
+    if(GetGOT() != GOT_NOB_HARBORBUILDING)
+    {
+        Inventory should = inventory.real;
+        for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
+        {
+            // Don't count warehouse workers
+            if(!(*it)->MemberOfWarehouse())
+                should.Add((*it)->GetJobType());
+        }
+        for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+            RTTR_Assert(should.people[i] == inventory.visual.people[i]);
+    }
 #endif
 
     // Falls eine Bestellung storniert wurde
