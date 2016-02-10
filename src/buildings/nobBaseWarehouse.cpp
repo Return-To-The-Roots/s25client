@@ -51,11 +51,13 @@ const unsigned empty_INTERVAL = 25;
 /// Intervall für Einlieferung
 const unsigned STORE_INTERVAL = 50;
 /// Dauer für das Erstellen von Trägern
-const unsigned short PRODUCE_HELPERS_GF = 150;
-const unsigned short PRODUCE_HELPERS_RANDOM_GF = 20;
+const unsigned PRODUCE_HELPERS_GF = 150;
+const unsigned PRODUCE_HELPERS_RANDOM_GF = 20;
 /// Dauer für das Rekrutierung von Soldaten
-const unsigned short RECRUITE_GF = 200;
-const unsigned short RECRUITE_RANDOM_GF = 200;
+const unsigned RECRUITE_GF = 200;
+const unsigned RECRUITE_RANDOM_GF = 200;
+const unsigned LEAVE_INTERVAL = 20;
+const unsigned LEAVE_INTERVAL_RAND = 10;
 
 nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(0),
@@ -661,7 +663,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         go_out = false;
 
     if(go_out)
-        leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
+        leaving_event = em->AddEvent(this, LEAVE_INTERVAL + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), LEAVE_INTERVAL_RAND));
 }
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
