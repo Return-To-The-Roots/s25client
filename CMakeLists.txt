@@ -214,6 +214,7 @@ ELSE (MSVC)
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wno-long-long")
+CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
 
 # avoid lhs-path bug in windows
