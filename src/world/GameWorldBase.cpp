@@ -512,7 +512,7 @@ unsigned GameWorldBase::GetNextHarborPoint(const MapPoint pt,
     RTTR_Assert(coastal_point_dir != 0xff);
 
     unsigned short sea_id = GetSeaId(origin_harbor_id, Direction::fromInt(coastal_point_dir));
-    const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbor(origin_harbor_id, Direction::fromInt(coastal_point_dir));
+    const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbor(origin_harbor_id, Direction::fromInt(dir));
 
 
     for(unsigned i = 0; i < neighbors.size(); ++i)
