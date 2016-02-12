@@ -892,9 +892,9 @@ void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
     RTTR_Assert(!helpers::contains(gwg->GetFigures(fig->GetPos()), fig)); // Figure is in the harbor, so it cannot be outside
     FigureForShip ffs = { fig, dest };
     figures_for_ships.push_back(ffs);
-    OrderShip();
     // Anzahl visuell erhöhen
     inventory.visual.Add(fig->GetJobType());
+    OrderShip();
 }
 
 /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
@@ -1254,9 +1254,9 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 
     SoldierForShip sfs = { attacker, gwg->GetHarborPoint(best_harbor_point) };
     soldiers_for_ships.push_back(sfs);
+    inventory.visual.Add(attacker->GetJobType());
 
     OrderShip();
-    inventory.visual.Add(attacker->GetJobType());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
