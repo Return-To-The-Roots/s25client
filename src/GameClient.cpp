@@ -114,6 +114,7 @@ void GameClient::RandCheckInfo::Clear()
  */
 void GameClient::ReplayInfo::Clear()
 {
+    replay = Replay();
     async = 0;
     end = false;
     next_gf = 0;
@@ -1671,7 +1672,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
             // Größe der gepackten Map
             replayinfo.replay.map_zip_length = mapinfo.ziplength;
             // Gepackte Map
-            replayinfo.replay.map_data = mapinfo.zipdata.get();
+            replayinfo.replay.map_data = mapinfo.zipdata;
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -1759,7 +1760,7 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             // Mapdaten auslesen und entpacken
             boost::interprocess::unique_ptr<char, Deleter<char[]> > real_data(new char[replayinfo.replay.map_length]);
 
-            int err = BZ2_bzBuffToBuffDecompress(real_data.get(), &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data, replayinfo.replay.map_zip_length, 0, 0);
+            int err = BZ2_bzBuffToBuffDecompress(real_data.get(), &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data.get(), replayinfo.replay.map_zip_length, 0, 0);
             if(err != BZ_OK)
             {
                 LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);

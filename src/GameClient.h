@@ -319,7 +319,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 unsigned length;
                 unsigned checksum;
                 std::string title;
-                boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
+                boost::shared_array<unsigned char> zipdata;
                 boost::shared_ptr<Savegame> savegame;
         } mapinfo;
 

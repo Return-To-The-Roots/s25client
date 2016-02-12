@@ -90,7 +90,7 @@ class Replay : public SavedFile
         MapType map_type;
         /// Gepackte Map - Daten (für alte Karte)
         unsigned map_length, map_zip_length;
-        unsigned char* map_data;
+        boost::shared_array<unsigned char> map_data;
         /// Savegame (für gespeichertes Spiel)
         boost::shared_ptr<Savegame> savegame;
 

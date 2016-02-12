@@ -62,8 +62,8 @@ void Replay::StopRecording()
     pf_file.Close();
 
     SetPlayerCount(0);
-    delete [] map_data;
-    map_data = 0;
+    map_data.reset();
+    savegame.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ bool Replay::WriteHeader(const std::string& filename)
             // Map-Daten
             file.WriteUnsignedInt(map_length);
             file.WriteUnsignedInt(map_zip_length);
-            file.WriteRawData(map_data, map_zip_length);
+            file.WriteRawData(map_data.get(), map_zip_length);
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -194,8 +194,8 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
                 // Map-Daten
                 map_length = file.ReadUnsignedInt();
                 map_zip_length = file.ReadUnsignedInt();
-                map_data = new unsigned char[map_zip_length];
-                file.ReadRawData(map_data, map_zip_length);
+                map_data.reset(new unsigned char[map_zip_length]);
+                file.ReadRawData(map_data.get(), map_zip_length);
             } break;
             case MAPTYPE_SAVEGAME:
             {
