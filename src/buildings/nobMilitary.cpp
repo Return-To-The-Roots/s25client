@@ -249,7 +249,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // "Rausgeh-Event"
         case 0:
         {
-            leaving_event = 0;
+            leaving_event = NULL;
 
             // Sind Leute da, die noch rausgehen wollen?
             if(!leave_house.empty())
@@ -272,11 +272,13 @@ void nobMilitary::HandleEvent(const unsigned int id)
             else
                 go_out = false;
 
+            RegulateTroops();
+
         } break;
         // Goldbestell-Event
         case 1:
         {
-            goldorder_event = 0;
+            goldorder_event = NULL;
 
             // ggf. nach neuen Goldmünzen suchen
             SearchCoins();
@@ -284,7 +286,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
         // Beförderungs-Event
         case 2:
         {
-            upgrade_event = 0;
+            upgrade_event = NULL;
 
             // Soldaten befördern
             // Von hinten durchgehen
