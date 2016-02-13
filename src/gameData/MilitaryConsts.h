@@ -64,7 +64,7 @@ const unsigned short GOLD_COUNT[NAT_COUNT][4] =
 };
 
 /// Radien der Militärgebäude
-const boost::array<unsigned, 6> MILITARY_RADIUS = {{ 8, 9, 10, 11 }};
+const boost::array<unsigned, 6> SUPPRESS_UNUSED MILITARY_RADIUS = {{ 8, 9, 10, 11 }};
 // Radius für einzelne Hafen(baustellen)
 const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;
@@ -85,8 +85,8 @@ const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
 const unsigned MILITARY_SETTINGS_COUNT = 8;
 
 /// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
-const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
-{
+const boost::array<unsigned, MILITARY_SETTINGS_COUNT> SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE =
+{{
     10,
     5,
     5,
@@ -95,7 +95,7 @@ const unsigned MILITARY_SETTINGS_SCALE[MILITARY_SETTINGS_COUNT] =
     8,
     8,
     8
-};
+}};
 
 // Besatzungsflaggen für die HQs
 const signed char TROOPS_FLAGS_HQ[NAT_COUNT][2] =
@@ -158,7 +158,6 @@ struct FightAnimation
     unsigned short attacking[8];
     // 3xVerteidigen mit jeweils 8 Frames
     unsigned short defending[3][8];
-
 };
 
 
@@ -476,7 +475,7 @@ const unsigned short HIT_SOLDIERS[NAT_COUNT][5] =
 };
 
 /// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
-const unsigned short HIT_MOMENT[5] = {4, 4, 4, 4, 6};
+const boost::array<unsigned short, 5> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
 
 
 

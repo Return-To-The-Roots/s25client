@@ -36,7 +36,7 @@ const unsigned short Replay::REPLAY_VERSION = 27;
  *
  *  @author OLiver
  */
-Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_type(MAPTYPE_SAVEGAME), map_length(0), map_zip_length(0), map_data(0),
+Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_type(MAPTYPE_SAVEGAME), map_length(0), map_zip_length(0),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
