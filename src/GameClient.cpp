@@ -398,7 +398,7 @@ void GameClient::StartGame(const unsigned int random_init)
     if(mapinfo.zipdata)
     {
         mapinfo.zipdata.reset();
-        replayinfo.replay.map_data = 0;
+        replayinfo.replay.map_data.reset();
     }
 }
 
