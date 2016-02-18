@@ -474,7 +474,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     if(GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())
                             && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
                     {
-                        WINDOWMANAGER.Show(new iwTrade(gwv, this, static_cast<nobBaseWarehouse*>(building)));
+                        WINDOWMANAGER.Show(new iwTrade(*static_cast<nobBaseWarehouse*>(building)));
                         return true;
                     }
                 }

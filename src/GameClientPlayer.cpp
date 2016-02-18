@@ -2398,15 +2398,15 @@ bool GameClientPlayer::IsDependentFigure(noFigure* fig)
     return false;
 }
 
-std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse* goalWh) const
+std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse& goalWh) const
 {
     std::vector<nobBaseWarehouse*> result;
 
     // Don't try to trade with us!
-    if(goalWh->GetPlayer() == playerid)
+    if(goalWh.GetPlayer() == playerid)
         return result;
 
-    const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
+    const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
 
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {

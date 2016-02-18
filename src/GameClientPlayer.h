@@ -427,7 +427,7 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Returns all warehouses that can trade with the given goal
         /// IMPORTANT: Warehouses can be destroyed. So check them first before using!
-        std::vector<nobBaseWarehouse*> GetWarehousesForTrading(nobBaseWarehouse* goalWh) const;
+        std::vector<nobBaseWarehouse*> GetWarehousesForTrading(nobBaseWarehouse& goalWh) const;
         /// Send wares to warehouse wh
         void Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const;
 

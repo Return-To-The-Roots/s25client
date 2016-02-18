@@ -39,7 +39,6 @@ class iwAIDebug : public IngameWindow
 
     private:
         std::vector<AIPlayerJH*> ais;
-        ctrlList* jobs;
         unsigned selection;
         unsigned overlay;
         ctrlText* text;
