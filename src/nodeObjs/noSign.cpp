@@ -72,10 +72,10 @@ void noSign::Draw(int x, int y)
 
     // Schild selbst
     if(type != 5)
-        LOADER.GetMapImageN(680 + type * 3 + quantity)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+        LOADER.GetMapPlayerImage(680 + type * 3 + quantity)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
     else
         // leeres Schild
-        LOADER.GetMapImageN(695)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+        LOADER.GetMapPlayerImage(695)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
 
     // Schatten des Schildes
     LOADER.GetMapImageN(700)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());

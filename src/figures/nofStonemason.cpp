@@ -46,7 +46,7 @@ void nofStonemason::DrawWorking(int x, int y)
     unsigned now_id;
 
     // Stein hauen
-    LOADER.GetImageN("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
+    LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
     ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
     if(now_id % 8 == 5)

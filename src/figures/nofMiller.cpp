@@ -58,7 +58,7 @@ void nofMiller::DrawWorking(int x, int y)
 
     if(now_id < 4) //hinauslaufen teil 1
     {
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(x, y);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][4][now_id % 8].draw(x + walkoffsets[now_id % 8][0], y + walkoffsets[now_id % 8][1], COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //        LOADER.GetBobN("jobs")->Draw(16,4,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],COLORS[gwg->GetPlayer(player).color]);
         rotate_sails = false;
@@ -70,17 +70,17 @@ void nofMiller::DrawWorking(int x, int y)
     }
     if( (now_id >= 8) && (now_id < 16)) //hinsetzen
     {
-        LOADER.GetImageN("rom_bobs", 166 + (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 166 + (now_id % 8))
         ->Draw(x + offsets_sitdown[workplace->GetNation()][0], y + offsets_sitdown[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
     }
     if( (now_id >= 16) && (now_id < max_id - 16)) //schlafen
     {
-        LOADER.GetImageN("rom_bobs", 174 + (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 174 + (now_id % 8))
         ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
     }
     if( (now_id >= max_id - 16) && (now_id < max_id - 8)) //aufstehn
     {
-        LOADER.GetImageN("rom_bobs", 166 + 7 - (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 166 + 7 - (now_id % 8))
         ->Draw(x + offsets_sitdown[workplace->GetNation()][0], y + offsets_sitdown[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
     }
     if( (now_id >= max_id - 8) && (now_id < max_id - 4)) //zurücklaufen teil 1
@@ -90,7 +90,7 @@ void nofMiller::DrawWorking(int x, int y)
     }
     if( (now_id >= max_id - 4) && (now_id < max_id)) //zurücklaufen teil 2
     {
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(x, y);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][1][now_id % 8].draw(x + walkoffsets[7 - (now_id % 8)][0], y + walkoffsets[7 - (now_id % 8)][1], COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //        LOADER.GetBobN("jobs")->Draw(16,1,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],COLORS[gwg->GetPlayer(player).color]);
         rotate_sails = false;
@@ -99,9 +99,9 @@ void nofMiller::DrawWorking(int x, int y)
     if (rotate_sails)
     {
         // Flügel der Mühle
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * (42 + ((now_id + 4) % 8)))->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * (42 + ((now_id + 4) % 8)))->Draw(x, y);
         // Schatten der Flügel
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
         // Mühlensound abspielen in zufälligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
@@ -118,9 +118,9 @@ void nofMiller::DrawWorking(int x, int y)
     else
     {
         // Flügel der Mühle
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * 49)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49)->Draw(x, y);
         // Schatten der Flügel
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
 
 }

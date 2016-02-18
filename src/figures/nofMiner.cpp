@@ -51,10 +51,10 @@ void nofMiner::DrawWorking(int x, int y)
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     if(workplace->GetNation() == 2)
-        LOADER.GetImageN("rom_bobs", 92 + now_id % 8)->Draw(x + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2],
+        LOADER.GetPlayerImage("rom_bobs", 92 + now_id % 8)->Draw(x + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2],
                 y + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2 + 1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
     else
-        LOADER.GetImageN("rom_bobs", 1799 + now_id % 4)
+        LOADER.GetPlayerImage("rom_bobs", 1799 + now_id % 4)
         ->Draw(x + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2],
                y + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2 + 1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
     // 1799

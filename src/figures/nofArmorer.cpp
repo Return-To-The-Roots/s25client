@@ -60,7 +60,7 @@ void nofArmorer::DrawWorking(int x, int y)
 
     if(now_id < 200)
     {
-        LOADER.GetImageN("rom_bobs", 16 + (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
         ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
 
         if((now_id % 8) == 5)

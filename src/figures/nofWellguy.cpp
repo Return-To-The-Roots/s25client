@@ -77,13 +77,13 @@ void nofWellguy::DrawWorking(int x, int y)
 
     if(now_id < 2) //laufen 1
     {
-        if(wpNation == 2) LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        if(wpNation == 2) LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.carrier_cache[10][walkdirection[wpNation][0]][now_id % 8][false].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][0],false,now_id%8,walkx,walky,COLORS[plColor]);
     }
     else if( (now_id >= 2) && (now_id < 4) ) //laufen 2
     {
-        if(wpNation == 2)LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        if(wpNation == 2)LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.carrier_cache[10][walkdirection[wpNation][1]][now_id % 8][false].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //       LOADER.GetBobN("carrier")->Draw(10,walkdirection[wpNation][1],false,now_id%8,walkx,walky,COLORS[plColor]);
     }
@@ -96,23 +96,23 @@ void nofWellguy::DrawWorking(int x, int y)
     {
         if(now_id == 8)
         {
-            LOADER.GetImageN("rom_bobs", 346)
+            LOADER.GetPlayerImage("rom_bobs", 346)
             ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
         }
         else
         {
-            LOADER.GetImageN("rom_bobs", 346 + (now_id % 8) - 1)
+            LOADER.GetPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)
             ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
         }
     }
     else if( (now_id >= 16) && (now_id < max_id - 16) ) //kurbeln
     {
-        LOADER.GetImageN("rom_bobs", 330 + (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 330 + (now_id % 8))
         ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
     }
     else if( (now_id >= max_id - 16) && (now_id < max_id - 8) ) //eimer rauf kurbeln
     {
-        LOADER.GetImageN("rom_bobs", 338 + (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 338 + (now_id % 8))
         ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
     }
     else if( (now_id >= max_id - 8) && (now_id < max_id - 4) ) //laufen 3
@@ -122,13 +122,13 @@ void nofWellguy::DrawWorking(int x, int y)
     }
     else if( (now_id >= max_id - 4) && (now_id < max_id - 2) ) //laufen 2
     {
-        if(wpNation == 2) LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        if(wpNation == 2) LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.carrier_cache[11][walkdirection[wpNation][4]][now_id % 8][false].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][4],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     else if(now_id >= max_id - 2) //laufen 1
     {
-        if(wpNation == 2) LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        if(wpNation == 2) LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_WELL + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.carrier_cache[11][walkdirection[wpNation][5]][now_id % 8][false].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("carrier")->Draw(11,walkdirection[wpNation][5],false,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }

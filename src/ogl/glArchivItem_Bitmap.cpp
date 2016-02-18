@@ -31,29 +31,12 @@
 #include "DebugNew.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-/** @class glArchivItem_Bitmap
- *
- *  Basisklasse für GL-Bitmapitems.
- *
- *  @author FloSoft
- */
-
-///////////////////////////////////////////////////////////////////////////////
-/** @var glArchivItem_Bitmap::texture
- *
- *  OpenGL-Textur des Bildes.
- *
- *  @author FloSoft
- */
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p glArchivItem_Bitmap.
  *
  *  @author FloSoft
  */
 glArchivItem_Bitmap::glArchivItem_Bitmap(void)
-    : baseArchivItem_Bitmap(), texture(0), filter(GL_NEAREST)
 {
 }
 
@@ -64,29 +47,8 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(void)
  *  @author FloSoft
  */
 glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
-    : baseArchivItem_Bitmap(item), texture(0), filter(item.filter)
+    : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_BitmapBase(item)
 {
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p glArchivItem_Bitmap.
- *
- *  @author FloSoft
- */
-glArchivItem_Bitmap::~glArchivItem_Bitmap(void)
-{
-    DeleteTexture();
-}
-
-glArchivItem_Bitmap& glArchivItem_Bitmap::operator=(const glArchivItem_Bitmap& item)
-{
-    if(this == &item)
-        return *this;
-    baseArchivItem_Bitmap::operator=(item);
-    texture = 0;
-    filter = item.filter;
-    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,11 +57,9 @@ glArchivItem_Bitmap& glArchivItem_Bitmap::operator=(const glArchivItem_Bitmap& i
  *
  *  @author FloSoft
  */
-void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color, const unsigned int unused)
+void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color)
 {
-    if(texture == 0)
-        GenerateTexture();
-    if(texture == 0)
+    if(GetTexture() == 0)
         return;
 
     if(src_w == 0)
@@ -111,7 +71,7 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
     if(dst_h == 0)
         dst_h = src_h;
 
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.BindTexture(GetTexture());
 
     RTTR_Assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
@@ -152,72 +112,9 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Liefert das GL-Textur-Handle.
- *
- *  @author FloSoft
- */
-unsigned int glArchivItem_Bitmap::GetTexture()
+void glArchivItem_Bitmap::FillTexture(void)
 {
-    if(texture == 0)
-        GenerateTexture();
-    return texture;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Löscht die GL-Textur (z.B fürs Neuerstellen)
- *
- *  @author FloSoft
- */
-void glArchivItem_Bitmap::DeleteTexture()
-{
-    VIDEODRIVER.DeleteTexture(texture);
-    //glDeleteTextures(1, (const GLuint*)&texture);
-    texture = 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Setzt den Texturfilter auf einen bestimmten Wert.
- *
- *  @author FloSoft
- */
-void glArchivItem_Bitmap::setFilter(unsigned int filter)
-{
-    if(this->filter == filter)
-        return;
-
-    this->filter = filter;
-
-    // neugenerierung der Textur anstoßen
-    if(texture != 0)
-        DeleteTexture();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Erzeugt die Textur.
- *
- *  @author FloSoft
- */
-void glArchivItem_Bitmap::GenerateTexture(void)
-{
-    if(tex_width_ == 0 || tex_height_ == 0)
-        return;
-
-    texture = VIDEODRIVER.GenerateTexture();
-
-    if(!palette_)
-        setPalette(LOADER.GetPaletteN("pal5"));
-
-    VIDEODRIVER.BindTexture(texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-
-    int iformat = GL_RGBA, dformat = GL_BGRA;
+    int iformat = GetInternalFormat(), dformat = GL_BGRA;
 
     std::vector<unsigned char> buffer(tex_width_ * tex_height_ * 4);
 

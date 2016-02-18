@@ -87,7 +87,7 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
     if(explode)
     {
         // Stein explodierend am Ziel zeichnen
-        LOADER.GetMapImageN(3102 + GAMECLIENT.Interpolate(4, event))->
+        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->
         Draw((dest_x - xoffset + world_width) % world_width, (dest_y - yoffset + world_height) % world_height);
     }
     else
@@ -111,7 +111,7 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
         // Schatten auf linearer Linie zeichnen
         LOADER.GetMapImageN(3101)->Draw((x - xoffset + world_width) % world_width, (y - yoffset + world_height) % world_height, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         // Stein auf Parabel zeichnen
-        LOADER.GetMapImageN(3100)->Draw((x - xoffset + world_width) % world_width, (y - yoffset + world_height + diff) % world_height);
+        LOADER.GetMapPlayerImage(3100)->Draw((x - xoffset + world_width) % world_width, (y - yoffset + world_height + diff) % world_height);
     }
 }
 

@@ -31,9 +31,7 @@
 
 void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color, const unsigned int player_color)
 {
-    if(texture == 0)
-        GenerateTexture();
-    if(texture == 0)
+    if(GetTexture() == 0)
         return;
 
     if(src_w == 0)
@@ -93,27 +91,20 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
 
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.BindTexture(GetTexture());
 
     glDrawArrays(GL_QUADS, 0, 8);
 }
 
-void glArchivItem_Bitmap_Player::GenerateTexture(void)
+void glArchivItem_Bitmap_Player::FillTexture(void)
 {
-    texture = VIDEODRIVER.GenerateTexture();
-
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
     setPalette(LOADER.GetPaletteN("colors"));
 
-    int iformat = GL_RGBA, dformat = GL_BGRA; //GL_BGRA_EXT;
+    int iformat = GetInternalFormat(), dformat = GL_BGRA; //GL_BGRA_EXT;
 
     std::vector<unsigned char> buffer(tex_width_ * 2 * tex_height_ * 4);
-
-    VIDEODRIVER.BindTexture(texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
     print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, 0, 0, 0, 0, 0, 0, false);
     print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, tex_width_, 0, 0, 0, 0, 0, true);

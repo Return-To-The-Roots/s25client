@@ -221,9 +221,9 @@ void nobUsual::Draw(int x, int y)
     if(type_ == BLD_MILL && !is_working)
     {
         // Flügel der Mühle
-        LOADER.GetNationImageN(nation, 250 + 5 * 49)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(nation, 250 + 5 * 49)->Draw(x, y);
         // Schatten der Flügel
-        LOADER.GetNationImageN(nation, 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(nation, 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
     else if(type_ == BLD_DONKEYBREEDER)
@@ -250,11 +250,7 @@ void nobUsual::Draw(int x, int y)
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
     else if(type_ == BLD_CATAPULT && !is_working)
     {
-        LOADER.GetImageN("rom_bobs", 1776)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
-
-        if(worker)
-            if(worker->GetObjId() == 696956)
-                NormalFont->Draw(x, y, "hallo", 0);
+        LOADER.GetPlayerImage("rom_bobs", 1776)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
     }
 
     // Bei Schweinefarm Schweinchen auf dem Hof zeichnen

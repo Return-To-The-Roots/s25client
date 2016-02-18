@@ -891,7 +891,7 @@ void noFigure::DrawWalking(int x, int y, const char* const file, unsigned int id
     if(!waiting_for_free_node || pause_walked_gf)
         realPos += CalcFigurRelative();
 
-    LOADER.GetImageN(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.GetPlayerImage(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
     DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
 }
 

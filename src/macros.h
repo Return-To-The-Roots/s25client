@@ -27,7 +27,6 @@
 #define GetBobPlayerImage(nation, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.nation_bobs[nation].get(nr)) )
 #define GetRomBob(nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.rombobs_lst.get(nr)) )
 #define GetMapBob(nr) ( GetMapImageN(nr) )
-#define GetMapPlayerImage(nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>(LOADER.map_lst.get(nr)) )
 
 #define SmallFont ( LOADER.GetFontN("outline_fonts", 0) )
 #define NormalFont ( LOADER.GetFontN("outline_fonts", 1) )
@@ -36,7 +35,6 @@
 #if defined _WIN32 && defined _MSC_VER
 #   define GetBobFile(file) ( dynamic_cast<glArchivItem_Bob*>(LOADER.##file##.get(0) ) )
 #   define GetImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap*>( LOADER.##type##.get(nr) ) )
-#   define GetPlayerImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>( LOADER.##type##.get(nr) ) )
 #   define GetFont(type, nr)  ( dynamic_cast<glArchivItem_Font*>( LOADER.##type##.get(nr) ) )
 #   define GetSound(type, nr) ( dynamic_cast<glArchivItem_Sound*>( LOADER.##type##.get(nr) ) )
 #   define GetMusic(type, nr) ( dynamic_cast<glArchivItem_Music*>( LOADER.##type##.get(nr) ) )
@@ -50,7 +48,6 @@
 #else
 #   define GetBobFile(file) ( dynamic_cast<glArchivItem_Bob*>(LOADER.file.get(0) ) )
 #   define GetImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap*>( LOADER.type.get(nr) ) )
-#   define GetPlayerImage(type, nr) ( dynamic_cast<glArchivItem_Bitmap_Player*>( LOADER.type.get(nr) ) )
 #   define GetFont(type, nr)  ( dynamic_cast<glArchivItem_Font*>( LOADER.type.get(nr) ) )
 #   define GetTxt(type, nr)   ( dynamic_cast<const libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) )->getText() )
 #   define GetSound(type, nr) ( dynamic_cast<glArchivItem_Sound*>( LOADER.type.get(nr) ) )

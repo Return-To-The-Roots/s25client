@@ -60,9 +60,9 @@ void nofMetalworker::DrawWorking(int x, int y)
 {
     signed char offsets[NAT_COUNT][2] = { { -11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5} };
 
-    unsigned now_id;
+    const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
-    LOADER.GetImageN("rom_bobs", 190 + (now_id = GAMECLIENT.Interpolate(230, current_ev)) % 23)
+    LOADER.GetPlayerImage("rom_bobs", 190 + (now_id % 23))
     ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
 
     // Hämmer-Sound

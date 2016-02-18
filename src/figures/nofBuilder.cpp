@@ -319,7 +319,7 @@ void nofBuilder::Draw(int x, int y)
                 if(index < 12 || index > 19)
                 {
                     // Bauarbeiter steht
-                    LOADER.GetImageN("rom_bobs", 353 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                    LOADER.GetPlayerImage("rom_bobs", 353 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
 
                     if(index % 4 == 2)
                         SOUNDMANAGER.PlayNOSound(78, this, index, 160 - rand() % 60);
@@ -327,7 +327,7 @@ void nofBuilder::Draw(int x, int y)
                 else
                 {
                     // er kniet
-                    LOADER.GetImageN("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                    LOADER.GetPlayerImage("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
 
                     if(index % 4 == 2)
                         SOUNDMANAGER.PlayNOSound(72, this, index, 160 - rand() % 60);
@@ -337,7 +337,7 @@ void nofBuilder::Draw(int x, int y)
             else if(rel_x < 5)
             {
                 // in der Mitte mit "Händen"
-                LOADER.GetImageN("rom_bobs", 287 + (index / 2) % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                LOADER.GetPlayerImage("rom_bobs", 287 + (index / 2) % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
             }
             else
             {
@@ -345,7 +345,7 @@ void nofBuilder::Draw(int x, int y)
                 if(index < 12 || index > 19)
                 {
                     // Bauarbeiter steht
-                    LOADER.GetImageN("rom_bobs", 279 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                    LOADER.GetPlayerImage("rom_bobs", 279 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
 
                     if(index % 4 == 2)
                         SOUNDMANAGER.PlayNOSound(78, this, index, 160 - rand() % 60);
@@ -353,7 +353,7 @@ void nofBuilder::Draw(int x, int y)
                 else
                 {
                     // er kniet
-                    LOADER.GetImageN("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                    LOADER.GetPlayerImage("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
 
                     if(index % 4 == 2)
                         SOUNDMANAGER.PlayNOSound(72, this, index, 160 - rand() % 60);

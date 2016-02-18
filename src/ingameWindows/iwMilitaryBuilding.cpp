@@ -67,7 +67,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
     AddImageButton(7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
-    AddImage(8, 117, 114, LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage(8, 117, 114, LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 	// "Go to next" (building of same type)
     AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
 	//addon military control active? -> show button
@@ -78,7 +78,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterf
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    LOADER.GetNationImageN(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
     DrawRectangle(GetX() + width_ / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2, GetY() + 60, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);

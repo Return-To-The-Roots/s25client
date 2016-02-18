@@ -51,7 +51,7 @@ void nofMinter::DrawWorking(int x, int y)
 
     if(now_id < 91)
     {
-        LOADER.GetImageN("rom_bobs", 84 + (now_id) % 8)
+        LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
         ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
 
         // Evtl Sound abspielen

@@ -280,7 +280,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.is_lagging)
-            LOADER.GetImageN("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player.color]);
+            LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player.color]);
     }
 }
 

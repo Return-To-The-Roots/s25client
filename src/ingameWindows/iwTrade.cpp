@@ -56,7 +56,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
     // Get title of the player
     SetTitle(_("Trade with %s") + GAMECLIENT.GetPlayer(wh->GetPlayer()).name);
     // Gebäudebild und dessen Schatten
-    AddImage( 0, 100, 144, LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
+    AddImage( 0, 100, 144, LOADER.GetNationImage(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
 
     const unsigned left_column = 200;
 
@@ -102,7 +102,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
 void iwTrade::Msg_PaintBefore()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = LOADER.GetNationImageN(wh->GetNation(), 250 + 5 * wh->GetBuildingType() + 1);
+    glArchivItem_Bitmap* bitmap = LOADER.GetNationImage(wh->GetNation(), 250 + 5 * wh->GetBuildingType() + 1);
 
     if(bitmap)
     {

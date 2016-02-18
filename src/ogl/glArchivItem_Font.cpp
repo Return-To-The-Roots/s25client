@@ -680,7 +680,7 @@ void glArchivItem_Font::initFont()
             x = 1;
         }
 
-        const libsiedler2::baseArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::baseArchivItem_Bitmap_Player*>(get(i));
+        const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
         if(c)
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
@@ -713,7 +713,7 @@ void glArchivItem_Font::initFont()
             x = 1;
         }
 
-        const libsiedler2::baseArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::baseArchivItem_Bitmap_Player*>(get(i));
+        const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
         if(c)
         {
             // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
