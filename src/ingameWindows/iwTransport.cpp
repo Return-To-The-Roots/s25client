@@ -28,25 +28,6 @@
 // Include last!
 #include "DebugNew.h"
 
-// Tooltips in der der Standardbelegung
-const unsigned short STD_TOOLTIP_INDICES[14] =
-{
-    190,
-    192,
-    185,
-    189,
-    188,
-    187,
-    186,
-    181,
-    182,
-    180,
-    184,
-    183,
-    191,
-    193
-};
-
 const std::string TOOLTIPS[14] =
 {
     gettext_noop("Coins"),
