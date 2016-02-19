@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/TradeRoute.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal): gwg(gwg), player(player)
 {

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Map.h"
@@ -39,7 +39,7 @@
 #include "driver/src/MouseCoords.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {

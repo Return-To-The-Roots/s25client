@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noFlag.h"
 
 #include "Loader.h"
@@ -36,7 +36,7 @@
 #include "gameData/TerrainData.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

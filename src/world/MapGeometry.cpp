@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/MapGeometry.h"
 #include <cmath>
 #include <algorithm>
@@ -23,7 +23,7 @@
 #include <cstdlib>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 Point<int> GetPointAround(const Point<int>& p, unsigned dir)
 {

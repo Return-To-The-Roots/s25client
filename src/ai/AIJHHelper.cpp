@@ -17,7 +17,7 @@
 
 
 #include "AIJHHelper.h"
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
 #include "AIConstruction.h"
 
@@ -32,7 +32,7 @@
 #include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 AIJH::Job::Job(AIPlayerJH& aijh)
     : aijh(aijh), status(AIJH::JOB_WAITING)

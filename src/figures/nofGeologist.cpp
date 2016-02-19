@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofGeologist.h"
 
 #include "nodeObjs/noFlag.h"
@@ -33,7 +33,7 @@
 #include "SerializedGameData.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), node_goal(0, 0)

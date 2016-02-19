@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
 
 #include "buildings/nobUsual.h"
@@ -30,7 +30,7 @@
 #include "ai/AIEventManager.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)

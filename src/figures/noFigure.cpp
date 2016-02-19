@@ -18,7 +18,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "figures/noFigure.h"
 
 #include "Loader.h"
@@ -46,7 +46,7 @@
 #include "Log.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, 0, 0, std::vector<unsigned char>(0, 0));

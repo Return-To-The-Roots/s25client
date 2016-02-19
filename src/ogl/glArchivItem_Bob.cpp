@@ -17,14 +17,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bob.h"
 
 #include "glArchivItem_Bitmap_Player.h"
 #include "colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

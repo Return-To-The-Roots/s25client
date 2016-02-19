@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noShip.h"
 #include "Loader.h"
 #include "macros.h"
@@ -36,7 +36,7 @@
 #include "Log.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned int ship_count = 55;
 

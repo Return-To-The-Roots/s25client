@@ -17,11 +17,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameMessageInterface.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 void GameMessageInterface::OnNMSPing(const GameMessage_Ping& msg) {}
 void GameMessageInterface::OnNMSPong(const GameMessage_Pong& msg) {}

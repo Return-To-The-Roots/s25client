@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofMinter.h"
 
 #include "Loader.h"
@@ -27,7 +27,7 @@
 #include "SoundManager.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_MINTER, pos, player, workplace)

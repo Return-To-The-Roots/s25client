@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobStorehouse.h"
 #include "Loader.h"
 #include "nodeObjs/noExtension.h"
@@ -28,7 +28,7 @@
 #include "GameClientPlayer.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)

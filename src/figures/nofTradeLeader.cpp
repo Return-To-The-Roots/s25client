@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofTradeLeader.h"
 #include "nofTradeDonkey.h"
 #include "world/GameWorldGame.h"
@@ -25,7 +25,7 @@
 #include "gameData/GameConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos)
     : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), homePos(homePos), goalPos(goalPos)

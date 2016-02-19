@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
 
 #include "desktops/dskGameInterface.h"
@@ -36,7 +36,7 @@
 #include "gameData/BuildingConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;

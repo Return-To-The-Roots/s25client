@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskMainMenu.h"
 
@@ -40,7 +40,7 @@
 #include "ingameWindows/iwTextfile.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskMainMenu

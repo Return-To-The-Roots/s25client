@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameCommandFactory.h"
 #include "GameCommands.h"
 
@@ -25,7 +25,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 template<class T_Handler>
 bool GameCommandFactory<T_Handler>::SetFlag(const MapPoint pt)

@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -39,7 +39,7 @@
 #include "gameData/ShieldConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)

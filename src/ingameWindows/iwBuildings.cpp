@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwBuildings.h"
 #include "Loader.h"
 #include "GameClient.h"
@@ -35,7 +35,7 @@
 #include "files.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned BUILDINGS_COUNT = 32;
 

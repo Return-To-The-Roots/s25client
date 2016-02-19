@@ -17,14 +17,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwBuildingProductivities.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "files.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Anzahl der angezeigten Gebäude
 const unsigned BUILDINGS_COUNT = 24;

@@ -17,14 +17,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIResourceMap.h"
 #include "gameData/TerrainData.h"
 #include "buildings/nobUsual.h"
 #include "buildings/noBuildingSite.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 AIResourceMap::AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes)
     : res(res), aii(&aii), nodes(&nodes), resRadius(AIJH::RES_RADIUS[res])

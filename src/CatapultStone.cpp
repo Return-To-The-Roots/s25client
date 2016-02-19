@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "CatapultStone.h"
 
 #include "EventManager.h"
@@ -32,7 +32,7 @@
 #include <cmath>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
                              const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 
 #include "drivers/VideoDriverWrapper.h"
@@ -33,7 +33,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /* Terrain rendering works like that:
  * Every point is associated with 2 triangles:

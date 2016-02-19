@@ -17,13 +17,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofPassiveWorker.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofPassiveWorker::nofPassiveWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : noFigure(job, pos, player, goal)

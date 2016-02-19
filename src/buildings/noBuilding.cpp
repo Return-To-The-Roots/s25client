@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noBuilding.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFire.h"
@@ -26,7 +26,7 @@
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

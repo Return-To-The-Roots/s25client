@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofStonemason.h"
 
 #include "nodeObjs/noGranite.h"
@@ -29,7 +29,7 @@
 #include "GameInterface.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_STONEMASON, pos, player, workplace)

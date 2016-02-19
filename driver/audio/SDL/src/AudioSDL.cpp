@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "main.h" // IWYU pragma: keep
 #include "AudioSDL.h"
 
 #include "SoundSDL_Effect.h"
@@ -33,7 +33,7 @@
 #include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 static AudioSDL* nthis = NULL;
 

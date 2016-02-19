@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GamePlayerInfo.h"
 
 #include "drivers/VideoDriverWrapper.h"
@@ -25,7 +25,7 @@
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor

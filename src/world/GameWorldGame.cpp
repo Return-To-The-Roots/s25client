@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldGame.h"
 
 #include "GameClient.h"
@@ -61,7 +61,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 GameWorldGame::GameWorldGame()
 {

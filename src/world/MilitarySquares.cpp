@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/MilitarySquares.h"
 #include "buildings/nobBaseMilitary.h"
 #include "gameData/MilitaryConsts.h"

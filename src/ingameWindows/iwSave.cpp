@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwSave.h"
 
 #include "WindowManager.h"
@@ -42,7 +42,7 @@
 #include <boost/filesystem.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;

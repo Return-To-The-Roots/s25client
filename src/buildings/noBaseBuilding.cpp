@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -36,7 +36,7 @@
 #include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
     : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type])

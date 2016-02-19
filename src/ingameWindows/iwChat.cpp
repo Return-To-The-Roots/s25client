@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwChat.h"
 
 #include "Loader.h"
@@ -26,7 +26,7 @@
 #include "Random.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 unsigned char iwChat::chat_dest = 0;
 

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noShipBuildingSite.h"
 
 #include "Loader.h"
@@ -30,7 +30,7 @@
 #include "PostMsg.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
     : noCoordBase(NOP_ENVIRONMENT, pos),

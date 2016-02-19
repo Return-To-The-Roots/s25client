@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
 
 #include "GameClientPlayer.h"
@@ -46,7 +46,7 @@
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);

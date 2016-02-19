@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Ware.h"
 
 #include "world/GameWorldGame.h"
@@ -32,7 +32,7 @@
 #include "Log.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),

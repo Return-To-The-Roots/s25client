@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofIronfounder.h"
 
 #include "Loader.h"
@@ -27,7 +27,7 @@
 #include "SoundManager.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_IRONFOUNDER, pos, player, workplace)

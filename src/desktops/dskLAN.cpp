@@ -16,7 +16,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskLAN.h"
 
@@ -35,7 +35,7 @@
 #include <boost/lexical_cast.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 namespace {
     const unsigned btBackId = 3;

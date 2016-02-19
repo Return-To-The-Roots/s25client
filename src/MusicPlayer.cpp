@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "MusicPlayer.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "drivers/AudioDriverWrapper.h"
@@ -33,7 +33,7 @@
 #include <sstream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

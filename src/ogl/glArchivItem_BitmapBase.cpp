@@ -17,14 +17,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_BitmapBase.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
 #include <vector>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /** @class glArchivItem_BitmapBase

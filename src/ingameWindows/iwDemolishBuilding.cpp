@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwDemolishBuilding.h"
 
 #include "Loader.h"
@@ -28,7 +28,7 @@
 
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer* const gwv, const noBaseBuilding* building, const bool flag)
     : IngameWindow(building->CreateGUIID(), 0xFFFE, 0xFFFE, 200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)

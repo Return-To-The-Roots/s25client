@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofPassiveSoldier.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobMilitary.h"
@@ -28,7 +28,7 @@
 #include "gameData/MilitaryConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
     healing_event(NULL)

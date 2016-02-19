@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofMiller.h"
 
 #include "Loader.h"
@@ -30,7 +30,7 @@
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofMiller::nofMiller(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_MILLER, pos, player, workplace), last_sound(0), next_interval(0)

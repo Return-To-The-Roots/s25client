@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldView.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Map.h"
@@ -44,7 +44,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned short height):
 	selPt(0, 0),

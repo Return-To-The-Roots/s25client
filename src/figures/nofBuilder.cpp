@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofBuilder.h"
 #include "Loader.h"
 #include "GameClient.h"
@@ -37,7 +37,7 @@
 #include "factories/BuildingFactory.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)

@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobMilitary.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -48,7 +48,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), coinsDisabled(false),

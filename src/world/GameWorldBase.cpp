@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"
 #include "pathfinding/RoadPathFinder.h"
@@ -39,7 +39,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 #define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
 

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwDiplomacy.h"
 
 #include "desktops/dskGameInterface.h"
@@ -31,7 +31,7 @@
 #include "iwMsgbox.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Position des Headers der Tabelle (Y)
 const unsigned short HEADER_Y = 30;

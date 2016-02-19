@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwPostWindow.h"
 #include "world/GameWorldViewer.h"
 #include "controls/ctrlText.h"
@@ -36,7 +36,7 @@
 #include <iostream>
 #include <sstream>
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 iwPostWindow::iwPostWindow(GameWorldViewer& gwv)
     : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)

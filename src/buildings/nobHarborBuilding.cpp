@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobHarborBuilding.h"
 #include "pathfinding/FreePathFinder.h"
 #include "Loader.h"
@@ -45,7 +45,7 @@
 #include <set>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :

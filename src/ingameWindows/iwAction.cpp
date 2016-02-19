@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwAction.h"
 
 #include "desktops/dskGameInterface.h"
@@ -35,7 +35,7 @@
 #include "buildings/nobMilitary.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 // Tab - Flags

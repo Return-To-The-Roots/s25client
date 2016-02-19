@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AudioDriverWrapper.h"
 #include "VideoDriverWrapper.h"
 #include "driver/src/AudioInterface.h"
@@ -25,7 +25,7 @@
 #include "MusicPlayer.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Konstruktor von @p DriverWrapper
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "RTTR_AssertError.h"
 
 #ifdef _WIN32
@@ -72,7 +72,7 @@
 #include <limits>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 void WaitForEnter()
 {

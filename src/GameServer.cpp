@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "GameServer.h"
 
@@ -60,7 +60,7 @@
 #include <boost/filesystem.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 GameServer::ServerConfig::ServerConfig()
 {

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofSoldier.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobMilitary.h"
@@ -30,7 +30,7 @@
 #include "gameData/MilitaryConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
                        nobBaseMilitary* const goal , nobBaseMilitary* const home, const unsigned char rank)

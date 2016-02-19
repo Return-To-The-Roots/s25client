@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/NewNode.h"
@@ -25,7 +25,7 @@
 #include <set>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 //////////////////////////////////////////////////////////////////////////
 /// FreePathFinder implementation

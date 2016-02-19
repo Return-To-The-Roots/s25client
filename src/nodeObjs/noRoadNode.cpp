@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noRoadNode.h"
 
 #include "RoadSegment.h"
@@ -26,7 +26,7 @@
 #include "SerializedGameData.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)

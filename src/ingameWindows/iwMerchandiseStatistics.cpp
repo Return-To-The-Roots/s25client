@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwMerchandiseStatistics.h"
 #include "controls/controls.h"
 #include "GameClient.h"
@@ -25,7 +25,7 @@
 
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // Farben für die einzelnen Balken
 const unsigned int iwMerchandiseStatistics::BarColors[14] =

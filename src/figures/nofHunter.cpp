@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofHunter.h"
 
 #include "nodeObjs/noAnimal.h"
@@ -33,7 +33,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Maximale Distanz, die ein Jäger läuft, um ein Tier zu jagen
 const MapCoord MAX_HUNTING_DISTANCE = 50;

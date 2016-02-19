@@ -17,13 +17,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 #include "Random.h"
 #include "GameMessages.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 void GameClient::ExecuteNWF()
 {

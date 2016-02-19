@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noTree.h"
 
 #include "Loader.h"
@@ -33,7 +33,7 @@
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;

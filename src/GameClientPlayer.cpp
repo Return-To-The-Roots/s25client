@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameClientPlayer.h"
 #include "GameClient.h"
 #include "Random.h"
@@ -49,7 +49,7 @@
 #include <limits>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // Standardbelegung der Transportreihenfolge festlegen
 const unsigned char STD_TRANSPORT[35] =

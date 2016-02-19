@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
 
 #include "gameData/MilitaryConsts.h"
@@ -26,7 +26,7 @@
 #include "buildings/nobHarborBuilding.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(JOB_SCOUT, pos, player, workplace)

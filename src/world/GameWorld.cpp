@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Loader.h"
 #include "GameClient.h"
 #include "world/MapLoader.h"
@@ -39,7 +39,7 @@
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& filename)

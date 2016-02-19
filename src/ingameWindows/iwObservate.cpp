@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "world/GameWorldViewer.h"
 #include "Loader.h"
@@ -31,7 +31,7 @@
 #include "controls/ctrlButton.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // 260x190, 300x250, 340x310
 

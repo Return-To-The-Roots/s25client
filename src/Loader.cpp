@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 
 #include "Loader.h"
 #include "files.h"
@@ -48,7 +48,7 @@
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

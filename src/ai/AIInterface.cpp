@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIInterface.h"
 #include "ai/AIJHHelper.h"
 
@@ -31,7 +31,7 @@
 #include "pathfinding/FreePathFinder.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 // from Pathfinding.cpp TODO: in nice

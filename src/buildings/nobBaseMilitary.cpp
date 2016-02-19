@@ -19,7 +19,7 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobBaseMilitary.h"
 #include "Loader.h"
 #include "world/GameWorldGame.h"
@@ -36,7 +36,7 @@
 #include <limits>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,

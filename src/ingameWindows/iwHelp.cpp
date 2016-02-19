@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwHelp.h"
 
 #include "Loader.h"
@@ -29,7 +29,7 @@
 #include "WindowManager.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Breite des Fensters
 const unsigned short HELP_WINDOW_WIDTH = 240;

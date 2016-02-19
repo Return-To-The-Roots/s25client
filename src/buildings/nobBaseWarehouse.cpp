@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobBaseWarehouse.h"
 #include "EventManager.h"
 #include "figures/nofCarrier.h"
@@ -44,7 +44,7 @@
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Intervall für Ausleerung (in gf)
 const unsigned empty_INTERVAL = 25;

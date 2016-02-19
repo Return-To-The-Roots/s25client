@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "build_version.h"
 
@@ -41,7 +41,7 @@
 #include <bzlib.h>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 #ifdef _WIN32
 
