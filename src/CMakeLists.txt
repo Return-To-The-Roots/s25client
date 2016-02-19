@@ -14,6 +14,8 @@ INCLUDE_DIRECTORIES(
 	"${CMAKE_SOURCE_DIR}/libsiedler2/src/"
 	"${CMAKE_SOURCE_DIR}/libendian/src/"
 	"${CMAKE_SOURCE_DIR}/src"
+	)
+INCLUDE_DIRECTORIES(SYSTEM
 	${BZIP2_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIR}
@@ -119,8 +121,9 @@ IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
 	# Add the SDL-include flags to an apple build
-	ADD_FLAGS(CMAKE_C_FLAGS -I${SDL_INCLUDE_DIR})
-	ADD_FLAGS(CMAKE_CXX_FLAGS -I${SDL_INCLUDE_DIR})
+	#ADD_FLAGS(CMAKE_C_FLAGS -I${SDL_INCLUDE_DIR})
+	#ADD_FLAGS(CMAKE_CXX_FLAGS -I${SDL_INCLUDE_DIR})
+	INCLUDE_DIRECTORIES(SYSTEM ${SDL_INCLUDE_DIR})
 
 	# Add library
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL -L${CMAKE_SOURCE_DIR}/macos -lSDLmain)
@@ -152,7 +155,7 @@ ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 #find_package(Lua52 REQUIRED)
 #IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 IF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "FreeBSD")
-	INCLUDE_DIRECTORIES("/usr/local/include/lua52")
+	INCLUDE_DIRECTORIES(SYSTEM "/usr/local/include/lua52")
 	SET(LUA_LIB "/usr/local/lib/liblua${LUA_VERSION}.a")
 ENDIF ()
 
@@ -181,22 +184,22 @@ ENDIF ()
 MESSAGE(STATUS "Checking LUA library at ${LUA_LIB}")
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua5.2.a")
-	INCLUDE_DIRECTORIES("/usr/include/lua5.2")
+	INCLUDE_DIRECTORIES(SYSTEM "/usr/include/lua5.2")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/lib/liblua.so")
-	INCLUDE_DIRECTORIES("/usr/include/")
+	INCLUDE_DIRECTORIES(SYSTEM "/usr/include/")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 IF ( NOT EXISTS "${LUA_LIB}" )
 	SET(LUA_LIB "/usr/local/lib/liblua-5.2.so")
-	INCLUDE_DIRECTORIES("/usr/local/include/")
+	INCLUDE_DIRECTORIES(SYSTEM "/usr/local/include/")
 ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
 
-INCLUDE_DIRECTORIES("${LUA_DIR}/include")
+INCLUDE_DIRECTORIES(SYSTEM "${LUA_DIR}/include")
 
 SET(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
 IF("${RTTR_Assert_Enabled}" EQUAL 0)
