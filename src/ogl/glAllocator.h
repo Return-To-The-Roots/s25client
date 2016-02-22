@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../../libsiedler2/src/types.h"
+#include "libsiedler2/src/StandardAllocator.h"
 
 class GlAllocator: public libsiedler2::StandardAllocator{
 public:

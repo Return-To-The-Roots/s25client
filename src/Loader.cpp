@@ -37,8 +37,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
 
-#include "../libsiedler2/src/types.h"
-#include "../libsiedler2/src/prototypen.h"
+#include "libsiedler2/src/libsiedler2.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -281,7 +280,7 @@ bool Loader::LoadSounds(void)
         libsiedler2::ArchivInfo sng;
 
         LOG.lprintf(_("Loading \"%s\": "), it->c_str());
-        if(libsiedler2::loader::LoadSND(*it, sng) != 0 )
+        if(libsiedler2::Load(*it, sng) != 0 )
         {
             LOG.lprintf(_("failed\n"));
             return false;

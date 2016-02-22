@@ -19,8 +19,8 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlPercent.h"
-
 #include "ogl/glArchivItem_Font.h"
+#include <cstdio>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

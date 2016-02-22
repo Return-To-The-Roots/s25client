@@ -31,17 +31,9 @@ class GameMessage : public Message
         /// Konstruktor von @p GameMessage.
         GameMessage(const unsigned short id, const unsigned char player): Message(id), player(player){}
 
-        void Serialize(Serializer& ser) const override
-        {
-            Message::Serialize(ser);
-            ser.PushUnsignedChar(player);
-        }
+        void Serialize(Serializer& ser) const override;
 
-        void Deserialize(Serializer& ser) override
-        {
-            Message::Deserialize(ser);
-            player = ser.PopUnsignedChar();
-        }
+        void Deserialize(Serializer& ser) override;
 
         /// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
         virtual void Run(MessageInterface* callback) = 0;

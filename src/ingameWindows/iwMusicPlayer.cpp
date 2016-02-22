@@ -34,6 +34,7 @@
 #include "ListDir.h"
 #include "Settings.h"
 #include <boost/filesystem.hpp>
+#include <cstdio>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

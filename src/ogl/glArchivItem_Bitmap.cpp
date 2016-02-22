@@ -24,7 +24,6 @@
 #include "GlobalVars.h"
 #include "Loader.h"
 
-#include "../libsiedler2/src/types.h"
 #include <vector>
 
 // Include last!

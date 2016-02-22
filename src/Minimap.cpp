@@ -26,8 +26,6 @@
 #include "FOWObjects.h"
 #include "ogl/glArchivItem_Map.h"
 
-#include "../libsiedler2/src/types.h"
-
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 

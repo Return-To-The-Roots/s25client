@@ -48,7 +48,7 @@
 #include "fileFuncs.h"
 
 #include "ogl/glAllocator.h"
-#include "../libsiedler2/src/types.h"
+#include "libsiedler2/src/libsiedler2.h"
 #include "mygettext.h"
 
 #ifdef __APPLE__

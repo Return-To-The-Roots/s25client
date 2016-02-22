@@ -33,9 +33,10 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "helpers/multiArray.h"
-#include "../libsiedler2/src/ArchivInfo.h"
-#include "../libsiedler2/src/ArchivItem_Text.h"
-#include "../libsiedler2/src/ArchivItem_Ini.h"
+#include "libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/ArchivItem_Text.h"
+#include "libsiedler2/src/ArchivItem_Ini.h"
+#include "libsiedler2/src/ArchivItem_Palette.h"
 #include <boost/array.hpp>
 #include <string>
 #include <vector>

@@ -24,6 +24,7 @@
 #include "GameProtocol.h"
 #include "GameCommand.h"
 #include "GameObject.h"
+#include "libutil/src/Serializer.h"
 
 /*
  * das Klassenkommentar ist alles Client-Sicht, für Server-Sicht ist alles andersrum
