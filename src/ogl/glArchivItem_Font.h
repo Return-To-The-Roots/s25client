@@ -33,7 +33,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
     public:
         /// Konstruktor von @p glArchivItem_Font.
-        glArchivItem_Font(void) : ArchivItem_Font(), _font(NULL), _font_outline(NULL), chars_per_line(16) {}
+        glArchivItem_Font(void) : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
         /// Kopierkonstruktor von @p glArchivItem_Font.
         glArchivItem_Font(const glArchivItem_Font& item);
 
@@ -41,7 +41,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 
         /// Zeichnet einen Text.
         void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);
-        void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...", unsigned short end_length = 0);
+        void Draw(short x, short y, const std::string& text,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end   = "...",  unsigned short end_length = 0);
 
         /// liefert die Länge einer Zeichenkette.
         unsigned short getWidth(const std::wstring& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short* max = NULL) const;
@@ -84,22 +84,22 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             DF_NO_OUTLINE = 16
         };
 
-        struct char_info
+        struct CharInfo
         {
-            char_info() : x(0), y(0), width(0), reserved(0xFFFF) {}
+            CharInfo() : x(0), y(0), width(0) {}
+            CharInfo(unsigned short x, unsigned short y, unsigned short width): x(x), y(y), width(width){}
             unsigned short x;
             unsigned short y;
             unsigned short width;
-            unsigned short reserved; // so we have 8 byte's
         };
 
         /// prüft ob ein Buchstabe existiert.
         inline bool CharExist(unsigned int c) const { return (CharWidth(c) > 0); }
-        inline bool CharExist(char_info ci) const { return (ci.width > 0); }
+        inline bool CharExist(CharInfo ci) const { return (ci.width > 0); }
 
         /// liefert die Breite eines Zeichens
-        inline unsigned int CharWidth(unsigned int c) const { return CharInfo(c).width; }
-        inline unsigned int CharWidth(char_info ci) const { return ci.width; }
+        inline unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
+        inline unsigned int CharWidth(CharInfo ci) const { return ci.width; }
 
         std::string Unicode_to_Utf8(unsigned int c) const;
         unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
@@ -116,11 +116,11 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         void DrawChar(const std::string& text, unsigned int& i, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th);
 
         /// liefert das Char-Info eines Zeichens
-        inline const char_info& CharInfo(unsigned int c) const
+        inline const CharInfo& GetCharInfo(unsigned int c) const
         {
-            static char_info ci;
+            static CharInfo ci;
 
-            std::map<unsigned int, char_info>::const_iterator it = utf8_mapping.find(c);
+            std::map<unsigned int, CharInfo>::const_iterator it = utf8_mapping.find(c);
             if(it != utf8_mapping.end())
                 return it->second;
 
@@ -129,11 +129,10 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             return ci;
         }
 
-        boost::scoped_ptr<glArchivItem_Bitmap> _font;
-        boost::scoped_ptr<glArchivItem_Bitmap> _font_outline;
+        boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
+        boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
-        unsigned int chars_per_line;
-        std::map<unsigned int, char_info> utf8_mapping;
+        std::map<unsigned int, CharInfo> utf8_mapping;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED
