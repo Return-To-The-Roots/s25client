@@ -21,6 +21,7 @@
 #include "figures/noFigure.h"
 
 class noBuildingSite;
+class SerializedGameData;
 
 /// Der Planierer
 class nofPlaner : public noFigure

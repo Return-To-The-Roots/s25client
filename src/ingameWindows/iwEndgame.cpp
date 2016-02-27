@@ -17,19 +17,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwEndgame.h"
-
 #include "Loader.h"
 #include "GameManager.h"
-
-#include "desktops/dskMainMenu.h"
 #include "iwSave.h"
 #include "WindowManager.h"
 #include "GameClient.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

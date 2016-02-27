@@ -17,18 +17,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap.h"
 
 #include "drivers/VideoDriverWrapper.h"
-#include "GlobalVars.h"
-#include "Loader.h"
-
-#include "../libsiedler2/src/types.h"
+#include <GL/gl.h>
 #include <vector>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

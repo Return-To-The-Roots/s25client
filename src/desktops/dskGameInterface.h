@@ -25,15 +25,16 @@
 #include "gameTypes/MapTypes.h"
 #include "Minimap.h"
 #include "customborderbuilder.h"
-
 #include "ClientInterface.h"
 #include "GameInterface.h"
 #include "LobbyInterface.h"
+#include "libsiedler2/src/ArchivInfo.h"
 
-class IngameWindow;
-class iwAction;
 class iwRoadWindow;
 class GameWorldViewer;
+class GlobalGameSettings;
+class MouseCoords;
+struct KeyEvent;
 
 enum RoadMode
 {

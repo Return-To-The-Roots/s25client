@@ -17,14 +17,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofForester.h"
 
-#include "nodeObjs/noGranite.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
-#include "Ware.h"
 #include "Random.h"
 #include "nodeObjs/noTree.h"
 #include "SoundManager.h"
@@ -32,7 +29,9 @@
 #include "gameData/TerrainData.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
+class nobUsual;
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)

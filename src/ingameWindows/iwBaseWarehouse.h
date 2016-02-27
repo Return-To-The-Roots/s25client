@@ -20,7 +20,6 @@
 #pragma once
 
 #include "iwWares.h"
-#include "gameTypes/InventorySetting.h"
 #include "IDataChangedListener.h"
 
 class nobBaseWarehouse;

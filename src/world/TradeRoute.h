@@ -21,7 +21,6 @@
 #include "gameTypes/MapTypes.h"
 #include "world/TradePath.h"
 
-class TradeGraph;
 class SerializedGameData;
 class GameWorldGame;
 

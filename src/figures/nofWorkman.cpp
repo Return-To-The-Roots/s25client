@@ -17,21 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofWorkman.h"
 
 #include "buildings/nobUsual.h"
-#include "Loader.h"
 #include "gameData/JobConsts.h"
-#include "gameData/BuildingConsts.h"
 #include "EventManager.h"
-#include "Ware.h"
-#include "GameClient.h"
-#include "GameClientPlayer.h"
 #include "SoundManager.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
+class nobBaseWarehouse;
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)

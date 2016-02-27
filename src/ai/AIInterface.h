@@ -27,6 +27,18 @@
 
 class nobHQ;
 class nobShipYard;
+class GameClientPlayerList;
+class RoadSegment;
+class noBuilding;
+class noBuildingSite;
+class noFlag;
+class noRoadNode;
+class noShip;
+class nobBaseWarehouse;
+class nobHarborBuilding;
+class nobMilitary;
+class nobUsual;
+struct Inventory;
 
 class AIInterface: public GameCommandFactory<AIInterface>
 {

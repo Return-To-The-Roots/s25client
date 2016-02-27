@@ -19,6 +19,8 @@
 #define NOF_STONEMASON_H_
 
 #include "nofFarmhand.h"
+class SerializedGameData;
+class nobUsual;
 
 class nofStonemason : public nofFarmhand
 {

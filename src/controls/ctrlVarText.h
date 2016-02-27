@@ -23,6 +23,8 @@
 #include <cstdarg>
 #include <vector>
 #include <string>
+class Window;
+class glArchivItem_Font;
 
 class ctrlVarText : public ctrlText
 {

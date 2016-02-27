@@ -17,22 +17,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glSmartBitmap.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "Settings.h"
 
 #include "Loader.h"
-#include "../libsiedler2/src/types.h"
 
 #include <climits>
 #include <vector>
-#include <list>
 #include <cstdio>
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+namespace libsiedler2 { class ArchivItem_Palette; }
 
 bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glSmartTexturePackerNode*>& todo)
 {

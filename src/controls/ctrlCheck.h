@@ -20,6 +20,8 @@
 #pragma once
 
 #include "Window.h"
+class MouseCoords;
+class glArchivItem_Font;
 
 class ctrlCheck : public Window
 {

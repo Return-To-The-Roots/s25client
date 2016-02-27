@@ -25,6 +25,8 @@ class nofPassiveSoldier;
 class nobHarborBuilding;
 class nobMilitary;
 class noShip;
+class SerializedGameData;
+class nobBaseMilitary;
 
 /// Angreifender Soldat
 class nofAttacker : public nofActiveSoldier

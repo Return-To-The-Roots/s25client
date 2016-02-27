@@ -15,11 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/MapSerializer.h"
 #include "world/World.h"
 #include "SerializedGameData.h"
-#include "buildings/noBuildingSite.h"
 #include "CatapultStone.h"
 
 void MapSerializer::Serialize(const World& world, SerializedGameData& sgd)

@@ -17,29 +17,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwTrade.h"
 
-#include "desktops/dskGameInterface.h"
-
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls/controls.h"
-#include "WindowManager.h"
-
-#include "iwMsgbox.h"
-
-#include "buildings/nobShipYard.h"
-#include "iwDemolishBuilding.h"
-#include "iwHelp.h"
-#include "gameData/BuildingConsts.h"
-#include "gameData/ShieldConsts.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlImage.h"
+#include "controls/ctrlText.h"
 #include "gameData/JobConsts.h"
+#include "gameData/ShieldConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -49,14 +41,14 @@
  *
  *  @author OLiver
  */
-iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* const wh)
-    : IngameWindow(wh->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gi(gi), wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))
+iwTrade::iwTrade(nobBaseWarehouse& wh)
+    : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
+      wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
-    SetTitle(_("Trade with %s") + GAMECLIENT.GetPlayer(wh->GetPlayer()).name);
+    SetTitle(_("Trade with %s") + GAMECLIENT.GetPlayer(wh.GetPlayer()).name);
     // Gebäudebild und dessen Schatten
-    AddImage( 0, 100, 144, LOADER.GetNationImage(wh->GetNation(), 250 + 5 * wh->GetBuildingType()));
+    AddImage( 0, 100, 144, LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType()));
 
     const unsigned left_column = 200;
 
@@ -102,7 +94,7 @@ iwTrade::iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBase
 void iwTrade::Msg_PaintBefore()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = LOADER.GetNationImage(wh->GetNation(), 250 + 5 * wh->GetBuildingType() + 1);
+    glArchivItem_Bitmap* bitmap = LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType() + 1);
 
     if(bitmap)
     {
@@ -128,7 +120,7 @@ void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
     // Start trading
     if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->GetVisible() && atoi(number_str.c_str()) > 0)
     {
-        GAMECLIENT.TradeOverLand(wh->GetPos(), ware_figure, gt, job, atoi(number_str.c_str()));
+        GAMECLIENT.TradeOverLand(wh.GetPos(), ware_figure, gt, job, atoi(number_str.c_str()));
         this->Close();
     }
 }

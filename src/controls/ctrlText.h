@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Window.h"
-
+class glArchivItem_Font;
 
 /// Basisklasse für Controls mit Texten wie auch Buttons, damit diese alle einheitlich verändert werden können
 class ctrlBaseText

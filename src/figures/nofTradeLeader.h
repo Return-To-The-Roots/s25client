@@ -21,7 +21,7 @@
 #include "world/TradeRoute.h"
 
 class nofTradeDonkey;
-class nobBaseWarehouse;
+class SerializedGameData;
 
 /// Leader of a trade caravane
 class nofTradeLeader : public noFigure

@@ -17,24 +17,23 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "WindowManager.h"
 
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
-
+#include "CollisionDetection.h"
 #include "Window.h"
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "Log.h"
 
-#include <ctime>
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

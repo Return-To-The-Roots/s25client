@@ -17,20 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "BurnedWarehouse.h"
 
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Random.h"
-#include "figures/noFigure.h"
-#include "ogl/glArchivItem_Map.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "figures/nofPassiveWorker.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Anzahl der Rausgeh-Etappen
 const unsigned GO_OUT_PHASES = 10;

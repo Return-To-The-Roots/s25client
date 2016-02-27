@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
 #include "GameServer.h"
 #include "GameClient.h"
@@ -24,9 +24,11 @@
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include <boost/array.hpp>
+#include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class GameWorldViewer;
 
 bool QuickStartGame(const std::string& filePath)
 {

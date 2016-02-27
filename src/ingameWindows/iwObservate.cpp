@@ -18,20 +18,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "world/GameWorldViewer.h"
 #include "Loader.h"
+#include "driver/src/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "WindowManager.h"
-#include "iwMsgbox.h"
 #include "desktops/dskGameInterface.h"
 #include "Settings.h"
 #include "controls/ctrlButton.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // 260x190, 300x250, 340x310
 

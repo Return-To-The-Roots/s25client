@@ -10,10 +10,7 @@
 #include "gameTypes/InventorySetting.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
-#include <cassert>
 
-class GameClient;
-class GameServer;
 class GameWorldGame;
 class GameClientPlayer;
 

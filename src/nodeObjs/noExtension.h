@@ -20,6 +20,7 @@
 #pragma once
 
 #include "noBase.h"
+class SerializedGameData;
 
 // Große Gebäude erstrecken sich über 4 Felder, die restlichen 3 werden mit dieser Klasse gefüllt
 class noExtension : public noBase

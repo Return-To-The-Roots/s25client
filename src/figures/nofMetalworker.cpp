@@ -17,11 +17,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofMetalworker.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "buildings/nobUsual.h"
@@ -29,10 +28,12 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "ingameWindows/iwTools.h"
+#include "PostMsg.h"
+#include "gameTypes/MessageTypes.h"
 #include "Log.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)

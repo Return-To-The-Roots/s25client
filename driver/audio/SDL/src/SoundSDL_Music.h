@@ -20,8 +20,6 @@
 #include <Sound.h>
 #include <SDL_mixer.h>
 
-class AudioSDL;
-
 class SoundSDL_Music : public Sound
 {
         friend class AudioSDL;

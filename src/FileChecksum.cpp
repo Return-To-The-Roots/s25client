@@ -19,12 +19,12 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "FileChecksum.h"
 #include <cstdio>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 unsigned int CalcChecksumOfFile(const char* const path)
 {

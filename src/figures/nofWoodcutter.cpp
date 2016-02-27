@@ -17,22 +17,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofWoodcutter.h"
 
-#include "nodeObjs/noGranite.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
-#include "Ware.h"
 #include "nodeObjs/noTree.h"
 #include "SoundManager.h"
-#include "ai/AIEventManager.h"
 
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
+class nobUsual;
 
 nofWoodcutter::nofWoodcutter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_WOODCUTTER, pos, player, workplace)

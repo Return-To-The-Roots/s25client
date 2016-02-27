@@ -18,6 +18,8 @@
 #define SDL_H_INCLUDED
 
 #include <AudioDriver.h>
+class AudioDriverLoaderInterface;
+class Sound;
 
 /// Klasse für den SDL Audiotreiber.
 class AudioSDL : public AudioDriver

@@ -17,21 +17,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwMissionStatement.h"
-
+#include "controls/ctrlMultiline.h"
 #include "Loader.h"
-#include "controls/controls.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "files.h"
-#include "Settings.h"
-#include "iwMsgbox.h"
-#include "WindowManager.h"
-
+#include "gameData/const_gui_ids.h"
 #include <sstream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

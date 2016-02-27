@@ -17,19 +17,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwDirectIPConnect.h"
-
+#include "controls/ctrlButton.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlText.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "controls/controls.h"
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "desktops/dskHostGame.h"
 #include "Settings.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

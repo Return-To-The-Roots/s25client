@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Desktop.h"
+class MouseCoords;
 
 /// Klasse des Splashscreen Desktops.
 class dskSplash : public Desktop

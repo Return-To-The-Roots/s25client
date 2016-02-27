@@ -22,6 +22,7 @@
 #include "IngameWindow.h"
 
 class GlobalGameSettings;
+class MouseCoords;
 
 class iwAddons : public IngameWindow
 {

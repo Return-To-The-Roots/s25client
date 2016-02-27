@@ -17,12 +17,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameMessage.h"
 #include "GameMessages.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -85,4 +85,16 @@ Message* GameMessage::create_game(unsigned short id)
     }
 
     return msg;
+}
+
+void GameMessage::Serialize(Serializer& ser) const
+{
+    Message::Serialize(ser);
+    ser.PushUnsignedChar(player);
+}
+
+void GameMessage::Deserialize(Serializer& ser)
+{
+    Message::Deserialize(ser);
+    player = ser.PopUnsignedChar();
 }

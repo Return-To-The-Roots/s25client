@@ -19,6 +19,8 @@
 
 
 #include "nofWorkman.h"
+class SerializedGameData;
+class nobUsual;
 
 /// Schiffsbauer - erstmal nur provisorisch, da er nur Boote baut
 class nofShipWright : public nofWorkman

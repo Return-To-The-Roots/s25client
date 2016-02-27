@@ -21,6 +21,7 @@
 #include "noCoordBase.h"
 #include "EventManager.h"
 #include "gameTypes/MapTypes.h"
+class SerializedGameData;
 
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
 const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};

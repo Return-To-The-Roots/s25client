@@ -17,13 +17,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwBaseWarehouse.h"
 
 #include "Loader.h"
 
-#include "drivers/VideoDriverWrapper.h"
-#include "controls/controls.h"
 #include "GameClient.h"
 #include "iwDemolishBuilding.h"
 #include "WindowManager.h"
@@ -31,15 +29,18 @@
 #include "iwHQ.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
-
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobStorehouse.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlImage.h"
+#include "controls/ctrlOptionGroup.h"
 
 #include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

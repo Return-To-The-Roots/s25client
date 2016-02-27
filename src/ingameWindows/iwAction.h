@@ -20,10 +20,11 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "controls/ctrlGroup.h"
+#include "gameTypes/MapTypes.h"
 
 class dskGameInterface;
 class GameWorldViewer;
+class ctrlGroup;
 
 class iwAction : public IngameWindow
 {

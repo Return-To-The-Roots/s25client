@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwAction.h"
 
 #include "desktops/dskGameInterface.h"
@@ -26,16 +26,19 @@
 #include "iwObservate.h"
 
 #include "Loader.h"
-#include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-
+#include "controls/ctrlBuildingIcon.h"
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlTab.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobMilitary.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 // Tab - Flags

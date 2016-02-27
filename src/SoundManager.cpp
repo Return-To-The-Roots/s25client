@@ -17,18 +17,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "SoundManager.h"
 
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "nodeObjs/noBase.h"
 #include "GameClient.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(0)
 {

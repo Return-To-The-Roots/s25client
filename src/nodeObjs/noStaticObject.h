@@ -20,6 +20,7 @@
 #pragma once
 
 #include "noCoordBase.h"
+class SerializedGameData;
 
 class noStaticObject : public noCoordBase
 {

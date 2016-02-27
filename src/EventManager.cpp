@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
 
 #include "GameClient.h"
@@ -27,7 +27,7 @@
 #include "Log.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 void EventManager::Event::Serialize_Event(SerializedGameData& sgd) const
 {

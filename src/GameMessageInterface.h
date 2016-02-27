@@ -20,7 +20,6 @@
 #pragma once
 
 #include "MessageInterface.h"
-#include "Random.h"
 #include <vector>
 
 class GameMessage_Ping;
@@ -62,6 +61,7 @@ class GameMessage_Server_Speed;
 
 class GameMessage_GetAsyncLog;
 class GameMessage_SendAsyncLog;
+struct RandomEntry;
 
 class GameMessageInterface : public MessageInterface
 {

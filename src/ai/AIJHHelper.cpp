@@ -16,23 +16,25 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 
+#include "defines.h" // IWYU pragma: keep
 #include "AIJHHelper.h"
-#include "defines.h"
 #include "AIPlayerJH.h"
 #include "AIConstruction.h"
-
-#include "GameClientPlayer.h"
-#include "GamePlayerList.h"
-#include "buildings/nobMilitary.h"
-#include "buildings/nobHQ.h"
 #include "buildings/noBuildingSite.h"
-#include "world/MapGeometry.h"
 #include "AIInterface.h"
-
-#include <iostream>
+#include "GlobalGameSettings.h"
+#include "addons/const_addons.h"
+#include "gameData/BuildingConsts.h"
+#include "gameTypes/Direction.h"
+#include "nodeObjs/noFlag.h"
+#include "world/GameWorldBase.h"
+#include <boost/array.hpp>
+#include <deque>
+#include <list>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class RoadSegment;
 
 AIJH::Job::Job(AIPlayerJH& aijh)
     : aijh(aijh), status(AIJH::JOB_WAITING)

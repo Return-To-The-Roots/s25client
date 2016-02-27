@@ -17,12 +17,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofDefender.h"
 
 #include "nofAttacker.h"
 #include "buildings/nobMilitary.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
@@ -30,7 +29,7 @@
 #include "SerializedGameData.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player,

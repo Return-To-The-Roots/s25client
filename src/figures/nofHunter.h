@@ -21,7 +21,8 @@
 #include "nofBuildingWorker.h"
 
 class noAnimal;
-
+class SerializedGameData;
+class nobUsual;
 
 /// Klasse für den Jäger, der Tiere jagt und Nahrung produziert
 class nofHunter : public nofBuildingWorker

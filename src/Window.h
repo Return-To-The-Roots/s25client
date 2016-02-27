@@ -19,18 +19,13 @@
 
 #pragma once
 
-#include "CollisionDetection.h"
-
 #include "Msgbox.h"
-#include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/TextureColor.h"
 #include "Rect.h"
-#include "colors.h"
 #include <map>
 
-class WindowManager;
-
-class ctrlAlternativeEdit;
 class ctrlBuildingIcon;
 class ctrlTextButton;
 class ctrlColorButton;

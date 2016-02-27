@@ -19,24 +19,22 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwPostWindow.h"
 #include "world/GameWorldViewer.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlButton.h"
-#include "controls/ctrlTable.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
-#include "WindowManager.h"
+#include "driver/src/KeyEvent.h"
 #include "Loader.h"
+#include "PostMsg.h"
 #include "gameData/const_gui_ids.h"
 #include "macros.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
 #include <iostream>
-#include <sstream>
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 iwPostWindow::iwPostWindow(GameWorldViewer& gwv)
     : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)

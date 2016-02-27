@@ -17,19 +17,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofDonkeybreeder.h"
 
 #include "GameClient.h"
-#include "SoundManager.h"
 
 #include "buildings/nobUsual.h"
 #include "nofCarrier.h"
-
+#include "Loader.h"
 #include "ogl/glSmartBitmap.h"
+#include "libutil/src/colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

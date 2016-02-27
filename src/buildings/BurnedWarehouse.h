@@ -20,6 +20,7 @@
 #include "nodeObjs/noCoordBase.h"
 #include "gameTypes/JobTypes.h"
 #include <boost/array.hpp>
+class SerializedGameData;
 
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase

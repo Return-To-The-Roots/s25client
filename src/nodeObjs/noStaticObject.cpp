@@ -17,9 +17,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
-#include "noEnvObject.h"
-
+#include "defines.h" // IWYU pragma: keep
+#include "noStaticObject.h"
 #include "noExtension.h"
 
 #include "Loader.h"
@@ -29,7 +28,7 @@
 #include "GameClient.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

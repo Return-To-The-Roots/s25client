@@ -17,11 +17,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofPigbreeder.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
@@ -29,7 +28,8 @@
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
 
 nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_PIGBREEDER, pos, player, workplace)

@@ -19,20 +19,16 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofAggressiveDefender.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
-#include "buildings/nobMilitary.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
-#include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
-#include "buildings/nobBaseWarehouse.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)

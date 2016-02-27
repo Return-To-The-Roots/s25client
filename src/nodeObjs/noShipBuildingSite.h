@@ -18,6 +18,7 @@
 #define SHIP_BUILDING_SITE_H_
 
 #include "noCoordBase.h"
+class SerializedGameData;
 
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
 class noShipBuildingSite: public noCoordBase

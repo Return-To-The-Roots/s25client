@@ -15,19 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
 #include "world/World.h"
 #include "ogl/glArchivItem_Map.h"
 #include "GameClient.h"
+#include "Random.h"
 #include "gameData/TerrainData.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noTree.h"
-#include "buildings/nobHQ.h"
 #include "nodeObjs/noAnimal.h"
+#include "buildings/nobHQ.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "Log.h"
+class noBase;
+class nobBaseWarehouse;
 
 MapLoader::MapLoader(World& world): world(world)
 {}
@@ -53,7 +57,7 @@ void MapLoader::Load(const glArchivItem_Map& map)
         }
     }
 
-    /// Bei FoW und aufgedeckt müssen auch die ersten FoW-Objekte erstellt werden
+    /// Bei FoW und aufgedeckt mï¿½ssen auch die ersten FoW-Objekte erstellt werden
     if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
     {
         for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
@@ -63,7 +67,7 @@ void MapLoader::Load(const glArchivItem_Map& map)
                 // Alle Spieler durchgehen
                 for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 {
-                    // An der Stelle FOW für diesen Spieler?
+                    // An der Stelle FOW fï¿½r diesen Spieler?
                     if(world.GetNode(pt).fow[i].visibility == VIS_FOW)
                         world.SaveFOWNode(pt, i, 0);
                 }
@@ -106,7 +110,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
                 // TODO: Berge hatten komische Wasserbeeinflussung
                 // ggf 0-4 Wasser setzen
                 if((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
-                    resource = 0; // Kein Wasser, in der Wüste, da isses trocken!
+                    resource = 0; // Kein Wasser, in der Wï¿½ste, da isses trocken!
                 else if((node.t1 == TT_STEPPE || node.t2 == TT_STEPPE))
                     resource = 0x23; // 2 Wasser
                 else if((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
@@ -221,8 +225,8 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
             // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
             case 0xC8:
             {
-                /// @todo mis0bobs unvollständig (dieses lagerzelt), 4 und 5 überhaupt nicht erwähnt
-                // mis1bobs, 2 und 3 sind vollständig eingebaut
+                /// @todo mis0bobs unvollstï¿½ndig (dieses lagerzelt), 4 und 5 ï¿½berhaupt nicht erwï¿½hnt
+                // mis1bobs, 2 und 3 sind vollstï¿½ndig eingebaut
 
                 // Objekte aus der map_?_z.lst
                 if(lc <= 0x0A)
@@ -236,13 +240,13 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Objekte aus der map.lst
                 else if(lc >= 0x10 && lc <= 0x14)
                     obj = new noEnvObject(pt, 542 + lc - 0x10);
-                // gestrandetes Schiff (mis0bobs, unvollständig)
+                // gestrandetes Schiff (mis0bobs, unvollstï¿½ndig)
                 else if(lc == 0x15)
                     obj = new noStaticObject(pt, (lc - 0x15) * 2, 0, 1);
                 // das Tor aus der map_?_z.lst
                 else if(lc == 0x16)
                     obj = new noStaticObject(pt, 560, 0xFFFF, 2);
-                // das geöffnete Tor aus map_?_z.lst
+                // das geï¿½ffnete Tor aus map_?_z.lst
                 else if(lc == 0x17)
                     obj = new noStaticObject(pt, 561, 0xFFFF, 2);
                 // Stalagmiten (mis1bobs)
@@ -260,7 +264,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Objekte aus der map.lst
                 else if(lc >= 0x28 && lc <= 0x2B)
                     obj = new noEnvObject(pt, 556 + lc - 0x28);
-                // die "kaputten" Gebäuderuinen usw (mis2bobs)
+                // die "kaputten" Gebï¿½uderuinen usw (mis2bobs)
                 else if(lc >= 0x2C && lc <= 0x2D)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
                 else if(lc == 0x2E)
@@ -324,8 +328,8 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
             Species species;
             switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
             {
-                // TODO: Welche ID ist Polarbär?
-            case 1: species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zufällige Hasenart nehmen
+                // TODO: Welche ID ist Polarbï¿½r?
+            case 1: species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zufï¿½llige Hasenart nehmen
             case 2: species = SPEC_FOX; break;
             case 3: species = SPEC_STAG; break;
             case 4: species = SPEC_DEER; break;
@@ -377,7 +381,7 @@ void MapLoader::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
     // HQ setzen
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        // Existiert überhaupt ein HQ?
+        // Existiert ï¿½berhaupt ein HQ?
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.hqPos.isValid())
         {
@@ -415,7 +419,7 @@ void MapLoader::InitSeasAndHarbors()
             world.harbor_pos[i].cps[z].sea_id = world.IsCoastalPoint(world.GetNeighbour(world.harbor_pos[i].pos, z));
     }
 
-    // Nachbarn der einzelnen Hafenplätze ermitteln
+    // Nachbarn der einzelnen Hafenplï¿½tze ermitteln
     CalcHarborPosNeighbors();
 }
 
@@ -523,17 +527,17 @@ void MapLoader::CalcHarborPosNeighbors()
 }
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
-/// Wasserpunkte mit der gleichen ID belegt und die Anzahl zurückgibt
+/// Wasserpunkte mit der gleichen ID belegt und die Anzahl zurï¿½ckgibt
 unsigned MapLoader::MeasureSea(const MapPoint start, const unsigned short sea_id)
 {
-    // Breitensuche von diesem Punkt aus durchführen
+    // Breitensuche von diesem Punkt aus durchfï¿½hren
     std::vector<bool> visited(world.GetWidth() * world.GetHeight(), false);
     std::queue< MapPoint > todo;
 
     todo.push(start);
     visited[world.GetIdx(start)] = true;
 
-    // Knoten zählen (Startknoten schon mit inbegriffen)
+    // Knoten zï¿½hlen (Startknoten schon mit inbegriffen)
     unsigned count = 0;
 
     while(!todo.empty())

@@ -19,18 +19,19 @@
 
 #pragma once
 
-#include "Singleton.h"
 #include "driver/src/VideoDriverLoaderInterface.h"
 #include "Point.h"
-#include <cstddef>
+#include "helpers/Deleter.h"
+#include "libutil/src/Singleton.h"
 #include <list>
 #include <string>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
-#include "helpers/Deleter.h"
 
 class Window;
 class Desktop;
 class IngameWindow;
+class MouseCoords;
+struct KeyEvent;
 
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface

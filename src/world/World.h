@@ -30,10 +30,12 @@
 #include <vector>
 #include <list>
 
-class noBuildingSite;
 class noNothing;
 class fowNothing;
 class CatapultStone;
+class FOWObject;
+class noBase;
+template <typename T> struct Point;
 
 /// Base class representing the world itself, no algorithms, handlers etc!
 class World

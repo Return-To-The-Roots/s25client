@@ -21,6 +21,8 @@
 
 #include "ctrlText.h"
 #include "ColorControlInterface.h"
+class Window;
+class glArchivItem_Font;
 
 class ctrlDeepening : public ctrlText
 {

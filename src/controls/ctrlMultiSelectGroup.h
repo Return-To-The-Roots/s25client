@@ -22,6 +22,8 @@
 #include "ctrlGroup.h"
 #include "ctrlButton.h"
 #include <set>
+class MouseCoords;
+class Window;
 
 /// Verwaltet eine Gruppe von n Buttons, von denen 0 bis n gleichzeitig ausgewählt sind
 class ctrlMultiSelectGroup : public ctrlGroup

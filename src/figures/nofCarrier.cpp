@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofCarrier.h"
 
 #include "Random.h"
@@ -30,17 +30,17 @@
 #include "RoadSegment.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
-#include "buildings/noBaseBuilding.h"
 #include "gameData/JobConsts.h"
-
+#include "Loader.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "Log.h"
-
+#include "libutil/src/colors.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/array.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten

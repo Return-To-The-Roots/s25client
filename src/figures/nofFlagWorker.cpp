@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofFlagWorker.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
@@ -27,7 +27,7 @@
 #include "buildings/nobBaseWarehouse.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : noFigure(job, pos, player, goal), flag(0), state(STATE_FIGUREWORK)

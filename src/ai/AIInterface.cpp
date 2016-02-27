@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIInterface.h"
 #include "ai/AIJHHelper.h"
 
@@ -25,14 +25,17 @@
 #include "buildings/nobHQ.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobMilitary.h"
+#include "buildings/noBuilding.h"
+#include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
+#include <limits>
 
 // Include last!
-#include "DebugNew.h"
-
+#include "DebugNew.h" // IWYU pragma: keep
+class noRoadNode;
 
 // from Pathfinding.cpp TODO: in nice
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);

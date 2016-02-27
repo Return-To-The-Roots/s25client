@@ -17,19 +17,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 
 #include "GlobalVars.h"
-#include "Loader.h"
 #include "Random.h"
 #include "GameManager.h"
-#include "desktops/dskGameInterface.h"
 #include "ClientInterface.h"
-#include "GameMessages.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 void GameClient::ExecuteGameFrame_Replay()
 {

@@ -17,17 +17,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameObject.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
 
 #include <iostream>
 
-#include "GamePlayerList.h"
-
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -20,12 +20,13 @@
 #pragma once
 
 #include "GamePlayerInfo.h"
+#include "GameMessage_GameCommand.h"
+#include "Socket.h"
 #include "MessageQueue.h"
 #include "../libutil/src/MyTime.h"
 
 #include <list>
 
-class GameMessage_GameCommand;
 class Serializer;
 
 // GamePlayerInfo für die PlayerSlots des Servers

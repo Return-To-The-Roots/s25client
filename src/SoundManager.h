@@ -22,7 +22,6 @@
 #include <list>
 
 class noBase;
-class glArchivItem_Sound;
 
 /// Game-naher SoundManager, der die abgespielten Sounds speichert und immer entscheidet, ob derjenige Sound abgespielt
 /// wird oder nicht, weil er eben bereits abgespielt wird

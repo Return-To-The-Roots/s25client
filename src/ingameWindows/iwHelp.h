@@ -20,6 +20,8 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "gameData/const_gui_ids.h"
+#include <string>
 
 /// Soforthilfe-Fenster
 class iwHelp : public IngameWindow
@@ -28,4 +30,4 @@ class iwHelp : public IngameWindow
         iwHelp(const GUI_ID gui_id, const std::string& title, const std::string& content);
 };
 
-#endif // !iwTextfile_H_INCLUDED
+#endif // iwHELP_H_INCLUDED

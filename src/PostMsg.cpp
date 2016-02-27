@@ -17,13 +17,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "PostMsg.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
+#include "GameClientPlayer.h"
+#include "Loader.h"
+#include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 PostMsg::PostMsg(const std::string& text, PostMessageCategory cat)
     : text(text), type(PMT_NORMAL), cat(cat), sendFrame(GAMECLIENT.GetGFNumber()) { }

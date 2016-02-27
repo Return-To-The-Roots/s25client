@@ -17,20 +17,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noShipBuildingSite.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "EventManager.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "noShip.h"
 #include "GameClient.h"
 #include "PostMsg.h"
+#include "ai/AIEvents.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
     : noCoordBase(NOP_ENVIRONMENT, pos),

@@ -21,6 +21,8 @@
 
 #include "ctrlGroup.h"
 #include "ctrlButton.h"
+class MouseCoords;
+class Window;
 
 /// Verwaltet eine Gruppe von Buttons, die als Optionsbuttons benötigt werden
 class ctrlOptionGroup : public ctrlGroup

@@ -28,8 +28,7 @@ enum GoodType;
 #endif
 
 class Ware;
-class nobBaseWarehouse;
-
+class SerializedGameData;
 
 /// Der "Warehouse-Worker" ist ein einfacher(er) Träger, der die Waren aus dem Lagerhaus holt
 class nofWarehouseWorker : public noFigure

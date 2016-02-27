@@ -17,16 +17,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwLobbyServerInfo.h"
-
-#include "WindowManager.h"
+#include "controls/ctrlEdit.h"
 #include "Loader.h"
-#include "controls/controls.h"
 #include "LobbyClient.h"
+#include "gameData/const_gui_ids.h"
+#include "helpers/converters.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -36,8 +36,6 @@
  */
 void iwLobbyServerInfo::UpdateServerInfo()
 {
-    static char host[512];
-
     if(LOBBYCLIENT.refreshserverinfo)
     {
         LOBBYCLIENT.refreshserverinfo = false;
@@ -48,10 +46,7 @@ void iwLobbyServerInfo::UpdateServerInfo()
 
         GetCtrl<ctrlEdit>(1)->SetText(serverinfo->getMap());
         GetCtrl<ctrlEdit>(4)->SetText(serverinfo->getName());
-
-        snprintf(host, 512, "%s:%d", serverinfo->getHost().c_str(), serverinfo->getPort());
-        GetCtrl<ctrlEdit>(6)->SetText(host);
-
+        GetCtrl<ctrlEdit>(6)->SetText(serverinfo->getHost() + ":" + helpers::toString(serverinfo->getPort()));
         GetCtrl<ctrlEdit>(8)->SetText(serverinfo->getVersion());
     }
 }

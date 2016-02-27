@@ -17,18 +17,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noFlag.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
-#include "buildings/noBuildingSite.h"
-#include "buildings/nobMilitary.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
 
@@ -36,7 +33,8 @@
 #include "gameData/TerrainData.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class noFigure;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

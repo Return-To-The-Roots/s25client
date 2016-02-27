@@ -16,22 +16,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskLobby.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "LobbyClient.h"
-#include "LobbyProtocol.h"
-#include "controls/controls.h"
 #include "FileChecksum.h"
 #include "Settings.h"
 
 #include "dskHostGame.h"
 #include "dskMultiPlayer.h"
+#include "controls/ctrlChat.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlTable.h"
 #include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwLobbyRanking.h"
 #include "ingameWindows/iwDirectIPCreate.h"
@@ -42,7 +42,7 @@
 #include <boost/lexical_cast.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -20,8 +20,9 @@
 
 #include "nofWorkman.h"
 
-class nobUsualBuilding;
 class nobBaseWarehouse;
+class SerializedGameData;
+class nobUsual;
 
 /// Klasse für den Schreiner
 class nofWellguy : public nofWorkman

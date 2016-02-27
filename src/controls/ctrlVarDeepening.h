@@ -21,6 +21,8 @@
 
 #include "ctrlVarText.h"
 #include <cstdarg>
+class Window;
+class glArchivItem_Font;
 
 class ctrlVarDeepening : public ctrlVarText
 {

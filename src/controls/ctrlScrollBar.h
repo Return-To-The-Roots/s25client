@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+class MouseCoords;
 
 class ctrlScrollBar : public Window
 {

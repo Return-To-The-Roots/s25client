@@ -20,12 +20,18 @@
 
 #include "world/GameWorldBase.h"
 #include "gameTypes/MapTypes.h"
-#include "world/TradeRoute.h"
 #include <vector>
 
-class TradeGraph;
-class nobBaseWarehouse;
 class TerritoryRegion;
+class CatapultStone;
+class GameInterface;
+class MilitarySquares;
+class RoadSegment;
+class noBaseBuilding;
+class noBuildingSite;
+class noRoadNode;
+class nofActiveSoldier;
+class nofAttacker;
 
 /// "Interface-Klasse" für das Spiel
 class GameWorldGame : public virtual GameWorldBase

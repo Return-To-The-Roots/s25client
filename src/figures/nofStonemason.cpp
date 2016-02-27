@@ -17,19 +17,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofStonemason.h"
 
 #include "nodeObjs/noGranite.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
-#include "Ware.h"
 #include "SoundManager.h"
 #include "GameInterface.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
+class nobUsual;
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_STONEMASON, pos, player, workplace)

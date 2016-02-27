@@ -17,31 +17,33 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "build_version.h"
 
 #include "Settings.h"
 #include "GameClient.h"
+#include "helpers/Deleter.h"
 
 #ifdef _WIN32
 #   include <windows.h>
+
 // Disable warning for faulty nameless enum typdef (check sfImage.../hdBase...)
 #   pragma warning(push)
 #   pragma warning(disable: 4091)
 #   include <dbghelp.h>
+
 #   pragma warning(pop)
 #else
 #   include <execinfo.h>
 #endif
 
 #include "../libutil/src/Log.h"
-#include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 #ifdef _WIN32
 
@@ -59,9 +61,9 @@ typedef WINBOOL (IMAGEAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HA
 #   endif
 #endif
 
-DebugInfo::DebugInfo() : Socket()
+DebugInfo::DebugInfo()
 {
-    Connect("debug.rttr.info", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port); //-V807
+    sock.Connect("debug.rttr.info", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port); //-V807
 
     Send("RTTRDBG", 7);
 
@@ -92,7 +94,7 @@ DebugInfo::DebugInfo() : Socket()
 DebugInfo::~DebugInfo()
 {
     SendString("DONE");
-    Close();
+    sock.Close();
 }
 
 bool DebugInfo::Send(const void* buffer, int length)
@@ -101,7 +103,7 @@ bool DebugInfo::Send(const void* buffer, int length)
 
     while (length > 0)
     {
-        int res = Socket::Send(ptr, length);
+        int res = sock.Send(ptr, length);
 
         if (res >= 0)
         {
@@ -407,6 +409,3 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
 
     return(true);
 }
-
-
-

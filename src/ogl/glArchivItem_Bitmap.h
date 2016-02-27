@@ -20,8 +20,8 @@
 #pragma once
 
 #include "glArchivItem_BitmapBase.h"
-#include "../libutil/src/colors.h"
 #include "../libsiedler2/src/ArchivItem_Bitmap.h"
+#include "libutil/src/colors.h"
 
 /// Basisklasse für GL-Bitmapitems.
 class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase

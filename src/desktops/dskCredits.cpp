@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "dskCredits.h"
 
 #include "GameManager.h"
@@ -34,11 +34,10 @@
 
 #include <boost/array.hpp>
 #include <cstdlib>
-#include <ctime>
 
 // Include last!
-#include "DebugNew.h"
-
+#include "DebugNew.h" // IWYU pragma: keep
+struct KeyEvent;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskCredits
  *

@@ -19,7 +19,7 @@
 
 
 #include "noDisappearingEnvObject.h"
-
+class SerializedGameData;
 
 /// Verschwindendes Umwelt-Objekt ohne weiter Bedeutung (z.b. Baumstamm etc.)
 class noDisappearingMapEnvObject : public noDisappearingEnvObject

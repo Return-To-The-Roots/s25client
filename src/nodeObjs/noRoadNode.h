@@ -23,6 +23,7 @@
 #include <boost/array.hpp>
 
 class Ware;
+class SerializedGameData;
 
 // Basisklasse für Gebäude und Flagge (alles, was als "Straßenknoten" dient
 class noRoadNode : public noCoordBase

@@ -22,7 +22,7 @@
 #include <cstring>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const char* GetWindowTitle()
 {

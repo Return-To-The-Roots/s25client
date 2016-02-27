@@ -21,6 +21,8 @@
 
 class nofAttacker;
 class nofPassiveSoldier;
+class SerializedGameData;
+class nobBaseMilitary;
 
 /// Aggressiv-verteidigender Soldat (jemand, der den Angreifer auf offenem Feld entgegenläuft)
 class nofAggressiveDefender : public nofActiveSoldier

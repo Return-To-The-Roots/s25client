@@ -17,11 +17,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameClientPlayer.h"
 #include "GameClient.h"
 #include "Random.h"
-
+#include "PostMsg.h"
 #include "RoadSegment.h"
 #include "Ware.h"
 
@@ -33,23 +33,27 @@
 #include "figures/nofCarrier.h"
 #include "nodeObjs/noShip.h"
 #include "buildings/nobHarborBuilding.h"
-#include "figures/nofTradeLeader.h"
 #include "FindWhConditions.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
 
 #include "GameInterface.h"
-
+#include "gameData/PlayerConsts.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
+#include "gameTypes/PactTypes.h"
+#include "gameTypes/MessageTypes.h"
+#include "world/TradeRoute.h"
 #include "SerializedGameData.h"
-#include "GameMessages.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
-
+#include "libutil/src/Log.h"
 #include <stdint.h>
 #include <limits>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // Standardbelegung der Transportreihenfolge festlegen
 const unsigned char STD_TRANSPORT[35] =
@@ -2398,15 +2402,15 @@ bool GameClientPlayer::IsDependentFigure(noFigure* fig)
     return false;
 }
 
-std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse* goalWh) const
+std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse& goalWh) const
 {
     std::vector<nobBaseWarehouse*> result;
 
     // Don't try to trade with us!
-    if(goalWh->GetPlayer() == playerid)
+    if(goalWh.GetPlayer() == playerid)
         return result;
 
-    const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
+    const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
 
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {

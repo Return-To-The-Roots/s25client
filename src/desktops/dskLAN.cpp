@@ -16,26 +16,24 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskLAN.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
 #include "Settings.h"
-#include "controls/controls.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "desktops/dskMultiPlayer.h"
 #include "gameData/LanDiscoveryCfg.h"
-
+#include "controls/ctrlTable.h"
 #include <Serializer.h>
-#include <Log.h>
 #include <boost/lexical_cast.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 namespace {
     const unsigned btBackId = 3;

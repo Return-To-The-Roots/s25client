@@ -24,7 +24,6 @@
 #include <string>
 
 class SerializedGameData;
-class glArchivItem_Map;
 
 class GameWorld : public GameWorldViewer, public GameWorldGame
 {

@@ -19,24 +19,23 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofAttacker.h"
 #include "nofDefender.h"
 #include "nofAggressiveDefender.h"
 #include "nofPassiveSoldier.h"
 #include "buildings/nobMilitary.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
-#include "buildings/nobBaseWarehouse.h"
 #include "PostMsg.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
+#include "nodeObjs/noFlag.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER

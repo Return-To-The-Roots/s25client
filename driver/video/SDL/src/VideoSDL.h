@@ -20,7 +20,9 @@
 #pragma once
 
 #include <VideoDriver.h>
-#include <SDL.h>
+class VideoDriverLoaderInterface;
+struct VideoMode;
+struct SDL_Surface;
 
 /// Klasse für den SDL Videotreiber.
 class VideoSDL : public VideoDriver

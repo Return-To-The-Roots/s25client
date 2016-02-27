@@ -21,6 +21,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/StatisticTypes.h"
+class ctrlText;
 
 /// Fenster mit den Warenstatistiken.
 class iwMerchandiseStatistics : public IngameWindow

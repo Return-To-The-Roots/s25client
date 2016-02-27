@@ -17,26 +17,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
 
-#include "desktops/dskGameInterface.h"
-
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls/controls.h"
 #include "WindowManager.h"
-
-#include "iwMsgbox.h"
-
+#include "controls/ctrlButton.h"
+#include "controls/ctrlPercent.h"
+#include "controls/ctrlText.h"
 #include "buildings/nobShipYard.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "gameData/BuildingConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;

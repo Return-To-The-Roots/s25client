@@ -17,22 +17,28 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Ware.h"
 
 #include "world/GameWorldGame.h"
 #include "GameClientPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "figures/nofCarrier.h"
-#include "SerializedGameData.h"
+#include "buildings/noBaseBuilding.h"
+#include "buildings/noBuilding.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noRoadNode.h"
+#include "RoadSegment.h"
+#include "gameTypes/BuildingTypes.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/GameConsts.h"
+#include "gameData/PlayerConsts.h"
+#include "SerializedGameData.h"
 #include "Log.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),

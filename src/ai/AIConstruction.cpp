@@ -17,24 +17,43 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIConstruction.h"
 
-#include "world/MapGeometry.h"
-#include "buildings/nobHQ.h"
+#include "AIPlayerJH.h"
+#include "AIInterface.h"
+#include "AIJHHelper.h"
+#include "GlobalGameSettings.h"
+#include "Point.h"
+#include "addons/const_addons.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
-#include "AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
+#include "buildings/nobBaseMilitary.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "gameTypes/BuildingQuality.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/Inventory.h"
+#include "gameTypes/JobTypes.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noRoadNode.h"
+#include <boost/array.hpp>
+#include <boost/container/flat_set.hpp>
+#include <boost/container/vector.hpp>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
+#include <list>
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS }};
 
 AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
-    : aii(aii), aijh(aijh), currentJob(NULL)
+    : aii(aii), aijh(aijh)
 {
     playerID = aii.GetPlayerID();
     buildingsWanted.resize(BUILDING_TYPES_COUNT);

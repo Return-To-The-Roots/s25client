@@ -24,6 +24,9 @@
 
 #include <string>
 #include <algorithm>
+class MouseCoords;
+class glArchivItem_Bitmap;
+class glArchivItem_Font;
 
 /// Buttonklasse
 class ctrlButton : public Window

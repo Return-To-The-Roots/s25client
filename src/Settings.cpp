@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Settings.h"
 
 #include "files.h"
@@ -35,7 +35,7 @@
 #endif
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned int Settings::SETTINGS_VERSION = 12;
 const unsigned int Settings::SETTINGS_SECTIONS = 11;

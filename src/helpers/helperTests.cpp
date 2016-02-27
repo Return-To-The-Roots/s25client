@@ -17,7 +17,7 @@
 
 // This test the implementation of the helpers
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "helpers/traits.h"
 
 #include <boost/container/flat_set.hpp>
@@ -25,7 +25,7 @@
 #include <vector>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // Use unnamed namespace
 namespace{

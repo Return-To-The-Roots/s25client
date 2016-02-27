@@ -17,26 +17,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobBaseWarehouse.h"
 #include "EventManager.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
-#include "figures/nofWarehouseWorker.h"
-#include "figures/nofPassiveSoldier.h"
-#include "figures/nofAggressiveDefender.h"
-#include "figures/nofDefender.h"
 #include "nobMilitary.h"
 #include "Random.h"
 #include "FindWhConditions.h"
 #include "gameData/JobConsts.h"
 #include "BurnedWarehouse.h"
 #include "SerializedGameData.h"
+#include "figures/nofWarehouseWorker.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofAggressiveDefender.h"
+#include "figures/nofDefender.h"
 #include "figures/nofPassiveWorker.h"
 #include "figures/nofTradeLeader.h"
 #include "figures/nofTradeDonkey.h"
+#include "nodeObjs/noFlag.h"
 #include "factories/JobFactory.h"
 #include "gameData/ShieldConsts.h"
 #include "Log.h"
@@ -44,7 +45,8 @@
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class nofAttacker;
 
 /// Intervall für Ausleerung (in gf)
 const unsigned empty_INTERVAL = 25;

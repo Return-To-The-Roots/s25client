@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "dskHostGame.h"
 #include "dskGameLoader.h"
 
@@ -25,9 +25,17 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameServer.h"
-#include "controls/controls.h"
 #include "LobbyClient.h"
-
+#include "controls/ctrlButton.h"
+#include "controls/ctrlChat.h"
+#include "controls/ctrlCheck.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlDeepening.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlPreviewMinimap.h"
+#include "controls/ctrlText.h"
+#include "controls/ctrlVarDeepening.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
@@ -35,13 +43,15 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwAddons.h"
 #include "gameData/GameConsts.h"
+#include "gameData/const_gui_ids.h"
 #include "Random.h"
 #include "Log.h"
 
 #include "../libsiedler2/src/prototypen.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class GameWorldViewer;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

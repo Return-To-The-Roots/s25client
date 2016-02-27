@@ -17,17 +17,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwLobbyRanking.h"
-
-#include "WindowManager.h"
+#include "controls/ctrlTable.h"
 #include "Loader.h"
-#include "controls/controls.h"
 #include "LobbyClient.h"
+#include "gameData/const_gui_ids.h"
 #include <boost/lexical_cast.hpp>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

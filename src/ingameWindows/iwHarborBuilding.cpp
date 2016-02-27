@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwHarborBuilding.h"
 
 #include "Loader.h"
@@ -27,7 +27,9 @@
 #include "controls/ctrlButton.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class GameWorldViewer;
+class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

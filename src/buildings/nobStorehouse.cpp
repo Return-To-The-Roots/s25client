@@ -19,16 +19,15 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nobStorehouse.h"
-#include "Loader.h"
-#include "nodeObjs/noExtension.h"
-#include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "PostMsg.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
 
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)

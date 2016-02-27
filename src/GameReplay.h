@@ -23,8 +23,10 @@
 #include "GameSavedFile.h"
 #include "GameProtocol.h"
 #include "gameTypes/MapTypes.h"
-#include "Point.h"
-#include <boost/smart_ptr.hpp>
+#include <boost/smart_ptr/shared_array.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include <string>
+#include <vector>
 
 class Savegame;
 

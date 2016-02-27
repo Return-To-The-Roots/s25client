@@ -17,17 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "ctrlProgress.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
+#include "CollisionDetection.h"
 
 #include <sstream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

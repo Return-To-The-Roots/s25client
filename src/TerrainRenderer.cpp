@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 
 #include "drivers/VideoDriverWrapper.h"
@@ -25,15 +25,20 @@
 #include "Settings.h"
 #include "GameClient.h"
 #include "world/MapGeometry.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "gameData/TerrainData.h"
+#include "ExtensionList.h"
+#include "Loader.h"
 #include "helpers/roundToNextPow2.h"
-#include <boost/scoped_array.hpp>
+#include "libsiedler2/src/ArchivInfo.h"
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
-#include <cmath>
-#include <stdexcept>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /* Terrain rendering works like that:
  * Every point is associated with 2 triangles:

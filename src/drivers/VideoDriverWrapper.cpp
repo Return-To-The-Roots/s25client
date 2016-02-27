@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
 
 #include "Settings.h"
@@ -26,7 +26,6 @@
 #include "../driver/src/VideoInterface.h"
 
 #include "WindowManager.h"
-#include "files.h"
 #include "error.h"
 #include "Log.h"
 
@@ -37,7 +36,7 @@
 #endif
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -291,6 +290,30 @@ unsigned int VideoDriverWrapper::GenerateTexture()
     texture_list[texture_pos] = newTexture;
 
     return texture_list[texture_pos++];
+}
+
+void VideoDriverWrapper::BindTexture(unsigned int t)
+{
+    if (t != texture_current)
+    {
+        texture_current = t;
+        glBindTexture(GL_TEXTURE_2D, t);
+    }
+}
+
+void VideoDriverWrapper::DeleteTexture(unsigned int t)
+{
+    if (t == texture_current)
+        texture_current = 0;
+    glDeleteTextures(1, &t);
+}
+
+KeyEvent VideoDriverWrapper::GetModKeyState(void) const
+{
+    if(videodriver)
+        return videodriver->GetModKeyState();
+    const KeyEvent ke = {KT_INVALID, 0, false, false, false};
+    return ke;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

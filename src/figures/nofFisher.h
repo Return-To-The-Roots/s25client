@@ -19,6 +19,8 @@
 #define NOF_FISHER_H_
 
 #include "nofFarmhand.h"
+class SerializedGameData;
+class nobUsual;
 
 class nofFisher : public nofFarmhand
 {

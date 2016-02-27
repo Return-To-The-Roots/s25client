@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameCommands.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -26,11 +26,10 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
-
-#include <cstdlib>
+#include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 namespace gc{
 

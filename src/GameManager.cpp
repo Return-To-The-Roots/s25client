@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GameManager.h"
 
 #include "GlobalVars.h"
@@ -36,16 +36,17 @@
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskLobby.h"
 #include "ingameWindows/iwMusicPlayer.h"
-
+#include "ogl/glArchivItem_Font.h"
+#include "Loader.h"
 #include "MusicPlayer.h"
 #include "Log.h"
-#include "helpers/win32_nanosleep.h"
-#include "../libutil/src/error.h"
+#include "libutil/src/error.h"
+#include "libutil/src/colors.h"
 
 #include <ctime>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

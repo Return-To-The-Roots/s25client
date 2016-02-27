@@ -20,11 +20,11 @@
 #pragma once
 
 #include "Window.h"
-#include "gameData/const_gui_ids.h"
-#include "gameTypes/MapTypes.h"
 #include <vector>
 
 class glArchivItem_Bitmap;
+class MouseCoords;
+template <typename T> struct Point;
 
 class IngameWindow : public Window
 {

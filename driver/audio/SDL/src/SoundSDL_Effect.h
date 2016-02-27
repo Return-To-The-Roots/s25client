@@ -19,7 +19,6 @@
 
 #include <Sound.h>
 
-class AudioSDL;
 struct Mix_Chunk;
 
 class SoundSDL_Effect : public Sound

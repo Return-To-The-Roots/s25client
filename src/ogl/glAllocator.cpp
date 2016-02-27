@@ -17,23 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glAllocator.h"
 
-// @Todo: Remove this includes
-#include "glArchivItem_Sound.h"
-#include "glArchivItem_Music.h"
 #include "glArchivItem_Sound_Wave.h"
 #include "glArchivItem_Sound_Midi.h"
 #include "glArchivItem_Sound_XMidi.h"
 #include "glArchivItem_Sound_Other.h"
 
-#include "glArchivItem_Bitmap.h"
 #include "glArchivItem_Bitmap_RLE.h"
 #include "glArchivItem_Bitmap_Player.h"
 #include "glArchivItem_Bitmap_Shadow.h"
 #include "glArchivItem_Bitmap_Raw.h"
-#include "glArchivItem_Bitmap_Direct.h"
 
 #include "glArchivItem_Bob.h"
 #include "glArchivItem_Font.h"
@@ -41,7 +36,7 @@
 
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -17,14 +17,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "FOWObjects.h"
 #include "SerializedGameData.h"
 #include "GameClient.h"
 #include "gameData/BuildingConsts.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "Loader.h"
+#include "libutil/src/colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(const unsigned color)

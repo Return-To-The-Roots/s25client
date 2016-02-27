@@ -19,6 +19,8 @@
 
 #include "Window.h"
 #include <vector>
+class MouseCoords;
+class glArchivItem_Font;
 
 class ctrlMultiline : public Window
 {

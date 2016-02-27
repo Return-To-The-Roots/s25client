@@ -16,12 +16,15 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "AIPlayer.h"
 #include "GameClientPlayer.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class GameClientPlayerList;
+class GameWorldBase;
+class GlobalGameSettings;
 
 AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                    const GameClientPlayerList& players, const GlobalGameSettings& ggs,

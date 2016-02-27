@@ -17,13 +17,10 @@
 #ifndef MINIMAP_H_
 #define MINIMAP_H_
 
-struct MapNode;
 class GameWorldViewer;
 
-#include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "gameTypes/MapTypes.h"
-#include "Point.h"
 #include <vector>
 
 class glArchivItem_Map;

@@ -17,10 +17,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "ctrlTable.h"
-
+#include "ctrlScrollBar.h"
 #include "ctrlButton.h"
+#include "CollisionDetection.h"
 #include "ogl/glArchivItem_Font.h"
 #include "driver/src/MouseCoords.h"
 #include "driver/src/KeyEvent.h"
@@ -28,7 +29,7 @@
 #include <cstdarg>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

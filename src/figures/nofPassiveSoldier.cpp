@@ -17,18 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofPassiveSoldier.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobMilitary.h"
-#include "Loader.h"
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class RoadSegment;
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
     healing_event(NULL)

@@ -19,6 +19,8 @@
 #define NOF_CHARBURNER_H_
 
 #include "nofFarmhand.h"
+class SerializedGameData;
+class nobUsual;
 
 class nofCharburner : public nofFarmhand
 {

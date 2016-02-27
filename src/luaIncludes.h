@@ -20,9 +20,11 @@
 
 extern "C"
 {
+    // IWYU pragma: begin_exports
     #include "lua.h"
     #include "lualib.h"
     #include "lauxlib.h"
+    // IWYU pragma: end_exports
 }
 
 #endif // luaIncludes_h__

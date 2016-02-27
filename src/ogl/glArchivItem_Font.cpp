@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Font.h"
 #include "Settings.h"
 #include "ExtensionList.h"
@@ -32,7 +32,7 @@
 #include <vector>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), chars_per_line(obj.chars_per_line), utf8_mapping(obj.utf8_mapping)
 {

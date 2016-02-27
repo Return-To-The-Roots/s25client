@@ -21,6 +21,8 @@
 
 class GameWorldViewer;
 class IngameMinimap;
+class MouseCoords;
+class Window;
 
 /// Minimap-Control für Ingame
 class ctrlIngameMinimap : public ctrlMinimap

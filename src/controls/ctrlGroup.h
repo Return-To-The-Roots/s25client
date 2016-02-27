@@ -20,6 +20,9 @@
 #pragma once
 
 #include "Window.h"
+class MouseCoords;
+struct KeyEvent;
+struct ScreenResizeEvent;
 
 class ctrlGroup : public Window
 {

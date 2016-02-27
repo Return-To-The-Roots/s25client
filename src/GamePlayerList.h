@@ -19,6 +19,7 @@
 #include "SerializableArray.h"
 #include "GameClientPlayer.h"
 #include "GameServerPlayer.h"
+class GamePlayerInfo;
 
 typedef SerializableArray<GamePlayerInfo> GamePlayerList;
 

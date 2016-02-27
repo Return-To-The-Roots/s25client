@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+class Window;
 
 class iwMsgbox : public IngameWindow
 {

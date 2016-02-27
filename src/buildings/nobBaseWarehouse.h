@@ -21,19 +21,28 @@
 
 #include "nobBaseMilitary.h"
 #include "EventManager.h"
-#include "figures/noFigure.h"
 #include "DataChangedObservable.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
+#include "helpers/containerUtils.h"
 #include <boost/array.hpp>
 #include <list>
 
 class nofCarrier;
-class nofWarehouseWorker;
 class noFigure;
 class Ware;
 class nobMilitary;
 class TradeRoute;
+
+class RoadSegment;
+class SerializedGameData;
+class noBaseBuilding;
+class noRoadNode;
+class nofActiveSoldier;
+class nofAggressiveDefender;
+class nofAttacker;
+class nofDefender;
+class nofSoldier;
 namespace gc{
     class SetInventorySetting;
     class SetAllInventorySettings;

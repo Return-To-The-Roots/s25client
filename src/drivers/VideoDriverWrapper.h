@@ -19,13 +19,10 @@
 
 
 #include "Singleton.h"
-#include "ExtensionList.h"
 #include "DriverWrapper.h"
 #include "driver/src/VideoInterface.h"
 #include <string>
 #include <boost/array.hpp>
-
-class VideoDriver;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -55,8 +52,8 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         void CleanUp();
         // erstellt eine Textur
         unsigned int GenerateTexture();
-        inline void BindTexture(unsigned int t) {if (t != texture_current) {texture_current = t; glBindTexture(GL_TEXTURE_2D, t);}}
-        inline void DeleteTexture(unsigned int t) {if (t == texture_current) {texture_current = 0;} glDeleteTextures(1, &t);}
+        void BindTexture(unsigned int t);
+        void DeleteTexture(unsigned int t);
 
         // Swapped den Buffer
         bool SwapBuffers();
@@ -80,7 +77,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         // setzt den Mausstatus
         void SetMousePos(const int x, const int y);
         /// Get state of the modifier keys
-        KeyEvent GetModKeyState(void) const { if(videodriver) return videodriver->GetModKeyState(); const KeyEvent ke = {KT_INVALID, 0, false, false, false}; return ke;  }
+        KeyEvent GetModKeyState(void) const;
 
         // Nachrichtenschleife
         bool Run();

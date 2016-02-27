@@ -17,21 +17,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Map.h"
-#include "nodeObjs/noTree.h"
-#include "buildings/nobUsual.h"
 #include "buildings/nobMilitary.h"
-#include "buildings/noBuildingSite.h"
-#include "CatapultStone.h"
 #include "GameClient.h"
-#include "SoundManager.h"
-#include "world/MapGeometry.h"
 #include "gameTypes/MapTypes.h"
-#include "desktops/dskGameInterface.h"
-#include "FOWObjects.h"
 #include "nodeObjs/noShip.h"
 
 #include "Settings.h"
@@ -39,7 +30,8 @@
 #include "driver/src/MouseCoords.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class FOWObject;
 
 GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(MapPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
 {

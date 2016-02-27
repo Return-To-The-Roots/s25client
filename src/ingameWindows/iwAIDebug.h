@@ -18,11 +18,9 @@
 #ifndef iwAIDEBUG_H_INCLUDED
 #define iwAIDEBUG_H_INCLUDED
 
-#include "iwAIDebug.h"
 #include "IngameWindow.h"
 
 class AIPlayerJH;
-class ctrlList;
 class ctrlText;
 class GameWorldViewer;
 
@@ -39,7 +37,6 @@ class iwAIDebug : public IngameWindow
 
     private:
         std::vector<AIPlayerJH*> ais;
-        ctrlList* jobs;
         unsigned selection;
         unsigned overlay;
         ctrlText* text;

@@ -17,19 +17,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "controls/controls.h"
 #include "GameServer.h"
 #include "GameClient.h"
 #include "ListDir.h"
 #include "files.h"
 #include "fileFuncs.h"
 #include "LobbyClient.h"
-
+#include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlPreviewMinimap.h"
+#include "controls/ctrlTable.h"
+#include "controls/ctrlText.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskHostGame.h"
 #include "desktops/dskLobby.h"
@@ -41,12 +43,12 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwPleaseWait.h"
 
-#include "Log.h"
-
-#include "../libsiedler2/src/prototypen.h"
+#include "ogl/glArchivItem_Map.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libsiedler2/src/prototypen.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskSelectMap

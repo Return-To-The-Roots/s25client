@@ -17,27 +17,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "dskGameLoader.h"
 
 #include "Loader.h"
-#include "controls/controls.h"
 #include "WindowManager.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
 #include "LobbyClient.h"
 #include "GameManager.h"
 
 #include "dskGameInterface.h"
-#include "dskMainMenu.h"
 #include "dskLobby.h"
 #include "dskDirectIP.h"
-
+#include "controls/ctrlText.h"
+#include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "files.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

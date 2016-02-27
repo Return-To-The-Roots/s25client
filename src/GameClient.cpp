@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "GameClient.h"
 
@@ -30,7 +30,6 @@
 #include "Settings.h"
 #include "FileChecksum.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "WindowManager.h"
 #include "desktops/dskGameInterface.h"
 #include "Random.h"
 #include "GameServer.h"
@@ -39,26 +38,29 @@
 #include "GlobalGameSettings.h"
 
 #include "gameData/GameConsts.h"
-
+#include "PostMsg.h"
 #include "SerializedGameData.h"
 #include "LobbyClient.h"
-#include "Settings.h"
 #include "files.h"
 #include "fileFuncs.h"
 #include "ClientInterface.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
+#include "helpers/Deleter.h"
 
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/glArchivItem_Map.h"
-#include "helpers/Deleter.h"
+#include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 #include <errno.h>
+#include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+
+class GameWorldViewer;
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
@@ -2223,8 +2225,6 @@ unsigned GameClient::GetTournamentModeDuration() const
     else
         return 0;
 }
-
-#include <iostream>
 
 void GameClient::LoadGGS()
 {

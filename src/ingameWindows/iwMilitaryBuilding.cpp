@@ -18,26 +18,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwMilitaryBuilding.h"
-
-#include "drivers/VideoDriverWrapper.h"
 
 #include "Loader.h"
 #include "GameClient.h"
 #include "gameData/MilitaryConsts.h"
 #include "WindowManager.h"
-#include "controls/controls.h"
 #include "iwDemolishBuilding.h"
 #include "iwMsgbox.h"
 #include "iwHelp.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
-#include "figures/nofActiveSoldier.h"
-
+#include "controls/ctrlButton.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

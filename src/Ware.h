@@ -23,11 +23,11 @@
 #include "gameTypes/GoodTypes.h"
 
 class noBaseBuilding;
-class GameWorld;
 class nobHarborBuilding;
 class nobBaseWarehouse;
 class noRoadNode;
 class noFlag;
+class SerializedGameData;
 
 // Die Klasse Ware kennzeichnet eine Ware, die von einem Träger transportiert wird bzw gerade an einer Flagge liegt
 class Ware : public GameObject

@@ -20,6 +20,10 @@
 #include "noRoadNode.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
+class FOWObject;
+class SerializedGameData;
+class Ware;
+class noFigure;
 
 class noFlag : public noRoadNode
 {

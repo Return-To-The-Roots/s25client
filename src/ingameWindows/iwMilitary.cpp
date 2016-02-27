@@ -17,16 +17,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwMilitary.h"
-
+#include "controls/ctrlProgress.h"
 #include "Loader.h"
-#include "controls/controls.h"
 #include "GameClient.h"
-
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

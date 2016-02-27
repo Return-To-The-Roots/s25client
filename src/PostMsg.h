@@ -18,14 +18,15 @@
 #ifndef POSTMSG_H_
 #define POSTMSG_H_
 
-#include "defines.h"
 #include <string>
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/MessageTypes.h"
 #include "gameTypes/PactTypes.h"
-#include "Loader.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/NationConsts.h"
 
 class SerializedGameData;
+class glArchivItem_Bitmap;
 
 /// Einfache Post-Nachricht, nur mit Text.
 class PostMsg
@@ -80,7 +81,6 @@ class ImagePostMsgWithLocation : public PostMsgWithLocation
         Nation senderNation;
 };
 
-class iwPostWindow;
 // TODO: evtl noch verschiedene ermöglichen durch einen weiteren Parameter? Allianz, Nicht-Angriffspakt, Zeitbegrenzung, whatever
 /// Diplomatie-Post-Nachricht, mit Annehmen- und Ablehnen-Knopf
 class DiplomacyPostQuestion : public PostMsg
@@ -134,8 +134,6 @@ class DiplomacyPostInfo : public PostMsg
         /// Typ der Diplomatienachricht
 
 };
-
-class noShip;
 
 class ShipPostMsg : public ImagePostMsgWithLocation
 {

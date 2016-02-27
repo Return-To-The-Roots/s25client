@@ -17,13 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Addons.h"
-
-#include "controls/controls.h"
+#include "Loader.h"
+#include "Window.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlCheck.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlText.h"
+#include "mygettext.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "Messenger.h"
 
 #include "Loader.h"
@@ -26,7 +26,7 @@
 #include "../mygettext/src/mygettext.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Chat-Destination-String, der entsprechend angezeigt wird
 const std::string CD_STRINGS[4] =

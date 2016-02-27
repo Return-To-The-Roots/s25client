@@ -19,8 +19,9 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
+#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "Loader.h"
@@ -29,17 +30,15 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "EventManager.h"
-#include "nofWoodcutter.h"
-#include "nofHunter.h"
-#include "nofArmorer.h"
 #include "SoundManager.h"
+#include "PostMsg.h"
 #include "SerializedGameData.h"
-#include "ai/AIEventManager.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/JobConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)

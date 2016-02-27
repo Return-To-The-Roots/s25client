@@ -17,25 +17,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwBuildings.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "buildings/nobMilitary.h"
-#include "iwMilitaryBuilding.h"
 #include "buildings/nobUsual.h"
-#include "iwBuilding.h"
+#include "buildings/nobMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "iwMilitaryBuilding.h"
+#include "iwBuilding.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
-
+#include "gameData/const_gui_ids.h"
 #include "files.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned BUILDINGS_COUNT = 32;
 

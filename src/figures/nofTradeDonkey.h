@@ -20,6 +20,7 @@
 #include "figures/noFigure.h"
 #include "gameTypes/GoodTypes.h"
 #include <deque>
+class SerializedGameData;
 
 /// For wares: donkey who carry the wares and follow the leader
 /// Can also be the other people following the leader!

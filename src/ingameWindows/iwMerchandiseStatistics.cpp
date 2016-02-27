@@ -17,15 +17,20 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwMerchandiseStatistics.h"
-#include "controls/controls.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-
+#include "Loader.h"
+#include "controls/ctrlMultiSelectGroup.h"
+#include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlText.h"
+#include "ogl/glArchivItem_Font.h"
+#include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 // Farben für die einzelnen Balken
 const unsigned int iwMerchandiseStatistics::BarColors[14] =

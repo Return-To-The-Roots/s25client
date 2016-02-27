@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noFighting.h"
 #include "gameData/MilitaryConsts.h"
 
@@ -27,14 +27,13 @@
 #include "GameClient.h"
 #include "Loader.h"
 #include "noSkeleton.h"
-#include "buildings/nobBaseMilitary.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NOP_FIGHTING)
 {

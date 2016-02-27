@@ -19,8 +19,8 @@
 
 #include "nofSoldier.h"
 
-class nofAttacker;
-
+class SerializedGameData;
+class nobBaseMilitary;
 
 /// Soldaten, die nur in Militärgebäude warten bzw. vom HQ dareinkommen und noch keine spezielle Funktion
 /// übernehmen

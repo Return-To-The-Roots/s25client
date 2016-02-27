@@ -18,10 +18,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noAnimal.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "EventManager.h"
@@ -33,7 +32,7 @@
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)

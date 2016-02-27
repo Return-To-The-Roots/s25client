@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h"
+#include "main.h" // IWYU pragma: keep
 #include "VideoSDL.h"
 #ifndef RTTR_Assert
 #   define RTTR_Assert assert
@@ -26,6 +26,8 @@
 #include "VideoDriverLoaderInterface.h"
 #include <VideoInterface.h>
 #include <build_version.h>
+
+#include <SDL.h>
 #include <algorithm>
 
 #ifdef _WIN32
@@ -34,7 +36,7 @@
 #endif // _WIN32
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

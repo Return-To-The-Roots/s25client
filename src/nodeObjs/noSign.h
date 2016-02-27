@@ -18,7 +18,7 @@
 #define NOSIGN_H_INCLUDED
 
 #include "noDisappearingEnvObject.h"
-#include "EventManager.h"
+class SerializedGameData;
 
 /// Stellt ein Ressourcen-Schild dar
 class noSign : public noDisappearingEnvObject

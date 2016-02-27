@@ -18,6 +18,9 @@
 #define NOF_SCOUT_LOOKOUTTOWER
 
 #include "nofBuildingWorker.h"
+class SerializedGameData;
+class nobBaseWarehouse;
+class nobUsual;
 
 /// Späher, der in einem Spähturm "arbeitet"
 class nofScout_LookoutTower : public nofBuildingWorker

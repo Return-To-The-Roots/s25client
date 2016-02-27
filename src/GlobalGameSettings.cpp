@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "GlobalGameSettings.h"
 
 #include "Settings.h"
@@ -68,9 +68,10 @@
 #include "Serializer.h"
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
+#include <iostream>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -20,7 +20,8 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "gameTypes/Inventory.h"
+class glArchivItem_Font;
+struct Inventory;
 
 class iwWares : public IngameWindow
 {

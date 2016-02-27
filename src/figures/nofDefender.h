@@ -21,6 +21,8 @@
 
 class nofAttacker;
 class nofPassiveSoldier;
+class SerializedGameData;
+class nobBaseMilitary;
 
 /// Verteidiger, der rauskommt, wenn ein Angreifer an die Flagge kommt
 class nofDefender : public nofActiveSoldier

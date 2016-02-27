@@ -20,6 +20,9 @@
 #pragma once
 
 #include "AIBase.h"
+class GameClientPlayerList;
+class GameWorldBase;
+class GlobalGameSettings;
 
 /// Klasse für die standardmäßige (vorerst) KI
 class AIPlayer : public AIBase

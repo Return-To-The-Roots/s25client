@@ -17,13 +17,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ArchivItem_Palette.h"
+#include <GL/gl.h>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

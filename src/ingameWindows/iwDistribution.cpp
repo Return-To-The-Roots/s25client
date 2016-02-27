@@ -17,16 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwDistribution.h"
 
 #include "Loader.h"
-#include "controls/controls.h"
-
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlProgress.h"
+#include "controls/ctrlTab.h"
 #include "GameClient.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 
 /// Anzahl der einzelnen Einstellungen in den Gruppen

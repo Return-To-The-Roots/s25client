@@ -19,18 +19,18 @@
 // Header
 
 
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "nofArmorer.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/JobConsts.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)

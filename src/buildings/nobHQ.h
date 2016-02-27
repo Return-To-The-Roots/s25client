@@ -20,6 +20,7 @@
 
 #include "nobBaseWarehouse.h"
 #include "gameData/MilitaryConsts.h"
+class SerializedGameData;
 
 class nobHQ : public nobBaseWarehouse
 {

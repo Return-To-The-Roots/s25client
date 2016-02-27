@@ -19,6 +19,8 @@
 
 #include "AudioInterface.h"
 #include <vector>
+class AudioDriverLoaderInterface;
+class Sound;
 
 /// Basisklasse für einen Audiotreiber.
 class AudioDriver: public IAudioDriver

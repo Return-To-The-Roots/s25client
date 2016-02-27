@@ -3,16 +3,11 @@
 
 #include "IngameWindow.h"
 
-class dskGameInterface;
-class nobUsual;
-class GameWorldViewer;
 class nobBaseWarehouse;
 
 class iwTrade : public IngameWindow
 {
-        GameWorldViewer* const gwv;
-        dskGameInterface* const gi; ///< Das GameInterface
-        nobBaseWarehouse* const wh;              ///< Das zugehörige Gebäudeobjekt
+        nobBaseWarehouse& wh;              ///< Das zugehörige Gebäudeobjekt
         /// Possible wares
         std::vector<GoodType> wares;
         /// Possible figures
@@ -21,7 +16,7 @@ class iwTrade : public IngameWindow
         std::vector<nobBaseWarehouse*> possibleSrcWarehouses;
 
     public:
-        iwTrade(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* const wh);
+        iwTrade(nobBaseWarehouse& wh);
 
     private:
 

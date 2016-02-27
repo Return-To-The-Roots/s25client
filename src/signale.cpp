@@ -17,19 +17,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #ifdef _WIN32
     #include <windows.h>
 #endif // _WIN32
 #include "signale.h"
-#include "signal.h"
 
 #include "GlobalVars.h"
 #include "Log.h"
 #include <cstdlib>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

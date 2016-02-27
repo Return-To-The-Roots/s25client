@@ -19,9 +19,8 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Bitmap.h"
 #include "glArchivItem_Bitmap.h"
-#include <cstdio>
+namespace libsiedler2 { class ArchivItem_Palette; }
 
 /// Klasse für GL-Direct-Bitmaps.
 class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap

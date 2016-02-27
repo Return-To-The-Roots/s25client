@@ -17,32 +17,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "iwOptionsWindow.h"
 
 #include "WindowManager.h"
 #include "Loader.h"
 #include "Settings.h"
-#include "files.h"
-
-#include "controls/controls.h"
 
 #include "iwEndgame.h"
 #include "iwSurrender.h"
 #include "iwTextfile.h"
 #include "iwSave.h"
 #include "iwSettings.h"
-
+#include "controls/ctrlButton.h"
+#include "controls/ctrlProgress.h"
 #include "SoundManager.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "MusicPlayer.h"
 #include "iwMusicPlayer.h"
 #include "ogl/glArchivItem_Font.h"
-
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -19,6 +19,7 @@
 #define NOB_STOREHOUSE_H_
 
 #include "nobBaseWarehouse.h"
+class SerializedGameData;
 
 class nobStorehouse : public nobBaseWarehouse
 {

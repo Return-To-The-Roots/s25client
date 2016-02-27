@@ -17,16 +17,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "noDisappearingEnvObject.h"
 
 #include "EventManager.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "Random.h"
+#include "libutil/src/colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

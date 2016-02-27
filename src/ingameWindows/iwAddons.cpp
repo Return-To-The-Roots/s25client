@@ -17,15 +17,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwAddons.h"
-#include "controls/controls.h"
 
 #include "GlobalGameSettings.h"
-#include "GameClient.h"
+#include "Loader.h"
+#include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlScrollBar.h"
+#include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
+class MouseCoords;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

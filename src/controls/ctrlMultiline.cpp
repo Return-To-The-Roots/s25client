@@ -17,15 +17,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "ctrlMultiline.h"
 #include "ctrlScrollBar.h"
 #include "ogl/glArchivItem_Font.h"
 #include "driver/src/MouseCoords.h"
+#include "CollisionDetection.h"
 #include <algorithm>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

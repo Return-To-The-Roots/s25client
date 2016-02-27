@@ -21,7 +21,8 @@
 #include "noCoordBase.h"
 #include "EventManager.h"
 
-class nofWoodcutter;
+class FOWObject;
+class SerializedGameData;
 
 /// Stellt einen Baum dar
 /*

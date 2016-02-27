@@ -17,7 +17,6 @@
 #ifndef AUDIOINTERFACE_H_INCLUDED
 #define AUDIOINTERFACE_H_INCLUDED
 
-#include "Interface.h"
 #include "AudioType.h"
 
 class Sound;

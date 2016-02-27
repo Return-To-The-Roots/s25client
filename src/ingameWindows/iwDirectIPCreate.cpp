@@ -17,21 +17,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwDirectIPCreate.h"
 
 #include "Loader.h"
 #include "WindowManager.h"
-#include "controls/controls.h"
-#include "GameProtocol.h"
-#include "LobbyClient.h"
 #include "Settings.h"
-
+#include "controls/ctrlButton.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlOptionGroup.h"
 #include "desktops/dskSelectMap.h"
 #include "ogl/glArchivItem_Font.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

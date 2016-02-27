@@ -17,22 +17,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "IngameWindow.h"
 
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
-#include "Settings.h"
-#include "GlobalVars.h"
+#include "CollisionDetection.h"
 #include "driver/src/MouseCoords.h"
+#include "gameData/const_gui_ids.h"
 #include <cstring>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned MAX_POS_SAVE_ENTRIES = CGI_MERCHANDISE_STATISTICS + 1;
-std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES,
-        Point<unsigned short>(0xffff, 0xffff));
+std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES, Point<unsigned short>::Invalid());
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

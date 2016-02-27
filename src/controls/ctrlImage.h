@@ -20,6 +20,8 @@
 #pragma once
 
 #include "Window.h"
+class MouseCoords;
+class glArchivItem_Bitmap;
 
 class ctrlImage : public Window
 {

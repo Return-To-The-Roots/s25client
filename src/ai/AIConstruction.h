@@ -19,16 +19,22 @@
 
 #pragma once
 
-#include "AIJHHelper.h"
-#include "nodeObjs/noFlag.h"
-#include "AIInterface.h"
-#include <boost/array.hpp>
-#include <limits>
+#include "GameClientPlayer.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
+#include <deque>
 
 class AIPlayerJH;
 
-namespace gc { class GameCommand; }
+class AIInterface;
+class noFlag;
+class noRoadNode;
+class nobMilitary;
+namespace AIJH { class BuildJob; }
+namespace AIJH { class ConnectJob; }
+namespace AIJH { class Job; }
+namespace boost { template <class T, std::size_t N> class array; }
 
 class AIConstruction
 {
@@ -126,17 +132,12 @@ class AIConstruction
         /// Contains how many buildings of every type is wanted
         std::vector<unsigned> buildingsWanted;
 
-        /// The current job the AI is working on
-        AIJH::Job* currentJob;
-
         /// Contains the build jobs the AI should try to execute
         std::deque<AIJH::BuildJob*> buildJobs;
 		std::deque<AIJH::ConnectJob*> connectJobs;
 
         /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
         BuildingCount buildingCounts;
-
-        //std::list<AIJH::Coords> storeHouses;
 
         unsigned char playerID;
 };

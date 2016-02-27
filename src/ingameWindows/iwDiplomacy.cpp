@@ -17,21 +17,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwDiplomacy.h"
 
-#include "desktops/dskGameInterface.h"
-
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls/controls.h"
 #include "WindowManager.h"
 #include "GameClientPlayer.h"
 #include "iwMsgbox.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlDeepening.h"
+#include "controls/ctrlText.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// Position des Headers der Tabelle (Y)
 const unsigned short HEADER_Y = 30;

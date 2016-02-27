@@ -18,6 +18,8 @@
 #define NOF_CATAPULTMAN_H_
 
 #include "nofBuildingWorker.h"
+class SerializedGameData;
+class nobUsual;
 
 /// Arbeiter im Katapult
 class nofCatapultMan : public nofBuildingWorker

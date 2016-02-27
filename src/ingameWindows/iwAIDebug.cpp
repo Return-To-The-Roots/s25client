@@ -17,19 +17,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwAIDebug.h"
-
-#include "WindowManager.h"
-#include "controls/controls.h"
 
 #include "GameClient.h"
 #include "GameServer.h"
 #include "ai/AIPlayerJH.h"
-
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlText.h"
+#include "Loader.h"
+#include "ogl/glArchivItem_Font.h"
+#include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

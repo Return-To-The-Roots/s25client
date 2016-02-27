@@ -17,19 +17,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "BinaryFile.h"
 #include "GameSavedFile.h"
 #include "GamePlayerInfo.h"
+#include "helpers/Deleter.h"
 #include "../libutil/src/Serializer.h"
 #include "../libutil/src/Log.h"
-#include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

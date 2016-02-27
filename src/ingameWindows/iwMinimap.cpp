@@ -17,14 +17,15 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "defines.h"
+#include "defines.h" // IWYU pragma: keep
 #include "iwMinimap.h"
 #include "controls/ctrlIngameMinimap.h"
 #include "Loader.h"
 #include "controls/ctrlButton.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
-#include "DebugNew.h"
+#include "DebugNew.h" // IWYU pragma: keep
 
 /// (maximale) Größe des Minimapfensters normal
 const unsigned short MINIMAP_WINDOW_WIDTH = 200;
