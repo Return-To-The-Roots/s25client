@@ -53,7 +53,7 @@
 const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS }};
 
 AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
-    : aii(aii), aijh(aijh), currentJob(NULL)
+    : aii(aii), aijh(aijh)
 {
     playerID = aii.GetPlayerID();
     buildingsWanted.resize(BUILDING_TYPES_COUNT);

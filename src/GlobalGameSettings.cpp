@@ -68,6 +68,7 @@
 #include "Serializer.h"
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
+#include <iostream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

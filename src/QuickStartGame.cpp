@@ -24,6 +24,7 @@
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include <boost/array.hpp>
+#include <iostream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

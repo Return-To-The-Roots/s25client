@@ -26,6 +26,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
+#include <iostream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

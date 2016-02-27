@@ -87,13 +87,13 @@ Message* GameMessage::create_game(unsigned short id)
     return msg;
 }
 
-void GameMessage::Serialize(Serializer& ser) const override
+void GameMessage::Serialize(Serializer& ser) const
 {
     Message::Serialize(ser);
     ser.PushUnsignedChar(player);
 }
 
-void GameMessage::Deserialize(Serializer& ser) override
+void GameMessage::Deserialize(Serializer& ser)
 {
     Message::Deserialize(ser);
     player = ser.PopUnsignedChar();
