@@ -41,7 +41,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 
         /// Zeichnet einen Text.
         void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);
-        void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...", unsigned short end_length = 0);
+        void Draw(short x, short y, const std::string& text,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end   = "...",  unsigned short end_length = 0);
 
         /// liefert die Länge einer Zeichenkette.
         unsigned short getWidth(const std::wstring& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned short* max = NULL) const;
