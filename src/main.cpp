@@ -45,6 +45,7 @@
 
 #include "ogl/glAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
+#include "mygettext/src/mygettext.h"
 
 #ifdef _WIN32
 #   include "../win32/resource.h"

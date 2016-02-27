@@ -24,6 +24,7 @@
 #include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "driver/src/MouseCoords.h"
+#include "ogl/oglIncludes.h"
 #include <cstdarg>
 
 // Include last!

@@ -22,7 +22,7 @@
 #include "../libsiedler2/src/ArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "colors.h"
-#include <GL/gl.h>
+#include "ogl/oglIncludes.h"
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
 #include <vector>

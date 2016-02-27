@@ -39,6 +39,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include "Log.h"
 #include "libutil/src/error.h"
 #include "libutil/src/colors.h"

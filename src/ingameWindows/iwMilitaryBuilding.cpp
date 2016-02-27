@@ -31,6 +31,7 @@
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
 #include "controls/ctrlButton.h"
+#include <set>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

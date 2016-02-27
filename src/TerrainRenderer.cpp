@@ -32,8 +32,7 @@
 #include "Loader.h"
 #include "helpers/roundToNextPow2.h"
 #include "libsiedler2/src/ArchivInfo.h"
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include "ogl/oglIncludes.h"
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
 

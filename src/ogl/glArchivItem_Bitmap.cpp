@@ -21,7 +21,7 @@
 #include "glArchivItem_Bitmap.h"
 
 #include "drivers/VideoDriverWrapper.h"
-#include <GL/gl.h>
+#include "ogl/oglIncludes.h"
 #include <vector>
 
 // Include last!

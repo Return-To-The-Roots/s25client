@@ -18,6 +18,7 @@
 #ifndef includes_h__
 #define includes_h__
 
+// IWYU pragma: begin_exports
 #ifdef __APPLE__
     #include <OpenGL/gl.h>
     #include <OpenGL/glext.h>
@@ -29,5 +30,6 @@
     #include <GL/gl.h>
     #include <GL/glext.h>
 #endif // !__APPLE__
+// IWYU pragma: end_exports
 
 #endif // includes_h__

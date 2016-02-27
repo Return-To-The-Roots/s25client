@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "ArchivItem_BitmapBase.h"
+#include "ArchivItem_Bitmap.h"
 
 class glArchivItem_BitmapBase: public virtual libsiedler2::ArchivItem_BitmapBase
 {

@@ -40,6 +40,7 @@
 
 #include <Log.h>
 #include <boost/lexical_cast.hpp>
+#include <set>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -21,7 +21,7 @@
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ArchivItem_Palette.h"
-#include <GL/gl.h>
+#include "ogl/oglIncludes.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

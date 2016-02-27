@@ -26,7 +26,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "Loader.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include <GL/gl.h>
+#include "ogl/oglIncludes.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
