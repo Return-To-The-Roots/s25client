@@ -77,8 +77,9 @@ glArchivItem_Bitmap* ImagePostMsgWithLocation::GetImage_() const
     if (senderBuilding == BLD_NOTHING)
     {
         // mal sehen, nach messagetype bebildern?
+        throw std::runtime_error("Post message without building not supported (yet)");
     }
-    return LOADER.GetNationImageN(senderNation, 250 + 5 * senderBuilding);
+    return LOADER.GetNationImage(senderNation, 250 + 5 * senderBuilding);
 }
 
 

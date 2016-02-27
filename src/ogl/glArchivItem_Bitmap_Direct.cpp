@@ -20,6 +20,7 @@
 #include "defines.h"
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "ArchivItem_Palette.h"
 
 // Include last!
 #include "DebugNew.h"
@@ -31,7 +32,6 @@
  *  @author FloSoft
  */
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(void)
-    : baseArchivItem_Bitmap(), glArchivItem_Bitmap()
 {
 }
 
@@ -42,7 +42,7 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(void)
  *  @author FloSoft
  */
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item)
-    : baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
+    : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
 {
 }
 
@@ -63,7 +63,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, color, palette);
 
     // Ist eine GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
-    if(texture != 0)
+    if(GetTexNoCreate() != 0)
     {
         if(x < tex_width_ && y < tex_height_)
         {
@@ -80,7 +80,7 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
                 clr.a = 0xFF;
             }
 
-            VIDEODRIVER.BindTexture(texture);
+            VIDEODRIVER.BindTexture(GetTexNoCreate());
             glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &clr);
         }
     }
@@ -105,13 +105,13 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, r, g, b, a);
 
     // Ist ein GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
-    if(texture != 0)
+    if(GetTexNoCreate() != 0)
     {
         if(x < tex_width_ && y < tex_height_)
         {
             unsigned char buffer[4] = { r, g, b, a };
 
-            VIDEODRIVER.BindTexture(texture);
+            VIDEODRIVER.BindTexture(GetTexNoCreate());
             glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
         }
     }

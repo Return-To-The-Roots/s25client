@@ -531,10 +531,10 @@ void Loader::fillCaches()
             }
             else
             {
-                bmp.add(GetNationImageN(nation, 250 + 5 * type));
-                bmp.addShadow(GetNationImageN(nation, 250 + 5 * type + 1));
-                skel.add(GetNationImageN(nation, 250 + 5 * type + 2));
-                skel.addShadow(GetNationImageN(nation, 250 + 5 * type + 3));
+                bmp.add(GetNationImage(nation, 250 + 5 * type));
+                bmp.addShadow(GetNationImage(nation, 250 + 5 * type + 1));
+                skel.add(GetNationImage(nation, 250 + 5 * type + 2));
+                skel.addShadow(GetNationImage(nation, 250 + 5 * type + 3));
             }
 
             stp->add(bmp);
@@ -553,8 +553,8 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(static_cast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr)));
-                bmp.addShadow(GetNationImageN(nation, nr + 10));
+                bmp.add(GetNationPlayerImage(nation, nr));
+                bmp.addShadow(GetNationImage(nation, nr + 10));
 
                 stp->add(bmp);
             }
@@ -628,8 +628,8 @@ void Loader::fillCaches()
 
         bmp.reset();
 
-        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, 0)));
-        bmp.addShadow(GetNationImageN(nation, 1));
+        bmp.add(GetNationPlayerImage(nation, 0));
+        bmp.addShadow(GetNationImage(nation, 1));
 
         stp->add(bmp);
     }
@@ -725,8 +725,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(GetImageN("boat", ((dir + 3) % 6) * 8 + ani_step)));
-            bmp.addShadow(dynamic_cast<glArchivItem_Bitmap*>(GetMapImageN(2048 + dir % 3)));
+            bmp.add(GetPlayerImage("boat", ((dir + 3) % 6) * 8 + ani_step));
+            bmp.addShadow(GetMapImageN(2048 + dir % 3));
 
             stp->add(bmp);
         }
@@ -940,6 +940,20 @@ bool Loader::CreateTerrainTextures(void)
     }
 
     return true;
+}
+
+glArchivItem_Bitmap* Loader::GetNationImage(unsigned int nation, unsigned int nr)
+{
+    glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
+    RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap*>(bmp));
+    return static_cast<glArchivItem_Bitmap*>(bmp);
+}
+
+glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned int nation, unsigned int nr)
+{
+    glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
+    RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap_Player*>(bmp));
+    return static_cast<glArchivItem_Bitmap_Player*>(bmp);
 }
 
 glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame/* = 0*/)
@@ -1162,7 +1176,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_Bitmap* out = dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(bobtype));
+            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(GlAllocator().create(bobtype));
 
             if(!out)
             {
@@ -1183,7 +1197,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 case libsiedler2::BOBTYPE_BITMAP_SHADOW:
                 case libsiedler2::BOBTYPE_BITMAP_RAW:
                 {
-                    out->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
                 } break;
                 case libsiedler2::BOBTYPE_BITMAP_PLAYER:
                 {

@@ -52,12 +52,12 @@ void nofPigbreeder::DrawWorking(int x, int y)
     unsigned int plColor = gwg->GetPlayer(player).color;
     int walksteps = 16;
 
-//  LOADER.GetImageN("rom_bobs", 148+(now_id = GAMECLIENT.Interpolate(12,current_ev)%12))
+//  LOADER.GetPlayerImage("rom_bobs", 148+(now_id = GAMECLIENT.Interpolate(12,current_ev)%12))
 //      ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
 
     if(now_id < 16)
     {
-        if (now_id < 8) LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_PIGFARM + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        if (now_id < 8) LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         int walkx = x + walkstart[wpNation][0] + ((offsets[wpNation][0] - walkstart[wpNation][0]) * now_id / walksteps);
         int walky = y + walkstart[wpNation][1] + ((offsets[wpNation][1] - walkstart[wpNation][1]) * now_id / walksteps);
 
@@ -66,7 +66,7 @@ void nofPigbreeder::DrawWorking(int x, int y)
     }
     if(now_id >= 16 && now_id < 40)
     {
-        LOADER.GetImageN("rom_bobs", 148 + (now_id - 16) / 2)
+        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
         ->Draw(x + offsets[wpNation][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
 
         // Evtl Sound abspielen
@@ -78,7 +78,7 @@ void nofPigbreeder::DrawWorking(int x, int y)
     }
     if(now_id >= 40 && now_id < 56)
     {
-        if(now_id > 46) LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_PIGFARM + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        if(now_id > 46) LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         int walkx = x + offsets[wpNation][0] + (((walkstart[wpNation][0] - offsets[wpNation][0])) * (now_id - 40) / walksteps);
         int walky = y + offsets[wpNation][1] + (((walkstart[wpNation][1] - offsets[wpNation][1])) * (now_id - 40) / walksteps);
         LOADER.bob_jobs_cache[wpNation][JOB_PIGBREEDER][1][(now_id - 40) % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);

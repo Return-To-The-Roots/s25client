@@ -71,7 +71,7 @@ void nofDonkeybreeder::DrawWorking(int x, int y)
 
     if(now_id < 400)
     {
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(x, y);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][4][(now_id / 70) % 8].draw(x + walk_start[nation][0] + now_id / 100, y + walk_start[nation][1] + now_id / 100, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //      LOADER.GetBobN("jobs")->Draw(24,4,false,(now_id/70)%8,x+walk_start[nation][0]+now_id/100,y+walk_start[nation][1]+now_id/100,color);
     }
@@ -79,13 +79,13 @@ void nofDonkeybreeder::DrawWorking(int x, int y)
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][3][((now_id - 400) / 70) % 8].draw(x + walk_start[nation][0] + 4 + walk_length[nation] * (now_id - 400) / 800, y + walk_start[nation][1] + 4, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //      LOADER.GetBobN("jobs")->Draw(24,3,false,((now_id-400)/70)%8,x+walk_start[nation][0]+4+walk_length[nation]*(now_id-400)/800,y+walk_start[nation][1]+4,color);
     else if(now_id < 2000)
-        LOADER.GetImageN("rom_bobs", 291 + (now_id - 1200) / 100)->Draw(x + walk_start[nation][0] + 4 + walk_length[nation], y + walk_start[nation][1] + 4, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)->Draw(x + walk_start[nation][0] + 4 + walk_length[nation], y + walk_start[nation][1] + 4, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
     else if(now_id < 2800)
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][0][((now_id - 2000) / 70) % 8].draw(x + walk_start[nation][0] + 4 + walk_length[nation] * (800 - (now_id - 2000)) / 800, y + walk_start[nation][1] + 4, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //      LOADER.GetBobN("jobs")->Draw(24,0,false,((now_id-2000)/70)%8,x+walk_start[nation][0]+4+walk_length[nation]*(800-(now_id-2000))/800,y+walk_start[nation][1]+4,color);
     else if(now_id < 3200)
     {
-        LOADER.GetNationImageN(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(x, y);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][1][((now_id - 2800) / 70) % 8].draw(x + walk_start[nation][0] + (400 - (now_id - 2800)) / 100, y + walk_start[nation][1] + (400 - (now_id - 2800)) / 100, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 //      LOADER.GetBobN("jobs")->Draw(24,1,false,((now_id-2800)/70)%8,x+walk_start[nation][0]+(400-(now_id-2800))/100,y+walk_start[nation][1]+(400-(now_id-2800))/100,color);
     }

@@ -1566,7 +1566,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
 
     LOG.lprintf("There are %u identical async log entries.\n", identical);
 
-    if ((SETTINGS.global.submit_debug_data == 1)
+    if (SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
             || (MessageBoxA(NULL,
                             _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in the future? Thank you very much!"),

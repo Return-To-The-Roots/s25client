@@ -373,12 +373,12 @@ bool VideoSDL::MessageLoop(void)
                 mouse_xy.x = ev.button.x;
                 mouse_xy.y = ev.button.y;
 
-                if(/*!mouse_xy.ldown && */(ev.button.button == SDL_BUTTON_LEFT))
+                if(/*!mouse_xy.ldown && */ev.button.button == SDL_BUTTON_LEFT)
                 {
                     mouse_xy.ldown = true;
                     CallBack->Msg_LeftDown(mouse_xy);
                 }
-                if(/*!mouse_xy.rdown &&*/ (ev.button.button == SDL_BUTTON_RIGHT))
+                if(/*!mouse_xy.rdown &&*/ ev.button.button == SDL_BUTTON_RIGHT)
                 {
                     mouse_xy.rdown = true;
                     CallBack->Msg_RightDown(mouse_xy);
@@ -389,12 +389,12 @@ bool VideoSDL::MessageLoop(void)
                 mouse_xy.x = ev.button.x;
                 mouse_xy.y = ev.button.y;
 
-                if(/*mouse_xy.ldown &&*/ (ev.button.button == SDL_BUTTON_LEFT))
+                if(/*mouse_xy.ldown &&*/ ev.button.button == SDL_BUTTON_LEFT)
                 {
                     mouse_xy.ldown = false;
                     CallBack->Msg_LeftUp(mouse_xy);
                 }
-                if(/*mouse_xy.rdown &&*/ (ev.button.button == SDL_BUTTON_RIGHT))
+                if(/*mouse_xy.rdown &&*/ ev.button.button == SDL_BUTTON_RIGHT)
                 {
                     mouse_xy.rdown = false;
                     CallBack->Msg_RightUp(mouse_xy);

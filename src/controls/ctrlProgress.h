@@ -59,7 +59,6 @@ class ctrlProgress : public Window
         TextureColor tc;
 
         unsigned short position;
-        unsigned short minimum;
         unsigned short maximum;
 
         // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)

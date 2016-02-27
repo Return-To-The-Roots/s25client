@@ -76,13 +76,13 @@ void nofBaker::DrawWorking(int x, int y)
 
     if(now_id < 2) //hinauslaufen teil 1
     {
-        LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][0],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
     if((now_id >= 2) && (now_id < 4) ) //hinauslaufen teil 2
     {
-        LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id % 8].draw(walkx, walky, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][1],true,now_id%8,walkx,walky,COLORS[plColor]);
     }
@@ -93,7 +93,7 @@ void nofBaker::DrawWorking(int x, int y)
     }
     if((now_id >= 8) && (now_id < 16) ) //brot in den ofen schieben
     {
-        LOADER.GetImageN("rom_bobs", 182 + (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 182 + (now_id % 8))
         ->Draw(x + offsets[wpNation][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
 
         // "Brot-rein/raus"-Sound
@@ -105,12 +105,12 @@ void nofBaker::DrawWorking(int x, int y)
     }
     if((now_id >= 16) && (now_id < max_id - 16) ) //warten
     {
-        LOADER.GetImageN("rom_bobs", 189)
+        LOADER.GetPlayerImage("rom_bobs", 189)
         ->Draw(x + offsets[wpNation][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
     }
     if((now_id >= max_id - 16) && (now_id < max_id - 8) ) //brot aus dem ofen holen
     {
-        LOADER.GetImageN("rom_bobs", 182 + 7 - (now_id % 8))
+        LOADER.GetPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))
         ->Draw(x + offsets[wpNation][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[plColor]);
 
         // "Brot-rein/raus"-Sound
@@ -127,13 +127,13 @@ void nofBaker::DrawWorking(int x, int y)
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2) ) //reingehn teil 1
     {
-        LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][4],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }
     if((now_id >= max_id - 2) && (now_id < max_id) ) //reingehn teil 2
     {
-        LOADER.GetNationImageN(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
         LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkx_r, walky_r, COLOR_WHITE, COLORS[plColor]);
 //        LOADER.GetBobN("jobs")->Draw(17,walkdirection[wpNation][5],true,now_id%8,walkx_r,walky_r,COLORS[plColor]);
     }

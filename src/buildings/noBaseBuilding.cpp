@@ -272,7 +272,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
     if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 6 : 1));
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type_);
+        return LOADER.GetNationImage(nation, 250 + 5 * type_);
 }
 
 /// Gibt ein Bild zurück für das Gebäudegerüst
@@ -281,7 +281,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
     if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 3);
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 2);
+        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 2);
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude
@@ -290,7 +290,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
     if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 2);
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 1);
+        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 1);
 }
 
 /// Gibt ein Bild zurück für das Gebäudegerüst
@@ -299,7 +299,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
     if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 4);
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 3);
+        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 3);
 }
 
 /// Gibt ein Bild zurück für die Tür des Gebäudes
@@ -308,6 +308,6 @@ glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
     if (type_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
     else
-        return LOADER.GetNationImageN(nation, 250 + 5 * type_ + 4);
+        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 4);
 }
 

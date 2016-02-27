@@ -112,12 +112,12 @@ void noFighting::Draw(int x, int y)
             if(animation < 4)
             {
                 // Noch kurz dastehen und warten, bis man stirbt
-                glArchivItem_Bitmap* image = LOADER.GetImageN("rom_bobs", FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).nation][soldiers[turn - 3]->GetRank()][turn - 3].defending[0][0]);
+                glArchivItem_Bitmap_Player* image = LOADER.GetPlayerImage("rom_bobs", FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).nation][soldiers[turn - 3]->GetRank()][turn - 3].defending[0][0]);
                 image->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color]);
             }
             else
                 // Sich in Luft auflösen
-                LOADER.GetImageN("rom_bobs", 903 + animation - 4)->Draw(x + ((turn - 3 == 0) ? (-12) : 12), y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color]);
+                LOADER.GetPlayerImage("rom_bobs", 903 + animation - 4)->Draw(x + ((turn - 3 == 0) ? (-12) : 12), y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color]);
 
             // Sterbesound abspielen
             if(animation == 6)
@@ -148,7 +148,7 @@ void noFighting::Draw(int x, int y)
                 if(turn == i)
                 {
                     // Angreifen
-                    LOADER.GetImageN("rom_bobs",
+                    LOADER.GetPlayerImage("rom_bobs",
                                      FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].
                                      attacking[animation])->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer()).color]);
                 }
@@ -158,7 +158,7 @@ void noFighting::Draw(int x, int y)
                     if(defending_animation < 3)
                     {
                         // Verteidigungsanimation
-                        LOADER.GetImageN("rom_bobs",
+                        LOADER.GetPlayerImage("rom_bobs",
                                          FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].
                                          defending[defending_animation][animation])->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer()).color]);
 
@@ -174,7 +174,7 @@ void noFighting::Draw(int x, int y)
                         if(GAMECLIENT.Interpolate(8, current_ev) == HIT_MOMENT[soldiers[!i]->GetRank()])
                         {
                             // weiß aufblinken
-                            LOADER.GetImageN("rom_bobs",
+                            LOADER.GetPlayerImage("rom_bobs",
                                              HIT_SOLDIERS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()] + i)
                             ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer()).color]);
 
@@ -183,7 +183,7 @@ void noFighting::Draw(int x, int y)
                         }
                         else
                             // normal dastehen
-                            LOADER.GetImageN("rom_bobs",
+                            LOADER.GetPlayerImage("rom_bobs",
                                              FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].
                                              defending[0][0])->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(soldiers[i]->GetPlayer()).color]);
                     }

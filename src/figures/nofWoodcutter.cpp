@@ -60,7 +60,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
     else if(i < 82)
     {
         // 2. Hacken
-        LOADER.GetImageN("rom_bobs", 24 + (i - 10) % 8)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+        LOADER.GetPlayerImage("rom_bobs", 24 + (i - 10) % 8)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
         if((i - 10) % 8 == 3)
         {
@@ -72,7 +72,7 @@ void nofWoodcutter::DrawWorking(int x, int y)
     else if(i < 105)
     {
         // 3. Warten bis Baum umfällt
-        LOADER.GetImageN("rom_bobs", 24)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+        LOADER.GetPlayerImage("rom_bobs", 24)->Draw(x - 9, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
         if(i == 90)
         {

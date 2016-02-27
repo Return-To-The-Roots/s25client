@@ -218,21 +218,21 @@ void nobMilitary::Draw(int x, int y)
     unsigned flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
-        LOADER.GetMapImageN(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+        LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     unsigned frontier_distance_tmp = frontier_distance;
-    glArchivItem_Bitmap* bitmap = NULL;
+    glArchivItem_Bitmap_Player* bitmap = NULL;
     unsigned int animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
     if(frontier_distance_tmp == 2)
     {
         // todo Hafenflagge
-        bitmap = LOADER.GetImageN("map_new", 3150 + animationFrame);
+        bitmap = LOADER.GetPlayerImage("map_new", 3150 + animationFrame);
     }
     else
     {
         if(frontier_distance_tmp == 3) frontier_distance_tmp = 2;
-        bitmap = LOADER.GetMapImageN(3150 + frontier_distance_tmp * 4 + animationFrame);
+        bitmap = LOADER.GetMapPlayerImage(3150 + frontier_distance_tmp * 4 + animationFrame);
     }
     if(bitmap)
         bitmap->Draw(x + BORDER_FLAGS[nation][size][0], y + BORDER_FLAGS[nation][size][1], 0, 0, 0, 0, 0, 0);

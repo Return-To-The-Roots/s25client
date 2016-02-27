@@ -42,14 +42,14 @@ class glBitmapItem
             nx = b->getNx() - x;
             ny = b->getNy() - y;
         }
-        glBitmapItem(libsiedler2::baseArchivItem_Bitmap_Player* b, bool isOwning = false): bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
+        glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning = false): bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
         {
             b->getVisibleArea(x, y, w, h);
             nx = b->getNx() - x;
             ny = b->getNy() - y;
         }
 
-        libsiedler2::baseArchivItem_Bitmap* bmp;
+        libsiedler2::ArchivItem_BitmapBase* bmp;
         glBitmapItemType type;
         /// If this is true, the owner of the bitmap item should also delete the bitmap
         bool isOwning_;
@@ -110,7 +110,7 @@ class glSmartBitmap
         void drawTo(unsigned char* buffer, unsigned stride, unsigned height, int x_offset = 0, int y_offset = 0);
 
         void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, false, transferOwnership));}
-        void add(libsiedler2::baseArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}
+        void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}
         void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, true, transferOwnership));}
 
         static unsigned nextPowerOfTwo(unsigned k);

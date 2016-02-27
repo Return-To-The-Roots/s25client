@@ -31,9 +31,9 @@ struct AudioType
     static const int COUNT = AD_OTHER + 1;
 
     Type t_;
-    AudioType(Type t) : t_(t) { assert(t_ >= AD_UNKNOWN && t_ < COUNT); }
+    AudioType(Type t) : t_(t) { assert(static_cast<int>(t_) >= AD_UNKNOWN && static_cast<int>(t_) < COUNT); }
     /// Converts an UInt safely to a Direction
-    explicit AudioType(unsigned t): t_(Type(t % COUNT)){ assert(t_ >= AD_UNKNOWN && t_ < COUNT); }
+    explicit AudioType(unsigned t): t_(Type(t % COUNT)){}
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static AudioType fromInt(unsigned t){ return Type(t); }
     static AudioType fromInt(int t){ return Type(t); }

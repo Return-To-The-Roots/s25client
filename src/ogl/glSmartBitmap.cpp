@@ -469,13 +469,14 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
         {
             case TYPE_ARCHIVITEM_BITMAP:
             {
-                it->bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h);
+                dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
+                        ->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h);
 
                 break;
             }
             case TYPE_ARCHIVITEM_BITMAP_PLAYER:
             {
-                libsiedler2::baseArchivItem_Bitmap_Player* bmp = dynamic_cast<libsiedler2::baseArchivItem_Bitmap_Player*>(it->bmp);
+                libsiedler2::ArchivItem_Bitmap_Player* bmp = dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp);
 
                 bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
                            xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h, false);
@@ -489,7 +490,8 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
             {
                 std::vector<unsigned char> tmp(w * h * 4);
 
-                it->bmp->print(&tmp.front(), w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, it->x, it->y, it->w, it->h);
+                dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
+                        ->print(&tmp.front(), w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, it->x, it->y, it->w, it->h);
 
                 unsigned tmpIdx = 0;
 

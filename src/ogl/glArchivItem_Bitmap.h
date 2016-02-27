@@ -19,15 +19,12 @@
 
 #pragma once
 
+#include "glArchivItem_BitmapBase.h"
 #include "../libutil/src/colors.h"
 #include "../libsiedler2/src/ArchivItem_Bitmap.h"
 
-#ifdef _WIN32
-typedef unsigned long long uint64_t;
-#endif
-
 /// Basisklasse für GL-Bitmapitems.
-class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
+class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase
 {
     public:
         /// Konstruktor von @p glArchivItem_Bitmap.
@@ -35,31 +32,12 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap
         /// Kopiekonstruktor von @p glArchivItem_Bitmap.
         glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
-        /// Destruktor von @p glArchivItem_Bitmap.
-        virtual ~glArchivItem_Bitmap(void);
-
-        glArchivItem_Bitmap& operator=(const glArchivItem_Bitmap& item);
-
         /// Erzeugt und zeichnet die Textur.
-        virtual void Draw(short dst_x, short dst_y, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE, const unsigned int unused = COLOR_WHITE);
-
-        /// liefert das GL-Textur-Handle.
-        unsigned int GetTexture();
-        /// Löscht die GL-Textur (z.B fürs Neuerstellen)
-        virtual void DeleteTexture();
-        /// Setzt den Texturfilter auf einen bestimmten Wert.
-        virtual void setFilter(unsigned int filter);
-
-        unsigned short GetTexWidth() {return(tex_width_);}
-        unsigned short GetTexHeight() {return(tex_height_);}
+        void Draw(short dst_x, short dst_y, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE);
 
     protected:
-        /// Erzeugt die Textur.
-        virtual void GenerateTexture();
+        void FillTexture() override;
 
-    protected:
-        unsigned int texture; ///< Das GL-Textur-Handle
-        unsigned int filter;  ///< Der aktuell gewählte Texturfilter
 };
 
 #endif // !GLARCHIVITEM_BITMAP_INCLUDED

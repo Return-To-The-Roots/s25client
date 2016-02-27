@@ -270,12 +270,12 @@ void nofCarrier::Draw(int x, int y)
                         if (!useNewyearsEgg)
                         {
                             // Nein, dann Animation abspielen
-                            LOADER.GetImageN("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
+                            LOADER.GetPlayerImage("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
                             ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
                         }
                         else     // Silvesteregg
                         {
-                            glArchivItem_Bitmap* bmp = LOADER.GetImageN("firework", (current_gf - next_animation) / 3 + 1);
+                            glArchivItem_Bitmap_Player* bmp = LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
 
                             if (bmp)
                             {

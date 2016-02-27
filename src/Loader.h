@@ -108,22 +108,28 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned int max = 0xFFFFFFFF);
 
     public:
-        inline glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>( files_[file].archiv.get(nr) ); }
-        inline glArchivItem_Font* GetFontN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Font*>( files_[file].archiv.get(nr) ); }
-        inline libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned int nr = 0) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>( files_[file].archiv.get(nr) ); }
-        inline glArchivItem_Sound* GetSoundN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Sound*>( files_[file].archiv.get(nr) ); }
-        inline std::string GetTextN(const std::string& file, unsigned int nr) { libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>( files_[file].archiv.get(nr) ); return archiv ? archiv->getText() : "text missing"; }
-        inline libsiedler2::ArchivInfo* GetInfoN(const std::string& file) { return &files_[file].archiv; }
-        inline glArchivItem_Bob* GetBobN(const std::string& file) { return dynamic_cast<glArchivItem_Bob*>( files_[file].archiv.get(0) ); };
-        inline glArchivItem_Bitmap* GetNationImageN(unsigned int nation, unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(nation_gfx[nation]->get(nr)); }
-        inline glArchivItem_Bitmap* GetMapImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(map_gfx->get(nr)); }
-        inline glArchivItem_Bitmap* GetTexImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr)); }
-        inline libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr)); }
-        inline libsiedler2::ArchivItem_Ini* GetSettingsIniN(const std::string& name) { return static_cast<libsiedler2::ArchivItem_Ini*>( GetInfoN(CONFIG_NAME)->find(name) ); }
+        glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned int nr) { return convertChecked<glArchivItem_Bitmap*>( files_[file].archiv.get(nr) ); }
+        glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned int nr) { return convertChecked<glArchivItem_Bitmap_Player*>( files_[file].archiv.get(nr) ); }
+        glArchivItem_Font* GetFontN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Font*>( files_[file].archiv.get(nr) ); }
+        libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned int nr = 0) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>( files_[file].archiv.get(nr) ); }
+        glArchivItem_Sound* GetSoundN(const std::string& file, unsigned int nr) { return dynamic_cast<glArchivItem_Sound*>( files_[file].archiv.get(nr) ); }
+        std::string GetTextN(const std::string& file, unsigned int nr) { libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>( files_[file].archiv.get(nr) ); return archiv ? archiv->getText() : "text missing"; }
+        libsiedler2::ArchivInfo* GetInfoN(const std::string& file) { return &files_[file].archiv; }
+        glArchivItem_Bob* GetBobN(const std::string& file) { return dynamic_cast<glArchivItem_Bob*>( files_[file].archiv.get(0) ); };
+        glArchivItem_BitmapBase* GetNationImageN(unsigned int nation, unsigned int nr) { return dynamic_cast<glArchivItem_BitmapBase*>(nation_gfx[nation]->get(nr)); }
+        glArchivItem_Bitmap* GetNationImage(unsigned int nation, unsigned int nr);
+        glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned int nation, unsigned int nr);
+        glArchivItem_Bitmap* GetMapImageN(unsigned int nr) { return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr)); }
+        glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned int nr) { return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr)); }
+        glArchivItem_Bitmap* GetTexImageN(unsigned int nr) { return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr)); }
+        libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned int nr) { return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr)); }
+        libsiedler2::ArchivItem_Ini* GetSettingsIniN(const std::string& name) { return static_cast<libsiedler2::ArchivItem_Ini*>( GetInfoN(CONFIG_NAME)->find(name) ); }
         /// Returns the texture for the given terrain. For animated textures the given frame is returned
         glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
     private:
+        template<typename T>
+        static T convertChecked(libsiedler2::ArchivItem* item){ T res = dynamic_cast<T>(item); RTTR_Assert(!item || res); return res; }
         std::map<std::string, FileEntry> files_;
         /// Terraintextures (unanimated)
         std::map<TerrainType, glArchivItem_Bitmap*> terrainTextures;
