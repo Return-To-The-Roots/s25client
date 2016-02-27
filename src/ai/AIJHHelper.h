@@ -21,7 +21,6 @@
 
 //#define DEBUG_AI
 
-#include "defines.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "AIEvents.h"
@@ -30,11 +29,7 @@
 #include <vector>
 
 class AIPlayerJH;
-class AIConstruction;
-class GameWorldBase;
-class AIInterface;
 struct PositionSearch;
-namespace gc { class GameCommand; }
 
 namespace AIJH
 {

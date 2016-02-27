@@ -20,14 +20,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwWares.h"
 #include "Loader.h"
-#include "controls/controls.h"
-#include "WindowManager.h"
 #include "GameClient.h"
+#include "controls/ctrlButton.h"
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlImage.h"
+#include "controls/ctrlVarText.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class glArchivItem_Bitmap;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

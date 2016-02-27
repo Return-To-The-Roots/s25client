@@ -20,11 +20,11 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "GameObject.h"
+#include "gameTypes/MapTypes.h"
 
-class dskGameInterface;
 class GameWorldView;
 class GameWorldViewer;
+class MouseCoords;
 
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwObservate : public IngameWindow

@@ -36,7 +36,6 @@
 #include "figures/nofBrewer.h"
 #include "figures/nofButcher.h"
 #include "figures/nofMinter.h"
-#include "figures/nofButcher.h"
 #include "figures/nofIronfounder.h"
 #include "figures/nofMiller.h"
 #include "figures/nofMetalworker.h"
@@ -46,7 +45,6 @@
 #include "figures/nofGeologist.h"
 #include "figures/nofScout_LookoutTower.h"
 #include "figures/nofScout_Free.h"
-#include "figures/nofCatapultMan.h"
 #include "figures/nofMiner.h"
 #include "figures/nofFarmer.h"
 #include "figures/nofForester.h"
@@ -57,10 +55,9 @@
 #include "figures/nofFisher.h"
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofCarrier.h"
-#include "figures/nofPassiveSoldier.h"
 #include "figures/nofShipWright.h"
 #include "figures/nofCharburner.h"
-
+#include "nodeObjs/noFlag.h"
 #include <stdexcept>
 #include "helpers/converters.h"
 

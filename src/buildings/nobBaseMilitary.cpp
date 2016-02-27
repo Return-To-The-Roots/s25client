@@ -21,11 +21,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nobBaseMilitary.h"
-#include "Loader.h"
 #include "world/GameWorldGame.h"
-#include "nodeObjs/noFire.h"
 #include "EventManager.h"
-#include "figures/nofSoldier.h"
 #include "Random.h"
 #include "nobMilitary.h"
 #include "figures/nofAttacker.h"

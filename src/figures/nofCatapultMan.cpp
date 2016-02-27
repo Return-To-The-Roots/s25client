@@ -20,12 +20,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofCatapultMan.h"
 #include "Random.h"
-#include "buildings/nobMilitary.h"
 #include "GameClient.h"
+#include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "CatapultStone.h"
 #include "gameData/MapConsts.h"
+#include "gameData/JobConsts.h"
 #include "SerializedGameData.h"
+#include "Loader.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

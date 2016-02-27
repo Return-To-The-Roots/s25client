@@ -27,7 +27,6 @@
 #include "GameClient.h"
 #include "Loader.h"
 #include "noSkeleton.h"
-#include "buildings/nobBaseMilitary.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 

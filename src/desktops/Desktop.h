@@ -20,6 +20,8 @@
 #pragma once
 
 #include "Window.h"
+class glArchivItem_Bitmap;
+struct ScreenResizeEvent;
 
 /// Desktopklasse für Spielmenü-Haupthintergrundflächen.
 class Desktop : public Window

@@ -22,18 +22,19 @@
 
 #include "nodeObjs/noFlag.h"
 #include "Loader.h"
-#include "macros.h"
 #include "Random.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "nodeObjs/noSign.h"
-#include "buildings/nobBaseWarehouse.h"
 #include "gameData/GameConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "PostMsg.h"
+#include "ai/AIEvents.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class noRoadNode;
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), node_goal(0, 0)

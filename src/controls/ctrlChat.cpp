@@ -19,9 +19,9 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlChat.h"
-
 #include "ctrlScrollBar.h"
 #include "ogl/glArchivItem_Font.h"
+#include "CollisionDetection.h"
 #include "Log.h"
 #include "driver/src/MouseCoords.h"
 

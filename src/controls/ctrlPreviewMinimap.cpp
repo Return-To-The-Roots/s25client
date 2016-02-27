@@ -19,12 +19,12 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlPreviewMinimap.h"
-
 #include "ogl/glArchivItem_Map.h"
-#include "gameData/MinimapConsts.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class Window;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -102,4 +102,13 @@ bool ctrlPreviewMinimap::Draw_()
     }
 
     return true;
+}
+
+void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
+{
+    if(s2map)
+    {
+        SetDisplaySize(width_, height_, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
+        minimap.SetMap(*s2map);
+    }
 }

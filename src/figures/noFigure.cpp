@@ -20,29 +20,23 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "figures/noFigure.h"
-
 #include "Loader.h"
+#include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
-#include "EventManager.h"
-#include "gameData/MapConsts.h"
-#include "nofCarrier.h"
 #include "nodeObjs/noSkeleton.h"
+#include "EventManager.h"
+#include "nofCarrier.h"
 #include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
-#include "gameData/DoorConsts.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-
 #include "ogl/glSmartBitmap.h"
-
 #include "Random.h"
-
 #include "SerializedGameData.h"
-#include "gameData/JobConsts.h"
 #include "gameData/GameConsts.h"
-
+#include "gameData/JobConsts.h"
+#include "gameData/MapConsts.h"
 #include "Log.h"
 
 // Include last!

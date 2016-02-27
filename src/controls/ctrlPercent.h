@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+class glArchivItem_Font;
 
 class ctrlPercent : public Window
 {

@@ -19,8 +19,9 @@
 #define NO_BUILDING_H_
 
 #include "noBaseBuilding.h"
-#include "nodeObjs/noFlag.h"
-#include "gameData/BuildingConsts.h"
+class FOWObject;
+class SerializedGameData;
+class noFigure;
 
 class noBuilding : public noBaseBuilding
 {

@@ -23,7 +23,6 @@
 #include "helpers/containerUtils.h"
 #include <string>
 #include <vector>
-#include <algorithm>
 
 class Window;
 

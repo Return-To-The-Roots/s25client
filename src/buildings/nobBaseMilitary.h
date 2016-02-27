@@ -19,7 +19,6 @@
 #define NOB_BASEMILITARY_H_
 
 #include "buildings/noBuilding.h"
-#include "gameData/BuildingConsts.h"
 #include "EventManager.h"
 #include <boost/container/flat_set.hpp>
 
@@ -28,7 +27,8 @@ class nofActiveSoldier;
 class nofAttacker;
 class nofAggressiveDefender;
 class nofDefender;
-
+class SerializedGameData;
+class noFigure;
 
 /// allgemeine Basisklasse für alle Militärgebäude (HQ,normale Militärgebäude, Häfen,einschließlich Lagerhäuser,
 /// weil die auch viele Merkmale davon haben, aber sind eigentlich keine Militärgebäude)

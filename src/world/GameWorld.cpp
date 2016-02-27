@@ -18,25 +18,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h" // IWYU pragma: keep
+#include "GameWorld.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-#include "Random.h"
-#include "gameData/MapConsts.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
 #include "buildings/noBuildingSite.h"
 #include "WindowManager.h"
-#include "SoundManager.h"
-#include "gameData/TerrainData.h"
 
-#include "Log.h"
 #include "../libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
-#include <queue>
-#include <algorithm>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

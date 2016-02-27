@@ -21,6 +21,8 @@
 #include "figures/noFigure.h"
 
 class noFlag;
+class SerializedGameData;
+class noRoadNode;
 
 /// Basisklasse für Geologen und Späher, also die, die an eine Flagge gebunden sind zum Arbeiten
 class nofFlagWorker : public noFigure

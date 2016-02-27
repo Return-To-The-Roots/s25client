@@ -22,24 +22,21 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include "gameTypes/Inventory.h"
-#include "PostMsg.h"
-#include "Point.h"
 #include "GameMessage_GameCommand.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "helpers/containerUtils.h"
 #include <boost/array.hpp>
 #include <list>
 #include <queue>
-#include <algorithm>
 
-class GameWorld;
 class noFlag;
 class RoadSegment;
 class nobBaseWarehouse;
 class noRoadNode;
 class noBaseBuilding;
-class noBuilding;
 class noBuildingSite;
 class Ware;
 class nobMilitary;
@@ -51,7 +48,6 @@ class nofCarrier;
 class noShip;
 class nobHarborBuilding;
 class GameWorldGame;
-class nofPassiveSoldier;
 class noFigure;
 
 

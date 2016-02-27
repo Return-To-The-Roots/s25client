@@ -24,8 +24,6 @@
 
 #include <iostream>
 
-#include "GamePlayerList.h"
-
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 

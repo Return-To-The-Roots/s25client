@@ -19,10 +19,11 @@
 #define NOF_BUILDING_WORKER_H_
 
 #include "figures/noFigure.h"
-#include "gameData/JobConsts.h"
+#include "gameTypes/GoodTypes.h"
 
 class nobUsual;
 class nobBaseWarehouse;
+class SerializedGameData;
 
 /// Repräsentiert einen Arbeiter in einem Gebäude
 class nofBuildingWorker : public noFigure

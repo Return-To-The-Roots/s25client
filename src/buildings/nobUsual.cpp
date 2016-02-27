@@ -31,6 +31,8 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class noFigure;
+class noRoadNode;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

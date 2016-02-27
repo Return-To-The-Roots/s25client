@@ -19,14 +19,15 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
-
+#include "PostMsg.h"
 #include "gameData/MilitaryConsts.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
-#include "buildings/nobHarborBuilding.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
+class nobBaseWarehouse;
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(JOB_SCOUT, pos, player, workplace)
@@ -77,6 +78,6 @@ void nofScout_LookoutTower::WorkplaceReached()
 
 bool nofScout_LookoutTower::AreWaresAvailable()
 {
-    // Spähturm-Erkunder arbeiten nie!
+    // Spï¿½hturm-Erkunder arbeiten nie!
     return false;
 }

@@ -23,14 +23,13 @@
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
-
+#include "CollisionDetection.h"
 #include "Window.h"
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "Log.h"
 
-#include <ctime>
 #include <algorithm>
 
 // Include last!

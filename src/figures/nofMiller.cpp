@@ -21,7 +21,6 @@
 #include "nofMiller.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -31,6 +30,7 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
 
 nofMiller::nofMiller(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_MILLER, pos, player, workplace), last_sound(0), next_interval(0)

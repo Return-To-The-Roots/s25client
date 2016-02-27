@@ -23,7 +23,14 @@
 #include <list>
 
 class noShip;
-class nofPassiveSoldier;
+class SerializedGameData;
+class Ware;
+class noBaseBuilding;
+class noFigure;
+class noRoadNode;
+class nobMilitary;
+class nofAttacker;
+class nofDefender;
 
 class nobHarborBuilding : public nobBaseWarehouse
 {

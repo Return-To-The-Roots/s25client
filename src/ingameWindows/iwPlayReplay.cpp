@@ -23,25 +23,20 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "WindowManager.h"
 #include "Loader.h"
-#include "controls/controls.h"
 
 #include "ListDir.h"
 #include "GameClient.h"
 #include "files.h"
 #include "fileFuncs.h"
-
+#include "controls/ctrlTable.h"
 #include "iwMsgbox.h"
 #include "desktops/dskGameLoader.h"
-
-#ifndef _WIN32
-#	include <unistd.h>
-#endif // _WIN32
-
+#include "gameData/const_gui_ids.h"
 #include <boost/filesystem.hpp>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
+class GameWorldViewer;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class iwPlayReplay
  *

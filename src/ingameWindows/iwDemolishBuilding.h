@@ -20,11 +20,9 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "GameObject.h"
-#include "buildings/noBuilding.h"
 
-class dskGameInterface;
 class GameWorldViewer;
+class noBaseBuilding;
 
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwDemolishBuilding : public IngameWindow

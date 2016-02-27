@@ -19,8 +19,7 @@
 #ifndef defines_h__
 #define defines_h__
 
-///////////////////////////////////////////////////////////////////////////////
-// System-Header
+// IWYU pragma: begin_exports
 
 #ifndef _CRTDBG_MAP_ALLOC
 #   define _CRTDBG_MAP_ALLOC
@@ -81,6 +80,11 @@
 #include "macros.h"
 #include "RTTR_Assert.h"
 
+// Include to use e.g. boost macros like BOOST_CONSTEXPR
+#include <boost/config.hpp>
+
+// IWYU pragma: end_exports
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
@@ -127,9 +131,6 @@ namespace boost{namespace filesystem{}}
 
 /// Shortcut for boost::filesystem
 namespace bfs = boost::filesystem;
-
-// Include to use e.g. boost macros like BOOST_CONSTEXPR
-#include <boost/config.hpp>
 
 #endif // defines_h__
 

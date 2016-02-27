@@ -21,6 +21,8 @@
 
 #include "Window.h"
 #include "ctrlList.h"
+class MouseCoords;
+class glArchivItem_Font;
 
 class ctrlComboBox : public Window
 {

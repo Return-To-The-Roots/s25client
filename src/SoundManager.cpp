@@ -24,7 +24,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
-#include "nodeObjs/noBase.h"
 #include "GameClient.h"
 
 // Include last!

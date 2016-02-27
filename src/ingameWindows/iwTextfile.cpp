@@ -22,12 +22,10 @@
 #include "iwTextfile.h"
 
 #include "Loader.h"
-#include "controls/controls.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "Settings.h"
-#include "iwMsgbox.h"
-#include "WindowManager.h"
+#include "controls/ctrlMultiline.h"
+#include "gameData/const_gui_ids.h"
 #include "fileFuncs.h"
 
 #include <fstream>

@@ -21,10 +21,8 @@
 #include "EventManager.h"
 #include "gameTypes/MapTypes.h"
 
-class nobMilitary;
 class GameWorldView;
-class GameWorldViewer;
-
+class SerializedGameData;
 
 /// Klasse für einen fliegenden Katapultstein
 class CatapultStone : public GameObject

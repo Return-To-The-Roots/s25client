@@ -17,10 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapGeometry.h"
-#include <cmath>
-#include <algorithm>
-#include <cassert>
-#include <cstdlib>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

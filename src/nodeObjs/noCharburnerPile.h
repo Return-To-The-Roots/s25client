@@ -20,6 +20,7 @@
 
 #include "noCoordBase.h"
 #include "EventManager.h"
+class SerializedGameData;
 
 /// The wood/coal piles made by the charburner
 class noCharburnerPile : public noCoordBase

@@ -23,7 +23,6 @@
 // Header
 #include "VideoInterface.h"
 #include "MouseCoords.h"
-#include <vector>
 #include <boost/array.hpp>
 
 class VideoDriverLoaderInterface;

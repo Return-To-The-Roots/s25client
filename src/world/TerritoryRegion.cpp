@@ -25,7 +25,6 @@
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
 #include "world/GameWorldBase.h"
-#include <stdexcept>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

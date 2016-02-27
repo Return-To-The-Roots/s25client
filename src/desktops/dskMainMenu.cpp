@@ -24,19 +24,16 @@
 #include "WindowManager.h"
 #include "Loader.h"
 #include "GlobalVars.h"
-#include "controls/controls.h"
 
 #include "Settings.h"
 
-#include "dskAboutRTTR.h"
 #include "dskSinglePlayer.h"
 #include "dskMultiPlayer.h"
 #include "dskOptions.h"
 #include "dskIntro.h"
 #include "dskCredits.h"
+#include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
-
-#include "ListDir.h"
 #include "ingameWindows/iwTextfile.h"
 
 // Include last!

@@ -21,11 +21,10 @@
 #include "GameMessageInterface.h"
 #include "GameProtocol.h"
 #include "GamePlayerList.h"
-#include "GameObject.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
 #include "../libutil/src/Log.h"
-
+class MessageInterface;
 /*
  * das Klassenkommentar ist alles Client-Sicht, für Server-Sicht ist alles andersrum
  *

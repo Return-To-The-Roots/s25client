@@ -19,6 +19,7 @@
 #define NOB_SHIPWRIGHT_H_
 
 #include "nobUsual.h"
+class SerializedGameData;
 
 /// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
 class nobShipYard : public nobUsual

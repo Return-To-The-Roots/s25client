@@ -18,11 +18,9 @@
 #ifndef iwAIDEBUG_H_INCLUDED
 #define iwAIDEBUG_H_INCLUDED
 
-#include "iwAIDebug.h"
 #include "IngameWindow.h"
 
 class AIPlayerJH;
-class ctrlList;
 class ctrlText;
 class GameWorldViewer;
 

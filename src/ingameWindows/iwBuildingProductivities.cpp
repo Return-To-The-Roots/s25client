@@ -21,6 +21,7 @@
 #include "iwBuildingProductivities.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "gameData/const_gui_ids.h"
 #include "files.h"
 
 // Include last!

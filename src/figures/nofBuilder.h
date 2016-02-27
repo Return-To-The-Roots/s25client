@@ -21,6 +21,8 @@
 #include "figures/noFigure.h"
 
 class noBuildingSite;
+class SerializedGameData;
+class noRoadNode;
 
 class nofBuilder : public noFigure
 {

@@ -19,16 +19,22 @@
 
 #pragma once
 
-#include "AIJHHelper.h"
-#include "nodeObjs/noFlag.h"
-#include "AIInterface.h"
-#include <boost/array.hpp>
-#include <limits>
+#include "GameClientPlayer.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
+#include <deque>
 
 class AIPlayerJH;
 
-namespace gc { class GameCommand; }
+class AIInterface;
+class noFlag;
+class noRoadNode;
+class nobMilitary;
+namespace AIJH { class BuildJob; }
+namespace AIJH { class ConnectJob; }
+namespace AIJH { class Job; }
+namespace boost { template <class T, std::size_t N> class array; }
 
 class AIConstruction
 {

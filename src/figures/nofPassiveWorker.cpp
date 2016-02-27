@@ -24,6 +24,8 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
+class noRoadNode;
 
 nofPassiveWorker::nofPassiveWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : noFigure(job, pos, player, goal)

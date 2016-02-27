@@ -24,6 +24,9 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
+#include "Loader.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

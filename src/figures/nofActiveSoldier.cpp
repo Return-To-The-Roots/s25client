@@ -22,13 +22,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofActiveSoldier.h"
 #include "buildings/nobMilitary.h"
-#include "Loader.h"
-#include "Random.h"
 #include "nodeObjs/noFighting.h"
+#include "nodeObjs/noFlag.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 
-#include "ogl/glSmartBitmap.h"
 #include "Log.h"
 
 // Include last!

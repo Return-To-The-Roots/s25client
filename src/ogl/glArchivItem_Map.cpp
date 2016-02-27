@@ -20,11 +20,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Map.h"
 
-#include "Settings.h"
-
-#include "GameClient.h"
-#include "SerializedGameData.h"
 #include "../libsiedler2/src/ArchivItem_Raw.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "glAllocator.h"
 
 // Include last!

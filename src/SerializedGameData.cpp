@@ -22,7 +22,6 @@
 
 #include "../libutil/src/Log.h"
 
-#include "nodeObjs/noBase.h"
 #include "GameObject.h"
 #include "EventManager.h"
 #include "GameClient.h"
@@ -82,7 +81,6 @@
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noDisappearingMapEnvObject.h"
-#include "EventManager.h"
 #include "RoadSegment.h"
 #include "Ware.h"
 #include "CatapultStone.h"
@@ -98,6 +96,7 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class BinaryFile;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {

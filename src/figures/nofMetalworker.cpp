@@ -21,7 +21,6 @@
 #include "nofMetalworker.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "buildings/nobUsual.h"
@@ -29,6 +28,8 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "ingameWindows/iwTools.h"
+#include "PostMsg.h"
+#include "gameTypes/MessageTypes.h"
 #include "Log.h"
 
 // Include last!

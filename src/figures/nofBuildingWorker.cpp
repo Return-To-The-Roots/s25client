@@ -21,6 +21,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
+#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "Loader.h"
@@ -29,14 +30,12 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "EventManager.h"
-#include "nofWoodcutter.h"
-#include "nofHunter.h"
-#include "nofArmorer.h"
 #include "SoundManager.h"
+#include "PostMsg.h"
 #include "SerializedGameData.h"
-#include "ai/AIEventManager.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/JobConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

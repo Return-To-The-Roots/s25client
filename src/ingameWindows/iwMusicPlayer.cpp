@@ -33,6 +33,7 @@
 #include "fileFuncs.h"
 #include "ListDir.h"
 #include "Settings.h"
+#include "gameData/const_gui_ids.h"
 #include <boost/filesystem.hpp>
 #include <cstdio>
 

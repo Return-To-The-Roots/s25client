@@ -20,10 +20,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlGroup.h"
 #include "drivers/ScreenResizeEvent.h"
-#include "driver/src/MouseCoords.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class MouseCoords;
+struct KeyEvent;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

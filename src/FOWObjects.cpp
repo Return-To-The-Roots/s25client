@@ -22,6 +22,9 @@
 #include "SerializedGameData.h"
 #include "GameClient.h"
 #include "gameData/BuildingConsts.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "Loader.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

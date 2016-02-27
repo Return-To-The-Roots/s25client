@@ -31,6 +31,7 @@ class nobHarborBuilding;
 class noFigure;
 class Ware;
 class nofAttacker;
+class SerializedGameData;
 
 /// Klasse für die Schiffe
 class noShip : public noMovable

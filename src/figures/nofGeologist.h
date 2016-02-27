@@ -19,13 +19,13 @@
 #define NOF_GEOLOGIST_H_
 
 #include "nofFlagWorker.h"
-#include "Point.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/Resource.h"
 #include <boost/array.hpp>
 #include <vector>
 
-class noFlag;
+class SerializedGameData;
+class noRoadNode;
 
 class nofGeologist : public nofFlagWorker
 {

@@ -20,11 +20,12 @@
 
 #pragma once
 
+#include "libsiedler2/src/ArchivItem_Bitmap.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include <GL/gl.h>
 #include <vector>
-#include "oglIncludes.h"
 
-#include "glArchivItem_Bitmap.h"
-#include "glArchivItem_Bitmap_Player.h"
+namespace libsiedler2 { class ArchivItem_BitmapBase; }
 
 enum glBitmapItemType
 {
@@ -115,8 +116,6 @@ class glSmartBitmap
 
         static unsigned nextPowerOfTwo(unsigned k);
 };
-
-class glSmartTexturePackerNode;
 
 class glSmartTexturePackerNode
 {

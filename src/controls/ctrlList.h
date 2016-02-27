@@ -22,6 +22,8 @@
 #include "Window.h"
 #include <string>
 #include <vector>
+class MouseCoords;
+class glArchivItem_Font;
 
 class ctrlList : public Window
 {

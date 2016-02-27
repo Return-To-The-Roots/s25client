@@ -22,6 +22,8 @@
 #include "iwBaseWarehouse.h"
 
 class nobStorehouse;
+class GameWorldViewer;
+class dskGameInterface;
 
 class iwStorehouse : public iwBaseWarehouse
 {

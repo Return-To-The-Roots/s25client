@@ -20,7 +20,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlButton.h"
 #include "Loader.h"
-
+#include "CollisionDetection.h"
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
 

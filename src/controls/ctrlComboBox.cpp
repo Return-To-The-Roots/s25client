@@ -19,11 +19,10 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "Loader.h"
-
 #include "ctrlComboBox.h"
-
 #include "ctrlButton.h"
 #include "ctrlList.h"
+#include "CollisionDetection.h"
 #include "driver/src/MouseCoords.h"
 
 // Include last!

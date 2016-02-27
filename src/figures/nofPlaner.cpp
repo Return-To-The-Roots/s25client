@@ -28,10 +28,10 @@
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "ogl/glSmartBitmap.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
     : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)

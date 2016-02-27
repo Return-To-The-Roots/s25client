@@ -19,14 +19,15 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwHQ.h"
-
+#include "buildings/nobBaseWarehouse.h"
 #include "Loader.h"
-#include "buildings/nobHQ.h"
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class GameWorldViewer;
+class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

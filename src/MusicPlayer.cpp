@@ -27,10 +27,9 @@
 
 #include "../libsiedler2/src/prototypen.h"
 #include "ogl/glArchivItem_Music.h"
-
+#include <sstream>
 #include <algorithm>
 #include <fstream>
-#include <sstream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

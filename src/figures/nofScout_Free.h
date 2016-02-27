@@ -19,6 +19,8 @@
 
 #include "nofFlagWorker.h"
 #include "gameTypes/MapTypes.h"
+class SerializedGameData;
+class noRoadNode;
 
 /// Frei herumlaufender Erkunder
 class nofScout_Free : public nofFlagWorker

@@ -25,7 +25,6 @@
 #include "Settings.h"
 
 #include "drivers/VideoDriverWrapper.h"
-#include "drivers/AudioDriverWrapper.h"
 #include "Log.h"
 
 #include "ListDir.h"
@@ -38,7 +37,6 @@
 #include "gameData/TerrainData.h"
 
 #include "libsiedler2/src/libsiedler2.h"
-
 #include <boost/filesystem.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <iomanip>
@@ -116,13 +114,13 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     if(file.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + file);
 
-    if(!boost::filesystem::exists(file))
+    if(!bfs::exists(file))
     {
         LOG.lprintf(_("File or directory does not exist: %s\n"), file.c_str());
         return false;
     }
     // is the entry a directory?
-    if(boost::filesystem::is_directory(file))
+    if(bfs::is_directory(file))
     {
         // yes, load all files in the directory
         unsigned int ladezeit = VIDEODRIVER.GetTickCount();
@@ -227,7 +225,7 @@ bool Loader::LoadSounds(void)
 {
     std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
     // ist die konvertierte sound.lst vorhanden?
-    if(!boost::filesystem::exists(soundLSTPath))
+    if(!bfs::exists(soundLSTPath))
     {
         // nein, dann konvertieren
 

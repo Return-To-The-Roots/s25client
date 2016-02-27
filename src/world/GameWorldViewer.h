@@ -24,6 +24,9 @@
 
 class MouseCoords;
 class noShip;
+class FOWObject;
+class TerrainRenderer;
+struct RoadsBuilding;
 
 /// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
 class GameWorldViewer : public virtual GameWorldBase

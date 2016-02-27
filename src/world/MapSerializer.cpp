@@ -19,7 +19,6 @@
 #include "world/MapSerializer.h"
 #include "world/World.h"
 #include "SerializedGameData.h"
-#include "buildings/noBuildingSite.h"
 #include "CatapultStone.h"
 
 void MapSerializer::Serialize(const World& world, SerializedGameData& sgd)

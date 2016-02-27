@@ -22,9 +22,9 @@
 
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "controls/controls.h"
-
+#include "controls/ctrlButton.h"
 #include "desktops/dskGameInterface.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -21,7 +21,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldView.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Map.h"
 #include "nodeObjs/noTree.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobMilitary.h"
@@ -29,17 +28,14 @@
 #include "CatapultStone.h"
 #include "GameClient.h"
 #include "SoundManager.h"
-#include "world/MapGeometry.h"
+#include "Loader.h"
 #include "gameData/MapConsts.h"
 #include "desktops/dskGameInterface.h"
 #include "FOWObjects.h"
-#include "nodeObjs/noShip.h"
-
-#include "Settings.h"
 
 #include "GameServer.h"
 #include "ai/AIPlayerJH.h"
-
+#include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
 #include <stdexcept>
 

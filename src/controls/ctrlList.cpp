@@ -19,8 +19,8 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlList.h"
-
 #include "ctrlScrollBar.h"
+#include "CollisionDetection.h"
 #include "WindowManager.h"
 #include "ogl/glArchivItem_Font.h"
 

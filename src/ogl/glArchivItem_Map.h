@@ -20,9 +20,8 @@
 #pragma once
 
 #include "../libsiedler2/src/ArchivItem_Map.h"
-#include "../libsiedler2/src/ArchivItem_Map_Header.h"
 
-class SerializedGameData;
+namespace libsiedler2 { class ArchivItem_Map_Header; }
 
 enum MapLayer
 {

@@ -19,7 +19,6 @@
 #include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "gameData/ShieldConsts.h"
-#include "gameData/JobConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

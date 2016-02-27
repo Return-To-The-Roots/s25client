@@ -18,8 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 #include "defines.h" // IWYU pragma: keep
-#include "noEnvObject.h"
-
+#include "noStaticObject.h"
 #include "noExtension.h"
 
 #include "Loader.h"

@@ -20,11 +20,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofFarmer.h"
 
-#include "nodeObjs/noGranite.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
-#include "Ware.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
 #include "SoundManager.h"

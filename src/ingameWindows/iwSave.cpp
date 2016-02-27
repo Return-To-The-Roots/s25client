@@ -22,7 +22,6 @@
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "controls/controls.h"
 
 #include "ListDir.h"
 #include "GameClient.h"
@@ -31,14 +30,13 @@
 #include "GameServer.h"
 #include "LobbyClient.h"
 #include "desktops/dskLobby.h"
-#include "desktops/dskHostGame.h"
 #include "GameSavegame.h"
-
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlTable.h"
 #include "iwPleaseWait.h"
-#include "iwMsgbox.h"
-
+#include "gameData/const_gui_ids.h"
 #include "Settings.h"
-
 #include <boost/filesystem.hpp>
 
 // Include last!

@@ -23,8 +23,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Random.h"
-#include "figures/noFigure.h"
-#include "ogl/glArchivItem_Map.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "figures/nofPassiveWorker.h"

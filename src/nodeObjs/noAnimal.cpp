@@ -21,7 +21,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noAnimal.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "EventManager.h"

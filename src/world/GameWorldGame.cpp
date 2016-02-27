@@ -22,46 +22,33 @@
 
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "Random.h"
-#include "SoundManager.h"
-#include "SerializedGameData.h"
-
-#include "figures/nofCarrier.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noStaticObject.h"
-#include "nodeObjs/noGranite.h"
-#include "nodeObjs/noTree.h"
-#include "nodeObjs/noFlag.h"
-#include "buildings/nobHQ.h"
-#include "nodeObjs/noFire.h"
+#include "TradePathCache.h"
+#include "GameInterface.h"
+#include "PostMsg.h"
+#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "buildings/noBuildingSite.h"
-#include "Ware.h"
-#include "gameData/MilitaryConsts.h"
-#include "world/TerritoryRegion.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
-#include "nodeObjs/noAnimal.h"
-#include "nodeObjs/noFighting.h"
-#include "CatapultStone.h"
-#include "world/MapGeometry.h"
 #include "figures/nofScout_Free.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noFighting.h"
 #include "nodeObjs/noShip.h"
-#include "TradePathCache.h"
-
-#include "WindowManager.h"
-#include "GameInterface.h"
-#include "drivers/VideoDriverWrapper.h"
+#include "world/TerritoryRegion.h"
+#include "world/MapGeometry.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
 #include "helpers/containerUtils.h"
 
-#include <algorithm>
 #include <stdexcept>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class CatapultStone;
+class MilitarySquares;
 
 GameWorldGame::GameWorldGame()
 {

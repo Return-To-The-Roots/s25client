@@ -19,9 +19,9 @@
 
 #include "ctrlMinimap.h"
 #include "Minimap.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/PlayerConsts.h"
 #include "ogl/glArchivItem_Map.h"
+class Window;
 
 /// Übersichtskarte (MapPreview)
 class ctrlPreviewMinimap : public ctrlMinimap
@@ -61,14 +61,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
 
         }
 
-        void SetMap(const glArchivItem_Map* const s2map)
-        {
-            if(s2map)
-            {
-                SetDisplaySize(width_, height_, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
-                minimap.SetMap(*s2map);
-            }
-        }
+        void SetMap(const glArchivItem_Map* const s2map);
 };
 
 

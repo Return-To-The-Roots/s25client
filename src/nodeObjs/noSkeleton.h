@@ -21,6 +21,7 @@
 
 #include "noCoordBase.h"
 #include "EventManager.h"
+class SerializedGameData;
 
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
 class noSkeleton: public noCoordBase

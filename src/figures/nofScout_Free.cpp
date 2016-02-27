@@ -22,12 +22,13 @@
 
 #include "nodeObjs/noFlag.h"
 #include "Random.h"
-#include "EventManager.h"
-#include "GameClient.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
+#include "gameData/MilitaryConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_SCOUT, pos, player, goal), nextPos(pos), rest_way(0)
@@ -140,32 +141,29 @@ void nofScout_Free::Scout()
 
 const unsigned SCOUT_RANGE = 16;
 
+struct IsScoutable
+{
+    const unsigned char player;
+    const GameWorldGame& gwg;
+    IsScoutable(const unsigned char player, const GameWorldGame& gwg): player(player), gwg(gwg){}
+
+    bool operator()(const MapPoint& pt) const
+    {
+        // Liegt Punkt im Nebel und für Figuren begehbar?
+        return gwg.GetNode(pt).fow[player].visibility != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
+    }
+};
+
 void nofScout_Free::GoToNewNode()
 {
-    std::list< MapPoint > available_points;
-
-    for(MapCoord tx = gwg->GetXA(flag->GetPos(), 0), r = 1; r < SCOUT_RANGE; tx = gwg->GetXA(tx, flag->GetY(), 0), ++r)
-    {
-        MapPoint t2(tx, flag->GetY());
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
-            {
-                // Liegt Punkt im Nebel und für Figuren begehbar?
-                if(gwg->GetNode(t2).fow[player].visibility != VIS_VISIBLE && gwg->IsNodeForFigures(t2))
-                {
-                    available_points.push_back(t2);
-                }
-            }
-        }
-    }
+    std::vector<MapPoint> available_points = gwg->GetPointsInRadius<0>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
 
     // Ein Objekt zufällig heraussuchen
     bool found_point = false;
     size_t numPointsLeft = available_points.size();
     while(numPointsLeft && !found_point)
     {
-        std::list< MapPoint >::iterator p = available_points.begin();
+        std::vector< MapPoint >::iterator p = available_points.begin();
         std::advance(p, RANDOM.Rand(__FILE__, __LINE__, GetObjId(), numPointsLeft));
 
         // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in

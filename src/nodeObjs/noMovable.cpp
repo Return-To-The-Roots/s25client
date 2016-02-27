@@ -20,8 +20,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noMovable.h"
 
-#include "GlobalGameSettings.h"
-#include "Random.h"
 #include "GameClient.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"

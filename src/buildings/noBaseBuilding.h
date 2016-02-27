@@ -24,6 +24,9 @@
 
 class glArchivItem_Bitmap;
 class noFlag;
+class SerializedGameData;
+class Ware;
+class noFigure;
 
 class noBaseBuilding : public noRoadNode
 {

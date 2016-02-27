@@ -20,7 +20,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlScrollBar.h"
 #include "ctrlButton.h"
-
+#include "CollisionDetection.h"
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
 

@@ -23,7 +23,6 @@
 #include "nobMilitary.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "helpers/PointDistance.h"
 #include "gameData/MilitaryConsts.h"
 #include "Ware.h"
 #include "figures/nofPassiveSoldier.h"
@@ -31,15 +30,15 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "Loader.h"
-#include "macros.h"
 #include "EventManager.h"
 #include "Random.h"
-#include "nobBaseWarehouse.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "FindWhConditions.h"
-#include "WindowManager.h"
+#include "PostMsg.h"
+#include "ai/AIEvents.h"
+#include "nodeObjs/noFlag.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
-#include "ai/AIEventManager.h"
 #include "Point.h"
 #include "Log.h"
 #include "helpers/containerUtils.h"
@@ -49,6 +48,7 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class RoadSegment;
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), coinsDisabled(false),

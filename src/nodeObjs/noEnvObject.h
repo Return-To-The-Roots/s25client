@@ -20,6 +20,7 @@
 #pragma once
 
 #include "noStaticObject.h"
+class SerializedGameData;
 
 class noEnvObject : public noStaticObject
 {

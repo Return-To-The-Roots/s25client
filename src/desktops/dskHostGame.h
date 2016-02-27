@@ -25,6 +25,8 @@
 
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
+class GameWorldViewer;
+class LobbyPlayerInfo;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame :

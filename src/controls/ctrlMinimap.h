@@ -18,7 +18,6 @@
 #define CTRL_MINIMAP_H_
 
 #include "Window.h"
-#include "gameTypes/MapTypes.h"
 
 class Minimap;
 

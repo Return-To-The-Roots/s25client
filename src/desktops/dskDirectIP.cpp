@@ -23,7 +23,6 @@
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "GameProtocol.h"
 #include "Settings.h"
 
 #include "dskMultiPlayer.h"

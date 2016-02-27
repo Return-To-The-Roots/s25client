@@ -22,6 +22,7 @@
 #include "EventManager.h"
 
 class nofActiveSoldier;
+class SerializedGameData;
 
 /// Kampf an einem Punkt zwischen 2 Soldaten, der erstgenannt ist immer der, der links steht
 class noFighting : public noBase

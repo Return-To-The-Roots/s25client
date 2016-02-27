@@ -21,13 +21,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nobHarborBuilding.h"
-#include "pathfinding/FreePathFinder.h"
 #include "Loader.h"
-#include "nodeObjs/noExtension.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
 #include "EventManager.h"
+#include "PostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
 #include "Random.h"
@@ -42,11 +41,9 @@
 #include "gameData/ShieldConsts.h"
 #include "SerializedGameData.h"
 
-#include <set>
-
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
+class noRoadNode;
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
     boards(sgd.PopUnsignedInt()),

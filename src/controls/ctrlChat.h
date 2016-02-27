@@ -21,6 +21,8 @@
 
 #include "Window.h"
 #include <vector>
+class MouseCoords;
+class glArchivItem_Font;
 
 /// ChatCtrl-Klasse für ein ChatCtrl.
 class ctrlChat : public Window

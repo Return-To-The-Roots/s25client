@@ -21,7 +21,6 @@
 #include "nofPassiveSoldier.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobMilitary.h"
-#include "Loader.h"
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"
@@ -29,6 +28,7 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class RoadSegment;
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
     healing_event(NULL)

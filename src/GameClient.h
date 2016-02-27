@@ -27,23 +27,20 @@
 #include "EventManager.h"
 #include "GameReplay.h"
 #include "GlobalGameSettings.h"
-#include "ai/AIEventManager.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameData/PlayerConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "FramesInfo.h"
 
-#include "helpers/Deleter.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
-#include <boost/smart_ptr.hpp>
-
 class AIBase;
 class ClientInterface;
-class GameClientPlayer;
-class GameMessage;
 class Savegame;
-class Window;
+class GameMessage_GameCommand;
+class GameWorldViewer;
+class PostMsg;
+class SavedFile;
+namespace AIEvent { class Base; }
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {

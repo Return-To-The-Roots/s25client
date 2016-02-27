@@ -22,6 +22,9 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class GameClientPlayerList;
+class GameWorldBase;
+class GlobalGameSettings;
 
 AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                    const GameClientPlayerList& players, const GlobalGameSettings& ggs,

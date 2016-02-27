@@ -24,7 +24,6 @@
 #include <list>
 #include <map>
 
-class GameObject;
 class SerializedGameData;
 
 class EventManager

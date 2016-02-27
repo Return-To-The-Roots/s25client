@@ -19,9 +19,15 @@
 
 #pragma once
 
-#include "ctrlScrollBar.h"
+#include "Window.h"
+#include "gameTypes/TextureColor.h"
 #include <vector>
 #include <cstdarg>
+#include <string>
+
+class MouseCoords;
+class glArchivItem_Font;
+struct KeyEvent;
 
 class ctrlTable : public Window
 {

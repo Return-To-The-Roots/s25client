@@ -18,6 +18,8 @@
 #define NOF_ACTIVESOLDIER_H_
 
 #include "nofSoldier.h"
+class SerializedGameData;
+class nobBaseMilitary;
 
 /// Base class for all 3 types of "active" soldiers (i.e. who are in the free world to fight and don't
 /// walk on the roads just to fill buildings)

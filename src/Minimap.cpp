@@ -20,11 +20,13 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Minimap.h"
 #include "gameData/MinimapConsts.h"
-#include "gameData/MapConsts.h"
 #include "GameClient.h"
 #include "gameData/TerrainData.h"
 #include "FOWObjects.h"
 #include "ogl/glArchivItem_Map.h"
+#include "Loader.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include <GL/gl.h>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

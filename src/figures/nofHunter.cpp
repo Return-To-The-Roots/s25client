@@ -26,10 +26,10 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "Loader.h"
-#include "macros.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
-
+#include "gameData/JobConsts.h"
+#include "ai/AIEvents.h"
 #include <stdexcept>
 
 // Include last!

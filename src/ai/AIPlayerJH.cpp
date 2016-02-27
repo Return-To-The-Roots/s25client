@@ -20,7 +20,6 @@
 #include "AIPlayerJH.h"
 
 #include "GameClientPlayer.h"
-#include "GamePlayerList.h"
 
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"
@@ -32,7 +31,6 @@
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noAnimal.h"
 
-#include "world/MapGeometry.h"
 #include "AIConstruction.h"
 #include "gameData/TerrainData.h"
 #include "FindWhConditions.h"
@@ -40,13 +38,13 @@
 #include "GameServer.h"
 
 #include <boost/array.hpp>
-#include <iostream>
 #include <list>
-#include <set>
 #include <algorithm>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class GameClientPlayerList;
+namespace AIEvent { class Base; }
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);

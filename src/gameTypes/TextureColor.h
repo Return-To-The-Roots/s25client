@@ -13,31 +13,21 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NONOTHING_H_INCLUDED
-#define NONOTHING_H_INCLUDED
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/
 
-#pragma once
+#ifndef TEXTURE_COLOR_H_INCLUDED
+#define TEXTURE_COLOR_H_INCLUDED
 
-#include "noBase.h"
-class SerializedGameData;
-
-class noNothing : public noBase
+/// Texturfarben
+enum TextureColor
 {
-    public:
-        /// Konstruktor von @p noNothing.
-        noNothing();
-
-    protected:  void Destroy_noNothing() { Destroy_noBase(); }
-    public:     void Destroy() { Destroy_noNothing(); }
-
-        /// Serialisierungsfunktionen
-    public:     void Serialize(SerializedGameData& sgd) const {}
-
-        GO_Type GetGOT() const { return GOT_UNKNOWN; }
-
-        /// An x,y zeichnen.
-        void Draw(int x, int y);
+    TC_GREY = 0,
+    TC_RED1,
+    TC_GREEN1,
+    TC_GREEN2,
+    TC_RED2,
+    TC_BRICKS,
+    TC_INVISIBLE
 };
 
-#endif // !NONOTHING_H_INCLUDED
+#endif //TEXTURE_COLOR_H_INCLUDED

@@ -23,6 +23,7 @@
 #include "WindowManager.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
+#include "CollisionDetection.h"
 
 #include <sstream>
 

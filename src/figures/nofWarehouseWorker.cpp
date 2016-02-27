@@ -20,7 +20,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofWarehouseWorker.h"
 #include "world/GameWorldGame.h"
-#include "Loader.h"
 #include "Ware.h"
 #include "GameClientPlayer.h"
 #include "nodeObjs/noRoadNode.h"
@@ -29,8 +28,6 @@
 #include "Random.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
-
-#include "ogl/glSmartBitmap.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

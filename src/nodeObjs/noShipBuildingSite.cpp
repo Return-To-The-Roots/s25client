@@ -21,13 +21,12 @@
 #include "noShipBuildingSite.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "EventManager.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "noShip.h"
 #include "GameClient.h"
 #include "PostMsg.h"
+#include "ai/AIEvents.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

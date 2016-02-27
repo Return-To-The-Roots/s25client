@@ -20,11 +20,12 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwStorehouse.h"
 
-#include "Loader.h"
 #include "buildings/nobStorehouse.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class GameWorldViewer;
+class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -30,15 +30,15 @@
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "ai/AIEventManager.h"
 #include "buildings/nobBaseWarehouse.h"
-
+#include "ai/AIEvents.h"
 #include "ogl/glSmartBitmap.h"
 #include "factories/BuildingFactory.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
+class RoadSegment;
+class noBuilding;
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
     : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(static_cast<noBuildingSite*>(building_site)), building_steps_available(0)

@@ -23,17 +23,17 @@
 #include "noBaseBuilding.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "ai/AIEvents.h"
+#include "nodeObjs/noExtension.h"
+#include "nodeObjs/noFlag.h"
 #include "gameData/DoorConsts.h"
 #include "gameData/MapConsts.h"
-#include "nodeObjs/noExtension.h"
-#include "Random.h"
 #include "nobBaseWarehouse.h"
 #include "Ware.h"
-#include "WindowManager.h"
 #include "SerializedGameData.h"
+#include "Loader.h"
 #include "GameInterface.h"
 #include "Log.h"
-#include <iostream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

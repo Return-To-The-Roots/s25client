@@ -34,7 +34,6 @@
 #include "iwBuildings.h"
 #include "iwBuildingProductivities.h"
 #include "iwStatistics.h"
-#include "iwSettings.h"
 #include "iwDiplomacy.h"
 #include "iwShip.h"
 #include "iwAIDebug.h"
@@ -42,6 +41,7 @@
 
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

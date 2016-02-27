@@ -20,8 +20,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound.h"
 
-#include "drivers/VideoDriverWrapper.h"
-
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 

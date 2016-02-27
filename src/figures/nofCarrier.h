@@ -19,12 +19,12 @@
 #define NOF_CARRIER_H_
 
 #include "figures/noFigure.h"
-#include "GlobalVars.h"
+#include <vector>
 
 class RoadSegment;
 class Ware;
 class noRoadNode;
-class glSmartBitmap;
+class SerializedGameData;
 
 enum CarrierState
 {

@@ -21,6 +21,7 @@
 
 #include "GameSavedFile.h"
 #include "SerializedGameData.h"
+class BinaryFile;
 
 class Savegame : public SavedFile
 {

@@ -20,6 +20,8 @@
 #pragma once
 
 #include "Message.h"
+class MessageInterface;
+class Serializer;
 
 class GameMessage : public Message
 {

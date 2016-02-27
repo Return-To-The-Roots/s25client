@@ -19,15 +19,15 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
-
+#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "EventManager.h"
 #include "Random.h"
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "PostMsg.h"
 #include "GameClient.h"
-#include "ai/AIEventManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

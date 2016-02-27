@@ -3,9 +3,6 @@
 
 #include "IngameWindow.h"
 
-class dskGameInterface;
-class nobUsual;
-class GameWorldViewer;
 class nobBaseWarehouse;
 
 class iwTrade : public IngameWindow

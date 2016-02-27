@@ -29,6 +29,11 @@ enum BuildingType;
 
 class nofBuilder;
 class nofPlaner;
+class FOWObject;
+class SerializedGameData;
+class Ware;
+class noFigure;
+class noRoadNode;
 
 /// repräsentiert eine Baustelle
 class noBuildingSite : public noBaseBuilding

@@ -19,6 +19,8 @@
 #define NOF_WOODCUTTER_H_
 
 #include "nofFarmhand.h"
+class SerializedGameData;
+class nobUsual;
 
 class nofWoodcutter : public nofFarmhand
 {

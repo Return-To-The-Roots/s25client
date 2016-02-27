@@ -21,7 +21,7 @@
 
 #include "noBase.h"
 #include "gameTypes/MapTypes.h"
-#include "Point.h"
+class SerializedGameData;
 
 class noCoordBase : public noBase
 {

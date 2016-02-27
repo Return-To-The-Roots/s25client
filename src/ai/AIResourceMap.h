@@ -21,8 +21,8 @@
 
 #include "ai/Resource.h"
 #include "ai/AIInterface.h"
-#include "ai/AIJHHelper.h"
 #include <vector>
+namespace AIJH { struct Node; }
 
 class AIResourceMap
 {

@@ -26,6 +26,8 @@
 #include "VideoDriverLoaderInterface.h"
 #include <VideoInterface.h>
 #include <build_version.h>
+
+#include <SDL.h>
 #include <algorithm>
 
 #ifdef _WIN32

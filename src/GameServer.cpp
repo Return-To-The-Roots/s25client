@@ -38,9 +38,8 @@
 #include "GameServerPlayer.h"
 #include "GameManager.h"
 #include "GameSavegame.h"
-#include "GameReplay.h"
-#include "ai/AIPlayer.h"
-
+#include "ai/AIBase.h"
+#include "ai/AIEvents.h"
 #include "Settings.h"
 #include "Debug.h"
 #include "fileFuncs.h"
@@ -50,14 +49,13 @@
 #include "gameData/LanDiscoveryCfg.h"
 #include "gameTypes/LanGameInfo.h"
 
+#include "helpers/Deleter.h"
 #include "../libsiedler2/src/prototypen.h"
 #include "../libsiedler2/src/ArchivItem_Map_Header.h"
 
 #include "files.h"
-#include <bzlib.h>
-#include "luaIncludes.h"
-
 #include <boost/filesystem.hpp>
+#include <bzlib.h>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

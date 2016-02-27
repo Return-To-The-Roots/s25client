@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include "GameObject.h"
 #include "FOWObjects.h"
 #include "Serializer.h"
+#include "gameTypes/GO_Type.h"
 #include "helpers/ReserveElements.hpp"
 #include "helpers/GetInsertIterator.hpp"
 #include <boost/static_assert.hpp>
@@ -29,10 +29,10 @@
 #include <map>
 #include <stdexcept>
 
-class noBase;
 class GameObject;
 class GameWorld;
 class EventManager;
+class BinaryFile;
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer

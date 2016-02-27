@@ -22,6 +22,7 @@
 #include "Desktop.h"
 
 #include <list>
+struct KeyEvent;
 
 /// Klasse des Credits Desktops.
 class dskCredits : public Desktop

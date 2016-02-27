@@ -19,18 +19,15 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwShip.h"
-#include "desktops/dskGameInterface.h"
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls/controls.h"
-#include "WindowManager.h"
 #include "nodeObjs/noShip.h"
-#include "iwMsgbox.h"
 #include "figures/noFigure.h"
 #include "Ware.h"
+#include "controls/ctrlButton.h"
 #include "gameData/JobConsts.h"
 #include "gameData/GameConsts.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

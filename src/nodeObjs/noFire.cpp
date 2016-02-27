@@ -22,7 +22,6 @@
 
 #include "EventManager.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "SoundManager.h"

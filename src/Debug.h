@@ -18,11 +18,12 @@
 #define DEBUG_H_
 
 #include "Random.h"
-#include "../libutil/src/Socket.h"
-#include <list>
+#include "Socket.h"
 
-class DebugInfo : Socket
+class DebugInfo
 {
+    Socket sock;
+
     public:
         DebugInfo();
         ~DebugInfo();

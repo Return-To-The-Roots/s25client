@@ -22,9 +22,9 @@
 #include "BinaryFile.h"
 #include "GameSavedFile.h"
 #include "GamePlayerInfo.h"
+#include "helpers/Deleter.h"
 #include "../libutil/src/Serializer.h"
 #include "../libutil/src/Log.h"
-#include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
 

@@ -22,7 +22,6 @@
 #include "world/GameWorldBase.h"
 #include "GameClient.h"
 #include "Log.h"
-#include <set>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

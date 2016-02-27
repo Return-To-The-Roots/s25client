@@ -20,6 +20,7 @@
 
 #include "noCoordBase.h"
 #include "EventManager.h"
+class SerializedGameData;
 
 // Klasse für ein brennendes Gebäude
 class noFire : public noCoordBase

@@ -23,6 +23,7 @@
 #include "NodalObjectTypes.h"
 
 class FOWObject;
+class SerializedGameData;
 
 class noBase : public GameObject
 {

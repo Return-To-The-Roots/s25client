@@ -20,6 +20,8 @@
 
 #include "noBase.h"
 #include "gameTypes/MapTypes.h"
+class FOWObject;
+class SerializedGameData;
 
 class noGranite : public noBase
 {

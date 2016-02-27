@@ -21,13 +21,13 @@
 #include "nofMinter.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class SerializedGameData;
 
 nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_MINTER, pos, player, workplace)

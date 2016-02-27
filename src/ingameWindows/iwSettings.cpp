@@ -22,19 +22,16 @@
 
 #include "Settings.h"
 #include "Loader.h"
-#include "controls/controls.h"
-#include "GameClient.h"
-#include "GlobalVars.h"
-#include "desktops/dskGameInterface.h"
-
+#include "controls/ctrlCheck.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlOptionGroup.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "drivers/AudioDriverWrapper.h"
-
-#include "iwTextfile.h"
-#include "iwMsgbox.h"
+#include "gameData/const_gui_ids.h"
+#include <cstdio>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

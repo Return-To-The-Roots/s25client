@@ -22,12 +22,12 @@
 #include "GameObject.h"
 #include <boost/array.hpp>
 #include <vector>
-#include <cassert>
 
 class nofCarrier;
 class noRoadNode;
 class noFlag;
 class noFigure;
+class SerializedGameData;
 
 class RoadSegment : public GameObject
 {

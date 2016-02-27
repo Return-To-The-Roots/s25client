@@ -20,6 +20,7 @@
 
 #include "nobBaseMilitary.h"
 #include "figures/nofSoldier.h"
+#include "helpers/containerUtils.h"
 #include <list>
 #include <vector>
 
@@ -29,7 +30,8 @@ class nofAttacker;
 class nofAggressiveDefender;
 class nofDefender;
 class Ware;
-class iwMilitaryBuilding;
+class SerializedGameData;
+class noFigure;
 
 /// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary

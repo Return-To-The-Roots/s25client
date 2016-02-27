@@ -19,7 +19,8 @@
 #define NOF_FARMHAND_H_
 
 #include "nofBuildingWorker.h"
-
+class SerializedGameData;
+class nobUsual;
 
 /// Ein Landarbeiter geht raus aus seiner Hütte und arbeitet in "freier Natur"
 class nofFarmhand : public nofBuildingWorker

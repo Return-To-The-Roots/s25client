@@ -19,6 +19,7 @@
 
 #include "noCoordBase.h"
 #include "EventManager.h"
+class SerializedGameData;
 
 class noDisappearingEnvObject : public noCoordBase
 {

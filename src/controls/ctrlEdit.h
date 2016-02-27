@@ -20,6 +20,9 @@
 #pragma once
 
 #include "Window.h"
+class MouseCoords;
+class glArchivItem_Font;
+struct KeyEvent;
 
 class ctrlEdit : public Window
 {

@@ -22,17 +22,13 @@
 
 #ifdef _WIN32
 #   include <windows.h>
-#else
-#   include <unistd.h>
 #endif
 
 #ifndef _MSC_VER
 #   include <csignal>
 #endif
 
-#include "GlobalVars.h"
 #include "signale.h"
-#include "Socket.h"
 
 #include "GameManager.h"
 
@@ -49,16 +45,17 @@
 
 #include "ogl/glAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
-#include "mygettext.h"
-
-#ifdef __APPLE__
-#   include <SDL_main.h>
-#endif // __APPLE__
 
 #ifdef _WIN32
 #   include "../win32/resource.h"
 #   include "drivers/VideoDriverWrapper.h"
 #endif
+
+#include <boost/filesystem.hpp>
+
+#ifdef __APPLE__
+#   include <SDL_main.h>
+#endif // __APPLE__
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
 #   include <eh.h>
@@ -66,7 +63,6 @@
 
 //#include <vld.h> 
 
-#include <boost/filesystem.hpp>
 #include <ctime>
 #include <iostream>
 #include <limits>

@@ -20,14 +20,9 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofCharburner.h"
 
-#include "nodeObjs/noGranite.h"
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
-#include "Ware.h"
-#include "Random.h"
 #include "SoundManager.h"
-#include "GameInterface.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"

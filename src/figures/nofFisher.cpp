@@ -21,7 +21,6 @@
 #include "nofFisher.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "SoundManager.h"
@@ -29,6 +28,7 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class nobUsual;
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)

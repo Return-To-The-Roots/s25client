@@ -20,23 +20,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwTrade.h"
 
-#include "desktops/dskGameInterface.h"
-
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "controls/controls.h"
-#include "WindowManager.h"
-
-#include "iwMsgbox.h"
-
-#include "buildings/nobShipYard.h"
-#include "iwDemolishBuilding.h"
-#include "iwHelp.h"
-#include "gameData/BuildingConsts.h"
-#include "gameData/ShieldConsts.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlImage.h"
+#include "controls/ctrlText.h"
 #include "gameData/JobConsts.h"
+#include "gameData/ShieldConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -18,10 +18,8 @@
 #ifndef GAMEPLAYERINFO_H_INCLUDED
 #define GAMEPLAYERINFO_H_INCLUDED
 
-#include "GameProtocol.h"
 #include "gameData/NationConsts.h"
 #include "gameData/PlayerConsts.h"
-#include <Socket.h>
 
 class Serializer;
 

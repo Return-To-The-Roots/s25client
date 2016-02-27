@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "AIEvents.h"
 #include <queue>
+namespace AIEvent { class Base; }
 
 class AIEventManager
 {

@@ -19,6 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "AIResourceMap.h"
+#include "AIJHHelper.h"
 #include "gameData/TerrainData.h"
 #include "buildings/nobUsual.h"
 #include "buildings/noBuildingSite.h"

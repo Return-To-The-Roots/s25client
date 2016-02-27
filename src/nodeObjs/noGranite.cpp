@@ -21,7 +21,6 @@
 #include "noGranite.h"
 
 #include "Loader.h"
-#include "EventManager.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
 

@@ -21,7 +21,6 @@
 #include "CollisionDetection.h"
 #include "Rect.h"
 #include <cstdlib>
-#include <cmath>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

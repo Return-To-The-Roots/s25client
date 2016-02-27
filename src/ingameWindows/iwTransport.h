@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+class glArchivItem_Bitmap;
 
 class iwTransport : public IngameWindow
 {

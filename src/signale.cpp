@@ -22,7 +22,6 @@
     #include <windows.h>
 #endif // _WIN32
 #include "signale.h"
-#include "signal.h"
 
 #include "GlobalVars.h"
 #include "Log.h"

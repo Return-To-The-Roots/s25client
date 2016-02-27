@@ -21,10 +21,7 @@
 #include "iwDemolishBuilding.h"
 
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "WindowManager.h"
-#include "iwMsgbox.h"
 
 
 // Include last!

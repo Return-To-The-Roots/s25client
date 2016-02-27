@@ -21,14 +21,11 @@
 #include "noFlag.h"
 
 #include "Loader.h"
-#include "macros.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
-#include "buildings/noBuildingSite.h"
-#include "buildings/nobMilitary.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
 
@@ -37,6 +34,7 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class noFigure;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

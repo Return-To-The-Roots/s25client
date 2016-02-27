@@ -29,8 +29,8 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <fstream>
 #include <iostream>
+#include <fstream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

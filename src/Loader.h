@@ -23,11 +23,13 @@
 #include "addons/const_addons.h"
 #include "gameData/NationConsts.h"
 #include "Rect.h"
+#include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_BitmapBase.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "ogl/glArchivItem_Bob.h"
-#include "ogl/glSmartBitmap.h" // Todo: Remove and use fwd decl
 #include "gameTypes/MapTypes.h"
 #include "gameData/AnimalConsts.h"
 #include "gameTypes/BuildingTypes.h"
@@ -42,14 +44,8 @@
 #include <vector>
 #include <map>
 
-namespace libsiedler2{
-    class ArchivItem_Palette;
-    class ArchivItem_Ini;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
-class glSmartBitmap;
 class glSmartTexturePacker;
 class glArchivItem_Bitmap_Raw;
 

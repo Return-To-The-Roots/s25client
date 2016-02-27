@@ -19,6 +19,8 @@
 #define NOF_FARMER_H_
 
 #include "nofFarmhand.h"
+class SerializedGameData;
+class nobUsual;
 
 class nofFarmer : public nofFarmhand
 {

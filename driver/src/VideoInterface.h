@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "Interface.h"
 #include "KeyEvent.h"
 #include <vector>
 

@@ -25,8 +25,6 @@
 #include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 
-struct CreateServerInfo;
-
 class dskSelectMap :
     public Desktop,
     public ClientInterface,

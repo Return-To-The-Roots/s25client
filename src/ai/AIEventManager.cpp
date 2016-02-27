@@ -19,6 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "AIEventManager.h"
+#include "AIEvents.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -19,14 +19,8 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwHelp.h"
-
+#include "controls/ctrlMultiline.h"
 #include "Loader.h"
-#include "controls/controls.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "files.h"
-#include "Settings.h"
-#include "iwMsgbox.h"
-#include "WindowManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -19,14 +19,9 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwSurrender.h"
-
 #include "Loader.h"
-#include "GameManager.h"
-
-#include "desktops/dskMainMenu.h"
-#include "iwSave.h"
-#include "WindowManager.h"
 #include "GameClient.h"
+#include "gameData/const_gui_ids.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

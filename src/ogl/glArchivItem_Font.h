@@ -21,14 +21,12 @@
 
 #include "../libsiedler2/src/ArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "oglIncludes.h"
 #include "colors.h"
-#include <boost/scoped_ptr.hpp>
+#include <GL/gl.h>
+#include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
 #include <vector>
 #include <string>
-
-class glArchivItem_Bitmap;
 
 /// Klasse für GL-Fontfiles.
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font

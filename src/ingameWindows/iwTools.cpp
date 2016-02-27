@@ -22,10 +22,9 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "controls/controls.h"
-
-
-#include <sstream>
+#include "controls/ctrlDeepening.h"
+#include "controls/ctrlProgress.h"
+#include "gameData/const_gui_ids.h"
 #include <iostream>
 
 // Include last!

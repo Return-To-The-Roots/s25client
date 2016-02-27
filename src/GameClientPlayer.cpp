@@ -21,7 +21,7 @@
 #include "GameClientPlayer.h"
 #include "GameClient.h"
 #include "Random.h"
-
+#include "PostMsg.h"
 #include "RoadSegment.h"
 #include "Ware.h"
 
@@ -33,18 +33,22 @@
 #include "figures/nofCarrier.h"
 #include "nodeObjs/noShip.h"
 #include "buildings/nobHarborBuilding.h"
-#include "figures/nofTradeLeader.h"
 #include "FindWhConditions.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
 
 #include "GameInterface.h"
-
+#include "gameData/PlayerConsts.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
+#include "gameTypes/PactTypes.h"
+#include "gameTypes/MessageTypes.h"
+#include "world/TradeRoute.h"
 #include "SerializedGameData.h"
-#include "GameMessages.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
-
+#include "libutil/src/Log.h"
 #include <stdint.h>
 #include <limits>
 

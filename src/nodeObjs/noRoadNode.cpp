@@ -21,9 +21,9 @@
 #include "noRoadNode.h"
 
 #include "RoadSegment.h"
-#include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

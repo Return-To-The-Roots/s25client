@@ -21,27 +21,30 @@
 #include "dskOptions.h"
 
 #include "GlobalGameSettings.h"
-#include "GameClient.h"
 #include "WindowManager.h"
 #include "Loader.h"
 
 #include "Settings.h"
-#include "controls/controls.h"
 #include "GlobalVars.h"
 
 #include "dskMainMenu.h"
-#include "ingameWindows/iwMusicPlayer.h"
 
 #include "languages.h"
 
 #include "drivers/VideoDriverWrapper.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "MusicPlayer.h"
-
+#include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlGroup.h"
+#include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlProgress.h"
 #include "helpers/mathFuncs.h"
+#include "ExtensionList.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

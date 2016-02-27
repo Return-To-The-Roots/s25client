@@ -21,9 +21,7 @@
 #include "glArchivItem_Bitmap.h"
 
 #include "drivers/VideoDriverWrapper.h"
-#include "GlobalVars.h"
-#include "Loader.h"
-
+#include <GL/gl.h>
 #include <vector>
 
 // Include last!

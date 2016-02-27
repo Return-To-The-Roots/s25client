@@ -24,6 +24,8 @@
 #define MAX_TAB_COUNT 20
 
 class ctrlGroup;
+class MouseCoords;
+class glArchivItem_Bitmap;
 
 class ctrlTab : public Window
 {

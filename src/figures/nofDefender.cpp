@@ -22,7 +22,6 @@
 
 #include "nofAttacker.h"
 #include "buildings/nobMilitary.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "nodeObjs/noFighting.h"

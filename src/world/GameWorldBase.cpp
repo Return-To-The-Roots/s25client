@@ -19,24 +19,27 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
-#include "nodeObjs/noFlag.h"
+#include "GameClient.h"
+#include "WindowManager.h"
+#include "PostMsg.h"
+#include "Loader.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
-#include "GameClient.h"
-#include "TerrainRenderer.h"
-#include "nodeObjs/noMovable.h"
-#include "figures/nofPassiveSoldier.h"
+#include "ai/AIEvents.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "figures/nofPassiveSoldier.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noMovable.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
-#include "WindowManager.h"
+#include "ogl/glArchivItem_Font.h"
 #include "ingameWindows/iwMissionStatement.h"
-#include "luaIncludes.h"
-#include "Log.h"
+#include "gameTypes/MessageTypes.h"
 #include "gameData/TerrainData.h"
 #include "helpers/containerUtils.h"
-#include <stdexcept>
+#include "Log.h"
+#include "luaIncludes.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

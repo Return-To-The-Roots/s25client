@@ -34,11 +34,10 @@
 
 #include <boost/array.hpp>
 #include <cstdlib>
-#include <ctime>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
+struct KeyEvent;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskCredits
  *

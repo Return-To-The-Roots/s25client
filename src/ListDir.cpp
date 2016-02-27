@@ -19,7 +19,6 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ListDir.h"
-
 #include <boost/filesystem.hpp>
 #include <algorithm>
 

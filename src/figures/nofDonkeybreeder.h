@@ -21,7 +21,8 @@
 
 #include "nofWorkman.h"
 
-class nobUsualBuilding;
+class SerializedGameData;
+class nobUsual;
 
 /// Klasse für den Eselzüchter
 class nofDonkeybreeder : public nofWorkman

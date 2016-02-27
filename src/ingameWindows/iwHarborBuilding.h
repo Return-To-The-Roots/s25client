@@ -20,6 +20,8 @@
 #include "iwHQ.h"
 
 class nobHarborBuilding;
+class GameWorldViewer;
+class dskGameInterface;
 
 class iwHarborBuilding : public iwHQ
 {

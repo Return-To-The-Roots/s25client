@@ -19,7 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "Window.h"
-
+#include "CollisionDetection.h"
 #include "Loader.h"
 #include "controls/controls.h"
 #include "drivers/VideoDriverWrapper.h"

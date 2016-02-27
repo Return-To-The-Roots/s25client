@@ -22,6 +22,7 @@
 #include "gameTypes/AnimalTypes.h"
 
 class nofHunter;
+class SerializedGameData;
 
 /// Klasse für die Tiere (ausgenommen Esel und Schweine natürlich)
 class noAnimal : public noMovable

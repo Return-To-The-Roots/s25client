@@ -29,17 +29,15 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/array.hpp>
 #include <queue>
-#include <deque>
 #include <list>
 
 class noFlag;
-class noBaseBuilding;
-class noRoadNode;
-class nobBaseMilitary;
-class AIPlayerJH;
-class nobMilitary;
-class nobBaseMilitary;
 class AIConstruction;
+class GameClientPlayerList;
+class GlobalGameSettings;
+class noShip;
+class nobBaseWarehouse;
+namespace AIEvent { class Base; }
 
 enum PositionSearchState
 {

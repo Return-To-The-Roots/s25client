@@ -20,15 +20,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildingSite.h"
 
-#include "drivers/VideoDriverWrapper.h"
-
 #include "Loader.h"
-#include "GameClient.h"
 #include "WindowManager.h"
 #include "buildings/noBuildingSite.h"
-
+#include "world/GameWorldViewer.h"
 #include "iwDemolishBuilding.h"
-#include "iwMsgbox.h"
 #include "iwHelp.h"
 
 // Include last!

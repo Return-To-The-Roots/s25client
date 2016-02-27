@@ -21,6 +21,9 @@
 #include "PostMsg.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
+#include "GameClientPlayer.h"
+#include "Loader.h"
+#include <stdexcept>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -20,23 +20,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskGameInterface.h"
 
-#include "files.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "Settings.h"
 #include "GlobalVars.h"
-#include "ListDir.h"
 #include "WindowManager.h"
 #include "SoundManager.h"
-#include "EventManager.h"
 #include "GameServer.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "LobbyClient.h"
 #include "controls/ctrlButton.h"
-#include "GameMessages.h"
 #include "GameManager.h"
-
+#include "CollisionDetection.h"
 #include "ingameWindows/iwChat.h"
 #include "ingameWindows/iwHQ.h"
 #include "ingameWindows/iwInventory.h"
@@ -58,7 +52,7 @@
 #include "ingameWindows/iwEndgame.h"
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwTrade.h"
-
+#include "nodeObjs/noFlag.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/noBuildingSite.h"
@@ -66,10 +60,14 @@
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
+#include "gameData/const_gui_ids.h"
+#include "ogl/glArchivItem_Font.h"
+#include "Loader.h"
 #include <sstream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+class noShip;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

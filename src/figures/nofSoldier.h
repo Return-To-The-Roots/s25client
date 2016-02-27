@@ -22,6 +22,7 @@
 #include <boost/container/flat_set.hpp>
 
 class nobBaseMilitary;
+class SerializedGameData;
 
 /// Basisklasse für alle Soldatentypen
 class nofSoldier : public noFigure

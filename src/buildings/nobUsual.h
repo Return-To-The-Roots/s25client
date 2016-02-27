@@ -26,6 +26,9 @@
 
 class Ware;
 class nofBuildingWorker;
+class SerializedGameData;
+class noFigure;
+class noRoadNode;
 
 // Gewöhnliches Gebäude mit einem Arbeiter und Waren
 class nobUsual : public noBuilding

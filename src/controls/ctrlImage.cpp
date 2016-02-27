@@ -19,7 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlImage.h"
-
+#include "CollisionDetection.h"
 #include "WindowManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 

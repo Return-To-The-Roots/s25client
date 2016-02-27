@@ -22,14 +22,13 @@
 
 #include "WindowManager.h"
 #include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "GameManager.h"
 
 #include "dskMainMenu.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
+class MouseCoords;
 ///////////////////////////////////////////////////////////////////////////////
 /** @class dskSplash
  *

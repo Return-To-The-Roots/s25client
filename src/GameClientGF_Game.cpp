@@ -20,7 +20,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 #include "Random.h"
-#include "GameMessages.h"
+#include "libutil/src/Log.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -21,24 +21,22 @@
 #pragma once
 
 #include "Singleton.h"
-#include "Socket.h"
 
 #include "GameMessageInterface.h"
 
 #include "GlobalGameSettings.h"
 #include "GamePlayerList.h"
 
-#include "ai/AIEventManager.h"
 #include "FramesInfo.h"
 #include "helpers/Deleter.h"
 #include <LANDiscoveryService.h>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
-class GameServerPlayer;
-class GlobalGameSettings;
 struct CreateServerInfo;
 class GameMessage;
 class AIBase;
+class GameMessage_GameCommand;
+namespace AIEvent { class Base; }
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {

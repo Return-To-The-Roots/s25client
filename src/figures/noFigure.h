@@ -18,7 +18,6 @@
 #define NOFIGURE_H_INCLUDED
 
 #include "nodeObjs/noMovable.h"
-#include "GlobalGameSettings.h"
 #include "gameTypes/MapTypes.h"
 
 class RoadSegment;
@@ -40,7 +39,7 @@ enum FigureState
     FS_JOB
 };
 
-class glSmartBitmap;
+class SerializedGameData;
 
 // Stellt einen Menschen dar
 class noFigure : public noMovable

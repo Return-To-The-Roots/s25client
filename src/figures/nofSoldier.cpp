@@ -20,10 +20,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofSoldier.h"
 #include "world/GameWorldGame.h"
-#include "buildings/nobMilitary.h"
 #include "Loader.h"
-#include "Random.h"
-#include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"
 #include "gameTypes/JobTypes.h"
