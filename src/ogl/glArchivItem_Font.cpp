@@ -25,21 +25,22 @@
 #include "glArchivItem_Bitmap.h"
 #include "Loader.h"
 #include "Log.h"
-#include "glAllocator.h"
 
-#include "../libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/src/libsiedler2.h"
+#include "libsiedler2/src/IAllocator.h"
 #include <cmath>
 #include <vector>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), chars_per_line(obj.chars_per_line), utf8_mapping(obj.utf8_mapping)
+glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
 {
-    if(obj._font)
-        _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font)));
-    if(obj._font_outline)
-        _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font_outline)));
+    if(obj.fontNoOutline)
+        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
+    if(obj.fontWithOutline)
+        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
 }
 
 glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
@@ -48,12 +49,15 @@ glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
         return *this;
 
     libsiedler2::ArchivItem_Font::operator=(obj);
-    chars_per_line = obj.chars_per_line;
     utf8_mapping = obj.utf8_mapping;
-    if(obj._font)
-        _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font)));
-    if(obj._font_outline)
-        _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().clone(*obj._font_outline)));
+    if(obj.fontNoOutline)
+        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
+    else
+        fontNoOutline.reset();
+    if(obj.fontWithOutline)
+        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
+    else
+        fontWithOutline.reset();
     return *this;
 }
 
@@ -176,7 +180,7 @@ inline void glArchivItem_Font::DrawChar(const std::string& text,
                                         float th)
 {
     unsigned int c = Utf8_to_Unicode(text, i);
-    char_info ci = CharInfo(c);
+    CharInfo ci = GetCharInfo(c);
 
     if(CharExist(ci))
     {
@@ -278,7 +282,7 @@ void glArchivItem_Font::Draw(short x,
                              const std::string& end,
                              unsigned short end_length)
 {
-    if(!_font)
+    if(!fontNoOutline)
         initFont();
 
     // Breite bestimmen
@@ -338,10 +342,10 @@ void glArchivItem_Font::Draw(short x,
         cx = x - line_width / 2;
     }
 
-    std::vector<GL_T2F_V3F_Struct> tmp;
-    tmp.reserve((text_max + (enable_end ? end_length : 0)) * 4);
-    float tw = _font->GetTexWidth();
-    float th = _font->GetTexHeight();
+    std::vector<GL_T2F_V3F_Struct> texList;
+    texList.reserve((text_max + (enable_end ? end_length : 0)) * 4);
+    float tw = fontNoOutline->GetTexWidth();
+    float th = fontNoOutline->GetTexHeight();
 
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
@@ -369,7 +373,7 @@ void glArchivItem_Font::Draw(short x,
                 cx = x;
         }
         else
-            DrawChar(text, i, tmp, cx, cy, tw, th);
+            DrawChar(text, i, texList, cx, cy, tw, th);
     }
 
     if(enable_end)
@@ -382,11 +386,11 @@ void glArchivItem_Font::Draw(short x,
                 cx = x;
             }
             else
-                DrawChar(end, i, tmp, cx, cy, tw, th);
+                DrawChar(end, i, texList, cx, cy, tw, th);
         }
     }
 
-    if(tmp.empty())
+    if(texList.empty())
         return;
 
     if (SETTINGS.video.vbo)
@@ -395,9 +399,9 @@ void glArchivItem_Font::Draw(short x,
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 
-    glInterleavedArrays(GL_T2F_V3F, 0, &tmp.front());
-    VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? _font->GetTexture() : _font_outline->GetTexture());
-    glDrawArrays(GL_QUADS, 0, tmp.size());
+    glInterleavedArrays(GL_T2F_V3F, 0, &texList.front());
+    VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? fontNoOutline->GetTexture() : fontWithOutline->GetTexture());
+    glDrawArrays(GL_QUADS, 0, texList.size());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -416,7 +420,7 @@ void glArchivItem_Font::Draw(short x,
 unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned length, unsigned max_width, unsigned short* max) const
 {
     if(length == 0)
-        length = unsigned(text.length());
+        length = unsigned(text.length()); 
 
     unsigned short w = 0, wm = 0;
     for(unsigned int i = 0; i < length; ++i)
@@ -442,7 +446,7 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
         w += cw;
     }
 
-    if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+    if(wm < w) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
         wm = w;
 
     if(max)
@@ -480,7 +484,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
         w += cw;
     }
 
-    if((wm == 0) || (wm < w)) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+    if(wm < w) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
         wm = w;
 
     if(max)
@@ -530,7 +534,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
                                     const unsigned short primary_width, const unsigned short secondary_width,
                                     WrapInfo& wi)
 {
-    if(!_font)
+    if(!fontNoOutline)
         initFont();
 
     // Breite der aktuellen Zeile
@@ -650,82 +654,60 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
  */
 void glArchivItem_Font::initFont()
 {
-    // @todo: Shouldn't we use libsiedler2::allocator?
-    _font_outline.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
-    _font.reset(dynamic_cast<glArchivItem_Bitmap*>(GlAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
+    utf8_mapping.clear();
+    fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
+    fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
 
-
-    // first, we have to find how much chars we really have, but we can also skip first 32
-    unsigned int chars = 32;
-    for(unsigned int i = 32; i < size(); ++i)
+    // first, we have to find how much chars we really have
+    unsigned int numChars = 0;
+    for(unsigned int i = 0; i < size(); ++i)
     {
         if(get(i))
-            ++chars;
+            ++numChars;
     }
 
-    chars_per_line = (unsigned int)std::sqrt((double)chars);
+    if(numChars == 0)
+        return;
 
-    int w = (dx + 2) * chars_per_line + 2;
-    int h = (dy + 2) * chars_per_line + 2;
-    std::vector<unsigned char> buffer(w * h * 4); // RGBA Puffer für alle Buchstaben
+    const unsigned numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
+    // Calc lines required (rounding up)
+    const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
 
-    int x = 1;
-    int y = 1;
-    chars = 0;
-    for(unsigned int i = 32; i < size(); ++i)
+    BOOST_CONSTEXPR_OR_CONST unsigned spacing = 1;
+    unsigned w = (dx + spacing * 2) * numCharsPerLine + spacing * 2;
+    unsigned h = (dy + spacing * 2) * numLines + spacing * 2;
+    std::vector<unsigned char> bufferWithOutline(w * h * 4); // RGBA Puffer für alle Buchstaben
+    std::vector<unsigned char> bufferNoOutline(w * h * 4); // RGBA Puffer für alle Buchstaben
+
+    libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
+    unsigned x = spacing;
+    unsigned y = spacing;
+    numChars = 0;
+    for(unsigned int i = 0; i < size(); ++i)
     {
-        if( (chars % chars_per_line) == 0 && i != 32 )
-        {
-            y += dy + 2;
-            x = 1;
-        }
-
         const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
-        if(c)
+        if(!c)
+            continue;
+
+        if((numChars % numCharsPerLine) == 0 && numChars > 0)
         {
-            // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
-            // damit man per OpenGL einfärben kann!
-            c->print(&buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y, 0, 0, 0, 0, true);
-
-            char_info ci;
-            ci.x = x;
-            ci.y = y;
-            ci.width = (c->getWidth() > dx + 2 ? dx + 2 : c->getWidth());
-
-            utf8_mapping[i] = ci;
-            x += dx + 2;
-            ++chars;
+            y += dy + spacing * 2;
+            x = spacing;
         }
+
+        // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
+        c->print(&bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette, 128, x, y, 0, 0, 0, 0, true);
+        c->print(&bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette, 128, x, y);
+
+        CharInfo ci(x, y, std::min<unsigned short>(dx + 2, c->getWidth()));
+
+        utf8_mapping[i] = ci;
+        x += dx + spacing * 2;
+        ++numChars;
     }
 
-    // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
-    // damit man per OpenGL einfärben kann!
-    _font->create(w, h, &buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
-
-    x = 1;
-    y = 1;
-    chars = 0;
-    for(unsigned int i = 32; i < size(); ++i)
-    {
-        if( (chars % chars_per_line) == 0 && i != 32 )
-        {
-            y += dy + 2;
-            x = 1;
-        }
-
-        const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
-        if(c)
-        {
-            // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
-            // damit man per OpenGL einfärben kann!
-            c->print(&buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"), 128, x, y);
-
-            x += dx + 2;
-            ++chars;
-        }
-    }
-
-    _font_outline->create(w, h, &buffer.front(), w, h, libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("colors"));
+    fontNoOutline->create(  w, h, &bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette);
+    fontWithOutline->create(w, h, &bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette);
 
     /*ArchivInfo items;
     items.pushC(_font);

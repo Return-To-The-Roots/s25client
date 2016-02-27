@@ -67,8 +67,8 @@ ctrlChat::ctrlChat(Window* parent,
     //ExtendMemory(128);
 
     // Breite der Klammern <> um die Spielernamen berechnen
-    bracket1_size = font->getWidth("<",  1);
-    bracket2_size = font->getWidth("> ", 2);
+    bracket1_size = font->getWidth("<");
+    bracket2_size = font->getWidth("> ");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
