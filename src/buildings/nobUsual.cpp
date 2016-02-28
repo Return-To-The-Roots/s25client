@@ -296,7 +296,7 @@ void nobUsual::Draw(int x, int y)
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(IsMine() && worker && nation == NAT_AFRICANS)
-        LOADER.GetMapImageN(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
+        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
         Draw(x + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][1]);
 }
 
