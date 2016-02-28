@@ -61,6 +61,7 @@ namespace helpers{
     /// Checks if the given type as a member function called push_back
     BOOST_TTI_HAS_MEMBER_FUNCTION(push_back)
     BOOST_TTI_HAS_MEMBER_FUNCTION(pop_front)
+    CREATE_MEMBER_DETECTOR(key_type)
     CREATE_MEMBER_DETECTOR(find)
 
     struct EEraseIterValidy

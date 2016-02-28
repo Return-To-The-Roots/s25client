@@ -91,9 +91,24 @@ namespace helpers{
         };
 
         template<
+            class T_Container,
+            class T_Type,
+            bool T_hasKeyType = HasAnyMemberCalled_key_type<T_Container>::value && HasAnyMemberCalled_find<T_Container>::value
+        >
+        struct HasCorrectFindMember
+        {
+            enum{ value = boost::is_convertible<T_Type, typename T_Container::key_type>::value };
+        };
+        template<class T_Container, class T_Type>
+        struct HasCorrectFindMember<T_Container, T_Type, false>
+        {
+            enum{ value = false };
+        };
+
+        template<
             class T,
             class U, 
-            bool T_useFind = boost::is_convertible<U, typename T::value_type>::value && HasAnyMemberCalled_find<T>::value
+            bool T_useFind = HasCorrectFindMember<T, U>::value
         >
         struct FindImpl
         {
@@ -105,7 +120,7 @@ namespace helpers{
         };
 
         template<class T, class U>
-        struct FindImpl<T, U, false>
+        struct FindImpl<T, U, false >
         {
             static typename T::const_iterator
             find(const T& container, const U& value)
