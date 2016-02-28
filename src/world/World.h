@@ -194,8 +194,10 @@ public:
     /// Erzeugt FOW-Objekte, -Straßen und -Grensteine von aktuellen Punkt für einen bestimmten Spieler
     void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
-    /// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
+    /// Returns whether a node is inside a (shippable) sea (surrounded by shippable water)
     bool IsSeaPoint(const MapPoint pt) const;
+    /// Returns true, if the point is surrounded by water
+    bool IsWaterPoint(const MapPoint pt) const;
     inline const unsigned GetSeaSize(const unsigned seaId) const;
     /// Is the harbor at the given sea
     bool IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const;

@@ -733,8 +733,18 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
     fow.boundary_stones = GetNode(pt).boundary_stones;
 }
 
-/// Gibt zurück, ob ein Punkt vollständig von Wasser umgeben ist
 bool World::IsSeaPoint(const MapPoint pt) const
+{
+    for(unsigned i = 0; i < 6; ++i)
+    {
+        if(!TerrainData::IsUsableByShip(GetTerrainAround(pt, i)))
+            return false;
+    }
+
+    return true;
+}
+
+bool World::IsWaterPoint(const MapPoint pt) const
 {
     for(unsigned i = 0; i < 6; ++i)
     {
@@ -864,6 +874,10 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
 {
     // Punkt muss selbst zu keinem Meer gehören
     if(GetNode(pt).sea_id)
+        return 0;
+
+    // Should not be inside water itself
+    if(IsWaterPoint(pt))
         return 0;
 
     // Um den Punkt herum muss ein gültiger Meeres Punkt sein
