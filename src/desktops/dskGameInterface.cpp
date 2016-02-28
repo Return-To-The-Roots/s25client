@@ -601,7 +601,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case KT_F3: // Koordinatenanzeige ein/aus vorläufig zu Debugzwecken
         {
-            if(GAMECLIENT.IsSinglePlayer())
+            if(GAMECLIENT.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
                 WINDOWMANAGER.Show(new iwMapDebug(*gwv));
         } return true;
         case KT_F8: // Tastaturbelegung
