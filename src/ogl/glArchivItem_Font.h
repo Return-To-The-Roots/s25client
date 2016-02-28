@@ -23,6 +23,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "colors.h"
 #include "ogl/oglIncludes.h"
+#include "helpers/containerUtils.h"
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
 #include <vector>
@@ -94,8 +95,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         };
 
         /// prüft ob ein Buchstabe existiert.
-        inline bool CharExist(unsigned int c) const { return (CharWidth(c) > 0); }
-        inline bool CharExist(CharInfo ci) const { return (ci.width > 0); }
+        inline bool CharExist(unsigned int c) const { return helpers::contains(utf8_mapping, c); }
 
         /// liefert die Breite eines Zeichens
         inline unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
@@ -105,7 +105,6 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
 
     private:
-        void initFont();
 
         struct GL_T2F_V3F_Struct
         {
@@ -113,26 +112,16 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
             GLfloat x, y, z;
         };
 
-        void DrawChar(const std::string& text, unsigned int& i, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th);
-
+        void initFont();
         /// liefert das Char-Info eines Zeichens
-        inline const CharInfo& GetCharInfo(unsigned int c) const
-        {
-            static CharInfo ci;
-
-            std::map<unsigned int, CharInfo>::const_iterator it = utf8_mapping.find(c);
-            if(it != utf8_mapping.end())
-                return it->second;
-
-            ci.width = 0;
-
-            return ci;
-        }
+        inline const CharInfo& GetCharInfo(unsigned int c) const;
+        void DrawChar(const std::string& text, unsigned int& i, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th);
 
         boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
         boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
         std::map<unsigned int, CharInfo> utf8_mapping;
+        CharInfo placeHolder; /// Placeholder if glyph is missing
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED

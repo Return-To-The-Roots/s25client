@@ -165,6 +165,15 @@ unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigne
     return c;
 }
 
+inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned int c) const
+{
+    std::map<unsigned int, CharInfo>::const_iterator it = utf8_mapping.find(c);
+    if(it != utf8_mapping.end())
+        return it->second;
+
+    return placeHolder;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
@@ -182,44 +191,41 @@ inline void glArchivItem_Font::DrawChar(const std::string& text,
     unsigned int c = Utf8_to_Unicode(text, i);
     CharInfo ci = GetCharInfo(c);
 
-    if(CharExist(ci))
-    {
-        float tx1 = (float)(ci.x) / tw;
-        float tx2 = (float)(ci.x + ci.width) / tw;
-        float ty1 = (float)(ci.y) / th;
-        float ty2 = (float)(ci.y + dy) / th;
+    float tx1 = static_cast<float>(ci.x) / tw;
+    float tx2 = static_cast<float>(ci.x + ci.width) / tw;
+    float ty1 = static_cast<float>(ci.y) / th;
+    float ty2 = static_cast<float>(ci.y + dy) / th;
 
-        GL_T2F_V3F_Struct tmp;
-        tmp.tx = tx1;
-        tmp.ty = ty1;
-        tmp.x = cx;
-        tmp.y = cy;
-        tmp.z = 0.0f;
-        vertices.push_back(tmp);
+    GL_T2F_V3F_Struct tmp;
+    tmp.tx = tx1;
+    tmp.ty = ty1;
+    tmp.x = cx;
+    tmp.y = cy;
+    tmp.z = 0.0f;
+    vertices.push_back(tmp);
 
-        tmp.tx = tx1;
-        tmp.ty = ty2;
-        tmp.x = cx;
-        tmp.y = (GLfloat)(cy + dy);
-        tmp.z = 0.0f;
-        vertices.push_back(tmp);
+    tmp.tx = tx1;
+    tmp.ty = ty2;
+    tmp.x = cx;
+    tmp.y = (GLfloat)(cy + dy);
+    tmp.z = 0.0f;
+    vertices.push_back(tmp);
 
-        tmp.tx = tx2;
-        tmp.ty = ty2;
-        tmp.x = (GLfloat)(cx + ci.width);
-        tmp.y = (GLfloat)(cy + dy);
-        tmp.z = 0.0f;
-        vertices.push_back(tmp);
+    tmp.tx = tx2;
+    tmp.ty = ty2;
+    tmp.x = (GLfloat)(cx + ci.width);
+    tmp.y = (GLfloat)(cy + dy);
+    tmp.z = 0.0f;
+    vertices.push_back(tmp);
 
-        tmp.tx = tx2;
-        tmp.ty = ty1;
-        tmp.x = (GLfloat)(cx + ci.width);
-        tmp.y = cy;
-        tmp.z = 0.0f;
-        vertices.push_back(tmp);
+    tmp.tx = tx2;
+    tmp.ty = ty1;
+    tmp.x = (GLfloat)(cx + ci.width);
+    tmp.y = cy;
+    tmp.z = 0.0f;
+    vertices.push_back(tmp);
 
-        cx += ci.width;
-    }
+    cx += ci.width;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -708,6 +714,16 @@ void glArchivItem_Font::initFont()
 
     fontNoOutline->create(  w, h, &bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette);
     fontWithOutline->create(w, h, &bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette);
+
+    // Set the placeholder for non-existant glyphs. Use '?' if possible (should always be)
+    if(helpers::contains(utf8_mapping, '?'))
+        placeHolder = utf8_mapping['?'];
+    else
+    {
+        // Fall back to first glyph in map (kinda random, but should not happen anyway)
+        LOG.write("Cannot find '?' glyph in font!");
+        placeHolder = utf8_mapping.begin()->second;
+    }
 
     /*ArchivInfo items;
     items.pushC(_font);
