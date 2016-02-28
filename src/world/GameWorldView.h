@@ -24,6 +24,14 @@
 class GameWorldViewer;
 struct RoadsBuilding;
 
+class IDebugNodePrinter{
+public:
+    virtual ~IDebugNodePrinter(){}
+    /// Called when a node is going to be printed at displayPt
+    /// Can e.g. print coordinates
+    virtual void print(const MapPoint& pt, const Point<int>& displayPt) = 0;
+};
+
 class GameWorldView
 {
     /// Selektierter Punkt
@@ -31,7 +39,7 @@ class GameWorldView
     Point<int> selO;
 
     /// Koordinaten auf der Map anzeigen (zum Debuggen)?
-    bool show_coordinates;
+    IDebugNodePrinter* debugNodePrinter;
 
     bool show_bq;    ///< Bauqualitäten-Anzeigen ein oder aus
     bool show_names; ///< Gebäudenamen-Anzeigen ein oder aus
@@ -96,7 +104,7 @@ public:
     void CalcFxLx();
 
     /// Koordinatenanzeige ein/aus
-    inline void ShowCoordinates() { show_coordinates = !show_coordinates; }
+    void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }
 
     /// Gibt selektierten Punkt zurück
     inline MapCoord GetSelX() const { return selPt.x; }

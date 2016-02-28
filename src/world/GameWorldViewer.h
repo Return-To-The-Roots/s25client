@@ -79,9 +79,6 @@ public:
     void MoveToX(int x, bool absolute = false) {view.MoveToX(x, absolute);}
     void MoveToY(int y, bool absolute = false) {view.MoveToY(y, absolute);}
 
-    /// Koordinatenanzeige ein/aus
-    inline void ShowCoordinates() { view.ShowCoordinates(); }
-
     /// Gibt selektierten Punkt zurück
     inline MapCoord GetSelX() const { return(view.GetSelX()); }
     inline MapCoord GetSelY() const { return(view.GetSelY()); }

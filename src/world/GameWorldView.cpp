@@ -44,7 +44,7 @@
 
 GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned short height):
 	selPt(0, 0),
-	show_coordinates(false),
+	debugNodePrinter(NULL),
 	show_bq(false),
 	show_names(false),
 	show_productivity(false),
@@ -198,21 +198,8 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
             }
 
 
-            if(show_coordinates)
-            {
-                char high[32];
-                //*sprintf(high,"%d",unsigned(GetNode(tx,ty).altitude));*/
-                sprintf(high, "%d;%d", t.x, t.y);
-                //*sprintf(high,"%X",unsigned(GetNode(tx,ty))).resources;*/
-                //sprintf(high,"%u",GetNode(tx,ty)).reserved;
-                NormalFont->Draw(curPos.x, curPos.y, high, 0, 0xFFFFFF00);
-
-                if(gwv->GetNode(t).reserved)
-                {
-                    NormalFont->Draw(curPos.x, curPos.y, "R", 0, 0xFFFF0000);
-                }
-
-            }
+            if(debugNodePrinter)
+                debugNodePrinter->print(t, curPos);
 
             if (d_active)
             {

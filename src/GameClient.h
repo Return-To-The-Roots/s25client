@@ -72,6 +72,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Liefert einen Player zurück
         inline GameClientPlayer& GetPlayer(const unsigned int id) { return *players.getElement(id); }
         inline GameClientPlayer& GetLocalPlayer(void) { return GetPlayer(playerId_); }
+        bool IsSinglePlayer() const;
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
         AIBase* CreateAIPlayer(const unsigned playerid);
 

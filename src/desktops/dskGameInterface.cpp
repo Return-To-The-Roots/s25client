@@ -52,6 +52,7 @@
 #include "ingameWindows/iwEndgame.h"
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwTrade.h"
+#include "ingameWindows/iwMapDebug.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
@@ -600,7 +601,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case KT_F3: // Koordinatenanzeige ein/aus vorläufig zu Debugzwecken
         {
-            gwv->ShowCoordinates();
+            if(GAMECLIENT.IsSinglePlayer())
+                WINDOWMANAGER.Show(new iwMapDebug(*gwv));
         } return true;
         case KT_F8: // Tastaturbelegung
         {
@@ -661,13 +663,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'v':
         {
-            unsigned singleplayer = 0, i = 0;
-            while(i < GAMECLIENT.GetPlayerCount() && singleplayer < 2)
-            {
-                if(GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED)singleplayer++;
-                i++;
-            }
-            if(singleplayer < 2)GAMECLIENT.IncreaseSpeed();
+            if(GAMECLIENT.IsSinglePlayer())
+                GAMECLIENT.IncreaseSpeed();
         } return true;
         case 'c': // Gebäudenamen anzeigen
         {

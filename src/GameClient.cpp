@@ -2073,6 +2073,22 @@ bool GameClient::AddGC(gc::GameCommand* gc)
     return true;
 }
 
+bool GameClient::IsSinglePlayer() const
+{
+    bool foundPlayer = false;
+    for(GameClientPlayerList::const_iterator it = players.begin(); it != players.end(); ++it)
+    {
+        if(it->ps == PS_OCCUPIED)
+        {
+            if(foundPlayer)
+                return false;
+            else
+                foundPlayer = true;
+        }
+    }
+    return true;
+}
+
 /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
 AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
 {
