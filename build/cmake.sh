@@ -235,7 +235,7 @@ if [ $? != 0 ] ; then
 fi
 
 MAKE="make"
-if [ "$(uname -s)" = "Darwin" ] ; then
+if [ "$(uname -s)" = "Darwin" ] && ["$GENERAITR" == "Xcode" ]; then
 	MAKE="xcodebuild"
 fi
 

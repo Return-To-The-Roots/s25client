@@ -114,7 +114,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 
         void initFont();
         /// liefert das Char-Info eines Zeichens
-        inline const CharInfo& GetCharInfo(unsigned int c) const;
+        const CharInfo& GetCharInfo(unsigned int c) const;
         void DrawChar(const std::string& text, unsigned int& i, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th);
 
         boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
