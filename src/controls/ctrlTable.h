@@ -40,7 +40,7 @@ class ctrlTable : public Window
         /// setzt die Auswahl.
         void SetSelection(unsigned short selection, bool left = true);
         /// fügt eine Zeile hinzu.
-        void AddRow(unsigned int alwaysnull, ...);
+        void AddRow(unsigned alwaysnull, ...);
         /// liefert den Wert eines Feldes.
         const std::string& GetItemText(unsigned short row, unsigned short column) const;
         /// sortiert die Zeilen.
@@ -78,6 +78,7 @@ class ctrlTable : public Window
         void Resize_(unsigned short width, unsigned short height);
         /// Setzt die Breite und Position der Buttons ohne Scrolleiste
         void ResetButtonWidths();
+        unsigned short GetSelectionFromMouse(const MouseCoords &mc);
 
     private:
         TextureColor tc;

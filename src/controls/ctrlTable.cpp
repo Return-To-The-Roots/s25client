@@ -330,7 +330,7 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
     {
-        SetSelection((mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos());
+        SetSelection(GetSelectionFromMouse(mc));
         if(parent_)
             parent_->Msg_TableLeftButton(this->id_, row_l_selection);
 
@@ -350,7 +350,7 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_))
     {
-        SetSelection((mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos(), false);
+        SetSelection(GetSelectionFromMouse(mc), false);
         if(parent_)
             parent_->Msg_TableRightButton(this->id_, row_r_selection);
 
@@ -358,6 +358,11 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
     }
     else
         return RelayMouseMessage(&Window::Msg_RightDown, mc);
+}
+
+unsigned short ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
+{
+    return (mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -408,8 +413,10 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
     {
-        if(mc.dbl_click && parent_)
+        if(mc.dbl_click && parent_){
+            SetSelection(GetSelectionFromMouse(mc));
             parent_->Msg_TableChooseItem(this->id_, row_l_selection);
+        }
 
         return true;
     }
