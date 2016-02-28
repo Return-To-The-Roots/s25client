@@ -259,8 +259,8 @@ void ctrlTable::SortRows(unsigned short column, bool* direction)
             std::transform(a.begin(), a.end(), a.begin(), tolower);
             std::transform(b.begin(), b.end(), b.begin(), tolower);
 
-            if((sort_direction && Compare(a, b, columns[column].sortType) < 0) ||
-                (!sort_direction && Compare(a, b, columns[column].sortType) > 0))
+            if((sort_direction && Compare(a, b, columns[column].sortType) > 0) ||
+                (!sort_direction && Compare(a, b, columns[column].sortType) < 0))
             {
                 using std::swap;
                 swap(rows[r], rows[r+1]);
@@ -530,7 +530,7 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             if (x_a* y_a == x_b * y_b)
                 return 0;
             else
-                return (x_a * y_a < x_b * y_b) ? 1 : -1;
+                return (x_a * y_a < x_b * y_b) ? -1 : 1;
         }
         break;
         // Nach Zahl sortieren
@@ -544,7 +544,7 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             if (num_a == num_b)
                 return 0;
             else
-                return (num_a < num_b) ? 1 : -1;
+                return (num_a < num_b) ? -1 : 1;
         }
         break;
         // Nach Datum im Format dd.mm.yyyy - hh:mm sortieren
@@ -560,13 +560,13 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             ss_b >> d_b >> c >> m_b >> c >> y_b;
 
             if (y_a != y_b)
-                return (y_a < y_b) ? 1 : -1;
+                return (y_a < y_b) ? -1 : 1;
 
             if (m_a != m_b)
-                return (m_a < m_b) ? 1 : -1;
+                return (m_a < m_b) ? -1 : 1;
 
             if (d_a != d_b)
-                return (d_a < d_b) ? 1 : -1;
+                return (d_a < d_b) ? -1 : 1;
 
             // " - "
             ss_a >> c;
@@ -579,9 +579,9 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             ss_b >> h_b >> c >> min_b;
 
             if (h_a != h_b)
-                return (h_a < h_b) ? 1 : -1;
+                return (h_a < h_b) ? -1 : 1;
             if (min_a != min_b)
-                return (min_a < min_b) ? 1 : -1;
+                return (min_a < min_b) ? -1 : 1;
 
             return 0;
         }

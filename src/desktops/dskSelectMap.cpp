@@ -175,7 +175,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsig
     ListDir(path, false, FillTable, (void*)table );
 
     // Dann noch sortieren
-    table->SortRows(0);
+    bool sortAsc = true;
+    table->SortRows(0, &sortAsc);
 
     // und Auswahl zurücksetzen
     table->SetSelection(0);
