@@ -734,6 +734,16 @@ void nofCarrier::LooseWare()
     }
 }
 
+struct IsCoastalAndForFigs
+{
+    const GameWorldGame& gwg;
+    IsCoastalAndForFigs(const GameWorldGame& gwg): gwg(gwg){}
+    
+    bool operator()(const MapPoint& pt) const{
+        return gwg.IsCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
+    }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
@@ -764,30 +774,21 @@ void nofCarrier::LostWork()
             }
 
             // Look for the shore
-            for(MapCoord tx = gwg->GetXA(tmpPos, 0), r = 1; r <= 5; tx = gwg->GetXA(tx, tmpPos.y, 0), ++r)
+            std::vector<MapPoint> coastPoints = gwg->GetPointsInRadius<0>(tmpPos, 5, Identity<MapPoint>(), IsCoastalAndForFigs(*gwg));
+            for(std::vector<MapPoint>::const_iterator it = coastPoints.begin(); it != coastPoints.end(); ++it)
             {
-
-                MapPoint t2(tx, tmpPos.y);
-                for(unsigned i = 2; i < 8; ++i)
+                if(gwg->FindShipPath(tmpPos, *it, &shore_path, NULL))
                 {
-                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2,  i % 6), ++r2)
-                    {
-                        if(gwg->IsCoastalPoint(t2) && gwg->IsNodeForFigures(t2))
-                        {
-                            if(gwg->FindShipPath(tmpPos, t2, &shore_path, NULL))
-                            {
-                                // Ok let's paddle to the coast
-                                rs_pos = 0;
-                                cur_rs = NULL;
-                                if(state == CARRS_WAITFORWARE || state == CARRS_WAITFORWARESPACE)
-                                    WanderOnWater();
-                                state = CARRS_BOATCARRIER_WANDERONWATER;
-                                return;
-                            }
-                        }
-                    }
+                    // Ok let's paddle to the coast
+                    rs_pos = 0;
+                    cur_rs = NULL;
+                    if(state == CARRS_WAITFORWARE || state == CARRS_WAITFORWARESPACE)
+                        WanderOnWater();
+                    state = CARRS_BOATCARRIER_WANDERONWATER;
+                    return;
                 }
             }
+
         }
 
         StartWandering();
