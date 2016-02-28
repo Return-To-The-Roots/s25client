@@ -53,13 +53,14 @@ class GameWorldViewer;
  */
 
 iwPlayReplay::iwPlayReplay(void)
-    : IngameWindow(CGI_PLAYREPLAY, 0xFFFF, 0xFFFF, 600, 300, _("Play Replay"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_PLAYREPLAY, 0xFFFF, 0xFFFF, 600, 330, _("Play Replay"), LOADER.GetImageN("resource", 41))
 {
     AddTable(0, 20, 30, 560, 220, TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
 
-    AddTextButton(1, 120, 260, 100, 22, TC_GREEN2, _("Start"), NormalFont);
-    AddTextButton(2, 320, 260, 100, 22, TC_RED1, _("Clear"), NormalFont);
-    AddTextButton(3, 430, 260, 150, 22, TC_RED1, _("Delete selected"), NormalFont);
+    AddTextButton(2, 20, 260, 100, 22, TC_RED1, _("Clear"), NormalFont);
+    AddTextButton(3, 20, 290, 160, 22, TC_RED1, _("Delete selected"), NormalFont);
+    AddTextButton(4, 190, 290, 190, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(1, 390, 290, 190, 22, TC_GREEN2, _("Start"), NormalFont);
 
     PopulateTable();
 
@@ -97,9 +98,14 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show( new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1) );
             break;
         case 3:
+        {
             ctrlTable* table = GetCtrl<ctrlTable>(0);
             if(table->GetSelection() < table->GetRowCount())
-                WINDOWMANAGER.Show( new iwMsgbox(_("Delete selected"), _("Are you sure you want to remove the selected replay?"), this, MSB_YESNO, MSB_QUESTIONRED, 2) );
+                WINDOWMANAGER.Show(new iwMsgbox(_("Delete selected"), _("Are you sure you want to remove the selected replay?"), this, MSB_YESNO, MSB_QUESTIONRED, 2));
+            break;
+        }
+        case 4:
+            Close();
             break;
     }
 }
