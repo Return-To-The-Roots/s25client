@@ -906,19 +906,9 @@ bool Loader::CreateTerrainTextures(void)
         Rect(242, 160, 50, 16),
     };
 
-    bool waterLoaded = false;
-
     for(unsigned char i=0; i<TT_COUNT; ++i)
     {
         TerrainType t = TerrainType(i);
-        if(TerrainData::IsWater(t))
-        {
-            // All water uses the same texture, so load only once
-            if(waterLoaded)
-                continue;
-            t = TT_WATER;
-            waterLoaded = true;
-        }
         if(TerrainData::IsAnimated(t))
             terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t));
         else
@@ -957,11 +947,6 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
 {
     if(TerrainData::IsAnimated(t))
     {
-        if(TerrainData::IsWater(t))
-        {
-            // All water uses the same texture
-            t = TT_WATER;
-        }
         libsiedler2::ArchivInfo* archive = terrainTexturesAnim[t];
         if(!archive)
             throw std::runtime_error("Invalid terrain texture requested");
@@ -1026,7 +1011,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
 
     glArchivItem_Bitmap_Raw bitmap;
     bitmap.setPalette(palette);
-    bitmap.setFormat(libsiedler2::FORMAT_PALETTED);
+    bitmap.setFormat(libsiedler2::FORMAT_RGBA);
 
     libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
     for(unsigned char i = 0; i < color_count; ++i)
