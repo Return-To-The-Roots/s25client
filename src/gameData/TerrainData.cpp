@@ -112,7 +112,7 @@ unsigned TerrainData::GetFrameCount(TerrainType t)
 
 unsigned char TerrainData::GetStartColor(TerrainType t)
 {
-    switch (t)
+    switch(t)
     {
     case TT_WATER:
     case TT_WATER2:
@@ -126,6 +126,14 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
     default:
         return 0;
     }
+}
+
+unsigned TerrainData::GetShiftColor(TerrainType t)
+{
+    if(t == TT_WATER2)
+        return 0x00000406; //slightly lighter water
+    else
+        return 0;
 }
 
 unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
@@ -349,8 +357,8 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] =
 /*TT_MOUNTAINMEADOW*/     { -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 /*TT_WATER*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 /*TT_LAVA*/               { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-/*TT_WATER2*/             {  1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1,  0,  1 },
-/*TT_BUILDABLE_WATER*/    { -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  0 },
+/*TT_WATER2*/             {  1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1,  1 },
+/*TT_BUILDABLE_WATER*/    { -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  1 },
 /*TT_BUILDABLE_MOUNTAIN*/ { -1, -1,  1,  1,  0,  0,  0,  0,  0,  1,  1,  1, -1,  0,  1,  1, -1, -1 },
 /*TT_LAVA2*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1 },
 /*TT_LAVA3*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 0 },
@@ -374,8 +382,8 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] =
 /*TT_MOUNTAINMEADOW*/     {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 /*TT_WATER*/              {  1,  1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1, -1 },
 /*TT_LAVA*/               {  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-/*TT_WATER2*/             {  1,  1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1, -1,  0,  1 },
-/*TT_BUILDABLE_WATER*/    {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  0 },
+/*TT_WATER2*/             {  1,  1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1, -1, -1,  1 },
+/*TT_BUILDABLE_WATER*/    {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  1 },
 /*TT_BUILDABLE_MOUNTAIN*/ { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  1, -1, -1,  1, -1, -1 },
 /*TT_LAVA2*/              {  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1 },
 /*TT_LAVA3*/              {  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 0 },
@@ -399,8 +407,8 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] =
 /*TT_MOUNTAINMEADOW*/     { -1, -1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 /*TT_WATER*/              {  0,  1,  0,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1,  1 },
 /*TT_LAVA*/               { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
-/*TT_WATER2*/             {  0,  1,  0,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1,  1,  0,  0 },
-/*TT_BUILDABLE_WATER*/    {  0,  1,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  0 },
+/*TT_WATER2*/             {  0,  1,  0,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1,  1, -1,  0 },
+/*TT_BUILDABLE_WATER*/    {  0,  1,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  1 },
 /*TT_BUILDABLE_MOUNTAIN*/ { -1, -1, -1, -1, -1,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1,  1, -1, -1 },
 /*TT_LAVA2*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1 },
 /*TT_LAVA3*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 0 },

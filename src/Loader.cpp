@@ -37,6 +37,7 @@
 #include "gameData/TerrainData.h"
 
 #include "libsiedler2/src/libsiedler2.h"
+#include "libutil/src/colors.h"
 #include <boost/filesystem.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <iomanip>
@@ -910,7 +911,7 @@ bool Loader::CreateTerrainTextures(void)
     {
         TerrainType t = TerrainType(i);
         if(TerrainData::IsAnimated(t))
-            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t));
+            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
         else
             terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
     }
@@ -996,7 +997,7 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
  *
  *  @author OLiver
  */
-libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index)
+libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift)
 {
     libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
     glArchivItem_Bitmap* image = GetTexImageN(0);
@@ -1006,6 +1007,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
 
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
     std::vector<unsigned char> buffer(width * height, start_index);
+    std::vector<uint32_t> shiftBuffer(colorShift ? buffer.size() : 0);
 
     image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
 
@@ -1025,7 +1027,28 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
             }
         }
 
-        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED);
+        if(colorShift)
+        {
+            bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
+            for(std::vector<uint32_t>::iterator it = shiftBuffer.begin(); it != shiftBuffer.end(); ++it)
+            {
+                unsigned a = GetAlpha(*it) + GetAlpha(colorShift);
+                unsigned r = GetRed(*it) + GetRed(colorShift);
+                unsigned g = GetGreen(*it) + GetGreen(colorShift);
+                unsigned b = GetBlue(*it) + GetBlue(colorShift);
+                if(a > 0xFF)
+                    a -= 0xFF;
+                if(r > 0xFF)
+                    r -= 0xFF;
+                if(g > 0xFF)
+                    g -= 0xFF;
+                if(b > 0xFF)
+                    b -= 0xFF;
+                *it = MakeColor(a, r, g, b);
+            }
+            bitmap.create(width, height, reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
+        }
 
         destination->pushC(bitmap);
     }
