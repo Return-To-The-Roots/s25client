@@ -591,6 +591,7 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
     tmpTexData[0].b = tmpTexData[1].b = tmpTexData[2].b = tmpTexData[3].b = GetBlue(color);
     tmpTexData[0].a = tmpTexData[1].a = tmpTexData[2].a = tmpTexData[3].a = GetAlpha(color);
 
+    int numQuads;
     if ((player_color != 0x00000000) && hasPlayer)
     {
         tmpTexData[4].x = tmpTexData[5].x = tmpTexData[0].x;
@@ -603,16 +604,13 @@ void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
         tmpTexData[4].b = tmpTexData[5].b = tmpTexData[6].b = tmpTexData[7].b = GetBlue(player_color);
         tmpTexData[4].a = tmpTexData[5].a = tmpTexData[6].a = tmpTexData[7].a = GetAlpha(player_color);
 
-        glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
-        VIDEODRIVER.BindTexture(texture);
-        glDrawArrays(GL_QUADS, 0, 8);
-
-        return;
-    }
+        numQuads = 8;
+    } else
+        numQuads = 4;
 
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
     VIDEODRIVER.BindTexture(texture);
-    glDrawArrays(GL_QUADS, 0, 4);
+    glDrawArrays(GL_QUADS, 0, numQuads);
 }
 
 void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, unsigned player_color)
