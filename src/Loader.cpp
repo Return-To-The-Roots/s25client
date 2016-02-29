@@ -837,7 +837,8 @@ void Loader::fillCaches()
     {
         // generate mega texture
         stp->pack();
-    }
+    } else
+        deletePtr(stp);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
