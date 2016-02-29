@@ -23,7 +23,8 @@
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
 #include "Ware.h"
-
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "Loader.h"

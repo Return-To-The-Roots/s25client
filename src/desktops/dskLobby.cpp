@@ -37,6 +37,8 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
 
 #include <Log.h>
 #include <boost/lexical_cast.hpp>

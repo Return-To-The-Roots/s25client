@@ -25,6 +25,7 @@
 #include "SerializedGameData.h"
 #include "noEnvObject.h"
 #include "noFire.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

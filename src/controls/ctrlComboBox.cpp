@@ -24,6 +24,8 @@
 #include "ctrlList.h"
 #include "CollisionDetection.h"
 #include "driver/src/MouseCoords.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

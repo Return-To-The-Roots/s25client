@@ -21,6 +21,7 @@
 #include "noSkeleton.h"
 #include "world/GameWorldGame.h"
 #include "Loader.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "EventManager.h"
 #include "Random.h"
 #include "SerializedGameData.h"

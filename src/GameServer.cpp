@@ -44,14 +44,16 @@
 #include "Debug.h"
 #include "fileFuncs.h"
 #include "ogl/glArchivItem_Map.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
 #include "gameData/GameConsts.h"
 #include "gameData/LanDiscoveryCfg.h"
 #include "gameTypes/LanGameInfo.h"
 
 #include "helpers/Deleter.h"
-#include "../libsiedler2/src/prototypen.h"
-#include "../libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libsiedler2/src/prototypen.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libutil/src/colors.h"
 
 #include "files.h"
 #include <boost/filesystem.hpp>

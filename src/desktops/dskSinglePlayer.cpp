@@ -33,6 +33,7 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "ogl/glArchivItem_Font.h"
 #include "fileFuncs.h"
 #include "files.h"
 #include <boost/filesystem.hpp>

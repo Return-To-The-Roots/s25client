@@ -221,9 +221,7 @@ void fowFlag::Draw(int x, int y) const
 {
     GameClientPlayer& owner = GAMECLIENT.GetPlayer(player);
     // Flagge
-    LOADER.GetNationPlayerImage(owner.nation, 100 + flag_type * 20)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(COLORS[owner.color]));
-    // Schatten
-    LOADER.GetNationImage(owner.nation, 100 + flag_type * 20 + 10)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.flag_cache[owner.nation][flag_type][0].draw(x, y, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(COLORS[owner.color]));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

@@ -27,6 +27,7 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "desktops/dskMultiPlayer.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/LanDiscoveryCfg.h"
 #include "controls/ctrlTable.h"
 #include <Serializer.h>

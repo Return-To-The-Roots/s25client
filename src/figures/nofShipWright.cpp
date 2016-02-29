@@ -23,9 +23,10 @@
 #include "SoundManager.h"
 #include "GameClient.h"
 #include "Random.h"
+#include "Loader.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "Loader.h"
 #include "libutil/src/colors.h"
 
 // Include last!

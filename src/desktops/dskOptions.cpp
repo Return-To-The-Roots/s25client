@@ -43,8 +43,10 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlProgress.h"
+#include "ogl/glArchivItem_Font.h"
 #include "helpers/mathFuncs.h"
 #include "ExtensionList.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

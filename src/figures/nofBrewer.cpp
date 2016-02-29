@@ -18,13 +18,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Header
 
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofBrewer.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

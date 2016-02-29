@@ -23,6 +23,8 @@
 #include "CollisionDetection.h"
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

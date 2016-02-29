@@ -27,8 +27,9 @@
 #include "build_version.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
-
-#include "../libutil/src/error.h"
+#include "libsiedler2/src/ArchivItem_Ini.h"
+#include "libsiedler2/src/ArchivItem_Text.h"
+#include "libutil/src/error.h"
 #include <sstream>
 #ifndef _WIN32
 #   include <cstring>

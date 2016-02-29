@@ -22,6 +22,8 @@
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

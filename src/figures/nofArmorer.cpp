@@ -28,6 +28,7 @@
 #include "SerializedGameData.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

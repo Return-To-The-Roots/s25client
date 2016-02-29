@@ -24,7 +24,8 @@
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
-
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 
 // Include last!

@@ -32,12 +32,16 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Bob.h"
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
 #include "Log.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

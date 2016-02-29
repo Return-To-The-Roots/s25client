@@ -26,6 +26,8 @@
 #include "GameClient.h"
 #include "buildings/nobMilitary.h"
 #include "nodeObjs/noEnvObject.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "Random.h"
 #include "gameData/MapConsts.h"
 

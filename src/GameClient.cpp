@@ -47,10 +47,11 @@
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
 #include "helpers/Deleter.h"
-
-#include "../libsiedler2/src/prototypen.h"
-#include "../libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/glArchivItem_Map.h"
+#include "ogl/glArchivItem_Font.h"
+
+#include "libsiedler2/src/prototypen.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>

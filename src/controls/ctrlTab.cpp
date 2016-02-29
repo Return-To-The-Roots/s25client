@@ -22,7 +22,7 @@
 
 #include "ctrlButton.h"
 #include "ctrlGroup.h"
-
+#include "ogl/glArchivItem_Bitmap.h"
 #include "Loader.h"
 #include <cstring>
 

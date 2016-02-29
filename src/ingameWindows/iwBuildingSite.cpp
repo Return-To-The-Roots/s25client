@@ -26,6 +26,8 @@
 #include "world/GameWorldViewer.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

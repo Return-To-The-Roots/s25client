@@ -33,6 +33,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "ai/AIEvents.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "factories/BuildingFactory.h"
 
 // Include last!

@@ -28,6 +28,7 @@
 #include "gameData/JobConsts.h"
 #include "SerializedGameData.h"
 #include "Loader.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
 
 // Include last!

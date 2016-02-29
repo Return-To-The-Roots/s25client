@@ -24,6 +24,9 @@
 #include "Loader.h"
 #include "CollisionDetection.h"
 #include "driver/src/MouseCoords.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
 #include "gameData/const_gui_ids.h"
 #include <cstring>
 

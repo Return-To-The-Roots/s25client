@@ -35,6 +35,7 @@
 #include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwTextfile.h"
+#include "ogl/glArchivItem_Font.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

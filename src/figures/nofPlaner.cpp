@@ -25,6 +25,7 @@
 #include "GameClientPlayer.h"
 #include "buildings/noBuildingSite.h"
 #include "Random.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"

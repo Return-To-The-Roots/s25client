@@ -26,6 +26,7 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
 #include "mygettext.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

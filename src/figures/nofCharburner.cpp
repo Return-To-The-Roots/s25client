@@ -25,6 +25,7 @@
 #include "SoundManager.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/TerrainData.h"
 #include "SerializedGameData.h"
 

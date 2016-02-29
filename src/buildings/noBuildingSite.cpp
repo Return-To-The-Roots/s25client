@@ -27,6 +27,7 @@
 #include "gameData/BuildingConsts.h"
 #include "FOWObjects.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "Loader.h"
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"

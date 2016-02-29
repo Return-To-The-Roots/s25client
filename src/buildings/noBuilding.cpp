@@ -24,6 +24,7 @@
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

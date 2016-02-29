@@ -24,6 +24,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 

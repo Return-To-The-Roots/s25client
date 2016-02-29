@@ -26,6 +26,7 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!

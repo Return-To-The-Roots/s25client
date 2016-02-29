@@ -23,7 +23,7 @@
 #include "WindowManager.h"
 #include "Loader.h"
 #include "GameManager.h"
-
+#include "ogl/glArchivItem_Bitmap.h"
 #include "dskMainMenu.h"
 
 // Include last!

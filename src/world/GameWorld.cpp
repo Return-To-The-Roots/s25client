@@ -25,10 +25,11 @@
 #include "world/MapSerializer.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
+#include "ogl/glArchivItem_Sound.h"
 #include "buildings/noBuildingSite.h"
 #include "WindowManager.h"
 
-#include "../libsiedler2/src/prototypen.h"
+#include "libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
 

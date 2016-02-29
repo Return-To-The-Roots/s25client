@@ -30,6 +30,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskLobby.h"
 #include "iwMsgbox.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!

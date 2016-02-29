@@ -25,6 +25,8 @@
 #include "figures/noFigure.h"
 #include "Ware.h"
 #include "controls/ctrlButton.h"
+#include "ogl/glArchivItem_Bob.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"

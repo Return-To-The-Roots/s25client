@@ -29,6 +29,8 @@
 #include "driver/src/KeyEvent.h"
 #include "Loader.h"
 #include "PostMsg.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "macros.h"
 #include "GameClient.h"

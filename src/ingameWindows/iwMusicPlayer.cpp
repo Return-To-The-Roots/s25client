@@ -34,6 +34,7 @@
 #include "ListDir.h"
 #include "Settings.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 #include <boost/filesystem.hpp>
 #include <cstdio>
 

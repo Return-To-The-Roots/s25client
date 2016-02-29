@@ -29,6 +29,7 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlText.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!

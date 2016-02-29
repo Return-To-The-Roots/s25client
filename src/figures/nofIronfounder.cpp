@@ -21,6 +21,7 @@
 #include "nofIronfounder.h"
 
 #include "Loader.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"

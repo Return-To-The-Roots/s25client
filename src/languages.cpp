@@ -24,7 +24,9 @@
 
 #include "files.h"
 #include "Settings.h"
-#include "../mygettext/src/mygettext.h"
+#include "libsiedler2/src/ArchivItem_Ini.h"
+#include "libsiedler2/src/ArchivItem_Text.h"
+#include "mygettext/src/mygettext.h"
 
 #include <algorithm>
 

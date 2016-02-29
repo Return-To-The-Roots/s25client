@@ -26,10 +26,11 @@
 #include "Settings.h"
 
 #include "dskMultiPlayer.h"
-
+#include "ogl/glArchivItem_Font.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwDirectIPConnect.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -25,6 +25,7 @@
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlProgress.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 #include <iostream>
 
 // Include last!

@@ -31,6 +31,7 @@
 #include "SerializedGameData.h"
 #include "PostMsg.h"
 #include "ai/AIEvents.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

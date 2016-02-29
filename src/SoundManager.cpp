@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "drivers/AudioDriverWrapper.h"
+#include "ogl/glArchivItem_Sound.h"
 #include "Settings.h"
 #include "GameClient.h"
 

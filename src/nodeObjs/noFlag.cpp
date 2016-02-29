@@ -28,7 +28,7 @@
 #include "buildings/noBuilding.h"
 #include "SerializedGameData.h"
 #include "FOWObjects.h"
-
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameData/TerrainData.h"
 

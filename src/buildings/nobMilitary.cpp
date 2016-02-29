@@ -39,6 +39,8 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "Point.h"
 #include "Log.h"
 #include "helpers/containerUtils.h"

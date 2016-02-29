@@ -29,6 +29,7 @@
 #include "buildings/nobShipYard.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/BuildingConsts.h"
 
 // Include last!

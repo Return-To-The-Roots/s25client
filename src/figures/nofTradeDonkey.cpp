@@ -20,6 +20,7 @@
 #include "GameClient.h"
 #include "gameData/JobConsts.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 #include "world/TradeRoute.h"

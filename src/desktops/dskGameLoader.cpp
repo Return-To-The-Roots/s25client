@@ -32,6 +32,7 @@
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "ogl/glArchivItem_Font.h"
 #include "files.h"
 
 // Include last!

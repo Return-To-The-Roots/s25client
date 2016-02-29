@@ -28,6 +28,8 @@
 #include "desktops/Desktop.h"
 #include "ingameWindows/IngameWindow.h"
 #include "drivers/ScreenResizeEvent.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
 #include "Log.h"
 
 #include <algorithm>

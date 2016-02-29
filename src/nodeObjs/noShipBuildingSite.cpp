@@ -27,6 +27,7 @@
 #include "GameClient.h"
 #include "PostMsg.h"
 #include "ai/AIEvents.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

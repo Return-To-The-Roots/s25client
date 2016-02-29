@@ -22,6 +22,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nobHQ.h"
 #include "Loader.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"

@@ -31,6 +31,7 @@
 #include "ExtensionList.h"
 #include "Loader.h"
 #include "helpers/roundToNextPow2.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "libsiedler2/src/ArchivInfo.h"
 #include "ogl/oglIncludes.h"
 #include <boost/smart_ptr/scoped_array.hpp>

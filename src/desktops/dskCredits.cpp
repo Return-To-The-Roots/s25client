@@ -31,7 +31,7 @@
 #include "gameData/JobConsts.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Music.h"
-
+#include "ogl/glArchivItem_Bob.h"
 #include <boost/array.hpp>
 #include <cstdlib>
 

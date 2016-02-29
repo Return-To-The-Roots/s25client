@@ -25,6 +25,7 @@
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
 #include "controls/ctrlButton.h"
+#include "ogl/glArchivItem_Font.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

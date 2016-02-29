@@ -21,6 +21,7 @@
 #include "iwDemolishBuilding.h"
 
 #include "Loader.h"
+#include "ogl/glArchivItem_Font.h"
 #include "GameClient.h"
 
 

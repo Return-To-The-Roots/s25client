@@ -28,8 +28,10 @@
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "desktops/dskHostGame.h"
+#include "ogl/glArchivItem_Font.h"
 #include "Settings.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

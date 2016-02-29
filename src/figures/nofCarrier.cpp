@@ -34,6 +34,7 @@
 #include "Loader.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "Log.h"
 #include "libutil/src/colors.h"
 #include <boost/assign/std/vector.hpp>

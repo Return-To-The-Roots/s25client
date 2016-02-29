@@ -31,6 +31,7 @@
 #include "controls/ctrlTable.h"
 #include "iwMsgbox.h"
 #include "desktops/dskGameLoader.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/filesystem.hpp>
 

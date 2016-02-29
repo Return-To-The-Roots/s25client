@@ -27,6 +27,7 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlText.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 

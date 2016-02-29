@@ -25,6 +25,7 @@
 #include "controls/ctrlProgress.h"
 #include "controls/ctrlTab.h"
 #include "GameClient.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!

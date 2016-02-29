@@ -26,6 +26,7 @@
 #include "nodeObjs/noGrainfield.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "SerializedGameData.h"
 #include "gameData/TerrainData.h"
 

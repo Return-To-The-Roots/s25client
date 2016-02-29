@@ -63,6 +63,8 @@
 #include "gameData/TerrainData.h"
 #include "gameData/const_gui_ids.h"
 #include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Sound.h"
 #include "Loader.h"
 #include <sstream>
 

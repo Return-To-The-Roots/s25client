@@ -42,6 +42,7 @@
 #include "desktops/dskLAN.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwAddons.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "Random.h"

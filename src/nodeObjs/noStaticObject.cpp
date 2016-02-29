@@ -23,7 +23,7 @@
 
 #include "Loader.h"
 #include "SerializedGameData.h"
-
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "GameClient.h"
 

@@ -27,6 +27,7 @@
 #include "controls/ctrlOptionGroup.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/src/colors.h"
 #include <cstdio>
 
 // Include last!

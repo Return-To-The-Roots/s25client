@@ -35,6 +35,8 @@
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/GameConsts.h"
