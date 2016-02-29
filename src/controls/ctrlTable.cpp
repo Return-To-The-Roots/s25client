@@ -318,6 +318,8 @@ bool ctrlTable::Draw_(void)
 void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     SortRows(ctrl_id - 1);
+    SetSelection(row_l_selection);
+    SetSelection(row_r_selection, false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
