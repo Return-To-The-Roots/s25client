@@ -159,7 +159,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
         // increase width or height, try whether opengl is able to handle textures that big
         if(w <= h)
         {
-            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w << 1, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w * 2, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
             glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
             if(parTexWidth == 0)
@@ -168,7 +168,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
                 w *= 2;
         } else if(h < w)
         {
-            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h << 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h * 2, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
             glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
             if(parTexWidth == 0)

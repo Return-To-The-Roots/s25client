@@ -20,7 +20,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glSmartBitmap.h"
 #include "drivers/VideoDriverWrapper.h"
-
+#include "libsiedler2/src/ArchivItem_Bitmap.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "Loader.h"
 #include <limits>
 
@@ -97,7 +98,7 @@ void glSmartBitmap::calcDimensions()
     h = ny + max_y;
 }
 
-void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned height, int x_offset, int y_offset)
+void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, unsigned const height, int const x_offset, int const y_offset)
 {
     libsiedler2::ArchivItem_Palette* p_colors = LOADER.GetPaletteN("colors");
     libsiedler2::ArchivItem_Palette* p_5 = LOADER.GetPaletteN("pal5");
@@ -105,66 +106,85 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
     for (std::vector<glBitmapItem>::const_iterator it = items.begin(); it != items.end(); ++it)
     {
         if ((it->w == 0) || (it->h == 0))
-        {
             continue;
-        }
 
-        unsigned xo = (nx - it->nx);
-        unsigned yo = (ny - it->ny);
+        const unsigned xo = (nx - it->nx);
+        const unsigned yo = (ny - it->ny);
 
-        switch (it->type)
+        if(it->type == TYPE_ARCHIVITEM_BITMAP_SHADOW)
         {
-            case TYPE_ARCHIVITEM_BITMAP:
+            std::vector<unsigned char> tmp(w * h * 4);
+
+            dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
+                ->print(&tmp.front(), w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, it->x, it->y, it->w, it->h);
+
+            unsigned tmpIdx = 0;
+
+            for(int y = 0; y < h; ++y)
             {
-                dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
-                        ->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5, xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h);
+                unsigned idx = ((y_offset + y) * stride + x_offset) * 4;
 
-                break;
-            }
-            case TYPE_ARCHIVITEM_BITMAP_PLAYER:
-            {
-                libsiedler2::ArchivItem_Bitmap_Player* bmp = dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp);
-
-                bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
-                           xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h, false);
-
-                bmp->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
-                           xo + w + x_offset, yo + y_offset, it->x, it->y, it->w, it->h, true);
-
-                break;
-            }
-            case TYPE_ARCHIVITEM_BITMAP_SHADOW:
-            {
-                std::vector<unsigned char> tmp(w * h * 4);
-
-                dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
-                        ->print(&tmp.front(), w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, it->x, it->y, it->w, it->h);
-
-                unsigned tmpIdx = 0;
-
-                for (int y = 0; y < h; ++y)
+                for(int x = 0; x < w; ++x)
                 {
-                    unsigned idx = ((y_offset + y) * stride + x_offset) * 4;
-
-                    for (int x = 0; x < w; ++x)
+                    if(tmp[tmpIdx + 3] != 0x00 && buffer[idx + 3] == 0x00)
                     {
-                        if (tmp[tmpIdx + 3] != 0x00 && buffer[idx + 3] == 0x00)
-                        {
-                            buffer[idx] = 0x00;
-                            buffer[idx + 1] = 0x00;
-                            buffer[idx + 2] = 0x00;
-                            buffer[idx + 3] = 0x40;
-                        }
+                        buffer[idx] = 0x00;
+                        buffer[idx + 1] = 0x00;
+                        buffer[idx + 2] = 0x00;
+                        buffer[idx + 3] = 0x40;
+                    }
 
-                        idx += 4;
-                        tmpIdx += 4;
+                    idx += 4;
+                    tmpIdx += 4;
+                }
+            }
+        } else if(!hasPlayer)
+        {
+            // No player bitmap -> Just (over)write the data
+            RTTR_Assert(it->type == TYPE_ARCHIVITEM_BITMAP);
+            dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
+                ->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5,
+                    xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h);
+        } else
+        {
+            // There is a player bitmap -> First write to temp buffer
+            std::vector<uint32_t> tmp(w * h);
+            if (it->type == TYPE_ARCHIVITEM_BITMAP)
+            {
+                dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
+                    ->print(reinterpret_cast<unsigned char*>(&tmp.front()), w, h, libsiedler2::FORMAT_RGBA, p_5,
+                        xo, yo, it->x, it->y, it->w, it->h);
+            } else
+            {
+                dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp)
+                    ->print(reinterpret_cast<unsigned char*>(&tmp.front()), w, h, libsiedler2::FORMAT_RGBA, p_colors, 128,
+                        xo, yo, it->x, it->y, it->w, it->h, false);
+            }
+            // Now copy temp buffer to real buffer, but we need to reset all player colors that would be overwritten
+            // so it looks like, the first bitmap is fully drawn (including player colors) and then the next
+            // overwrites it
+            uint32_t* const pBuffer = reinterpret_cast<uint32_t*>(buffer);
+            for(int y = yo; y < h; y++)
+            {
+                for(int x = xo; x < w; x++)
+                {
+                    // Check for non-transparent pixels
+                    if(tmp[y * w + x])
+                    {
+                        // Copy to buffer
+                        pBuffer[(y + y_offset) * stride + x + x_offset] = tmp[y * w + x];
+                        // Reset player color to transparent
+                        pBuffer[(y + y_offset) * stride + x + x_offset + w] = 0;
                     }
                 }
-
-                break;
             }
-            default:
-                break;
+            // Finally write the player color part if it has one
+            if(it->type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
+            {
+                dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp)
+                    ->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
+                        xo + w + x_offset, yo + y_offset, it->x, it->y, it->w, it->h, true);
+            }
         }
     }
 }
