@@ -20,45 +20,15 @@
 
 #pragma once
 
-#include "libsiedler2/src/ArchivItem_Bitmap.h"
-#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include "ogl/glBitmapItem.h"
 #include "ogl/oglIncludes.h"
 #include <vector>
 
-namespace libsiedler2 { class ArchivItem_BitmapBase; }
-
-enum glBitmapItemType
+namespace libsiedler2
 {
-    TYPE_ARCHIVITEM_BITMAP = 0,
-    TYPE_ARCHIVITEM_BITMAP_PLAYER,
-    TYPE_ARCHIVITEM_BITMAP_SHADOW
-};
-
-class glBitmapItem
-{
-    public:
-        glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow = false, bool isOwning = false): bmp(b), type(shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP), isOwning_(isOwning)
-        {
-            b->getVisibleArea(x, y, w, h);
-            nx = b->getNx() - x;
-            ny = b->getNy() - y;
-        }
-        glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning = false): bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
-        {
-            b->getVisibleArea(x, y, w, h);
-            nx = b->getNx() - x;
-            ny = b->getNy() - y;
-        }
-
-        libsiedler2::ArchivItem_BitmapBase* bmp;
-        glBitmapItemType type;
-        /// If this is true, the owner of the bitmap item should also delete the bitmap
-        bool isOwning_;
-
-        int nx, ny;
-        int w, h;
-        int x, y;
-};
+    class baseArchivItem_Bitmap;
+    class ArchivItem_Bitmap_Player;
+}
 
 class glSmartBitmap
 {
@@ -117,38 +87,7 @@ class glSmartBitmap
         static unsigned nextPowerOfTwo(unsigned k);
 };
 
-class glSmartTexturePackerNode
-{
-        int x, y;
-        int w, h;
 
-        glSmartBitmap* bmp;
-
-        glSmartTexturePackerNode* child[2];
-
-    public:
-        glSmartTexturePackerNode() : x(0), y(0), w(0), h(0), bmp(NULL) {child[0] = child[1] = NULL;}
-        glSmartTexturePackerNode(int w, int h) : x(0), y(0), w(w), h(h), bmp(NULL) {child[0] = child[1] = NULL;}
-
-        bool insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glSmartTexturePackerNode*>& todo);
-        void destroy(unsigned reserve = 0);
-};
-
-class glSmartTexturePacker
-{
-    private:
-        std::vector<unsigned> textures;
-        std::vector<glSmartBitmap*> items;
-
-        bool packHelper(std::vector<glSmartBitmap*> &list);
-        static bool sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b);
-    public:
-        ~glSmartTexturePacker();
-
-        bool pack();
-
-        void add(glSmartBitmap& bmp) {items.push_back(&bmp);}
-};
 
 #endif
 

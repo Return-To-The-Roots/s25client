@@ -33,6 +33,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glAllocator.h"
+#include "ogl/glTexturePacker.h"
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
 
