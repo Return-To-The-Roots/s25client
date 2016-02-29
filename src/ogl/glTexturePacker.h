@@ -22,7 +22,7 @@
 
 class glSmartBitmap;
 
-class glSmartTexturePacker
+class glTexturePacker
 {
 private:
     std::vector<unsigned> textures;
@@ -31,7 +31,7 @@ private:
     bool packHelper(std::vector<glSmartBitmap*> &list);
     static bool sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b);
 public:
-    ~glSmartTexturePacker();
+    ~glTexturePacker();
 
     bool pack();
 

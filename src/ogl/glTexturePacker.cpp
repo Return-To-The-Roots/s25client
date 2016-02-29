@@ -25,7 +25,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-glSmartTexturePacker::~glSmartTexturePacker()
+glTexturePacker::~glTexturePacker()
 {
     for(std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
     {
@@ -33,12 +33,12 @@ glSmartTexturePacker::~glSmartTexturePacker()
     }
 }
 
-bool glSmartTexturePacker::sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b)
+bool glTexturePacker::sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b)
 {
     return((a->getTexWidth() * a->getTexHeight()) > (b->getTexWidth() * b->getTexHeight()));
 }
 
-bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
+bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 {
     int w = 0;
     int h = 0;
@@ -92,7 +92,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 
     // maximum texture size reached?
     bool maxTex = false;
-    std::vector<glSmartTexturePackerNode*> tmpVec;
+    std::vector<glTexturePackerNode*> tmpVec;
     tmpVec.reserve(list.size());
 
     do
@@ -101,7 +101,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
         if((w* h >= total) || maxTex)
         {
             // texture packer
-            glSmartTexturePackerNode* root = new glSmartTexturePackerNode(w, h);
+            glTexturePackerNode* root = new glTexturePackerNode(w, h);
 
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;
@@ -208,7 +208,7 @@ bool glSmartTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
     } while(0 == 0);
 }
 
-bool glSmartTexturePacker::pack()
+bool glTexturePacker::pack()
 {
     for(std::vector<glSmartBitmap*>::const_iterator it = items.begin(); it != items.end(); ++it)
     {

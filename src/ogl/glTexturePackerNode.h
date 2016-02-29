@@ -21,21 +21,21 @@
 #include <vector>
 
 class glSmartBitmap;
-class glSmartTexturePackerNode;
+class glTexturePackerNode;
 
-class glSmartTexturePackerNode
+class glTexturePackerNode
 {
     int x, y;
     int w, h;
 
     glSmartBitmap* bmp;
-    glSmartTexturePackerNode* child[2];
+    glTexturePackerNode* child[2];
 
 public:
-    glSmartTexturePackerNode(): x(0), y(0), w(0), h(0), bmp(NULL) { child[0] = child[1] = NULL; }
-    glSmartTexturePackerNode(int w, int h): x(0), y(0), w(w), h(h), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode(): x(0), y(0), w(0), h(0), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode(int w, int h): x(0), y(0), w(w), h(h), bmp(NULL) { child[0] = child[1] = NULL; }
 
-    bool insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glSmartTexturePackerNode*>& todo);
+    bool insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo);
     void destroy(unsigned reserve = 0);
 };
 

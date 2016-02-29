@@ -47,7 +47,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class glSmartTexturePacker;
+class glTexturePacker;
 class glArchivItem_Bitmap_Raw;
 
 const std::string CONFIG_NAME = "config";
@@ -146,7 +146,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         libsiedler2::ArchivInfo roads;
         libsiedler2::ArchivInfo roads_points;
 
-        glSmartTexturePacker* stp;
+        glTexturePacker* stp;
 
         helpers::MultiArray<glSmartBitmap, 8, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
         helpers::MultiArray<glSmartBitmap, NAT_COUNT, BUILDING_TYPES_COUNT, 2> building_cache;

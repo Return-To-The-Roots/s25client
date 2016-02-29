@@ -22,7 +22,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glSmartTexturePackerNode*>& todo)
+bool glTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();
 
@@ -33,7 +33,7 @@ bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, u
 
     while(!todo.empty())
     {
-        glSmartTexturePackerNode* current = todo.back();
+        glTexturePackerNode* current = todo.back();
         todo.pop_back();
 
         if(current->child[0])
@@ -73,8 +73,8 @@ bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, u
             return(true);
         }
 
-        current->child[0] = new glSmartTexturePackerNode();
-        current->child[1] = new glSmartTexturePackerNode();
+        current->child[0] = new glTexturePackerNode();
+        current->child[1] = new glTexturePackerNode();
 
         int dw = current->w - bw;
         int dh = current->h - bh;
@@ -105,9 +105,9 @@ bool glSmartTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, u
     return(false);
 }
 
-void glSmartTexturePackerNode::destroy(unsigned reserve)
+void glTexturePackerNode::destroy(unsigned reserve)
 {
-    std::vector<glSmartTexturePackerNode*> todo;
+    std::vector<glTexturePackerNode*> todo;
 
     todo.reserve(reserve);
 
@@ -119,7 +119,7 @@ void glSmartTexturePackerNode::destroy(unsigned reserve)
 
     while(!todo.empty())
     {
-        glSmartTexturePackerNode* current = todo.back();
+        glTexturePackerNode* current = todo.back();
         todo.pop_back();
 
         if(current->child[0])

@@ -459,7 +459,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 void Loader::fillCaches()
 {
     delete stp;
-    stp = new glSmartTexturePacker();
+    stp = new glTexturePacker();
 
 // Animals
     for (unsigned species = 0; species < SPEC_COUNT; ++species)
