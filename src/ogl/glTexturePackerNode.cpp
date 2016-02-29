@@ -22,7 +22,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-bool glTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo)
+bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();
 

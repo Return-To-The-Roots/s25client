@@ -91,12 +91,12 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;
 
-            std::vector<unsigned char> buffer(w * h * 4);
+            std::vector<uint32_t> buffer(w * h);
 
             // try storing bitmaps in the big texture
             for(std::vector<glSmartBitmap*>::const_iterator it = list.begin(); it != list.end(); ++it)
             {
-                if(!root->insert((*it), &buffer.front(), w, h, tmpVec))
+                if(!root->insert((*it), buffer, w, h, tmpVec))
                 {
                     // inserting this bitmap failed? just remember it for next texture
                     left.push_back((*it));

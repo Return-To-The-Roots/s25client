@@ -23,6 +23,7 @@
 #include "ogl/glBitmapItem.h"
 #include "ogl/oglIncludes.h"
 #include <vector>
+#include <stdint.h>
 
 namespace libsiedler2
 {
@@ -78,7 +79,7 @@ class glSmartBitmap
         void draw(int x, int y, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
         void drawPercent(int x, int y, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
 
-        void drawTo(unsigned char* const buffer, const unsigned stride, const unsigned height, const int x_offset = 0, const int y_offset = 0);
+        void drawTo(std::vector<uint32_t>& buffer, const unsigned stride, const unsigned height, const int x_offset = 0, const int y_offset = 0);
 
         void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, false, transferOwnership));}
         void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}

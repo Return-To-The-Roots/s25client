@@ -20,10 +20,12 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glSmartBitmap.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "Loader.h"
 #include "libsiedler2/src/ArchivItem_Bitmap.h"
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
-#include "Loader.h"
+#include "libutil/src/colors.h"
 #include <limits>
+#include <climits>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -98,7 +100,7 @@ void glSmartBitmap::calcDimensions()
     h = ny + max_y;
 }
 
-void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, unsigned const height, int const x_offset, int const y_offset)
+void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride, unsigned const height, int const x_offset, int const y_offset)
 {
     libsiedler2::ArchivItem_Palette* p_colors = LOADER.GetPaletteN("colors");
     libsiedler2::ArchivItem_Palette* p_5 = LOADER.GetPaletteN("pal5");
@@ -113,29 +115,27 @@ void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, u
 
         if(it->type == TYPE_ARCHIVITEM_BITMAP_SHADOW)
         {
-            std::vector<unsigned char> tmp(w * h * 4);
+            std::vector<uint32_t> tmp(w * h);
 
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
-                ->print(&tmp.front(), w, h, libsiedler2::FORMAT_RGBA, p_5, xo, yo, it->x, it->y, it->w, it->h);
+                ->print(reinterpret_cast<unsigned char*>(&tmp.front()), w, h, libsiedler2::FORMAT_RGBA, p_5,
+                    xo, yo, it->x, it->y, it->w, it->h);
 
             unsigned tmpIdx = 0;
 
             for(int y = 0; y < h; ++y)
             {
-                unsigned idx = ((y_offset + y) * stride + x_offset) * 4;
+                unsigned idx = (y_offset + y) * stride + x_offset;
 
                 for(int x = 0; x < w; ++x)
                 {
-                    if(tmp[tmpIdx + 3] != 0x00 && buffer[idx + 3] == 0x00)
+                    if(tmp[tmpIdx + 3] != 0x00 && GetAlpha(buffer[idx]) == 0x00)
                     {
-                        buffer[idx] = 0x00;
-                        buffer[idx + 1] = 0x00;
-                        buffer[idx + 2] = 0x00;
-                        buffer[idx + 3] = 0x40;
+                        buffer[idx] = MakeColor(0x40, 0, 0, 0);
                     }
 
-                    idx += 4;
-                    tmpIdx += 4;
+                    idx++;
+                    tmpIdx++;
                 }
             }
         } else if(!hasPlayer)
@@ -143,7 +143,7 @@ void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, u
             // No player bitmap -> Just (over)write the data
             RTTR_Assert(it->type == TYPE_ARCHIVITEM_BITMAP);
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
-                ->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_5,
+                ->print(reinterpret_cast<unsigned char*>(&buffer.front()), stride, height, libsiedler2::FORMAT_RGBA, p_5,
                     xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h);
         } else
         {
@@ -163,7 +163,6 @@ void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, u
             // Now copy temp buffer to real buffer, but we need to reset all player colors that would be overwritten
             // so it looks like, the first bitmap is fully drawn (including player colors) and then the next
             // overwrites it
-            uint32_t* const pBuffer = reinterpret_cast<uint32_t*>(buffer);
             for(int y = yo; y < h; y++)
             {
                 for(int x = xo; x < w; x++)
@@ -172,9 +171,9 @@ void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, u
                     if(tmp[y * w + x])
                     {
                         // Copy to buffer
-                        pBuffer[(y + y_offset) * stride + x + x_offset] = tmp[y * w + x];
+                        buffer[(y + y_offset) * stride + x + x_offset] = tmp[y * w + x];
                         // Reset player color to transparent
-                        pBuffer[(y + y_offset) * stride + x + x_offset + w] = 0;
+                        buffer[(y + y_offset) * stride + x + x_offset + w] = 0;
                     }
                 }
             }
@@ -182,7 +181,7 @@ void glSmartBitmap::drawTo(unsigned char* const buffer, unsigned const stride, u
             if(it->type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp)
-                    ->print(buffer, stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
+                    ->print(reinterpret_cast<unsigned char*>(&buffer.front()), stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
                         xo + w + x_offset, yo + y_offset, it->x, it->y, it->w, it->h, true);
             }
         }
@@ -210,8 +209,8 @@ void glSmartBitmap::generateTexture()
     // do we have a player-colored overlay?
     unsigned stride = hasPlayer ? w * 2 : w;
 
-    std::vector<unsigned char> buffer(stride * h * 4);
-    drawTo(&buffer.front(), stride, h);
+    std::vector<uint32_t> buffer(stride * h);
+    drawTo(buffer, stride, h);
 
     VIDEODRIVER.BindTexture(texture);
 
