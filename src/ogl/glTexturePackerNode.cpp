@@ -45,15 +45,11 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsign
 
         // we are a leaf and do already contain an image
         if(current->bmp)
-        {
             continue;
-        }
 
         // no space left for this item
         if((bw > current->w) || (bh > current->h))
-        {
             continue;
-        }
 
         if((bw == current->w) && (bh == current->h))
         {
@@ -70,7 +66,7 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsign
             b->tmpTexData[4].tx = b->tmpTexData[5].tx = (float)(current->x + current->w / 2) / (float)gw;
             b->tmpTexData[6].tx = b->tmpTexData[7].tx = (float)(current->x + current->w) / (float)gw;
 
-            return(true);
+            return true;
         }
 
         current->child[0] = new glTexturePackerNode();
@@ -102,7 +98,7 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, unsigned char* buffer, unsign
         todo.push_back(current->child[0]);
     }
 
-    return(false);
+    return false;
 }
 
 void glTexturePackerNode::destroy(unsigned reserve)

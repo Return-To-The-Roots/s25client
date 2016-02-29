@@ -28,31 +28,20 @@
 glTexturePacker::~glTexturePacker()
 {
     for(std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
-    {
         VIDEODRIVER.DeleteTexture((*it));
-    }
 }
 
 bool glTexturePacker::sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b)
 {
-    return((a->getTexWidth() * a->getTexHeight()) > (b->getTexWidth() * b->getTexHeight()));
+    return (a->getTexWidth() * a->getTexHeight()) > (b->getTexWidth() * b->getTexHeight());
 }
 
 bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
 {
-    int w = 0;
-    int h = 0;
-    int tmp = 0;
-    int total = 0;
-
-    unsigned texture;
-
-    texture = VIDEODRIVER.GenerateTexture();
+    unsigned texture = VIDEODRIVER.GenerateTexture();
 
     if(!texture)
-    {
-        return(false);
-    }
+        return false;
 
     textures.push_back(texture);
 
@@ -61,17 +50,16 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // find space needed in total and biggest texture to store (as a start)
+    int w = 0;
+    int h = 0;
+    int total = 0;
     for(std::vector<glSmartBitmap*>::const_iterator it = list.begin(); it != list.end(); ++it)
     {
         if((*it)->getTexWidth() > w)
-        {
             w = (*it)->getTexWidth();
-        }
 
         if((*it)->getTexHeight() > h)
-        {
             h = (*it)->getTexHeight();
-        }
 
         total += (*it)->getTexWidth() * (*it)->getTexHeight();
     }
@@ -80,15 +68,12 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
     w = glSmartBitmap::nextPowerOfTwo(w);
     h = glSmartBitmap::nextPowerOfTwo(h);
 
+    int parTexWidth = 0;
     glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+    glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
-
-    glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
-
-    if(tmp == 0)
-    {
-        return(false);
-    }
+    if(parTexWidth == 0)
+        return false;
 
     // maximum texture size reached?
     bool maxTex = false;
@@ -147,29 +132,23 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
             if(left.empty())   // nothing left, just generate texture and return success
             {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
+                glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
-                glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
+                if(parTexWidth == 0)
+                    return false;
 
-                if(tmp == 0)
-                {
-                    return(false);
-                }
-
-                return(true);
+                return true;
             } else if(maxTex)    // maximum texture size reached and something still left
             {
                 // generate this texture and release the buffer
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
+                glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
-                glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
-
-                if(tmp == 0)
-                {
-                    return(false);
-                }
+                if(parTexWidth == 0)
+                    return false;
 
                 // recursively generate textures for what is left
-                return(packHelper(left));
+                return packHelper(left);
             }
 
             // our pre-estimated size if the big texture was not enough for the algorithm to fit all textures in
@@ -181,58 +160,42 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
         if(w <= h)
         {
             glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w << 1, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+            glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
-            glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
-
-            if(tmp == 0)
-            {
+            if(parTexWidth == 0)
                 maxTex = true;
-            } else
-            {
-                w <<= 1;
-            }
+            else
+                w *= 2;
         } else if(h < w)
         {
             glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, w, h << 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+            glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
-            glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tmp);
-
-            if(tmp == 0)
-            {
+            if(parTexWidth == 0)
                 maxTex = true;
-            } else
-            {
-                h <<= 1;
-            }
+            else
+                h *= 2;
         }
-    } while(0 == 0);
+    } while(true);
 }
 
 bool glTexturePacker::pack()
 {
     for(std::vector<glSmartBitmap*>::const_iterator it = items.begin(); it != items.end(); ++it)
-    {
         (*it)->calcDimensions();
-    }
 
     std::sort(items.begin(), items.end(), sortSmartBitmap);
 
     if(packHelper(items))
-    {
-        return(true);
-    }
+        return true;
 
     // free all textures allocated by us
     for(std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
-    {
         VIDEODRIVER.DeleteTexture((*it));
-    }
 
     // reset glSmartBitmap textures
     for(std::vector<glSmartBitmap*>::const_iterator it = items.begin(); it != items.end(); ++it)
-    {
         (*it)->setSharedTexture(0);
-    }
 
-    return(false);
+    return false;
 }

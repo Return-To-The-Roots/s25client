@@ -22,6 +22,7 @@
 #include "drivers/VideoDriverWrapper.h"
 
 #include "Loader.h"
+#include <limits>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -29,9 +30,8 @@
 void glSmartBitmap::reset()
 {
     if (texture && !sharedTexture)
-    {
         VIDEODRIVER.DeleteTexture(texture);
-    }
+    texture = 0;
 
     for(std::vector<glBitmapItem>::iterator it = items.begin(); it != items.end(); ++it)
     {
@@ -39,8 +39,6 @@ void glSmartBitmap::reset()
             delete it->bmp;
     }
     items.clear();
-
-    texture = 0;
 }
 
 glSmartBitmap::~glSmartBitmap()
@@ -51,18 +49,16 @@ glSmartBitmap::~glSmartBitmap()
 unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
 {
     if (k == 0)
-    {
-        return(1);
-    }
+        return 1;
 
     k--;
 
-    for (unsigned i = 1; i < sizeof(unsigned)*CHAR_BIT; i <<= 1)
+    for (unsigned i = 1; i < sizeof(unsigned)*CHAR_BIT; i *= 2)
     {
         k = k | k >> i;
     }
 
-    return(k + 1);
+    return k + 1;
 }
 
 void glSmartBitmap::calcDimensions()
@@ -77,36 +73,24 @@ void glSmartBitmap::calcDimensions()
     int max_x = 0;
     int max_y = 0;
 
-    nx = ny = INT_MIN;
+    nx = ny = std::numeric_limits<int>::min();
 
     hasPlayer = false;
 
     for (std::vector<glBitmapItem>::const_iterator it = items.begin(); it != items.end(); ++it)
     {
         if (it->type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
-        {
             hasPlayer = true;
-        }
 
         if (nx < it->nx)
-        {
             nx = it->nx;
-        }
-
         if (ny < it->ny)
-        {
             ny = it->ny;
-        }
 
         if (max_x < it->w - it->nx)
-        {
             max_x = it->w - it->nx;
-        }
-
         if (max_y < it->h - it->ny)
-        {
             max_y = it->h - it->ny;
-        }
     }
 
     w = nx + max_x;
@@ -160,19 +144,16 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
 
                 for (int y = 0; y < h; ++y)
                 {
-                    unsigned idx = ((y_offset + y) * stride + x_offset) << 2;
+                    unsigned idx = ((y_offset + y) * stride + x_offset) * 4;
 
                     for (int x = 0; x < w; ++x)
                     {
-                        if (tmp[tmpIdx + 3] != 0x00)
+                        if (tmp[tmpIdx + 3] != 0x00 && buffer[idx + 3] == 0x00)
                         {
-                            if (buffer[idx + 3] == 0x00)
-                            {
-                                buffer[idx] = 0x00;
-                                buffer[idx + 1] = 0x00;
-                                buffer[idx + 2] = 0x00;
-                                buffer[idx + 3] = 0x40;
-                            }
+                            buffer[idx] = 0x00;
+                            buffer[idx + 1] = 0x00;
+                            buffer[idx + 2] = 0x00;
+                            buffer[idx + 3] = 0x40;
                         }
 
                         idx += 4;
@@ -191,18 +172,14 @@ void glSmartBitmap::drawTo(unsigned char* buffer, unsigned stride, unsigned heig
 void glSmartBitmap::generateTexture()
 {
     if (items.empty())
-    {
         return;
-    }
 
     if (!texture)
     {
         texture = VIDEODRIVER.GenerateTexture();
 
         if (!texture)
-        {
             return;
-        }
     }
 
     calcDimensions();
@@ -235,47 +212,7 @@ void glSmartBitmap::generateTexture()
 
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
 {
-    if (!texture)
-    {
-        generateTexture();
-
-        if (!texture)
-        {
-            return;
-        }
-    }
-
-    tmpTexData[0].x = tmpTexData[1].x = GLfloat(x - nx);
-    tmpTexData[2].x = tmpTexData[3].x = GLfloat(x - nx + w);
-
-    tmpTexData[0].y = tmpTexData[3].y = GLfloat(y - ny);
-    tmpTexData[1].y = tmpTexData[2].y = GLfloat(y - ny + h);
-
-    tmpTexData[0].r = tmpTexData[1].r = tmpTexData[2].r = tmpTexData[3].r = GetRed(color);
-    tmpTexData[0].g = tmpTexData[1].g = tmpTexData[2].g = tmpTexData[3].g = GetGreen(color);
-    tmpTexData[0].b = tmpTexData[1].b = tmpTexData[2].b = tmpTexData[3].b = GetBlue(color);
-    tmpTexData[0].a = tmpTexData[1].a = tmpTexData[2].a = tmpTexData[3].a = GetAlpha(color);
-
-    int numQuads;
-    if ((player_color != 0x00000000) && hasPlayer)
-    {
-        tmpTexData[4].x = tmpTexData[5].x = tmpTexData[0].x;
-        tmpTexData[6].x = tmpTexData[7].x = tmpTexData[2].x;
-        tmpTexData[4].y = tmpTexData[7].y = tmpTexData[0].y;
-        tmpTexData[5].y = tmpTexData[6].y = tmpTexData[1].y;
-
-        tmpTexData[4].r = tmpTexData[5].r = tmpTexData[6].r = tmpTexData[7].r = GetRed(player_color);
-        tmpTexData[4].g = tmpTexData[5].g = tmpTexData[6].g = tmpTexData[7].g = GetGreen(player_color);
-        tmpTexData[4].b = tmpTexData[5].b = tmpTexData[6].b = tmpTexData[7].b = GetBlue(player_color);
-        tmpTexData[4].a = tmpTexData[5].a = tmpTexData[6].a = tmpTexData[7].a = GetAlpha(player_color);
-
-        numQuads = 8;
-    } else
-        numQuads = 4;
-
-    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
-    VIDEODRIVER.BindTexture(texture);
-    glDrawArrays(GL_QUADS, 0, numQuads);
+    drawPercent(x, y, 100, color, player_color);
 }
 
 void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, unsigned player_color)
@@ -285,21 +222,20 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
         generateTexture();
 
         if (!texture)
-        {
             return;
-        }
     }
 
     // nothing to draw?
     if (!percent)
-    {
         return;
-    }
+    RTTR_Assert(percent <= 100);
+
+    const float partDrawn = percent / 100.f;
 
     tmpTexData[0].x = tmpTexData[1].x = GLfloat(x - nx);
     tmpTexData[2].x = tmpTexData[3].x = GLfloat(x - nx + w);
 
-    tmpTexData[0].y = tmpTexData[3].y = GLfloat(y - ny + h - h * (float) percent / 100.0f);
+    tmpTexData[0].y = tmpTexData[3].y = GLfloat(y - ny + h - h * partDrawn);
     tmpTexData[1].y = tmpTexData[2].y = GLfloat(y - ny + h);
 
     tmpTexData[0].r = tmpTexData[1].r = tmpTexData[2].r = tmpTexData[3].r = GetRed(color);
@@ -307,11 +243,11 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
     tmpTexData[0].b = tmpTexData[1].b = tmpTexData[2].b = tmpTexData[3].b = GetBlue(color);
     tmpTexData[0].a = tmpTexData[1].a = tmpTexData[2].a = tmpTexData[3].a = GetAlpha(color);
 
-    float cache = tmpTexData[0].ty;
+    float oldTy0 = tmpTexData[0].ty;
+    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[1].ty - (tmpTexData[1].ty - tmpTexData[0].ty) * partDrawn;
 
-    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[1].ty - (tmpTexData[1].ty - tmpTexData[0].ty) * (float) percent / 100.0f;
-
-    if ((player_color != 0x00000000) && hasPlayer)
+    int numQuads;
+    if (player_color && hasPlayer)
     {
         tmpTexData[4].x = tmpTexData[5].x = tmpTexData[0].x;
         tmpTexData[6].x = tmpTexData[7].x = tmpTexData[2].x;
@@ -323,22 +259,15 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
         tmpTexData[4].b = tmpTexData[5].b = tmpTexData[6].b = tmpTexData[7].b = GetBlue(player_color);
         tmpTexData[4].a = tmpTexData[5].a = tmpTexData[6].a = tmpTexData[7].a = GetAlpha(player_color);
 
-        tmpTexData[4].ty = tmpTexData[7].ty = tmpTexData[3].ty;
+        tmpTexData[4].ty = tmpTexData[7].ty = tmpTexData[0].ty;
 
-        glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
-        VIDEODRIVER.BindTexture(texture);
-        glDrawArrays(GL_QUADS, 0, 8);
-
-        tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[4].ty = tmpTexData[7].ty = cache;
-
-        return;
-    }
+        numQuads = 8;
+    } else
+        numQuads = 4;
 
     glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
     VIDEODRIVER.BindTexture(texture);
-    glDrawArrays(GL_QUADS, 0, 4);
+    glDrawArrays(GL_QUADS, 0, numQuads);
 
-    tmpTexData[0].ty = tmpTexData[3].ty = cache;
-
+    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[4].ty = tmpTexData[7].ty = oldTy0;
 }
-
