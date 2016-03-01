@@ -46,11 +46,19 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
         return;
 
     // Wird Sound schon gespielt?
+    unsigned numPlayedCt = 0;
     for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end(); ++it)
     {
-        if(it->obj == obj && it->id == id)
-            return;
+        if(it->id == id)
+        {
+            if(it->obj == obj)
+                return;
+            numPlayedCt++;
+        }
     }
+    // Play same sound only 3 times at once
+    if(numPlayedCt >= 3)
+        return;
 
     // Sound wird noch nicht gespielt --> hinzufügen und abspielen
     unsigned play_id = LOADER.GetSoundN("sound", sound_lst_id)->Play(volume, false);
