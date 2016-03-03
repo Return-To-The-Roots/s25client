@@ -1301,7 +1301,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
         }else if( wf.back() == "fon" ) // Font
         {
             glArchivItem_Font* font = new glArchivItem_Font();
-            font->setName(itFile->c_str());
+            font->setName(*itFile);
             font->setDx(dx);
             font->setDy(dy);
 

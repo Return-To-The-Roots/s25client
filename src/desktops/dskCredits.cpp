@@ -377,7 +377,7 @@ void dskCredits::Msg_PaintAfter()
 
     for(std::list<CreditsEntry::Line>::iterator line = this->itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
-        LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line.c_str(), 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
         columnToY[line->column] += LargeFont->getHeight() + 5;
     }
 

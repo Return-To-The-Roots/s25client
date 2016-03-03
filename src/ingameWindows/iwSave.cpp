@@ -114,7 +114,7 @@ void iwSaveLoad::RefreshTable()
     // Verzeichnis auflisten
     std::string tmp = GetFilePath(FILE_PATHS[85]);
     tmp += "*.sav";
-    ListDir(tmp.c_str(), false, iwSave::FillSaveTable, GetCtrl<ctrlTable>(0));
+    ListDir(tmp, false, iwSave::FillSaveTable, GetCtrl<ctrlTable>(0));
 
     // qx: Nach Zeit Sortieren
     GetCtrl<ctrlTable>(0)->SortRows(2);

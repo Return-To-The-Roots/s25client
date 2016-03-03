@@ -96,7 +96,7 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
 
     // Remember some things
     const bool was_on_bottom = (scroll->GetPos() + page_size == chat_lines.size());
-    const bool width_changed = (this->width_ != width && chat_lines.size());
+    const bool width_changed = (this->width_ != width && !chat_lines.empty());
     unsigned short position = 0;
     // Remember the entry on top
     for(unsigned short i = 1; i <= scroll->GetPos(); ++i)
@@ -166,7 +166,7 @@ bool ctrlChat::Draw_()
         if(chat_lines[i + pos].secondary)
         {
             // dann etwas Platz lassen davor und den entsprechenden Text hinschreiben
-            font->Draw(GetX() + 2, GetY() + 2 + i * (font->getHeight() + 2), chat_lines[i + pos].msg.c_str(), 0, chat_lines[i + pos].msg_color);
+            font->Draw(GetX() + 2, GetY() + 2 + i * (font->getHeight() + 2), chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
         }
         else
         {

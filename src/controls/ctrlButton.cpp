@@ -201,7 +201,7 @@ void ctrlTextButton::DrawContent() const
         color = this->color_;
 
     font->Draw(GetX() + width_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ),
-               GetY() + height_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
+               GetY() + height_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
 }
 
 

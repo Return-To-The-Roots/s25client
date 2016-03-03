@@ -1035,7 +1035,7 @@ void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination c
 void dskGameInterface::CI_Async(const std::string& checksums_list)
 {
     messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
-    messenger.AddMessage("", 0, CD_SYSTEM, checksums_list.c_str(), COLOR_YELLOW);
+    messenger.AddMessage("", 0, CD_SYSTEM, checksums_list, COLOR_YELLOW);
     messenger.AddMessage("", 0, CD_SYSTEM, _("A auto-savegame is created..."), COLOR_RED);
 
 }

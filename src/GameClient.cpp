@@ -1083,7 +1083,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
                 libsiedler2::ArchivInfo map;
 
                 // Karteninformationen laden
-                if(libsiedler2::loader::LoadMAP(clientconfig.mapfilepath.c_str(), map, true) != 0)
+                if(libsiedler2::loader::LoadMAP(clientconfig.mapfilepath, map, true) != 0)
                 {
                     LOG.lprintf("GameClient::OnNMSMapData: ERROR: Map \"%s\", couldn't load header!\n", clientconfig.mapfilepath.c_str());
                     Stop();

@@ -67,7 +67,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     const bool readonlySettings = !GAMECLIENT.IsHost() || GAMECLIENT.IsSavegame();
 
     // Kartenname
-    AddText(0, 400, 5, GAMECLIENT.GetGameName().c_str(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(0, 400, 5, GAMECLIENT.GetGameName(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     // "Spielername"
     AddText(10, 95, 40, _("Player Name"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
@@ -295,9 +295,9 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
     ctrlBaseText* text;
     if(GAMECLIENT.IsHost() && !player.is_host)
-        text = group->AddTextButton(1, 20, cy, 150, 22, tc, name.c_str(), NormalFont);
+        text = group->AddTextButton(1, 20, cy, 150, 22, tc, name, NormalFont);
     else
-        text = group->AddDeepening(1, 20, cy, 150, 22, tc, name.c_str(), NormalFont, COLOR_YELLOW);
+        text = group->AddDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
 
     // Is das der Host? Dann farblich markieren
     if(player.is_host)
@@ -346,7 +346,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
             {
                 if(GAMECLIENT.GetPlayer(i).origin_name.length())
                 {
-                    combo->AddString(GAMECLIENT.GetPlayer(i).origin_name.c_str());
+                    combo->AddString(GAMECLIENT.GetPlayer(i).origin_name);
                     if(i == row)
                         combo->SetSelection(combo->GetCount() - 1);
                 }

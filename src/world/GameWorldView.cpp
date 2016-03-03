@@ -229,7 +229,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     else if (d_what > 3 && d_what < 13)
                     {
                         ss << ai->GetResMapValue(t, AIJH::Resource(d_what - 4));
-                        NormalFont->Draw(curPos.x, curPos.y, ss.str().c_str(), 0, 0xFFFFFF00);
+                        NormalFont->Draw(curPos.x, curPos.y, ss.str(), 0, 0xFFFFFF00);
                     }
                 }
             }

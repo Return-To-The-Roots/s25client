@@ -151,7 +151,7 @@ void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
         case 21: // Chattext senden
         {
             ctrlEdit* edit = GetCtrl<ctrlEdit>(21);
-            LOBBYCLIENT.SendChat(edit->GetText().c_str());
+            LOBBYCLIENT.SendChat(edit->GetText());
             edit->SetText("");
         } break;
     }

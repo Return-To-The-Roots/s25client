@@ -2540,7 +2540,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[2] = 4;
     milSettings[3] = 5;
 	//interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
-	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (inventory.goods[GD_COINS]>0 || (inventory.goods[GD_GOLD]>0 && inventory.goods[GD_COAL]>0 && aii.GetBuildings(BLD_MINT).size()) )? 8 : 0;     
+	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (inventory.goods[GD_COINS]>0 || (inventory.goods[GD_GOLD]>0 && inventory.goods[GD_COAL]>0 && !aii.GetBuildings(BLD_MINT).empty()) )? 8 : 0;     
     milSettings[6] = ggs.getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%

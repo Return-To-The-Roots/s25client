@@ -61,7 +61,7 @@ bool ctrlDeepening::Draw_()
 {
     Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
-    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 
     DrawContent();
 

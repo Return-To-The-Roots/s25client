@@ -152,7 +152,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             libsiedler2::ArchivInfo map;
 
             // Karteninformationen laden
-            if(libsiedler2::loader::LoadMAP(serverconfig.mapname.c_str(), map, true) != 0)
+            if(libsiedler2::loader::LoadMAP(serverconfig.mapname, map, true) != 0)
             {
                 LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", serverconfig.mapname.c_str());
                 return false;
