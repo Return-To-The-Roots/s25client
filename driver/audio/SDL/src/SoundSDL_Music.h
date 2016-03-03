@@ -28,7 +28,7 @@ class SoundSDL_Music : public Sound
         SoundSDL_Music();
 
         /// Destruktor von @p SoundSDL_Music.
-        ~SoundSDL_Music(void);
+        ~SoundSDL_Music(void) override;
 
     private:
 

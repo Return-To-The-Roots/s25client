@@ -27,11 +27,11 @@ class nobUsual;
 class nofMinter : public nofWorkman
 {
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 64; }
+        unsigned short GetCarryID() const override { return 64; }
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
+        GoodType ProduceWare() override;
 
     public:
 
@@ -40,9 +40,9 @@ class nofMinter : public nofWorkman
 
 /// Serialisierungsfunktionen
     protected:  void Serialize_nofMinter(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofMinter(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofMinter(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_MINTER; }
+        GO_Type GetGOT() const override { return GOT_NOF_MINTER; }
 };
 
 #endif

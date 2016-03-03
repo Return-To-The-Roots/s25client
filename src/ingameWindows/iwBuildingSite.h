@@ -30,9 +30,9 @@ class iwBuildingSite : public IngameWindow
         iwBuildingSite(GameWorldViewer* const gwv, const noBuildingSite* const buildingsite);
 
     protected:
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_PaintBefore();
-        void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_PaintBefore() override;
+        void Msg_PaintAfter() override;
 
     private:
         GameWorldViewer* const gwv;

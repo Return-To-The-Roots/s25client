@@ -38,7 +38,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
         /// Konstruktor von @p DriverWrapper
         AudioDriverWrapper();
 
-        ~AudioDriverWrapper();
+        ~AudioDriverWrapper() override;
 
         /// Läd den Treiber
         bool LoadDriver(void);
@@ -72,7 +72,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
 
     private:
 
-        void Msg_MusicFinished();
+        void Msg_MusicFinished() override;
 
     private:
 

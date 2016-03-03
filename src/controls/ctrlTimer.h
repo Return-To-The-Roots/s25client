@@ -29,10 +29,10 @@ class ctrlTimer : public Window
         void Start(unsigned int timeout);
         void Stop(void);
 
-        virtual void Msg_PaintBefore();
+        void Msg_PaintBefore() override;
 
     protected:
-        virtual bool Draw_(void) { return true; };
+        bool Draw_(void) override { return true; };
 
     private:
         unsigned int timeout;

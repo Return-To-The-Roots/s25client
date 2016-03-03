@@ -32,7 +32,7 @@ class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
         glArchivItem_Music& operator=(const glArchivItem_Music& item);
 
         /// Destruktor von @p glArchivItem_Sound.
-        virtual ~glArchivItem_Music(void);
+        ~glArchivItem_Music(void) override;
 
         /// Spielt die Musik ab.
         virtual void Play(const unsigned repeats) = 0;

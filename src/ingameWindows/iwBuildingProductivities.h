@@ -36,7 +36,7 @@ class iwBuildingProductivities : public IngameWindow
         void UpdatePercents();
 
         /// Produktivitäts-Progressbars aktualisieren
-        void Msg_PaintAfter();
+        void Msg_PaintAfter() override;
 
 };
 

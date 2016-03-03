@@ -64,9 +64,9 @@ class fowNothing : public FOWObject
 
         fowNothing(){}
         fowNothing(SerializedGameData& sgd){}
-        void Serialize(SerializedGameData& sgd) const{}
-        void Draw(int x, int y) const{}
-        FOW_Type GetType() const { return FOW_NOTHING; }
+        void Serialize(SerializedGameData& sgd) const override{}
+        void Draw(int x, int y) const override{}
+        FOW_Type GetType() const override { return FOW_NOTHING; }
 };
 
 
@@ -83,9 +83,9 @@ class fowBuilding : public FOWObject
 
         fowBuilding(const BuildingType type, const Nation nation);
         fowBuilding(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
-        void Draw(int x, int y) const;
-        FOW_Type GetType() const { return FOW_BUILDING; }
+        void Serialize(SerializedGameData& sgd) const override;
+        void Draw(int x, int y) const override;
+        FOW_Type GetType() const override { return FOW_BUILDING; }
 };
 
 /// Baustelle
@@ -104,9 +104,9 @@ class fowBuildingSite : public FOWObject
 
         fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
         fowBuildingSite(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
-        void Draw(int x, int y) const;
-        FOW_Type GetType() const { return FOW_BUILDINGSITE; }
+        void Serialize(SerializedGameData& sgd) const override;
+        void Draw(int x, int y) const override;
+        FOW_Type GetType() const override { return FOW_BUILDINGSITE; }
 };
 
 
@@ -123,9 +123,9 @@ class fowFlag : public FOWObject
 
         fowFlag(const unsigned char player, const FlagType flag_type);
         fowFlag(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
-        void Draw(int x, int y) const;
-        FOW_Type GetType() const { return FOW_FLAG; }
+        void Serialize(SerializedGameData& sgd) const override;
+        void Draw(int x, int y) const override;
+        FOW_Type GetType() const override { return FOW_FLAG; }
 };
 
 /// Baum
@@ -142,9 +142,9 @@ class fowTree : public FOWObject
 
         fowTree(const unsigned char type, const unsigned char size);
         fowTree(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
-        void Draw(int x, int y) const;
-        FOW_Type GetType() const { return FOW_TREE; }
+        void Serialize(SerializedGameData& sgd) const override;
+        void Draw(int x, int y) const override;
+        FOW_Type GetType() const override { return FOW_TREE; }
 };
 
 /// Granitblock
@@ -159,9 +159,9 @@ class fowGranite : public FOWObject
 
         fowGranite(const GraniteType type, const unsigned char state);
         fowGranite(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
-        void Draw(int x, int y) const;
-        FOW_Type GetType() const { return FOW_GRANITE; }
+        void Serialize(SerializedGameData& sgd) const override;
+        void Draw(int x, int y) const override;
+        FOW_Type GetType() const override { return FOW_GRANITE; }
 };
 
 

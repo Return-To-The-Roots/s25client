@@ -28,7 +28,7 @@ class noStaticObject : public noCoordBase
         noStaticObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 0, NodalObjectType type = NOP_OBJECT);
         noStaticObject(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy() { Destroy_noStaticObject(); }
+        void Destroy() override { Destroy_noStaticObject(); }
 
         /// gibt die Item-ID zurück (nr in der jeweiligen File)
         unsigned short GetItemID() const { return id; }
@@ -37,16 +37,16 @@ class noStaticObject : public noCoordBase
         /// gibt die Größe des Objekts zurück.
         unsigned char GetSize(void) const { return size; }
 
-        virtual BlockingManner GetBM() const { return BlockingManner(unsigned(BM_HUT) + size); }
+        BlockingManner GetBM() const override { return BlockingManner(unsigned(BM_HUT) + size); }
 
         /// zeichnet das Objekt.
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noStaticObject(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noStaticObject(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noStaticObject(sgd); }
 
-        GO_Type GetGOT() const { return GOT_STATICOBJECT; }
+        GO_Type GetGOT() const override { return GOT_STATICOBJECT; }
 
     protected:
         void Destroy_noStaticObject();

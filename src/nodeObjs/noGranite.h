@@ -35,20 +35,20 @@ class noGranite : public noBase
 
         /// Aufräummethoden
     protected:  void Destroy_noGranite() { Destroy_noBase(); }
-    public:     void Destroy() { Destroy_noGranite(); }
+    public:     void Destroy() override { Destroy_noGranite(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noGranite(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noGranite(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noGranite(sgd); }
 
-        GO_Type GetGOT() const { return GOT_GRANITE; }
+        GO_Type GetGOT() const override { return GOT_GRANITE; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
-        BlockingManner GetBM() const { return BM_GRANITE; }
+        BlockingManner GetBM() const override { return BM_GRANITE; }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        FOWObject* CreateFOWObject() const;
+        FOWObject* CreateFOWObject() const override;
 
         /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
         void Hew();

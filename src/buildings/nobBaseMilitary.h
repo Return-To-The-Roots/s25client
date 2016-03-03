@@ -62,15 +62,15 @@ class nobBaseMilitary : public noBuilding
 
         nobBaseMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
         nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id);
-        virtual ~nobBaseMilitary();
+        ~nobBaseMilitary() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nobBaseMilitary();
-    public:     void Destroy() { Destroy_nobBaseMilitary(); }
+    public:     void Destroy() override { Destroy_nobBaseMilitary(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobBaseMilitary(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobBaseMilitary(sgd); }
+    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobBaseMilitary(sgd); }
 
 
         /// Figur hinzufügen, die rausgehen will (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)

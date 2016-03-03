@@ -46,7 +46,7 @@ class nofFlagWorker : public noFigure
     protected:
 
         /// Kündigt bei der Flagge
-        void AbrogateWorkplace();
+        void AbrogateWorkplace() override;
         /// Geht wieder zurück zur Flagge und dann nach Hause
         void GoToFlag();
 
@@ -57,11 +57,11 @@ class nofFlagWorker : public noFigure
 
         /// Aufräummethoden
     protected:  void Destroy_nofFlagWorker();
-    public:     void Destroy() { Destroy_nofFlagWorker(); }
+    public:     void Destroy() override { Destroy_nofFlagWorker(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofFlagWorker(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFlagWorker(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFlagWorker(sgd); }
 
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde

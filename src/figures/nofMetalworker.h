@@ -29,11 +29,11 @@ class nofMetalworker : public nofWorkman
     GoodType nextProducedTool;
     protected:
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const;
+        unsigned short GetCarryID() const override;
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
+        GoodType ProduceWare() override;
         /// Returns the next tool to be produced according to the orders
         GoodType GetOrderedTool();
         /// Returns a random tool according to the priorities
@@ -47,9 +47,9 @@ class nofMetalworker : public nofWorkman
 
         nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
-        void Serialize(SerializedGameData& sgd) const;
+        void Serialize(SerializedGameData& sgd) const override;
 
-        GO_Type GetGOT() const { return GOT_NOF_METALWORKER; }
+        GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
         void HandleDerivedEvent(const unsigned int id) override;
 };
 

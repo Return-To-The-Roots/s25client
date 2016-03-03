@@ -59,10 +59,10 @@ class nofBuilder : public noFigure
 
     private:
 
-        void GoalReached();
-        void Walked();
-        void AbrogateWorkplace();
-        void HandleDerivedEvent(const unsigned int id);
+        void GoalReached() override;
+        void Walked() override;
+        void AbrogateWorkplace() override;
+        void HandleDerivedEvent(const unsigned int id) override;
 
         /// In neue Richtung laufen (Freewalk)
         void StartFreewalk();
@@ -74,15 +74,15 @@ class nofBuilder : public noFigure
         nofBuilder(const MapPoint pt, const unsigned char player, noRoadNode* building_site);
         nofBuilder(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy(){ RTTR_Assert(!building_site); noFigure::Destroy(); }
+        void Destroy() override{ RTTR_Assert(!building_site); noFigure::Destroy(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofBuilder(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofBuilder(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuilder(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_BUILDER; }
+        GO_Type GetGOT() const override { return GOT_NOF_BUILDER; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
         void LostWork();

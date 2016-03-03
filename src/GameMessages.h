@@ -43,7 +43,7 @@ public:
 	GameMessage_Ping(): GameMessage(NMS_PING) {}
 	GameMessage_Ping(const unsigned char player): GameMessage(NMS_PING, player) {}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		//LOG.write("<<< NMS_PING\n");
 		GetInterface(callback)->OnNMSPing(*this);
@@ -57,7 +57,7 @@ class GameMessage_Pong : public GameMessage
 public:
 	GameMessage_Pong(): GameMessage(NMS_PONG) { }
 	GameMessage_Pong(const unsigned char player): GameMessage(NMS_PONG, player) {}
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		//LOG.write("<<< NMS_PONG\n");
 		GetInterface(callback)->OnNMSPong(*this);
@@ -92,7 +92,7 @@ public:
         version = ser.PopString();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_Type(%d, %s)\n", boost::underlying_cast<int>(type), version.c_str());
 		GetInterface(callback)->OnNMSServerType(*this);
@@ -121,7 +121,7 @@ public:
         err_code = ser.PopUnsignedInt();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		GetInterface(callback)->OnNMSServerTypeOK(*this);
 	}
@@ -150,7 +150,7 @@ public:
         password = ser.PopString();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_PASSWORD(%s)\n", "********");
 		GetInterface(callback)->OnNMSServerPassword(*this);
@@ -180,7 +180,7 @@ public:
         name = ser.PopString();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_NAME(%s)\n", name.c_str());
 		GetInterface(callback)->OnNMSServerName(*this);
@@ -213,7 +213,7 @@ public:
         nwf_length = ser.PopUnsignedInt();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_START(%d, %d)\n", random_init, nwf_length);
 		GetInterface(callback)->OnNMSServerStart(*this);
@@ -243,7 +243,7 @@ public:
         countdown = ser.PopUnsignedInt();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_COUNTDOWN(%d)\n", countdown);
 		GetInterface(callback)->OnNMSServerCountdown(*this);
@@ -257,7 +257,7 @@ class GameMessage_Server_CancelCountdown : public GameMessage
 public:
 	GameMessage_Server_CancelCountdown(): GameMessage(NMS_SERVER_CANCELCOUNTDOWN) {}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_CANCELCOUNTDOWN\n");
 		GetInterface(callback)->OnNMSServerCancelCountdown(*this);
@@ -293,7 +293,7 @@ public:
         text = ser.PopString();
     }
 
-    void Run(MessageInterface* callback)
+    void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
         GetInterface(callback)->OnNMSServerChat(*this);
@@ -320,7 +320,7 @@ public:
         text = ser.PopString();
     }
 
-    void Run(MessageInterface* callback)
+    void Run(MessageInterface* callback) override
     {
         GetInterface(callback)->OnNMSSystemChat(*this);
     }
@@ -356,7 +356,7 @@ public:
             checksums[i] = ser.PopSignedInt();
     }
 
-    void Run(MessageInterface* callback)
+    void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_SERVER_ASYNC(%d)\n", checksums.size());
         GetInterface(callback)->OnNMSServerAsync(*this);
@@ -388,7 +388,7 @@ public:
         playerid = ser.PopUnsignedInt();
     }
 
-    void Run(MessageInterface* callback)
+    void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_PLAYER_ID(%d)\n", playerid);
         GetInterface(callback)->OnNMSPlayerId(*this);
@@ -421,7 +421,7 @@ public:
         playername = ser.PopString();
     }
 
-    void Run(MessageInterface* callback)
+    void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_PLAYER_NAME(%s)\n", playername.c_str());
         GetInterface(callback)->OnNMSPlayerName(*this);
@@ -453,7 +453,7 @@ public:
         gpl.deserialize(ser);
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_LIST(%d)\n", gpl.getCount());
 		for(unsigned int i = 0; i < gpl.getCount(); ++i)
@@ -476,7 +476,7 @@ public:
 		LOG.write(">>> NMS_PLAYER_TOGGLESTATE(%d)\n", player);
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_TOGGLESTATE(%d)\n", player);
 		GetInterface(callback)->OnNMSPlayerToggleState(*this);
@@ -509,7 +509,7 @@ public:
         nation = Nation(ser.PopUnsignedChar());
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_TOGGLENATION\n");
 		GetInterface(callback)->OnNMSPlayerToggleNation(*this);
@@ -542,7 +542,7 @@ public:
         team = Team(ser.PopUnsignedChar());
     }
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_TOGGLETEAM\n");
 		GetInterface(callback)->OnNMSPlayerToggleTeam(*this);
@@ -575,7 +575,7 @@ public:
         color = ser.PopUnsignedChar();
     }
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_TOGGLECOLOR\n");
 		GetInterface(callback)->OnNMSPlayerToggleColor(*this);
@@ -608,7 +608,7 @@ public:
         param = ser.PopUnsignedShort();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_KICKED\n");
 		GetInterface(callback)->OnNMSPlayerKicked(*this);
@@ -637,7 +637,7 @@ public:
         ping = ser.PopUnsignedShort();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		//LOG.write("<<< NMS_PLAYER_PING\n");
 		GetInterface(callback)->OnNMSPlayerPing(*this);
@@ -670,7 +670,7 @@ public:
         name = ser.PopString();
     }
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_NEW\n");
 		GetInterface(callback)->OnNMSPlayerNew(*this);
@@ -703,7 +703,7 @@ public:
         ready = ser.PopBool();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_READY\n");
 		GetInterface(callback)->OnNMSPlayerReady(*this);
@@ -735,7 +735,7 @@ public:
         player2 = ser.PopUnsignedChar();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_SWAP\n");
 		GetInterface(callback)->OnNMSPlayerSwap(*this);
@@ -783,7 +783,7 @@ public:
         script = ser.PopString();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_MAP_INFO\n");
 		GetInterface(callback)->OnNMSMapInfo(*this);
@@ -821,7 +821,7 @@ public:
         ser.PopRawData(&map_data.front(), map_data.size());
     }
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_MAP_DATA\n");
 		GetInterface(callback)->OnNMSMapData(*this);
@@ -852,7 +852,7 @@ public:
         checksum = ser.PopUnsignedInt();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_MAP_CHECKSUM\n");
 		GetInterface(callback)->OnNMSMapChecksum(*this);
@@ -881,7 +881,7 @@ public:
         correct = ser.PopBool();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		GetInterface(callback)->OnNMSMapChecksumOK(*this);
 	}
@@ -912,7 +912,7 @@ public:
         ggs.Deserialize(ser);
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_GGS_CHANGE\n");
 		GetInterface(callback)->OnNMSGGSChange(*this);
@@ -942,7 +942,7 @@ public:
         gf_length = ser.PopUnsignedInt();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_SPEED(%d)\n", gf_length);
 		GetInterface(callback)->OnNMSServerSpeed(*this);
@@ -979,7 +979,7 @@ public:
         first = ser.PopBool();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_NWF_DONE(%d, %d, %d)\n", nr, gf_length, (first ? 1 : 0));
 		GetInterface(callback)->OnNMSServerDone(*this);
@@ -1013,7 +1013,7 @@ public:
         nr = ser.PopUnsignedInt();
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PAUSE(%d)\n", paused ? 1 : 0);
 		GetInterface(callback)->OnNMSPause(*this);
@@ -1030,7 +1030,7 @@ public:
 	{
 		LOG.write(">>> NMS_GET_ASYNC_LOG\n");
 	}
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_GET_ASYNC_LOG\n");
 		GetInterface(callback)->OnNMSGetAsyncLog(*this);
@@ -1092,7 +1092,7 @@ public:
 
 	}
 
-	void Run(MessageInterface* callback)
+	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", recved_log.size(), last ? "last" : "non-last");
 		GetInterface(callback)->OnNMSSendAsyncLog(*this, recved_log, last);

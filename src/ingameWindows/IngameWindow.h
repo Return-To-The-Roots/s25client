@@ -36,7 +36,7 @@ class IngameWindow : public Window
         IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
             const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool close_on_right_click = true, Window* parent = NULL);
         /// Destruktor von @p IngameWindow.
-        ~IngameWindow(void);
+        ~IngameWindow(void) override;
 
         /// setzt die Fenster-ID.
         void SetID(unsigned int id) { this->id_ = id; }
@@ -82,7 +82,7 @@ class IngameWindow : public Window
         void MouseMove(const MouseCoords& mc);
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
         /// Verschiebt Fenster in die Bildschirmmitte
         void MoveToCenter();
@@ -90,7 +90,7 @@ class IngameWindow : public Window
         void MoveNextToMouse();
 
         /// Weiterleitung von Nachrichten erlaubt oder nicht?
-        bool IsMessageRelayAllowed() const;
+        bool IsMessageRelayAllowed() const override;
 
     protected:
         unsigned short iwHeight;

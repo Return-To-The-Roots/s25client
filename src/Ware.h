@@ -60,15 +60,15 @@ class Ware : public GameObject
         Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location);
         Ware(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~Ware();
+        ~Ware() override;
 
-        void Destroy(void);
+        void Destroy(void) override;
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_Ware(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_Ware(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_Ware(sgd); }
 
-        GO_Type GetGOT() const { return GOT_WARE; }
+        GO_Type GetGOT() const override { return GOT_WARE; }
 
         /// siehe oben
         inline unsigned char GetNextDir() const { return next_dir; }
@@ -119,7 +119,7 @@ class Ware : public GameObject
         /// Beginnt damit auf ein Schiff im Hafen zu warten
         void WaitForShip(nobHarborBuilding* hb);
 
-        std::string ToString() const;
+        std::string ToString() const override;
 
         static std::string GoodType2String(GoodType value)
         {

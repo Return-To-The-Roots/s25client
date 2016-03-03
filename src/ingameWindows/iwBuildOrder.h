@@ -28,7 +28,7 @@ class iwBuildOrder : public IngameWindow
     public:
 
         iwBuildOrder(void);
-        ~iwBuildOrder();
+        ~iwBuildOrder() override;
 
     private:
 
@@ -37,9 +37,9 @@ class iwBuildOrder : public IngameWindow
         /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
         void TransmitSettings();
 
-        void Msg_Timer(const unsigned int ctrl_id);
-        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

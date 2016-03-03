@@ -55,7 +55,7 @@ protected:
 
 public:
     GameWorldBase();
-    virtual ~GameWorldBase();
+    ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
     void Init(const unsigned short width, const unsigned short height, LandscapeType lt) override;

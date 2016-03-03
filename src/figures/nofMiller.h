@@ -34,11 +34,11 @@ class nofMiller : public nofWorkman
     private:
 
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 75; }
+        unsigned short GetCarryID() const override { return 75; }
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
+        GoodType ProduceWare() override;
 
     public:
 
@@ -47,9 +47,9 @@ class nofMiller : public nofWorkman
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofMiller(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofMiller(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofMiller(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_MILLER; }
+        GO_Type GetGOT() const override { return GOT_NOF_MILLER; }
 };
 
 #endif

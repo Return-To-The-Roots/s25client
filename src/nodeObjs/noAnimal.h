@@ -67,22 +67,22 @@ class noAnimal : public noMovable
         noAnimal(const Species species, const MapPoint pt);
         noAnimal(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noAnimal() {}
+        ~noAnimal() override {}
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noAnimal(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noAnimal(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noAnimal(sgd); }
 
         /// Aufräummethoden
     protected:  void Destroy_noAnimal() { RTTR_Assert(!hunter); Destroy_noMovable(); }
-    public:     void Destroy() { Destroy_noAnimal(); }
+    public:     void Destroy() override { Destroy_noAnimal(); }
 
-        GO_Type GetGOT() const { return GOT_ANIMAL; }
+        GO_Type GetGOT() const override { return GOT_ANIMAL; }
 
         // An x,y zeichnen
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
         // Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
         /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
         void StartLiving();

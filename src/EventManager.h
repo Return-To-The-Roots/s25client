@@ -48,13 +48,13 @@ class EventManager
 
                 Event(SerializedGameData& sgd, const unsigned obj_id);
 
-                void Destroy(void){}
+                void Destroy(void) override{}
 
                 /// Serialisierungsfunktionen
             protected: void Serialize_Event(SerializedGameData& sgd) const;
-            public: void Serialize(SerializedGameData& sgd) const { Serialize_Event(sgd); }
+            public: void Serialize(SerializedGameData& sgd) const override { Serialize_Event(sgd); }
 
-                GO_Type GetGOT() const { return GOT_EVENT; }
+                GO_Type GetGOT() const override { return GOT_EVENT; }
 
                 // Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
                 bool operator<= (const Event& other) const { return gf_next <= other.gf_next; }

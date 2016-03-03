@@ -32,20 +32,20 @@ class nobHQ : public nobBaseWarehouse
 
         /// Aufräummethoden
     protected:  void Destroy_nobHQ();
-    public:     void Destroy() { Destroy_nobHQ(); }
+    public:     void Destroy() override { Destroy_nobHQ(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobHQ(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobHQ(sgd); }
+    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobHQ(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOB_HQ; }
+        GO_Type GetGOT() const override { return GOT_NOB_HQ; }
 
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
 
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
 };
 

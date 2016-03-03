@@ -30,10 +30,10 @@ class Desktop : public Window
         Desktop(glArchivItem_Bitmap* background);
         void Show(void);
 
-        void Msg_ScreenResize(const ScreenResizeEvent& sr);
+        void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
 
     protected:
-        bool Draw_(void);
+        bool Draw_(void) override;
 
     protected:
         glArchivItem_Bitmap* background;

@@ -52,11 +52,11 @@ class noMovable : public noCoordBase
 
         /// Aufräummethoden
     protected:  void Destroy_noMovable() { Destroy_noCoordBase(); }
-    public:     void Destroy() { Destroy_noMovable(); }
+    public:     void Destroy() override { Destroy_noMovable(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noMovable(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noMovable(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noMovable(sgd); }
 
         /// Returns the direction in which the object is moving/which it is facing
         unsigned char GetCurMoveDir() const { return curMoveDir; }
@@ -75,7 +75,7 @@ class noMovable : public noCoordBase
         /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
         MapPoint GetDestinationForCurrentMove() const;
         /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-        bool IsMoving() const;
+        bool IsMoving() const override;
 
 };
 

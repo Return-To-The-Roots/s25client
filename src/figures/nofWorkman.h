@@ -32,7 +32,7 @@ class nofWorkman : public nofBuildingWorker
     private:
 
         // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
-        virtual void WalkedDerived(); // man gelaufen ist
+        void WalkedDerived() override; // man gelaufen ist
         /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
         virtual GoodType ProduceWare() = 0;
         /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
@@ -56,9 +56,9 @@ class nofWorkman : public nofBuildingWorker
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofWorkman(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofWorkman(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
 
-        virtual void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
 
 };

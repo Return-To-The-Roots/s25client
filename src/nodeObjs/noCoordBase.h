@@ -34,11 +34,11 @@ class noCoordBase : public noBase
 
         /// Aufräummethoden
     protected:  void Destroy_noCoordBase(void) { Destroy_noBase(); }
-    public:     void Destroy(void) { Destroy_noCoordBase(); }
+    public:     void Destroy(void) override { Destroy_noCoordBase(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noCoordBase(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noCoordBase(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noCoordBase(sgd); }
 
         /// liefert die X-Koordinate.
         MapCoord GetX(void) const { return pos.x; }

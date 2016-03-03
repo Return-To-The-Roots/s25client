@@ -80,13 +80,13 @@ class nofCarrier : public noFigure
 
     private:
 
-        void GoalReached();
-        void Walked();
-        void AbrogateWorkplace();
+        void GoalReached() override;
+        void Walked() override;
+        void AbrogateWorkplace() override;
         /// Make the carrier loose/destroy the ware if he has any
         void LooseWare();
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
         /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die Mitte
         void LookForWares();
@@ -112,17 +112,17 @@ class nofCarrier : public noFigure
         nofCarrier(const CarrierType ct, const MapPoint pt, const unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
         nofCarrier(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~nofCarrier();
+        ~nofCarrier() override;
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofCarrier(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofCarrier(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofCarrier(sgd); }
 
         /// Aufräummethoden
     protected:  void Destroy_nofCarrier();
-    public:     void Destroy() { Destroy_nofCarrier(); }
+    public:     void Destroy() override { Destroy_nofCarrier(); }
 
-        GO_Type GetGOT() const { return GOT_NOF_CARRIER; }
+        GO_Type GetGOT() const override { return GOT_NOF_CARRIER; }
 
         /// Gibt Träger-Typ zurück
         CarrierType GetCarrierType() const { return ct; }
@@ -131,7 +131,7 @@ class nofCarrier : public noFigure
         /// Gibt Träger-Produktivität in % zurück
         unsigned GetProductivity() const { return productivity; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
         void LostWork();
@@ -156,7 +156,7 @@ class nofCarrier : public noFigure
         noRoadNode* GetSecondFlag() const;
 
         /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-        void CorrectSplitData_Derived();
+        void CorrectSplitData_Derived() override;
 };
 
 #endif

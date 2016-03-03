@@ -93,9 +93,9 @@ public:
     Visibility GetVisibility(const MapPoint pt) const;
 
     /// Höhe wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
-    void AltitudeChanged(const MapPoint pt);
+    void AltitudeChanged(const MapPoint pt) override;
     /// Sichtbarkeit wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
-    void VisibilityChanged(const MapPoint pt);
+    void VisibilityChanged(const MapPoint pt) override;
 
     /// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
     unsigned char GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const;

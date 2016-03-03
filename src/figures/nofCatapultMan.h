@@ -49,11 +49,11 @@ class nofCatapultMan : public nofBuildingWorker
     private:
 
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-        void WalkedDerived();
+        void WalkedDerived() override;
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 0; }
+        unsigned short GetCarryID() const override { return 0; }
 
         /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
         void HandleStateTargetBuilding();
@@ -66,11 +66,11 @@ class nofCatapultMan : public nofBuildingWorker
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofCatapultMan(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofCatapultMan(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofCatapultMan(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_CATAPULTMAN; }
+        GO_Type GetGOT() const override { return GOT_NOF_CATAPULTMAN; }
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
         void WorkArborted();

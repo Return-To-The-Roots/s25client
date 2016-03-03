@@ -51,14 +51,14 @@ class noRoadNode : public noCoordBase
         noRoadNode(const NodalObjectType nop, const MapPoint pt, const unsigned char player);
         noRoadNode(SerializedGameData& sgd, const unsigned obj_id);
 
-        virtual ~noRoadNode();
+        ~noRoadNode() override;
         /// Aufräummethoden
     protected:  void Destroy_noRoadNode();
-    public:     void Destroy() { Destroy_noRoadNode(); }
+    public:     void Destroy() override { Destroy_noRoadNode(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noRoadNode(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noRoadNode(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noRoadNode(sgd); }
 
         inline noRoadNode* GetNeighbour(const unsigned char dir) const {
             if(!routes[dir])

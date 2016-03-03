@@ -31,17 +31,17 @@ class noDisappearingMapEnvObject : public noDisappearingEnvObject
 
         /// Aufräummethoden
     protected:  void Destroy_noDisappearingMapEnvObject();
-    public:     void Destroy() { Destroy_noDisappearingMapEnvObject(); }
+    public:     void Destroy() override { Destroy_noDisappearingMapEnvObject(); }
         /// Serialisierungsfunktionen
     protected:  void Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noDisappearingMapEnvObject(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noDisappearingMapEnvObject(sgd); }
 
-        GO_Type GetGOT() const { return GOT_DISAPPEARINGMAPENVOBJECT; }
+        GO_Type GetGOT() const override { return GOT_DISAPPEARINGMAPENVOBJECT; }
 
         /// An x,y zeichnen.
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
     private:
 

@@ -32,9 +32,9 @@ class nofScout_Free : public nofFlagWorker
 
     private:
 
-        void GoalReached();
-        void Walked();
-        void HandleDerivedEvent(const unsigned int id);
+        void GoalReached() override;
+        void Walked() override;
+        void HandleDerivedEvent(const unsigned int id) override;
 
         /// Erkundet (quasi ein Umherirren)
         void Scout();
@@ -43,7 +43,7 @@ class nofScout_Free : public nofFlagWorker
         void GoToNewNode();
 
         /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
-        virtual unsigned GetVisualRange() const;
+        unsigned GetVisualRange() const override;
 
     public:
 
@@ -52,14 +52,14 @@ class nofScout_Free : public nofFlagWorker
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofScout_Free(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofScout_Free(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_Free(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_SCOUT_FREE; }
+        GO_Type GetGOT() const override { return GOT_NOF_SCOUT_FREE; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        void LostWork();
+        void LostWork() override;
 
         ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
         //bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }

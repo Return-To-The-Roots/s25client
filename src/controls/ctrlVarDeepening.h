@@ -31,7 +31,7 @@ class ctrlVarDeepening : public ctrlVarText
         ctrlVarDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc,  const std::string& text, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list liste);
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     private:
         TextureColor tc;

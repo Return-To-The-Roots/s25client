@@ -86,10 +86,10 @@ class dskGameInterface :
         /// Konstruktor von @p dskGameInterface.
         dskGameInterface();
         /// Destruktor von @p dskGameInterface.
-        ~dskGameInterface(void);
+        ~dskGameInterface(void) override;
 
-        void LC_Status_ConnectionLost(void);
-        void LC_Status_Error(const std::string& error);
+        void LC_Status_ConnectionLost(void) override;
+        void LC_Status_Error(const std::string& error) override;
         /// Called whenever Settings are changed ingame
         void SettingsChanged(void);
 
@@ -132,7 +132,7 @@ class dskGameInterface :
 
     private:
 
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
 
         /// Baut Weg zurück von Ende bis zu start_id
         void DemolishRoad(const unsigned start_id);
@@ -140,42 +140,42 @@ class dskGameInterface :
         /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
         void UpdatePostIcon(const unsigned postmessages_count, bool showPigeon);
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_PaintBefore();
-        void Msg_PaintAfter();
-        bool Msg_LeftDown(const MouseCoords& mc);
-        bool Msg_LeftUp(const MouseCoords& mc);
-        bool Msg_MouseMove(const MouseCoords& mc);
-        bool Msg_RightDown(const MouseCoords& mc);
-        bool Msg_RightUp(const MouseCoords& mc);
-        bool Msg_KeyDown(const KeyEvent& ke);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_PaintBefore() override;
+        void Msg_PaintAfter() override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_RightUp(const MouseCoords& mc) override;
+        bool Msg_KeyDown(const KeyEvent& ke) override;
 
-        void CI_PlayerLeft(const unsigned player_id);
-        void CI_GGSChanged(const GlobalGameSettings& ggs);
-        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg);
-        void CI_Async(const std::string& checksums_list);
-        void CI_ReplayAsync(const std::string& msg);
-        void CI_ReplayEndReached(const std::string& msg);
-        void CI_GamePaused();
-        void CI_GameResumed();
-        void CI_Error(const ClientError ce);
-        void CI_NewPostMessage(const unsigned postmessages_count);
-        void CI_PostMessageDeleted(const unsigned postmessages_count);
+        void CI_PlayerLeft(const unsigned player_id) override;
+        void CI_GGSChanged(const GlobalGameSettings& ggs) override;
+        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) override;
+        void CI_Async(const std::string& checksums_list) override;
+        void CI_ReplayAsync(const std::string& msg) override;
+        void CI_ReplayEndReached(const std::string& msg) override;
+        void CI_GamePaused() override;
+        void CI_GameResumed() override;
+        void CI_Error(const ClientError ce) override;
+        void CI_NewPostMessage(const unsigned postmessages_count) override;
+        void CI_PostMessageDeleted(const unsigned postmessages_count) override;
 
         /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
-        void GI_FlagDestroyed(const MapPoint pt);
+        void GI_FlagDestroyed(const MapPoint pt) override;
         /// Spielerwechsel
-        void CI_PlayersSwapped(const unsigned player1, const unsigned player2);
+        void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
 
         /// Wenn ein Spieler verloren hat
-        void GI_PlayerDefeated(const unsigned player_id);
+        void GI_PlayerDefeated(const unsigned player_id) override;
         /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        void GI_UpdateMinimap(const MapPoint pt);
+        void GI_UpdateMinimap(const MapPoint pt) override;
         /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
-        void GI_TreatyOfAllianceChanged();
+        void GI_TreatyOfAllianceChanged() override;
 
-        void GI_Winner(const unsigned player_id);
-        void GI_TeamWinner(const unsigned player_id);
+        void GI_Winner(const unsigned player_id) override;
+        void GI_TeamWinner(const unsigned player_id) override;
 };
 
 #endif // !dskGAMEINTERFACE_H_INCLUDED

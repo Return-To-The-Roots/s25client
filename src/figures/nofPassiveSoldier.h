@@ -34,13 +34,13 @@ class nofPassiveSoldier : public nofSoldier
     private:
 
         /// Eventhandling
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
         // informieren, wenn ...
-        void GoalReached(); // das Ziel erreicht wurde
+        void GoalReached() override; // das Ziel erreicht wurde
 
         /// wenn man gelaufen ist
-        void Walked();
+        void Walked() override;
         /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
         void Heal();
 
@@ -50,20 +50,20 @@ class nofPassiveSoldier : public nofSoldier
         nofPassiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
         nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~nofPassiveSoldier();
+        ~nofPassiveSoldier() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nofPassiveSoldier();
-    public:     void Destroy() { Destroy_nofPassiveSoldier(); }
+    public:     void Destroy() override { Destroy_nofPassiveSoldier(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofPassiveSoldier(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofPassiveSoldier(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofPassiveSoldier(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_PASSIVESOLDIER; }
+        GO_Type GetGOT() const override { return GOT_NOF_PASSIVESOLDIER; }
 
         // Zeichnet den Soldaten
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
         void InBuildingDestroyed();

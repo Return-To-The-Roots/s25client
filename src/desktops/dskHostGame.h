@@ -40,7 +40,7 @@ class dskHostGame :
         dskHostGame(const ServerType serverType);
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
     private:
 
         void TogglePlayerReady(unsigned char player, bool ready);
@@ -56,39 +56,39 @@ class dskHostGame :
         void ChangePing(const unsigned i);
         void ChangeColor(const unsigned i, const unsigned char color);
 
-        void Msg_PaintBefore();
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked);
-        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_EditEnter(const unsigned int ctrl_id);
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
+        void Msg_PaintBefore() override;
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked) override;
+        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
 
-        void LC_RankingInfo(const LobbyPlayerInfo& player);
+        void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
-        void CI_Error(const ClientError ce);
+        void CI_Error(const ClientError ce) override;
 
-        void CI_NewPlayer(const unsigned player_id);
-        void CI_PlayerLeft(const unsigned player_id);
+        void CI_NewPlayer(const unsigned player_id) override;
+        void CI_PlayerLeft(const unsigned player_id) override;
 
-        void CI_GameStarted(GameWorldViewer* gwv);
+        void CI_GameStarted(GameWorldViewer* gwv) override;
 
-        void CI_PSChanged(const unsigned player_id, const PlayerState ps);
-        void CI_NationChanged(const unsigned player_id, const Nation nation);
-        void CI_TeamChanged(const unsigned player_id, const unsigned char team);
-        void CI_PingChanged(const unsigned player_id, const unsigned short ping);
-        void CI_ColorChanged(const unsigned player_id, const unsigned char color);
-        void CI_ReadyChanged(const unsigned player_id, const bool ready);
-        void CI_PlayersSwapped(const unsigned player1, const unsigned player2);
-        void CI_GGSChanged(const GlobalGameSettings& ggs);
+        void CI_PSChanged(const unsigned player_id, const PlayerState ps) override;
+        void CI_NationChanged(const unsigned player_id, const Nation nation) override;
+        void CI_TeamChanged(const unsigned player_id, const unsigned char team) override;
+        void CI_PingChanged(const unsigned player_id, const unsigned short ping) override;
+        void CI_ColorChanged(const unsigned player_id, const unsigned char color) override;
+        void CI_ReadyChanged(const unsigned player_id, const bool ready) override;
+        void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
+        void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
-        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg);
-        void CI_Countdown(int countdown);
-        void CI_CancelCountdown();
+        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) override;
+        void CI_Countdown(int countdown) override;
+        void CI_CancelCountdown() override;
 
-        void LC_Status_Error(const std::string& error);
+        void LC_Status_Error(const std::string& error) override;
 
         void GoBack();
         bool IsSinglePlayer(){ return serverType == ServerType::LOCAL; }

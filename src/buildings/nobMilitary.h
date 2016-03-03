@@ -80,7 +80,7 @@ class nobMilitary : public nobBaseMilitary
         /// Wählt je nach Militäreinstellungen (Verteidigerstärke) einen passenden Soldaten aus
         nofPassiveSoldier* ChooseSoldier();
         /// Stellt Verteidiger zur Verfügung
-        nofDefender* ProvideDefender(nofAttacker* const attacker);
+        nofDefender* ProvideDefender(nofAttacker* const attacker) override;
         /// Will/kann das Gebäude noch Münzen bekommen?
         bool WantCoins();
         /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
@@ -97,20 +97,20 @@ class nobMilitary : public nobBaseMilitary
         nobMilitary(SerializedGameData& sgd, const unsigned obj_id);
     public:
 
-        ~nobMilitary();
+        ~nobMilitary() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nobMilitary();
-    public:     void Destroy() { Destroy_nobMilitary(); }
+    public:     void Destroy() override { Destroy_nobMilitary(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobMilitary(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobMilitary(sgd); }
+    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobMilitary(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOB_MILITARY; }
+        GO_Type GetGOT() const override { return GOT_NOB_MILITARY; }
 
-        void Draw(int x, int y);
-        void HandleEvent(const unsigned int id);
+        void Draw(int x, int y) override;
+        void HandleEvent(const unsigned int id) override;
 
         /// Wurde das Militärgebäude neu gebaut und noch nicht besetzt und kann somit abgerissen werden bei Land-verlust?
         bool IsNewBuilt() const { return new_built; }
@@ -138,30 +138,30 @@ class nobMilitary : public nobBaseMilitary
 
 
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
-        void TakeWare(Ware* ware);
+        void TakeWare(Ware* ware) override;
         /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-        void AddWare(Ware*& ware);
+        void AddWare(Ware*& ware) override;
         /// Eine bestellte Ware konnte doch nicht kommen
-        void WareLost(Ware* ware);
+        void WareLost(Ware* ware) override;
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-        bool FreePlaceAtFlag();
+        bool FreePlaceAtFlag() override;
 
         /// Berechnet, wie dringend eine Goldmünze gebraucht wird, in Punkten, je höher desto dringender
         unsigned CalcCoinsPoints();
 
         /// Wird aufgerufen, wenn ein Soldat kommt
-        void GotWorker(Job job, noFigure* worker);
+        void GotWorker(Job job, noFigure* worker) override;
         /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
-        void AddActiveSoldier(nofActiveSoldier* soldier);
+        void AddActiveSoldier(nofActiveSoldier* soldier) override;
         /// Fügt passiven Soldaten (der aus einem Lagerhaus kommt) zum Militärgebäude hinzu
         void AddPassiveSoldier(nofPassiveSoldier* soldier);
         /// Soldat konnte nicht kommen
-        void SoldierLost(nofSoldier* soldier);
+        void SoldierLost(nofSoldier* soldier) override;
         /// Soldat ist jetzt auf Mission
         void SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActiveSoldier* active_soldier);
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-        nofAggressiveDefender* SendDefender(nofAttacker* attacker);
+        nofAggressiveDefender* SendDefender(nofAttacker* attacker) override;
 
         /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         unsigned GetNumSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
@@ -210,7 +210,7 @@ class nobMilitary : public nobBaseMilitary
         void HitOfCatapultStone();
 
         /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
-        bool DefendersAvailable() const { return (GetTroopsCount() > 0); }
+        bool DefendersAvailable() const override { return (GetTroopsCount() > 0); }
 
 		/// send all soldiers of the highest rank home (if highest=lowest keep 1)
 		void SendSoldiersHome();
@@ -222,7 +222,7 @@ class nobMilitary : public nobBaseMilitary
 
         bool WasCapturedOnce() const {return(captured_not_built);}
 
-        virtual void UnlinkAggressor(nofAttacker* soldier);
+        void UnlinkAggressor(nofAttacker* soldier) override;
 };
 
 

@@ -42,11 +42,11 @@ class iwObservate : public IngameWindow
         iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt);
 
     private:
-        bool Draw_();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        bool Msg_MouseMove(const MouseCoords& mc);
-        bool Msg_RightDown(const MouseCoords& mc);
-        bool Msg_RightUp(const MouseCoords& mc);
+        bool Draw_() override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_RightUp(const MouseCoords& mc) override;
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED

@@ -27,7 +27,7 @@ class Savegame : public SavedFile
 {
     public:
         Savegame();
-        ~Savegame();
+        ~Savegame() override;
 
         /// Schreibst Savegame oder Teile davon
         bool Save(const std::string& filename);

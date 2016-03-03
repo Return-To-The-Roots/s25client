@@ -81,7 +81,7 @@ class nofBuildingWorker : public noFigure
         /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
         void StopNotWorking();
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-        void AbrogateWorkplace();
+        void AbrogateWorkplace() override;
         /// Tries to start working. 
         /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
         void TryToWork();
@@ -94,8 +94,8 @@ class nofBuildingWorker : public noFigure
     private:
 
         /// von noFigure aufgerufen
-        void Walked(); // wenn man gelaufen ist
-        void GoalReached(); // wenn das Ziel erreicht wurde
+        void Walked() override; // wenn man gelaufen ist
+        void GoalReached() override; // wenn das Ziel erreicht wurde
 
         /// Malt den Arbeiter beim Arbeiten
         virtual void DrawWorking(int x, int y) = 0;
@@ -127,14 +127,14 @@ class nofBuildingWorker : public noFigure
 
         /// Aufräummethoden
     protected:  void Destroy_nofBuildingWorker() { RTTR_Assert(!workplace); Destroy_noFigure(); }
-    public:     void Destroy() { Destroy_nofBuildingWorker(); }
+    public:     void Destroy() override { Destroy_nofBuildingWorker(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofBuildingWorker(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofBuildingWorker(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuildingWorker(sgd); }
 
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Wenn eine neue Ware kommt oder die Produktion wieder erlaubt wurde, wird das aufgerufen
         void GotWareOrProductionAllowed();

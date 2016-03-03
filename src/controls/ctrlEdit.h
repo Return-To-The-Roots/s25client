@@ -41,13 +41,13 @@ class ctrlEdit : public Window
         void SetMaxLength(unsigned short maxlength = 0) { this->maxLength_ = maxlength; }
         void SetNumberOnly(const bool activated) {this->numberOnly_ = activated; }
 
-        virtual void Msg_PaintAfter();
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftDown_After(const MouseCoords& mc);
-        virtual bool Msg_KeyDown(const KeyEvent& ke);
+        void Msg_PaintAfter() override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftDown_After(const MouseCoords& mc) override;
+        bool Msg_KeyDown(const KeyEvent& ke) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     private:
         void AddChar(unsigned int c);

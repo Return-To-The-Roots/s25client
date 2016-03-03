@@ -30,24 +30,24 @@ class noFlag : public noRoadNode
     public:
         noFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 0xFF);
         noFlag(SerializedGameData& sgd, const unsigned int obj_id);
-        ~noFlag();
+        ~noFlag() override;
 
-        void Destroy()  {   Destroy_noFlag();   }
-        void Serialize(SerializedGameData& sgd) const { Serialize_noFlag(sgd);  }
+        void Destroy() override  {   Destroy_noFlag();   }
+        void Serialize(SerializedGameData& sgd) const override { Serialize_noFlag(sgd);  }
 
-        inline GO_Type GetGOT() const { return GOT_FLAG; }
+        inline GO_Type GetGOT() const override { return GOT_FLAG; }
         inline FlagType GetFlagType() const { return flagtype; }
         /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
         inline bool IsSpaceForWare() const { return GetWareCount() < wares.size(); }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
-        BlockingManner GetBM() const { return BM_FLAG; }
+        BlockingManner GetBM() const override { return BM_FLAG; }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
-        FOWObject* CreateFOWObject() const;
+        FOWObject* CreateFOWObject() const override;
         /// Legt eine Ware an der Flagge ab.
-        void AddWare(Ware*& ware);
+        void AddWare(Ware*& ware) override;
         /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
         unsigned GetWareCount() const;
         /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
@@ -55,7 +55,7 @@ class noFlag : public noRoadNode
         /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
         unsigned GetWaresCountForRoad(const unsigned char dir) const;
         /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
-        unsigned GetPunishmentPoints(const unsigned char dir) const;
+        unsigned GetPunishmentPoints(const unsigned char dir) const override;
         /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
         void DestroyAttachedBuilding();
         /// Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.

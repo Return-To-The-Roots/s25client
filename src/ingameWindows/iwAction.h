@@ -72,7 +72,7 @@ class iwAction : public IngameWindow
 
     public:
         iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
-        ~iwAction();
+        ~iwAction() override;
 
         /// Gibt zurück, auf welchen Punkt es sich bezieht
         unsigned short GetSelectedX() const { return selectedPt.x; }
@@ -80,10 +80,10 @@ class iwAction : public IngameWindow
 
     private:
 
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id);
-        void Msg_Group_TabChange(const unsigned group_id, const unsigned int ctrl_id, const unsigned short tab_id);
-        void Msg_PaintAfter();
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id) override;
+        void Msg_Group_TabChange(const unsigned group_id, const unsigned int ctrl_id, const unsigned short tab_id) override;
+        void Msg_PaintAfter() override;
 
         inline void Msg_ButtonClick_TabBuild(const unsigned int ctrl_id);
         inline void Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id);

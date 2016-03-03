@@ -35,30 +35,30 @@ class VideoDriver: public IVideoDriver
         VideoDriver(VideoDriverLoaderInterface* CallBack);
 
         /// Destruktor von @p Videotreiber.
-        virtual ~VideoDriver(void){}
+        ~VideoDriver(void) override{}
 
         /// Funktion zum Auslesen der Mauskoordinaten.
-        virtual void GetMousePos(int& x, int& y) const;
+        void GetMousePos(int& x, int& y) const override;
 
         /// Funktion zum Auslesen der X-Koordinate der Maus.
-        virtual int GetMousePosX() const;
+        int GetMousePosX() const override;
 
         /// Funktion zum Auslesen der Y-Koordinate der Maus.
-        virtual int GetMousePosY() const;
+        int GetMousePosY() const override;
 
         /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
-        virtual bool GetMouseStateL(void) const;
+        bool GetMouseStateL(void) const override;
 
         /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
-        virtual bool GetMouseStateR(void) const;
+        bool GetMouseStateR(void) const override;
 
         //
-        virtual unsigned short GetScreenWidth()  const { return screenWidth;  }
-        virtual unsigned short GetScreenHeight() const { return screenHeight; }
-        virtual bool IsFullscreen() const { return isFullscreen_; }
+        unsigned short GetScreenWidth()  const override { return screenWidth;  }
+        unsigned short GetScreenHeight() const override { return screenHeight; }
+        bool IsFullscreen() const override { return isFullscreen_; }
 
         /// prüft auf Initialisierung.
-        virtual bool IsInitialized() { return initialized; }
+        bool IsInitialized() override { return initialized; }
 
     protected:
         VideoDriverLoaderInterface* CallBack;  ///< Das DriverCallback für Rückmeldungen.

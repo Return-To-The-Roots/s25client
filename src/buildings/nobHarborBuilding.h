@@ -101,12 +101,12 @@ class nobHarborBuilding : public nobBaseWarehouse
         /// Dasselbe für Menschen
         bool UseFigureAtOnce(noFigure* fig, noRoadNode& goal) override;
         /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
-        void CancelFigure(noFigure* figure);
+        void CancelFigure(noFigure* figure) override;
         /// Bestellt ein Schiff zum Hafen, sofern dies nötig ist
         void OrderShip();
 
         /// Stellt Verteidiger zur Verfügung
-        virtual nofDefender* ProvideDefender(nofAttacker* const attacker);
+        nofDefender* ProvideDefender(nofAttacker* const attacker) override;
 
         friend class SerializedGameData;
         friend class BuildingFactory;
@@ -117,19 +117,19 @@ public:
         unsigned GetMilitaryRadius() const override { return HARBOR_RADIUS; }
 
         /// Aufräummethoden
-        void Destroy();
+        void Destroy() override;
         /// Serialisierung
-        void Serialize(SerializedGameData& sgd) const;
-        GO_Type GetGOT() const { return GOT_NOB_HARBORBUILDING; }
-        void Draw(int x, int y);
-        void HandleEvent(const unsigned int id);
+        void Serialize(SerializedGameData& sgd) const override;
+        GO_Type GetGOT() const override { return GOT_NOB_HARBORBUILDING; }
+        void Draw(int x, int y) override;
+        void HandleEvent(const unsigned int id) override;
 
         /// Eine bestellte Ware konnte doch nicht kommen
-        void WareLost(Ware* ware);
+        void WareLost(Ware* ware) override;
         /// Legt eine Ware im Lagerhaus ab
-        void AddWare(Ware*& ware);
+        void AddWare(Ware*& ware) override;
         /// Eine Figur geht ins Lagerhaus
-        void AddFigure(noFigure* figure, const bool increase_visual_counts);
+        void AddFigure(noFigure* figure, const bool increase_visual_counts) override;
         /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
         /// benötigt!)
         unsigned CalcDistributionPoints(const GoodType type);
@@ -156,7 +156,7 @@ public:
 
         /// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
         /// wenn wir einen benötigen, müssen wir einen neuen bestellen
-        void RemoveDependentFigure(noFigure* figure);
+        void RemoveDependentFigure(noFigure* figure) override;
 
         /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
         unsigned GetHarborPosID() const;

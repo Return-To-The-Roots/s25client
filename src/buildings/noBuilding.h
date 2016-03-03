@@ -35,11 +35,11 @@ class noBuilding : public noBaseBuilding
 
         /// Aufräummethoden
     protected:  void Destroy_noBuilding();
-    public:     void Destroy() { Destroy_noBuilding(); }
+    public:     void Destroy() override { Destroy_noBuilding(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noBuilding(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noBuilding(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuilding(sgd); }
 
         /// Zeichnet das Gebäude an sich mit Tür ohne zusätzlichen Schnickschnack
         void DrawBaseBuilding(int x, int y);
@@ -47,13 +47,13 @@ class noBuilding : public noBaseBuilding
         void OpenDoor() {++opendoor;}
         void CloseDoor() {RTTR_Assert(opendoor); --opendoor;}
 
-        void GotWorker(Job job, noFigure* worker);
+        void GotWorker(Job job, noFigure* worker) override;
 
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
         virtual bool FreePlaceAtFlag() = 0;
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        FOWObject* CreateFOWObject() const;
+        FOWObject* CreateFOWObject() const override;
 };
 
 

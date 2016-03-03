@@ -24,14 +24,14 @@
 /// Klasse des Hauptmenü Desktops.
 class dskMainMenu : public Desktop
 {
-        void Msg_PaintAfter();
+        void Msg_PaintAfter() override;
     public:
         /// Konstruktor von @p dskMainMenu.
         dskMainMenu(void);
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_Timer(const unsigned int ctrl_id);
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
 };
 
 #endif // !dskMAINMENU_H_INCLUDED

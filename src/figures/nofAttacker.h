@@ -52,7 +52,7 @@ class nofAttacker : public nofActiveSoldier
         unsigned ship_obj_id;
 
         /// wenn man gelaufen ist
-        void Walked();
+        void Walked() override;
         /// Geht nach Hause für Attacking-Missoin
         void ReturnHomeMissionAttacking();
         /// Läuft weiter
@@ -74,11 +74,11 @@ class nofAttacker : public nofActiveSoldier
         void HandleState_SeaAttack_ReturnToShip();
 
         /// The derived classes regain control after a fight of nofActiveSoldier
-        void FreeFightEnded();
+        void FreeFightEnded() override;
 
     public:
         /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-        void InformTargetsAboutCancelling();
+        void InformTargetsAboutCancelling() override;
 
         void RemoveFromAttackedGoal();
 
@@ -87,32 +87,32 @@ class nofAttacker : public nofActiveSoldier
         /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
         nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor);
         nofAttacker(SerializedGameData& sgd, const unsigned obj_id);
-        ~nofAttacker();
+        ~nofAttacker() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nofAttacker();
-    public:     void Destroy() { Destroy_nofAttacker(); }
+    public:     void Destroy() override { Destroy_nofAttacker(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofAttacker(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofAttacker(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofAttacker(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_ATTACKER; }
+        GO_Type GetGOT() const override { return GOT_NOF_ATTACKER; }
         const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
         /// Blockt der Angreifer noch?
         bool IsBlockingRoads() const;
 
         /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
-        void HomeDestroyed();
+        void HomeDestroyed() override;
         /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
-        void HomeDestroyedAtBegin();
+        void HomeDestroyedAtBegin() override;
 
         /// Wenn ein Kampf gewonnen wurde
-        void WonFighting();
+        void WonFighting() override;
         /// Wenn ein Kampf verloren wurde (Tod)
-        void LostFighting();
+        void LostFighting() override;
 
         /// Sagt einem angreifenden Soldaten, dass es das Ziel nich mehr gibt
         void AttackedGoalDestroyed();

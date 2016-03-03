@@ -31,7 +31,7 @@ class iwStatistics : public IngameWindow
 
         /// Konstruktor von @p iwStatistics.
         iwStatistics();
-        ~iwStatistics();
+        ~iwStatistics() override;
 
     private:
 
@@ -44,9 +44,9 @@ class iwStatistics : public IngameWindow
         std::vector<bool> activePlayers;
         unsigned numPlayingPlayers;
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_PaintAfter();
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_PaintAfter() override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
         void DrawStatistic(StatisticType type);
         void DrawAxis();
 };

@@ -44,11 +44,11 @@ class RoadSegment : public GameObject
         RoadSegment(SerializedGameData& sgd, const unsigned obj_id);
 
         /// zerstört das Objekt.
-        void Destroy(void) { Destroy_RoadSegment(); }
+        void Destroy(void) override { Destroy_RoadSegment(); }
         /// serialisiert das Objekt.
-        void Serialize(SerializedGameData& sgd) const { Serialize_RoadSegment(sgd); }
+        void Serialize(SerializedGameData& sgd) const override { Serialize_RoadSegment(sgd); }
         /// liefert den GO-Type.
-        inline GO_Type GetGOT() const { return GOT_ROADSEGMENT; }
+        inline GO_Type GetGOT() const override { return GOT_ROADSEGMENT; }
         /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst kommt Müll raus!!)
         inline bool GetNodeID(const noRoadNode* rn) { return (rn == f2); }
         /// Gibt Straßen-Typ zurück

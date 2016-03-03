@@ -30,7 +30,7 @@ class ctrlDeepening : public ctrlText
         ctrlDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
         /// Derived classes cann draw extended content
         virtual void DrawContent() const{}
 
@@ -45,7 +45,7 @@ class ctrlColorDeepening : public ctrlDeepening, public ColorControlInterface
         ctrlColorDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
 
         /// Setzt die Farbe des Controls
-        virtual void SetColor(const unsigned int fill_color);
+        void SetColor(const unsigned int fill_color) override;
 
     protected:
         void DrawContent() const override;

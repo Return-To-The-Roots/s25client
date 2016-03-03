@@ -39,7 +39,7 @@ class noBase : public GameObject
         /// Type zurückgeben.
         NodalObjectType GetType(void) const { return nop; }
         /// Serialisierungsfunktion.
-        void Serialize(SerializedGameData& sgd) const { Serialize_noBase(sgd); }
+        void Serialize(SerializedGameData& sgd) const override { Serialize_noBase(sgd); }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         virtual FOWObject* CreateFOWObject() const;

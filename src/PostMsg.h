@@ -59,7 +59,7 @@ class PostMsgWithLocation : public PostMsg
         MapCoord GetX() const { return pt.x; }
         MapCoord GetY() const { return pt.y; }
         MapPoint GetPos() const { return pt; }
-        virtual void Serialize(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) override;
 
     private:
         MapPoint pt;
@@ -74,7 +74,7 @@ class ImagePostMsgWithLocation : public PostMsgWithLocation
         ImagePostMsgWithLocation(SerializedGameData& sgd);
 
         glArchivItem_Bitmap* GetImage_() const;
-        virtual void Serialize(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) override;
 
     private:
         BuildingType senderBuilding;
@@ -101,7 +101,7 @@ class DiplomacyPostQuestion : public PostMsg
         DiplomacyPostQuestion(SerializedGameData& sgd);
 
         unsigned GetPlayerID() const { return player; }
-        virtual void Serialize(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) override;
 
     private:
         /// Typ der Diplomatienachricht
@@ -129,7 +129,7 @@ class DiplomacyPostInfo : public PostMsg
         DiplomacyPostInfo(const unsigned char other_player, const Type dp_type, const PactType pt);
         DiplomacyPostInfo(SerializedGameData& sgd);
 
-        virtual void Serialize(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) override;
 
         /// Typ der Diplomatienachricht
 

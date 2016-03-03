@@ -82,7 +82,7 @@ class GameMessage_GameCommand : public GameMessage
             }
         }
 
-        void Run(MessageInterface* callback)
+        void Run(MessageInterface* callback) override
         {
             GetInterface(callback)->OnNMSGameCommand(*this);
         }

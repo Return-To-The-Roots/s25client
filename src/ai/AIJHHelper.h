@@ -111,8 +111,8 @@ namespace AIJH
                 RTTR_Assert(type != BLD_NOTHING);
             }
 
-            ~BuildJob() { }
-            virtual void ExecuteJob();
+            ~BuildJob() override { }
+            void ExecuteJob() override;
             inline BuildingType GetType() const { return type; }            
             inline MapPoint GetAround() const { return around; }
 
@@ -133,8 +133,8 @@ namespace AIJH
         public:
             ConnectJob(AIPlayerJH& aijh, MapPoint flagPos)
                 : Job(aijh), flagPos(flagPos) { }
-            ~ConnectJob() { }
-            virtual void ExecuteJob();
+            ~ConnectJob() override { }
+            void ExecuteJob() override;
 			MapPoint getFlag() const {return flagPos;}
         private:
             MapPoint flagPos;
@@ -146,8 +146,8 @@ namespace AIJH
             friend class iwAIDebug;
         public:
             EventJob(AIPlayerJH& aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) { }
-            ~EventJob() { delete ev; }
-            void ExecuteJob();
+            ~EventJob() override { delete ev; }
+            void ExecuteJob() override;
             inline AIEvent::Base* GetEvent() const { return ev; }
         private:
             AIEvent::Base* ev;
@@ -159,8 +159,8 @@ namespace AIJH
             friend class iwAIDebug;
         public:
             SearchJob(AIPlayerJH& aijh, PositionSearch* search) : Job(aijh), search(search) { }
-            ~SearchJob();
-            void ExecuteJob();
+            ~SearchJob() override;
+            void ExecuteJob() override;
 
         private:
             PositionSearch* search;

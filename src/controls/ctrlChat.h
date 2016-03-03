@@ -31,24 +31,24 @@ class ctrlChat : public Window
         /// Konstruktor von @p ctrlChat.
         ctrlChat(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
         /// Destruktor von @p ctrlChat.
-        virtual ~ctrlChat();
+        ~ctrlChat() override;
 
         /// Größe ändern
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
         /// Fügt eine Chatnachricht hinzu.
         void AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, unsigned int msg_color);
         /// Setzt Farbe der Zeitangaben.
         void SetTimeColor(const unsigned int color) { time_color = color; }
 
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
 
     protected:
         /// Zeichnet das Chat-Control.
-        virtual bool Draw_();
+        bool Draw_() override;
         /// Vergrößert die Anzahl der Chatzeilen.
         void ExtendMemory(const unsigned int count);
         /// Converts an unwrapped line into a wrapped one and appends it

@@ -30,17 +30,17 @@ class noSign : public noDisappearingEnvObject
 
         /// Aufräummethoden
     protected:  void Destroy_noSign();
-    public:     void Destroy() { Destroy_noSign(); }
+    public:     void Destroy() override { Destroy_noSign(); }
         /// Serialisierungsfunktionen
     protected:  void Serialize_noSign(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noSign(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
 
-        GO_Type GetGOT() const { return GOT_SIGN; }
+        GO_Type GetGOT() const override { return GOT_SIGN; }
 
         /// An x,y zeichnen.
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
         unsigned char GetSignType() const { return type; }
 

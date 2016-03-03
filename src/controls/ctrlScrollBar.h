@@ -33,15 +33,15 @@ class ctrlScrollBar : public Window
         unsigned short GetPageSize() const { return pagesize; }
         unsigned short GetPos() const { return scroll_pos; }
 
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
 
     private:
         void CalculatePosition() { scroll_pos = (scrollbar_pos * scroll_range / scroll_height); }

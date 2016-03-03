@@ -29,9 +29,9 @@ class iwDiplomacy : public IngameWindow
 
     private:
 
-        void Msg_PaintBefore();
-        void Msg_PaintAfter();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintBefore() override;
+        void Msg_PaintAfter() override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 /// Kleines Fenster, über das einem Spieler ein neues Bündnis angeboten werden kann
@@ -44,7 +44,7 @@ class iwSuggestPact : public IngameWindow
 
     public:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

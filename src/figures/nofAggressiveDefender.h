@@ -33,7 +33,7 @@ class nofAggressiveDefender : public nofActiveSoldier
         nobBaseMilitary* attacked_goal;
 
         /// wenn man gelaufen ist
-        void Walked();
+        void Walked() override;
         /// Geht nach Haus für MAggressiveDefending-Mission
         void ReturnHomeMissionAggressiveDefending();
         /// Läuft wieter
@@ -41,12 +41,12 @@ class nofAggressiveDefender : public nofActiveSoldier
         /// Sucht sich für MissionAggressiveAttacking ein neues Ziel, wenns keins findet, gehts nach Hause
         void MissionAggressiveDefendingLookForNewAggressor();
         /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-        void InformTargetsAboutCancelling();
+        void InformTargetsAboutCancelling() override;
 
         void CancelAtAttacker();
 
         /// The derived classes regain control after a fight of nofActiveSoldier
-        void FreeFightEnded();
+        void FreeFightEnded() override;
 
     public:
 
@@ -55,29 +55,29 @@ class nofAggressiveDefender : public nofActiveSoldier
         nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
         nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~nofAggressiveDefender();
+        ~nofAggressiveDefender() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nofAggressiveDefender();
-    public:     void Destroy() { Destroy_nofAggressiveDefender(); }
+    public:     void Destroy() override { Destroy_nofAggressiveDefender(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofAggressiveDefender(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofAggressiveDefender(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_AGGRESSIVEDEFENDER; }
+        GO_Type GetGOT() const override { return GOT_NOF_AGGRESSIVEDEFENDER; }
 
         /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
-        void HomeDestroyed();
+        void HomeDestroyed() override;
         /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
-        void HomeDestroyedAtBegin();
+        void HomeDestroyedAtBegin() override;
 
         void CancelAtAttackedBld();
 
         /// Wenn ein Kampf gewonnen wurde
-        void WonFighting();
+        void WonFighting() override;
         /// Wenn ein Kampf verloren wurde (Tod)
-        void LostFighting();
+        void LostFighting() override;
 
         /// Gebäude, das vom aggressiv-verteidigenden Soldaten verteidigt werden sollte, wurde zerstört
         void AttackedGoalDestroyed();

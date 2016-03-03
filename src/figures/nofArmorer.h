@@ -32,12 +32,12 @@ class nofArmorer : public nofWorkman
         bool sword_shield;
 
     protected:
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const;
+        unsigned short GetCarryID() const override;
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
-		void HandleDerivedEvent(const unsigned int id);
+        GoodType ProduceWare() override;
+		void HandleDerivedEvent(const unsigned int id) override;
 
         bool AreWaresAvailable() override;
 
@@ -48,9 +48,9 @@ class nofArmorer : public nofWorkman
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofArmorer(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofArmorer(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofArmorer(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_ARMORER; }
+        GO_Type GetGOT() const override { return GOT_NOF_ARMORER; }
 };
 
 #endif

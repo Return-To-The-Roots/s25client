@@ -29,7 +29,7 @@ class ctrlComboBox : public Window
     public:
         ctrlComboBox(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
 
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
 
         void AddString(const std::string& text);
         void DeleteAllItems();
@@ -39,17 +39,17 @@ class ctrlComboBox : public Window
         unsigned short GetCount() const { return GetCtrl<ctrlList>(0)->GetLineCount(); }
         const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
 
-        virtual void Msg_PaintAfter();
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_RightDown(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_PaintAfter() override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
         void ShowList(bool show);
 

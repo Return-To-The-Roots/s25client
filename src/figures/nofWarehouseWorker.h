@@ -50,39 +50,39 @@ class nofWarehouseWorker : public noFigure
 
     private:
 
-        void GoalReached();
-        void Walked();
+        void GoalReached() override;
+        void Walked() override;
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-        void AbrogateWorkplace();
+        void AbrogateWorkplace() override;
 
         void LooseWare();
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
     public:
 
         nofWarehouseWorker(const MapPoint pt, const unsigned char player, Ware* ware, const bool task);
         nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~nofWarehouseWorker();
+        ~nofWarehouseWorker() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nofWarehouseWorker();
-    public:     void Destroy() { Destroy_nofWarehouseWorker(); }
+    public:     void Destroy() override { Destroy_nofWarehouseWorker(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofWarehouseWorker(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofWarehouseWorker(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWarehouseWorker(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_WAREHOUSEWORKER; }
+        GO_Type GetGOT() const override { return GOT_NOF_WAREHOUSEWORKER; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         // Ware nach draußen bringen (von Lagerhaus aus aufgerufen)
         void CarryWare(Ware* ware);
 
         /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
-        bool MemberOfWarehouse() const { return true; }
+        bool MemberOfWarehouse() const override { return true; }
 
 };
 

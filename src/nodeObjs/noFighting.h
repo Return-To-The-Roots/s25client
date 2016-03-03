@@ -48,20 +48,20 @@ class noFighting : public noBase
 
         noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
         noFighting(SerializedGameData& sgd, const unsigned obj_id);
-        ~noFighting();
+        ~noFighting() override;
 
         /// Aufräummethoden
     protected:  void Destroy_noFighting();
-    public:     void Destroy() { Destroy_noFighting(); }
+    public:     void Destroy() override { Destroy_noFighting(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noFighting(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noFighting(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noFighting(sgd); }
 
-        GO_Type GetGOT() const { return GOT_FIGHTING; }
+        GO_Type GetGOT() const override { return GOT_FIGHTING; }
 
-        void Draw(int x, int y);
-        void HandleEvent(const unsigned int id);
+        void Draw(int x, int y) override;
+        void HandleEvent(const unsigned int id) override;
 
         /// Dürfen andern Figuren diesen Kampf schon durchqueren?
         bool IsActive() const;

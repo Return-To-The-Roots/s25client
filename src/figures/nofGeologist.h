@@ -45,9 +45,9 @@ class nofGeologist : public nofFlagWorker
 
     private:
 
-        void GoalReached();
-        void Walked();
-        void HandleDerivedEvent(const unsigned int id);
+        void GoalReached() override;
+        void Walked() override;
+        void HandleDerivedEvent(const unsigned int id) override;
 
         /// Kann man an diesem Punkt ein Schild aufstellen?
         bool IsNodeGood(const MapPoint pt) const;
@@ -73,14 +73,14 @@ class nofGeologist : public nofFlagWorker
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofGeologist(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofGeologist(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofGeologist(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_GEOLOGIST; }
+        GO_Type GetGOT() const override { return GOT_NOF_GEOLOGIST; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        void LostWork();
+        void LostWork() override;
 
 };
 

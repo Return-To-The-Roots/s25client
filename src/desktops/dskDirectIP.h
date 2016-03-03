@@ -27,7 +27,7 @@ class dskDirectIP : public Desktop
         dskDirectIP();
 
     private:
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 

@@ -62,7 +62,7 @@ namespace AIEvent
     {
     public:
         Location(EventType type, const MapPoint pt): Base(type), pos(pt) { }
-        ~Location() { }
+        ~Location() override { }
         MapCoord GetX() const { return pos.x; }
         MapCoord GetY() const { return pos.y; }
         MapPoint GetPos() const { return pos; }
@@ -75,7 +75,7 @@ namespace AIEvent
     {
     public:
         Direction(EventType type, const MapPoint pt, unsigned char direction): Location(type, pt), direction(direction) { }
-        ~Direction() { }
+        ~Direction() override { }
         unsigned char GetDirection() const { return direction; }
 
     protected:
@@ -86,7 +86,7 @@ namespace AIEvent
     {
     public:
         Building(EventType type, const MapPoint pt, BuildingType building): Location(type, pt), building(building) { }
-        ~Building() { }
+        ~Building() override { }
         BuildingType GetBuildingType() const { return building; }
 
     protected:

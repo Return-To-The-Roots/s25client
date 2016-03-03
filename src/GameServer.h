@@ -44,7 +44,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
 
         GameServer(void);
-        ~GameServer(void);
+        ~GameServer(void) override;
 
         /// "Versucht" den Server zu starten (muss ggf. erst um Erlaubnis beim LobbyClient fragen)
         bool TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type);

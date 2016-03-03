@@ -63,32 +63,32 @@ protected:
         /// Wird gerade gearbeitet oder nicht?
         bool is_working;
 
-        ~nobUsual();
+        ~nobUsual() override;
 
         /// Aufräummethoden
     protected:  void Destroy_nobUsual();
-    public:     void Destroy() { Destroy_nobUsual(); }
+    public:     void Destroy() override { Destroy_nobUsual(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobUsual(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobUsual(sgd); }
+    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobUsual(sgd); }
 
-        virtual GO_Type GetGOT() const { return GOT_NOB_USUAL; }
+        GO_Type GetGOT() const override { return GOT_NOB_USUAL; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         bool HasWorker() const;
 
         /// Event-Handler
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
         /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-        void AddWare(Ware*& ware);
+        void AddWare(Ware*& ware) override;
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-        bool FreePlaceAtFlag();
+        bool FreePlaceAtFlag() override;
         /// Eine bestellte Ware konnte doch nicht kommen
-        void WareLost(Ware* ware);
+        void WareLost(Ware* ware) override;
         /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
-        void GotWorker(Job job, noFigure* worker);
+        void GotWorker(Job job, noFigure* worker) override;
         /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
         void WorkerArrived();
         /// Wird vom Arbeiter aufgerufen, wenn er nicht (mehr) zur Arbeit kommen kann
@@ -105,7 +105,7 @@ protected:
         unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
 
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-        void TakeWare(Ware* ware);
+        void TakeWare(Ware* ware) override;
 
         /// Bestellte Waren
         inline bool AreThereAnyOrderedWares() const {

@@ -46,16 +46,16 @@ class ctrlOptionGroup : public ctrlGroup
         // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
         ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
 
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
         /// Zeichenmethode.
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     private:
         unsigned short selection_; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )

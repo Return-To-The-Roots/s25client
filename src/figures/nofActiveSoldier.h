@@ -84,7 +84,7 @@ class nofActiveSoldier : public nofSoldier
 
 
         /// Handle walking for nofActiveSoldier speciefic sates
-        virtual void Walked();
+        void Walked() override;
 
         /// Looks for enemies nearby which want to fight with this soldier
         /// Returns true if it found one
@@ -104,10 +104,10 @@ class nofActiveSoldier : public nofSoldier
     private:
 
         /// Is informed when...
-        void GoalReached(); // ... he reached his "working place" (i.e. his military building)
+        void GoalReached() override; // ... he reached his "working place" (i.e. his military building)
 
         /// Gets the visual range radius of this soldier
-        virtual unsigned GetVisualRange() const;
+        unsigned GetVisualRange() const override;
 
     public:
 
@@ -121,17 +121,17 @@ class nofActiveSoldier : public nofSoldier
 
         /// Tidy up
     protected:  void Destroy_nofActiveSoldier() { RTTR_Assert(!enemy); Destroy_nofSoldier(); }
-    public:     void Destroy() { Destroy_nofActiveSoldier(); }
+    public:     void Destroy() override { Destroy_nofActiveSoldier(); }
 
         /// Serializer
     protected:  void Serialize_nofActiveSoldier(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofActiveSoldier(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofActiveSoldier(sgd); }
 
         /// Draw soldier (for all types of soldiers done by this base class!)
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Event handling
-        virtual void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
         /// Informs the different things that we are not coming anymore
         virtual void InformTargetsAboutCancelling();

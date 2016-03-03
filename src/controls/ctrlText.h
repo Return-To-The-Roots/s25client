@@ -52,7 +52,7 @@ class ctrlText : public Window, public ctrlBaseText
     public:
         ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     protected:
 

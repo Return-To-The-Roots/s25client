@@ -31,9 +31,9 @@ class iwPostWindow : public IngameWindow
 {
     public:
         iwPostWindow(GameWorldViewer& gwv);
-        void Msg_PaintBefore();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        bool Msg_KeyDown(const KeyEvent& ke);
+        void Msg_PaintBefore() override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        bool Msg_KeyDown(const KeyEvent& ke) override;
 
     private:
         GameWorldViewer& gwv;

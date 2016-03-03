@@ -35,10 +35,10 @@ class nofTradeLeader : public noFigure
 
     private:
 
-        void GoalReached();
-        void Walked();
-        void HandleDerivedEvent(const unsigned int id);
-        void AbrogateWorkplace();
+        void GoalReached() override;
+        void Walked() override;
+        void HandleDerivedEvent(const unsigned int id) override;
+        void AbrogateWorkplace() override;
 
         /// Tries to go to the home ware house and returns whether this is possible
         bool TryToGoHome();
@@ -52,11 +52,11 @@ class nofTradeLeader : public noFigure
 
         void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }
 
-        void Serialize(SerializedGameData& sgd) const;
+        void Serialize(SerializedGameData& sgd) const override;
 
-        GO_Type GetGOT() const { return GOT_NOF_TRADELEADER; }
+        GO_Type GetGOT() const override { return GOT_NOF_TRADELEADER; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
         void LostWork();

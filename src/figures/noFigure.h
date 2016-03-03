@@ -130,13 +130,13 @@ class noFigure : public noMovable
 
         /// Aufräummethoden
     protected:  void Destroy_noFigure();
-    public:     void Destroy() { Destroy_noFigure(); }
+    public:     void Destroy() override { Destroy_noFigure(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noFigure(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noFigure(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noFigure(sgd); }
 
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
         /// Ziel setzen
         void SetGoalToNULL() { goal_ = NULL; }

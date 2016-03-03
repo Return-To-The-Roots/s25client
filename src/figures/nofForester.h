@@ -27,24 +27,24 @@ class nofForester : public nofFarmhand
     private:
 
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const;
+        unsigned short GetCarryID() const override;
 
         /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-        void WorkStarted();
+        void WorkStarted() override;
         /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-        void WorkFinished();
+        void WorkFinished() override;
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt);
+        PointQuality GetPointQuality(const MapPoint pt) override;
 
     public:
 
         nofForester(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofForester(SerializedGameData& sgd, const unsigned obj_id);
 
-        GO_Type GetGOT() const { return GOT_NOF_FORESTER; }
+        GO_Type GetGOT() const override { return GOT_NOF_FORESTER; }
 
 };
 

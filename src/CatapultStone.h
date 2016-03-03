@@ -49,22 +49,22 @@ class CatapultStone : public GameObject
 
         CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~CatapultStone() {}
+        ~CatapultStone() override {}
 
         /// Zerstören
-        void Destroy();
+        void Destroy() override;
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_CatapultStone(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_CatapultStone(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
 
         // Zeichnet den fliegenden Stein
         void Draw(const GameWorldView& gwv, const int xoffset, const int yoffset);
 
         /// Event-Handler
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
-        GO_Type GetGOT() const { return GOT_CATAPULTSTONE; }
+        GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
 };
 
 #endif // !CATAPULT_STONE_H_

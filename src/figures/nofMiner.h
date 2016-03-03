@@ -28,11 +28,11 @@ class nofMiner : public nofWorkman
 {
 protected:
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const;
+        unsigned short GetCarryID() const override;
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
+        GoodType ProduceWare() override;
 
         bool AreWaresAvailable() override;
 
@@ -41,7 +41,7 @@ protected:
         nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofMiner(SerializedGameData& sgd, const unsigned obj_id);
 
-        GO_Type GetGOT() const { return GOT_NOF_MINER; }
+        GO_Type GetGOT() const override { return GOT_NOF_MINER; }
 };
 
 #endif

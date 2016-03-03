@@ -43,7 +43,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Konstruktor von @p WindowManager.
         WindowManager(void);
         /// Destruktor von @p WindowManager.
-        ~WindowManager(void);
+        ~WindowManager(void) override;
         void CleanUp();
 
         /// Zeichnet Desktop und alle Fenster.
@@ -66,26 +66,26 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// merkt einen Desktop zum Wechsel vor.
         void Switch(Desktop* desktop, bool mouse = false);
         /// Verarbeitung des Drückens der Linken Maustaste.
-        void Msg_LeftDown(MouseCoords mc);
+        void Msg_LeftDown(MouseCoords mc) override;
         /// Verarbeitung des Loslassens der Linken Maustaste.
-        void Msg_LeftUp(MouseCoords mc);
+        void Msg_LeftUp(MouseCoords mc) override;
         /// Verarbeitung des Drückens der Rechten Maustaste.
-        void Msg_RightUp(const MouseCoords& mc);
+        void Msg_RightUp(const MouseCoords& mc) override;
         /// Verarbeitung des Loslassens der Rechten Maustaste.
-        void Msg_RightDown(const MouseCoords& mc);
+        void Msg_RightDown(const MouseCoords& mc) override;
         /// Verarbeitung des Drückens des Rad hoch.
-        void Msg_WheelUp(const MouseCoords& mc);
+        void Msg_WheelUp(const MouseCoords& mc) override;
         /// Verarbeitung Rad runter.
-        void Msg_WheelDown(const MouseCoords& mc);
+        void Msg_WheelDown(const MouseCoords& mc) override;
         /// Verarbeitung des Verschiebens der Maus.
-        void Msg_MouseMove(const MouseCoords& mc);
+        void Msg_MouseMove(const MouseCoords& mc) override;
         /// Verarbeitung Keyboard-Event
-        void Msg_KeyDown(const KeyEvent& ke);
+        void Msg_KeyDown(const KeyEvent& ke) override;
         // setzt den Tooltip
         void SetToolTip(Window* ttw, const std::string& tooltip);
 
         /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
-        void ScreenResized(unsigned short width, unsigned short height);
+        void ScreenResized(unsigned short width, unsigned short height) override;
         /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
         // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
         void Msg_ScreenResize(unsigned short width, unsigned short height);

@@ -31,10 +31,10 @@ class ctrlList : public Window
         /// Konstruktor von @p ctrlList.
         ctrlList(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
         /// Destruktor von @p ctrlList.
-        virtual ~ctrlList(void);
+        ~ctrlList(void) override;
 
         /// Größe verändern
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
 
         /// Neuen String zur Listbox hinzufügen.
         void AddString(const std::string& text);
@@ -63,15 +63,15 @@ class ctrlList : public Window
             }
         }
 
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_RightDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
     protected:
         /// Zeichenmethode.
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     private:
         TextureColor tc;

@@ -46,15 +46,15 @@ class ctrlProgress : public Window
         void SetPosition(unsigned short position);
         const unsigned short& GetPosition(void) const { return position; }
 
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     private:
         TextureColor tc;

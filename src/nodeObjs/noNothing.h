@@ -29,15 +29,15 @@ class noNothing : public noBase
         noNothing();
 
     protected:  void Destroy_noNothing() { Destroy_noBase(); }
-    public:     void Destroy() { Destroy_noNothing(); }
+    public:     void Destroy() override { Destroy_noNothing(); }
 
         /// Serialisierungsfunktionen
-    public:     void Serialize(SerializedGameData& sgd) const {}
+    public:     void Serialize(SerializedGameData& sgd) const override {}
 
-        GO_Type GetGOT() const { return GOT_UNKNOWN; }
+        GO_Type GetGOT() const override { return GOT_UNKNOWN; }
 
         /// An x,y zeichnen.
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 };
 
 #endif // !NONOTHING_H_INCLUDED

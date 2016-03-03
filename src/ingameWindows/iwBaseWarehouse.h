@@ -38,7 +38,7 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
     public:
         /// Konstruktor von @p iwBaseWarehouse.
         iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
-        ~iwBaseWarehouse();
+        ~iwBaseWarehouse() override;
 
         void OnChange(unsigned changeId) override;
 
@@ -50,8 +50,8 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
         void UpdateOverlay(unsigned i, bool isWare);
         void UpdateOverlays();
 
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwHQ_H_INCLUDED

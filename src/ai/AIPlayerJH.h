@@ -94,7 +94,7 @@ class AIPlayerJH : public AIBase
     public:
         AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                    const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level);
-        ~AIPlayerJH();
+        ~AIPlayerJH() override;
 
         AIInterface& GetInterface() { return aii; }
 
@@ -114,11 +114,11 @@ class AIPlayerJH : public AIBase
         bool IsInvalidShipyardPosition(const MapPoint pt);
 
     protected:
-        void RunGF(const unsigned gf,bool gfisnwf);
+        void RunGF(const unsigned gf,bool gfisnwf) override;
 
         void PlanNewBuildings( const unsigned gf );
 
-        void SendAIEvent(AIEvent::Base* ev);
+        void SendAIEvent(AIEvent::Base* ev) override;
 		
         /// Executes a job form the job queue
         void ExecuteAIJob();

@@ -69,7 +69,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         /// Konstruktor von @p Loader.
         Loader(void);
         /// Desktruktor von @p Loader.
-        ~Loader(void);
+        ~Loader(void) override;
 
         /// Lädt alle allgemeinen Dateien.
         bool LoadFilesAtStart(void);

@@ -29,12 +29,12 @@ class dskSplash : public Desktop
         /// Konstruktor von @p dskSplash.
         dskSplash();
         /// Destruktor von @p dskSplash.
-        ~dskSplash();
+        ~dskSplash() override;
 
     private:
 
-        void Msg_Timer(const unsigned int ctrl_id);
-        bool Msg_LeftDown(const MouseCoords& mc);
+        void Msg_Timer(const unsigned int ctrl_id) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
 };
 
 #endif // !dskSPLASH_H_INCLUDED

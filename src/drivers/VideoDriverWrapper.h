@@ -35,7 +35,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         /// Konstruktor von @p DriverWrapper
         VideoDriverWrapper();
         /// Destruktor von @p DriverWrapper
-        ~VideoDriverWrapper();
+        ~VideoDriverWrapper() override;
 
         /// Läd den Treiber
         bool LoadDriver(void);

@@ -40,7 +40,7 @@ class GameMessage : public Message
         /// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
         virtual void Run(MessageInterface* callback) = 0;
 
-        virtual void run(MessageInterface* callback, unsigned int id)
+        void run(MessageInterface* callback, unsigned int id) override
         {
             if(id != 0xFFFFFFFF)
                 player = static_cast<unsigned char>(id);
@@ -48,7 +48,7 @@ class GameMessage : public Message
         }
 
         static Message* create_game(unsigned short id);
-        virtual Message* create(unsigned short id) const { return create_game(id); }
+        Message* create(unsigned short id) const override { return create_game(id); }
 };
 
 #endif // GAMEMESSAGE_H_INCLUDED

@@ -36,7 +36,7 @@ namespace gc{
                 : GameCommand(gst), pt_(PopMapPoint(ser)){}
 
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 ser.PushUnsignedShort(pt_.x);
                 ser.PushUnsignedShort(pt_.y);
@@ -56,7 +56,7 @@ namespace gc{
         public:
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Flagge zerstören
@@ -70,7 +70,7 @@ namespace gc{
                 : Coords(DESTROYFLAG, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Straße bauen
@@ -94,7 +94,7 @@ namespace gc{
             }
         public:
 
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -105,7 +105,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Straße zerstören
@@ -121,7 +121,7 @@ namespace gc{
                 : Coords(DESTROYROAD, ser),
                   start_dir(ser.PopUnsignedChar()) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -129,7 +129,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Straße aufwerten
@@ -144,14 +144,14 @@ namespace gc{
             UpgradeRoad(Serializer& ser)
                 : Coords(UPGRADEROAD, ser), start_dir(ser.PopUnsignedChar()) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
                 ser.PushUnsignedChar(start_dir);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Warenverteilung ändern
@@ -172,14 +172,14 @@ namespace gc{
                     data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Baureihenfolge ändern
@@ -202,7 +202,7 @@ namespace gc{
                     data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 ser.PushUnsignedChar(order_type);
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
@@ -210,7 +210,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 
@@ -227,7 +227,7 @@ namespace gc{
                 : Coords(SETBUILDINGSITE, ser),
                   bt(BuildingType(ser.PopUnsignedChar())) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -235,7 +235,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Gebäude zerstören
@@ -249,7 +249,7 @@ namespace gc{
                 : Coords(DESTROYBUILDING, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -263,7 +263,7 @@ namespace gc{
                 : Coords(SENDSOLDIERSHOME, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -277,7 +277,7 @@ namespace gc{
                 : Coords(ORDERNEWSOLDIERS, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 
@@ -299,14 +299,14 @@ namespace gc{
                     data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Transportreihenfolge ändern
@@ -327,14 +327,14 @@ namespace gc{
                     data[i] = ser.PopUnsignedChar();
             }
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Werkzeugeinstellungen ändern
@@ -375,7 +375,7 @@ namespace gc{
                     orders[i] = (signed char)ser.PopSignedChar();
             }
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 for(unsigned i = 0; i < DATA_SIZE; ++i)
                     ser.PushUnsignedChar(data[i]);
@@ -385,7 +385,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Geologen rufen
@@ -399,7 +399,7 @@ namespace gc{
                 : Coords(CALLGEOLOGIST, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Späher rufen
@@ -413,7 +413,7 @@ namespace gc{
                 : Coords(CALLSCOUT, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Basisklasse für beide Angriffstypen
@@ -433,7 +433,7 @@ namespace gc{
                 : Coords(gst, ser),
                   soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool()) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -455,7 +455,7 @@ namespace gc{
                 : BaseAttack(ATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// See-Angriff starten
@@ -469,7 +469,7 @@ namespace gc{
                 : BaseAttack(SEAATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
@@ -487,7 +487,7 @@ namespace gc{
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -505,7 +505,7 @@ namespace gc{
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -519,7 +519,7 @@ namespace gc{
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
@@ -540,7 +540,7 @@ namespace gc{
                   state(static_cast<InventorySetting>(ser.PopUnsignedChar()))
                 {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -550,7 +550,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
@@ -572,7 +572,7 @@ namespace gc{
                     states.push_back(static_cast<InventorySetting>(ser.PopUnsignedChar()));
             }
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -583,7 +583,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Verändert die Reserve im HQ auf einen bestimmten Wert
@@ -603,7 +603,7 @@ namespace gc{
                   count(ser.PopUnsignedChar())
             {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -612,7 +612,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Alle Fahnen zerstören
@@ -625,11 +625,11 @@ namespace gc{
             CheatArmageddon(Serializer& ser)
                 : GameCommand(CHEAT_ARMAGEDDON) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Aufgeben
@@ -642,11 +642,11 @@ namespace gc{
             Surrender(Serializer& ser)
                 : GameCommand(SURRENDER) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Alle eigenen Fahnen zerstören
@@ -659,11 +659,11 @@ namespace gc{
             DestroyAll(Serializer& ser)
                 : GameCommand(DESTROYALL) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Unterbreitet anderen Spielern einen Bündnisvertrag
@@ -684,7 +684,7 @@ namespace gc{
                 player(ser.PopUnsignedChar()), pt(PactType(ser.PopUnsignedChar())), duration(ser.PopUnsignedInt()) {}
         public:
 
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 ser.PushUnsignedChar(player);
                 ser.PushUnsignedChar(static_cast<unsigned char>(pt));
@@ -692,7 +692,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 
@@ -716,7 +716,7 @@ namespace gc{
                 accepted(ser.PopBool()), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), player(ser.PopUnsignedChar()) {}
         public:
 
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 ser.PushBool(accepted);
                 ser.PushUnsignedInt(id);
@@ -725,7 +725,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 
@@ -745,14 +745,14 @@ namespace gc{
                 pt(PactType(ser.PopUnsignedChar())), player(ser.PopUnsignedChar()) {}
         public:
 
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 ser.PushUnsignedChar(static_cast<unsigned char>(pt));
                 ser.PushUnsignedChar(player);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Zwischen Boote und Schiffen beim Schiffsbauer hin- und herschalten
@@ -766,7 +766,7 @@ namespace gc{
                 : Coords(TOGGLESHIPYARDMODE, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Expedition starten
@@ -780,7 +780,7 @@ namespace gc{
                 : Coords(STARTEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Expedition starten
@@ -794,7 +794,7 @@ namespace gc{
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 /// Wartendes Schiff einer Expedition Befehle geben
@@ -824,14 +824,14 @@ namespace gc{
                   action(Action(ser.PopUnsignedChar())),
                   ship_id(ser.PopUnsignedInt()) {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 ser.PushUnsignedChar(static_cast<unsigned char>(action));
                 ser.PushUnsignedInt(ship_id);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
 
         private:
             /// Die Aktion, die ausgeführt werden soll
@@ -863,7 +863,7 @@ namespace gc{
                   count(ser.PopUnsignedInt())
             {}
         public:
-            virtual void Serialize(Serializer& ser) const
+            void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
 
@@ -874,7 +874,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid);
+            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) override;
     };
 
 

@@ -66,7 +66,7 @@ struct RandomEntry;
 class GameMessageInterface : public MessageInterface
 {
     protected:
-        virtual ~GameMessageInterface() {}
+        ~GameMessageInterface() override {}
 
     public:
         virtual void OnNMSPing(const GameMessage_Ping& msg);

@@ -27,14 +27,14 @@ class ctrlImage : public Window
 {
     public:
         ctrlImage(Window* parent, unsigned int id, unsigned short x, unsigned short y, glArchivItem_Bitmap* image, const std::string& tooltip);
-        virtual ~ctrlImage();
+        ~ctrlImage() override;
 
         void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
 
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_(void) override;
 
     private:
         glArchivItem_Bitmap* image;

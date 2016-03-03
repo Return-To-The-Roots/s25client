@@ -35,26 +35,26 @@ class nofCharburner : public nofFarmhand
     private:
 
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const;
+        unsigned short GetCarryID() const override;
 
         /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-        void WorkStarted();
+        void WorkStarted() override;
         /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-        void WorkFinished();
+        void WorkFinished() override;
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt);
+        PointQuality GetPointQuality(const MapPoint pt) override;
 
         /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
-        void WalkingStarted();
+        void WalkingStarted() override;
 
         /// Draws the figure while returning home / entering the building (often carrying wares)
-        void DrawReturnStates(const int x, const int y);
+        void DrawReturnStates(const int x, const int y) override;
         /// Draws the charburner while walking
         /// (overriding standard method of nofFarmhand)
-        void DrawOtherStates(const int x, const int y);
+        void DrawOtherStates(const int x, const int y) override;
 
     protected:
         bool AreWaresAvailable() override;
@@ -64,9 +64,9 @@ class nofCharburner : public nofFarmhand
         nofCharburner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofCharburner(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Serialize(SerializedGameData& sgd) const;
+        void Serialize(SerializedGameData& sgd) const override;
 
-        GO_Type GetGOT() const { return GOT_NOF_CHARBURNER; }
+        GO_Type GetGOT() const override { return GOT_NOF_CHARBURNER; }
 
 };
 
