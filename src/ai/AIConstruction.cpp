@@ -61,7 +61,7 @@ AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
     InitBuildingsWanted();
 }
 
-AIConstruction::~AIConstruction(void)
+AIConstruction::~AIConstruction()
 {
 }
 

@@ -33,7 +33,7 @@
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap::glArchivItem_Bitmap(void)
+glArchivItem_Bitmap::glArchivItem_Bitmap()
 {
 }
 
@@ -109,7 +109,7 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
     return;
 }
 
-void glArchivItem_Bitmap::FillTexture(void)
+void glArchivItem_Bitmap::FillTexture()
 {
     int iformat = GetInternalFormat(), dformat = GL_BGRA;
 

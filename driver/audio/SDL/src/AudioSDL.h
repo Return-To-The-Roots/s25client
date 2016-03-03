@@ -38,16 +38,16 @@ class AudioSDL : public AudioDriver
         AudioSDL(AudioDriverLoaderInterface* adli);
 
         /// Destruktor von @p AudioSDL.
-        ~AudioSDL(void) override;
+        ~AudioSDL() override;
 
         /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName(void) const override;
+        const char* GetName() const override;
 
         /// Treiberinitialisierungsfunktion.
-        bool Initialize(void) override;
+        bool Initialize() override;
 
         /// Treiberaufräumfunktion.
-        void CleanUp(void) override;
+        void CleanUp() override;
 
         Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) override;
         Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size) override;
@@ -57,7 +57,7 @@ class AudioSDL : public AudioDriver
         /// Spielt Midi ab
         void PlayMusic(Sound* sound, const unsigned repeats) override;
         /// Stoppt die Musik.
-        void StopMusic(void) override;
+        void StopMusic() override;
         /// Wird der Sound (noch) abgespielt?
         bool IsEffectPlaying(const unsigned play_id) override;
         /// Stoppt einen Sound

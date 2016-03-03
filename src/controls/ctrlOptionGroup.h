@@ -55,7 +55,7 @@ class ctrlOptionGroup : public ctrlGroup
 
     protected:
         /// Zeichenmethode.
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         unsigned short selection_; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )

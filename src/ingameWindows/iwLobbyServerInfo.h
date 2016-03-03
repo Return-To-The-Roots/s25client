@@ -33,7 +33,7 @@ class iwLobbyServerInfo : public IngameWindow
         iwLobbyServerInfo();
 
         void Set(const LobbyServerInfo* serverinfo, unsigned int server);
-        unsigned int GetNr(void) { return server; }
+        unsigned int GetNr() { return server; }
 
     protected:
         void UpdateServerInfo();

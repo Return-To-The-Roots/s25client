@@ -375,7 +375,7 @@ void dskSelectMap::LC_Status_Error(const std::string& error)
  *
  *  @author FloSoft
  */
-void dskSelectMap::LC_Created(void)
+void dskSelectMap::LC_Created()
 {
     // ggf. im nächstes Stadium weiter
     GAMESERVER.Start();

@@ -43,20 +43,20 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
 
-        GameServer(void);
-        ~GameServer(void) override;
+        GameServer();
+        ~GameServer() override;
 
         /// "Versucht" den Server zu starten (muss ggf. erst um Erlaubnis beim LobbyClient fragen)
         bool TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type);
         /// Startet den Server, muss vorher TryToStart aufgerufen werden!
         bool Start();
 
-        void Run(void);
-        void Stop(void);
+        void Run();
+        void Stop();
 
-        bool StartGame(void);
-        bool StartCountdown(void);
-        void CancelCountdown(void);
+        bool StartGame();
+        bool StartCountdown();
+        void CancelCountdown();
 
         bool TogglePause();
 		bool IsPaused(){return framesinfo.isPaused;}
@@ -85,10 +85,10 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
         void KickPlayer(NS_PlayerKicked npk);
 
-        void ClientWatchDog(void);
+        void ClientWatchDog();
 
-        void WaitForClients(void);
-        void FillPlayerQueues(void);
+        void WaitForClients();
+        void FillPlayerQueues();
 
         /// Sendet ein NC-Paket ohne Befehle
         void SendNothingNC(const unsigned int& id);

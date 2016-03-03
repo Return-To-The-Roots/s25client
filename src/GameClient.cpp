@@ -131,7 +131,7 @@ void GameClient::ReplayInfo::Clear()
  *
  *  @author FloSoft
  */
-GameClient::GameClient(void)
+GameClient::GameClient()
     : skiptogf(0), gw(NULL), em(NULL), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
       ci(NULL), human_ai(NULL), replay_mode(false), game_log(NULL)
 {
@@ -147,7 +147,7 @@ GameClient::GameClient(void)
  *
  *  @author FloSoft
  */
-GameClient::~GameClient(void)
+GameClient::~GameClient()
 {
     Stop();
     ExitGame();

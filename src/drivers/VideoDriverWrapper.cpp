@@ -73,7 +73,7 @@ VideoDriverWrapper::~VideoDriverWrapper()
  *
  *  @author FloSoft
  */
-bool VideoDriverWrapper::LoadDriver(void)
+bool VideoDriverWrapper::LoadDriver()
 {
 #ifdef _WIN32
     // unter Windows standardmäßig WinAPI prüfen
@@ -308,7 +308,7 @@ void VideoDriverWrapper::DeleteTexture(unsigned int t)
     glDeleteTextures(1, &t);
 }
 
-KeyEvent VideoDriverWrapper::GetModKeyState(void) const
+KeyEvent VideoDriverWrapper::GetModKeyState() const
 {
     if(videodriver)
         return videodriver->GetModKeyState();

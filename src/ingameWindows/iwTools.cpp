@@ -37,7 +37,7 @@
  *
  *  @author OLiver
  */
-iwTools::iwTools(void)
+iwTools::iwTools()
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
       settings_changed(false)
 {

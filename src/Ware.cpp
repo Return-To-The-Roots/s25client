@@ -55,7 +55,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
 Ware::~Ware()
 {}
 
-void Ware::Destroy(void)
+void Ware::Destroy()
 {
     RTTR_Assert(!goal);
     RTTR_Assert(!location);

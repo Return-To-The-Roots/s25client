@@ -34,7 +34,7 @@
  *
  *  @author OLiver
  */
-iwSkipGFs::iwSkipGFs(void)
+iwSkipGFs::iwSkipGFs()
     : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41))
 {
     // Text vor Editfeld

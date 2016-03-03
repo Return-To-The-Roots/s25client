@@ -53,7 +53,7 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
  *
  *  @author OLiver
  */
-bool ctrlBuildingIcon::Draw_(void)
+bool ctrlBuildingIcon::Draw_()
 {
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();

@@ -142,7 +142,7 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
  *
  *  @author OLiver
  */
-void ctrlTab::DeleteAllTabs(void)
+void ctrlTab::DeleteAllTabs()
 {
     for(unsigned int i = 0; i < tab_count; ++i)
         DeleteCtrl(i);
@@ -214,7 +214,7 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
  *
  *  @author OLiver
  */
-bool ctrlTab::Draw_(void)
+bool ctrlTab::Draw_()
 {
     DrawControls();
 

@@ -40,7 +40,7 @@ class iwDistribution : public IngameWindow
         bool settings_changed;
     public:
 
-        iwDistribution(void);
+        iwDistribution();
         ~iwDistribution() override;
 
     private:

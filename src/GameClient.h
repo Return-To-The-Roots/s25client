@@ -59,8 +59,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
             CS_GAME
         };
 
-        GameClient(void);
-        ~GameClient(void) override;
+        GameClient();
+        ~GameClient() override;
 
         void SetInterface(ClientInterface* ci) { this->ci = ci; }
         bool IsHost() const { return clientconfig.host; }
@@ -71,7 +71,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         inline unsigned GetPlayerCount() const { return players.getCount(); }
         /// Liefert einen Player zurück
         inline GameClientPlayer& GetPlayer(const unsigned int id) { return *players.getElement(id); }
-        inline GameClientPlayer& GetLocalPlayer(void) { return GetPlayer(playerId_); }
+        inline GameClientPlayer& GetLocalPlayer() { return GetPlayer(playerId_); }
         bool IsSinglePlayer() const;
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
         AIBase* CreateAIPlayer(const unsigned playerid);

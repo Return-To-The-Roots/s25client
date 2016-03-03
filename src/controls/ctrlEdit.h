@@ -33,8 +33,8 @@ class ctrlEdit : public Window
         void SetText(const std::string& text);
         void SetText(const unsigned int text);
 
-        std::string GetText(void) const;
-        const std::wstring& GetWText(void) const { return text_; }
+        std::string GetText() const;
+        const std::wstring& GetWText() const { return text_; }
         void SetFocus(bool focus = true) { newFocus_ = focus; }
         void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
         void SetNotify(bool notify = true) { this->notify_ = notify; }
@@ -47,12 +47,12 @@ class ctrlEdit : public Window
         bool Msg_KeyDown(const KeyEvent& ke) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         void AddChar(unsigned int c);
-        void RemoveChar(void);
-        void Notify(void);
+        void RemoveChar();
+        void Notify();
 
         void CursorLeft() { if(cursorPos_ == 0) return; --cursorPos_; Notify(); };
         void CursorRight() { if(cursorPos_ == text_.length()) return; ++cursorPos_; Notify(); };

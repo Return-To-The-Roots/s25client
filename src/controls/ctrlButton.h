@@ -42,14 +42,14 @@ class ctrlButton : public Window
         /// Setzt Tooltip
         void SetTooltip(const std::string& tooltip) { this->tooltip_ = tooltip; }
         /// Liefert Tooltip zurück
-        std::string GetTooltip(void) const { return tooltip_; }
+        std::string GetTooltip() const { return tooltip_; }
         /// Tauscht Tooltips
         void SwapTooltip(ctrlButton* two) { std::swap(tooltip_, two->tooltip_); }
 
         void SetCheck(bool check) { this->check = check; }
-        bool GetCheck(void) { return check; }
+        bool GetCheck() { return check; }
         void SetIlluminated(bool illuminated) { this->illuminated = illuminated; }
-        bool GetIlluminated(void) { return illuminated; }
+        bool GetIlluminated() { return illuminated; }
         void SetBorder(const bool border) { this->border = border; }
 
         bool Msg_MouseMove(const MouseCoords& mc) override;
@@ -58,7 +58,7 @@ class ctrlButton : public Window
 
     protected:
         /// Zeichnet Grundstruktur des Buttons
-        bool Draw_(void) override;
+        bool Draw_() override;
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
         virtual void DrawContent() const = 0;
         // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist

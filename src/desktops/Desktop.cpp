@@ -52,7 +52,7 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
  *
  *  @author OLiver
  */
-bool Desktop::Draw_(void)
+bool Desktop::Draw_()
 {
     if(background)
     {
@@ -79,7 +79,7 @@ bool Desktop::Draw_(void)
  *
  *  @author OLiver
  */
-void Desktop::Show(void)
+void Desktop::Show()
 {
     WINDOWMANAGER.Switch(this);
 }

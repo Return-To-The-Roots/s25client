@@ -28,7 +28,7 @@ class glArchivItem_Bitmap_Player : public libsiedler2::ArchivItem_Bitmap_Player,
 {
     public:
         /// Konstruktor von @p glArchivItem_Bitmap_Player.
-        glArchivItem_Bitmap_Player(void) {}
+        glArchivItem_Bitmap_Player() {}
 
         /// Kopierkonstruktor von @p ArchivItem_Bitmap_Player.
         glArchivItem_Bitmap_Player(const glArchivItem_Bitmap_Player& item) : ArchivItem_BitmapBase(item), ArchivItem_Bitmap_Player(item), glArchivItem_BitmapBase(item) {}

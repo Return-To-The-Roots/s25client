@@ -36,7 +36,7 @@
  *
  *  @author OLiver
  */
-Window::Window(void)
+Window::Window()
     : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_("")
 {
 }
@@ -69,7 +69,7 @@ Window::Window(unsigned short x,
  *
  *  @author OLiver
  */
-Window::~Window(void)
+Window::~Window()
 {
     // Steuerelemente aufräumen
     for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
@@ -82,7 +82,7 @@ Window::~Window(void)
  *
  *  @author OLiver
  */
-bool Window::Draw(void)
+bool Window::Draw()
 {
     if(visible_)
         return Draw_();
@@ -1125,7 +1125,7 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
  *
  *  @author OLiver
  */
-void Window::DrawControls(void)
+void Window::DrawControls()
 {
     for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
     {

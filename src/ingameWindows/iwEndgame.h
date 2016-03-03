@@ -25,7 +25,7 @@ class iwEndgame : public IngameWindow
 {
     public:
 
-        iwEndgame(void);
+        iwEndgame();
 
     private:
 

@@ -85,7 +85,7 @@ const Languages::Language& Languages::getLanguage(unsigned int i)
  *
  *  @author FloSoft
  */
-unsigned int Languages::getCount(void)
+unsigned int Languages::getCount()
 {
     if(!loaded)
         loadLanguages();

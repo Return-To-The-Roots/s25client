@@ -41,7 +41,7 @@ class BurnedWarehouse : public noCoordBase
 
         ~BurnedWarehouse() override;
 
-        void Destroy(void) override;
+        void Destroy() override;
 
 
         /// Serialisierungsfunktionen

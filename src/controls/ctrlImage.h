@@ -34,7 +34,7 @@ class ctrlImage : public Window
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         glArchivItem_Bitmap* image;

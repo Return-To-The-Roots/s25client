@@ -124,7 +124,7 @@ void noStaticObject::Draw(int x, int y)
  *
  *  @author FloSoft
  */
-void noStaticObject::Destroy_noStaticObject(void)
+void noStaticObject::Destroy_noStaticObject()
 {
     // waren wir ein "Schloss" Objekt?
     if(GetSize() == 2)

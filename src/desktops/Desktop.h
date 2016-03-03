@@ -28,12 +28,12 @@ class Desktop : public Window
 {
     public:
         Desktop(glArchivItem_Bitmap* background);
-        void Show(void);
+        void Show();
 
         void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     protected:
         glArchivItem_Bitmap* background;

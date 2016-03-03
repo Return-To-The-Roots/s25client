@@ -94,7 +94,7 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
     glDrawArrays(GL_QUADS, 0, 8);
 }
 
-void glArchivItem_Bitmap_Player::FillTexture(void)
+void glArchivItem_Bitmap_Player::FillTexture()
 {
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!

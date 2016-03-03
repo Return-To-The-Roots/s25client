@@ -62,7 +62,7 @@ class Ware : public GameObject
 
         ~Ware() override;
 
-        void Destroy(void) override;
+        void Destroy() override;
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_Ware(SerializedGameData& sgd) const;

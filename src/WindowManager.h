@@ -41,15 +41,15 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 
     public:
         /// Konstruktor von @p WindowManager.
-        WindowManager(void);
+        WindowManager();
         /// Destruktor von @p WindowManager.
-        ~WindowManager(void) override;
+        ~WindowManager() override;
         void CleanUp();
 
         /// Zeichnet Desktop und alle Fenster.
-        void Draw(void);
+        void Draw();
         /// liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
-        bool IsDesktopActive(void);
+        bool IsDesktopActive();
 
         /// schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
         /// Sendet eine Tastaturnachricht an die Steuerelemente.
@@ -95,7 +95,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
     private:
         /// wechselt einen Desktop
-        void Switch(void);
+        void Switch();
 
     private:
         boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     ///< aktueller Desktop

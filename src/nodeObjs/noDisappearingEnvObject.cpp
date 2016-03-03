@@ -117,7 +117,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
  *
  *  @author FloSoft
  */
-void noDisappearingEnvObject::Destroy_noDisappearingEnvObject(void)
+void noDisappearingEnvObject::Destroy_noDisappearingEnvObject()
 {
     // Feld räumen, wenn ich sterbe
     gwg->SetNO(pos, NULL);

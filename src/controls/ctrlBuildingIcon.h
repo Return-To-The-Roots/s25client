@@ -33,7 +33,7 @@ class ctrlBuildingIcon : public ctrlButton
 
     protected:
         /// zeichnet das Fenster.
-        bool Draw_(void) override;
+        bool Draw_() override;
         void DrawContent() const override;
 
     protected:

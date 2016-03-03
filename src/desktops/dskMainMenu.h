@@ -27,7 +27,7 @@ class dskMainMenu : public Desktop
         void Msg_PaintAfter() override;
     public:
         /// Konstruktor von @p dskMainMenu.
-        dskMainMenu(void);
+        dskMainMenu();
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_Timer(const unsigned int ctrl_id) override;

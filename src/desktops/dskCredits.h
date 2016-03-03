@@ -37,7 +37,7 @@ class dskCredits : public Desktop
         void Msg_PaintAfter() override;
         void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        bool Close(void);
+        bool Close();
 
         struct CreditsEntry
         {

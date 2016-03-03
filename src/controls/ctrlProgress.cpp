@@ -93,7 +93,7 @@ void ctrlProgress::SetPosition(unsigned short position)
  *
  *  @author Devil
  */
-bool ctrlProgress::Draw_(void)
+bool ctrlProgress::Draw_()
 {
     Draw3D(GetX() + height_ - 2 + x_padding, GetY() + y_padding, width_ - (height_ * 2) + 4 - 2 * x_padding, height_ - 2 * y_padding, tc, 2);
 

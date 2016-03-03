@@ -44,7 +44,7 @@ class RoadSegment : public GameObject
         RoadSegment(SerializedGameData& sgd, const unsigned obj_id);
 
         /// zerstört das Objekt.
-        void Destroy(void) override { Destroy_RoadSegment(); }
+        void Destroy() override { Destroy_RoadSegment(); }
         /// serialisiert das Objekt.
         void Serialize(SerializedGameData& sgd) const override { Serialize_RoadSegment(sgd); }
         /// liefert den GO-Type.
@@ -113,7 +113,7 @@ class RoadSegment : public GameObject
 
     protected:
         /// zerstört das Objekt.
-        void Destroy_RoadSegment(void);
+        void Destroy_RoadSegment();
         /// serialisiert das Objekt.
         void Serialize_RoadSegment(SerializedGameData& sgd) const;
 

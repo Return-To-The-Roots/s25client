@@ -36,11 +36,11 @@ class ctrlTab : public Window
         /// fügt eine Tab hinzu.
         ctrlGroup* AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id);
         /// löscht alle Tabs.
-        void DeleteAllTabs(void);
+        void DeleteAllTabs();
         /// aktiviert eine bestimmte Tabseite.
         void SetSelection(unsigned short nr, bool notify = false);
         /// Gibt ID des aktuell gewählten Tabs zurück
-        unsigned int GetCurrentTab(void) const { return tabs[tab_selection]; }
+        unsigned int GetCurrentTab() const { return tabs[tab_selection]; }
         /// Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen werden können
         ctrlGroup* GetGroup(const unsigned int tab_id);
         /// Gibt aktuell ausgewählte Tab-Gruppe zürck
@@ -68,7 +68,7 @@ class ctrlTab : public Window
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         unsigned short tab_count;

@@ -47,7 +47,7 @@ EventManager* GameObject::em = NULL;
  *
  *  @author OLiver
  */
-GameObject::GameObject(void) : objId(objIdCounter_++)
+GameObject::GameObject() : objId(objIdCounter_++)
 {
     // ein Objekt mehr
     ++objCounter_;

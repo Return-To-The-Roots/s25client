@@ -87,7 +87,7 @@ AudioSDL::AudioSDL(AudioDriverLoaderInterface* adli) : AudioDriver(adli), master
  *
  *  @author FloSoft
  */
-AudioSDL::~AudioSDL(void)
+AudioSDL::~AudioSDL()
 {
     CleanUp();
 }
@@ -100,7 +100,7 @@ AudioSDL::~AudioSDL(void)
  *
  *  @author FloSoft
  */
-const char* AudioSDL::GetName(void) const
+const char* AudioSDL::GetName() const
 {
     return GetDriverName();
 }
@@ -113,7 +113,7 @@ const char* AudioSDL::GetName(void) const
  *
  *  @author FloSoft
  */
-bool AudioSDL::Initialize(void)
+bool AudioSDL::Initialize()
 {
     if( SDL_InitSubSystem( SDL_INIT_AUDIO ) < 0 )
     {
@@ -146,7 +146,7 @@ bool AudioSDL::Initialize(void)
  *
  *  @author FloSoft
  */
-void AudioSDL::CleanUp(void)
+void AudioSDL::CleanUp()
 {
     // Sounddeskriptoren aufräumen
     for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
@@ -338,7 +338,7 @@ void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
  *
  *  @author FloSoft
  */
-void AudioSDL::StopMusic(void)
+void AudioSDL::StopMusic()
 {
     // Musik anhalten
     Mix_FadeOutMusic(1000);

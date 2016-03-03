@@ -139,7 +139,7 @@ dskGameInterface::~dskGameInterface()
  *
  *  @author OLiver
  */
-void dskGameInterface::SettingsChanged(void)
+void dskGameInterface::SettingsChanged()
 {
 }
 

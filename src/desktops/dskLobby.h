@@ -46,10 +46,10 @@ class dskLobby :
         void UpdatePlayerList(bool first = false);
         void UpdateServerList(bool first = false);
 
-        void LC_Connected(void) override;
+        void LC_Connected() override;
 
-        void LC_Status_ConnectionLost(void) override;
-        void LC_Status_IncompleteMessage(void) override;
+        void LC_Status_ConnectionLost() override;
+        void LC_Status_IncompleteMessage() override;
         void LC_Status_Error(const std::string& error) override;
 
         void LC_Chat(const std::string& player, const std::string& text) override;

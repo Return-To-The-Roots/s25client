@@ -75,7 +75,7 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
  *
  *  @author OLiver
  */
-bool ctrlMultiline::Draw_(void)
+bool ctrlMultiline::Draw_()
 {
     if(draw_box)
         Draw3D(GetX(), GetY(), width_, height_, tc, 2);

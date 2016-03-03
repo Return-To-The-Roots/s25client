@@ -81,7 +81,7 @@ ctrlVarText::~ctrlVarText()
  *
  *  @author FloSoft
  */
-bool ctrlVarText::Draw_(void)
+bool ctrlVarText::Draw_()
 {
     font->Draw( GetX(), GetY(), GetFormatedText(), format, color_);
 

@@ -47,7 +47,7 @@
  *
  *  @author FloSoft
  */
-glArchivItem_BitmapBase::glArchivItem_BitmapBase(void)
+glArchivItem_BitmapBase::glArchivItem_BitmapBase()
     : texture(0), filter(GL_NEAREST)
 {
 }
@@ -69,7 +69,7 @@ glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& 
  *
  *  @author FloSoft
  */
-glArchivItem_BitmapBase::~glArchivItem_BitmapBase(void)
+glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
 {
     DeleteTexture();
 }
@@ -134,7 +134,7 @@ void glArchivItem_BitmapBase::setFilter(unsigned int filter)
  *
  *  @author FloSoft
  */
-void glArchivItem_BitmapBase::GenerateTexture(void)
+void glArchivItem_BitmapBase::GenerateTexture()
 {
     if(tex_width_ == 0 || tex_height_ == 0)
         return;

@@ -25,8 +25,8 @@ namespace AIEvent { class Base; }
 class AIEventManager
 {
     public:
-        AIEventManager(void);
-        ~AIEventManager(void);
+        AIEventManager();
+        ~AIEventManager();
         void AddAIEvent(AIEvent::Base* ev) { events.push(ev); }
         AIEvent::Base* GetEvent();
         bool EventAvailable() const { return !events.empty(); }

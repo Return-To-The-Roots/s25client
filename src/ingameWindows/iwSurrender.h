@@ -25,7 +25,7 @@ class iwSurrender : public IngameWindow
 {
     public:
 
-        iwSurrender(void);
+        iwSurrender();
 
     private:
 

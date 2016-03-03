@@ -26,7 +26,7 @@ class Sound
         Sound();
 
         /// Destruktor von @p Sound.
-        virtual ~Sound(void);
+        virtual ~Sound();
 
         void SetNr(int nr) { this->nr = nr; }
         int GetNr() { return nr; }

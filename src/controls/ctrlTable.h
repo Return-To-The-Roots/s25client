@@ -33,10 +33,10 @@ class ctrlTable : public Window
 {
     public:
         ctrlTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
-        ~ctrlTable(void) override;
+        ~ctrlTable() override;
 
         /// löscht alle Items.
-        void DeleteAllItems(void);
+        void DeleteAllItems();
         /// setzt die Auswahl.
         void SetSelection(unsigned short selection, bool left = true);
         /// fügt eine Zeile hinzu.
@@ -72,7 +72,7 @@ class ctrlTable : public Window
 
     protected:
 
-        bool Draw_(void) override;
+        bool Draw_() override;
 
         /// Größe ändern
         void Resize_(unsigned short width, unsigned short height) override;

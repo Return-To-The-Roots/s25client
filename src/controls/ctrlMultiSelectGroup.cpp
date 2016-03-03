@@ -45,7 +45,7 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
  *
  *  @author jh
  */
-bool ctrlMultiSelectGroup::Draw_(void)
+bool ctrlMultiSelectGroup::Draw_()
 {
     DrawControls();
 

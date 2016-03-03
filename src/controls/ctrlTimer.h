@@ -27,12 +27,12 @@ class ctrlTimer : public Window
         ctrlTimer(Window* parent, unsigned int id, unsigned int timeout);
 
         void Start(unsigned int timeout);
-        void Stop(void);
+        void Stop();
 
         void Msg_PaintBefore() override;
 
     protected:
-        bool Draw_(void) override { return true; };
+        bool Draw_() override { return true; };
 
     private:
         unsigned int timeout;

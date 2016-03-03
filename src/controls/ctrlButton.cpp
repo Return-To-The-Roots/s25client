@@ -153,7 +153,7 @@ void ctrlButton::TestMouseOver()
  *
  *  @author OLiver
  */
-bool ctrlButton::Draw_(void)
+bool ctrlButton::Draw_()
 {
     if(width_ == 0 || height_ == 0)
         return true;

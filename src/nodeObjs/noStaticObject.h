@@ -35,7 +35,7 @@ class noStaticObject : public noCoordBase
         /// gibt die Nr der File zurück)
         unsigned short GetItemFile() const { return file; }
         /// gibt die Größe des Objekts zurück.
-        unsigned char GetSize(void) const { return size; }
+        unsigned char GetSize() const { return size; }
 
         BlockingManner GetBM() const override { return BlockingManner(unsigned(BM_HUT) + size); }
 

@@ -38,7 +38,7 @@ class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevi
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 15;
 
-        GameManager(void);
+        GameManager();
 
         bool Start();
         void Stop();
@@ -48,30 +48,30 @@ class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevi
         bool ShowMenu();
 
         /// Average FPS Zähler zurücksetzen.
-        inline void ResetAverageFPS(void)
+        inline void ResetAverageFPS()
         {
             run_time = 0;
             frame_count = 0;
         }
 
-        inline unsigned int GetRuntime(void)
+        inline unsigned int GetRuntime()
         {
             return run_time;
         }
 
-        inline unsigned int GetFrameCount(void)
+        inline unsigned int GetFrameCount()
         {
             return frame_count;
         }
 
-        inline unsigned int GetAverageFPS(void)
+        inline unsigned int GetAverageFPS()
         {
             if(run_time == 0)
                 return 0;
             return (frame_count / run_time);
         }
 
-        inline unsigned int GetFPS(void)
+        inline unsigned int GetFPS()
         {
             return framerate;
         }

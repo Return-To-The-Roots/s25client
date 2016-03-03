@@ -48,7 +48,7 @@ const unsigned PROGRESS_BORDER_DISTANCE = 20;
  *
  *  @author OLiver
  */
-iwDistribution::iwDistribution(void)
+iwDistribution::iwDistribution()
     : IngameWindow(CGI_DISTRIBUTION, 0xFFFF, 0xFFFF, 290, 312, _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
       settings_changed(false)
 {

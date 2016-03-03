@@ -52,9 +52,9 @@ class DriverWrapper
 
     public:
         /// Konstruktor von @p DriverWrapper
-        DriverWrapper(void);
+        DriverWrapper();
         /// Destruktor von @p DriverWrapper
-        ~DriverWrapper(void);
+        ~DriverWrapper();
 
         /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
         bool Load(const DriverType dt, std::string& preference);

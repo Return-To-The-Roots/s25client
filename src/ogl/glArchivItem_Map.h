@@ -49,15 +49,15 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
 {
     public:
         /// Konstruktor von @p glArchivItem_Map.
-        glArchivItem_Map(void);
+        glArchivItem_Map();
         /// Destruktor von @p glArchivItem_Map.
-        ~glArchivItem_Map(void) override;
+        ~glArchivItem_Map() override;
 
         /// lädt die Mapdaten aus einer Datei.
         int load(std::istream& file, bool only_header) override;
 
         /// liefert den Header der Map als konstantes Objekt zurück.
-        const libsiedler2::ArchivItem_Map_Header& getHeader(void) const { return *header; }
+        const libsiedler2::ArchivItem_Map_Header& getHeader() const { return *header; }
 
         /// liefert einen Map-Layer zurück.
         const std::vector<unsigned char>& GetLayer(MapLayer type) const;

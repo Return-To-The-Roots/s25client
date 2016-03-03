@@ -34,10 +34,10 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 18;
 
-        Settings(void);
+        Settings();
 
-        bool Load(void); // Lädt Einstellungen
-        void Save(void); // Speichert Einstellungen
+        bool Load(); // Lädt Einstellungen
+        void Save(); // Speichert Einstellungen
 
     protected:
         bool LoadDefaults();

@@ -48,7 +48,7 @@ class EventManager
 
                 Event(SerializedGameData& sgd, const unsigned obj_id);
 
-                void Destroy(void) override{}
+                void Destroy() override{}
 
                 /// Serialisierungsfunktionen
             protected: void Serialize_Event(SerializedGameData& sgd) const;

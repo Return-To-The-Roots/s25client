@@ -258,7 +258,7 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  c
  *
  *  @author OLiver
  */
-void iwLoad::SaveLoad(void)
+void iwLoad::SaveLoad()
 {
     // Server starten
     ctrlTable* table = GetCtrl<ctrlTable>(0);

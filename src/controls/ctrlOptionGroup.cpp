@@ -45,7 +45,7 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent,
  *
  *  @author OLiver
  */
-bool ctrlOptionGroup::Draw_(void)
+bool ctrlOptionGroup::Draw_()
 {
     DrawControls();
 

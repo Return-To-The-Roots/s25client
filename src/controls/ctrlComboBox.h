@@ -49,7 +49,7 @@ class ctrlComboBox : public Window
         void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
         void ShowList(bool show);
 

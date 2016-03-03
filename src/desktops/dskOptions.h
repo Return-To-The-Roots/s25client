@@ -27,7 +27,7 @@
 class dskOptions: public Desktop
 {
     public:
-        dskOptions(void);
+        dskOptions();
         ~dskOptions() override;
 
     private:

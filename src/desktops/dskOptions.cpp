@@ -66,7 +66,7 @@
  *  @author OLiver
  *  @author FloSoft
  */
-dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
+dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);

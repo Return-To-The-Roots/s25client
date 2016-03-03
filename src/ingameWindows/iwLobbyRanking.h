@@ -24,7 +24,7 @@
 class iwLobbyRanking : public IngameWindow
 {
     public:
-        iwLobbyRanking(void);
+        iwLobbyRanking();
 
     protected:
         void UpdateRankings(bool first = false);

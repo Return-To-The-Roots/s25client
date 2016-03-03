@@ -36,7 +36,7 @@ class ctrlCheck : public Window
         bool Msg_LeftDown(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         TextureColor tc;

@@ -71,7 +71,7 @@ class ctrlGroup : public Window
         bool Msg_KeyDown(const KeyEvent& ke) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 };
 
 #endif // !CTRLGROUP_H_INCLUDED

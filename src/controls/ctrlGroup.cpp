@@ -46,7 +46,7 @@ ctrlGroup::ctrlGroup(Window* parent,
  *
  *  @author FloSoft
  */
-bool ctrlGroup::Draw_(void)
+bool ctrlGroup::Draw_()
 {
     // Steuerelemente zeichnen
     DrawControls();

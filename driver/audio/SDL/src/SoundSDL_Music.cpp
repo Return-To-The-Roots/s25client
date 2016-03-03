@@ -39,7 +39,7 @@ SoundSDL_Music::SoundSDL_Music() : music(NULL)
  *
  *  @author FloSoft
  */
-SoundSDL_Music::~SoundSDL_Music(void)
+SoundSDL_Music::~SoundSDL_Music()
 {
     Mix_FreeMusic(music);
 }

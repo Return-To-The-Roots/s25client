@@ -51,7 +51,7 @@ class dskSelectMap :
         void CI_NextConnectState(const ConnectState cs) override;
         void CI_Error(const ClientError ce) override;
 
-        void LC_Created(void) override;
+        void LC_Created() override;
         void LC_Status_Error(const std::string& error) override;
 
         /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle

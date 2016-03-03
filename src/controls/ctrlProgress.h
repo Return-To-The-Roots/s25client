@@ -44,7 +44,7 @@ class ctrlProgress : public Window
                      unsigned short* const write_val = NULL);
 
         void SetPosition(unsigned short position);
-        const unsigned short& GetPosition(void) const { return position; }
+        const unsigned short& GetPosition() const { return position; }
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -54,7 +54,7 @@ class ctrlProgress : public Window
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         TextureColor tc;

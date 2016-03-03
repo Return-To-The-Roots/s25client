@@ -35,7 +35,7 @@ class VideoDriver: public IVideoDriver
         VideoDriver(VideoDriverLoaderInterface* CallBack);
 
         /// Destruktor von @p Videotreiber.
-        ~VideoDriver(void) override{}
+        ~VideoDriver() override{}
 
         /// Funktion zum Auslesen der Mauskoordinaten.
         void GetMousePos(int& x, int& y) const override;
@@ -47,10 +47,10 @@ class VideoDriver: public IVideoDriver
         int GetMousePosY() const override;
 
         /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
-        bool GetMouseStateL(void) const override;
+        bool GetMouseStateL() const override;
 
         /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
-        bool GetMouseStateR(void) const override;
+        bool GetMouseStateR() const override;
 
         //
         unsigned short GetScreenWidth()  const override { return screenWidth;  }

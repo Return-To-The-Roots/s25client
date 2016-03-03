@@ -30,7 +30,7 @@ class ctrlDeepening : public ctrlText
         ctrlDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
         /// Derived classes cann draw extended content
         virtual void DrawContent() const{}
 

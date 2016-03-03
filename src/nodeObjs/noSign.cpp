@@ -92,7 +92,7 @@ void noSign::HandleEvent(const unsigned int id)
  *
  *  @author FloSoft
  */
-void noSign::Destroy_noSign(void)
+void noSign::Destroy_noSign()
 {
     Destroy_noDisappearingEnvObject();
 }

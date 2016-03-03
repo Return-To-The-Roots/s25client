@@ -257,7 +257,7 @@ void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
  *
  *  @author OLiver
  */
-bool ctrlScrollBar::Draw_(void)
+bool ctrlScrollBar::Draw_()
 {
     // Leiste
     Draw3D(GetX(), GetY() + button_height - 2, width_, height_ - button_height * 2 + 4, tc, 2);

@@ -68,13 +68,13 @@ class Window
 
     public:
         /// Konstruktor von @p Window.
-        Window(void);
+        Window();
         /// Konstruktor von @p Window mit Parametern.
         Window(unsigned short x, unsigned short y, unsigned int id, Window* parent, unsigned short width = 0, unsigned short height = 0, const std::string& tooltip = "");
         /// virtueller Destruktor von @p Window.
-        virtual ~Window(void);
+        virtual ~Window();
         /// zeichnet das Fenster.
-        bool Draw(void);
+        bool Draw();
         /// liefert die X-Koordinate.
         unsigned short GetX(bool absolute = true) const;
         /// liefert die Y-Koordinate.
@@ -116,7 +116,7 @@ class Window
         bool GetActive() const { return active_; }
         /// liefert das übergeordnete Fenster
         Window* GetParent() const { return parent_; }
-        const unsigned int GetID(void) const { return id_; }
+        const unsigned int GetID() const { return id_; }
 
         template<typename T>
         T* GetCtrl(unsigned int id)
@@ -287,7 +287,7 @@ class Window
         /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
         void SetScale(bool scale = true) { this->scale_ = scale; }
         /// zeichnet die Steuerelemente.
-        void DrawControls(void);
+        void DrawControls();
         /// prüft ob Mauskoordinaten in einer gesperrten Region liegt.
         bool TestWindowInRegion(Window* window, const MouseCoords& mc) const;
         /// zeichnet das Fenster. (virtuelle Memberfunktion)

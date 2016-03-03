@@ -38,7 +38,7 @@
  *
  *  @author OLiver
  */
-iwPleaseWait::iwPleaseWait(void) : IngameWindow(CGI_PLEASEWAIT, 0xFFFF, 0xFFFF, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true)
+iwPleaseWait::iwPleaseWait() : IngameWindow(CGI_PLEASEWAIT, 0xFFFF, 0xFFFF, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true)
 {
     GAMEMANAGER.SetCursor(CURSOR_MOON);
     AddText(0, GetWidth() / 2, GetHeight() / 2, _("Please wait..."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, NormalFont);

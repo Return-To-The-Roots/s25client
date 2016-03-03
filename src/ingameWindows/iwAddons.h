@@ -41,7 +41,7 @@ class iwAddons : public IngameWindow
 
     public:
         iwAddons(GlobalGameSettings* ggs, ChangePolicy policy = SETDEFAULTS);
-        ~iwAddons(void) override;
+        ~iwAddons() override;
 
     protected:
         void Msg_ButtonClick(const unsigned int ctrl_id) override;

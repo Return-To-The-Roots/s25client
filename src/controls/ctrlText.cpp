@@ -53,7 +53,7 @@ ctrlText::ctrlText(Window* parent,
  *
  *  @author OLiver
  */
-bool ctrlText::Draw_(void)
+bool ctrlText::Draw_()
 {
     if(!text.empty())
         font->Draw(GetX(), GetY(), text, format, color_);

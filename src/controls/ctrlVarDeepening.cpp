@@ -61,7 +61,7 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
  *
  *  @author FloSoft
  */
-bool ctrlVarDeepening::Draw_(void)
+bool ctrlVarDeepening::Draw_()
 {
     Draw3D(x_, y_, width_, height_, tc, 2);
 

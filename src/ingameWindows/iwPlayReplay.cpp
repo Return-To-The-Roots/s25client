@@ -53,7 +53,7 @@ class GameWorldViewer;
  *  @author OLiver
  */
 
-iwPlayReplay::iwPlayReplay(void)
+iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, 0xFFFF, 0xFFFF, 600, 330, _("Play Replay"), LOADER.GetImageN("resource", 41))
 {
     AddTable(0, 20, 30, 560, 220, TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);

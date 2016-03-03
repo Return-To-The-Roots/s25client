@@ -42,7 +42,7 @@ class AIConstruction
 
     public:
         AIConstruction(AIInterface& aii, AIPlayerJH& aijh);
-        ~AIConstruction(void);
+        ~AIConstruction();
 
         /// Adds a build job to the queue
         void AddBuildJob(AIJH::BuildJob* job, bool front);

@@ -37,7 +37,7 @@ class noBase : public GameObject
         virtual void Draw(int x, int y) = 0;
 
         /// Type zurückgeben.
-        NodalObjectType GetType(void) const { return nop; }
+        NodalObjectType GetType() const { return nop; }
         /// Serialisierungsfunktion.
         void Serialize(SerializedGameData& sgd) const override { Serialize_noBase(sgd); }
 
@@ -66,7 +66,7 @@ class noBase : public GameObject
 
     protected:
         /// Räumt das Basisobjekt auf.
-        void Destroy_noBase(void) {}
+        void Destroy_noBase() {}
         /// serialisiert das Basisobjekt.
         void Serialize_noBase(SerializedGameData& sgd) const;
 

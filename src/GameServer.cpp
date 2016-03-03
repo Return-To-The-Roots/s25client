@@ -106,7 +106,7 @@ void GameServer::CountDown::Clear(int time)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
+GameServer::GameServer(): lanAnnouncer(LAN_DISCOVERY_CFG)
 {
     status = SS_STOPPED;
 
@@ -121,7 +121,7 @@ GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::~GameServer(void)
+GameServer::~GameServer()
 {
     Stop();
 }
@@ -418,7 +418,7 @@ void GameServer::AnnounceStatusChange()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Hauptschleife
-void GameServer::Run(void)
+void GameServer::Run()
 {
     if(status == SS_STOPPED)
         return;
@@ -483,7 +483,7 @@ void GameServer::Run(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // stoppt den server
-void GameServer::Stop(void)
+void GameServer::Stop()
 {
     // player verabschieden
     players.clear();
@@ -1142,7 +1142,7 @@ void GameServer::SendNothingNC(const unsigned int& id)
 
 ///////////////////////////////////////////////////////////////////////////////
 // testet, ob in der Verbindungswarteschlange Clients auf Verbindung warten
-void GameServer::WaitForClients(void)
+void GameServer::WaitForClients()
 {
     SocketSet set;
 
@@ -1184,7 +1184,7 @@ void GameServer::WaitForClients(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // füllt die warteschlangen mit "paketen"
-void GameServer::FillPlayerQueues(void)
+void GameServer::FillPlayerQueues()
 {
     SocketSet set;
     unsigned char client = 0xFF;

@@ -39,7 +39,7 @@ class ctrlScrollBar : public Window
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
         void Resize_(unsigned short width, unsigned short height) override;
 

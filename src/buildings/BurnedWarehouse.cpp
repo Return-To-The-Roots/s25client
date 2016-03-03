@@ -56,7 +56,7 @@ BurnedWarehouse::~BurnedWarehouse()
 }
 
 
-void BurnedWarehouse::Destroy(void)
+void BurnedWarehouse::Destroy()
 {
 }
 

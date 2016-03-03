@@ -62,7 +62,7 @@
  *
  *  @author FloSoft
  */
-Loader::Loader(void) : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
+Loader::Loader() : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
 {
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::ArchivInfo*>(NULL));
 }
@@ -73,7 +73,7 @@ Loader::Loader(void) : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
  *
  *  @author FloSoft
  */
-Loader::~Loader(void)
+Loader::~Loader()
 {
     delete stp;
     ClearTerrainTextures();
@@ -88,7 +88,7 @@ Loader::~Loader(void)
  *  @author FloSoft
  *  @author OLiver
  */
-bool Loader::LoadFilesAtStart(void)
+bool Loader::LoadFilesAtStart()
 {
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned> files;
@@ -230,7 +230,7 @@ bool Loader::LoadLsts(unsigned int dir)
  *
  *  @author FloSoft
  */
-bool Loader::LoadSounds(void)
+bool Loader::LoadSounds()
 {
     std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
     // ist die konvertierte sound.lst vorhanden?
@@ -887,7 +887,7 @@ void Loader::ClearTerrainTextures()
  *
  *  @author OLiver
  */
-bool Loader::CreateTerrainTextures(void)
+bool Loader::CreateTerrainTextures()
 {
     RTTR_Assert(lastgfx <= 2);
     ClearTerrainTextures();

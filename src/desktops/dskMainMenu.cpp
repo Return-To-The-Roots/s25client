@@ -55,7 +55,7 @@
  *  @author OLiver
  *  @author FloSoft
  */
-dskMainMenu::dskMainMenu(void) : Desktop(LOADER.GetImageN("menu", 0))
+dskMainMenu::dskMainMenu() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version
     AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());

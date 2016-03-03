@@ -62,7 +62,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
 
     protected:
         /// Zeichenmethode.
-        bool Draw_(void) override;
+        bool Draw_() override;
 
     private:
         std::set<unsigned short> selectedItems_; ///< aktuell ausgewählte Buttons

@@ -58,7 +58,7 @@ const unsigned FADING_TIME = 2000;
  *
  *  @author siegi44
  */
-dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
+dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
@@ -396,7 +396,7 @@ void dskCredits::Msg_PaintAfter()
  *
  *  @author siegi44
  */
-bool dskCredits::Close(void)
+bool dskCredits::Close()
 {
     WINDOWMANAGER.Switch(new dskMainMenu());
     return true;

@@ -75,7 +75,7 @@ void ctrlTimer::Start(unsigned int timeout)
  *
  *  @author FloSoft
  */
-void ctrlTimer::Stop(void)
+void ctrlTimer::Stop()
 {
     timer = 0;
 }

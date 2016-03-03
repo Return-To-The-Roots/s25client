@@ -29,7 +29,7 @@
  *
  *  @author OLiver
  */
-noNothing::noNothing(void) : noBase(NOP_NOTHING)
+noNothing::noNothing() : noBase(NOP_NOTHING)
 {
 }
 

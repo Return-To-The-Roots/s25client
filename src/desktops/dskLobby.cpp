@@ -359,7 +359,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  *
  *  @author FloSoft
  */
-void dskLobby::LC_Connected(void)
+void dskLobby::LC_Connected()
 {
     WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
 }

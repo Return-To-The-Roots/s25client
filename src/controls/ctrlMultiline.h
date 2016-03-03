@@ -49,7 +49,7 @@ class ctrlMultiline : public Window
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
         void Resize_(unsigned short width, unsigned short height) override;
 

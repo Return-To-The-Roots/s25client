@@ -78,7 +78,7 @@ IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, 
  *
  *  @author OLiver
  */
-IngameWindow::~IngameWindow(void)
+IngameWindow::~IngameWindow()
 {
     // Possibly save our old position
     if(id_ < MAX_POS_SAVE_ENTRIES)

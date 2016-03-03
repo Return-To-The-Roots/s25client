@@ -78,7 +78,7 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool ctrlCheck::Draw_(void)
+bool ctrlCheck::Draw_()
 {
     const unsigned short box_size = 20;
     unsigned short distance = (height_ - box_size) / 2;

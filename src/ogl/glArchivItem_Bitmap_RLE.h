@@ -27,7 +27,7 @@ class glArchivItem_Bitmap_RLE : public libsiedler2::baseArchivItem_Bitmap_RLE, p
 {
     public:
         /// Konstruktor von @p glArchivItem_Bitmap_RLE.
-        glArchivItem_Bitmap_RLE(void){}
+        glArchivItem_Bitmap_RLE(){}
 
         /// Kopierkonstruktor von @p glArchivItem_Bitmap_RLE.
         glArchivItem_Bitmap_RLE(const glArchivItem_Bitmap_RLE& item) : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_RLE(item), glArchivItem_Bitmap(item) {}

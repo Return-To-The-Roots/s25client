@@ -107,7 +107,7 @@ class GlobalGameSettings
 
         struct item
         {
-            item(void) : addon(NULL), status(0) {}
+            item() : addon(NULL), status(0) {}
             item(Addon* addon) : addon(addon), status(addon->getDefaultStatus()) {}
 
             Addon* addon;

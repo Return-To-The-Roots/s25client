@@ -86,12 +86,12 @@ class dskGameInterface :
         /// Konstruktor von @p dskGameInterface.
         dskGameInterface();
         /// Destruktor von @p dskGameInterface.
-        ~dskGameInterface(void) override;
+        ~dskGameInterface() override;
 
-        void LC_Status_ConnectionLost(void) override;
+        void LC_Status_ConnectionLost() override;
         void LC_Status_Error(const std::string& error) override;
         /// Called whenever Settings are changed ingame
-        void SettingsChanged(void);
+        void SettingsChanged();
 
         /// Lässt das Spiel laufen (zeichnen)
         void Run();

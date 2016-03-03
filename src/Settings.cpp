@@ -53,7 +53,7 @@ const unsigned short Settings::SCREEN_REFRESH_RATES[] =
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
-Settings::Settings(void) //-V730
+Settings::Settings() //-V730
 {
 }
 
@@ -166,7 +166,7 @@ bool Settings::LoadDefaults()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine zum Laden der Konfiguration
-bool Settings::Load(void)
+bool Settings::Load()
 {
     if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
     {
@@ -323,7 +323,7 @@ bool Settings::Load(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine zum Speichern der Konfiguration
-void Settings::Save(void)
+void Settings::Save()
 {
     libsiedler2::ArchivInfo& configInfo = *LOADER.GetInfoN(CONFIG_NAME);
     if(configInfo.size() != SETTINGS_SECTIONS)

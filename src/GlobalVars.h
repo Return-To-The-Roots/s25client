@@ -26,7 +26,7 @@ class GlobalVars : public Singleton<GlobalVars>
 {
     public:
         /// Konstruktor von @p GlobalVars.
-        GlobalVars(void);
+        GlobalVars();
 
     public:
         bool notdone;

@@ -27,7 +27,7 @@ class iwBuildOrder : public IngameWindow
         bool settings_changed;
     public:
 
-        iwBuildOrder(void);
+        iwBuildOrder();
         ~iwBuildOrder() override;
 
     private:

@@ -310,7 +310,7 @@ void ctrlComboBox::SetSelection(unsigned short selection)
  *
  *  @author OLiver
  */
-bool ctrlComboBox::Draw_(void)
+bool ctrlComboBox::Draw_()
 {
     ctrlList* liste = GetCtrl<ctrlList>(0);
 

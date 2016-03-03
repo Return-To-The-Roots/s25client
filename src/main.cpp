@@ -213,7 +213,7 @@ void UninstallSignalHandlers()
  *
  *  @author FloSoft
  */
-void ExitHandler(void)
+void ExitHandler()
 {
     Socket::Shutdown();
     UninstallSignalHandlers();

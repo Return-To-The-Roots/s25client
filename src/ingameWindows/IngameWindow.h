@@ -36,27 +36,27 @@ class IngameWindow : public Window
         IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
             const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool close_on_right_click = true, Window* parent = NULL);
         /// Destruktor von @p IngameWindow.
-        ~IngameWindow(void) override;
+        ~IngameWindow() override;
 
         /// setzt die Fenster-ID.
         void SetID(unsigned int id) { this->id_ = id; }
         /// liefert die Fenster-ID.
-        unsigned int GetID(void) { return id_; }
+        unsigned int GetID() { return id_; }
 
         /// setzt den Hintergrund.
         void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
         /// liefert den Hintergrund.
-        glArchivItem_Bitmap* GetBackground(void) { return background; }
+        glArchivItem_Bitmap* GetBackground() { return background; }
 
         /// setzt den Fenstertitel.
         void SetTitle(const std::string& title) { this->title_ = title; }
         /// liefert den Fenstertitel.
-        const std::string& GetTitle(void) { return title_; }
+        const std::string& GetTitle() { return title_; }
 
         /// setzt die ausgeklappte Höhe des Fensters.
         void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!isMinimized_) this->height_ = height; }
         /// liefert die ausgeklappte Höhe des Fensters.
-        unsigned short GetIwHeight(void) const { return iwHeight; }
+        unsigned short GetIwHeight() const { return iwHeight; }
 
         /// merkt das Fenster zum Schließen vor.
         void Close(bool closeme = true) { this->closeme = closeme; }
@@ -75,14 +75,14 @@ class IngameWindow : public Window
         /// "modalisiert" das Fenster.
         void SetModal(bool modal = true) { this->modal = modal; }
         /// ist das Fenster ein modales Fenster?
-        bool GetModal(void) { return modal; }
+        bool GetModal() { return modal; }
 
         void MouseLeftDown(const MouseCoords& mc);
         void MouseLeftUp(const MouseCoords& mc);
         void MouseMove(const MouseCoords& mc);
 
     protected:
-        bool Draw_(void) override;
+        bool Draw_() override;
 
         /// Verschiebt Fenster in die Bildschirmmitte
         void MoveToCenter();

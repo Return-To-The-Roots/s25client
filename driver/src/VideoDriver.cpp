@@ -145,7 +145,7 @@ int VideoDriver::GetMousePosY() const
  *
  *  @author FloSoft
  */
-bool VideoDriver::GetMouseStateL(void) const
+bool VideoDriver::GetMouseStateL() const
 {
     return mouse_xy.ldown;
 }
@@ -158,7 +158,7 @@ bool VideoDriver::GetMouseStateL(void) const
  *
  *  @author FloSoft
  */
-bool VideoDriver::GetMouseStateR(void) const
+bool VideoDriver::GetMouseStateR() const
 {
     return mouse_xy.rdown;
 }

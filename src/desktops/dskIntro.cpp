@@ -42,7 +42,7 @@
  *
  *  @author FloSoft
  */
-dskIntro::dskIntro(void) : Desktop(LOADER.GetImageN("menu", 0))
+dskIntro::dskIntro() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // "Zurück"
     AddTextButton(0, 300, 550, 200, 22, TC_RED1, _("Back"), NormalFont);
