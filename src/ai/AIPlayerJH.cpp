@@ -2439,9 +2439,7 @@ bool AIPlayerJH::NoEnemyHarbor()
 
 bool AIPlayerJH::IsInvalidShipyardPosition(const MapPoint pt)
 {
-    if (BuildingNearby(pt, BLD_SHIPYARD, 20) || !HarborPosClose(pt, 8))
-        return true;
-    return false;
+    return BuildingNearby(pt, BLD_SHIPYARD, 20) || !HarborPosClose(pt, 8);
 
 }
 

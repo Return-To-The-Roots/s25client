@@ -2366,10 +2366,7 @@ bool GameClientPlayer::CanBuildCatapult() const
         max = limits[GAMECLIENT.GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) - 2];
     }
 
-    if(bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] >= max)
-        return false;
-    else
-        return true;
+    return bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] < max;
 }
 
 /// A ship has discovered new hostile territory --> determines if this is new

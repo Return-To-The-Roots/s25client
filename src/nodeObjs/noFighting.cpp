@@ -360,9 +360,6 @@ bool noFighting::IsSoldierOfPlayer(const unsigned char player) const
 
     // Der Spieler der gewonnen hat und schon wieder gegangen ist (taucht dann nicht bei den ersten beiden mit
     // auf, wenn der Kampf beendet ist)
-    if(player_won == player)
-        return true;
-
-    return false;
+    return player_won == player;
 }
 

@@ -982,10 +982,7 @@ bool nofAttacker::IsBlockingRoads() const
 
     // Wenn Block-Event schon abgelaufen ist --> blocking_event = 0, da dürfen sich nicht mehr durch
     // wenn es das noch gibt, ist es noch nicht abgelaufen und die Leute können noch durchgehen
-    if(!blocking_event)
-        return true;
-    else
-        return false;
+    return blocking_event == NULL;
 }
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können

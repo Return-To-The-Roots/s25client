@@ -51,17 +51,14 @@ struct PathConditionHuman
     {
         // Feld passierbar?
         noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
-        if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
-            return false;
-
-        return true;
+        return bm == noBase::BM_NOTBLOCKING || bm == noBase::BM_TREE || bm == noBase::BM_FLAG;
     }
 
     // Called for every node
     FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
         // Feld passierbar?
-        // Nicht über Wasser, Lava, Sümpfe gehen
+        // Nicht ï¿½ber Wasser, Lava, Sï¿½mpfe gehen
         return gwb.IsNodeToNodeForFigure(fromPt, dir);
     }
 };
@@ -106,7 +103,7 @@ struct PathConditionShip
     // Called for every node
     FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
-        // Der Übergang muss immer aus Wasser sein zu beiden Seiten
+        // Der ï¿½bergang muss immer aus Wasser sein zu beiden Seiten
         return TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(fromPt, dir)) &&
                TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(fromPt, dir));
     }

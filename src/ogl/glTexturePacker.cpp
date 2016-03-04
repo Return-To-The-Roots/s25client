@@ -134,10 +134,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*> &list)
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
-                if(parTexWidth == 0)
-                    return false;
-
-                return true;
+                return parTexWidth != 0;
             } else if(maxTex)    // maximum texture size reached and something still left
             {
                 // generate this texture and release the buffer

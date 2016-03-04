@@ -754,7 +754,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 void dskGameInterface::Run()
 {
     unsigned water_percent;
-    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow ? true : false, selected, road);
+    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow != NULL, selected, road);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);

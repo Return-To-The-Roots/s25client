@@ -71,7 +71,7 @@ void MapNode::Deserialize(SerializedGameData& sgd)
     {
         roads[z] = sgd.PopUnsignedChar();
         RTTR_Assert(roads[z] < 4);
-        roads_real[z] = roads[z] ? true : false;
+        roads_real[z] = roads[z] != 0;
     }
 
     altitude = sgd.PopUnsignedChar();

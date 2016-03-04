@@ -263,10 +263,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const
                 return false;
         }
 
-        if(!flagPossible)
-            return false;
-
-        return true;
+        return flagPossible;
     }
     else
     {

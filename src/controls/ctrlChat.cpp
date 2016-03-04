@@ -236,7 +236,7 @@ void ctrlChat::WrapLine(unsigned short i)
     {
         ChatLine wrap_line;
         // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
-        wrap_line.secondary = (i ? true : false);
+        wrap_line.secondary = i != 0;
         if(!wrap_line.secondary)
         {
             wrap_line.time_string = line.time_string;

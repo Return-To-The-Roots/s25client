@@ -558,7 +558,7 @@ void dskOptions::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigne
         case 10: // Optionengruppen anzeigen
         {
             for(unsigned short i = 21; i < 24; ++i)
-                GetCtrl<ctrlGroup>(i)->SetVisible( (i == selection + 10 ? true : false) );
+                GetCtrl<ctrlGroup>(i)->SetVisible(i == selection + 10);
         } break;
     }
 }
