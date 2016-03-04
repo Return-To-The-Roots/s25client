@@ -73,7 +73,7 @@ class nofCatapultMan : public nofBuildingWorker
         void HandleDerivedEvent(const unsigned int id) override;
 
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-        void WorkArborted();
+        void WorkAborted();
 };
 
 

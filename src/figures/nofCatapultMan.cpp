@@ -327,7 +327,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int id)
     }
 }
 
-void nofCatapultMan::WorkArborted()
+void nofCatapultMan::WorkAborted()
 {
 }
 
