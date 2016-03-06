@@ -31,7 +31,7 @@ class GlobalGameSettings
         GlobalGameSettings(const GlobalGameSettings& ggs);
         ~GlobalGameSettings();
 
-        void operator=(const GlobalGameSettings& ggs);
+        GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
 
         /// Serialisierung und Deserialisierung
         void Serialize(Serializer& ser) const;

@@ -92,11 +92,15 @@ GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
     Deserialize(ser);
 }
 
-void GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
+GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 {
+    if(this == &ggs)
+        return *this;
+
     Serializer ser;
     ggs.Serialize(ser);
     Deserialize(ser);
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
