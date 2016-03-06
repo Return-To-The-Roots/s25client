@@ -2047,10 +2047,7 @@ void GameClient::ResetVisualSettings()
     visual_settings.tools_settings = player.toolsSettings_;
 
     visual_settings.order_type = player.orderType_;
-
-    // Baureihenfolge füllen (0 ist das HQ!)
-    for(unsigned char i = 0; i < 31; ++i)
-        visual_settings.build_order[i] = player.build_order[i];
+    visual_settings.build_order = player.build_order;
 }
 
 

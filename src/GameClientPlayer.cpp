@@ -129,10 +129,19 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     GAMECLIENT.visual_settings.order_type = orderType_ = 0;
 
     // Baureihenfolge füllen (0 ist das HQ!)
-    for(unsigned char i = 1, j = 0; i < 40; ++i)
+    for(unsigned char i = 1, j = 0; i < BLD_COUNT; ++i)
     {
         // Diese Ids sind noch nicht besetzt
-        if(i == 3 || (i >= 5 && i <= 8) || i == 15 || i == 27 || i == 30)
+        if(
+              i == BLD_NOTHING2 ||
+              i == BLD_NOTHING3 ||
+              i == BLD_NOTHING4 ||
+              i == BLD_NOTHING5 ||
+              i == BLD_NOTHING6 ||
+              i == BLD_NOTHING7 ||
+              i == BLD_CHARBURNER ||
+              i == BLD_NOTHING9
+          )
             continue;
 
         GAMECLIENT.visual_settings.build_order[j] = build_order[j] = i;
@@ -1301,16 +1310,10 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
         // Spezielle Reihenfolge
 
         // Typ in der Reihenfolge suchen und Position als Priorität zurückgeben
-        for(unsigned i = 0; i < 31; ++i)
+        for(unsigned i = 0; i < build_order.size(); ++i)
         {
             if(building_site->GetBuildingType() == static_cast<BuildingType>(build_order[i]))
-            {
-                /*  char str[256];
-                sprintf(str,"gf = %u, pr = %u\n",
-                GAMECLIENT.GetGFNumber(), i);
-                GAMECLIENT.AddToGameLog(str);*/
                 return i;
-            }
         }
     }
     else
