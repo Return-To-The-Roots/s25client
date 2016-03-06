@@ -186,26 +186,24 @@ namespace gc{
     class ChangeBuildOrder : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der BuildOrder-Daten
-            static const unsigned DATA_SIZE = 31;
             /// Ordnungs-Typ
             const unsigned char order_type;
             /// Daten der BuildOrder
-            boost::array<unsigned char, 31> data;
+            boost::array<unsigned char, 32> data;
         protected:
-            ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 31>& data)
-                : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+            ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 32>& data)
+                : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) {}
             ChangeBuildOrder(Serializer& ser)
                 : GameCommand(CHANGEBUILDORDER), order_type(ser.PopUnsignedChar())
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
                 ser.PushUnsignedChar(order_type);
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 

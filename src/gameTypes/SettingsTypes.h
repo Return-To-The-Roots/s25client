@@ -21,7 +21,7 @@
 #include <boost/array.hpp>
 
 #define NUM_DISTRIBUTION 23
-#define NUM_BUILD_ORDERS 31
+#define NUM_BUILD_ORDERS 32
 #define NUM_TRANSPORT_ORDERS 14
 #define NUM_TOOL_SETTINGS 12
 

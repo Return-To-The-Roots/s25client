@@ -56,10 +56,10 @@
 #include "DebugNew.h" // IWYU pragma: keep
 
 // Standardbelegung der Transportreihenfolge festlegen
-const unsigned char STD_TRANSPORT[35] =
-{
+const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT =
+{{
     2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
-};
+}};
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -139,7 +139,6 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
               i == BLD_NOTHING5 ||
               i == BLD_NOTHING6 ||
               i == BLD_NOTHING7 ||
-              i == BLD_CHARBURNER ||
               i == BLD_NOTHING9
           )
             continue;
@@ -149,7 +148,7 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     }
 
     // Transportreihenfolge festlegen
-    memcpy(transport, STD_TRANSPORT, 35 * sizeof(unsigned char));
+    transport = STD_TRANSPORT;
 
     GAMECLIENT.visual_settings.transport_order[0] = STD_TRANSPORT[GD_COINS];
     GAMECLIENT.visual_settings.transport_order[1] = STD_TRANSPORT[GD_SWORD];
@@ -278,10 +277,10 @@ void GameClientPlayer::Serialize(SerializedGameData& sgd)
 
     sgd.PushUnsignedChar(orderType_);
 
-    for(unsigned i = 0; i < 31; ++i)
+    for(unsigned i = 0; i < build_order.size(); ++i)
         sgd.PushUnsignedChar(build_order[i]);
 
-    sgd.PushRawData(transport, WARE_TYPES_COUNT);
+    sgd.PushRawData(transport.elems, transport.size());
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
         sgd.PushUnsignedChar(militarySettings_[i]);
@@ -394,10 +393,10 @@ void GameClientPlayer::Deserialize(SerializedGameData& sgd)
 
     orderType_ = sgd.PopUnsignedChar();
 
-    for(unsigned i = 0; i < 31; ++i)
+    for(unsigned i = 0; i < build_order.size(); ++i)
         build_order[i] = sgd.PopUnsignedChar();
 
-    sgd.PopRawData(transport, WARE_TYPES_COUNT);
+    sgd.PopRawData(transport.elems, transport.size());
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
         militarySettings_[i] = sgd.PopUnsignedChar();

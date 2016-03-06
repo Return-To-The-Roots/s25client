@@ -42,7 +42,7 @@ iwBuildOrder::iwBuildOrder()
     ctrlList* list = AddList(0, 15, 60, 150, 220, TC_GREY, NormalFont);
 
     // Liste füllen
-    for(unsigned char i = 0; i < 31; ++i)
+    for(unsigned char i = 0; i < GAMECLIENT.visual_settings.build_order.size(); ++i)
         list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]])); //-V807
 
     // Nach ganz oben

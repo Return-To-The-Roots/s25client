@@ -166,7 +166,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Baureihenfolge
         BuildOrders build_order;
         /// Prioritäten der Waren im Transport
-        unsigned char transport[WARE_TYPES_COUNT];
+        boost::array<unsigned char, WARE_TYPES_COUNT> transport;
         /// Militäreinstellungen (die vom Militärmenü)
         boost::array<unsigned char, MILITARY_SETTINGS_COUNT> militarySettings_;
         /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
