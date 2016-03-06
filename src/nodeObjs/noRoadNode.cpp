@@ -111,18 +111,15 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
         else
             oflag = routes[dir]->GetF1();
 
-        bool found = false;
         for(unsigned z = 0; z < 6; ++z)
         {
             if(oflag->routes[z] == routes[dir])
             {
                 oflag->routes[z] = NULL;
-                found = true;
                 break;
-            }
+            }else
+                RTTR_Assert(z < 5); // Need to find it before last iteration
         }
-
-        RTTR_Assert(found);
 
         RoadSegment* tmp = routes[dir];
         routes[dir] = NULL;

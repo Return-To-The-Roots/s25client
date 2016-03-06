@@ -37,6 +37,8 @@
 #include "ai/AIPlayerJH.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
+#include "helpers/converters.h"
+#include <boost/format.hpp>
 #include <stdexcept>
 
 // Include last!
@@ -298,13 +300,13 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                 nobUsual* n = dynamic_cast<nobUsual*>(no);
                                 if(n)
                                 {
-                                    char text[256];
+                                    std::string text;
                                     unsigned int color = COLOR_RED;
 
                                     if(!n->HasWorker())
-                                        snprintf(text, 256, "%s", _("(House unoccupied)"));
+                                        text = _("(House unoccupied)");
                                     else if(n->IsProductionDisabledVirtual())
-                                        snprintf(text, 256, "%s", _("(stopped)"));
+                                        text = _("(stopped)");
                                     else
                                     {
                                         // Catapult and Lookout tower doesn't have productivity!
@@ -313,7 +315,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                         else
                                         {
                                             unsigned short p = n->GetProductivity();
-                                            snprintf(text, 256, "(%d %%)", p);
+                                            text = helpers::toString(p) + " %";
                                             if(p >= 60)
                                                 color = 0xFF00E000;
                                             else if(p >= 30)
@@ -331,14 +333,16 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                             {
                                 // Display amount of soldiers
                                 unsigned soldiers_count = static_cast<nobMilitary*>(no)->GetTroopsCount();
-                                char str[64];
+                                std::string sSoldiers;
                                 if(soldiers_count == 1)
-                                    strcpy(str, _("(1 soldier)"));
+                                    sSoldiers = _("(1 soldier)");
                                 else
-                                    sprintf(str, _("(%d soldiers)"), soldiers_count);
+                                    sSoldiers = boost::str(
+                                            boost::format(_("(%d soldiers)")) % soldiers_count
+                                            );
 
 
-                                SmallFont->Draw(curPos.x, curPos.y, str, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
+                                SmallFont->Draw(curPos.x, curPos.y, sSoldiers, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
                                                 (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
                                 curPos.y += SmallFont->getHeight();
                             }

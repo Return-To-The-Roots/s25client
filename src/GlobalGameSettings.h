@@ -19,7 +19,6 @@
 #define GlobalGameSettings_H_INCLUDED
 
 #include "addons/Addons.h"
-#include "helpers/containerUtils.h"
 #include <vector>
 #include <algorithm>
 
@@ -92,16 +91,7 @@ class GlobalGameSettings
         unsigned int GetMaxMilitaryRank() const;
 
     private:
-        void registerAddon(Addon* addon)
-        {
-            if(!addon)
-                return;
-
-            if(!helpers::contains(addons, addon->getId()))
-                addons.push_back(item(addon));
-
-            std::sort(addons.begin(), addons.end());
-        }
+        void registerAddon(Addon* addon);
 
         struct item
         {

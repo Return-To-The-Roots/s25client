@@ -2045,7 +2045,6 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
         if(dir == 1 && (aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDING) || aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
         {
             //the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
-            finds += 3;
             return true;
         }
         if(startFlag->routes[dir])
@@ -2059,24 +2058,19 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
     }
     // if we found more than 1 road -> the flag is still in use.
     if (finds > 2)
-    {
         return false;
-    }
-    else
+    else if(finds == 2)
     {
-        if(finds == 2)
+        if(allowcircle)
         {
-            if(allowcircle)
-            {
-                std::vector<MapPoint> flagcheck;
-                if(!IsFlagPartofCircle(startFlag, 10, startFlag, 7, true, flagcheck))
-                    return false;
-                if(!firstflag)
-                    return false;
-            }
-            else
+            std::vector<MapPoint> flagcheck;
+            if(!IsFlagPartofCircle(startFlag, 10, startFlag, 7, true, flagcheck))
+                return false;
+            if(!firstflag)
                 return false;
         }
+        else
+            return false;
     }
 
     // kill the flag
@@ -2090,9 +2084,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
 
     // nothing found?
     if (foundDir > 6)
-    {
         return false;
-    }
     // at least 1 road exists
     RemoveUnusedRoad(startFlag->routes[foundDir]->GetOtherFlag(startFlag), (startFlag->routes[foundDir]->GetOtherFlagDir(startFlag) + 3) % 6, false);
     // 2 roads exist

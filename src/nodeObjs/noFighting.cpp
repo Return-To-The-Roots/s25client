@@ -313,6 +313,7 @@ void noFighting::StartAttack()
                 results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 6);
             } break;
             case 1: // Mittlere Stärke
+            default:
             {
                 results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 10);
             } break;

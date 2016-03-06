@@ -23,6 +23,7 @@
 #include "SerializedGameData.h"
 #include "GameClientPlayer.h"
 #include "Loader.h"
+#include <boost/format.hpp>
 #include <stdexcept>
 
 // Include last!
@@ -106,18 +107,16 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     : PostMsg("", PMC_DIPLOMACY), dp_type(ACCEPT), id(id), player(player), pt(pt)
 {
     type = PMT_DIPLOMACYQUESTION;
+    text = boost::str(
+               boost::format(_("The player '%s' offers you a %s.")) % GAMECLIENT.GetPlayer(player).name % _(PACT_TITLES[pt])
+           ) + "\n";
 
-    char msg[512];
-    sprintf(msg, _("The player '%s' offers you a %s."), GAMECLIENT.GetPlayer(player).name.c_str(),
-            _(PACT_TITLES[pt]));
-
-    char duration_msg[512];
     if(duration == 0xFFFFFFFF)
-        strcpy(duration_msg, _("Duration: Forever"));
+        text += _("Duration: Forever");
     else
-        sprintf(duration_msg, _("Duration: %u GF (%s)"), duration, GAMECLIENT.FormatGFTime(duration).c_str());
-
-    text = std::string(msg) + "\n" + duration_msg;
+        text += boost::str(
+                    boost::format(_("Duration: %u GF (%s)")) % duration % GAMECLIENT.FormatGFTime(duration)
+                );
 }
 
 /// Vertrag auflösen

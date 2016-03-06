@@ -26,6 +26,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "GameClient.h"
+#include <stdexcept>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -106,7 +107,8 @@ void noStaticObject::Draw(int x, int y)
         // Use only shadows where available
         if(file < 6)
             shadow = LOADER.GetImageN(files[file], id + 1);
-    }
+    }else
+        throw std::runtime_error("Invalid file number for static object");
 
     RTTR_Assert(bitmap);
 
