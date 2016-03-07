@@ -221,7 +221,6 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
             return false;
     }
 
-
     return true;
 }
 

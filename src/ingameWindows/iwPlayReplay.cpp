@@ -29,6 +29,7 @@
 #include "files.h"
 #include "fileFuncs.h"
 #include "controls/ctrlTable.h"
+#include "controls/ctrlButton.h"
 #include "iwMsgbox.h"
 #include "desktops/dskGameLoader.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -51,6 +52,7 @@ iwPlayReplay::iwPlayReplay()
     AddTable(0, 20, 30, 560, 220, TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
 
     AddTextButton(2, 20, 260, 100, 22, TC_RED1, _("Clear"), NormalFont);
+    AddTextButton(5, 130, 260, 160, 22, TC_RED1, "Delete Invalid", NormalFont, _("Removes all replays that cannot be loaded with the current game version"));
     AddTextButton(3, 20, 290, 160, 22, TC_RED1, _("Delete selected"), NormalFont);
     AddTextButton(4, 190, 290, 190, 22, TC_RED1, _("Back"), NormalFont);
     AddTextButton(1, 390, 290, 190, 22, TC_GREEN2, _("Start"), NormalFont);
@@ -69,6 +71,8 @@ void iwPlayReplay::PopulateTable()
     bool sortDir = table->GetSortDirection();
     table->DeleteAllItems();
 
+    unsigned numInvalid = 0;
+
     std::vector<std::string> replays = GetReplays();
     for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
     {
@@ -76,7 +80,10 @@ void iwPlayReplay::PopulateTable()
 
         // Datei laden
         if(!replay.LoadHeader(*it, false))
+        {
+            numInvalid++;
             continue;
+        }
 
         // Zeitstamp benutzen
         std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
@@ -105,11 +112,22 @@ void iwPlayReplay::PopulateTable()
         std::string lastGF = helpers::toString(replay.lastGF_);
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), fileName.c_str());
+        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it->c_str());
     }
 
     // Erst einmal nach Dateiname sortieren
     table->SortRows(sortCol, &sortDir);
+
+    ctrlTextButton* btDelInvalid = GetCtrl<ctrlTextButton>(5);
+    if(numInvalid == 0)
+        btDelInvalid->SetVisible(false);
+    else
+    {
+        btDelInvalid->SetVisible(true);
+        char text[255];
+        snprintf(text, 255, _("Delete Invalid (%u)"), numInvalid);
+        btDelInvalid->SetText(text);
+    }
 }
 
 void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -121,7 +139,6 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
             StartReplay();
             break;
         case 2:
-            // Sicherheitsabfrage, ob der Benutzer auch wirklich alle löschen möchte
             WINDOWMANAGER.Show( new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1) );
             break;
         case 3:
@@ -133,6 +150,9 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
         }
         case 4:
             Close();
+            break;
+        case 5:
+            WINDOWMANAGER.Show(new iwMsgbox(_("Clear"), _("Are you sure to remove all invalid replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 3));
             break;
     }
 }
@@ -174,7 +194,7 @@ void iwPlayReplay::StartReplay()
 void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     // Sollen alle Replays gelöscht werden?
-    if(mbr == MSR_YES && msgbox_id == 1)
+    if(msgbox_id == 1 && mbr == MSR_YES)
     {
         std::vector<std::string> replays = GetReplays();
         for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
@@ -185,7 +205,22 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
 
         // Tabelle leeren
         GetCtrl<ctrlTable>(0)->DeleteAllItems();
-    }else if(msgbox_id == 2 && mbr == MSR_YES)
+    } else if(msgbox_id == 3 && mbr == MSR_YES)
+    {
+        std::vector<std::string> replays = GetReplays();
+        for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+        {
+            Replay replay;
+            if(!replay.LoadHeader(*it, false))
+            {
+                replay.StopRecording();
+                boost::system::error_code ec;
+                bfs::remove(*it, ec);
+            }
+        }
+
+        PopulateTable();
+    } else if(msgbox_id == 2 && mbr == MSR_YES)
     {
         ctrlTable* table = GetCtrl<ctrlTable>(0);
         if(table->GetSelection() < table->GetRowCount())
