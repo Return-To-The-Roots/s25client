@@ -33,6 +33,7 @@
 #include "desktops/dskGameLoader.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
+#include "helpers/converters.h"
 #include <boost/filesystem.hpp>
 
 // Include last!
@@ -213,12 +214,10 @@ void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
     if(!path.has_filename())
         return;
 	std::string fileName = path.filename().string();
-
-    char gfl[50];
-    snprintf(gfl, 50, "%u", replay.lastGF_);
+    std::string lastGF = helpers::toString(replay.lastGF_);
 
     // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), gfl, filePath.c_str());
+    static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), filePath.c_str());
 }
 
 
