@@ -457,7 +457,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
         {
             const unsigned cw = CharWidth(Utf8_to_Unicode(text, i));
             // haben wir das maximum erreicht?
-            if(curLineLen + cw > max_width)
+            if(curLineLen + cw > max_width && length > 1)
             {
                 if(max)
                     *max = i;
