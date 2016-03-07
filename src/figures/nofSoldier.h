@@ -40,7 +40,7 @@ class nofSoldier : public noFigure
         void DrawSoldierWalking(int x, int y, bool waitingsoldier = false);
 
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-        void AbrogateWorkplace();
+        void AbrogateWorkplace() override;
 
     public:
 
@@ -52,11 +52,11 @@ class nofSoldier : public noFigure
 
         /// Aufräummethoden
     protected:  void Destroy_nofSoldier() { RTTR_Assert(HasNoHome()); Destroy_noFigure(); }
-    public:     void Destroy() { Destroy_nofSoldier(); }
+    public:     void Destroy() override { Destroy_nofSoldier(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofSoldier(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofSoldier(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofSoldier(sgd); }
 
         /// Liefert Rang des Soldaten
         unsigned char GetRank() const;

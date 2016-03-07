@@ -34,7 +34,7 @@ class iwTransport : public IngameWindow
     public:
 
         iwTransport();
-        ~iwTransport();
+        ~iwTransport() override;
 
     private:
 
@@ -43,8 +43,8 @@ class iwTransport : public IngameWindow
         /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
         void TransmitSettings();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_Timer(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwTRANSPORT_H_INCLUDED

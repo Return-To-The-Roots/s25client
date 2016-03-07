@@ -52,7 +52,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     
     while (std::getline(ss, line, '\n'))
     {
-        text->AddString(line.c_str(), COLOR_YELLOW, false); // add this line to the window contents
+        text->AddString(line, COLOR_YELLOW, false); // add this line to the window contents
         unsigned short current_line_width = NormalFont->getWidth(line); // get the width of line in normal font
         if (current_line_width > max_line_width) // if wider than max, re-set max
         {
@@ -66,7 +66,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     AddTextButton(1, width_ / 2 - 100, 435, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
 }
 
-void iwMissionStatement::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMissionStatement::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     Close();
 }

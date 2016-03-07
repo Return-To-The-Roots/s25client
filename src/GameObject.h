@@ -32,21 +32,21 @@ class GameObject
 {
     public:
         /// Konstruktor von @p GameObject.
-        GameObject(void);
+        GameObject();
         /// Deserialisierungskonstruktor
         GameObject(SerializedGameData& sgd, const unsigned obj_id);
         /// Copy-Konstruktor
         GameObject(const GameObject& go);
         /// Destruktor von @p GameObject.
-        virtual ~GameObject(void);
+        virtual ~GameObject();
 
         GameObject& operator=(const GameObject& obj);
 
         /// zerstört das Objekt.
-        virtual void Destroy(void) = 0;
+        virtual void Destroy() = 0;
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        virtual void HandleEvent(const unsigned int id) {}
+        virtual void HandleEvent(const unsigned int  /*id*/) {}
 
         /// Gibt Objekt-ID zurück.
         unsigned GetObjId() const { return objId; }
@@ -54,12 +54,12 @@ class GameObject
         /// Serialisierungsfunktion.
         virtual void Serialize(SerializedGameData& sgd) const = 0;
         /// Liefert den GOT (siehe oben)
-        virtual GO_Type GetGOT(void) const = 0;
+        virtual GO_Type GetGOT() const = 0;
 
         /// Setzt Pointer auf GameWorld und EventManager
         static void SetPointers(GameWorldGame* const gameWorld, EventManager* const eventManager){ GameObject::gwg = gameWorld; GameObject::em = eventManager; }
         /// setzt den Objekt und Objekt-ID-Counter zurück
-        static void ResetCounter(void) { objIdCounter_ = 1; objCounter_ = 0; };
+        static void ResetCounter() { objIdCounter_ = 1; objCounter_ = 0; };
         /// Gibt Anzahl Objekte zurück.
         static unsigned GetObjCount() { return objCounter_; }
         /// Setzt Anzahl der Objekte (NUR FÜR DAS LADEN!)
@@ -73,7 +73,7 @@ class GameObject
     protected:
 
         /// Serialisierungsfunktion.
-        void Serialize_GameObject(SerializedGameData& sgd) const {}
+        void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
 
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;

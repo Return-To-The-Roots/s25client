@@ -27,18 +27,18 @@
 class dskOptions: public Desktop
 {
     public:
-        dskOptions(void);
-        ~dskOptions();
+        dskOptions();
+        ~dskOptions() override;
 
     private:
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr);
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr) override;
 
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position);
-        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
 
     private:
         GlobalGameSettings ggs;

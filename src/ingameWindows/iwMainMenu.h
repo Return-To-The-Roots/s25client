@@ -36,7 +36,7 @@ class iwMainMenu : public IngameWindow
         iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi);
     private:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwMAINMENU_H_INCLUDED

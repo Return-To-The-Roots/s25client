@@ -99,11 +99,6 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
 
     // Auf irgendeinem Meer müssen wir ja sein
     RTTR_Assert(seaId_ > 0);
-
-    gwg->AddFigure(this, pos);
-
-    // Schiff registrieren lassen
-    gwg->GetPlayer(player).RegisterShip(this);
 }
 
 void noShip::Serialize(SerializedGameData& sgd) const
@@ -680,7 +675,7 @@ void noShip::HandleState_GoToHarbor()
             StartIdling();
             // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
             noBase* hb = goal.isValid() ? gwg->GetNO(goal) : NULL;
-            if(hb->GetGOT() == GOT_NOB_HARBORBUILDING)
+            if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                 static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
         } break;
     case NO_ROUTE_FOUND:

@@ -37,13 +37,13 @@ class iwDirectIPConnect : public IngameWindow, public ClientInterface
     private:
         void SetText(const std::string& text, unsigned int color, bool button);
 
-        void Msg_EditChange(const unsigned int ctrl_id);
-        void Msg_EditEnter(const unsigned int ctrl_id);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_EditChange(const unsigned int ctrl_id) override;
+        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
 
-        void CI_Error(const ClientError ce);
-        void CI_NextConnectState(const ConnectState cs);
+        void CI_Error(const ClientError ce) override;
+        void CI_NextConnectState(const ConnectState cs) override;
 
 };
 

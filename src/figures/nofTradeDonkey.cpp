@@ -102,7 +102,7 @@ void nofTradeDonkey::Walked()
     }
 }
 
-void nofTradeDonkey::HandleDerivedEvent(const unsigned int id)
+void nofTradeDonkey::HandleDerivedEvent(const unsigned int  /*id*/)
 {
 }
 void nofTradeDonkey::AbrogateWorkplace()

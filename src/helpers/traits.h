@@ -21,7 +21,7 @@
 #include <boost/tti/has_member_function.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/type_traits.hpp>
-#include <assert.h>
+#include <cassert>
 
 // Based on code from https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
 #define CREATE_MEMBER_DETECTOR(X)                                                   \

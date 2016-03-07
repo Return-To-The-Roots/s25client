@@ -32,55 +32,55 @@ class VideoSDL : public VideoDriver
         VideoSDL(VideoDriverLoaderInterface* CallBack);
 
         /// Destruktor von @p VideoSDL.
-        ~VideoSDL(void);
+        ~VideoSDL() override;
 
         /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName(void) const;
+        const char* GetName() const override;
 
         /// Treiberinitialisierungsfunktion.
-        bool Initialize(void);
+        bool Initialize() override;
 
         /// Treiberaufräumfunktion.
-        void CleanUp(void);
+        void CleanUp() override;
 
         /// Erstellt das Fenster mit entsprechenden Werten.
-        bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen);
+        bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
 
         /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-        bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen);
+        bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
 
         /// Schliesst das Fenster.
-        void DestroyScreen(void);
+        void DestroyScreen() override;
 
         /// Wechselt die OpenGL-Puffer.
-        bool SwapBuffers(void);
+        bool SwapBuffers() override;
 
         /// Die Nachrichtenschleife.
-        bool MessageLoop(void);
+        bool MessageLoop() override;
 
         /// Funktion zum Auslesen des TickCounts.
-        unsigned long GetTickCount(void) const;
+        unsigned long GetTickCount() const override;
 
         /// Funktion zum Holen einer Subfunktion.
-        void* GetFunction(const char* function) const;
+        void* GetFunction(const char* function) const override;
 
         /// Listet verfügbare Videomodi auf
-        void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+        void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
 
         /// Funktion zum Setzen der Mauskoordinaten.
-        void SetMousePos(int x, int y);
+        void SetMousePos(int x, int y) override;
 
         /// Funktion zum Setzen der X-Koordinate der Maus.
-        void SetMousePosX(int x);
+        void SetMousePosX(int x) override;
 
         /// Funktion zum Setzen der Y-Koordinate der Maus.
-        void SetMousePosY(int y);
+        void SetMousePosY(int y) override;
 
         /// Get state of the modifier keys
-        KeyEvent GetModKeyState(void) const;
+        KeyEvent GetModKeyState() const override;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        void* GetMapPointer() const;
+        void* GetMapPointer() const override;
 
     private:
         SDL_Surface* screen; ///< Das Fenster-SDL-Surface.

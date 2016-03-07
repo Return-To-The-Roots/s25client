@@ -39,11 +39,11 @@ class nofHunter : public nofBuildingWorker
     private:
 
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-        void WalkedDerived();
+        void WalkedDerived() override;
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 89; }
+        unsigned short GetCarryID() const override { return 89; }
 
         /// Trifft Vorbereitungen fürs nach Hause - Laufen
         void StartWalkingHome();
@@ -65,22 +65,22 @@ class nofHunter : public nofBuildingWorker
         nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofHunter(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy(){ RTTR_Assert(!animal); nofBuildingWorker::Destroy(); }
+        void Destroy() override{ RTTR_Assert(!animal); nofBuildingWorker::Destroy(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofHunter(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofHunter(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofHunter(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_HUNTER; }
+        GO_Type GetGOT() const override { return GOT_NOF_HUNTER; }
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 
         void TryStartHunting();
 
         /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
         void AnimalLost();
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-        void WorkAborted();
+        void WorkAborted() override;
 };
 
 #endif

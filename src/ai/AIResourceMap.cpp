@@ -32,7 +32,7 @@ AIResourceMap::AIResourceMap(const AIJH::Resource res, const AIInterface& aii, c
 {
 }
 
-AIResourceMap::~AIResourceMap(void)
+AIResourceMap::~AIResourceMap()
 {
 }
 

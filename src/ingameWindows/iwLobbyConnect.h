@@ -26,19 +26,19 @@ class iwLobbyConnect : public IngameWindow, public LobbyInterface
 {
     public:
         iwLobbyConnect();
-        ~iwLobbyConnect();
+        ~iwLobbyConnect() override;
 
-        void LC_LoggedIn(const std::string& email);
-        void LC_Registered(void);
+        void LC_LoggedIn(const std::string& email) override;
+        void LC_Registered() override;
 
-        void LC_Status_Waiting(void);
-        void LC_Status_Error(const std::string& error);
+        void LC_Status_Waiting() override;
+        void LC_Status_Error(const std::string& error) override;
 
     protected:
-        void Msg_EditChange(const unsigned int ctrl_id);
-        void Msg_EditEnter(const unsigned int ctrl_id);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_EditChange(const unsigned int ctrl_id) override;
+        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
 
     private:
         void SetText(const std::string& text, unsigned int color, bool button);

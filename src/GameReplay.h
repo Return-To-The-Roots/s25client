@@ -45,7 +45,7 @@ class Replay : public SavedFile
 
     public:
         Replay();
-        ~Replay();
+        ~Replay() override;
 
         /// Räumt auf, schließt datei
         void StopRecording();

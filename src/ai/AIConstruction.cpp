@@ -61,7 +61,7 @@ AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
     InitBuildingsWanted();
 }
 
-AIConstruction::~AIConstruction(void)
+AIConstruction::~AIConstruction()
 {
 }
 
@@ -119,7 +119,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
 	unsigned i=0; //count up to limit
 	unsigned initconjobs = connectJobs.size()<5?connectJobs.size():5;
 	unsigned initbuildjobs = buildJobs.size()<5?buildJobs.size():5;
-	for(;i<limit && connectJobs.size() && i < initconjobs ;i++) //go through list, until limit is reached or list empty or when every entry has been checked
+	for(;i<limit && !connectJobs.empty() && i < initconjobs ;i++) //go through list, until limit is reached or list empty or when every entry has been checked
 	{
         AIJH::ConnectJob* job = connectJobs.front();
 		job->ExecuteJob();
@@ -134,7 +134,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
 			delete job;
 		}
 	}	
-	for(;i<limit && buildJobs.size() && i < (initconjobs+initbuildjobs) ;i++)
+	for(;i<limit && !buildJobs.empty() && i < (initconjobs+initbuildjobs) ;i++)
 	{
         AIJH::BuildJob* job = buildJobs.front();
 		job->ExecuteJob();
@@ -189,7 +189,7 @@ struct Point2Flag{
 
     Point2Flag(const AIInterface& aii): aii_(aii){}
 
-    result_type operator()(const MapPoint pt, unsigned r) const
+    result_type operator()(const MapPoint pt, unsigned  /*r*/) const
     {
         return aii_.GetSpecObj<noFlag>(pt);
     }

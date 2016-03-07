@@ -39,8 +39,8 @@ class iwDemolishBuilding : public IngameWindow
 
     private:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_PaintBefore();
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_PaintBefore() override;
 
 };
 

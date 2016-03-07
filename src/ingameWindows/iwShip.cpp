@@ -42,7 +42,7 @@
  *
  *  @author OLiver
  */
-iwShip::iwShip(GameWorldViewer* const gwv, dskGameInterface* const gi, noShip* const ship)
+iwShip::iwShip(GameWorldViewer* const gwv, dskGameInterface* const  /*gi*/, noShip* const ship)
     : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), ship_id(ship ? GAMECLIENT.GetPlayer(ship->GetPlayer()).GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())
 {

@@ -31,21 +31,21 @@ class noSkeleton: public noCoordBase
         noSkeleton(const MapPoint pt);
         noSkeleton(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noSkeleton();
+        ~noSkeleton() override;
 
-        void Destroy() { Destroy_noSkeleton(); }
+        void Destroy() override { Destroy_noSkeleton(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noSkeleton(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noSkeleton(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noSkeleton(sgd); }
 
-        GO_Type GetGOT() const { return GOT_SKELETON; }
+        GO_Type GetGOT() const override { return GOT_SKELETON; }
 
     protected:
         void Destroy_noSkeleton();
 
-        void Draw(int x, int y);
-        void HandleEvent(const unsigned int id);
+        void Draw(int x, int y) override;
+        void HandleEvent(const unsigned int id) override;
 
     private:
         /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)

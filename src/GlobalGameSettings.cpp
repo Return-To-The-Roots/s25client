@@ -69,6 +69,7 @@
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
 #include <iostream>
+#include <stdexcept>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -91,11 +92,15 @@ GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
     Deserialize(ser);
 }
 
-void GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
+GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 {
+    if(this == &ggs)
+        return *this;
+
     Serializer ser;
     ggs.Serialize(ser);
     Deserialize(ser);
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,6 +175,18 @@ void GlobalGameSettings::reset(bool recreate)
 
 		registerAddon(new AddonMilitaryHitpoints);
     }
+}
+
+void GlobalGameSettings::registerAddon(Addon* addon)
+{
+    if(!addon)
+        return;
+
+    if(helpers::contains(addons, addon->getId()))
+        throw std::runtime_error("Addon already registered");
+
+    addons.push_back(item(addon));
+    std::sort(addons.begin(), addons.end());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

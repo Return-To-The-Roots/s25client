@@ -128,7 +128,7 @@ void GameWorld::ImportantObjectDestroyed(const MapPoint pt)
     WINDOWMANAGER.Close(CreateGUIID(pt));
 }
 
-void GameWorld::MilitaryBuildingCaptured(const MapPoint pt, const unsigned char player)
+void GameWorld::MilitaryBuildingCaptured(const MapPoint  /*pt*/, const unsigned char player)
 {
     if(player == GAMECLIENT.GetPlayerID())
         LOADER.GetSoundN("sound", 110)->Play(255, false);

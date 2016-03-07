@@ -31,10 +31,10 @@ class noDisappearingEnvObject : public noCoordBase
 
         /// Aufräummethoden
     protected:  void Destroy_noDisappearingEnvObject();
-    public:     void Destroy() { Destroy_noDisappearingEnvObject(); }
+    public:     void Destroy() override { Destroy_noDisappearingEnvObject(); }
         /// Serialisierungsfunktionen
     protected:  void Serialize_noDisappearingEnvObject(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noDisappearingEnvObject(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noDisappearingEnvObject(sgd); }
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
         void HandleEvent_noDisappearingEnvObject(const unsigned int id);

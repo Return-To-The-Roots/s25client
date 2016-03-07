@@ -436,7 +436,7 @@ void nobUsual::WareLost(Ware* ware)
  *
  *  @author OLiver
  */
-void nobUsual::GotWorker(Job job, noFigure* worker)
+void nobUsual::GotWorker(Job  /*job*/, noFigure* worker)
 {
     this->worker = static_cast<nofBuildingWorker*>(worker);
 
@@ -483,7 +483,7 @@ bool nobUsual::WaresAvailable()
     switch(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
     {
         case 0: return true;
-        case 1: return (wares[0])?true:false;
+        case 1: return wares[0] != 0;
         case 2: return (wares[0] && wares[1]);
         case 3: return (wares[0] || wares[1] || wares[2]);
         default: return false;
@@ -575,7 +575,7 @@ void nobUsual::ConsumeWares()
  *
  *  @author OLiver
  */
-unsigned nobUsual::CalcDistributionPoints(noRoadNode* start, const GoodType type)
+unsigned nobUsual::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType type)
 {
     // Warentyp ermitteln
     unsigned id;

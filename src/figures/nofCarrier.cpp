@@ -126,7 +126,7 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
                        RoadSegment* workplace,
                        noRoadNode* const goal)
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct),
-      state(CARRS_FIGUREWORK), fat( ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) ? true : false) ),
+      state(CARRS_FIGUREWORK), fat( ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0) ),
       workplace(workplace), carried_ware(NULL), productivity_ev(0),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
 {
@@ -664,7 +664,7 @@ void nofCarrier::GoalReached()
             StartWalking(i);
             cur_rs = workplace;
             rs_pos = 0;
-            rs_dir = (rn == cur_rs->GetF1()) ? false : true;
+            rs_dir = rn != cur_rs->GetF1();
 
             state = CARRS_GOTOMIDDLEOFROAD;
 

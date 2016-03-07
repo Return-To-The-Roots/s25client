@@ -35,7 +35,7 @@ class GameServerPlayer : public GamePlayerInfo
     public:
         GameServerPlayer(const unsigned playerid);
         GameServerPlayer(const unsigned playerid, Serializer& ser);
-        ~GameServerPlayer();
+        ~GameServerPlayer() override;
 
         /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
         unsigned GetTimeOut() const;

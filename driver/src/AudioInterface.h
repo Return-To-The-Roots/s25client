@@ -26,16 +26,16 @@ class IAudioDriver
 {
 public:
     /// Destruktor von @p IAudioDriver.
-    virtual ~IAudioDriver(void) = 0;
+    virtual ~IAudioDriver() = 0;
 
     /// Funktion zum Auslesen des Treibernamens.
-    virtual const char* GetName(void) const = 0;
+    virtual const char* GetName() const = 0;
 
     /// Treiberinitialisierungsfunktion.
-    virtual bool Initialize(void) = 0;
+    virtual bool Initialize() = 0;
 
     /// Treiberaufräumfunktion.
-    virtual void CleanUp(void) = 0;
+    virtual void CleanUp() = 0;
 
     virtual Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) = 0;
     virtual Sound* LoadMusic (AudioType data_type, const unsigned char* data, unsigned long size) = 0;
@@ -45,7 +45,7 @@ public:
     /// Spielt Midi ab
     virtual void PlayMusic(Sound* sound, const unsigned repeats) = 0;
     /// Stoppt die Musik.
-    virtual void StopMusic(void) = 0;
+    virtual void StopMusic() = 0;
     /// Stoppt einen Sound
     virtual void StopEffect(const unsigned int play_id) = 0;
     /// Wird ein Sound (noch) abgespielt?

@@ -32,7 +32,7 @@
  *
  *  @author FloSoft
  */
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(void)
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct()
 {
 }
 

@@ -46,10 +46,10 @@ class ctrlIngameMinimap : public ctrlMinimap
                            GameWorldViewer& gwv);
 
         /// Zeichnet die MapPreview
-        bool Draw_();
+        bool Draw_() override;
 
-        bool Msg_LeftDown(const MouseCoords& mc);
-        bool Msg_MouseMove(const MouseCoords& mc);
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
 
         /// Setzt Breite und Höhe des Controls
         void SetDisplaySize(const unsigned short width, const unsigned short height);

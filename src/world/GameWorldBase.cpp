@@ -263,10 +263,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const
                 return false;
         }
 
-        if(!flagPossible)
-            return false;
-
-        return true;
+        return flagPossible;
     }
     else
     {
@@ -279,7 +276,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const
     return true;
 }
 
-bool GameWorldBase::RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
+bool GameWorldBase::RoadAlreadyBuilt(const bool  /*boat_road*/, const MapPoint start, const std::vector<unsigned char>& route)
 {
     MapPoint tmp(start);
     for(unsigned i = 0; i < route.size() - 1; ++i)
@@ -293,7 +290,7 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool boat_road, const MapPoint start,
     return true;
 }
 
-void GameWorldBase::CalcRoad(const MapPoint pt, const unsigned char player)
+void GameWorldBase::CalcRoad(const MapPoint pt, const unsigned char  /*player*/)
 {
     CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
 

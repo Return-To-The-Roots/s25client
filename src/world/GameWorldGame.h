@@ -67,7 +67,7 @@ protected:
 public:
 
     GameWorldGame();
-    virtual ~GameWorldGame();
+    ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     inline GameInterface* GetGameInterface() const { return gi; }

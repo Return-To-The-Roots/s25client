@@ -106,7 +106,7 @@ void GameServer::CountDown::Clear(int time)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
+GameServer::GameServer(): lanAnnouncer(LAN_DISCOVERY_CFG)
 {
     status = SS_STOPPED;
 
@@ -121,7 +121,7 @@ GameServer::GameServer(void): lanAnnouncer(LAN_DISCOVERY_CFG)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::~GameServer(void)
+GameServer::~GameServer()
 {
     Stop();
 }
@@ -152,7 +152,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             libsiedler2::ArchivInfo map;
 
             // Karteninformationen laden
-            if(libsiedler2::loader::LoadMAP(serverconfig.mapname.c_str(), map, true) != 0)
+            if(libsiedler2::loader::LoadMAP(serverconfig.mapname, map, true) != 0)
             {
                 LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", serverconfig.mapname.c_str());
                 return false;
@@ -418,7 +418,7 @@ void GameServer::AnnounceStatusChange()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Hauptschleife
-void GameServer::Run(void)
+void GameServer::Run()
 {
     if(status == SS_STOPPED)
         return;
@@ -483,7 +483,7 @@ void GameServer::Run(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // stoppt den server
-void GameServer::Stop(void)
+void GameServer::Stop()
 {
     // player verabschieden
     players.clear();
@@ -997,7 +997,7 @@ void GameServer::RunGF(bool isNWF)
     ++framesinfo.gf_nr;
 }
 
-void GameServer::ExecuteNWF(const unsigned currentTime)
+void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
 {
     // Advance lastExecutedTime by the GF length.
     // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier
@@ -1142,7 +1142,7 @@ void GameServer::SendNothingNC(const unsigned int& id)
 
 ///////////////////////////////////////////////////////////////////////////////
 // testet, ob in der Verbindungswarteschlange Clients auf Verbindung warten
-void GameServer::WaitForClients(void)
+void GameServer::WaitForClients()
 {
     SocketSet set;
 
@@ -1184,7 +1184,7 @@ void GameServer::WaitForClients(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // füllt die warteschlangen mit "paketen"
-void GameServer::FillPlayerQueues(void)
+void GameServer::FillPlayerQueues()
 {
     SocketSet set;
     unsigned char client = 0xFF;

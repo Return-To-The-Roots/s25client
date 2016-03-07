@@ -31,11 +31,11 @@ class iwRoadWindow : public IngameWindow
 
     public:
         iwRoadWindow(dskGameInterface* const gi, bool flagpossible, int mouse_x, int mouse_y);
-        ~iwRoadWindow();
+        ~iwRoadWindow() override;
 
     private:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwROADWINDOW_H_INCLUDED

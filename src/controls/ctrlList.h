@@ -31,28 +31,28 @@ class ctrlList : public Window
         /// Konstruktor von @p ctrlList.
         ctrlList(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
         /// Destruktor von @p ctrlList.
-        virtual ~ctrlList(void);
+        ~ctrlList() override;
 
         /// Größe verändern
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
 
         /// Neuen String zur Listbox hinzufügen.
         void AddString(const std::string& text);
         /// Verändert einen String
         void SetString(const std::string& text, const unsigned id);
         /// Listbox leeren.
-        void DeleteAllItems(void);
+        void DeleteAllItems();
         /// liefert den Wert einer Zeile.
         const std::string& GetItemText(unsigned short line) const;
         /// liefert den Wert der aktuell gewählten Zeile.
-        const std::string& GetSelItemText(void) const { return GetItemText(selection_); };
+        const std::string& GetSelItemText() const { return GetItemText(selection_); };
         /// Vertauscht zwei Zeilen.
         void Swap(unsigned short first, unsigned short second);
         /// Löscht ein Element
         void Remove(const unsigned short index);
 
-        unsigned short GetLineCount(void) const { return static_cast<unsigned short>(lines.size()); }
-        unsigned short GetSelection(void) const { return static_cast<unsigned short>(selection_); };
+        unsigned short GetLineCount() const { return static_cast<unsigned short>(lines.size()); }
+        unsigned short GetSelection() const { return static_cast<unsigned short>(selection_); };
         void SetSelection(unsigned short selection)
         {
             if(selection != this->selection_ && selection < lines.size())
@@ -63,15 +63,15 @@ class ctrlList : public Window
             }
         }
 
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_RightDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
     protected:
         /// Zeichenmethode.
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
     private:
         TextureColor tc;

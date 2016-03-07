@@ -423,7 +423,7 @@ void noFigure::WalkToGoal()
                 cur_rs = curRoadNode->routes[route];
                 StartWalking(route);
                 rs_pos = 0;
-                rs_dir = (curRoadNode == cur_rs->GetF1()) ? false : true;
+                rs_dir = curRoadNode != cur_rs->GetF1();
             }
         }
 
@@ -575,7 +575,7 @@ struct Point2Flag{
 
     Point2Flag(GameWorldBase& gwb): gwb(gwb){}
 
-    result_type operator()(const MapPoint pt, unsigned r) const
+    result_type operator()(const MapPoint pt, unsigned  /*r*/) const
     {
         return gwb.GetSpecObj<noFlag>(pt);
     }

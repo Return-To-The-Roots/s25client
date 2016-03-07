@@ -31,10 +31,10 @@ class ctrlVarText : public ctrlText
     public:
         /// liste contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
         ctrlVarText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int count, va_list liste);
-        virtual ~ctrlVarText(void);
+        ~ctrlVarText() override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_() override;
         /// Returns the text with placeholders replaced by the actual vars
         std::string GetFormatedText() const;
 

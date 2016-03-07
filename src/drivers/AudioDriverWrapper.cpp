@@ -47,7 +47,7 @@ void AudioDriverWrapper::PlayMusic(Sound* sound, const unsigned repeats)
 }
 
 /// Stoppt die Musik.
-void AudioDriverWrapper::StopMusic(void)
+void AudioDriverWrapper::StopMusic()
 {
     if(audiodriver)
         audiodriver->StopMusic();
@@ -81,7 +81,7 @@ void AudioDriverWrapper::SetMasterMusicVolume(unsigned char volume)
         audiodriver->SetMasterMusicVolume(volume);
 }
 
-std::string AudioDriverWrapper::GetName(void) const
+std::string AudioDriverWrapper::GetName() const
 {
     if(audiodriver)
         return audiodriver->GetName();
@@ -90,7 +90,7 @@ std::string AudioDriverWrapper::GetName(void) const
 }
 
 /// Lädt den Treiber
-bool AudioDriverWrapper::LoadDriver(void)
+bool AudioDriverWrapper::LoadDriver()
 {
     // DLL laden
     if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))

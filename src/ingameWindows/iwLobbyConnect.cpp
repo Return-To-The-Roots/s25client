@@ -42,7 +42,7 @@
  *
  *  @author FloSoft
  */
-iwLobbyConnect::iwLobbyConnect(void)
+iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, 0xFFFF, 0xFFFF, 500, 260, _("Connecting to Lobby"), LOADER.GetImageN("resource", 41))
 {
     // Benutzername
@@ -148,7 +148,7 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
  *
  *  @author FloSoft
  */
-void iwLobbyConnect::Msg_EditChange(const unsigned int ctrl_id)
+void iwLobbyConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(0, COLOR_RED, true);

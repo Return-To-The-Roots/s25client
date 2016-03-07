@@ -28,19 +28,19 @@ class noExtension : public noBase
     public:
         noExtension(noBase* const base) : noBase(NOP_EXTENSION), base(base) {}
         noExtension(SerializedGameData& sgd, const unsigned obj_id);
-        ~noExtension();
+        ~noExtension() override;
 
-        void Destroy() { Destroy_noExtension(); }
+        void Destroy() override { Destroy_noExtension(); }
         noBase* GetBaseObject() const { return base; }
-        void Draw(int x, int y) {}
+        void Draw(int  /*x*/, int  /*y*/) override {}
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noExtension(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noExtension(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noExtension(sgd); }
 
-        GO_Type GetGOT() const { return GOT_EXTENSION; }
+        GO_Type GetGOT() const override { return GOT_EXTENSION; }
 
-        BlockingManner GetBM() const { return BM_SINGLEBLOCKING; }
+        BlockingManner GetBM() const override { return BM_SINGLEBLOCKING; }
 
     protected:
         void Destroy_noExtension() { Destroy_noBase(); }

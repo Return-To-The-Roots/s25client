@@ -26,13 +26,13 @@ class glArchivItem_Sound_Other : public libsiedler2::baseArchivItem_Sound_Other,
 {
     public:
         /// Konstruktor von @p glArchivItem_Sound_Other.
-        glArchivItem_Sound_Other(void) : baseArchivItem_Sound(), baseArchivItem_Sound_Other(), glArchivItem_Music() {}
+        glArchivItem_Sound_Other() : baseArchivItem_Sound(), baseArchivItem_Sound_Other(), glArchivItem_Music() {}
 
         /// Kopierkonstruktor von @p glArchivItem_Sound_Other.
         glArchivItem_Sound_Other(const glArchivItem_Sound_Other& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Other(item), glArchivItem_Music(item) {}
 
         /// Spielt die Musik ab.
-        void Play(const unsigned repeats);
+        void Play(const unsigned repeats) override;
 };
 
 #endif // !GLARCHIVITEM_SOUND_OTHER_H_INCLUDED

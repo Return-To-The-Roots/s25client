@@ -71,7 +71,7 @@ void noSkeleton::Draw(int x, int y)
     LOADER.GetMapImageN(547 + type)->Draw(x, y, 0, 0, 0, 0, 0, 0);
 }
 
-void noSkeleton::HandleEvent(const unsigned int id)
+void noSkeleton::HandleEvent(const unsigned int  /*id*/)
 {
     if(!type)
     {

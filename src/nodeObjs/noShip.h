@@ -146,17 +146,17 @@ class noShip : public noMovable
         noShip(const MapPoint pt, const unsigned char player);
         noShip(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noShip() {}
+        ~noShip() override {}
 
-        void Serialize(SerializedGameData& sgd) const;
-        void Destroy();
+        void Serialize(SerializedGameData& sgd) const override;
+        void Destroy() override;
 
-        GO_Type GetGOT() const { return GOT_SHIP; }
+        GO_Type GetGOT() const override { return GOT_SHIP; }
 
         // An x,y zeichnen
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
         // Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
         /// Gibt den Besitzer zurück
         unsigned char GetPlayer() const { return player; }

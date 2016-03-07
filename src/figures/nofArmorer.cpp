@@ -91,7 +91,7 @@ unsigned short nofArmorer::GetCarryID() const
     }
 }
 
-void nofArmorer::HandleDerivedEvent(const unsigned int id)
+void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
 {	
     switch(state)
     {

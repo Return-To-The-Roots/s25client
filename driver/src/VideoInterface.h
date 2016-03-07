@@ -40,13 +40,13 @@ public:
     virtual ~IVideoDriver() = 0;
 
     /// Funktion zum Auslesen des Treibernamens.
-    virtual const char* GetName(void) const = 0;
+    virtual const char* GetName() const = 0;
 
     /// Treiberinitialisierungsfunktion.
-    virtual bool Initialize(void) = 0;
+    virtual bool Initialize() = 0;
 
     /// Treiberaufräumfunktion.
-    virtual void CleanUp(void) = 0;
+    virtual void CleanUp() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
     virtual bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
@@ -55,16 +55,16 @@ public:
     virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
 
     /// Schliesst das Fenster.
-    virtual void DestroyScreen(void) = 0;
+    virtual void DestroyScreen() = 0;
 
     /// Wechselt die OpenGL-Puffer.
-    virtual bool SwapBuffers(void) = 0;
+    virtual bool SwapBuffers() = 0;
 
     /// Die Nachrichtenschleife.
-    virtual bool MessageLoop(void) = 0;
+    virtual bool MessageLoop() = 0;
 
     /// Funktion zum Auslesen des TickCounts.
-    virtual unsigned long GetTickCount(void) const = 0;
+    virtual unsigned long GetTickCount() const = 0;
 
     /// Funktion zum Holen einer Subfunktion.
     virtual void* GetFunction(const char* function) const = 0;
@@ -90,10 +90,10 @@ public:
     virtual void SetMousePosY(int y) = 0;
 
     /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
-    virtual bool GetMouseStateL(void) const = 0;
+    virtual bool GetMouseStateL() const = 0;
 
     /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
-    virtual bool GetMouseStateR(void) const = 0;
+    virtual bool GetMouseStateR() const = 0;
 
     //
     virtual unsigned short GetScreenWidth()  const = 0;
@@ -101,7 +101,7 @@ public:
     virtual bool IsFullscreen() const = 0;
 
     /// Get state of the modifier keys
-    virtual KeyEvent GetModKeyState(void) const = 0;
+    virtual KeyEvent GetModKeyState() const = 0;
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
     virtual void* GetMapPointer() const = 0;

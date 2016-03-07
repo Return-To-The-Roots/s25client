@@ -55,7 +55,7 @@ class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLonge
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 29;
 
         SoundManager();
-        ~SoundManager();
+        ~SoundManager() override;
 
         /// Versucht ggf. Objekt-Sound abzuspielen
         void PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned int id, unsigned char volume = 255);

@@ -30,10 +30,10 @@ class nofPassiveWorker : public noFigure
     private:
 
         /// von noFigure aufgerufen
-        void Walked(); // wenn man gelaufen ist
-        void GoalReached(); // wenn das Ziel erreicht wurde
-        void AbrogateWorkplace();
-        void HandleDerivedEvent(const unsigned int id); /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+        void Walked() override; // wenn man gelaufen ist
+        void GoalReached() override; // wenn das Ziel erreicht wurde
+        void AbrogateWorkplace() override;
+        void HandleDerivedEvent(const unsigned int id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
     public:
 
@@ -41,9 +41,9 @@ class nofPassiveWorker : public noFigure
         nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Zeichnen
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
-        GO_Type GetGOT() const
+        GO_Type GetGOT() const override
         {
             return GOT_NOF_PASSIVEWORKER;
         }

@@ -87,7 +87,7 @@ ctrlTable::ctrlTable(Window* parent,
  *
  *  @author OLiver
  */
-ctrlTable::~ctrlTable(void)
+ctrlTable::~ctrlTable()
 {
     DeleteAllItems();
     columns.clear();
@@ -132,7 +132,7 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
  *
  *  @author OLiver
  */
-void ctrlTable::DeleteAllItems(void)
+void ctrlTable::DeleteAllItems()
 {
     rows.clear();
 
@@ -278,7 +278,7 @@ void ctrlTable::SortRows(unsigned short column, bool* direction)
  *
  *  @author FloSoft
  */
-bool ctrlTable::Draw_(void)
+bool ctrlTable::Draw_()
 {
     Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
@@ -444,7 +444,7 @@ bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-void ctrlTable::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
+void ctrlTable::Msg_ScrollShow(const unsigned int  /*ctrl_id*/, const bool visible)
 {
     if(visible)
     {

@@ -670,13 +670,13 @@ void nobBaseWarehouse::HandleLeaveEvent()
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
 /// (muss in dem Fall true zurückgeben)
-bool nobBaseWarehouse::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
+bool nobBaseWarehouse::UseWareAtOnce(Ware*  /*ware*/, noBaseBuilding&  /*goal*/)
 {
     return false;
 }
 
 /// Dasselbe für Menschen
-bool nobBaseWarehouse::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
+bool nobBaseWarehouse::UseFigureAtOnce(noFigure*  /*fig*/, noRoadNode&  /*goal*/)
 {
     return false;
 }

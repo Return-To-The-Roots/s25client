@@ -28,7 +28,7 @@ class iwMerchandiseStatistics : public IngameWindow
 {
     public:
         iwMerchandiseStatistics();
-        ~iwMerchandiseStatistics();
+        ~iwMerchandiseStatistics() override;
 
     private:
         /// Malt die bunten Kästchen über den Buttons
@@ -51,9 +51,9 @@ class iwMerchandiseStatistics : public IngameWindow
         ctrlText* maxValue;
 
         // Durchgereichte Methoden vom Window
-        void Msg_PaintAfter();
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintAfter() override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwMERCHANDISE_STATISTICS_H_INCLUDED

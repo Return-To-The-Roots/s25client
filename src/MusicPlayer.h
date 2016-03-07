@@ -36,7 +36,7 @@ class Playlist
         void Prepare();
 
         /// liefert den Dateinamen des akteullen Songs
-        const std::string getCurrentSong() const    {   return (songs.size() && order.size() ? songs[order[0]] : "");   }
+        const std::string getCurrentSong() const    {   return (!songs.empty() && !order.empty() ? songs[order[0]] : "");   }
 
         /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
         const std::string getNextSong();

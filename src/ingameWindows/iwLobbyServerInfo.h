@@ -33,12 +33,12 @@ class iwLobbyServerInfo : public IngameWindow
         iwLobbyServerInfo();
 
         void Set(const LobbyServerInfo* serverinfo, unsigned int server);
-        unsigned int GetNr(void) { return server; }
+        unsigned int GetNr() { return server; }
 
     protected:
         void UpdateServerInfo();
 
-        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_Timer(const unsigned int ctrl_id) override;
 
 
 };

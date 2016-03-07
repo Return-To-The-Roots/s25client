@@ -62,7 +62,7 @@ AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli)
  *
  *  @author FloSoft
  */
-AudioDriver::~AudioDriver(void)
+AudioDriver::~AudioDriver()
 {
     for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
     {
@@ -80,7 +80,7 @@ AudioDriver::~AudioDriver(void)
  *
  *  @author FloSoft
  */
-const char* AudioDriver::GetName(void) const
+const char* AudioDriver::GetName() const
 {
     return NULL;
 }

@@ -19,7 +19,6 @@
 #define GlobalGameSettings_H_INCLUDED
 
 #include "addons/Addons.h"
-#include "helpers/containerUtils.h"
 #include <vector>
 #include <algorithm>
 
@@ -32,7 +31,7 @@ class GlobalGameSettings
         GlobalGameSettings(const GlobalGameSettings& ggs);
         ~GlobalGameSettings();
 
-        void operator=(const GlobalGameSettings& ggs);
+        GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
 
         /// Serialisierung und Deserialisierung
         void Serialize(Serializer& ser) const;
@@ -69,9 +68,7 @@ class GlobalGameSettings
         bool isEnabled(AddonId id) const
         {
             std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
-            if(it == addons.end() || it->status == it->addon->getDefaultStatus())
-                return false;
-            return true;
+            return it != addons.end() && it->status != it->addon->getDefaultStatus();
         }
 
         unsigned int getSelection(AddonId id) const
@@ -94,20 +91,11 @@ class GlobalGameSettings
         unsigned int GetMaxMilitaryRank() const;
 
     private:
-        void registerAddon(Addon* addon)
-        {
-            if(!addon)
-                return;
-
-            if(!helpers::contains(addons, addon->getId()))
-                addons.push_back(item(addon));
-
-            std::sort(addons.begin(), addons.end());
-        }
+        void registerAddon(Addon* addon);
 
         struct item
         {
-            item(void) : addon(NULL), status(0) {}
+            item() : addon(NULL), status(0) {}
             item(Addon* addon) : addon(addon), status(addon->getDefaultStatus()) {}
 
             Addon* addon;

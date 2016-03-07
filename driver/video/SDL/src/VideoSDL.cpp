@@ -104,7 +104,7 @@ VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack)
  *
  *  @author FloSoft
  */
-VideoSDL::~VideoSDL(void)
+VideoSDL::~VideoSDL()
 {
     CleanUp();
 }
@@ -117,7 +117,7 @@ VideoSDL::~VideoSDL(void)
  *
  *  @author FloSoft
  */
-const char* VideoSDL::GetName(void) const
+const char* VideoSDL::GetName() const
 {
     return GetDriverName();
 }
@@ -130,7 +130,7 @@ const char* VideoSDL::GetName(void) const
  *
  *  @author FloSoft
  */
-bool VideoSDL::Initialize(void)
+bool VideoSDL::Initialize()
 {
     if( SDL_InitSubSystem( SDL_INIT_VIDEO ) < 0 )
     {
@@ -156,7 +156,7 @@ bool VideoSDL::Initialize(void)
  *
  *  @author FloSoft
  */
-void VideoSDL::CleanUp(void)
+void VideoSDL::CleanUp()
 {
     if(!initialized)
         return;
@@ -273,7 +273,7 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
  *
  *  @author FloSoft
  */
-void VideoSDL::DestroyScreen(void)
+void VideoSDL::DestroyScreen()
 {
     // Fenster schliessen
     CleanUp();
@@ -288,7 +288,7 @@ void VideoSDL::DestroyScreen(void)
  *
  *  @author FloSoft
  */
-bool VideoSDL::SwapBuffers(void)
+bool VideoSDL::SwapBuffers()
 {
     // Puffer wechseln
     SDL_GL_SwapBuffers();
@@ -304,7 +304,7 @@ bool VideoSDL::SwapBuffers(void)
  *
  *  @author FloSoft
  */
-bool VideoSDL::MessageLoop(void)
+bool VideoSDL::MessageLoop()
 {
     SDL_Event ev;
 
@@ -439,7 +439,7 @@ bool VideoSDL::MessageLoop(void)
  *
  *  @author FloSoft
  */
-unsigned long VideoSDL::GetTickCount(void) const
+unsigned long VideoSDL::GetTickCount() const
 {
     return SDL_GetTicks();
 }
@@ -527,7 +527,7 @@ void VideoSDL::SetMousePosY(int y)
  *
  *  @author Divan
  */
-KeyEvent VideoSDL::GetModKeyState(void) const
+KeyEvent VideoSDL::GetModKeyState() const
 {
     const SDLMod modifiers = SDL_GetModState();
     const KeyEvent ke = { KT_INVALID, 0, ( (modifiers& KMOD_CTRL) != 0), ( (modifiers& KMOD_SHIFT) != 0), ( (modifiers& KMOD_ALT) != 0)};

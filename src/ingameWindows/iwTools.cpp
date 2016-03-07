@@ -37,7 +37,7 @@
  *
  *  @author OLiver
  */
-iwTools::iwTools(void)
+iwTools::iwTools()
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(ADDON_TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
       settings_changed(false)
 {
@@ -176,13 +176,13 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         }
 }
 
-void iwTools::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
+void iwTools::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
     // Einstellungen wurden geändert
     settings_changed = true;
 }
 
-void iwTools::Msg_Timer(const unsigned int ctrl_id)
+void iwTools::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte

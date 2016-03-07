@@ -38,35 +38,35 @@ class AudioSDL : public AudioDriver
         AudioSDL(AudioDriverLoaderInterface* adli);
 
         /// Destruktor von @p AudioSDL.
-        ~AudioSDL(void);
+        ~AudioSDL() override;
 
         /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName(void) const;
+        const char* GetName() const override;
 
         /// Treiberinitialisierungsfunktion.
-        bool Initialize(void);
+        bool Initialize() override;
 
         /// Treiberaufräumfunktion.
-        void CleanUp(void);
+        void CleanUp() override;
 
-        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size);
-        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size);
+        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) override;
+        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size) override;
 
         /// Spielt Sound ab
-        unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop);
+        unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;
         /// Spielt Midi ab
-        void PlayMusic(Sound* sound, const unsigned repeats);
+        void PlayMusic(Sound* sound, const unsigned repeats) override;
         /// Stoppt die Musik.
-        void StopMusic(void);
+        void StopMusic() override;
         /// Wird der Sound (noch) abgespielt?
-        bool IsEffectPlaying(const unsigned play_id);
+        bool IsEffectPlaying(const unsigned play_id) override;
         /// Stoppt einen Sound
-        void StopEffect(const unsigned play_id);
+        void StopEffect(const unsigned play_id) override;
         /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-        void ChangeVolume(const unsigned play_id, const unsigned char volume);
+        void ChangeVolume(const unsigned play_id, const unsigned char volume) override;
 
-        void SetMasterEffectVolume(unsigned char volume);
-        void SetMasterMusicVolume(unsigned char volume);
+        void SetMasterEffectVolume(unsigned char volume) override;
+        void SetMasterMusicVolume(unsigned char volume) override;
 
     private:
 

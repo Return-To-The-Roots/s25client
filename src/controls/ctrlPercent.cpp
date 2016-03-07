@@ -54,7 +54,7 @@ ctrlPercent::ctrlPercent(Window* parent,
  *
  *  @author OLiver
  */
-bool ctrlPercent::Draw_(void)
+bool ctrlPercent::Draw_()
 {
     // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
     unsigned short percentage = (this->percentage_ ?  *this->percentage_ : 0);

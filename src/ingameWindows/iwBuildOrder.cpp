@@ -35,7 +35,7 @@
  *
  *  @author OLiver
  */
-iwBuildOrder::iwBuildOrder(void)
+iwBuildOrder::iwBuildOrder()
     : IngameWindow(CGI_BUILDORDER, (unsigned short) - 1, (unsigned short) - 1, 320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),
       settings_changed(false)
 {
@@ -92,7 +92,7 @@ void iwBuildOrder::TransmitSettings()
     }
 }
 
-void iwBuildOrder::Msg_Timer(const unsigned int ctrl_id)
+void iwBuildOrder::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte

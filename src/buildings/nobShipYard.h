@@ -45,9 +45,9 @@ class nobShipYard : public nobUsual
 
     public:
         /// Serialisierungsfunktionen
-        void Serialize(SerializedGameData& sgd) const;
+        void Serialize(SerializedGameData& sgd) const override;
 
-        GO_Type GetGOT() const { return GOT_NOB_SHIPYARD; }
+        GO_Type GetGOT() const override { return GOT_NOB_SHIPYARD; }
 
         /// Gibt aktuellen Modus zurück
         Mode GetMode() const { return mode; }

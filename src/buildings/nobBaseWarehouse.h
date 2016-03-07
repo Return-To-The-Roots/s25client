@@ -123,7 +123,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
     protected:
 
         /// Stellt Verteidiger zur Verfügung
-        virtual nofDefender* ProvideDefender(nofAttacker* const attacker);
+        nofDefender* ProvideDefender(nofAttacker* const attacker) override;
 
         void HandleBaseEvent(const unsigned int id);
 
@@ -144,17 +144,17 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
         void Clear();
         
-        virtual ~nobBaseWarehouse();
+        ~nobBaseWarehouse() override;
 
         /// Aufräummethoden
     protected:
         void Destroy_nobBaseWarehouse();
     public:
-        void Destroy() { Destroy_nobBaseWarehouse(); }
+        void Destroy() override { Destroy_nobBaseWarehouse(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobBaseWarehouse(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobBaseWarehouse(sgd); }
+    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobBaseWarehouse(sgd); }
 
         const Inventory& GetInventory() const;
 
@@ -196,35 +196,35 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen konnten
         void AddWaitingWare(Ware*& ware);
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-        bool FreePlaceAtFlag();
+        bool FreePlaceAtFlag() override;
         // Eine Ware liegt vor der Flagge des Warenhauses und will rein --> ein Warenhausmitarbeiter muss kommen und sie holen
         void FetchWare();
         // Soll die nächste Ware nicht holen
         void DontFetchNextWare() {fetch_double_protection = true;}
 
         /// Legt eine Ware im Lagerhaus ab
-        virtual void AddWare(Ware*& ware);
+        void AddWare(Ware*& ware) override;
         /// Eine Figur geht ins Lagerhaus
         virtual void AddFigure(noFigure* figure, const bool increase_visual_counts = true);
 
         /// Eine bestellte Ware konnte doch nicht kommen
-        virtual void WareLost(Ware* ware);
+        void WareLost(Ware* ware) override;
         /// Bestellte Ware, die sich noch hier drin befindet, storniert ihre Auslieferung
         void CancelWare(Ware* ware);
         /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
         virtual void CancelFigure(noFigure* figure);
 
         /// Sowas ist bei Warenhäusern nicht nötig
-        unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type) { return 0; }
+        unsigned CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType  /*type*/) { return 0; }
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-        void TakeWare(Ware* ware);
+        void TakeWare(Ware* ware) override;
 
         /// Fügt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
         void AddDependentFigure(noFigure* figure) { RTTR_Assert(!IsDependentFigure(figure)); dependent_figures.push_back(figure); }
         //// Entfernt eine abhängige Figur wieder aus der Liste
         virtual void RemoveDependentFigure(noFigure* figure) { RTTR_Assert(IsDependentFigure(figure)); dependent_figures.remove(figure); }
         /// Wird aufgerufen, wenn ein Arbeiter hierher kommt
-        void GotWorker(Job job, noFigure* worker) { RTTR_Assert(!IsDependentFigure(worker)); dependent_figures.push_back(worker); }
+        void GotWorker(Job  /*job*/, noFigure* worker) override { RTTR_Assert(!IsDependentFigure(worker)); dependent_figures.push_back(worker); }
 
         //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
 		void RemoveDependentWare(Ware* ware) { RTTR_Assert(IsWareDependent(ware)); dependent_wares.remove(ware); }
@@ -234,7 +234,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         bool AreWaresToEmpty() const;
 
         /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
-        void AddActiveSoldier(nofActiveSoldier* soldier);
+        void AddActiveSoldier(nofActiveSoldier* soldier) override;
         /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
         unsigned GetSoldiersCount() const
         {
@@ -245,12 +245,12 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst=false);
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-        nofAggressiveDefender* SendDefender(nofAttacker* attacker);
+        nofAggressiveDefender* SendDefender(nofAttacker* attacker) override;
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
-        void SoldierLost(nofSoldier* soldier);
+        void SoldierLost(nofSoldier* soldier) override;
 
         /// Sind noch Truppen drinne, die dieses Gebäude verteidigen könnten?
-        bool DefendersAvailable() const;
+        bool DefendersAvailable() const override;
 
         /// Verändert Reserveeinstellung - visuell (nur das geforderte natürlich) und gibt neue Anzahl zurück
         unsigned IncreaseReserveVisual(unsigned rank);

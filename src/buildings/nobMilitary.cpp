@@ -635,7 +635,7 @@ bool nobMilitary::FreePlaceAtFlag()
 {
     return false;
 }
-void nobMilitary::GotWorker(Job job, noFigure* worker)
+void nobMilitary::GotWorker(Job  /*job*/, noFigure* worker)
 {
     // Insert soldiers sorted. Weak ones first
     RTTR_Assert(dynamic_cast<nofPassiveSoldier*>(worker));

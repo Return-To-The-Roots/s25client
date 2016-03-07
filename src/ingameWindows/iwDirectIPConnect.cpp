@@ -92,7 +92,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
  *
  *  @author FloSoft
  */
-void iwDirectIPConnect::Msg_EditChange(const unsigned int ctrl_id)
+void iwDirectIPConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(EMPTY_STRING, COLOR_RED, true);

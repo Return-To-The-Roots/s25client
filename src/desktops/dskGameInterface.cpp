@@ -139,7 +139,7 @@ dskGameInterface::~dskGameInterface()
  *
  *  @author OLiver
  */
-void dskGameInterface::SettingsChanged(void)
+void dskGameInterface::SettingsChanged()
 {
 }
 
@@ -512,7 +512,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
  *
  *  @author Divan
  */
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
+bool dskGameInterface::Msg_LeftUp(const MouseCoords&  /*mc*/)
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -549,7 +549,7 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool dskGameInterface::Msg_RightUp(const MouseCoords& mc) //-V524
+bool dskGameInterface::Msg_RightUp(const MouseCoords&  /*mc*/) //-V524
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -754,7 +754,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 void dskGameInterface::Run()
 {
     unsigned water_percent;
-    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow ? true : false, selected, road);
+    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow != NULL, selected, road);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
@@ -799,7 +799,7 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
  *
  *  @author OLiver
  */
-bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool end)
+bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
 {
     std::vector<unsigned char> new_route;
     bool path_found = gwv->FindRoadPath(road.point, cSel, new_route, road.mode == RM_BOAT);
@@ -1004,7 +1004,7 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
  *
  *  @author OLiver
  */
-void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& ggs)
+void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
 {
     // TODO: print what has changed
     char text[256];
@@ -1035,7 +1035,7 @@ void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination c
 void dskGameInterface::CI_Async(const std::string& checksums_list)
 {
     messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
-    messenger.AddMessage("", 0, CD_SYSTEM, checksums_list.c_str(), COLOR_YELLOW);
+    messenger.AddMessage("", 0, CD_SYSTEM, checksums_list, COLOR_YELLOW);
     messenger.AddMessage("", 0, CD_SYSTEM, _("A auto-savegame is created..."), COLOR_RED);
 
 }

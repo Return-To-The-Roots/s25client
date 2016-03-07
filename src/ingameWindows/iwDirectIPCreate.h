@@ -39,13 +39,13 @@ class iwDirectIPCreate : public IngameWindow, public LobbyInterface
     public:
         iwDirectIPCreate(ServerType server_type);
 
-        void LC_Status_Error(const std::string& error);
+        void LC_Status_Error(const std::string& error) override;
 
     protected:
-        void Msg_EditChange(const unsigned int ctrl_id);
-        void Msg_EditEnter(const unsigned int ctrl_id);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_EditChange(const unsigned int ctrl_id) override;
+        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
 
     private:
         void SetText(const std::string& text, unsigned int color, bool button);

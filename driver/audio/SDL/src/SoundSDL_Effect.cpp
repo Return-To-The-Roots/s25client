@@ -40,7 +40,7 @@ SoundSDL_Effect::SoundSDL_Effect() : sound(NULL)
  *
  *  @author FloSoft
  */
-SoundSDL_Effect::~SoundSDL_Effect(void)
+SoundSDL_Effect::~SoundSDL_Effect()
 {
     if(sound)
         Mix_FreeChunk(sound);

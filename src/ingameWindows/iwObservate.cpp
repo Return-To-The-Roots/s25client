@@ -155,7 +155,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
     return(false);
 }
 
-bool iwObservate::Msg_RightUp(const MouseCoords& mc)
+bool iwObservate::Msg_RightUp(const MouseCoords&  /*mc*/)
 {
     scroll = false;
 

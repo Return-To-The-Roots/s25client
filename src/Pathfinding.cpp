@@ -38,7 +38,7 @@ struct Param_RoadPath
 };
 
 /// Abbruch-Bedingungen für Straßenbau-Pathfinding
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
+bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char  /*dir*/, const void* param)
 {
     const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
 
@@ -54,7 +54,7 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsig
 }
 
 /// Abbruch-Bedingungen für Straßenbau-Pathfinding for comfort road construction with a possible flag every 2 steps
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param)
+bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const unsigned char  /*dir*/, const void* param)
 {
     const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
 
@@ -121,7 +121,7 @@ unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, con
 }
 
 /// Wegfindung für Schiffe auf dem Wasser
-bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length, const unsigned max_length)
+bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length, const unsigned  /*max_length*/)
 {
     return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, PathConditionShip(*this), false);
 }

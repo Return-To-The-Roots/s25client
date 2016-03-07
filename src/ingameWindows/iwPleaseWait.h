@@ -26,9 +26,9 @@ class iwPleaseWait : public IngameWindow
 {
     public:
         /// Konstruktor von @p iwPleaseWait.
-        iwPleaseWait(void);
+        iwPleaseWait();
         /// Destruktor von @p iwPleaseWait.
-        ~iwPleaseWait();
+        ~iwPleaseWait() override;
 };
 
 #endif // !iwPLEASEWAIT_H_INCLUDED

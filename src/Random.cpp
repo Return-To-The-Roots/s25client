@@ -30,7 +30,7 @@
  *
  *  @author FloSoft
  */
-Random::Random(void)
+Random::Random()
 {
     /*log = fopen("async_log.txt","w");*/
     Init(123456789);

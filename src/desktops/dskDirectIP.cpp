@@ -41,7 +41,7 @@
  *
  *  @author FloSoft
  */
-dskDirectIP::dskDirectIP(void) : Desktop(LOADER.GetImageN("menu", 0))
+dskDirectIP::dskDirectIP() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version
     AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());

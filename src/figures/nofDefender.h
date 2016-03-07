@@ -31,10 +31,10 @@ class nofDefender : public nofActiveSoldier
         nofAttacker* attacker;
 
         /// wenn man gelaufen ist
-        void Walked();
+        void Walked() override;
 
         /// The derived classes regain control after a fight of nofActiveSoldier
-        void FreeFightEnded();
+        void FreeFightEnded() override;
 
     public:
 
@@ -45,13 +45,13 @@ class nofDefender : public nofActiveSoldier
 
         /// Aufräummethoden
     protected:  void Destroy_nofDefender() { RTTR_Assert(!attacker); Destroy_nofActiveSoldier(); }
-    public:     void Destroy() { Destroy_nofDefender(); }
+    public:     void Destroy() override { Destroy_nofDefender(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofDefender(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofDefender(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofDefender(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_DEFENDER; }
+        GO_Type GetGOT() const override { return GOT_NOF_DEFENDER; }
 
         /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
         /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann
@@ -60,13 +60,13 @@ class nofDefender : public nofActiveSoldier
         void AttackerArrested();
 
         /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
-        void HomeDestroyed();
+        void HomeDestroyed() override;
         /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
-        void HomeDestroyedAtBegin();
+        void HomeDestroyedAtBegin() override;
         /// Wenn ein Kampf gewonnen wurde
-        void WonFighting();
+        void WonFighting() override;
         /// Wenn ein Kampf verloren wurde (Tod)
-        void LostFighting();
+        void LostFighting() override;
 
         /// Is the defender waiting at the flag for an attacker?
         bool IsWaitingAtFlag() const { return (state == STATE_DEFENDING_WAITING); }

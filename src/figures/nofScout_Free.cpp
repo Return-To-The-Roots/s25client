@@ -81,7 +81,7 @@ void nofScout_Free::Walked()
     }
 }
 
-void nofScout_Free::HandleDerivedEvent(const unsigned int id)
+void nofScout_Free::HandleDerivedEvent(const unsigned int  /*id*/)
 {
 }
 

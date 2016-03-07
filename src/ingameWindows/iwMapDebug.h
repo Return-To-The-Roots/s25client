@@ -27,7 +27,7 @@ class iwMapDebug: public IngameWindow
 {
 public:
     iwMapDebug(GameWorldViewer& gwv);
-    ~iwMapDebug();
+    ~iwMapDebug() override;
 
 private:
     class DebugPrinter;

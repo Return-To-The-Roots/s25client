@@ -55,7 +55,7 @@
  *
  *  @author OLiver
  */
-GameManager::GameManager(void) : frames(0), frame_count(0), framerate(0), frame_time(0),
+GameManager::GameManager() : frames(0), frame_count(0), framerate(0), frame_time(0),
     run_time(0), last_time(0), skipgf_last_time(0), skipgf_last_report_gf(0),
     cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
 {

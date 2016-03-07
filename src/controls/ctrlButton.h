@@ -34,7 +34,7 @@ class ctrlButton : public Window
     public:
         ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
                    const TextureColor tc, const std::string& tooltip);
-        virtual ~ctrlButton();
+        ~ctrlButton() override;
 
         void Enable(bool enable = true) { enabled = enable; }
         void SetTexture(TextureColor tc) { this->tc = tc; }
@@ -42,23 +42,23 @@ class ctrlButton : public Window
         /// Setzt Tooltip
         void SetTooltip(const std::string& tooltip) { this->tooltip_ = tooltip; }
         /// Liefert Tooltip zurück
-        std::string GetTooltip(void) const { return tooltip_; }
+        std::string GetTooltip() const { return tooltip_; }
         /// Tauscht Tooltips
         void SwapTooltip(ctrlButton* two) { std::swap(tooltip_, two->tooltip_); }
 
         void SetCheck(bool check) { this->check = check; }
-        bool GetCheck(void) { return check; }
+        bool GetCheck() { return check; }
         void SetIlluminated(bool illuminated) { this->illuminated = illuminated; }
-        bool GetIlluminated(void) { return illuminated; }
+        bool GetIlluminated() { return illuminated; }
         void SetBorder(const bool border) { this->border = border; }
 
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
 
     protected:
         /// Zeichnet Grundstruktur des Buttons
-        virtual bool Draw_(void);
+        bool Draw_() override;
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
         virtual void DrawContent() const = 0;
         // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
@@ -92,7 +92,7 @@ class ctrlTextButton : public ctrlButton, public ctrlBaseText
     protected:
 
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-        void DrawContent() const;
+        void DrawContent() const override;
 };
 
 
@@ -121,7 +121,7 @@ class ctrlImageButton : public ctrlButton
     protected:
 
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-        void DrawContent() const;
+        void DrawContent() const override;
 
     protected:
 
@@ -143,12 +143,12 @@ class ctrlColorButton : public ctrlButton, public ColorControlInterface
     public:
 
         /// Setzt die Farbe des Controls
-        virtual void SetColor(const unsigned int fill_color);
+        void SetColor(const unsigned int fill_color) override;
 
     protected:
 
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-        void DrawContent() const;
+        void DrawContent() const override;
 
     protected:
 

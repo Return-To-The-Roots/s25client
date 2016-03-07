@@ -37,9 +37,9 @@ class noBase : public GameObject
         virtual void Draw(int x, int y) = 0;
 
         /// Type zurückgeben.
-        NodalObjectType GetType(void) const { return nop; }
+        NodalObjectType GetType() const { return nop; }
         /// Serialisierungsfunktion.
-        void Serialize(SerializedGameData& sgd) const { Serialize_noBase(sgd); }
+        void Serialize(SerializedGameData& sgd) const override { Serialize_noBase(sgd); }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         virtual FOWObject* CreateFOWObject() const;
@@ -66,7 +66,7 @@ class noBase : public GameObject
 
     protected:
         /// Räumt das Basisobjekt auf.
-        void Destroy_noBase(void) {}
+        void Destroy_noBase() {}
         /// serialisiert das Basisobjekt.
         void Serialize_noBase(SerializedGameData& sgd) const;
 

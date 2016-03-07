@@ -39,8 +39,8 @@ class iwMilitaryBuilding : public IngameWindow
         static void DemolitionNotAllowed();
 
     private:
-        void Msg_PaintAfter();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintAfter() override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwMILITARYBUILDING_H_INCLUDED

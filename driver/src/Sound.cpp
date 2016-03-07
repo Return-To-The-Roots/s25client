@@ -63,6 +63,6 @@ Sound::Sound() :  nr(-1), type(SD_UNKNOWN)
  *
  *  @author FloSoft
  */
-Sound::~Sound(void)
+Sound::~Sound()
 {
 }

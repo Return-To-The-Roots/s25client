@@ -41,8 +41,8 @@ class iwWares : public IngameWindow
 
     protected:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_PaintBefore();
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_PaintBefore() override;
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

@@ -79,7 +79,7 @@ void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
  *
  *  @author FloSoft
  */
-void noDisappearingMapEnvObject::Destroy_noDisappearingMapEnvObject(void)
+void noDisappearingMapEnvObject::Destroy_noDisappearingMapEnvObject()
 {
     Destroy_noDisappearingEnvObject();
 }

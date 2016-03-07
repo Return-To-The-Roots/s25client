@@ -220,7 +220,7 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool ctrlList::Draw_(void)
+bool ctrlList::Draw_()
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 

@@ -89,27 +89,27 @@ class noTree : public noCoordBase
         noTree(const MapPoint pt, const unsigned char type, const unsigned char size);
         noTree(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noTree();
+        ~noTree() override;
 
         /// Aufräummethoden
     protected:  void Destroy_noTree();
-    public:     void Destroy() { Destroy_noTree(); }
+    public:     void Destroy() override { Destroy_noTree(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noTree(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noTree(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noTree(sgd); }
 
-        GO_Type GetGOT() const { return GOT_TREE; }
+        GO_Type GetGOT() const override { return GOT_TREE; }
 
 
-        void Draw( int x,   int y);
+        void Draw( int x,   int y) override;
 
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
-        BlockingManner GetBM() const { return BM_TREE; }
+        BlockingManner GetBM() const override { return BM_TREE; }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        FOWObject* CreateFOWObject() const;
+        FOWObject* CreateFOWObject() const override;
 
         /// Setzt Instance-Counter auf 0
         static void ResetInstanceCounter() { INSTANCE_COUNTER = 0; }

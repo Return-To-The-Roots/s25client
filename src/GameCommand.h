@@ -95,7 +95,7 @@ namespace gc
     public:
         GameCommand(const GameCommand& obj): gst(obj.gst), refCounter_(0) // Do not copy refCounter!
         {}
-        virtual ~GameCommand(void) {}
+        virtual ~GameCommand() {}
 
         GameCommand& operator=(const GameCommand& obj)
         {

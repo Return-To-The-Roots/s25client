@@ -32,7 +32,7 @@ class ctrlPercent : public Window
 
     protected:
         /// Zeichenmethode.
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
     private:
         TextureColor tc;

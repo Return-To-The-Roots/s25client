@@ -33,26 +33,26 @@ class ctrlEdit : public Window
         void SetText(const std::string& text);
         void SetText(const unsigned int text);
 
-        std::string GetText(void) const;
-        const std::wstring& GetWText(void) const { return text_; }
+        std::string GetText() const;
+        const std::wstring& GetWText() const { return text_; }
         void SetFocus(bool focus = true) { newFocus_ = focus; }
         void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
         void SetNotify(bool notify = true) { this->notify_ = notify; }
         void SetMaxLength(unsigned short maxlength = 0) { this->maxLength_ = maxlength; }
         void SetNumberOnly(const bool activated) {this->numberOnly_ = activated; }
 
-        virtual void Msg_PaintAfter();
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftDown_After(const MouseCoords& mc);
-        virtual bool Msg_KeyDown(const KeyEvent& ke);
+        void Msg_PaintAfter() override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftDown_After(const MouseCoords& mc) override;
+        bool Msg_KeyDown(const KeyEvent& ke) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
     private:
         void AddChar(unsigned int c);
-        void RemoveChar(void);
-        void Notify(void);
+        void RemoveChar();
+        void Notify();
 
         void CursorLeft() { if(cursorPos_ == 0) return; --cursorPos_; Notify(); };
         void CursorRight() { if(cursorPos_ == text_.length()) return; ++cursorPos_; Notify(); };

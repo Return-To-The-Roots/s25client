@@ -30,13 +30,13 @@ class AudioDriver: public IAudioDriver
         AudioDriver(AudioDriverLoaderInterface* adli);
 
         /// Destruktor von @p AudioDriver.
-        virtual ~AudioDriver(void);
+        ~AudioDriver() override;
 
         /// Funktion zum Auslesen des Treibernamens.
-        virtual const char* GetName(void) const;
+        const char* GetName() const override;
 
         /// prüft auf Initialisierung.
-        virtual bool IsInitialized() { return initialized; }
+        bool IsInitialized() override { return initialized; }
 
     protected:
 

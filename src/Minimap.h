@@ -146,7 +146,7 @@ class IngameMinimap : public Minimap
         unsigned CombineWithPlayerColor(const unsigned color, const unsigned char player) const;
         /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
         /// in dem Falle: Karte aktualisieren
-        void BeforeDrawing();
+        void BeforeDrawing() override;
         /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
         void UpdateAll(const DrawnObject drawn_object);
 };

@@ -41,10 +41,10 @@ class nofFarmhand : public nofBuildingWorker
     private:
 
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
-        void WalkedDerived();
+        void WalkedDerived() override;
 
         /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-        void WorkAborted();
+        void WorkAborted() override;
         /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden (an abgeleitete Klassen)
         virtual void WorkAborted_Farmhand();
 
@@ -71,7 +71,7 @@ class nofFarmhand : public nofBuildingWorker
         virtual void WorkFinished() = 0;
 
         /// Zeichnen der Figur in sonstigen Arbeitslagen
-        virtual void DrawOtherStates(const int x, const int y);
+        void DrawOtherStates(const int x, const int y) override;
 
     public:
 
@@ -80,13 +80,13 @@ class nofFarmhand : public nofBuildingWorker
 
         /// Aufräummethoden
     protected:  void Destroy_nofFarmhand() { Destroy_nofBuildingWorker(); }
-    public:     void Destroy() { Destroy_nofFarmhand(); }
+    public:     void Destroy() override { Destroy_nofFarmhand(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofFarmhand(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofFarmhand(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 };
 
 

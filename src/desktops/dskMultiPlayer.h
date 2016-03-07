@@ -29,7 +29,7 @@ class dskMultiPlayer : public Desktop
         dskMultiPlayer();
 
     private:
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !dskMULTIPLAYER_H_INCLUDED

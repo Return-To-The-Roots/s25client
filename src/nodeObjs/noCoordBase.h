@@ -33,17 +33,17 @@ class noCoordBase : public noBase
         noCoordBase(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    protected:  void Destroy_noCoordBase(void) { Destroy_noBase(); }
-    public:     void Destroy(void) { Destroy_noCoordBase(); }
+    protected:  void Destroy_noCoordBase() { Destroy_noBase(); }
+    public:     void Destroy() override { Destroy_noCoordBase(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noCoordBase(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noCoordBase(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noCoordBase(sgd); }
 
         /// liefert die X-Koordinate.
-        MapCoord GetX(void) const { return pos.x; }
+        MapCoord GetX() const { return pos.x; }
         /// liefert die Y-Koordinate.
-        MapCoord GetY(void) const { return pos.y; }
+        MapCoord GetY() const { return pos.y; }
 
         /// Returns position
         MapPoint GetPos() const { return pos; }

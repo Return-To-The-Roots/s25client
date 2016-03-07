@@ -30,14 +30,14 @@ class dskCredits : public Desktop
     public:
         /// Konstruktor von @p dskCredits.
         dskCredits();
-        ~dskCredits();
+        ~dskCredits() override;
 
     private:
-        bool Msg_KeyDown(const KeyEvent& ke);
-        void Msg_PaintAfter();
-        void Msg_ButtonClick(const unsigned ctrl_id);
+        bool Msg_KeyDown(const KeyEvent& ke) override;
+        void Msg_PaintAfter() override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        bool Close(void);
+        bool Close();
 
         struct CreditsEntry
         {

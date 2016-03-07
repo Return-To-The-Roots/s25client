@@ -34,6 +34,6 @@ AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const
 
 
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned gf, bool gfisnwf)
+void AIPlayer::RunGF(const unsigned  /*gf*/, bool  /*gfisnwf*/)
 {
 }

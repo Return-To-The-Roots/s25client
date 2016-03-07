@@ -32,9 +32,9 @@ class iwPlayReplay : public IngameWindow
 
     private:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection) override;
 
         /// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
         static void FillReplayTable(const std::string& filePath, void* param);

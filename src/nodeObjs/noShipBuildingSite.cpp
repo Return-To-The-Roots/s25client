@@ -117,11 +117,14 @@ void noShipBuildingSite::MakeBuildStep()
     // Schiff fertiggestellt?
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2])
     {
-        // Mich vernichten
+        // Replace me by ship
         em->AddToKillList(this);
-        gwg->SetNO(pos, NULL);
-        // ein fertiges Schiff stattdessen hinsetzen
-        new noShip(pos, player);
+        noShip* ship = new noShip(pos, player);
+        gwg->SetNO(pos, ship, true);
+
+        // Schiff registrieren lassen
+        gwg->GetPlayer(player).RegisterShip(ship);
+
         // BQ neu berechnen, da Schiff nicht mehr blockiert
         gwg->RecalcBQAroundPointBig(pos);
 

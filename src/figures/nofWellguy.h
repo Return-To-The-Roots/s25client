@@ -29,12 +29,12 @@ class nofWellguy : public nofWorkman
 {
     protected:
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         // TODO:der Brunnentyphat keine ID in JOBS.BOB
-        unsigned short GetCarryID() const { return 111; }
+        unsigned short GetCarryID() const override { return 111; }
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
+        GoodType ProduceWare() override;
 
         bool AreWaresAvailable() override;
 
@@ -45,7 +45,7 @@ class nofWellguy : public nofWorkman
         nofWellguy(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
         nofWellguy(SerializedGameData& sgd, const unsigned obj_id);
 
-        GO_Type GetGOT() const { return GOT_NOF_WELLGUY; }
+        GO_Type GetGOT() const override { return GOT_NOF_WELLGUY; }
 };
 
 #endif

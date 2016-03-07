@@ -53,22 +53,22 @@ class noCharburnerPile : public noCoordBase
         noCharburnerPile(const MapPoint pt);
         noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noCharburnerPile();
+        ~noCharburnerPile() override;
 
         /// Aufräummethoden
     protected:  void Destroy_noCharburnerPile();
-    public:     void Destroy() { Destroy_noCharburnerPile(); }
+    public:     void Destroy() override { Destroy_noCharburnerPile(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noCharburnerPile(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noCharburnerPile(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noCharburnerPile(sgd); }
 
-        GO_Type GetGOT() const { return GOT_CHARBURNERPILE; }
+        GO_Type GetGOT() const override { return GOT_CHARBURNERPILE; }
 
-        void Draw(int x, int y);
-        void HandleEvent(const unsigned int id);
+        void Draw(int x, int y) override;
+        void HandleEvent(const unsigned int id) override;
 
-        BlockingManner GetBM() const { return BM_CHARBURNERPILE; }
+        BlockingManner GetBM() const override { return BM_CHARBURNERPILE; }
 
         /// Get the current state of the charburner pile
         State GetState() const { return state; }

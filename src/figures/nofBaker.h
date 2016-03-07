@@ -27,18 +27,18 @@ class nobUsual;
 class nofBaker : public nofWorkman
 {
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 76; }
+        unsigned short GetCarryID() const override { return 76; }
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare();
+        GoodType ProduceWare() override;
 
     public:
 
         nofBaker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofBaker(SerializedGameData& sgd, const unsigned obj_id);
 
-        GO_Type GetGOT() const { return GOT_NOF_BAKER; }
+        GO_Type GetGOT() const override { return GOT_NOF_BAKER; }
 };
 
 #endif

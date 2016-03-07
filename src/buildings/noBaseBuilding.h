@@ -53,15 +53,15 @@ class noBaseBuilding : public noRoadNode
         noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pt, const unsigned char player);
         noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
-        virtual ~noBaseBuilding();
+        ~noBaseBuilding() override;
 
         /// Aufräummethoden
     protected:  void Destroy_noBaseBuilding();
-    public:     void Destroy() { Destroy_noBaseBuilding(); }
+    public:     void Destroy() override { Destroy_noBaseBuilding(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noBaseBuilding(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noBaseBuilding(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noBaseBuilding(sgd); }
 
         /// Eine bestellte Ware konnte doch nicht kommen
         virtual void WareLost(Ware* ware) = 0;
@@ -70,7 +70,7 @@ class noBaseBuilding : public noRoadNode
         BuildingQuality GetSize() const { return BUILDING_SIZE[type_]; }
         BuildingType GetBuildingType () const { return type_; }
         Nation GetNation() const { return nation; }
-        virtual BlockingManner GetBM() const;
+        BlockingManner GetBM() const override;
 
         /// Harbor, storehouse or headquarters?
         bool IsWarehouse() const
@@ -92,7 +92,7 @@ class noBaseBuilding : public noRoadNode
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
         virtual void TakeWare(Ware* ware) = 0;
         /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
-        virtual void GotWorker(Job job, noFigure* worker) {};
+        virtual void GotWorker(Job  /*job*/, noFigure*  /*worker*/) {};
 
 
         /// Gibt ein Bild zurück für das normale Gebäude

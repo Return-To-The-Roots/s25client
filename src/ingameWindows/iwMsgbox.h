@@ -36,14 +36,14 @@ class iwMsgbox : public IngameWindow
 
     public:
         iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
-        ~iwMsgbox();
+        ~iwMsgbox() override;
 
     private:
 
         void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_PaintAfter();
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_PaintAfter() override;
 };
 
 #endif // !iwMSGBOX_H_INCLUDED

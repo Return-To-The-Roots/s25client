@@ -41,23 +41,23 @@ class noFire : public noCoordBase
         noFire(const MapPoint pt, const unsigned char size);
         noFire(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noFire();
+        ~noFire() override;
         /// Aufräummethoden
     protected:  void Destroy_noFire();
-    public:     void Destroy() { Destroy_noFire(); }
+    public:     void Destroy() override { Destroy_noFire(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noFire(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noFire(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noFire(sgd); }
 
-        GO_Type GetGOT() const { return GOT_FIRE; }
+        GO_Type GetGOT() const override { return GOT_FIRE; }
 
-        BlockingManner GetBM() const { return BM_GRANITE; }
+        BlockingManner GetBM() const override { return BM_GRANITE; }
 
         /// Zeichnen
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
         /// Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 };
 
 #endif

@@ -23,34 +23,34 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-void ClientInterface::CI_NextConnectState(const ConnectState cs) {}
-void ClientInterface::CI_Error(const ClientError ce) {}
+void ClientInterface::CI_NextConnectState(const ConnectState  /*cs*/) {}
+void ClientInterface::CI_Error(const ClientError  /*ce*/) {}
 
-void ClientInterface::CI_NewPlayer(const unsigned player_id) {}
-void ClientInterface::CI_PlayerLeft(const unsigned player_id) {}
+void ClientInterface::CI_NewPlayer(const unsigned  /*player_id*/) {}
+void ClientInterface::CI_PlayerLeft(const unsigned  /*player_id*/) {}
 
-void ClientInterface::CI_GameStarted(GameWorldViewer* gwv) {}
+void ClientInterface::CI_GameStarted(GameWorldViewer*  /*gwv*/) {}
 
-void ClientInterface::CI_PSChanged(const unsigned player_id, const PlayerState ps) {}
-void ClientInterface::CI_NationChanged(const unsigned player_id, const Nation nation) {}
-void ClientInterface::CI_ColorChanged(const unsigned player_id, const unsigned char color) {}
-void ClientInterface::CI_TeamChanged(const unsigned player_id, const unsigned char team) {}
-void ClientInterface::CI_PingChanged(const unsigned player_id, const unsigned short ping) {}
-void ClientInterface::CI_ReadyChanged(const unsigned player_id, const bool ready) {}
-void ClientInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2) {}
-void ClientInterface::CI_GGSChanged(const GlobalGameSettings& ggs) {}
+void ClientInterface::CI_PSChanged(const unsigned  /*player_id*/, const PlayerState  /*ps*/) {}
+void ClientInterface::CI_NationChanged(const unsigned  /*player_id*/, const Nation  /*nation*/) {}
+void ClientInterface::CI_ColorChanged(const unsigned  /*player_id*/, const unsigned char  /*color*/) {}
+void ClientInterface::CI_TeamChanged(const unsigned  /*player_id*/, const unsigned char  /*team*/) {}
+void ClientInterface::CI_PingChanged(const unsigned  /*player_id*/, const unsigned short  /*ping*/) {}
+void ClientInterface::CI_ReadyChanged(const unsigned  /*player_id*/, const bool  /*ready*/) {}
+void ClientInterface::CI_PlayersSwapped(const unsigned  /*player1*/, const unsigned  /*player2*/) {}
+void ClientInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/) {}
 
-void ClientInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) {}
-void ClientInterface::CI_Countdown(int countdown) {}
+void ClientInterface::CI_Chat(const unsigned  /*player_id*/, const ChatDestination  /*cd*/, const std::string&  /*msg*/) {}
+void ClientInterface::CI_Countdown(int  /*countdown*/) {}
 void ClientInterface::CI_CancelCountdown() {}
 
-void ClientInterface::CI_NewPostMessage(const unsigned postmessages_count) {}
-void ClientInterface::CI_PostMessageDeleted(const unsigned postmessages_count) {}
+void ClientInterface::CI_NewPostMessage(const unsigned  /*postmessages_count*/) {}
+void ClientInterface::CI_PostMessageDeleted(const unsigned  /*postmessages_count*/) {}
 
-void ClientInterface::CI_Async(const std::string& checksums_list) {}
-void ClientInterface::CI_ReplayAsync(const std::string& msg) {}
-void ClientInterface::CI_ReplayEndReached(const std::string& msg) {}
+void ClientInterface::CI_Async(const std::string&  /*checksums_list*/) {}
+void ClientInterface::CI_ReplayAsync(const std::string&  /*msg*/) {}
+void ClientInterface::CI_ReplayEndReached(const std::string&  /*msg*/) {}
 void ClientInterface::CI_GamePaused() {}
 void ClientInterface::CI_GameResumed() {}
-void ClientInterface::CI_FlagDestroyed(const unsigned short x, const unsigned short y) {}
+void ClientInterface::CI_FlagDestroyed(const unsigned short  /*x*/, const unsigned short  /*y*/) {}
 

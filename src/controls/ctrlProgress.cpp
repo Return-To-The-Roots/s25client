@@ -53,7 +53,7 @@ ctrlProgress::ctrlProgress(Window* parent,
                            const std::string& tooltip,
                            const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip,
-                           unsigned short* const write_val)
+                           unsigned short* const  /*write_val*/)
     : Window(x, y, id, parent, width, height, tooltip),
       tc(tc), position(0), maximum(maximum), x_padding(x_padding), y_padding(y_padding), force_color(force_color)
 {
@@ -93,7 +93,7 @@ void ctrlProgress::SetPosition(unsigned short position)
  *
  *  @author Devil
  */
-bool ctrlProgress::Draw_(void)
+bool ctrlProgress::Draw_()
 {
     Draw3D(GetX() + height_ - 2 + x_padding, GetY() + y_padding, width_ - (height_ * 2) + 4 - 2 * x_padding, height_ - 2 * y_padding, tc, 2);
 

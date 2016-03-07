@@ -33,10 +33,10 @@ class ctrlCheck : public Window
         void SetReadOnly(bool readonly) { this->readonly = readonly; }
         bool GetReadOnly() const { return readonly; }
 
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
+        bool Msg_LeftDown(const MouseCoords& mc) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
     private:
         TextureColor tc;

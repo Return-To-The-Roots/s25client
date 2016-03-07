@@ -35,10 +35,10 @@ class nofTradeDonkey : public noFigure
 
     private:
 
-        void GoalReached();
-        void Walked();
-        void HandleDerivedEvent(const unsigned int id);
-        void AbrogateWorkplace();
+        void GoalReached() override;
+        void Walked() override;
+        void HandleDerivedEvent(const unsigned int id) override;
+        void AbrogateWorkplace() override;
 
         /// Returns next direction
         unsigned char GetNextDir() { unsigned char dir = next_dirs.front(); next_dirs.pop_front(); return dir; }
@@ -50,11 +50,11 @@ class nofTradeDonkey : public noFigure
 
         void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }
 
-        void Serialize(SerializedGameData& sgd) const;
+        void Serialize(SerializedGameData& sgd) const override;
 
-        GO_Type GetGOT() const { return GOT_NOF_TRADEDONKEY; }
+        GO_Type GetGOT() const override { return GOT_NOF_TRADEDONKEY; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
         void LostWork();

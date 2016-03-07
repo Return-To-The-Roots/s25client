@@ -37,6 +37,8 @@
 #include "ai/AIPlayerJH.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
+#include "helpers/converters.h"
+#include <boost/format.hpp>
 #include <stdexcept>
 
 // Include last!
@@ -84,7 +86,7 @@ struct ObjectBetweenLines
     ObjectBetweenLines(noBase* obj, const Point<int>& pos) : obj(obj), pos(pos) {}
 };
 
-void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
+void GameWorldView::Draw(const unsigned char  /*player*/, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
 {
 
     int shortest_len = 100000;
@@ -229,7 +231,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                     else if (d_what > 3 && d_what < 13)
                     {
                         ss << ai->GetResMapValue(t, AIJH::Resource(d_what - 4));
-                        NormalFont->Draw(curPos.x, curPos.y, ss.str().c_str(), 0, 0xFFFFFF00);
+                        NormalFont->Draw(curPos.x, curPos.y, ss.str(), 0, 0xFFFFFF00);
                     }
                 }
             }
@@ -298,13 +300,13 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                 nobUsual* n = dynamic_cast<nobUsual*>(no);
                                 if(n)
                                 {
-                                    char text[256];
+                                    std::string text;
                                     unsigned int color = COLOR_RED;
 
                                     if(!n->HasWorker())
-                                        snprintf(text, 256, "%s", _("(House unoccupied)"));
+                                        text = _("(House unoccupied)");
                                     else if(n->IsProductionDisabledVirtual())
-                                        snprintf(text, 256, "%s", _("(stopped)"));
+                                        text = _("(stopped)");
                                     else
                                     {
                                         // Catapult and Lookout tower doesn't have productivity!
@@ -313,7 +315,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                                         else
                                         {
                                             unsigned short p = n->GetProductivity();
-                                            snprintf(text, 256, "(%d %%)", p);
+                                            text = helpers::toString(p) + " %";
                                             if(p >= 60)
                                                 color = 0xFF00E000;
                                             else if(p >= 30)
@@ -331,14 +333,16 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
                             {
                                 // Display amount of soldiers
                                 unsigned soldiers_count = static_cast<nobMilitary*>(no)->GetTroopsCount();
-                                char str[64];
+                                std::string sSoldiers;
                                 if(soldiers_count == 1)
-                                    strcpy(str, _("(1 soldier)"));
+                                    sSoldiers = _("(1 soldier)");
                                 else
-                                    sprintf(str, _("(%d soldiers)"), soldiers_count);
+                                    sSoldiers = boost::str(
+                                            boost::format(_("(%d soldiers)")) % soldiers_count
+                                            );
 
 
-                                SmallFont->Draw(curPos.x, curPos.y, str, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
+                                SmallFont->Draw(curPos.x, curPos.y, sSoldiers, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
                                                 (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
                                 curPos.y += SmallFont->getHeight();
                             }
@@ -471,7 +475,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
     SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 }
 
-void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t, const Point<int> curPos, Visibility vis)
+void GameWorldView::DrawBoundaryStone(const int  /*x*/, const int  /*y*/, const MapPoint t, const Point<int> curPos, Visibility vis)
 {
     if(vis == VIS_INVISIBLE)
         // schwarz/unsichtbar, nichts zeichnen

@@ -33,7 +33,7 @@
  *
  *  @author OLiver
  */
-iwMilitary::iwMilitary(void)
+iwMilitary::iwMilitary()
     : IngameWindow(CGI_MILITARY, 0xFFFE, 0xFFFE, 168, 330, _("Military"), LOADER.GetImageN("io", 5)),
       settings_changed(false)
 {
@@ -84,7 +84,7 @@ void iwMilitary::TransmitSettings()
 }
 
 
-void iwMilitary::Msg_Timer(const unsigned int ctrl_id)
+void iwMilitary::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte
@@ -94,7 +94,7 @@ void iwMilitary::Msg_Timer(const unsigned int ctrl_id)
         TransmitSettings();
 }
 
-void iwMilitary::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
+void iwMilitary::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
 
     // Einstellungen wurden geändert

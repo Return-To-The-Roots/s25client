@@ -488,7 +488,7 @@ void nofBuildingWorker::WorkplaceReached()
 }
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofBuildingWorker::DrawOtherStates(const int x, const int y)
+void nofBuildingWorker::DrawOtherStates(const int  /*x*/, const int  /*y*/)
 {
 }
 

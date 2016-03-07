@@ -78,7 +78,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     while(!file.eof())
     {
         std::getline(file, line); // get next line
-        text->AddString(line.c_str(), COLOR_YELLOW, false); // add this line to the window contents
+        text->AddString(line, COLOR_YELLOW, false); // add this line to the window contents
         current_line_width = NormalFont->getWidth(line); // get the width of line in normal font
         if (current_line_width > max_line_width) // if wider than max, re-set max
         {

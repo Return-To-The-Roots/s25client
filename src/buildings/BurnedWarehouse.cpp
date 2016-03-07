@@ -56,7 +56,7 @@ BurnedWarehouse::~BurnedWarehouse()
 }
 
 
-void BurnedWarehouse::Destroy(void)
+void BurnedWarehouse::Destroy()
 {
 }
 
@@ -73,7 +73,7 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
 }
 
 
-void BurnedWarehouse::HandleEvent(const unsigned int id)
+void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 

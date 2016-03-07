@@ -60,7 +60,7 @@ void nofFarmhand::WalkedDerived()
 }
 
 
-void nofFarmhand::HandleDerivedEvent(const unsigned int id)
+void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {
@@ -238,10 +238,7 @@ bool nofFarmhand::IsPointAvailable(const MapPoint pt)
     if(GetPointQuality(pt) != PQ_NOTPOSSIBLE)
     {
         // Gucken, ob ein Weg hinführt
-        if(gwg->FindHumanPath(this->pos, pt, 20) != 0xFF)
-            return true;
-        else
-            return false;
+        return gwg->FindHumanPath(this->pos, pt, 20) != 0xFF;
     }
     else
         return false;

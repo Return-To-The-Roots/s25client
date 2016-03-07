@@ -118,7 +118,7 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
     }
 }
 
-void CatapultStone::HandleEvent(const unsigned int id)
+void CatapultStone::HandleEvent(const unsigned int  /*id*/)
 {
     if(explode)
     {

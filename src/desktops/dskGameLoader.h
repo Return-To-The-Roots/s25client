@@ -35,13 +35,13 @@ class dskGameLoader :
         /// Konstruktor von @p dskGameLoader.
         dskGameLoader(GameWorldViewer* gwv);
         /// Destruktor von @p dskGameLoader.
-        ~dskGameLoader();
+        ~dskGameLoader() override;
 
-        void LC_Status_Error(const std::string& error);
+        void LC_Status_Error(const std::string& error) override;
 
     private:
-        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr);
-        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr) override;
+        void Msg_Timer(const unsigned int ctrl_id) override;
 
         unsigned int position;
         /// Falls ein Savegame geladen wird --> Pointer darauf

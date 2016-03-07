@@ -28,6 +28,7 @@
 #include "SerializedGameData.h"
 
 #include "Log.h"
+#include <stdexcept>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -66,10 +67,15 @@ void nofActiveSoldier::GoalReached()
     // Add myself to the building
     if(!building)
     {
-        if((building = gwg->GetSpecObj<nobMilitary>(this->GetPos())))
+        RTTR_Assert(false);
+        building = gwg->GetSpecObj<nobMilitary>(this->GetPos());
+        if(building)
             LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y,GAMECLIENT.GetGFNumber());
         else
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didnt find one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y,GAMECLIENT.GetGFNumber());
+        {
+            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didn't find one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y,GAMECLIENT.GetGFNumber());
+            throw std::runtime_error("No building found for soldier");
+        }
     }
     building->AddActiveSoldier(this);
 
@@ -176,7 +182,7 @@ void nofActiveSoldier::Draw(int x, int y)
     }
 }
 
-void nofActiveSoldier::HandleDerivedEvent(const unsigned int id)
+void nofActiveSoldier::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     // That's not supposed to happen!
     RTTR_Assert(false);

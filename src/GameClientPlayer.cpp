@@ -388,16 +388,6 @@ void GameClientPlayer::Deserialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < 31; ++i)
         build_order[i] = sgd.PopUnsignedChar();
 
-    char str[256] = "";
-    for(unsigned char i = 0; i < 31; ++i)
-    {
-        char tmp[256];
-        sprintf(tmp, "%u ", i);
-        strcat(str, tmp);
-    }
-    strcat(str, "\n");
-    puts(str);
-
     sgd.PopRawData(transport, WARE_TYPES_COUNT);
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
@@ -2360,16 +2350,13 @@ bool GameClientPlayer::CanBuildCatapult() const
                   bc.building_counts[BLD_WATCHTOWER] * 0.5 +
                   bc.building_counts[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     }
-    else
+    else if(GAMECLIENT.GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) < 8)
     {
-        const unsigned int limits[6] = { 0, 3, 5, 10, 20, 30};
+        const boost::array<unsigned, 6> limits = {{ 0, 3, 5, 10, 20, 30}};
         max = limits[GAMECLIENT.GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) - 2];
     }
 
-    if(bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] >= max)
-        return false;
-    else
-        return true;
+    return bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] < max;
 }
 
 /// A ship has discovered new hostile territory --> determines if this is new

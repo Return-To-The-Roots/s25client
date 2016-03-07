@@ -94,7 +94,7 @@ dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL
     GAMECLIENT.SetInterface(this);
 }
 
-void dskLobby::Msg_Timer(const unsigned int ctrl_id)
+void dskLobby::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     LOBBYCLIENT.SendServerListRequest();
 }
@@ -106,7 +106,7 @@ void dskLobby::Msg_PaintBefore()
     GetCtrl<ctrlEdit>(21)->SetFocus();
 }
 
-void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*mbr*/)
 {
     // Verbindung verloren
     if(msgbox_id == 0)
@@ -151,13 +151,13 @@ void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
         case 21: // Chattext senden
         {
             ctrlEdit* edit = GetCtrl<ctrlEdit>(21);
-            LOBBYCLIENT.SendChat(edit->GetText().c_str());
+            LOBBYCLIENT.SendChat(edit->GetText());
             edit->SetText("");
         } break;
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection)
+void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short  /*selection*/)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
@@ -359,7 +359,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  *
  *  @author FloSoft
  */
-void dskLobby::LC_Connected(void)
+void dskLobby::LC_Connected()
 {
     WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
 }

@@ -53,7 +53,7 @@ class ctrlMinimap : public Window
         inline unsigned short GetBottom() const { return GetTop() + height_show + padding_y; }
 
         /// Größe ändern
-        virtual void Resize_(unsigned short width, unsigned short heigth);
+        void Resize_(unsigned short width, unsigned short heigth) override;
         void SetDisplaySize(const unsigned short width, const unsigned short height,
                             const unsigned short map_width, const unsigned short map_height);
 

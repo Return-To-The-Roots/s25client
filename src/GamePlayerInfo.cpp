@@ -62,13 +62,13 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
 
 ///////////////////////////////////////////////////////////////////////////////
 // Destruktor
-GamePlayerInfo::~GamePlayerInfo(void)
+GamePlayerInfo::~GamePlayerInfo()
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Rausschmeisser
-void GamePlayerInfo::clear(void)
+void GamePlayerInfo::clear()
 {
     name.clear();
     defeated = false;

@@ -34,7 +34,7 @@ class AIPlayer : public AIBase
 
         /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
         /// gf ist die GF-Zahl vom Spiel
-        void RunGF(const unsigned gf, bool gfisnwf);
+        void RunGF(const unsigned gf, bool gfisnwf) override;
 };
 
 #endif //!AIPLAYER_H_INCLUDED

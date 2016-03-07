@@ -47,7 +47,7 @@ EventManager* GameObject::em = NULL;
  *
  *  @author OLiver
  */
-GameObject::GameObject(void) : objId(objIdCounter_++)
+GameObject::GameObject() : objId(objIdCounter_++)
 {
     // ein Objekt mehr
     ++objCounter_;
@@ -79,7 +79,7 @@ void GameObject::Destroy()
 {
 }
 
-void GameObject::Serialize(SerializedGameData& sgd) const
+void GameObject::Serialize(SerializedGameData&  /*sgd*/) const
 {
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }

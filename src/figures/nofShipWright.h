@@ -29,11 +29,11 @@ class nofShipWright : public nofWorkman
         MapPoint dest;
     private:
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 90; }
+        unsigned short GetCarryID() const override { return 90; }
         /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() { return GD_BOAT; }
+        GoodType ProduceWare() override { return GD_BOAT; }
 
         /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
         void StartWalkingToShip(const unsigned char first_dir);
@@ -42,24 +42,24 @@ class nofShipWright : public nofWorkman
         bool IsPointGood(const MapPoint pt) const;
 
         /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
-        void WorkFinished();
+        void WorkFinished() override;
 
         void WalkToWorkpoint();
         void StartWalkingHome();
         void WalkHome();
-        void WorkAborted();
-        void WalkedDerived();
+        void WorkAborted() override;
+        void WalkedDerived() override;
 
         /// Zeichnen der Figur in sonstigen Arbeitslagen
-        void DrawOtherStates(const int x, const int y);
+        void DrawOtherStates(const int x, const int y) override;
 
     public:
 
         nofShipWright(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofShipWright(SerializedGameData& sgd, const unsigned obj_id);
-        GO_Type GetGOT() const { return GOT_NOF_SHIPWRIGHT; }
-        void HandleDerivedEvent(const unsigned int id);
-        void Serialize(SerializedGameData& sgd) const;
+        GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
+        void HandleDerivedEvent(const unsigned int id) override;
+        void Serialize(SerializedGameData& sgd) const override;
 };
 
 

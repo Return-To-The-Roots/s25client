@@ -70,39 +70,39 @@ class noBuildingSite : public noBaseBuilding
         noBuildingSite(const MapPoint pt, const unsigned char player);
         noBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noBuildingSite();
+        ~noBuildingSite() override;
 
         /// Aufräummethoden
     protected:  void Destroy_noBuildingSite();
-    public:     void Destroy() { Destroy_noBuildingSite(); }
+    public:     void Destroy() override { Destroy_noBuildingSite(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noBuildingSite(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noBuildingSite(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuildingSite(sgd); }
 
-        GO_Type GetGOT() const { return GOT_BUILDINGSITE; }
+        GO_Type GetGOT() const override { return GOT_BUILDINGSITE; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        FOWObject* CreateFOWObject() const;
+        FOWObject* CreateFOWObject() const override;
 
-        void AddWare(Ware*& ware);
-        void GotWorker(Job job, noFigure* worker);
+        void AddWare(Ware*& ware) override;
+        void GotWorker(Job job, noFigure* worker) override;
 
         /// Fordert Baumaterial an
         void OrderConstructionMaterial();
         /// Wird aufgerufen, wenn der Bauarbeiter kündigt
         void Abrogate();
         /// Eine bestellte Ware konnte doch nicht kommen
-        void WareLost(Ware* ware);
+        void WareLost(Ware* ware) override;
         /// Gibt den Bau-Fortschritt zurück
         unsigned char GetBuildProgress(bool percent = true) const;
 
         unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
 
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-        void TakeWare(Ware* ware);
+        void TakeWare(Ware* ware) override;
         /// Gibt zurück, ob die Baustelle fertiggestellt ist
         bool IsBuildingComplete();
 

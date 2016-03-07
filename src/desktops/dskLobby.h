@@ -46,22 +46,22 @@ class dskLobby :
         void UpdatePlayerList(bool first = false);
         void UpdateServerList(bool first = false);
 
-        void LC_Connected(void);
+        void LC_Connected() override;
 
-        void LC_Status_ConnectionLost(void);
-        void LC_Status_IncompleteMessage(void);
-        void LC_Status_Error(const std::string& error);
+        void LC_Status_ConnectionLost() override;
+        void LC_Status_IncompleteMessage() override;
+        void LC_Status_Error(const std::string& error) override;
 
-        void LC_Chat(const std::string& player, const std::string& text);
+        void LC_Chat(const std::string& player, const std::string& text) override;
 
     protected:
-        void Msg_Timer(const unsigned int ctrl_id);
-        void Msg_PaintBefore();
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_EditEnter(const unsigned int ctrl_id);
-        void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
+        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_PaintBefore() override;
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection) override;
 
         /**
          * Connectes to the currently selected game and returns true on success

@@ -37,9 +37,9 @@ class iwShip : public IngameWindow
 
     private:
 
-        void Msg_PaintBefore();
-        void Msg_PaintAfter();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
+        void Msg_PaintBefore() override;
+        void Msg_PaintAfter() override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
 
         void DrawCargo();
 };

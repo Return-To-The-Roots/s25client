@@ -27,15 +27,15 @@ class nofScout_LookoutTower : public nofBuildingWorker
 {
     protected:
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-        void WalkedDerived();
+        void WalkedDerived() override;
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y);
+        void DrawWorking(int x, int y) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const { return 0; }
+        unsigned short GetCarryID() const override { return 0; }
         /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-        void WorkAborted();
+        void WorkAborted() override;
         /// Arbeitsplatz wurde erreicht
-        void WorkplaceReached();
+        void WorkplaceReached() override;
 
         bool AreWaresAvailable() override;
 
@@ -47,11 +47,11 @@ class nofScout_LookoutTower : public nofBuildingWorker
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_nofScout_LookoutTower(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_LookoutTower(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
+        GO_Type GetGOT() const override { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
 
-        void HandleDerivedEvent(const unsigned int id);
+        void HandleDerivedEvent(const unsigned int id) override;
 };
 
 

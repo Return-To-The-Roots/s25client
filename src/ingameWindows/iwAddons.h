@@ -41,14 +41,14 @@ class iwAddons : public IngameWindow
 
     public:
         iwAddons(GlobalGameSettings* ggs, ChangePolicy policy = SETDEFAULTS);
-        ~iwAddons(void);
+        ~iwAddons() override;
 
     protected:
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-        void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position);
-        bool Msg_WheelUp(const MouseCoords& mc);
-        bool Msg_WheelDown(const MouseCoords& mc);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
 
         /// Aktualisiert die Addons, die angezeigt werden sollen
         void UpdateView(const unsigned short selection);

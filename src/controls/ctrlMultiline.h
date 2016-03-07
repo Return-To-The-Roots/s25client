@@ -42,16 +42,16 @@ class ctrlMultiline : public Window
         /// Schaltet Box ein und aus
         void EnableBox(const bool enable) { draw_box = enable; }
 
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
 
     private:
 

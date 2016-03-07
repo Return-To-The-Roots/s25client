@@ -30,7 +30,7 @@ class SoundSDL_Effect : public Sound
         SoundSDL_Effect();
 
         /// Destruktor von @p SoundSDL_Effect.
-        ~SoundSDL_Effect(void);
+        ~SoundSDL_Effect() override;
 
 
     private:

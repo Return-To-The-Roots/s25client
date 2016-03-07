@@ -33,10 +33,10 @@ class ctrlTable : public Window
 {
     public:
         ctrlTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
-        virtual ~ctrlTable(void);
+        ~ctrlTable() override;
 
         /// löscht alle Items.
-        void DeleteAllItems(void);
+        void DeleteAllItems();
         /// setzt die Auswahl.
         void SetSelection(unsigned short selection, bool left = true);
         /// fügt eine Zeile hinzu.
@@ -51,15 +51,15 @@ class ctrlTable : public Window
         unsigned short GetColumnCount() { return static_cast<unsigned short>(columns.size()); }
         unsigned short GetSelection(bool left = true) { return (left ? row_l_selection : row_r_selection); }
 
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_RightDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-        virtual void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible);
-        virtual bool Msg_KeyDown(const KeyEvent& ke);
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible) override;
+        bool Msg_KeyDown(const KeyEvent& ke) override;
 
         enum SortType
         {
@@ -72,10 +72,10 @@ class ctrlTable : public Window
 
     protected:
 
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
         /// Größe ändern
-        void Resize_(unsigned short width, unsigned short height);
+        void Resize_(unsigned short width, unsigned short height) override;
         /// Setzt die Breite und Position der Buttons ohne Scrolleiste
         void ResetButtonWidths();
         unsigned short GetSelectionFromMouse(const MouseCoords &mc);

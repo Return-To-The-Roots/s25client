@@ -34,7 +34,7 @@
  *
  *  @author OLiver
  */
-iwSkipGFs::iwSkipGFs(void)
+iwSkipGFs::iwSkipGFs()
     : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41))
 {
     // Text vor Editfeld
@@ -54,12 +54,12 @@ void iwSkipGFs::SkipGFs()
     GAMECLIENT.SkipGF(gf);
 }
 
-void iwSkipGFs::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwSkipGFs::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     SkipGFs();
 }
 
-void iwSkipGFs::Msg_EditEnter(const unsigned int ctrl_id)
+void iwSkipGFs::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     SkipGFs();
 }

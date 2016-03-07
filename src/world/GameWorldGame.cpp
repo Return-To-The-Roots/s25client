@@ -648,7 +648,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 #endif
 }
 
-bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bool destroyed, const bool newBuilt) const
+bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bool destroyed, const bool  /*newBuilt*/) const
 {
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
     RTTR_Assert((building.GetBuildingType() == BLD_HARBORBUILDING && dynamic_cast<const noBuildingSite*>(&building)) || dynamic_cast<const nobBaseMilitary*>(&building));
@@ -800,10 +800,7 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
     }
 
     // Darf nicht im Wasser liegen, 
-    if(!good_terrains)
-        return false;
-
-    return true;
+    return good_terrains != 0;
 }
 
 void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
@@ -1035,7 +1032,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 }
 
 
-bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt, const unsigned char dir)
+bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt, const unsigned char  /*dir*/)
 {
     /// Objekte sammeln
     std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
@@ -1154,7 +1151,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
         }
 }
 
-bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center)
+bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker*  /*attacker*/, const MapPoint center)
 {
     // Gültiger Punkt für Figuren?
     if(!IsNodeForFigures(pt))
@@ -1178,9 +1175,7 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttack
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
-    if(FindHumanPath(pt, center, CalcDistance(pt, center)) == 0xff)
-        return false;
-    return true;
+    return FindHumanPath(pt, center, CalcDistance(pt, center)) != 0xff;
 }
 
 bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags, nofActiveSoldier* exception)
@@ -1223,10 +1218,7 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
     }
     // Liegt hier was rum auf dem man nicht kämpfen sollte?
     noBase::BlockingManner bm = GetNO(pt)->GetBM();
-    if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
-        return false;
-
-    return true;
+    return !(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG);
 }
 
 bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const

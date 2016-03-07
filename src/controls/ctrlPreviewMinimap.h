@@ -49,7 +49,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
                             glArchivItem_Map* s2map);
 
         /// Zeichnet die MapPreview
-        bool Draw_();
+        bool Draw_() override;
 
         /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
         void SetPlayerColor(const unsigned id, const unsigned color)

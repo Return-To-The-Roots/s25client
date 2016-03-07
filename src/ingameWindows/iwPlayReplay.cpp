@@ -53,7 +53,7 @@ class GameWorldViewer;
  *  @author OLiver
  */
 
-iwPlayReplay::iwPlayReplay(void)
+iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, 0xFFFF, 0xFFFF, 600, 330, _("Play Replay"), LOADER.GetImageN("resource", 41))
 {
     AddTable(0, 20, 30, 560, 220, TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
@@ -111,7 +111,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwPlayReplay::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+void iwPlayReplay::Msg_TableChooseItem(const unsigned  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
     StartReplay();
 }
@@ -222,7 +222,7 @@ void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
 }
 
 
-void iwPlayReplay::RemoveReplay(const std::string& filePath, void* param)
+void iwPlayReplay::RemoveReplay(const std::string& filePath, void*  /*param*/)
 {
     boost::system::error_code ec;
     bfs::remove(filePath, ec);

@@ -41,9 +41,9 @@ class Addon
 
         virtual void hideGui(Window* window, unsigned int id) const;
         virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const { }
+        virtual void setGuiStatus(Window*  /*window*/, unsigned int  /*id*/, unsigned int  /*status*/) const { }
 
-        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const
+        virtual unsigned int getGuiStatus(Window*  /*window*/, unsigned int  /*id*/, bool& failed) const
         {
             failed = false;
             return getDefaultStatus();
@@ -76,10 +76,10 @@ class AddonList : public Addon
         AddonList(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
             : Addon(id, groups, name, description, default_status) { }
 
-        virtual void hideGui(Window* window, unsigned int id) const;
-        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const;
-        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const;
+        void hideGui(Window* window, unsigned int id) const override;
+        void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const override;
+        void setGuiStatus(Window* window, unsigned int id, unsigned int status) const override;
+        unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const override;
 
     protected:
         void removeOptions()
@@ -109,10 +109,10 @@ class AddonBool : public Addon
         AddonBool(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
             : Addon(id, groups, name, description, default_status) { }
 
-        virtual void hideGui(Window* window, unsigned int id) const;
-        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const;
-        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const;
+        void hideGui(Window* window, unsigned int id) const override;
+        void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const override;
+        void setGuiStatus(Window* window, unsigned int id, unsigned int status) const override;
+        unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const override;
 };
 
 #endif // !ADDONS_H_INCLUDED

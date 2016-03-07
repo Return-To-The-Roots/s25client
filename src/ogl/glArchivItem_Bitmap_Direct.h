@@ -27,7 +27,7 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 {
     public:
         /// Konstruktor von @p glArchivItem_Bitmap_Direct.
-        glArchivItem_Bitmap_Direct(void);
+        glArchivItem_Bitmap_Direct();
         /// Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
         glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item);
 
@@ -40,9 +40,9 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
         unsigned char* tex_getPixel(const unsigned short x, const unsigned short y);
 
         /// lädt die Bilddaten aus einer Datei.
-        int load(std::istream& file, const libsiedler2::ArchivItem_Palette* palette) override { return 254; }
+        int load(std::istream&  /*file*/, const libsiedler2::ArchivItem_Palette*  /*palette*/) override { return 254; }
         /// schreibt die Bilddaten in eine Datei.
-        int write(std::ostream& file, const libsiedler2::ArchivItem_Palette* palette) const override { return 254; }
+        int write(std::ostream&  /*file*/, const libsiedler2::ArchivItem_Palette*  /*palette*/) const override { return 254; }
 };
 
 #endif // !GLARCHIVITEM_BITMAP_DIRECT_H_INCLUDED

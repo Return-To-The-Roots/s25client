@@ -35,7 +35,7 @@
  *
  *  @author OLiver
  */
-iwEndgame::iwEndgame(void)
+iwEndgame::iwEndgame()
     : IngameWindow(CGI_ENDGAME, 0xFFFF, 0xFFFF, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))
 {
     // Ok

@@ -53,7 +53,7 @@ const unsigned short Settings::SCREEN_REFRESH_RATES[] =
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
-Settings::Settings(void) //-V730
+Settings::Settings() //-V730
 {
 }
 
@@ -166,7 +166,7 @@ bool Settings::LoadDefaults()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine zum Laden der Konfiguration
-bool Settings::Load(void)
+bool Settings::Load()
 {
     if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
     {
@@ -205,7 +205,7 @@ bool Settings::Load(void)
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
-    global.debugMode = (iniGlobal->getValueI("debugMode") ? true : false);
+    global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
 
     // };
 
@@ -215,10 +215,10 @@ bool Settings::Load(void)
     video.windowed_height =      iniVideo->getValueI("windowed_height");
     video.fullscreen_width =       iniVideo->getValueI("fullscreen_width");
     video.fullscreen_height =      iniVideo->getValueI("fullscreen_height");
-    video.fullscreen = (iniVideo->getValueI("fullscreen") ? true : false);
+    video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
     video.vsync =       iniVideo->getValueI("vsync");
-    video.vbo =        (iniVideo->getValueI("vbo") ? true : false);
-    video.shared_textures = (iniVideo->getValueI("shared_textures") ? true : false);
+    video.vbo =        (iniVideo->getValueI("vbo") != 0);
+    video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
     // };
 
     if(video.fullscreen_width == 0 || video.fullscreen_height == 0
@@ -243,9 +243,9 @@ bool Settings::Load(void)
 
     // sound
     // {
-    sound.musik =         (iniSound->getValueI("musik") ? true : false);
+    sound.musik =         (iniSound->getValueI("musik") != 0);
     sound.musik_volume =   iniSound->getValueI("musik_volume");
-    sound.effekte =       (iniSound->getValueI("effekte") ? true : false);
+    sound.effekte =       (iniSound->getValueI("effekte") != 0);
     sound.effekte_volume = iniSound->getValueI("effekte_volume");
     sound.playlist =       iniSound->getValue("playlist");
     // }
@@ -255,7 +255,7 @@ bool Settings::Load(void)
     lobby.name =           iniLobby->getValue("name");
     lobby.email =          iniLobby->getValue("email");
     lobby.password =       iniLobby->getValue("password");
-    lobby.save_password = (iniLobby->getValueI("save_password") ? true : false);
+    lobby.save_password = (iniLobby->getValueI("save_password") != 0);
     // }
 
     if(lobby.name.length() == 0)
@@ -274,7 +274,7 @@ bool Settings::Load(void)
     // server
     // {
     server.last_ip = iniServer->getValue("last_ip");
-    server.ipv6 = (iniServer->getValueI("ipv6") ? true : false);
+    server.ipv6 = (iniServer->getValueI("ipv6") != 0);
     // }
 
     // proxy
@@ -299,12 +299,12 @@ bool Settings::Load(void)
     // interface
     // {
     interface.autosave_interval = iniInterface->getValueI("autosave_interval");
-    interface.revert_mouse = (iniInterface->getValueI("revert_mouse") ? true : false);
+    interface.revert_mouse = (iniInterface->getValueI("revert_mouse") != 0);
     // }
 
     // ingame
     // {
-    ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") ? true : false);
+    ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
     // }
 
     // addons
@@ -323,7 +323,7 @@ bool Settings::Load(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine zum Speichern der Konfiguration
-void Settings::Save(void)
+void Settings::Save()
 {
     libsiedler2::ArchivInfo& configInfo = *LOADER.GetInfoN(CONFIG_NAME);
     if(configInfo.size() != SETTINGS_SECTIONS)
@@ -429,7 +429,7 @@ void Settings::Save(void)
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("revert_mouse", (interface.revert_mouse ? true : false));
+    iniInterface->setValue("revert_mouse", (interface.revert_mouse));
     // }
 
     // ingame

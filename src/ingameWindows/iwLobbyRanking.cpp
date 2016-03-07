@@ -67,7 +67,7 @@ void iwLobbyRanking::UpdateRankings(bool first)
  *
  *  @author Devil
  */
-iwLobbyRanking::iwLobbyRanking(void)
+iwLobbyRanking::iwLobbyRanking()
     : IngameWindow(CGI_LOBBYRANKING, 0xFFFF, 0xFFFF, 440, 410, _("Internet Ranking"), LOADER.GetImageN("resource", 41), true)
 {
     AddTable(0, 20, 25, 400, 340, TC_GREY, NormalFont, 4, _("Name"), 360, ctrlTable::SRT_STRING, _("Points"), 185, ctrlTable::SRT_NUMBER, _("Lost"), 215, ctrlTable::SRT_NUMBER, _("Won"), 240, ctrlTable::SRT_NUMBER);

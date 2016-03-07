@@ -59,8 +59,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
             CS_GAME
         };
 
-        GameClient(void);
-        ~GameClient(void);
+        GameClient();
+        ~GameClient() override;
 
         void SetInterface(ClientInterface* ci) { this->ci = ci; }
         bool IsHost() const { return clientconfig.host; }
@@ -71,7 +71,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         inline unsigned GetPlayerCount() const { return players.getCount(); }
         /// Liefert einen Player zurück
         inline GameClientPlayer& GetPlayer(const unsigned int id) { return *players.getElement(id); }
-        inline GameClientPlayer& GetLocalPlayer(void) { return GetPlayer(playerId_); }
+        inline GameClientPlayer& GetLocalPlayer() { return GetPlayer(playerId_); }
         bool IsSinglePlayer() const;
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
         AIBase* CreateAIPlayer(const unsigned playerid);
@@ -194,38 +194,38 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void StatisticStep();
 
         //  Netzwerknachrichten
-        virtual void OnNMSPing(const GameMessage_Ping& msg) override;
+        void OnNMSPing(const GameMessage_Ping& msg) override;
 
-        virtual void OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg) override;
-        virtual void OnNMSServerPassword(const GameMessage_Server_Password& msg) override;
-        virtual void OnNMSServerName(const GameMessage_Server_Name& msg) override;
-        virtual void OnNMSServerStart(const GameMessage_Server_Start& msg) override;
-        virtual void OnNMSServerChat(const GameMessage_Server_Chat& msg) override;
-        virtual void OnNMSSystemChat(const GameMessage_System_Chat& msg) override;
-        virtual void OnNMSServerAsync(const GameMessage_Server_Async& msg) override;
-        virtual void OnNMSServerCountdown(const GameMessage_Server_Countdown& msg) override;
-        virtual void OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg) override;
+        void OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg) override;
+        void OnNMSServerPassword(const GameMessage_Server_Password& msg) override;
+        void OnNMSServerName(const GameMessage_Server_Name& msg) override;
+        void OnNMSServerStart(const GameMessage_Server_Start& msg) override;
+        void OnNMSServerChat(const GameMessage_Server_Chat& msg) override;
+        void OnNMSSystemChat(const GameMessage_System_Chat& msg) override;
+        void OnNMSServerAsync(const GameMessage_Server_Async& msg) override;
+        void OnNMSServerCountdown(const GameMessage_Server_Countdown& msg) override;
+        void OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg) override;
 
-        virtual void OnNMSPlayerId(const GameMessage_Player_Id& msg) override;
-        virtual void OnNMSPlayerList(const GameMessage_Player_List& msg) override;
-        virtual void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg) override;
-        virtual void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) override;
-        virtual void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
-        virtual void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;
-        virtual void OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg) override;
-        virtual void OnNMSPlayerPing(const GameMessage_Player_Ping& msg) override;
-        virtual void OnNMSPlayerNew(const GameMessage_Player_New& msg) override;
-        virtual void OnNMSPlayerReady(const GameMessage_Player_Ready& msg) override;
-        virtual void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg) override;
+        void OnNMSPlayerId(const GameMessage_Player_Id& msg) override;
+        void OnNMSPlayerList(const GameMessage_Player_List& msg) override;
+        void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg) override;
+        void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) override;
+        void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
+        void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;
+        void OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg) override;
+        void OnNMSPlayerPing(const GameMessage_Player_Ping& msg) override;
+        void OnNMSPlayerNew(const GameMessage_Player_New& msg) override;
+        void OnNMSPlayerReady(const GameMessage_Player_Ready& msg) override;
+        void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg) override;
 
         void OnNMSMapInfo(const GameMessage_Map_Info& msg) override;
         void OnNMSMapData(const GameMessage_Map_Data& msg) override;
         void OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg) override;
 
-        virtual void OnNMSPause(const GameMessage_Pause& msg) override;
-        virtual void OnNMSServerDone(const GameMessage_Server_NWFDone& msg) override;
-        virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg) override;
-        virtual void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
+        void OnNMSPause(const GameMessage_Pause& msg) override;
+        void OnNMSServerDone(const GameMessage_Server_NWFDone& msg) override;
+        void OnNMSGameCommand(const GameMessage_GameCommand& msg) override;
+        void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
 
         void OnNMSGGSChange(const GameMessage_GGSChange& msg) override;
 

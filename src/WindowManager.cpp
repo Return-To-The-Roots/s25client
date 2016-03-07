@@ -43,7 +43,7 @@
  *
  *  @author OLiver
  */
-WindowManager::WindowManager(void)
+WindowManager::WindowManager()
     : disable_mouse(false),
       mouseCoords(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
 {
@@ -55,7 +55,7 @@ WindowManager::WindowManager(void)
  *
  *  @author OLiver
  */
-WindowManager::~WindowManager(void)
+WindowManager::~WindowManager()
 {
     CleanUp();
 }
@@ -78,7 +78,7 @@ void WindowManager::CleanUp()
  *  @author OLiver
  *  @author FloSoft
  */
-void WindowManager::Draw(void)
+void WindowManager::Draw()
 {
     // ist ein neuer Desktop eingetragen? Wenn ja, wechseln
     if(nextdesktop)
@@ -136,7 +136,7 @@ void WindowManager::Draw(void)
  *
  *  @author OLiver
  */
-bool WindowManager::IsDesktopActive(void)
+bool WindowManager::IsDesktopActive()
 {
     if(curDesktop)
         return curDesktop->GetActive();
@@ -917,7 +917,7 @@ void WindowManager::Close(unsigned int id)
  *
  *  @author OLiver
  */
-void WindowManager::Switch(void)
+void WindowManager::Switch()
 {
     // einmal richtig clearen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

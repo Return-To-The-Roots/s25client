@@ -27,10 +27,10 @@ class noShipBuildingSite: public noCoordBase
 
         noShipBuildingSite(const MapPoint pt, const unsigned char player);
         noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
-        ~noShipBuildingSite();
-        void Destroy();
-        void Serialize(SerializedGameData& sgd) const;
-        GO_Type GetGOT() const { return GOT_SHIPBUILDINGSITE; }
+        ~noShipBuildingSite() override;
+        void Destroy() override;
+        void Serialize(SerializedGameData& sgd) const override;
+        GO_Type GetGOT() const override { return GOT_SHIPBUILDINGSITE; }
 
         /// Gibt den Eigentümer zurück
         unsigned char GetPlayer() const { return player; }
@@ -38,11 +38,11 @@ class noShipBuildingSite: public noCoordBase
         /// Das Schiff wird um eine Stufe weitergebaut
         void MakeBuildStep();
 
-        BlockingManner GetBM() const { return BM_HUT; }
+        BlockingManner GetBM() const override { return BM_HUT; }
 
     protected:
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
     private:
 

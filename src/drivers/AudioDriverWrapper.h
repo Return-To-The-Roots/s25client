@@ -38,10 +38,10 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
         /// Konstruktor von @p DriverWrapper
         AudioDriverWrapper();
 
-        ~AudioDriverWrapper();
+        ~AudioDriverWrapper() override;
 
         /// Läd den Treiber
-        bool LoadDriver(void);
+        bool LoadDriver();
 
         /// Lädt einen Sound.
         Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size);
@@ -56,7 +56,7 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
         void PlayMusic(Sound* sound, const unsigned repeats);
 
         /// Stoppt die Musik.
-        void StopMusic(void);
+        void StopMusic();
 
         /// Wird ein Sound (noch) abgespielt?
         bool IsEffectPlaying(const unsigned play_id);
@@ -68,11 +68,11 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
 
         void SetMasterMusicVolume(unsigned char volume);
 
-        std::string GetName(void) const;
+        std::string GetName() const;
 
     private:
 
-        void Msg_MusicFinished();
+        void Msg_MusicFinished() override;
 
     private:
 

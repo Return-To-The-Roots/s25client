@@ -224,7 +224,7 @@ void nofGeologist::Walked()
     }
 }
 
-void nofGeologist::HandleDerivedEvent(const unsigned int id)
+void nofGeologist::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {
@@ -273,11 +273,8 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    if(!gwg->IsNodeForFigures(pt) || obj.GetGOT() == GOT_SIGN
-            || obj.GetType() == NOP_FLAG || obj.GetType() == NOP_TREE)
-        return false;
-
-    return true;
+    return !gwg->IsNodeForFigures(pt) && obj.GetGOT() != GOT_SIGN
+            && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
 }
 
 struct GetMapPointWithRadius

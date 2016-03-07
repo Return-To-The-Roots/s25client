@@ -49,22 +49,22 @@ class noGrainfield : public noCoordBase
         noGrainfield(const MapPoint pt);
         noGrainfield(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~noGrainfield();
+        ~noGrainfield() override;
 
         /// Aufräummethoden
     protected:  void Destroy_noGrainfield();
-    public:     void Destroy() { Destroy_noGrainfield(); }
+    public:     void Destroy() override { Destroy_noGrainfield(); }
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noGrainfield(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_noGrainfield(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noGrainfield(sgd); }
 
-        GO_Type GetGOT() const { return GOT_GRAINFIELD; }
+        GO_Type GetGOT() const override { return GOT_GRAINFIELD; }
 
-        void Draw(int x, int y);
-        void HandleEvent(const unsigned int id);
+        void Draw(int x, int y) override;
+        void HandleEvent(const unsigned int id) override;
 
-        BlockingManner GetBM() const { return BM_GRANITE; }
+        BlockingManner GetBM() const override { return BM_GRANITE; }
 
         /// Kann man es abernten?
         bool IsHarvestable() const { return size == 3 && state == STATE_NORMAL;}

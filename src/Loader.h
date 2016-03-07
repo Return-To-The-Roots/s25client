@@ -67,12 +67,12 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 19;
 
         /// Konstruktor von @p Loader.
-        Loader(void);
+        Loader();
         /// Desktruktor von @p Loader.
-        ~Loader(void);
+        ~Loader() override;
 
         /// Lädt alle allgemeinen Dateien.
-        bool LoadFilesAtStart(void);
+        bool LoadFilesAtStart();
         /// Lädt die Spieldateien.
         bool LoadFilesAtGame(unsigned char gfxset, bool* nations);
         /// Lädt Dateien von Addons.
@@ -81,7 +81,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         /// Deletes all loaded terrain textures
         void ClearTerrainTextures();
         /// Lädt das Terrain.
-        bool CreateTerrainTextures(void);
+        bool CreateTerrainTextures();
 
         /// Lädt die Settings.
         bool LoadSettings();

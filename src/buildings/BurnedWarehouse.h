@@ -39,21 +39,21 @@ class BurnedWarehouse : public noCoordBase
         BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
         BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~BurnedWarehouse();
+        ~BurnedWarehouse() override;
 
-        void Destroy(void);
+        void Destroy() override;
 
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_BurnedWarehouse(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const { Serialize_BurnedWarehouse(sgd); }
+    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_BurnedWarehouse(sgd); }
 
-        GO_Type GetGOT() const { return GOT_BURNEDWAREHOUSE; }
+        GO_Type GetGOT() const override { return GOT_BURNEDWAREHOUSE; }
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 
-        void Draw(int x, int y) {}
+        void Draw(int  /*x*/, int  /*y*/) override {}
 };
 
 #endif

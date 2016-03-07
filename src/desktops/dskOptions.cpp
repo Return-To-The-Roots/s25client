@@ -45,6 +45,7 @@
 #include "controls/ctrlProgress.h"
 #include "ogl/glArchivItem_Font.h"
 #include "helpers/mathFuncs.h"
+#include "helpers/converters.h"
 #include "ExtensionList.h"
 #include "libutil/src/colors.h"
 
@@ -66,7 +67,7 @@
  *  @author OLiver
  *  @author FloSoft
  */
-dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
+dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
@@ -292,22 +293,22 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 48 : 49) ); //-V807
 
     // "Limit Framerate" füllen
-    optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(51);
+    ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
     for(unsigned char i = 0; i < Settings::SCREEN_REFRESH_RATES_COUNT; ++i)
     {
         switch(Settings::SCREEN_REFRESH_RATES[i])
         {
             case 0:
             {
-                groupGrafik->GetCtrl<ctrlComboBox>(51)->AddString(_("Disabled"));
-                groupGrafik->GetCtrl<ctrlComboBox>(51)->SetSelection(0);
+                cbFrameRate->AddString(_("Disabled"));
+                cbFrameRate->SetSelection(0);
             } break;
             case 1:
             {
                 if(GLOBALVARS.ext_swapcontrol)
-                    groupGrafik->GetCtrl<ctrlComboBox>(51)->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
+                    cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
                 if(SETTINGS.video.vsync == 1)
-                    groupGrafik->GetCtrl<ctrlComboBox>(51)->SetSelection(1);
+                    cbFrameRate->SetSelection(1);
             } break;
             default:
             {
@@ -317,13 +318,11 @@ dskOptions::dskOptions(void) : Desktop(LOADER.GetImageN("setup013", 0))
                 if(960 / Settings::SCREEN_REFRESH_RATES[i] > 13)
 #endif // _WIN32
                 {
-                    std::stringstream rrate;
-                    rrate << Settings::SCREEN_REFRESH_RATES[i] << " fps";
-                    groupGrafik->GetCtrl<ctrlComboBox>(51)->AddString(rrate.str());
+                    cbFrameRate->AddString(helpers::toString(Settings::SCREEN_REFRESH_RATES[i]) + " FPS");
                 }
 
                 if(SETTINGS.video.vsync == Settings::SCREEN_REFRESH_RATES[i])
-                    groupGrafik->GetCtrl<ctrlComboBox>(51)->SetSelection(i - (GLOBALVARS.ext_swapcontrol ? 0 : 1));
+                    cbFrameRate->SetSelection(i - (GLOBALVARS.ext_swapcontrol ? 0 : 1));
             } break;
         }
     }
@@ -365,7 +364,7 @@ dskOptions::~dskOptions()
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position)
+void dskOptions::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -469,7 +468,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
 {
     switch(ctrl_id)
     {
@@ -558,7 +557,7 @@ void dskOptions::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigne
         case 10: // Optionengruppen anzeigen
         {
             for(unsigned short i = 21; i < 24; ++i)
-                GetCtrl<ctrlGroup>(i)->SetVisible( (i == selection + 10 ? true : false) );
+                GetCtrl<ctrlGroup>(i)->SetVisible(i == selection + 10);
         } break;
     }
 }
@@ -637,7 +636,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void dskOptions::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void dskOptions::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -660,7 +659,7 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned int group_id, const unsign
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr)
+void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult  /*mbr*/)
 {
     switch(msgbox_id)
     {

@@ -33,7 +33,7 @@ class iwHQ : public iwBaseWarehouse
 
     protected:
 
-        virtual void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
 
 };
 

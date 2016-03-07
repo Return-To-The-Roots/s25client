@@ -77,10 +77,7 @@ void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned shor
 
     bool scale_width = false;
 
-    if(x_scale > y_scale)
-        scale_width = false;
-    else
-        scale_width = true;
+    scale_width = x_scale <= y_scale;
 
     RTTR_Assert(map_height != 0);
     RTTR_Assert(scaled_map_width != 0);

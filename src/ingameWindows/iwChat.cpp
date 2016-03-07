@@ -60,13 +60,13 @@ void iwChat::Msg_PaintBefore()
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void iwChat::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
     chat_dest = static_cast<unsigned char>(selection);
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
+void iwChat::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     Close();
 
@@ -94,7 +94,7 @@ void iwChat::Msg_EditEnter(const unsigned int ctrl_id)
     {
         char* x = NULL;
 
-        *x = 1; //-V522
+        *x = 1; //-V522 // NOLINT
 
         return;
     }

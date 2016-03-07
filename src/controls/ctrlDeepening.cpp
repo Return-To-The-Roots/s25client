@@ -57,11 +57,11 @@ ctrlDeepening::ctrlDeepening(Window* parent,
  *
  *  @author OLiver
  */
-bool ctrlDeepening::Draw_(void)
+bool ctrlDeepening::Draw_()
 {
     Draw3D(GetX(), GetY(), width_, height_, tc, 2);
 
-    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, text.c_str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetX() + width_ / 2, GetY() + height_ / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 
     DrawContent();
 
@@ -99,7 +99,7 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
  *
  *  @author Divan
  */
-void ctrlColorDeepening::DrawContent(void) const
+void ctrlColorDeepening::DrawContent() const
 {
     DrawRectangle(x_ + 3, y_ + 3, width_ - 6, height_ - 6, fillColor);
 }

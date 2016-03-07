@@ -20,10 +20,10 @@ class iwTrade : public IngameWindow
 
     private:
 
-        void Msg_PaintBefore();
-        void Msg_PaintAfter();
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection);
+        void Msg_PaintBefore() override;
+        void Msg_PaintAfter() override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection) override;
         unsigned GetPossibleTradeAmount(const Job job) const;
         unsigned GetPossibleTradeAmount(const GoodType good) const;
 };

@@ -30,7 +30,7 @@ class iwTools : public IngameWindow
     public:
 
         iwTools();
-        ~iwTools();
+        ~iwTools() override;
 
     private:
 
@@ -39,15 +39,15 @@ class iwTools : public IngameWindow
         /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
         void TransmitSettings();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id);
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-        void Msg_Timer(const unsigned int ctrl_id);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_Timer(const unsigned int ctrl_id) override;
 
         //qx:tools
         unsigned int m_Updated;
         static unsigned int m_UpdateReq;
         void UpdateTexts();
-        void Msg_PaintBefore();
+        void Msg_PaintBefore() override;
     public:
         static void UpdateOrders();
 };

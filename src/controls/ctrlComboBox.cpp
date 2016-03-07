@@ -251,7 +251,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlComboBox::Msg_ListSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
     // Liste wieder ausblenden
     ShowList(false);
@@ -310,7 +310,7 @@ void ctrlComboBox::SetSelection(unsigned short selection)
  *
  *  @author OLiver
  */
-bool ctrlComboBox::Draw_(void)
+bool ctrlComboBox::Draw_()
 {
     ctrlList* liste = GetCtrl<ctrlList>(0);
 

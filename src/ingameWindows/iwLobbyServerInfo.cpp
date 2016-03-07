@@ -58,7 +58,7 @@ void iwLobbyServerInfo::UpdateServerInfo()
  *
  *  @author Devil
  */
-iwLobbyServerInfo::iwLobbyServerInfo(void)
+iwLobbyServerInfo::iwLobbyServerInfo()
     : IngameWindow(CGI_LOBBYSERVERINFO, 0xFFFF, 0xFFFF, 260, 260, _("Server Information"), LOADER.GetImageN("resource", 41))
 {
     AddText(0, 30,  40, _("Map Name:"), COLOR_YELLOW, 0, NormalFont);

@@ -29,18 +29,18 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
-    public:     void Destroy() { Destroy_nobBaseWarehouse(); }
+    public:     void Destroy() override { Destroy_nobBaseWarehouse(); }
 
         /// Serialisierungsfunktionen
     protected: void Serialize_nobStorehouse(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const { Serialize_nobStorehouse(sgd); }
+    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobStorehouse(sgd); }
 
-        GO_Type GetGOT() const { return GOT_NOB_STOREHOUSE; }
+        GO_Type GetGOT() const override { return GOT_NOB_STOREHOUSE; }
         unsigned GetMilitaryRadius() const override { return 0; }
 
-        void Draw(int x, int y);
+        void Draw(int x, int y) override;
 
-        void HandleEvent(const unsigned int id);
+        void HandleEvent(const unsigned int id) override;
 };
 
 

@@ -24,11 +24,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-AIEventManager::AIEventManager(void)
+AIEventManager::AIEventManager()
 {
 }
 
-AIEventManager::~AIEventManager(void)
+AIEventManager::~AIEventManager()
 {
     while(AIEvent::Base* ev = GetEvent())
         deletePtr(ev);

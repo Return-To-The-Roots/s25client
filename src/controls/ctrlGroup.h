@@ -29,49 +29,49 @@ class ctrlGroup : public Window
     public:
         ctrlGroup(Window* parent, unsigned int id, bool scale = false);
 
-        void Msg_ScreenResize(const ScreenResizeEvent& sr);
+        void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
 
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-        virtual void Msg_EditEnter(const unsigned int ctrl_id);
-        virtual void Msg_EditChange(const unsigned int ctrl_id);
-        virtual void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id);
-        virtual void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
-        virtual void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-        virtual void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible);
-        virtual void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Timer(const unsigned int ctrl_id);
-        virtual void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_EditChange(const unsigned int ctrl_id) override;
+        void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id) override;
+        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
+        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection) override;
 
-        virtual void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id);
-        virtual void Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked);
-        virtual void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position);
-        virtual void Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible);
-        virtual void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id) override;
+        void Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked) override;
+        void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible) override;
+        void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
 
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_RightDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_RightUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_KeyDown(const KeyEvent& ke);
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_RightDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_RightUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
+        bool Msg_KeyDown(const KeyEvent& ke) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_() override;
 };
 
 #endif // !CTRLGROUP_H_INCLUDED

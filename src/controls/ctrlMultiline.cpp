@@ -75,7 +75,7 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
  *
  *  @author OLiver
  */
-bool ctrlMultiline::Draw_(void)
+bool ctrlMultiline::Draw_()
 {
     if(draw_box)
         Draw3D(GetX(), GetY(), width_, height_, tc, 2);
@@ -174,7 +174,7 @@ bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
 }
 
 
-void ctrlMultiline::Resize_(unsigned short width, unsigned short height)
+void ctrlMultiline::Resize_(unsigned short width, unsigned short  /*height*/)
 {
     // Position der Scrollbar anpassen
     GetCtrl<ctrlScrollBar>(0)->Move(width - SCROLLBAR_WIDTH, 0);

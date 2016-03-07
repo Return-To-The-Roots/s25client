@@ -35,10 +35,10 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         /// Konstruktor von @p DriverWrapper
         VideoDriverWrapper();
         /// Destruktor von @p DriverWrapper
-        ~VideoDriverWrapper();
+        ~VideoDriverWrapper() override;
 
         /// Läd den Treiber
-        bool LoadDriver(void);
+        bool LoadDriver();
 
         /// Erstellt das Fenster.
         bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
@@ -77,14 +77,14 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         // setzt den Mausstatus
         void SetMousePos(const int x, const int y);
         /// Get state of the modifier keys
-        KeyEvent GetModKeyState(void) const;
+        KeyEvent GetModKeyState() const;
 
         // Nachrichtenschleife
         bool Run();
 
         unsigned int GetTickCount();
 
-        std::string GetName(void) const { return (videodriver) ? videodriver->GetName() : ""; }
+        std::string GetName() const { return (videodriver) ? videodriver->GetName() : ""; }
         bool IsLoaded() const { return videodriver != NULL; }
 
     private:

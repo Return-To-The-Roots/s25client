@@ -313,6 +313,7 @@ void noFighting::StartAttack()
                 results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 6);
             } break;
             case 1: // Mittlere Stärke
+            default:
             {
                 results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 10);
             } break;
@@ -360,9 +361,6 @@ bool noFighting::IsSoldierOfPlayer(const unsigned char player) const
 
     // Der Spieler der gewonnen hat und schon wieder gegangen ist (taucht dann nicht bei den ersten beiden mit
     // auf, wenn der Kampf beendet ist)
-    if(player_won == player)
-        return true;
-
-    return false;
+    return player_won == player;
 }
 

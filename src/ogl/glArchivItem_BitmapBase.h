@@ -26,7 +26,7 @@ class glArchivItem_BitmapBase: public virtual libsiedler2::ArchivItem_BitmapBase
 public:
     glArchivItem_BitmapBase();
     glArchivItem_BitmapBase(const glArchivItem_BitmapBase& other);
-    virtual ~glArchivItem_BitmapBase();
+    ~glArchivItem_BitmapBase() override;
 
     glArchivItem_BitmapBase& operator=(const glArchivItem_BitmapBase& item);
 

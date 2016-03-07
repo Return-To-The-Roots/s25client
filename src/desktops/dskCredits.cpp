@@ -58,7 +58,7 @@ const unsigned FADING_TIME = 2000;
  *
  *  @author siegi44
  */
-dskCredits::dskCredits(void) : Desktop(LOADER.GetImageN("setup013", 0))
+dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
     AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
@@ -377,7 +377,7 @@ void dskCredits::Msg_PaintAfter()
 
     for(std::list<CreditsEntry::Line>::iterator line = this->itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
-        LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line.c_str(), 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
         columnToY[line->column] += LargeFont->getHeight() + 5;
     }
 
@@ -396,7 +396,7 @@ void dskCredits::Msg_PaintAfter()
  *
  *  @author siegi44
  */
-bool dskCredits::Close(void)
+bool dskCredits::Close()
 {
     WINDOWMANAGER.Switch(new dskMainMenu());
     return true;
@@ -408,13 +408,13 @@ bool dskCredits::Close(void)
  *
  *  @author siegi44
  */
-bool dskCredits::Msg_KeyDown(const KeyEvent& ke)
+bool dskCredits::Msg_KeyDown(const KeyEvent&  /*ke*/)
 {
     return Close();
 }
 
 
-void dskCredits::Msg_ButtonClick(const unsigned ctrl_id)
+void dskCredits::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
 {
     Close();
 }

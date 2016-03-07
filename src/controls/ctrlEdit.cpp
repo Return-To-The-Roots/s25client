@@ -87,7 +87,7 @@ void ctrlEdit::SetText(const unsigned int text)
         AddChar(textt.str().at(i));
 }
 
-std::string ctrlEdit::GetText(void) const
+std::string ctrlEdit::GetText() const
 {
     std::string t;
     for(unsigned int i = 0; i < text_.length(); ++i)
@@ -103,7 +103,7 @@ std::string ctrlEdit::GetText(void) const
  *
  *  @author OLiver
  */
-bool ctrlEdit::Draw_(void)
+bool ctrlEdit::Draw_()
 {
     // Box malen
     Draw3D(GetX(), GetY(), width_, height_, texColor_, 2);

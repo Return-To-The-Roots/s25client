@@ -29,7 +29,7 @@
  *
  *  @author FloSoft
  */
-glArchivItem_Sound::glArchivItem_Sound(void)
+glArchivItem_Sound::glArchivItem_Sound()
     : baseArchivItem_Sound(), sound(NULL)
 {
 }
@@ -60,5 +60,5 @@ glArchivItem_Sound& glArchivItem_Sound::operator=(const glArchivItem_Sound& item
  *
  *  @author FloSoft
  */
-glArchivItem_Sound::~glArchivItem_Sound(void)
+glArchivItem_Sound::~glArchivItem_Sound()
 {}

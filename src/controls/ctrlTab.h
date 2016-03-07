@@ -36,39 +36,39 @@ class ctrlTab : public Window
         /// fügt eine Tab hinzu.
         ctrlGroup* AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id);
         /// löscht alle Tabs.
-        void DeleteAllTabs(void);
+        void DeleteAllTabs();
         /// aktiviert eine bestimmte Tabseite.
         void SetSelection(unsigned short nr, bool notify = false);
         /// Gibt ID des aktuell gewählten Tabs zurück
-        unsigned int GetCurrentTab(void) const { return tabs[tab_selection]; }
+        unsigned int GetCurrentTab() const { return tabs[tab_selection]; }
         /// Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen werden können
         ctrlGroup* GetGroup(const unsigned int tab_id);
         /// Gibt aktuell ausgewählte Tab-Gruppe zürck
         ctrlGroup* GetCurrentGroup() { return GetGroup(GetCurrentTab()); }
 
-        virtual void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id);
-        virtual void Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked);
-        virtual void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position);
-        virtual void Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible);
-        virtual void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
+        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id) override;
+        void Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked) override;
+        void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible) override;
+        void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id) override;
+        void Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        bool Msg_LeftDown(const MouseCoords& mc) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
+        bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        virtual bool Draw_(void);
+        bool Draw_() override;
 
     private:
         unsigned short tab_count;

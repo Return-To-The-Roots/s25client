@@ -562,7 +562,7 @@ struct MapPoint2Idx
     const AIInterface& aii_;
 
     MapPoint2Idx(const AIInterface& aii): aii_(aii){}
-    result_type operator()(const MapPoint pt, unsigned r)
+    result_type operator()(const MapPoint pt, unsigned  /*r*/)
     {
         return aii_.GetIdx(pt);
     }
@@ -584,7 +584,7 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshol
     return resourceMaps[res].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
-PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best)
+PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType  /*bld*/, bool best)
 {
     // set some basic parameters
     PositionSearch* p = new PositionSearch(pt, res, minimum, size, BLD_WOODCUTTER, best);
@@ -946,7 +946,7 @@ void AIPlayerJH::ExecuteAIJob()
 		*/
 }
 
-void AIPlayerJH::RecalcBQAround(const MapPoint pt)
+void AIPlayerJH::RecalcBQAround(const MapPoint  /*pt*/)
 {
 }
 
@@ -1314,7 +1314,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
     }
 }
 
-void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char dir)
+void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char  /*dir*/)
 {
     const noFlag* flag;
     //does the flag still exist?
@@ -2045,7 +2045,6 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
         if(dir == 1 && (aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDING) || aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
         {
             //the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
-            finds += 3;
             return true;
         }
         if(startFlag->routes[dir])
@@ -2059,24 +2058,19 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
     }
     // if we found more than 1 road -> the flag is still in use.
     if (finds > 2)
-    {
         return false;
-    }
-    else
+    else if(finds == 2)
     {
-        if(finds == 2)
+        if(allowcircle)
         {
-            if(allowcircle)
-            {
-                std::vector<MapPoint> flagcheck;
-                if(!IsFlagPartofCircle(startFlag, 10, startFlag, 7, true, flagcheck))
-                    return false;
-                if(!firstflag)
-                    return false;
-            }
-            else
+            std::vector<MapPoint> flagcheck;
+            if(!IsFlagPartofCircle(startFlag, 10, startFlag, 7, true, flagcheck))
+                return false;
+            if(!firstflag)
                 return false;
         }
+        else
+            return false;
     }
 
     // kill the flag
@@ -2090,9 +2084,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
 
     // nothing found?
     if (foundDir > 6)
-    {
         return false;
-    }
     // at least 1 road exists
     RemoveUnusedRoad(startFlag->routes[foundDir]->GetOtherFlag(startFlag), (startFlag->routes[foundDir]->GetOtherFlagDir(startFlag) + 3) % 6, false);
     // 2 roads exist
@@ -2439,9 +2431,7 @@ bool AIPlayerJH::NoEnemyHarbor()
 
 bool AIPlayerJH::IsInvalidShipyardPosition(const MapPoint pt)
 {
-    if (BuildingNearby(pt, BLD_SHIPYARD, 20) || !HarborPosClose(pt, 8))
-        return true;
-    return false;
+    return BuildingNearby(pt, BLD_SHIPYARD, 20) || !HarborPosClose(pt, 8);
 
 }
 
@@ -2540,7 +2530,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[2] = 4;
     milSettings[3] = 5;
 	//interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
-	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (inventory.goods[GD_COINS]>0 || (inventory.goods[GD_GOLD]>0 && inventory.goods[GD_COAL]>0 && aii.GetBuildings(BLD_MINT).size()) )? 8 : 0;     
+	milSettings[4] = UpdateUpgradeBuilding() >= 0 && (inventory.goods[GD_COINS]>0 || (inventory.goods[GD_GOLD]>0 && inventory.goods[GD_COAL]>0 && !aii.GetBuildings(BLD_MINT).empty()) )? 8 : 0;     
     milSettings[6] = ggs.getSelection(ADDON_SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%
