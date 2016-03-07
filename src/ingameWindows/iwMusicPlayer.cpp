@@ -368,10 +368,9 @@ void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
         // Add Track directory of tracks - Window
         case 2:
         {
-            std::list<std::string> lst;
-            ListDir(msg + "/*.ogg", false, NULL, NULL, &lst);
+            std::vector<std::string> oggFiles = ListDir(msg, "ogg");
 
-            for(std::list<std::string>::iterator it = lst.begin(); it != lst.end(); ++it)
+            for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
                 GetCtrl<ctrlList>(0)->AddString(*it);
 
             changed = true;
@@ -426,11 +425,10 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 {
     GetCtrl<ctrlComboBox>(2)->DeleteAllItems();
 
-    std::list<std::string> segments;
-    ListDir(std::string(FILE_PATHS[90]) + "*.pll", false, NULL, NULL, &segments);
+    std::vector<std::string> playlists = ListDir(std::string(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
-    for(std::list<std::string>::iterator it = segments.begin(); it != segments.end(); ++it, ++i)
+    for(std::vector<std::string>::iterator it = playlists.begin(); it != playlists.end(); ++it, ++i)
     {
         bfs::path playlistPath(*it);
         // Reduce to pure filename

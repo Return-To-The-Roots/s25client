@@ -136,17 +136,16 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 
         LOG.lprintf(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n"), GetFilePath(file).c_str());
 
-        std::list<std::string> lst;
-        ListDir(file + "*.lst", true, NULL, NULL, &lst);
-        ListDir(file + "*.bob", true, NULL, NULL, &lst);
-        ListDir(file + "*.idx", true, NULL, NULL, &lst);
-        ListDir(file + "*.bmp", true, NULL, NULL, &lst);
-        ListDir(file + "*.txt", true, NULL, NULL, &lst);
-        ListDir(file + "*.ger", true, NULL, NULL, &lst);
-        ListDir(file + "*.eng", true, NULL, NULL, &lst);
-        ListDir(file + "*.ini", true, NULL, NULL, &lst);
+        std::vector<std::string> lst = ListDir(file, "lst", true);
+        lst = ListDir(file, "bob", true, &lst);
+        lst = ListDir(file, "idx", true, &lst);
+        lst = ListDir(file, "bmp", true, &lst);
+        lst = ListDir(file, "txt", true, &lst);
+        lst = ListDir(file, "ger", true, &lst);
+        lst = ListDir(file, "eng", true, &lst);
+        lst = ListDir(file, "ini", true, &lst);
 
-        for(std::list<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
+        for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
             if(!LoadFile( *i, GetPaletteN("pal5"), isOriginal ) )
                 return false;
@@ -277,12 +276,11 @@ bool Loader::LoadSounds()
             return false;
     }
 
-    std::list<std::string> liste;
-    ListDir(GetFilePath(FILE_PATHS[50]), false, NULL, NULL, &liste);
+    std::vector<std::string> oggFiles = ListDir(GetFilePath(FILE_PATHS[50]), "ogg");
 
     unsigned int i = 0;
-    sng_lst.alloc(liste.size());
-    for(std::list<std::string>::iterator it = liste.begin(); it != liste.end(); ++it)
+    sng_lst.alloc(oggFiles.size());
+    for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
     {
         libsiedler2::ArchivInfo sng;
 
@@ -1194,19 +1192,18 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
         return false;
     }
 
-    LOG.lprintf(_("Loading directory %s\n"), GetFilePath(filePath).c_str());
-    std::list<std::string> lst;
-    ListDir(filePath + "/*.bmp", false, NULL, NULL, &lst);
-    ListDir(filePath + "/*.txt", false, NULL, NULL, &lst);
-    ListDir(filePath + "/*.ger", false, NULL, NULL, &lst);
-    ListDir(filePath + "/*.eng", false, NULL, NULL, &lst);
-    ListDir(filePath + "/*.fon", true, NULL, NULL, &lst);
-    ListDir(filePath + "/*.empty", false, NULL, NULL, &lst);
+    LOG.lprintf(_("Loading directory %s\n"), filePath.c_str());
+    std::vector<std::string> lst = ListDir(filePath, "bmp");
+    lst = ListDir(filePath, "txt", false, &lst);
+    lst = ListDir(filePath, "ger", false, &lst);
+    lst = ListDir(filePath, "eng", false, &lst);
+    lst = ListDir(filePath, "fon", false, &lst);
+    lst = ListDir(filePath, "empty", false, &lst);
 
-    lst.sort(SortFilesHelper);
+    std::sort(lst.begin(), lst.end(), SortFilesHelper);
 
     std::vector<unsigned char> buffer(1000 * 1000 * 4);
-    for(std::list<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
+    for(std::vector<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
     {
         // read file number, to set the index correctly
         std::string filename = bfs::path(*itFile).filename().string();

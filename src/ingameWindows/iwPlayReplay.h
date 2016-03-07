@@ -28,18 +28,12 @@ class iwPlayReplay : public IngameWindow
         /// Konstruktor von @p iwPlayReplay.
         iwPlayReplay();
 
-        void PopulateTable();
-
-    private:
-
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
         void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection) override;
 
-        /// Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
-        static void FillReplayTable(const std::string& filePath, void* param);
-        /// Callbackfunktion zum löschen aller Replays
-        static void RemoveReplay(const std::string& filePath, void* param);
+    private:
+        void PopulateTable();
 
         /// Startet das Replay (aktuell ausgewählter Eintrag)
         void StartReplay();

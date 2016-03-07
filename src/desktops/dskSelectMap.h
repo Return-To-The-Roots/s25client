@@ -24,6 +24,8 @@
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
+#include <string>
+#include <vector>
 
 class dskSelectMap :
     public Desktop,
@@ -39,8 +41,7 @@ class dskSelectMap :
         ~dskSelectMap() override;
 
     private:
-        /// Callbackfunktion zum Eintragen einer Karte in der Tabelle.
-        static void FillTable(const std::string& filename, void* param);
+        void FillTable(const std::vector<std::string>& files);
 
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;

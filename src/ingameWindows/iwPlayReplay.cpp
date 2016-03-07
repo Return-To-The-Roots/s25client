@@ -39,20 +39,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 class GameWorldViewer;
-///////////////////////////////////////////////////////////////////////////////
-/** @class iwPlayReplay
- *
- *  Klasse des Replay-Listen-Fensters.
- *
- *  @author OLiver
- */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwPlayReplay.
- *
- *  @author OLiver
- */
+std::vector<std::string> GetReplays()
+{
+    return ListDir(GetFilePath(FILE_PATHS[51]), "rpl");
+}
 
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, 0xFFFF, 0xFFFF, 600, 330, _("Play Replay"), LOADER.GetImageN("resource", 41))
@@ -78,10 +69,44 @@ void iwPlayReplay::PopulateTable()
     bool sortDir = table->GetSortDirection();
     table->DeleteAllItems();
 
-    // Verzeichnis auflisten
-    std::string tmp = GetFilePath(FILE_PATHS[51]);
-    tmp += "*.rpl";
-    ListDir(tmp, false, FillReplayTable, table);
+    std::vector<std::string> replays = GetReplays();
+    for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+    {
+        Replay replay;
+
+        // Datei laden
+        if(!replay.LoadHeader(*it, false))
+            return;
+
+        // Zeitstamp benutzen
+        std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
+
+        // Spielernamen auslesen
+        std::string tmp_players;
+        for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
+        {
+            // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
+            const SavedFile::Player& curPlayer = replay.GetPlayer(i);
+            if(curPlayer.ps == PS_OCCUPIED || curPlayer.ps == PS_KI)
+            {
+                // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
+                if(!tmp_players.empty())
+                    tmp_players += ", ";
+
+                tmp_players += curPlayer.name;
+            }
+        }
+
+        // Dateiname noch rausextrahieren aus dem Pfad
+        bfs::path path = *it;
+        if(!path.has_filename())
+            return;
+        std::string fileName = path.filename().string();
+        std::string lastGF = helpers::toString(replay.lastGF_);
+
+        // Und das Zeug zur Tabelle hinzufügen
+        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), fileName.c_str());
+    }
 
     // Erst einmal nach Dateiname sortieren
     table->SortRows(sortCol, &sortDir);
@@ -151,10 +176,12 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     // Sollen alle Replays gelöscht werden?
     if(mbr == MSR_YES && msgbox_id == 1)
     {
-        // Dateien löschen
-        std::string tmp = GetFilePath(FILE_PATHS[51]);
-        tmp += "*.rpl";
-        ListDir(tmp, false, RemoveReplay, 0);
+        std::vector<std::string> replays = GetReplays();
+        for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+        {
+            boost::system::error_code ec;
+            bfs::remove(*it, ec);
+        }
 
         // Tabelle leeren
         GetCtrl<ctrlTable>(0)->DeleteAllItems();
@@ -163,66 +190,9 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         ctrlTable* table = GetCtrl<ctrlTable>(0);
         if(table->GetSelection() < table->GetRowCount())
         {
-            RemoveReplay(table->GetItemText(table->GetSelection(), 4), NULL);
+            boost::system::error_code ec;
+            bfs::remove(table->GetItemText(table->GetSelection(), 4), ec);
             PopulateTable();
         }
     }
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Callbackfunktion zum Eintragen einer Replay-Zeile in der Tabelle.
- *
- *  @param[in] filename Der Dateiname
- *  @param[in] param    Ein benutzerdefinierter Parameter
- *
- *  @todo Noch korrekt dokumentieren (was wird da so übersprungen usw)
- *
- *  @author OLiver
- */
-void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
-{
-    Replay replay;
-
-    // Datei laden
-    if(!replay.LoadHeader(filePath, false))
-        return;
-
-    // Zeitstamp benutzen
-    std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
-
-    // Spielernamen auslesen
-    std::string tmp_players;
-    for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
-    {
-        // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
-        const SavedFile::Player& curPlayer = replay.GetPlayer(i);
-        if(curPlayer.ps == PS_OCCUPIED || curPlayer.ps == PS_KI)
-        {
-            // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
-            if(!tmp_players.empty())
-                tmp_players += ", ";
-
-            tmp_players += curPlayer.name;
-        }
-    }
-
-    // Dateiname noch rausextrahieren aus dem Pfad
-    bfs::path path = filePath;
-    if(!path.has_filename())
-        return;
-	std::string fileName = path.filename().string();
-    std::string lastGF = helpers::toString(replay.lastGF_);
-
-    // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), filePath.c_str());
-}
-
-
-void iwPlayReplay::RemoveReplay(const std::string& filePath, void*  /*param*/)
-{
-    boost::system::error_code ec;
-    bfs::remove(filePath, ec);
 }

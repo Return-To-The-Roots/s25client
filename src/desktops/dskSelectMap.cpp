@@ -164,15 +164,10 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
     table->DeleteAllItems();
 
     static const unsigned int ids[] = { 39, 40, 41, 42, 43, 52, 91, 93, 48 };
-    char path[4096];
 
     // Und wieder füllen lassen
-    snprintf(path, 4096, "%s*.swd", GetFilePath(FILE_PATHS[ids[selection]]).c_str());
-    ListDir(path, false, FillTable, (void*)table );
-
-    // Nach beiden Kartentypen suchen
-    snprintf(path, 4096, "%s*.wld", GetFilePath(FILE_PATHS[ids[selection]]).c_str());
-    ListDir(path, false, FillTable, (void*)table );
+    FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "swd"));
+    FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "wld"));
 
     // Dann noch sortieren
     bool sortAsc = true;
@@ -381,35 +376,25 @@ void dskSelectMap::LC_Created()
     GAMESERVER.Start();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Callbackfunktion zum Eintragen einer Karte in der Tabelle.
- *
- *  @param[in] filename Der Dateiname
- *  @param[in] param    Ein aufrufsabhängiger Parameter
- *
- *  @author OLiver
- */
-void dskSelectMap::FillTable(const std::string& filename, void* param)
+void dskSelectMap::FillTable(const std::vector<std::string>& files)
 {
-    ctrlTable* tabelle = (ctrlTable*)param;
-    char players[64], size[32];
-    libsiedler2::ArchivInfo map;
+    ctrlTable* table = GetCtrl<ctrlTable>(1);
 
-    // Ist die Tabelle gültig?
-    if(!tabelle)
-        return;
-
-    // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(filename, map, true) == 0)
+    for(std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
     {
+        // Karteninformationen laden
+        libsiedler2::ArchivInfo map;
+        if(libsiedler2::loader::LoadMAP(*it, map, true) != 0)
+            continue;
+
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
         RTTR_Assert(header);
 
-        if (header->getPlayer() > MAX_PLAYERS)
-            return;
+        if(header->getPlayer() > MAX_PLAYERS)
+            continue;
 
         // Und Zeilen vorbereiten
+        char players[64], size[32];
         snprintf(players, 64, _("%d Player"), header->getPlayer());
         snprintf(size, 32, "%dx%d", header->getWidth(), header->getHeight());
 
@@ -421,7 +406,7 @@ void dskSelectMap::FillTable(const std::string& filename, void* param)
             _("Winter world")
         };
 
-        tabelle->AddRow(0, header->getName().c_str(), header->getAuthor().c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filename.c_str());
+        table->AddRow(0, header->getName().c_str(), header->getAuthor().c_str(), players, landscapes[header->getGfxSet()].c_str(), size, it->c_str());
     }
 }
 

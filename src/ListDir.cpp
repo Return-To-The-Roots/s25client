@@ -28,39 +28,44 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // lists the files of a directory
-void ListDir(const std::string& path, bool directories, void (*CallBack)(const std::string& filename, void* param), void* param, std::list<std::string> *liste)
+std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories, const std::vector<std::string>* const appendTo)
 {
-    namespace bfs = boost::filesystem;
+    std::vector<std::string> result;
+    if(appendTo)
+        result = *appendTo;
+
     bfs::path fullPath(path);
 
-    if(!fullPath.has_extension())
-        return;
+    if(!bfs::exists(fullPath))
+        return result;
 
-    bfs::path parentPath = fullPath.parent_path();
-    std::string extension = fullPath.extension().string();
-    std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
-    if(!bfs::exists(parentPath))
-        return;
-
-    for(bfs::directory_iterator it = bfs::directory_iterator(parentPath); it != bfs::directory_iterator(); ++it)
+    if(!extension.empty())
     {
-        if(bfs::is_directory(it->status()) && !directories)
+        std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
+        // Add dot if missing
+        if(extension[0] != '.')
+            extension = "." + extension;
+    }
+
+    for(bfs::directory_iterator it = bfs::directory_iterator(fullPath); it != bfs::directory_iterator(); ++it)
+    {
+        if(bfs::is_directory(it->status()) && !includeDirectories)
             continue;
 
         bfs::path curPath = it->path();
         curPath.make_preferred();
 
-        std::string curExt = curPath.extension().string();
-        std::transform(curExt.begin(), curExt.end(), curExt.begin(), tolower);
-        if(curExt != extension)
-            continue;
+        if(!extension.empty())
+        {
+            std::string curExt = curPath.extension().string();
+            std::transform(curExt.begin(), curExt.end(), curExt.begin(), tolower);
+            if(curExt != extension)
+                continue;
+        }
 
-        if(CallBack)
-            CallBack(curPath.string(), param);
-        if(liste)
-            liste->push_back(curPath.string());
+        result.push_back(curPath.string());
     }
 
-    if(liste)
-        liste->sort();
+    std::sort(result.begin(), result.end());
+    return result;
 }

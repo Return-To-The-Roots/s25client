@@ -20,11 +20,13 @@
 
 #pragma once
 
-#include <list>
 #include <string>
+#include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-// Funktionsprototypen
-void ListDir(const std::string& path, bool directories, void (*CallBack)(const std::string& filename, void* param), void* param, std::list<std::string>* liste = NULL);
+/// List all files in the given path with a given extension
+/// @extension Extension that files/folders must have (dot is added automatically to front) or empty to list all
+/// @includeDirectories tells whether directories should be added too
+/// @appendTo Appends to given vector (if specified)
+std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories = false, const std::vector<std::string>* const appendTo = NULL);
 
 #endif // LISTDIR_H_INCLUDED

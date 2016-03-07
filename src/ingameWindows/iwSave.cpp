@@ -37,6 +37,7 @@
 #include "iwPleaseWait.h"
 #include "gameData/const_gui_ids.h"
 #include "Settings.h"
+#include "helpers/converters.h"
 #include <boost/filesystem.hpp>
 
 // Include last!
@@ -111,12 +112,35 @@ void iwSaveLoad::RefreshTable()
 {
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
-    // Verzeichnis auflisten
-    std::string tmp = GetFilePath(FILE_PATHS[85]);
-    tmp += "*.sav";
-    ListDir(tmp, false, iwSave::FillSaveTable, GetCtrl<ctrlTable>(0));
+    std::vector<std::string> saveFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
+    for(std::vector<std::string>::iterator it = saveFiles.begin(); it != saveFiles.end(); ++it)
+    {
+        Savegame save;
 
-    // qx: Nach Zeit Sortieren
+        // Datei öffnen
+        if(!save.Load(*it, false, false))
+            return;
+
+        // Zeitstring erstellen
+        std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
+
+        // Dateiname noch rausextrahieren aus dem Pfad
+        bfs::path path = *it;
+        if(!path.has_filename())
+            return;
+        bfs::path fileName = path.filename();
+
+        // ".sav" am Ende weg
+        RTTR_Assert(fileName.has_extension());
+        fileName.replace_extension();
+
+        std::string startGF = helpers::toString(save.start_gf);
+
+        // Und das Zeug zur Tabelle hinzufügen
+        GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.map_name.c_str(), dateStr.c_str(), startGF.c_str(), it->c_str());
+    }
+
+    // Nach Zeit Sortieren
     GetCtrl<ctrlTable>(0)->SortRows(2);
 }
 
@@ -128,30 +152,7 @@ void iwSaveLoad::RefreshTable()
  */
 void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
 {
-    Savegame save;
-
-    // Datei öffnen
-    if(!save.Load(filePath, false, false))
-        return;
-
-    // Zeitstring erstellen
-    std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
-
-    // Dateiname noch rausextrahieren aus dem Pfad
-    bfs::path path = filePath;
-    if(!path.has_filename())
-        return;
-    bfs::path fileName = path.filename();
-
-    // ".sav" am Ende weg
-    RTTR_Assert(fileName.has_extension());
-    fileName.replace_extension();
-
-    char start_gf[32];
-    sprintf(start_gf, "%u", save.start_gf);
-
-    // Und das Zeug zur Tabelle hinzufügen
-    static_cast<ctrlTable*>(param)->AddRow(0, fileName.string().c_str(), save.map_name.c_str(), dateStr.c_str(), start_gf, filePath.c_str());
+    
 }
 
 ///////////////////////////////////////////////////////////////////////////////

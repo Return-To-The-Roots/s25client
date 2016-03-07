@@ -89,14 +89,11 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 3: // "Letztes Spiel fortsetzen"
         {
-            std::list<std::string> liste;
-            std::string tmp = GetFilePath(FILE_PATHS[85]);
-
-            ListDir(tmp + "*.sav", false, NULL, NULL, &liste);
+            std::vector<std::string> savFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
 
             bfs::path path;
             unser_time_t recent = 0;
-            for(std::list<std::string>::iterator it = liste.begin(); it != liste.end(); ++it)
+            for(std::vector<std::string>::iterator it = savFiles.begin(); it != savFiles.end(); ++it)
             {
                 Savegame save;
 

@@ -158,27 +158,26 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
 std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const DriverType dt)
 {
     std::vector<DriverItem> driver_list;
-    /// Verfügbare Treiber auflisten
-    std::list<std::string> driver_files;
 
     const std::string DIRECTORY[2] = { "video", "audio" };
 
-    std::string path = GetFilePath(FILE_PATHS[46]) + DIRECTORY[dt] + "/" +
+    std::string path = GetFilePath(FILE_PATHS[46]) + DIRECTORY[dt];
+    std::string extension = 
 #ifdef _WIN32
-                       "*.dll";
+                       "dll";
 #else
 #   ifdef __APPLE__
-                       "*.dylib";
+                       "dylib";
 #   else
-                       "*.so";
+                       "so";
 #   endif // !__APPLE__
 #endif // !_WIN32
 
     LOG.lprintf("searching for drivers in %s\n", path.c_str());
-    ListDir(path, false, 0, 0, &driver_files);
+    std::vector<std::string> driver_files = ListDir(path, extension, false);
 
     HINSTANCE dll;
-    for(std::list<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
+    for(std::vector<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
     {
         std::string path(*it);
 
