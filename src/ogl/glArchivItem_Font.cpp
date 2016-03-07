@@ -625,7 +625,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     }
 
     // Ignore trailing newline
-    if(wi.positions.back() + 1 >= length)
+    if(wi.positions.back() + 1 >= length && wi.positions.size() > 1)
         wi.positions.pop_back();
     return wi;
 }
