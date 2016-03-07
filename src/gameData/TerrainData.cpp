@@ -46,7 +46,7 @@ TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
     case 15: return TT_MEADOW_FLOWERS;
     case 16: return TT_LAVA;
     case 18: return TT_MOUNTAINMEADOW;
-    case 19: return TT_WATER2;
+    case 19: return TT_WATER_NOSHIP;
     case 20: return TT_LAVA2;
     case 21: return TT_LAVA3;
     case 22: return TT_LAVA4;
@@ -77,7 +77,7 @@ Rect TerrainData::GetPosInTexture(TerrainType t)
     case TT_STEPPE:             return Rect(0,   144, 48, 48);
     case TT_MOUNTAINMEADOW:     return Rect(48,  144, 48, 48);
     case TT_WATER:
-    case TT_WATER2:
+    case TT_WATER_NOSHIP:
     case TT_BUILDABLE_WATER:    return Rect(192, 48,  55, 56);
     case TT_LAVA:               return Rect(192, 104, 55, 56);
     case TT_LAVA2:              return Rect(66,  223, 31, 32);
@@ -97,7 +97,7 @@ unsigned TerrainData::GetFrameCount(TerrainType t)
     switch (t)
     {
     case TT_WATER:
-    case TT_WATER2:
+    case TT_WATER_NOSHIP:
     case TT_BUILDABLE_WATER:
        return 8;
     case TT_LAVA:
@@ -115,7 +115,7 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
     switch(t)
     {
     case TT_WATER:
-    case TT_WATER2:
+    case TT_WATER_NOSHIP:
     case TT_BUILDABLE_WATER:
         return 240;
     case TT_LAVA:
@@ -130,10 +130,7 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
 
 unsigned TerrainData::GetShiftColor(TerrainType t)
 {
-    if(t == TT_WATER2)
-        return 0x00000406; //slightly lighter water
-    else
-        return 0;
+    return 0;
 }
 
 unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
@@ -157,14 +154,15 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
         case TT_MEADOW3: return 0xFF407008;
         case TT_STEPPE: return 0xFF88b028;
         case TT_MOUNTAINMEADOW: return 0xFF9c8058;
-        case TT_WATER: return 0xFF1038a4;
+        case TT_WATER:
+        case TT_WATER_NOSHIP:
+        case TT_BUILDABLE_WATER:
+            return 0xFF1038a4;
         case TT_LAVA:
         case TT_LAVA2:
         case TT_LAVA3:
         case TT_LAVA4:
             return 0xFFc02020;
-        case TT_WATER2: return 0xFF2259EA;
-        case TT_BUILDABLE_WATER: return 0xFF1038a4;
         case TT_BUILDABLE_MOUNTAIN: return 0xFF9c8058;
         }
         break;
@@ -185,14 +183,15 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
         case TT_MEADOW3: return 0xFF646048;
         case TT_STEPPE: return 0xFF88b028;
         case TT_MOUNTAINMEADOW: return 0xFF001820;
-        case TT_WATER: return 0xFF454520;
+        case TT_WATER:
+        case TT_WATER_NOSHIP:
+        case TT_BUILDABLE_WATER:
+            return 0xFF454520;
         case TT_LAVA:
         case TT_LAVA2:
         case TT_LAVA3:
         case TT_LAVA4:
             return 0xFFC32020;
-        case TT_WATER2: return 0xFF454520;
-        case TT_BUILDABLE_WATER: return 0xFF454520;
         case TT_BUILDABLE_MOUNTAIN: return 0xFF706454;
         }
         break;
@@ -213,14 +212,15 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
         case TT_MEADOW3: return 0xFFa0accc;
         case TT_STEPPE: return 0xFF88b15e;
         case TT_MOUNTAINMEADOW: return 0xFF94a0c0;
-        case TT_WATER: return 0xFF1038a4;
+        case TT_WATER:
+        case TT_WATER_NOSHIP:
+        case TT_BUILDABLE_WATER:
+            return 0xFF1038a4;
         case TT_LAVA:
         case TT_LAVA2:
         case TT_LAVA3:
         case TT_LAVA4:
             return 0xFFc02020;
-        case TT_WATER2: return 0xFF1344C4;
-        case TT_BUILDABLE_WATER: return 0xFF1038a4;
         case TT_BUILDABLE_MOUNTAIN: return 0xFF60607c;
         }
     }
@@ -254,7 +254,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
         case TT_BUILDABLE_MOUNTAIN:
             return ET_MOUNTAIN;
         case TT_WATER:
-        case TT_WATER2:
+        case TT_WATER_NOSHIP:
         case TT_BUILDABLE_WATER:
             return ET_WATER;
         case TT_LAVA:
@@ -291,7 +291,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
         case TT_BUILDABLE_MOUNTAIN:
             return ET_MEADOW;
         case TT_WATER:
-        case TT_WATER2:
+        case TT_WATER_NOSHIP:
         case TT_BUILDABLE_WATER:
             return ET_MOUNTAIN;
         }
@@ -301,7 +301,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
         {
         case TT_SNOW:
         case TT_SWAMPLAND:
-        case TT_WATER2:
+        case TT_WATER_NOSHIP:
         case TT_WATER:
         case TT_BUILDABLE_WATER:
             return ET_WATER;
@@ -357,7 +357,7 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] =
 /*TT_MOUNTAINMEADOW*/     { -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 /*TT_WATER*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 /*TT_LAVA*/               { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-/*TT_WATER2*/             {  1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1,  1 },
+/*TT_WATER_NOSHIP*/       {  1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, -1, -1,  1 },
 /*TT_BUILDABLE_WATER*/    { -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  1 },
 /*TT_BUILDABLE_MOUNTAIN*/ { -1, -1,  1,  1,  0,  0,  0,  0,  0,  1,  1,  1, -1,  0,  1,  1, -1, -1 },
 /*TT_LAVA2*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1 },
@@ -382,7 +382,7 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] =
 /*TT_MOUNTAINMEADOW*/     {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 /*TT_WATER*/              {  1,  1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1, -1 },
 /*TT_LAVA*/               {  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-/*TT_WATER2*/             {  1,  1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1, -1, -1,  1 },
+/*TT_WATER_NOSHIP*/       {  1,  1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1, -1, -1,  1 },
 /*TT_BUILDABLE_WATER*/    {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0,  1 },
 /*TT_BUILDABLE_MOUNTAIN*/ { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  1, -1, -1,  1, -1, -1 },
 /*TT_LAVA2*/              {  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1 },
@@ -407,7 +407,7 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] =
 /*TT_MOUNTAINMEADOW*/     { -1, -1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 },
 /*TT_WATER*/              {  0,  1,  0,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1,  1 },
 /*TT_LAVA*/               { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0 },
-/*TT_WATER2*/             {  0,  1,  0,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1,  1, -1,  0 },
+/*TT_WATER_NOSHIP*/       {  0,  1,  0,  1, -1, -1, -1, -1,  1,  1,  1,  1,  1,  1, -1,  0 },
 /*TT_BUILDABLE_WATER*/    {  0,  1,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  1 },
 /*TT_BUILDABLE_MOUNTAIN*/ { -1, -1, -1, -1, -1,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1,  1, -1, -1 },
 /*TT_LAVA2*/              { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1 },
@@ -516,7 +516,7 @@ bool TerrainData::IsWater(TerrainType t)
     switch (t)
     {
     case TT_WATER:
-    case TT_WATER2:
+    case TT_WATER_NOSHIP:
     case TT_BUILDABLE_WATER:
         return true;
     default:
@@ -597,7 +597,7 @@ BuildingQuality TerrainData::GetBuildingQuality(TerrainType t)
         return BQ_FLAG;
     case TT_SWAMPLAND:
     case TT_WATER:
-    case TT_WATER2:
+    case TT_WATER_NOSHIP:
         return BQ_NOTHING;
     case TT_MOUNTAIN1:
     case TT_MOUNTAIN2:
