@@ -70,12 +70,14 @@ iwOptionsWindow::iwOptionsWindow(dskGameInterface* gameDesktop)
     AddText(7, 85, 180, _("Load 'ReadMe' file"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // "Spiel laden!"
-    AddImageButton( 8, 35, 210, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 48));
-    AddText(9, 85, 230, _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    // TODO: Implement
+    //AddImageButton( 8, 35, 210, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 48));
+    //AddText(9, 85, 230, _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // "Spiel speichern!"
-    AddImageButton(10, 35, 250, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 47));
-    AddText(11, 85, 270, _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
+    AddImageButton(10, 35, 230, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 47));
+    AddText(11, 85, 255, _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // Geräusche an/aus
     AddImageButton(12, 35, 300, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
