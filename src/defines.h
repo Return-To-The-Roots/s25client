@@ -64,7 +64,7 @@
 #   define GetProcAddressW GetProcAddress
 #   define GetProcAddressA GetProcAddress
 #   define FreeLibrary(lib) dlclose(lib)
-#   include <assert.h>
+#   include <cassert>
 #endif // !_WIN32
 
 #ifndef NO_BUILD_PATHS

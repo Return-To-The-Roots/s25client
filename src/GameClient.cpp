@@ -55,7 +55,7 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
-#include <errno.h>
+#include <cerrno>
 #include <iostream>
 
 // Include last!
