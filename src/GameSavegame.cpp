@@ -142,10 +142,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
 {
     // Signatur und Version einlesen
     if(!ValidateFile(file, 8, SAVE_SIGNATURE, SAVE_VERSION))
-    {
-        LOG.lprintf("Savegame::Load: ERROR: File is not a valid RTTR savegame!\n");
         return false;
-    }
 
     // Zeitstempel
     file.ReadRawData(&save_time, 8);
