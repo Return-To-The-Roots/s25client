@@ -76,7 +76,7 @@ void iwPlayReplay::PopulateTable()
 
         // Datei laden
         if(!replay.LoadHeader(*it, false))
-            return;
+            continue;
 
         // Zeitstamp benutzen
         std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
@@ -100,7 +100,7 @@ void iwPlayReplay::PopulateTable()
         // Dateiname noch rausextrahieren aus dem Pfad
         bfs::path path = *it;
         if(!path.has_filename())
-            return;
+            continue;
         std::string fileName = path.filename().string();
         std::string lastGF = helpers::toString(replay.lastGF_);
 

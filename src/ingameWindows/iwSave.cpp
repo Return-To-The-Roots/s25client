@@ -119,7 +119,7 @@ void iwSaveLoad::RefreshTable()
 
         // Datei öffnen
         if(!save.Load(*it, false, false))
-            return;
+            continue;
 
         // Zeitstring erstellen
         std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
@@ -127,7 +127,7 @@ void iwSaveLoad::RefreshTable()
         // Dateiname noch rausextrahieren aus dem Pfad
         bfs::path path = *it;
         if(!path.has_filename())
-            return;
+            continue;
         bfs::path fileName = path.filename();
 
         // ".sav" am Ende weg
