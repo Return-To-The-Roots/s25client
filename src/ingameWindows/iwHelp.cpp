@@ -42,14 +42,16 @@ const unsigned MAX_LINES = 15;
 iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string& content)
     : IngameWindow(gui_id, 0xFFFE, 0xFFFE, HELP_WINDOW_WIDTH, 480, title, LOADER.GetImageN("resource", 41))
 {
-    glArchivItem_Font::WrapInfo wi;
-    NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28, HELP_WINDOW_WIDTH - 28, wi);
+    glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28, HELP_WINDOW_WIDTH - 28);
 
     // Mehr Linien benötigt als die maximalen? Dann kommt ja noch die Scrollbar dran und der ganze Spaß muss
     // umgebrochen werden, also nochmal mit geringerer Breite berechnen
     if(wi.positions.size() > MAX_LINES)
-        NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28 - ctrlMultiline::SCROLLBAR_WIDTH,
-                                HELP_WINDOW_WIDTH - 24 - ctrlMultiline::SCROLLBAR_WIDTH, wi);
+    {
+        wi = NormalFont->GetWrapInfo(content,
+            HELP_WINDOW_WIDTH - 28 - ctrlMultiline::SCROLLBAR_WIDTH,
+            HELP_WINDOW_WIDTH - 24 - ctrlMultiline::SCROLLBAR_WIDTH);
+    }
 
     unsigned int show_lines = std::min( (unsigned int)wi.positions.size(), MAX_LINES);
 

@@ -374,9 +374,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
 {
     ctrlMultiline* text = GetCtrl<ctrlMultiline>(12);
 
-    glArchivItem_Font::WrapInfo wi;
-
-    NormalFont->GetWrapInfo(message, 190, 190, wi);
+    glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(message, 190, 190);
     std::vector<std::string> lines = wi.CreateSingleStrings(message);
     for(unsigned i = 0; i < 3; ++i)
     {

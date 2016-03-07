@@ -531,14 +531,12 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *  @param[in]     text            Text, der auf Zeilen verteilt werden soll
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
- *  @param[in,out] wi              Pointer auf die Anfänge der einzelnen Zeilen
  *
  *
  *  @author OLiver
  */
-void glArchivItem_Font::GetWrapInfo(const std::string& text,
-                                    const unsigned short primary_width, const unsigned short secondary_width,
-                                    WrapInfo& wi)
+glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text,
+                                    const unsigned short primary_width, const unsigned short secondary_width)
 {
     if(!fontNoOutline)
         initFont();
@@ -551,7 +549,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
     unsigned word_start = 0;
 
     // Logischerweise fangen wir in der ersten Zeile an
-    wi.positions.clear();
+    WrapInfo wi;
     wi.positions.push_back(0);
 
     // Länge des Strings
@@ -650,6 +648,7 @@ void glArchivItem_Font::GetWrapInfo(const std::string& text,
     // Ignore trailing newline
     if(wi.positions.back() + 1 >= length)
         wi.positions.pop_back();
+    return wi;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -85,12 +85,11 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
     LOG.lcprintf(CD_COLORS[cd], "%s", CD_STRINGS[cd].c_str());
     LOG.lprintf("%s\n", msg.c_str());
 
-    glArchivItem_Font::WrapInfo wi;
-
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    LargeFont->GetWrapInfo(msg, VIDEODRIVER.GetScreenWidth() - 60
-                           - LargeFont->getWidth(author) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                           VIDEODRIVER.GetScreenWidth() - 60, wi);
+    glArchivItem_Font::WrapInfo wi = LargeFont->GetWrapInfo(
+        msg,
+        VIDEODRIVER.GetScreenWidth() - 60 - LargeFont->getWidth(author) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
+        VIDEODRIVER.GetScreenWidth() - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(msg);

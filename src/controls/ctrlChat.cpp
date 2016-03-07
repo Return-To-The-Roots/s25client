@@ -223,10 +223,8 @@ void ctrlChat::WrapLine(unsigned short i)
         return;
     }
 
-    glArchivItem_Font::WrapInfo wi;
-
     // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
-    font->GetWrapInfo(line.msg, width_ - prefix_width - 2 - SCROLLBAR_WIDTH, width_ - 2 - SCROLLBAR_WIDTH, wi);
+    glArchivItem_Font::WrapInfo wi = font->GetWrapInfo(line.msg, width_ - prefix_width - 2 - SCROLLBAR_WIDTH, width_ - 2 - SCROLLBAR_WIDTH);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);

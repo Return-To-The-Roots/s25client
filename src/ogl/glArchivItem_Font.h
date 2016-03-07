@@ -64,7 +64,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 
         /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
         /// es unumgänglich ist (Wort länger als die Zeile)
-        void GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width, WrapInfo& wi);
+        WrapInfo GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width);
 
         enum
         {

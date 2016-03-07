@@ -43,8 +43,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* ms
     /*AddText(1, 80, 30, text, COLOR_YELLOW, 0, NormalFont);*/
 
     // Umbrechungsinformationen vom Text holen
-    glArchivItem_Font::WrapInfo wi;
-    NormalFont->GetWrapInfo(text, 330, 330, wi);
+    glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(text, 330, 330);
     // Einzelne Zeilen-Strings erzeugen
     strings = wi.CreateSingleStrings(text);
 
