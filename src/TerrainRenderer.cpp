@@ -287,7 +287,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 
 /// Erzeugt fertiges Dreieick für OpenGL
 
-void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer& gwv, const bool update)
+void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer&  /*gwv*/, const bool update)
 {
     unsigned int pos = GetTriangleIdx(pt);
 
@@ -413,7 +413,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
 }
 
 /// Erzeugt die Dreiecke für die Ränder
-void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorldViewer& gwv, const bool update)
+void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorldViewer&  /*gwv*/, const bool update)
 {
     unsigned int pos = GetVertexIdx(pt);
 
@@ -568,7 +568,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
     }
 }
 
-void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameWorldViewer& gwv, const bool update)
+void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameWorldViewer&  /*gwv*/, const bool update)
 {
     unsigned int pos = GetVertexIdx(pt);
 

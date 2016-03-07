@@ -445,7 +445,7 @@ void GameClient::ExitGame()
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPing(const GameMessage_Ping& msg)
+void GameClient::OnNMSPing(const GameMessage_Ping&  /*msg*/)
 {
     send_queue.push(new GameMessage_Pong(0xFF));
 }
@@ -989,7 +989,7 @@ void GameClient::OnNMSServerCountdown(const GameMessage_Server_Countdown& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg)
+void GameClient::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown&  /*msg*/)
 {
     if(ci)
         ci->CI_CancelCountdown();
@@ -1177,7 +1177,7 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// Speed change message vom Server
 /// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
+void GameClient::OnNMSServerSpeed(const GameMessage_Server_Speed&  /*msg*/)
 {
 }
 
@@ -1299,7 +1299,7 @@ void GameClient::OnNMSPause(const GameMessage_Pause& msg)
  *
  *  @author Maqs
  */
-void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg)
+void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog&  /*msg*/)
 {
     // AsyncLog an den Server senden
 

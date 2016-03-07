@@ -224,7 +224,7 @@ void nofGeologist::Walked()
     }
 }
 
-void nofGeologist::HandleDerivedEvent(const unsigned int id)
+void nofGeologist::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {

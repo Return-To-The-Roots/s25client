@@ -56,13 +56,13 @@ dskSplash::~dskSplash()
     GAMEMANAGER.SetCursor();
 }
 
-void dskSplash::Msg_Timer(const unsigned int ctrl_id)
+void dskSplash::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     // Hauptmenü zeigen
     WINDOWMANAGER.Switch(new dskMainMenu);
 }
 
-bool dskSplash::Msg_LeftDown(const MouseCoords& mc)
+bool dskSplash::Msg_LeftDown(const MouseCoords&  /*mc*/)
 {
     // Hauptmenü zeigen
     WINDOWMANAGER.Switch(new dskMainMenu, true);

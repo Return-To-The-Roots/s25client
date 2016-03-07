@@ -79,7 +79,7 @@ void GameObject::Destroy()
 {
 }
 
-void GameObject::Serialize(SerializedGameData& sgd) const
+void GameObject::Serialize(SerializedGameData&  /*sgd*/) const
 {
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }

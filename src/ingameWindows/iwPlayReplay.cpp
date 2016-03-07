@@ -111,7 +111,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwPlayReplay::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+void iwPlayReplay::Msg_TableChooseItem(const unsigned  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
     StartReplay();
 }
@@ -222,7 +222,7 @@ void iwPlayReplay::FillReplayTable(const std::string& filePath, void* param)
 }
 
 
-void iwPlayReplay::RemoveReplay(const std::string& filePath, void* param)
+void iwPlayReplay::RemoveReplay(const std::string& filePath, void*  /*param*/)
 {
     boost::system::error_code ec;
     bfs::remove(filePath, ec);

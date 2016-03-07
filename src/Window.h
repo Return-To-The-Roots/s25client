@@ -295,7 +295,7 @@ class Window
         /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
         virtual bool IsMessageRelayAllowed() const;
         /// Auf Größe verändern evtl. auch individuell reagieren?
-        virtual void Resize_(unsigned short width, unsigned short height) {}
+        virtual void Resize_(unsigned short  /*width*/, unsigned short  /*height*/) {}
 
         template <typename T>
         T* AddCtrl(unsigned int id, T* ctrl)

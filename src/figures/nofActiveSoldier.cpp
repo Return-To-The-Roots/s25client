@@ -182,7 +182,7 @@ void nofActiveSoldier::Draw(int x, int y)
     }
 }
 
-void nofActiveSoldier::HandleDerivedEvent(const unsigned int id)
+void nofActiveSoldier::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     // That's not supposed to happen!
     RTTR_Assert(false);

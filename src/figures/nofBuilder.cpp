@@ -121,7 +121,7 @@ void nofBuilder::LostWork()
     }
 }
 
-void nofBuilder::HandleDerivedEvent(const unsigned int id)
+void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {

@@ -284,7 +284,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const unsigned char player) : In
 }
 
 
-void iwSuggestPact::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwSuggestPact::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     /// Dauer auswählen (wenn id == DURATION_COUNT, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();

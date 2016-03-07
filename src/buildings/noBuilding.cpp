@@ -39,7 +39,7 @@ class noFigure;
 noBuilding::noBuilding(const BuildingType type,
                        const MapPoint pos,
                        const unsigned char player,
-                       const Nation nation)
+                       const Nation  /*nation*/)
     : noBaseBuilding(NOP_BUILDING, type, pos, player),
       opendoor(0)
 {
@@ -106,7 +106,7 @@ void noBuilding::DrawBaseBuilding(int x, int y)
  *
  *  @author OLiver
  */
-void noBuilding::GotWorker(Job job, noFigure* worker)
+void noBuilding::GotWorker(Job  /*job*/, noFigure*  /*worker*/)
 {
 }
 

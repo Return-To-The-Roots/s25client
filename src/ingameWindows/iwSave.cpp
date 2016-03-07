@@ -72,7 +72,7 @@ iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& windo
  *
  *  @author OLiver
  */
-void iwSaveLoad::Msg_EditEnter(const unsigned int ctrl_id)
+void iwSaveLoad::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     SaveLoad();
 }
@@ -83,7 +83,7 @@ void iwSaveLoad::Msg_EditEnter(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void iwSaveLoad::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwSaveLoad::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     SaveLoad();
 }
@@ -94,7 +94,7 @@ void iwSaveLoad::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void iwSaveLoad::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void iwSaveLoad::Msg_TableSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
     // Dateiname ins Edit schreiben, wenn wir entsprechende Einträge auswählen
     GetCtrl<ctrlEdit>(1)->SetText
@@ -229,7 +229,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
  *
  *  @author OLiver
  */
-void iwSave::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void iwSave::Msg_ComboSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
 
     // Erster Eintrag --> deaktiviert
@@ -283,7 +283,7 @@ void iwLoad::SaveLoad()
 
 
 /// Handle double click on the table
-void iwLoad::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+void iwLoad::Msg_TableChooseItem(const unsigned  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
     SaveLoad();
 }

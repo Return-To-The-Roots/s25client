@@ -1213,7 +1213,7 @@ void Window::Msg_PaintAfter()
  *
  *  @author OLiver
  */
-bool Window::Msg_LeftDown(const MouseCoords& mc)
+bool Window::Msg_LeftDown(const MouseCoords&  /*mc*/)
 {
     return false;
 }
@@ -1224,7 +1224,7 @@ bool Window::Msg_LeftDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool Window::Msg_RightDown(const MouseCoords& mc)
+bool Window::Msg_RightDown(const MouseCoords&  /*mc*/)
 {
     return false;
 }
@@ -1235,12 +1235,12 @@ bool Window::Msg_RightDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool Window::Msg_LeftUp(const MouseCoords& mc)
+bool Window::Msg_LeftUp(const MouseCoords&  /*mc*/)
 {
     return false;
 }
 
-bool Window::Msg_LeftDown_After(const MouseCoords& mc)
+bool Window::Msg_LeftDown_After(const MouseCoords&  /*mc*/)
 {
     return false;
 }
@@ -1251,18 +1251,7 @@ bool Window::Msg_LeftDown_After(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool Window::Msg_RightUp(const MouseCoords& mc)
-{
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
-bool Window::Msg_WheelUp(const MouseCoords& mc)
+bool Window::Msg_RightUp(const MouseCoords&  /*mc*/)
 {
     return false;
 }
@@ -1273,7 +1262,18 @@ bool Window::Msg_WheelUp(const MouseCoords& mc)
  *
  *  @author Divan
  */
-bool Window::Msg_WheelDown(const MouseCoords& mc)
+bool Window::Msg_WheelUp(const MouseCoords&  /*mc*/)
+{
+    return false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *
+ *  @author Divan
+ */
+bool Window::Msg_WheelDown(const MouseCoords&  /*mc*/)
 {
     return false;
 }
@@ -1284,7 +1284,7 @@ bool Window::Msg_WheelDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool Window::Msg_MouseMove(const MouseCoords& mc)
+bool Window::Msg_MouseMove(const MouseCoords&  /*mc*/)
 {
     return false;
 }
@@ -1295,7 +1295,7 @@ bool Window::Msg_MouseMove(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool Window::Msg_KeyDown(const KeyEvent& ke)
+bool Window::Msg_KeyDown(const KeyEvent&  /*ke*/)
 {
     return false;
 }
@@ -1306,7 +1306,7 @@ bool Window::Msg_KeyDown(const KeyEvent& ke)
  *
  *  @author OLiver
  */
-void Window::Msg_ButtonClick(const unsigned int ctrl_id)
+void Window::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1316,7 +1316,7 @@ void Window::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author Divan
  */
-void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
+void Window::Msg_ScreenResize(const ScreenResizeEvent&  /*sr*/)
 {
 }
 
@@ -1327,7 +1327,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
  *
  *  @author OLiver
  */
-void Window::Msg_EditEnter(const unsigned int ctrl_id)
+void Window::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1337,7 +1337,7 @@ void Window::Msg_EditEnter(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void Window::Msg_EditChange(const unsigned int ctrl_id)
+void Window::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1347,7 +1347,7 @@ void Window::Msg_EditChange(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void Window::Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id)
+void Window::Msg_TabChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*tab_id*/)
 {
 }
 
@@ -1357,21 +1357,11 @@ void Window::Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_
  *
  *  @author OLiver
  */
-void Window::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_ListSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
-void Window::Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void Window::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_ListChooseItem(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1381,7 +1371,7 @@ void Window::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned shor
  *
  *  @author OLiver
  */
-void Window::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
+void Window::Msg_ComboSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1391,7 +1381,17 @@ void Window::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
  *
  *  @author OLiver
  */
-void Window::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
+void Window::Msg_CheckboxChange(const unsigned int  /*ctrl_id*/, const bool  /*checked*/)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *
+ *  @author OLiver
+ */
+void Window::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
 }
 
@@ -1401,7 +1401,7 @@ void Window::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short
  *
  *  @author FloSoft
  */
-void Window::Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position)
+void Window::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
 }
 
@@ -1411,7 +1411,7 @@ void Window::Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short p
  *
  *  @author OLiver
  */
-void Window::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
+void Window::Msg_ScrollShow(const unsigned int  /*ctrl_id*/, const bool  /*visible*/)
 {
 }
 
@@ -1421,7 +1421,7 @@ void Window::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
  *
  *  @author OLiver
  */
-void Window::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1431,7 +1431,7 @@ void Window::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned sh
  *
  *  @author OLiver
  */
-void Window::Msg_Timer(const unsigned int ctrl_id)
+void Window::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1441,21 +1441,11 @@ void Window::Msg_Timer(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void Window::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_TableSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
-void Window::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void Window::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_TableChooseItem(const unsigned  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1465,7 +1455,7 @@ void Window::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned sho
  *
  *  @author OLiver
  */
-void Window::Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_TableRightButton(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1475,7 +1465,7 @@ void Window::Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned shor
  *
  *  @author OLiver
  */
-void Window::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void Window::Msg_TableLeftButton(const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1485,7 +1475,7 @@ void Window::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
  *
  *  @author OLiver
  */
-void Window::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void Window::Msg_MsgBoxResult(const unsigned  /*msgbox_id*/, const MsgboxResult  /*mbr*/)
 {
 }
 
@@ -1495,7 +1485,7 @@ void Window::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned i
  *
  *  @author OLiver
  */
-void Window::Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id)
+void Window::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1505,7 +1495,7 @@ void Window::Msg_Group_EditEnter(const unsigned int group_id, const unsigned int
  *
  *  @author OLiver
  */
-void Window::Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id)
+void Window::Msg_Group_EditEnter(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1515,7 +1505,7 @@ void Window::Msg_Group_EditChange(const unsigned int group_id, const unsigned in
  *
  *  @author OLiver
  */
-void Window::Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id)
+void Window::Msg_Group_EditChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1525,7 +1515,7 @@ void Window::Msg_Group_TabChange(const unsigned int group_id, const unsigned int
  *
  *  @author OLiver
  */
-void Window::Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_Group_TabChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*tab_id*/)
 {
 }
 
@@ -1535,7 +1525,7 @@ void Window::Msg_Group_ListSelectItem(const unsigned int group_id, const unsigne
  *
  *  @author OLiver
  */
-void Window::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_Group_ListSelectItem(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1545,7 +1535,7 @@ void Window::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsign
  *
  *  @author OLiver
  */
-void Window::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked)
+void Window::Msg_Group_ComboSelectItem(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1555,7 +1545,7 @@ void Window::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigne
  *
  *  @author OLiver
  */
-void Window::Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position)
+void Window::Msg_Group_CheckboxChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const bool  /*checked*/)
 {
 }
 
@@ -1565,7 +1555,7 @@ void Window::Msg_Group_ProgressChange(const unsigned int group_id, const unsigne
  *
  *  @author OLiver
  */
-void Window::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible)
+void Window::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
 }
 
@@ -1575,7 +1565,7 @@ void Window::Msg_Group_ScrollShow(const unsigned int group_id, const unsigned in
  *
  *  @author OLiver
  */
-void Window::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_Group_ScrollShow(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const bool  /*visible*/)
 {
 }
 
@@ -1585,7 +1575,7 @@ void Window::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsi
  *
  *  @author OLiver
  */
-void Window::Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id)
+void Window::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1595,7 +1585,7 @@ void Window::Msg_Group_Timer(const unsigned int group_id, const unsigned int ctr
  *
  *  @author OLiver
  */
-void Window::Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_Group_Timer(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/)
 {
 }
 
@@ -1605,7 +1595,7 @@ void Window::Msg_Group_TableSelectItem(const unsigned int group_id, const unsign
  *
  *  @author OLiver
  */
-void Window::Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_Group_TableSelectItem(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }
 
@@ -1615,6 +1605,16 @@ void Window::Msg_Group_TableRightButton(const unsigned int group_id, const unsig
  *
  *  @author OLiver
  */
-void Window::Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void Window::Msg_Group_TableRightButton(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ *
+ *  @author OLiver
+ */
+void Window::Msg_Group_TableLeftButton(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
 }

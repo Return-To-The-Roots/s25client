@@ -60,7 +60,7 @@ void nofFarmhand::WalkedDerived()
 }
 
 
-void nofFarmhand::HandleDerivedEvent(const unsigned int id)
+void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {

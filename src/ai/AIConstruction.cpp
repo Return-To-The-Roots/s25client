@@ -189,7 +189,7 @@ struct Point2Flag{
 
     Point2Flag(const AIInterface& aii): aii_(aii){}
 
-    result_type operator()(const MapPoint pt, unsigned r) const
+    result_type operator()(const MapPoint pt, unsigned  /*r*/) const
     {
         return aii_.GetSpecObj<noFlag>(pt);
     }

@@ -145,7 +145,7 @@ WinExceptionHandler(
 #endif
 }
 #else
-void LinExceptionHandler(int sig)
+void LinExceptionHandler(int  /*sig*/)
 {
     if (SETTINGS.global.submit_debug_data == 1)
     {
@@ -314,13 +314,13 @@ bool InitGame()
  *  @author FloSoft
  *  @author OLiver
  */
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
     InitProgram();
     if(!InitDirectories())
         return 1;
 
-    // Zufallsgenerator initialisieren (Achtung: nur für Animationens-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
+    // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
     srand(static_cast<unsigned int>(std::time(NULL)));
 
     // Exit-Handler initialisieren

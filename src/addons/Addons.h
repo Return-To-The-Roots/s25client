@@ -41,9 +41,9 @@ class Addon
 
         virtual void hideGui(Window* window, unsigned int id) const;
         virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-        virtual void setGuiStatus(Window* window, unsigned int id, unsigned int status) const { }
+        virtual void setGuiStatus(Window*  /*window*/, unsigned int  /*id*/, unsigned int  /*status*/) const { }
 
-        virtual unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const
+        virtual unsigned int getGuiStatus(Window*  /*window*/, unsigned int  /*id*/, bool& failed) const
         {
             failed = false;
             return getDefaultStatus();

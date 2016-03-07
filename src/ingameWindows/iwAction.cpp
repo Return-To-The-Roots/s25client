@@ -346,7 +346,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
 }
 
-void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& width)
+void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned int& width)
 {
     RTTR_Assert(group);
 
@@ -413,7 +413,7 @@ iwAction::~iwAction()
     gi->ActionWindowClosed();
 }
 
-void iwAction::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void iwAction::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     switch(GetCtrl<ctrlTab>(0)->GetCurrentTab())
     {
@@ -505,7 +505,7 @@ void iwAction::Msg_TabChange(const unsigned int ctrl_id, const unsigned short ta
 
 }
 
-void iwAction::Msg_Group_TabChange(const unsigned group_id, const unsigned int ctrl_id, const unsigned short tab_id)
+void iwAction::Msg_Group_TabChange(const unsigned  /*group_id*/, const unsigned int ctrl_id, const unsigned short tab_id)
 {
     switch(ctrl_id)
     {

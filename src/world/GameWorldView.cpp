@@ -86,7 +86,7 @@ struct ObjectBetweenLines
     ObjectBetweenLines(noBase* obj, const Point<int>& pos) : obj(obj), pos(pos) {}
 };
 
-void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
+void GameWorldView::Draw(const unsigned char  /*player*/, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
 {
 
     int shortest_len = 100000;
@@ -475,7 +475,7 @@ void GameWorldView::Draw(const unsigned char player, unsigned* water, const bool
     SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 }
 
-void GameWorldView::DrawBoundaryStone(const int x, const int y, const MapPoint t, const Point<int> curPos, Visibility vis)
+void GameWorldView::DrawBoundaryStone(const int  /*x*/, const int  /*y*/, const MapPoint t, const Point<int> curPos, Visibility vis)
 {
     if(vis == VIS_INVISIBLE)
         // schwarz/unsichtbar, nichts zeichnen

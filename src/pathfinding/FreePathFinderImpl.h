@@ -57,7 +57,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
               const bool randomRoute, const unsigned maxLength,
               std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
               const TNodeChecker& nodeChecker,
-              const bool record)
+              const bool  /*record*/)
 {
     RTTR_Assert(start != dest);
 

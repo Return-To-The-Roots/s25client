@@ -54,7 +54,7 @@ void Addon::hideGui(Window* window, unsigned int id) const
  *
  *  @author FloSoft
  */
-void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const //-V669
+void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  /*readonly*/, unsigned int  /*status*/) const //-V669
 {
     ctrlText* text = window->GetCtrl<ctrlText>(id);
     if(!text)

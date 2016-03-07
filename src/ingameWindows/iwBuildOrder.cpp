@@ -92,7 +92,7 @@ void iwBuildOrder::TransmitSettings()
     }
 }
 
-void iwBuildOrder::Msg_Timer(const unsigned int ctrl_id)
+void iwBuildOrder::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte

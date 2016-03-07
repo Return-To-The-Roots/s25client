@@ -648,7 +648,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 #endif
 }
 
-bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bool destroyed, const bool newBuilt) const
+bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bool destroyed, const bool  /*newBuilt*/) const
 {
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
     RTTR_Assert((building.GetBuildingType() == BLD_HARBORBUILDING && dynamic_cast<const noBuildingSite*>(&building)) || dynamic_cast<const nobBaseMilitary*>(&building));
@@ -1032,7 +1032,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 }
 
 
-bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt, const unsigned char dir)
+bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt, const unsigned char  /*dir*/)
 {
     /// Objekte sammeln
     std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
@@ -1151,7 +1151,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
         }
 }
 
-bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center)
+bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker*  /*attacker*/, const MapPoint center)
 {
     // Gültiger Punkt für Figuren?
     if(!IsNodeForFigures(pt))

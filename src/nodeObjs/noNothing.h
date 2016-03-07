@@ -32,7 +32,7 @@ class noNothing : public noBase
     public:     void Destroy() override { Destroy_noNothing(); }
 
         /// Serialisierungsfunktionen
-    public:     void Serialize(SerializedGameData& sgd) const override {}
+    public:     void Serialize(SerializedGameData&  /*sgd*/) const override {}
 
         GO_Type GetGOT() const override { return GOT_UNKNOWN; }
 

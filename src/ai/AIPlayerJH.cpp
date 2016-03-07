@@ -562,7 +562,7 @@ struct MapPoint2Idx
     const AIInterface& aii_;
 
     MapPoint2Idx(const AIInterface& aii): aii_(aii){}
-    result_type operator()(const MapPoint pt, unsigned r)
+    result_type operator()(const MapPoint pt, unsigned  /*r*/)
     {
         return aii_.GetIdx(pt);
     }
@@ -584,7 +584,7 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshol
     return resourceMaps[res].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
-PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld, bool best)
+PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType  /*bld*/, bool best)
 {
     // set some basic parameters
     PositionSearch* p = new PositionSearch(pt, res, minimum, size, BLD_WOODCUTTER, best);
@@ -946,7 +946,7 @@ void AIPlayerJH::ExecuteAIJob()
 		*/
 }
 
-void AIPlayerJH::RecalcBQAround(const MapPoint pt)
+void AIPlayerJH::RecalcBQAround(const MapPoint  /*pt*/)
 {
 }
 
@@ -1314,7 +1314,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
     }
 }
 
-void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char dir)
+void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char  /*dir*/)
 {
     const noFlag* flag;
     //does the flag still exist?

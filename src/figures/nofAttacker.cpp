@@ -743,7 +743,7 @@ void nofAttacker::AttackedGoalDestroyed()
     }
 }
 
-bool nofAttacker::AttackFlag(nofDefender* defender)
+bool nofAttacker::AttackFlag(nofDefender*  /*defender*/)
 {
     // Zur Flagge laufen, findet er einen Weg?
     unsigned char tmp_dir = gwg->FindHumanPath(pos, attacked_goal->GetFlag()->GetPos(), 3, true);
@@ -923,7 +923,7 @@ void nofAttacker::CapturedBuildingFull()
     }
 }
 
-void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_radius, const unsigned char dir)
+void nofAttacker::StartSucceeding(const MapPoint  /*pt*/, const unsigned short new_radius, const unsigned char  /*dir*/)
 {
     // Wir sollen auf diesen Punkt nachrücken
     state = STATE_ATTACKING_WALKINGTOGOAL;
@@ -963,7 +963,7 @@ void nofAttacker::SwitchStateAttackingWaitingForDefender()
     blocking_event = em->AddEvent(this, BLOCK_OFFSET, 5);
 }
 
-void nofAttacker::HandleDerivedEvent(const unsigned int id)
+void nofAttacker::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     // abfragen, nich dass er evtl schon losgelaufen ist wieder, weil das Gebäude abgebrannt wurde etc.
     if(state == STATE_ATTACKING_WAITINGFORDEFENDER)

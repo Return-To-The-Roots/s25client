@@ -53,7 +53,7 @@ class BurnedWarehouse : public noCoordBase
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
         void HandleEvent(const unsigned int id) override;
 
-        void Draw(int x, int y) override {}
+        void Draw(int  /*x*/, int  /*y*/) override {}
 };
 
 #endif

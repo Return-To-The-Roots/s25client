@@ -997,7 +997,7 @@ void GameServer::RunGF(bool isNWF)
     ++framesinfo.gf_nr;
 }
 
-void GameServer::ExecuteNWF(const unsigned currentTime)
+void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
 {
     // Advance lastExecutedTime by the GF length.
     // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier

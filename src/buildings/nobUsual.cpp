@@ -436,7 +436,7 @@ void nobUsual::WareLost(Ware* ware)
  *
  *  @author OLiver
  */
-void nobUsual::GotWorker(Job job, noFigure* worker)
+void nobUsual::GotWorker(Job  /*job*/, noFigure* worker)
 {
     this->worker = static_cast<nofBuildingWorker*>(worker);
 
@@ -575,7 +575,7 @@ void nobUsual::ConsumeWares()
  *
  *  @author OLiver
  */
-unsigned nobUsual::CalcDistributionPoints(noRoadNode* start, const GoodType type)
+unsigned nobUsual::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType type)
 {
     // Warentyp ermitteln
     unsigned id;

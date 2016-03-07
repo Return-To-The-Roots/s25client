@@ -268,7 +268,7 @@ FOWObject* noBuildingSite::CreateFOWObject() const
 }
 
 
-void noBuildingSite::GotWorker(Job job, noFigure* worker)
+void noBuildingSite::GotWorker(Job  /*job*/, noFigure* worker)
 {
     // Aha, wir haben nen Planierer/Bauarbeiter bekommen
     if(state == STATE_PLANING)
@@ -291,7 +291,7 @@ void noBuildingSite::Abrogate()
     gwg->GetPlayer(player).AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER, this);
 }
 
-unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* start, const GoodType goodtype)
+unsigned noBuildingSite::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType goodtype)
 {
     // Beim Planieren brauchen wir noch gar nichts
     if(state == STATE_PLANING)

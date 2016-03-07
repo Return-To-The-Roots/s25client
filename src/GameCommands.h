@@ -622,10 +622,10 @@ namespace gc{
         protected:
             CheatArmageddon()
                 : GameCommand(CHEAT_ARMAGEDDON) {}
-            CheatArmageddon(Serializer& ser)
+            CheatArmageddon(Serializer&  /*ser*/)
                 : GameCommand(CHEAT_ARMAGEDDON) {}
         public:
-            void Serialize(Serializer& ser) const override
+            void Serialize(Serializer&  /*ser*/) const override
             {}
 
             /// Führt das GameCommand aus
@@ -639,10 +639,10 @@ namespace gc{
         protected:
             Surrender()
                 : GameCommand(SURRENDER) {}
-            Surrender(Serializer& ser)
+            Surrender(Serializer&  /*ser*/)
                 : GameCommand(SURRENDER) {}
         public:
-            void Serialize(Serializer& ser) const override
+            void Serialize(Serializer&  /*ser*/) const override
             {}
 
             /// Führt das GameCommand aus
@@ -656,10 +656,10 @@ namespace gc{
         protected:
             DestroyAll()
                 : GameCommand(DESTROYALL) {}
-            DestroyAll(Serializer& ser)
+            DestroyAll(Serializer&  /*ser*/)
                 : GameCommand(DESTROYALL) {}
         public:
-            void Serialize(Serializer& ser) const override
+            void Serialize(Serializer&  /*ser*/) const override
             {}
 
             /// Führt das GameCommand aus

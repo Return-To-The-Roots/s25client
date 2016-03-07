@@ -54,12 +54,12 @@ void iwSkipGFs::SkipGFs()
     GAMECLIENT.SkipGF(gf);
 }
 
-void iwSkipGFs::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwSkipGFs::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     SkipGFs();
 }
 
-void iwSkipGFs::Msg_EditEnter(const unsigned int ctrl_id)
+void iwSkipGFs::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     SkipGFs();
 }

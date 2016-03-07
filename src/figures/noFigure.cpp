@@ -575,7 +575,7 @@ struct Point2Flag{
 
     Point2Flag(GameWorldBase& gwb): gwb(gwb){}
 
-    result_type operator()(const MapPoint pt, unsigned r) const
+    result_type operator()(const MapPoint pt, unsigned  /*r*/) const
     {
         return gwb.GetSpecObj<noFlag>(pt);
     }

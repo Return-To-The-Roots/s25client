@@ -59,7 +59,7 @@ void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     Close();
 }
 
-void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int ctrl_id)
+void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     Msg_ButtonClick(1);
 }
@@ -134,7 +134,7 @@ iwMusicPlayer::~iwMusicPlayer()
     }
 }
 
-void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection)
+void iwMusicPlayer::Msg_ComboSelectItem(const unsigned  /*ctrl_id*/, const unsigned short selection)
 {
     // Entsprechende Datei geladen
     if(selection != 0xFFFF)
@@ -153,7 +153,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned s
 
 }
 
-void iwMusicPlayer::Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection)
+void iwMusicPlayer::Msg_ListChooseItem(const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
     // Werte in Musikplayer bringen
     MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);

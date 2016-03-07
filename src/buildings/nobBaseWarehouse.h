@@ -215,7 +215,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         virtual void CancelFigure(noFigure* figure);
 
         /// Sowas ist bei Warenhäusern nicht nötig
-        unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type) { return 0; }
+        unsigned CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType  /*type*/) { return 0; }
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
         void TakeWare(Ware* ware) override;
 
@@ -224,7 +224,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         //// Entfernt eine abhängige Figur wieder aus der Liste
         virtual void RemoveDependentFigure(noFigure* figure) { RTTR_Assert(IsDependentFigure(figure)); dependent_figures.remove(figure); }
         /// Wird aufgerufen, wenn ein Arbeiter hierher kommt
-        void GotWorker(Job job, noFigure* worker) override { RTTR_Assert(!IsDependentFigure(worker)); dependent_figures.push_back(worker); }
+        void GotWorker(Job  /*job*/, noFigure* worker) override { RTTR_Assert(!IsDependentFigure(worker)); dependent_figures.push_back(worker); }
 
         //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
 		void RemoveDependentWare(Ware* ware) { RTTR_Assert(IsWareDependent(ware)); dependent_wares.remove(ware); }

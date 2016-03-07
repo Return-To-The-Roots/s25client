@@ -176,13 +176,13 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         }
 }
 
-void iwTools::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
+void iwTools::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
     // Einstellungen wurden geändert
     settings_changed = true;
 }
 
-void iwTools::Msg_Timer(const unsigned int ctrl_id)
+void iwTools::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte

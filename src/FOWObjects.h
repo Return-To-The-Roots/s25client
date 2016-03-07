@@ -63,9 +63,9 @@ class fowNothing : public FOWObject
     public:
 
         fowNothing(){}
-        fowNothing(SerializedGameData& sgd){}
-        void Serialize(SerializedGameData& sgd) const override{}
-        void Draw(int x, int y) const override{}
+        fowNothing(SerializedGameData&  /*sgd*/){}
+        void Serialize(SerializedGameData&  /*sgd*/) const override{}
+        void Draw(int  /*x*/, int  /*y*/) const override{}
         FOW_Type GetType() const override { return FOW_NOTHING; }
 };
 

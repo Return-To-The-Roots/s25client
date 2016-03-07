@@ -45,7 +45,7 @@ static AudioSDL* nthis = NULL;
  *
  *  @author FloSoft
  */
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void* device_dependent)
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void*  /*device_dependent*/)
 {
     nthis = new AudioSDL(adli);
     return nthis;

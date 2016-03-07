@@ -85,7 +85,7 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
  *
  *  @author FloSoft
  */
-void iwDirectIPCreate::Msg_EditChange(const unsigned int ctrl_id)
+void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText("", COLOR_RED, true);

@@ -444,7 +444,7 @@ bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-void ctrlTable::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
+void ctrlTable::Msg_ScrollShow(const unsigned int  /*ctrl_id*/, const bool visible)
 {
     if(visible)
     {

@@ -39,7 +39,7 @@ noNothing::noNothing() : noBase(NOP_NOTHING)
  *
  *  @author OLiver
  */
-void noNothing::Draw(int x, int y)
+void noNothing::Draw(int  /*x*/, int  /*y*/)
 {
 }
 

@@ -223,7 +223,7 @@ void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned 
  *
  *  @author FloSoft
  */
-void iwAddons::Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position)
+void iwAddons::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {
     ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(5);
     UpdateView(optiongroup->GetSelection());
@@ -235,7 +235,7 @@ void iwAddons::Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short
  *
  *  @author Divan
  */
-bool iwAddons::Msg_WheelUp(const MouseCoords& mc)
+bool iwAddons::Msg_WheelUp(const MouseCoords&  /*mc*/)
 {
     // Forward to ScrollBar
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
@@ -252,7 +252,7 @@ bool iwAddons::Msg_WheelUp(const MouseCoords& mc)
  *
  *  @author Divan
  */
-bool iwAddons::Msg_WheelDown(const MouseCoords& mc)
+bool iwAddons::Msg_WheelDown(const MouseCoords&  /*mc*/)
 {
     // Forward to ScrollBar
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);

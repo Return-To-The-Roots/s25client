@@ -108,7 +108,7 @@ void iwTrade::Msg_PaintAfter()
 {}
 
 
-void iwTrade::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwTrade::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     //pressed the send button
     unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();

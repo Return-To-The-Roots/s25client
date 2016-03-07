@@ -110,7 +110,7 @@ namespace FW
 
     struct NoCondition
     {
-        bool operator()(const nobBaseWarehouse& wh) const { return true; }
+        bool operator()(const nobBaseWarehouse&  /*wh*/) const { return true; }
     };
 }
 

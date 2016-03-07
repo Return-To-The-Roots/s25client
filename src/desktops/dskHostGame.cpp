@@ -229,7 +229,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
  *
  *  @author Divan
  */
-void dskHostGame::Resize_(unsigned short width, unsigned short height)
+void dskHostGame::Resize_(unsigned short  /*width*/, unsigned short  /*height*/)
 {
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
@@ -491,7 +491,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked)
+void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const bool checked)
 {
     unsigned player_id = 8 - (group_id - 50);
 
@@ -506,7 +506,7 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const un
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
     unsigned player_id = 8 - (group_id - 50);
 
@@ -637,7 +637,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_EditEnter(const unsigned int ctrl_id)
+void dskHostGame::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     GAMECLIENT.Command_Chat(GetCtrl<ctrlEdit>(4)->GetText(), CD_ALL);
     GetCtrl<ctrlEdit>(4)->SetText("");
@@ -722,7 +722,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short  /*selection*/)
 {
     switch(ctrl_id)
     {
@@ -746,7 +746,7 @@ void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
+void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool  /*checked*/)
 {
 
     switch(ctrl_id)
@@ -987,7 +987,7 @@ void dskHostGame::CI_ColorChanged(const unsigned player_id, const unsigned char 
  *
  *  @author OLiver
  */
-void dskHostGame::CI_PingChanged(const unsigned player_id, const unsigned short ping)
+void dskHostGame::CI_PingChanged(const unsigned player_id, const unsigned short  /*ping*/)
 {
     ChangePing(player_id);
 }
@@ -1050,7 +1050,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
  *
  *  @author OLiver
  */
-void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
+void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination  /*cd*/, const std::string& msg)
 {
     if ((player_id != 0xFFFFFFFF) && !IsSinglePlayer())
     {

@@ -795,7 +795,7 @@ void nobHarborBuilding::CheckExplorationExpeditionReady()
 }
 
 /// Schiff konnte nicht mehr kommen
-void nobHarborBuilding::ShipLost(noShip* ship)
+void nobHarborBuilding::ShipLost(noShip*  /*ship*/)
 {
     // Neues Schiff bestellen
     OrderShip();

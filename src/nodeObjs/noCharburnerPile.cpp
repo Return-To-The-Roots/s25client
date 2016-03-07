@@ -132,7 +132,7 @@ void noCharburnerPile::Draw( int x, int y)
     }
 }
 
-void noCharburnerPile::HandleEvent(const unsigned int id)
+void noCharburnerPile::HandleEvent(const unsigned int  /*id*/)
 {
     // Smoldering is over
     // Pile is ready for the remove of the cover

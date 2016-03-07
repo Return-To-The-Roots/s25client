@@ -512,7 +512,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
  *
  *  @author Divan
  */
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
+bool dskGameInterface::Msg_LeftUp(const MouseCoords&  /*mc*/)
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -549,7 +549,7 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-bool dskGameInterface::Msg_RightUp(const MouseCoords& mc) //-V524
+bool dskGameInterface::Msg_RightUp(const MouseCoords&  /*mc*/) //-V524
 {
     // Stop Scrolling
     gwv->MouseUp();
@@ -799,7 +799,7 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
  *
  *  @author OLiver
  */
-bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool end)
+bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
 {
     std::vector<unsigned char> new_route;
     bool path_found = gwv->FindRoadPath(road.point, cSel, new_route, road.mode == RM_BOAT);
@@ -1004,7 +1004,7 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
  *
  *  @author OLiver
  */
-void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& ggs)
+void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
 {
     // TODO: print what has changed
     char text[256];

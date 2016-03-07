@@ -408,7 +408,7 @@ bool VideoDriverWrapper::Initialize()
  *
  *  @author FloSoft
  */
-void VideoDriverWrapper::RenewViewport(bool onlyRenew)
+void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
 {
     const unsigned short width  = videodriver->GetScreenWidth();
     const unsigned short height = videodriver->GetScreenHeight();

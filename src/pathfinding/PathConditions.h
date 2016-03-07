@@ -34,7 +34,7 @@ struct PathConditionRoad
     }
 
     // Called for every edge (node to other node)
-    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
+    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
     {
         return true;
     }

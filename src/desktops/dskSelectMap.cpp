@@ -156,7 +156,7 @@ dskSelectMap::~dskSelectMap()
  *  @author OLiver
  *  @author FloSoft
  */
-void dskSelectMap::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const unsigned short selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(1);
 
@@ -263,7 +263,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+void dskSelectMap::Msg_TableChooseItem(const unsigned  /*ctrl_id*/, const unsigned short  /*selection*/)
 {
     // Doppelklick auf bestimmte Map -> weiter
     StartServer();
@@ -299,7 +299,7 @@ void dskSelectMap::StartServer()
  *
  *  @author OLiver
  */
-void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
     {

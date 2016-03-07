@@ -364,7 +364,7 @@ dskOptions::~dskOptions()
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position)
+void dskOptions::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -468,7 +468,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
 {
     switch(ctrl_id)
     {
@@ -636,7 +636,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void dskOptions::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void dskOptions::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -659,7 +659,7 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned int group_id, const unsign
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr)
+void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult  /*mbr*/)
 {
     switch(msgbox_id)
     {

@@ -49,7 +49,7 @@ struct ShipPoint
     ShipPoint(MapPoint pos, unsigned char firstDir): pos(pos), first_dir(firstDir){}
 };
 
-void nofShipWright::HandleDerivedEvent(const unsigned int id)
+void nofShipWright::HandleDerivedEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {
@@ -187,7 +187,7 @@ void nofShipWright::Serialize(SerializedGameData& sgd) const
 
 
 /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
-void nofShipWright::StartWalkingToShip(const unsigned char first_dir)
+void nofShipWright::StartWalkingToShip(const unsigned char  /*first_dir*/)
 {
     state = STATE_WALKTOWORKPOINT;
     // Wir arbeiten jetzt

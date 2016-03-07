@@ -51,10 +51,10 @@ void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& 
 void nofScout_LookoutTower::WalkedDerived()
 {}
 
-void nofScout_LookoutTower::DrawWorking(int x, int y)
+void nofScout_LookoutTower::DrawWorking(int  /*x*/, int  /*y*/)
 {}
 
-void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int id)
+void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int  /*id*/)
 {}
 
 void nofScout_LookoutTower::WorkAborted()

@@ -408,13 +408,13 @@ bool dskCredits::Close()
  *
  *  @author siegi44
  */
-bool dskCredits::Msg_KeyDown(const KeyEvent& ke)
+bool dskCredits::Msg_KeyDown(const KeyEvent&  /*ke*/)
 {
     return Close();
 }
 
 
-void dskCredits::Msg_ButtonClick(const unsigned ctrl_id)
+void dskCredits::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
 {
     Close();
 }

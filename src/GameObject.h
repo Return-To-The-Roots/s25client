@@ -46,7 +46,7 @@ class GameObject
         virtual void Destroy() = 0;
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        virtual void HandleEvent(const unsigned int id) {}
+        virtual void HandleEvent(const unsigned int  /*id*/) {}
 
         /// Gibt Objekt-ID zurück.
         unsigned GetObjId() const { return objId; }
@@ -73,7 +73,7 @@ class GameObject
     protected:
 
         /// Serialisierungsfunktion.
-        void Serialize_GameObject(SerializedGameData& sgd) const {}
+        void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
 
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;

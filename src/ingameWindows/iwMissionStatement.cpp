@@ -66,7 +66,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     AddTextButton(1, width_ / 2 - 100, 435, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
 }
 
-void iwMissionStatement::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMissionStatement::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     Close();
 }

@@ -106,7 +106,7 @@ void noGrainfield::Draw( int x, int y)
 
 }
 
-void noGrainfield::HandleEvent(const unsigned int id)
+void noGrainfield::HandleEvent(const unsigned int  /*id*/)
 {
     switch(state)
     {

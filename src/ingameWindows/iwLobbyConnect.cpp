@@ -148,7 +148,7 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
  *
  *  @author FloSoft
  */
-void iwLobbyConnect::Msg_EditChange(const unsigned int ctrl_id)
+void iwLobbyConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(0, COLOR_RED, true);

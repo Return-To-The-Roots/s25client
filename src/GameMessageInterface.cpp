@@ -24,45 +24,45 @@
 #include "DebugNew.h" // IWYU pragma: keep
 struct RandomEntry;
 
-void GameMessageInterface::OnNMSPing(const GameMessage_Ping& msg) {}
-void GameMessageInterface::OnNMSPong(const GameMessage_Pong& msg) {}
+void GameMessageInterface::OnNMSPing(const GameMessage_Ping&  /*msg*/) {}
+void GameMessageInterface::OnNMSPong(const GameMessage_Pong&  /*msg*/) {}
 
-void GameMessageInterface::OnNMSServerType(const GameMessage_Server_Type& msg) {}
-void GameMessageInterface::OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg) {}
-void GameMessageInterface::OnNMSServerPassword(const GameMessage_Server_Password& msg) {}
-void GameMessageInterface::OnNMSServerName(const GameMessage_Server_Name& msg) {}
-void GameMessageInterface::OnNMSServerStart(const GameMessage_Server_Start& msg) {}
-void GameMessageInterface::OnNMSServerChat(const GameMessage_Server_Chat& msg) {}
-void GameMessageInterface::OnNMSServerAsync(const GameMessage_Server_Async& msg) {}
-void GameMessageInterface::OnNMSServerCountdown(const GameMessage_Server_Countdown& msg) {}
-void GameMessageInterface::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg) {}
+void GameMessageInterface::OnNMSServerType(const GameMessage_Server_Type&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerTypeOK(const GameMessage_Server_TypeOK&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerPassword(const GameMessage_Server_Password&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerName(const GameMessage_Server_Name&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerStart(const GameMessage_Server_Start&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerChat(const GameMessage_Server_Chat&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerAsync(const GameMessage_Server_Async&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerCountdown(const GameMessage_Server_Countdown&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown&  /*msg*/) {}
 
-void GameMessageInterface::OnNMSPlayerId(const GameMessage_Player_Id& msg) {}
-void GameMessageInterface::OnNMSPlayerName(const GameMessage_Player_Name& msg) {}
-void GameMessageInterface::OnNMSPlayerList(const GameMessage_Player_List& msg) {}
-void GameMessageInterface::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg) {}
-void GameMessageInterface::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) {}
-void GameMessageInterface::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) {}
-void GameMessageInterface::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) {}
-void GameMessageInterface::OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg) {}
-void GameMessageInterface::OnNMSPlayerPing(const GameMessage_Player_Ping& msg) {}
-void GameMessageInterface::OnNMSPlayerNew(const GameMessage_Player_New& msg) {}
-void GameMessageInterface::OnNMSPlayerReady(const GameMessage_Player_Ready& msg) {}
-void GameMessageInterface::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg) {}
+void GameMessageInterface::OnNMSPlayerId(const GameMessage_Player_Id&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerName(const GameMessage_Player_Name&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerList(const GameMessage_Player_List&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerKicked(const GameMessage_Player_Kicked&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerPing(const GameMessage_Player_Ping&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerNew(const GameMessage_Player_New&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerReady(const GameMessage_Player_Ready&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerSwap(const GameMessage_Player_Swap&  /*msg*/) {}
 
-void GameMessageInterface::OnNMSMapInfo(const GameMessage_Map_Info& msg) {}
-void GameMessageInterface::OnNMSMapData(const GameMessage_Map_Data& msg) {}
-void GameMessageInterface::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg) {}
-void GameMessageInterface::OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg) {}
+void GameMessageInterface::OnNMSMapInfo(const GameMessage_Map_Info&  /*msg*/) {}
+void GameMessageInterface::OnNMSMapData(const GameMessage_Map_Data&  /*msg*/) {}
+void GameMessageInterface::OnNMSMapChecksum(const GameMessage_Map_Checksum&  /*msg*/) {}
+void GameMessageInterface::OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK&  /*msg*/) {}
 
 
-void GameMessageInterface::OnNMSPause(const GameMessage_Pause& msg) {}
-void GameMessageInterface::OnNMSServerDone(const GameMessage_Server_NWFDone& msg) {}
-void GameMessageInterface::OnNMSGameCommand(const GameMessage_GameCommand& msg) {}
-void GameMessageInterface::OnNMSServerSpeed(const GameMessage_Server_Speed& msg) {}
+void GameMessageInterface::OnNMSPause(const GameMessage_Pause&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerDone(const GameMessage_Server_NWFDone&  /*msg*/) {}
+void GameMessageInterface::OnNMSGameCommand(const GameMessage_GameCommand&  /*msg*/) {}
+void GameMessageInterface::OnNMSServerSpeed(const GameMessage_Server_Speed&  /*msg*/) {}
 
-void GameMessageInterface::OnNMSGGSChange(const GameMessage_GGSChange& msg) {}
+void GameMessageInterface::OnNMSGGSChange(const GameMessage_GGSChange&  /*msg*/) {}
 
-void GameMessageInterface::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg) {}
-void GameMessageInterface::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last) {}
+void GameMessageInterface::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog&  /*msg*/) {}
+void GameMessageInterface::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog&  /*msg*/, const std::vector<RandomEntry>&  /*his*/, bool  /*last*/) {}
 

@@ -35,7 +35,7 @@ namespace helpers{
 	template<class T>
 	struct ReserveElements<T, false>
 	{
-	    static void reserve(T& collection, unsigned size)
+	    static void reserve(T&  /*collection*/, unsigned  /*size*/)
 	    {}
 	};
 

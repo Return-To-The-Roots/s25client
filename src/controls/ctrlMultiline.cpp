@@ -174,7 +174,7 @@ bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
 }
 
 
-void ctrlMultiline::Resize_(unsigned short width, unsigned short height)
+void ctrlMultiline::Resize_(unsigned short width, unsigned short  /*height*/)
 {
     // Position der Scrollbar anpassen
     GetCtrl<ctrlScrollBar>(0)->Move(width - SCROLLBAR_WIDTH, 0);
