@@ -364,6 +364,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         ChangeReady(row, player.ready);
         ChangeColor(row, player.color);
     }
+    group->SetActive(this->active_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
