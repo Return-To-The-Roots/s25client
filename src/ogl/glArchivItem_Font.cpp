@@ -29,6 +29,7 @@
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/src/libsiedler2.h"
 #include "libsiedler2/src/IAllocator.h"
+#include <boost/algorithm/string.hpp>
 #include <cmath>
 #include <vector>
 
@@ -516,7 +517,9 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
     {
         RTTR_Assert(*it >= curStart);
-        destStrings.push_back(origin_text.substr(curStart, *it - curStart));
+        std::string curLine = origin_text.substr(curStart, *it - curStart);
+        boost::algorithm::trim_right(curLine);
+        destStrings.push_back(curLine);
         curStart = *it;
     }
     /* Push last part */
