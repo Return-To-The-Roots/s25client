@@ -946,16 +946,23 @@ void WindowManager::Switch()
 
 void WindowManager::SetToolTip(Window* ttw, const std::string& tooltip)
 {
+    // Max width of tooltip
+    const unsigned short MAX_TOOLTIP_WIDTH = 260;
     static Window* lttw = NULL;
 
-    if(tooltip.empty() && !ttw)
+    if(tooltip.empty() && (!ttw || lttw == ttw))
         this->curTooltip.clear();
-
-    if(tooltip.empty() && lttw == ttw)
-        this->curTooltip.clear();
-    if(tooltip.length())
+    else if(!tooltip.empty())
     {
-        this->curTooltip = tooltip;
+        glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(tooltip, MAX_TOOLTIP_WIDTH, MAX_TOOLTIP_WIDTH);
+        std::vector<std::string> lines = wi.CreateSingleStrings(tooltip);
+        curTooltip.clear();
+        for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it)
+        {
+            if(!curTooltip.empty())
+                curTooltip += "\n";
+            curTooltip += *it;
+        }
         lttw = ttw;
     }
 }
@@ -965,27 +972,24 @@ void WindowManager::DrawToolTip()
     // Tooltip zeichnen
     if(curTooltip.length() && mouseCoords)
     {
+        const unsigned spacing = 30;
         unsigned text_width = NormalFont->getWidth(curTooltip);
-        unsigned right_edge = mouseCoords->x + 30 + text_width + 2;
-        unsigned x = mouseCoords->x + 30;
+        unsigned x = mouseCoords->x + spacing;
+        unsigned right_edge = x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
-            x = mouseCoords->x - 30 - text_width;
+            x = mouseCoords->x - spacing - text_width;
 
-        unsigned int count = 0;
-        size_t pos = 0;
-        do
+        unsigned int numLines = 1;
+        size_t pos = curTooltip.find('\n');
+        while(pos != std::string::npos)
         {
-            count++;
-            if(pos != 0)
-                pos++;
-            pos = curTooltip.find('\n', pos);
+            numLines++;
+            pos = curTooltip.find('\n', pos + 1);
         }
-        while( pos != std::string::npos && (pos < curTooltip.length() - 2));
 
-        Window::DrawRectangle(x - 2 , mouseCoords->y - 2, text_width + 4, 4 + count * NormalFont->getDy(), 0x9F000000);
+        Window::DrawRectangle(x - 2 , mouseCoords->y - 2, text_width + 4, 4 + numLines * NormalFont->getDy(), 0x9F000000);
         NormalFont->Draw(x, mouseCoords->y , curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
-
     }
 }
