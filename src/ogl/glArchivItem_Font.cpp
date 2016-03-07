@@ -276,6 +276,7 @@ void glArchivItem_Font::Draw(short x,
  *  @param[in] color  Farbe des Textes
  *  @param[in] length Länge des Textes
  *  @param[in] max    maximale Länge
+ *  @param     end    Suffix for displaying a truncation of the text (...)
  *
  *  @author OLiver
  */
@@ -287,7 +288,7 @@ void glArchivItem_Font::Draw(short x,
                              unsigned short length,
                              unsigned short max,
                              const std::string& end,
-                             unsigned short end_length)
+                             unsigned short endLen)
 {
     if(!fontNoOutline)
         initFont();
@@ -295,40 +296,31 @@ void glArchivItem_Font::Draw(short x,
     // Breite bestimmen
     if(length == 0)
         length = (unsigned short)text.length();
-    if(end_length == 0)
-        end_length = (unsigned short)end.length();
+    if(endLen == 0)
+        endLen = (unsigned short)end.length();
 
-    bool enable_end;
-
-    unsigned short text_max = 0;
-    unsigned short text_width = getWidth(text, length, max, &text_max);
+    unsigned maxNumChars = 0;
+    unsigned short textWidth = getWidth(text, length, max, &maxNumChars);
 
     // text_max ist die maximale Indexzahl, nicht mehr die Breite in Pixel!
-    if(end.length() && text_max < length)
+    if(endLen > 0 && maxNumChars < length)
     {
-        unsigned short end_max = 0;
-        unsigned short end_width = getWidth(end, end_length, max, &end_max);
+        unsigned short endWidth = getWidth(end, endLen, max);
 
-        // Bei Überlauf oder kleiner 0 - nix zeichnen ;)
-        if( text_width - end_width > text_width || text_width - end_width <= 0 )
+        // If "end" does not fit, draw nothing
+        if(textWidth < endWidth)
             return;
 
-        text_width -= end_width;
-
         // Wieviele Buchstaben gehen in den "Rest" (ohne "end")
-        text_max = 0;
-        getWidth(text, length, text_width, &text_max);
+         textWidth = getWidth(text, length, textWidth - endWidth, &maxNumChars) + endWidth;
+    } else
+        endLen = 0;
 
-        enable_end = true;
-    }
-    else
-        enable_end = false;
-
-    if(text_max == 0)
+    if(maxNumChars == 0)
         return;
 
     if( (format & 3) == DF_RIGHT)
-        x -= text_width;
+        x -= textWidth;
     if( (format & 12) == DF_BOTTOM)
         y -= dy;
     if( (format & 12) == DF_VCENTER)
@@ -337,43 +329,35 @@ void glArchivItem_Font::Draw(short x,
     short cx = x, cy = y;
     if( (format & 3) == DF_CENTER)
     {
-        unsigned short line_width = text_width;
-        for(unsigned short j = 0; j < text_max; ++j)
-        {
-            if(text[j] == '\n')
-            {
-                line_width = getWidth(text, j);
-                break;
-            }
-        }
+        unsigned short line_width;
+        size_t nlPos = text.find('\n');
+        if(nlPos != std::string::npos)
+            line_width = getWidth(text, nlPos);
+        else
+            line_width = textWidth;
         cx = x - line_width / 2;
     }
 
     std::vector<GL_T2F_V3F_Struct> texList;
-    texList.reserve((text_max + (enable_end ? end_length : 0)) * 4);
+    texList.reserve((maxNumChars + endLen) * 4);
     float tw = fontNoOutline->GetTexWidth();
     float th = fontNoOutline->GetTexHeight();
 
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
-    for(unsigned int i = 0; i < text_max; ++i)
+    for(unsigned int i = 0; i < maxNumChars; ++i)
     {
         if(text[i] == '\n')
         {
             cy += dy;
             if( (format & 3) == DF_CENTER)
             {
-                unsigned short line_width = 0;
-                for(unsigned short j = i + 1; j < text_max; ++j)
-                {
-                    if(text[j] == '\n')
-                    {
-                        line_width = getWidth(&text[i + 1], j - i - 1);
-                        break;
-                    }
-                }
-                if(line_width == 0)
-                    line_width = getWidth(&text[i + 1], text_max - i - 1);
+                unsigned short line_width;
+                size_t nlPos = text.find('\n', i + 1);
+                if(nlPos != std::string::npos)
+                    line_width = getWidth(&text[i + 1], nlPos - i - 1);
+                else
+                    line_width = getWidth(&text[i + 1], maxNumChars - i - 1);
                 cx = x - line_width / 2;
             }
             else
@@ -383,18 +367,14 @@ void glArchivItem_Font::Draw(short x,
             DrawChar(text, i, texList, cx, cy, tw, th);
     }
 
-    if(enable_end)
+    for(unsigned int i = 0; i < endLen; ++i)
     {
-        for(unsigned int i = 0; i < end_length; ++i)
+        if(end[i] == '\n')
         {
-            if(end[i] == '\n')
-            {
-                cy += dy;
-                cx = x;
-            }
-            else
-                DrawChar(end, i, texList, cx, cy, tw, th);
-        }
+            cy += dy;
+            cx = x;
+        } else
+            DrawChar(end, i, texList, cx, cy, tw, th);
     }
 
     if(texList.empty())
@@ -424,7 +404,7 @@ void glArchivItem_Font::Draw(short x,
  *
  *  @author OLiver
  */
-unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned length, unsigned max_width, unsigned short* max) const
+unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned length, unsigned max_width, unsigned* max) const
 {
     if(length == 0)
         length = unsigned(text.length());
@@ -438,14 +418,16 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
                 maxLineLen = curLineLen;
             curLineLen = 0;
         } else
-            curLineLen += CharWidth(text[i]);
-
-        // haben wir das maximum erreicht?
-        if(std::max(maxLineLen, curLineLen) > max_width)
         {
-            if(max)
-                *max = i;
-            return std::max(maxLineLen, curLineLen);
+            const unsigned cw = CharWidth(text[i]);
+            // haben wir das maximum erreicht?
+            if(curLineLen + cw > max_width)
+            {
+                if(max)
+                    *max = i;
+                return curLineLen;
+            }
+            curLineLen += cw;
         }
     }
 
@@ -458,7 +440,7 @@ unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned le
     return maxLineLen;
 }
 
-unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned short* max) const
+unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned* max) const
 {
     if(length == 0)
         length = unsigned(text.length());
@@ -472,14 +454,16 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
                 maxLineLen = curLineLen;
             curLineLen = 0;
         } else
-            curLineLen += CharWidth(Utf8_to_Unicode(text, i));
-
-        // haben wir das maximum erreicht?
-        if(std::max(maxLineLen, curLineLen) > max_width)
         {
-            if(max)
-                *max = i;
-            return std::max(maxLineLen, curLineLen);
+            const unsigned cw = CharWidth(Utf8_to_Unicode(text, i));
+            // haben wir das maximum erreicht?
+            if(curLineLen + cw > max_width)
+            {
+                if(max)
+                    *max = i;
+                return curLineLen;
+            }
+            curLineLen += cw;
         }
     }
 

@@ -117,7 +117,7 @@ bool ctrlEdit::Draw_()
         dtext = text_;
 
     const unsigned max_width = width_ - 8 - font_->getDx();
-    unsigned short max;
+    unsigned max;
     font_->getWidth(dtext.substr(viewStart_), unsigned(text_.length()) - viewStart_, max_width, &max);
     while(max > 0 && text_.length() - viewStart_ > max)
     {
