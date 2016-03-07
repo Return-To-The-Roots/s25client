@@ -427,39 +427,35 @@ void glArchivItem_Font::Draw(short x,
 unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned length, unsigned max_width, unsigned short* max) const
 {
     if(length == 0)
-        length = unsigned(text.length()); 
+        length = unsigned(text.length());
 
-    unsigned short w = 0, wm = 0;
+    unsigned curLineLen = 0, maxLineLen = 0;
     for(unsigned int i = 0; i < length; ++i)
     {
-        unsigned short cw = CharWidth(text[i]);
-
         if(text[i] == '\n')
         {
-            if(w > wm) // Längste Zeile
-                wm = w;
-            w = 0;
-        }
+            if(curLineLen > maxLineLen) // Längste Zeile
+                maxLineLen = curLineLen;
+            curLineLen = 0;
+        } else
+            curLineLen += CharWidth(text[i]);
 
         // haben wir das maximum erreicht?
-        if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
+        if(std::max(maxLineLen, curLineLen) > max_width)
         {
             if(max)
                 *max = i;
-            if(wm == 0)
-                wm = w;
-            return wm;
+            return std::max(maxLineLen, curLineLen);
         }
-        w += cw;
     }
 
-    if(wm < w) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
-        wm = w;
+    if(curLineLen > maxLineLen) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+        maxLineLen = curLineLen;
 
     if(max)
         *max = length;
 
-    return wm;
+    return maxLineLen;
 }
 
 unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned short* max) const
@@ -467,37 +463,33 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     if(length == 0)
         length = unsigned(text.length());
 
-    unsigned short w = 0, wm = 0;
+    unsigned curLineLen = 0, maxLineLen = 0;
     for(unsigned int i = 0; i < length; ++i)
     {
-        unsigned short cw = CharWidth(Utf8_to_Unicode(text, i));
-
         if(text[i] == '\n')
         {
-            if(w > wm) // Längste Zeile
-                wm = w;
-            w = 0;
-        }
+            if(curLineLen > maxLineLen) // Längste Zeile
+                maxLineLen = curLineLen;
+            curLineLen = 0;
+        } else
+            curLineLen += CharWidth(Utf8_to_Unicode(text, i));
 
         // haben wir das maximum erreicht?
-        if(unsigned((wm > 0 ? wm : w) + cw) > max_width)
+        if(std::max(maxLineLen, curLineLen) > max_width)
         {
             if(max)
                 *max = i;
-            if(wm == 0)
-                wm = w;
-            return wm;
+            return std::max(maxLineLen, curLineLen);
         }
-        w += cw;
     }
 
-    if(wm < w) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
-        wm = w;
+    if(curLineLen > maxLineLen) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+        maxLineLen = curLineLen;
 
     if(max)
         *max = length;
 
-    return wm;
+    return maxLineLen;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
