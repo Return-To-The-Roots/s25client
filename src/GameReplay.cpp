@@ -207,15 +207,18 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
         }
 
         file.ReadShortString(map_name);
-    }
 
-    if(load_extended_header)
-    {
         // Try to open precalculated pathfinding results
         pathfinding_results = pf_file.Open(filename + "_res", OFM_READ);
 
         if(!pathfinding_results)
             pf_file.Open(filename + "_res", OFM_WRITE);
+    } else if(map_type == MAPTYPE_SAVEGAME)
+    {
+        // Validate savegame
+        Savegame save;
+        if(!save.Load(file, false, false))
+            return false;
     }
 
 
