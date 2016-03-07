@@ -194,14 +194,16 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 void ctrlTextButton::DrawContent() const
 {
+    const bool isHighlighted = state == BUTTON_PRESSED || check;
     unsigned color;
-    if(this->color_ == COLOR_YELLOW)
-        color = ( (state == BUTTON_PRESSED || check) ? 0xFFFFAA00 : COLOR_YELLOW );
+    if(this->color_ == COLOR_YELLOW && isHighlighted)
+        color = 0xFFFFAA00;
     else
         color = this->color_;
 
-    font->Draw(GetX() + width_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ),
-               GetY() + height_ / 2 + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
+    const unsigned short offset = isHighlighted ? 2 : 0;
+    font->Draw(GetX() + width_ / 2 + offset,
+               GetY() + height_ / 2 + offset, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
 }
 
 
@@ -216,7 +218,10 @@ void ctrlImageButton::DrawContent() const
 {
     // Bild
     if(image)
-        image->Draw(GetX() + width_ / 2   + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), GetY() + height_ / 2   + ( (state == BUTTON_PRESSED || check) ? 2 : 0 ), 0, 0, 0, 0, 0, 0, modulation_color);
+    {
+        const unsigned short offset = (state == BUTTON_PRESSED || check) ? 2 : 0;
+        image->Draw(GetX() + width_ / 2 + offset, GetY() + height_ / 2 + offset, 0, 0, 0, 0, 0, 0, modulation_color);
+    }
 }
 
 
