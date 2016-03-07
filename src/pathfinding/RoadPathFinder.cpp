@@ -36,7 +36,7 @@ struct RoadNodeComperatorGreater
     {
         if (lhs->estimate == rhs->estimate)
         {
-            // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
+            // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir fï¿½r std::set eine streng
             // monoton steigende Folge brauchen
             return (lhs->GetObjId() > rhs->GetObjId());
         }
@@ -63,8 +63,8 @@ namespace AdditonalCosts{
     {
         unsigned operator()(const noRoadNode& curNode, const unsigned char nextDir) const
         {
-            // Im Warenmodus müssen wir Strafpunkte für überlastete Träger hinzuaddieren, 
-            // damit der Algorithmus auch Ausweichrouten auswählt
+            // Im Warenmodus mï¿½ssen wir Strafpunkte fï¿½r ï¿½berlastete Trï¿½ger hinzuaddieren, 
+            // damit der Algorithmus auch Ausweichrouten auswï¿½hlt
             return curNode.GetPunishmentPoints(nextDir);
         }
     };
@@ -132,14 +132,13 @@ namespace SegmentConstraints{
     };
 }
 
-/// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Straßen
+/// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Straï¿½en
 template<class T_AdditionalCosts, class T_SegmentConstraints>
 bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal,
                               const bool record, const unsigned max,
                               const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
                               unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
-    RTTR_Assert(&start && &goal);
     if(&start == &goal)
     {
         // Path where start==goal should never happen
@@ -187,7 +186,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         currentVisit = 1;
     }
 
-    // Anfangsknoten einfügen
+    // Anfangsknoten einfï¿½gen
     todo.clear();
 
     start.targetDistance = gwb_.CalcDistance(start.GetPos(), goal.GetPos());
@@ -201,13 +200,13 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 
     while (!todo.empty())
     {
-        // Knoten mit den geringsten Wegkosten auswählen
+        // Knoten mit den geringsten Wegkosten auswï¿½hlen
         const noRoadNode& best = *todo.pop();
 
         // Ziel erreicht?
         if (&best == &goal)
         {
-            // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
+            // Jeweils die einzelnen Angaben zurï¿½ckgeben, falls gewï¿½nscht (Pointer ï¿½bergeben)
             if (length)
                 *length = best.cost;
 
@@ -261,7 +260,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(!isSegmentAllowed(*best.routes[i]))
                 continue;
 
-            // Neuer Weg für diesen neuen Knoten berechnen
+            // Neuer Weg fï¿½r diesen neuen Knoten berechnen
             unsigned cost = best.cost + best.routes[i]->GetLength();
             cost += addCosts(best, i);
 
@@ -271,7 +270,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             // Was node already visited?
             if (neighbour->last_visit == currentVisit)
             {
-                // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
+                // Dann nur ggf. Weg und Vorgï¿½nger korrigieren, falls der Weg kï¿½rzer ist
                 if (cost < neighbour->cost)
                 {
                     neighbour->cost = cost;
@@ -302,7 +301,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 
             for (unsigned i = 0; i < scs.size(); ++i)
             {
-                // Neuer Weg für diesen neuen Knoten berechnen
+                // Neuer Weg fï¿½r diesen neuen Knoten berechnen
                 unsigned cost = best.cost + scs[i].way_costs;
 
                 if (cost > max)
@@ -312,7 +311,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 // Was node already visited?
                 if (dest.last_visit == currentVisit)
                 {
-                    // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
+                    // Dann nur ggf. Weg und Vorgï¿½nger korrigieren, falls der Weg kï¿½rzer ist
                     if (cost < dest.cost)
                     {
                         dest.dir_ = SHIP_DIR;
