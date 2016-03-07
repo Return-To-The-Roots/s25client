@@ -38,7 +38,7 @@
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                        unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
     : Window(x, y, id, parent, width, height), tc(tc), state(BUTTON_UP), border(true),
-      check(false), illuminated(false), enabled(true)
+      check(false), illuminated(false), enabled(true), isMouseOver(false)
 {
     SetTooltip(tooltip);
 }
@@ -65,6 +65,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
     if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
+        isMouseOver = true;
         if(mc.ldown)
             state = BUTTON_PRESSED;
         else
@@ -76,6 +77,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     }
     else
     {
+        isMouseOver = false;
         state =  BUTTON_UP;
         WINDOWMANAGER.SetToolTip(this, "");
 
@@ -91,7 +93,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
  */
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(enabled && isMouseOver)
     {
         state = BUTTON_PRESSED;
         return true;
@@ -106,7 +108,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
     {
         state =  BUTTON_UP;
 
-        if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+        if(enabled && isMouseOver)
         {
             parent_->Msg_ButtonClick(GetID());
             return true;
@@ -121,8 +123,7 @@ void ctrlButton::TestMouseOver()
 {
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
     {
-        if(!Coll(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(),
-                 GetX(), GetY(), width_, height_))
+        if(!isMouseOver)
             // Nicht mehr drauf --> wieder normalen Zustand
             state = BUTTON_UP;
     }
@@ -181,6 +182,16 @@ void ctrlTextButton::DrawContent() const
     else
         color = this->color_;
 
+    const unsigned short maxTextWidth = width_ - 4; // reduced by border
+
+    if(tooltip_.empty() && enabled && isMouseOver)
+    {
+        unsigned maxNumChars;
+        font->getWidth(text, 0, maxTextWidth, &maxNumChars);
+        if(maxNumChars < text.length())
+            WINDOWMANAGER.SetToolTip(this, text);
+    }
+
     const unsigned short offset = isHighlighted ? 2 : 0;
     font->Draw(GetX() + width_ / 2 + offset,
                GetY() + height_ / 2 + offset,
@@ -188,7 +199,7 @@ void ctrlTextButton::DrawContent() const
                glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
                color,
                0,
-               width_ - 4); // reduced by border
+               maxTextWidth);
 }
 
 

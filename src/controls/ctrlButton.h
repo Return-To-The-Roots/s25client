@@ -78,6 +78,7 @@ class ctrlButton : public Window
         bool illuminated;
         /// Button angeschalten?
         bool enabled;
+        bool isMouseOver; // Mouse over this button
 };
 
 /// Button mit Text

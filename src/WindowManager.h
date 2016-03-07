@@ -82,7 +82,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Verarbeitung Keyboard-Event
         void Msg_KeyDown(const KeyEvent& ke) override;
         // setzt den Tooltip
-        void SetToolTip(Window* ttw, const std::string& tooltip);
+        void SetToolTip(const Window* ttw, const std::string& tooltip);
 
         /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
         void ScreenResized(unsigned short width, unsigned short height) override;

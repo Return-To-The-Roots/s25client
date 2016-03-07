@@ -944,11 +944,11 @@ void WindowManager::Switch()
     }
 }
 
-void WindowManager::SetToolTip(Window* ttw, const std::string& tooltip)
+void WindowManager::SetToolTip(const Window* ttw, const std::string& tooltip)
 {
     // Max width of tooltip
     const unsigned short MAX_TOOLTIP_WIDTH = 260;
-    static Window* lttw = NULL;
+    static const Window* lttw = NULL;
 
     if(tooltip.empty() && (!ttw || lttw == ttw))
         this->curTooltip.clear();
