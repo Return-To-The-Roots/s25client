@@ -100,25 +100,6 @@ bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-//bool ctrlButton::Msg_LeftDown_After(const MouseCoords& mc)
-//{
-//  if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width, height))
-//  {
-//      state = BUTTON_PRESSED;
-//      return true;
-//  }
-//
-//  return false;
-//}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 {
     if(state == BUTTON_PRESSED)
@@ -187,8 +168,7 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x
                                unsigned short width, unsigned short height, const TextureColor tc,
                                const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
     : ctrlButton(parent, id, x, y, width, height, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
-{
-}
+{}
 
 
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
@@ -203,7 +183,12 @@ void ctrlTextButton::DrawContent() const
 
     const unsigned short offset = isHighlighted ? 2 : 0;
     font->Draw(GetX() + width_ / 2 + offset,
-               GetY() + height_ / 2 + offset, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color );
+               GetY() + height_ / 2 + offset,
+               text,
+               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
+               color,
+               0,
+               width_ - 4); // reduced by border
 }
 
 
