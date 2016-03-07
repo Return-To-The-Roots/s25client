@@ -129,7 +129,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride,
 
                 for(int x = 0; x < w; ++x)
                 {
-                    if(tmp[tmpIdx + 3] != 0x00 && GetAlpha(buffer[idx]) == 0x00)
+                    if(GetAlpha(tmp[tmpIdx]) != 0x00 && GetAlpha(buffer[idx]) == 0x00)
                     {
                         buffer[idx] = MakeColor(0x40, 0, 0, 0);
                     }
