@@ -66,9 +66,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         isMouseOver = true;
-        if(mc.ldown)
-            state = BUTTON_PRESSED;
-        else
+        if(state != BUTTON_PRESSED)
             state = BUTTON_HOVER;
 
         WINDOWMANAGER.SetToolTip(this, tooltip_);
