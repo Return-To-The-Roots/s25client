@@ -31,14 +31,13 @@
 class iwMapDebug::DebugPrinter: public IDebugNodePrinter
 {
 public:
-    DebugPrinter(GameWorldBase& gwb): showCoords(true), showDataIdx(0), gw(gwb){}
+    DebugPrinter(GameWorldBase& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
 
     void print(const MapPoint& pt, const Point<int>& displayPt) override
     {
         if(showCoords){
-            char coord[32];
-            sprintf(coord, "%u;%u", pt.x, pt.y);
-            NormalFont->Draw(displayPt.x, displayPt.y, coord, 0, 0xFFFFFF00);
+            std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
+            font->Draw(displayPt.x, displayPt.y, coord, 0, 0xFFFFFF00);
         }
         std::string data;
         unsigned color = 0xFFFF0000;
@@ -66,12 +65,13 @@ public:
         }        
 
         if(!data.empty())
-            NormalFont->Draw(displayPt.x, displayPt.y, data, 0, color);
+            font->Draw(displayPt.x, displayPt.y, data, 0, color);
     }
 
     bool showCoords;
     unsigned showDataIdx;
     GameWorldBase& gw;
+    glArchivItem_Font* font;
 };
 
 iwMapDebug::iwMapDebug(GameWorldViewer& gwv):
