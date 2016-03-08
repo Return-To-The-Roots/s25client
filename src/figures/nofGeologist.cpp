@@ -273,7 +273,7 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    return !gwg->IsNodeForFigures(pt) && obj.GetGOT() != GOT_SIGN
+    return gwg->IsNodeForFigures(pt) && obj.GetGOT() != GOT_SIGN
             && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
 }
 
@@ -311,7 +311,7 @@ void nofGeologist::LookForNewNodes()
 
 bool nofGeologist::IsValidTargetNode(const MapPoint pt) const
 {
-    return (IsNodeGood(pt) && !gwg->GetNode(pt).reserved && (gwg->FindHumanPath(this->pos, pt, 20)) != 0xFF);
+    return (IsNodeGood(pt) && !gwg->GetNode(pt).reserved && (pos == pt || gwg->FindHumanPath(pos, pt, 20) != 0xFF));
 }
 
 unsigned char nofGeologist::GetNextNode()
