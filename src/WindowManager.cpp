@@ -677,30 +677,26 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
     if(!curDesktop)
         return;
 
-    // ist der Maus-Klick-Fix aktiv?
-    if(!disable_mouse)
+    // nein, ist unser Desktop aktiv?
+    if(curDesktop->GetActive())
     {
-        // nein, ist unser Desktop aktiv?
-        if(curDesktop->GetActive())
-        {
-            // ja, dann Msg_MouseMove aufrufen
-            curDesktop->Msg_MouseMove(mc);
+        // ja, dann Msg_MouseMove aufrufen
+        curDesktop->Msg_MouseMove(mc);
 
-            // und alles drunter auch benachrichtigen
-            curDesktop->RelayMouseMessage(&Window::Msg_MouseMove, mc);
-        }
-        else if(!windows.empty())
-        {
-            IngameWindow& activeWnd = *windows.back();
-            // und MouseMove vom Fenster aufrufen
-            activeWnd.MouseMove(mc);
+        // und alles drunter auch benachrichtigen
+        curDesktop->RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    }
+    else if(!windows.empty())
+    {
+        IngameWindow& activeWnd = *windows.back();
+        // und MouseMove vom Fenster aufrufen
+        activeWnd.MouseMove(mc);
 
-            // ja, dann Msg_MouseMove aufrufen
-            activeWnd.Msg_MouseMove(mc);
+        // ja, dann Msg_MouseMove aufrufen
+        activeWnd.Msg_MouseMove(mc);
 
-            // und alles drunter auch benachrichtigen
-            activeWnd.RelayMouseMessage(&Window::Msg_MouseMove, mc);
-        }
+        // und alles drunter auch benachrichtigen
+        activeWnd.RelayMouseMessage(&Window::Msg_MouseMove, mc);
     }
 }
 
@@ -941,6 +937,8 @@ void WindowManager::Switch()
     {
         // Desktop aktivieren
         curDesktop->SetActive(true);
+        // Dummy mouse move to init hovering etc
+        Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), false, false, false));
     }
 }
 
