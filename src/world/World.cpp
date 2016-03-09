@@ -301,7 +301,9 @@ const noBase* World::GetNO(const MapPoint pt) const
 void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)
 {
     RTTR_Assert(replace || obj == NULL || GetNode(pt).obj == NULL);
+#if RTTR_ENABLE_ASSERTS
     RTTR_Assert(!dynamic_cast<noMovable*>(obj)); // It should be a static, non-movable object
+#endif
     GetNodeInt(pt).obj = obj;
 }
 
