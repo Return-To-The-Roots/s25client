@@ -89,6 +89,9 @@ iwMapDebug::iwMapDebug(GameWorldViewer& gwv):
     data->AddString(_("Resources"));
     data->AddString(_("Sea Id"));
     data->SetSelection(1);
+
+    printer->showCoords = cbShowCoords->GetCheck();
+    printer->showDataIdx = data->GetSelection();
 }
 
 iwMapDebug::~iwMapDebug()
