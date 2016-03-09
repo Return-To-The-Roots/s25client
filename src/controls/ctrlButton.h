@@ -63,6 +63,7 @@ class ctrlButton : public Window
         virtual void DrawContent() const = 0;
         // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
         void TestMouseOver();
+        bool IsMouseOver(const int mouseX, const int mouseY) const;
 
     protected:
 
@@ -78,7 +79,6 @@ class ctrlButton : public Window
         bool illuminated;
         /// Button angeschalten?
         bool enabled;
-        bool isMouseOver; // Mouse over this button
 };
 
 /// Button mit Text

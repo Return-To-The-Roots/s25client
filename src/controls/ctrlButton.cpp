@@ -38,7 +38,7 @@
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                        unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
     : Window(x, y, id, parent, width, height), tc(tc), state(BUTTON_UP), border(true),
-      check(false), illuminated(false), enabled(true), isMouseOver(false)
+      check(false), illuminated(false), enabled(true)
 {
     SetTooltip(tooltip);
 }
@@ -63,9 +63,8 @@ ctrlButton::~ctrlButton()
  */
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
-    if(enabled && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(enabled && IsMouseOver(mc.x, mc.y))
     {
-        isMouseOver = true;
         if(state != BUTTON_PRESSED)
             state = BUTTON_HOVER;
 
@@ -75,12 +74,16 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     }
     else
     {
-        isMouseOver = false;
         state =  BUTTON_UP;
         WINDOWMANAGER.SetToolTip(this, "");
 
         return false;
     }
+}
+
+bool ctrlButton::IsMouseOver(const int mouseX, const int mouseY) const
+{
+    return Coll(mouseX, mouseY, GetX(), GetY(), width_, height_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -91,7 +94,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
  */
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(enabled && isMouseOver)
+    if(enabled && IsMouseOver(mc.x, mc.y))
     {
         state = BUTTON_PRESSED;
         return true;
@@ -106,7 +109,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
     {
         state =  BUTTON_UP;
 
-        if(enabled && isMouseOver)
+        if(enabled && IsMouseOver(mc.x, mc.y))
         {
             parent_->Msg_ButtonClick(GetID());
             return true;
@@ -121,7 +124,7 @@ void ctrlButton::TestMouseOver()
 {
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
     {
-        if(!isMouseOver)
+        if(!IsMouseOver(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY()))
             // Nicht mehr drauf --> wieder normalen Zustand
             state = BUTTON_UP;
     }
@@ -182,7 +185,7 @@ void ctrlTextButton::DrawContent() const
 
     const unsigned short maxTextWidth = width_ - 4; // reduced by border
 
-    if(tooltip_.empty() && enabled && isMouseOver)
+    if(tooltip_.empty() && state == BUTTON_HOVER)
     {
         unsigned maxNumChars;
         font->getWidth(text, 0, maxTextWidth, &maxNumChars);
