@@ -112,7 +112,7 @@ void noAnimal::Draw(int x, int y)
         } break;
         case STATE_DEAD:
         {
-            if (LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
+            if (!LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].empty())
             {
                 LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y);
             }
@@ -123,7 +123,7 @@ void noAnimal::Draw(int x, int y)
             unsigned char alpha = 0xFF - GAMECLIENT.Interpolate(0xFF, current_ev);
 
             // Gibts ein Leichenbild?
-            if (LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].isGenerated())
+            if (!LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].empty())
             {
                 LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
             }

@@ -62,16 +62,17 @@ class glSmartBitmap
         ~glSmartBitmap();
         void reset();
 
-        inline int getWidth() {return(w);}
-        inline int getHeight() {return(h);}
+        int getWidth() const {return w;}
+        int getHeight() const {return h;}
 
-        inline int getTexWidth() {return(hasPlayer ? getWidth() * 2 : getWidth());}
-        inline int getTexHeight() {return getHeight();}
+        int getTexWidth() const {return hasPlayer ? getWidth() * 2 : getWidth();}
+        int getTexHeight() const {return getHeight();}
 
-        inline bool isGenerated() {return(texture != 0);}
-        inline bool isPlayer() {return(hasPlayer);}
+        bool isGenerated() const {return texture != 0;}
+        bool isPlayer() const {return hasPlayer;}
+        bool empty() const { return items.empty(); }
 
-        inline void setSharedTexture(unsigned tex) {if (tex != 0) {sharedTexture = true; texture = tex;} else {sharedTexture = false; texture = 0;}}
+        void setSharedTexture(unsigned tex) { texture = tex; sharedTexture = (tex != 0); }
 
         void calcDimensions();
 
