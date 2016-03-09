@@ -20,6 +20,9 @@
 #include "nodeObjs/noNothing.h"
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noFlag.h"
+#if RTTR_ENABLE_ASSERTS
+#   include "nodeObjs/noMovable.h"
+#endif
 #include "FOWObjects.h"
 #include "gameData/TerrainData.h"
 #include "RoadSegment.h"
@@ -298,6 +301,7 @@ const noBase* World::GetNO(const MapPoint pt) const
 void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)
 {
     RTTR_Assert(replace || obj == NULL || GetNode(pt).obj == NULL);
+    RTTR_Assert(!dynamic_cast<noMovable*>(obj)); // It should be a static, non-movable object
     GetNodeInt(pt).obj = obj;
 }
 
