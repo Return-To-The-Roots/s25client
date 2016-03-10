@@ -46,6 +46,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libsiedler2/src/prototypen.h"
+#include "libutil/src/ucString.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -208,7 +209,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigne
                         preview->SetMap(map);
 
                         ctrlText* text = GetCtrl<ctrlText>(12);
-                        text->SetText(std::string(map->getHeader().getName()) );
+                        text->SetText(cvStringToUTF8(map->getHeader().getName()) );
                         text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
 
                         text = GetCtrl<ctrlText>(13);
@@ -406,7 +407,10 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
             _("Winter world")
         };
 
-        table->AddRow(0, header->getName().c_str(), header->getAuthor().c_str(), players, landscapes[header->getGfxSet()].c_str(), size, it->c_str());
+        std::string name = cvStringToUTF8(header->getName());
+        std::string author = cvStringToUTF8(header->getAuthor());
+
+        table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, it->c_str());
     }
 }
 

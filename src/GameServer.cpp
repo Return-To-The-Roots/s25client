@@ -54,6 +54,7 @@
 #include "libsiedler2/src/prototypen.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libutil/src/colors.h"
+#include "libutil/src/ucString.h"
 
 #include "files.h"
 #include <boost/filesystem.hpp>
@@ -161,7 +162,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             RTTR_Assert(header);
 
             serverconfig.playercount = header->getPlayer();
-            mapinfo.title = header->getName();
+            mapinfo.title = cvStringToUTF8(header->getName());
         } break;
         // Gespeichertes Spiel
         case MAPTYPE_SAVEGAME:
