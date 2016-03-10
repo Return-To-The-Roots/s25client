@@ -39,6 +39,57 @@
 
 typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
 
+
+template<typename T>
+struct GetNextCharAndIncIt;
+
+template<>
+struct GetNextCharAndIncIt<uint32_t>
+{
+    template<class T_Iterator>
+    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
+    {
+        return *it++;
+    }
+};
+
+template<>
+struct GetNextCharAndIncIt<char>
+{
+    template<class T_Iterator>
+    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
+    {
+        return utf8::next(it, itEnd);
+    }
+};
+
+template<class T_Iterator>
+struct Distance
+{
+    size_t operator()(const T_Iterator& first, const T_Iterator& last) const
+    {
+        return std::distance(first, last);
+    }
+};
+
+template<class T_Iterator>
+struct Distance<utf8::iterator<T_Iterator> >
+{
+    size_t operator()(const utf8::iterator<T_Iterator>& first, const utf8::iterator<T_Iterator>& last) const
+    {
+        return std::distance(first.base(), last.base());
+    }
+};
+
+template<class T_Iterator>
+T_Iterator nextIt(T_Iterator it, typename std::iterator_traits<T_Iterator>::difference_type n = 1)
+{
+    std::advance(it, n);
+    return it;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
 {
     if(obj.fontNoOutline)
@@ -295,47 +346,6 @@ void glArchivItem_Font::Draw(short x,
     glDrawArrays(GL_QUADS, 0, texList.size());
 }
 
-template<typename T>
-struct GetNextCharAndIncIt;
-
-template<>
-struct GetNextCharAndIncIt<uint32_t>
-{
-    template<class T_Iterator>
-    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
-    {
-        return *it++;
-    }
-};
-
-template<>
-struct GetNextCharAndIncIt<char>
-{
-    template<class T_Iterator>
-    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
-    {
-        return utf8::next(it, itEnd);
-    }
-};
-
-template<class T_Iterator>
-struct Distance
-{
-    size_t operator()(const T_Iterator& first, const T_Iterator& last) const
-    {
-        return std::distance(first, last);
-    }
-};
-
-template<class T_Iterator>
-struct Distance<utf8::iterator<T_Iterator> >
-{
-    size_t operator()(const utf8::iterator<T_Iterator>& first, const utf8::iterator<T_Iterator>& last) const
-    {
-        return std::distance(first.base(), last.base());
-    }
-};
-
 template<class T_Iterator>
 unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const
 {
@@ -427,13 +437,6 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     /* Push last part */
     destStrings.push_back(text.substr(curStart));
     return destStrings;
-}
-
-template<class T_Iterator>
-T_Iterator nextIt(T_Iterator it, typename std::iterator_traits<T_Iterator>::difference_type n = 1)
-{
-    std::advance(it, n);
-    return it;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
