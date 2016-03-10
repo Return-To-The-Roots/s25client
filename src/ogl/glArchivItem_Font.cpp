@@ -477,39 +477,18 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
         // Word ended
         if(curChar == 0 || curChar == '\n' || curChar == ' ')
         {
-            // Does the last word fit on the curent line
-            if(word_width + line_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
+            // Is the current word to long for the current line
+            if(word_width + line_width > ((wi.positions.size() == 1) ? primary_width : secondary_width))
             {
-                // Add it to current line if at space (text end and line break are handled below)
-                if(curChar == ' ')
-                {
-                    // Add length of word and whitespace
-                    line_width += word_width + CharWidth(' ');
-
-                    // Start new word (after whitespace)
-                    word_width = 0;
-                    itWordStart = nextIt(it);
-                }
-            }
-            else
-            {
-                // Word does not fit -> Start new line
+                // Word does not fit -> Start new line 
 
                 // Can we fit the word in one line?
                 if(word_width <= secondary_width)
                 {
                     // New line starts at index of word start
                     wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
-                    // Set up this line if we are going to continue it (not at line break or text end)
-                    if(curChar == ' ')
-                    {
-                        // Line contains word and whitespace
-                        line_width = word_width + CharWidth(' ');
-                        word_width = 0;
-                        itWordStart = nextIt(it);
-                    }
-                }
-                else
+                    line_width = 0;
+                } else
                 {
                     // Word does not even fit on one line -> Put as many letters in one line as possible
                     for(utf8Iterator itWord = itWordStart; itWord != it; ++itWord)
@@ -517,7 +496,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                         unsigned letter_width = CharWidth(*itWord);
 
                         // Can we fit the letter onto current line?
-                        if(line_width + letter_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
+                        if(line_width + letter_width <= ((wi.positions.size() == 1) ? primary_width : secondary_width))
                             line_width += letter_width; // Add it
                         else
                         {
@@ -528,29 +507,29 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                         }
                     }
 
-                    // Word(part) is as long as the current line
-                    word_width = line_width;
-
-                    if(curChar == ' ')
-                    {
-                        // Line contains word and whitespace
-                        line_width = word_width + CharWidth(' ');
-                        word_width = 0;
-                        itWordStart = nextIt(it);
-                    }
+                    // Restart word
+                    word_width = 0;
                 }
             }
-            // If line break add new line (after all the word-breaking above)
-            if(curChar == '\n')
+            if(curChar == 0)
+                break;
+            else if(curChar == ' ')
             {
+                // Set up this line if we are going to continue it (not at line break or text end)
+                // Line contains word and whitespace
+                line_width += word_width + CharWidth(' ');
+                word_width = 0;
+                itWordStart = nextIt(it);
+            }else if(curChar == '\n')
+            {
+                // If line break add new line (after all the word-breaking above)
                 itWordStart = nextIt(it);
                 if(itWordStart == itEnd)
                     break; // Reached end
                 word_width = 0;
                 line_width = 0;
                 wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
-            } else if(curChar == 0)
-                break;
+            }
         }
         else
         {
