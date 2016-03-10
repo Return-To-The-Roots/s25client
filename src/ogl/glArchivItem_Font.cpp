@@ -467,11 +467,11 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     wi.positions.push_back(0);
 
     utf8Iterator it(text.begin(), text.begin(), text.end());
-    utf8Iterator itEnd(text.begin(), text.begin(), text.end());
+    utf8Iterator itEnd(text.end(), text.begin(), text.end());
     utf8Iterator itWordStart = it;
 
     uint32_t curChar = 1;
-    for(; curChar != 0; ++it)
+    for(;; ++it)
     {
         curChar = (it != itEnd) ? *it : 0;
         // Word ended
@@ -549,7 +549,8 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                 word_width = 0;
                 line_width = 0;
                 wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
-            }
+            } else if(curChar == 0)
+                break;
         }
         else
         {
