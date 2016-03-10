@@ -50,7 +50,7 @@ dskDirectIP::dskDirectIP() : Desktop(LOADER.GetImageN("menu", 0))
     AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // Copyright
-    AddVarText(2, 800, 600, _("\xA9 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Create Game"), NormalFont);
     AddTextButton(4, 115, 210, 220, 22, TC_GREEN2, _("Join Game"), NormalFont);
