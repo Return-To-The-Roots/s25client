@@ -29,12 +29,15 @@
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/src/libsiedler2.h"
 #include "libsiedler2/src/IAllocator.h"
+#include "libutil/utf8/utf8.h"
 #include <boost/algorithm/string.hpp>
 #include <cmath>
 #include <vector>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
+
+typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
 
 glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
 {
@@ -62,110 +65,6 @@ glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
     return *this;
 }
 
-std::string glArchivItem_Font::Unicode_to_Utf8(unsigned int c) const
-{
-    std::string text;
-    if(c > 0x7F) // unicode?
-    {
-        if(c >= 0x80 && c <= 0x7FF) // 2 byte utf-8
-        {
-            unsigned int cH = ((c & 0x0000FF00) >> 8);
-            unsigned int cL =  (c & 0x000000FF);
-
-            unsigned char c0 = 0xC0 | ((cL & 0xC0) >> 6) | ((cH & 0x07) << 2); // untere 2 bits und obere 3 bits
-            unsigned char c1 = 0x80 |  (cL & 0x3F); // untere 6 bits
-
-            text.push_back(c0);
-            text.push_back(c1);
-        }
-        else if(c >= 0x800 && c <= 0xFFFF) // 3 byte utf-8
-        {
-            unsigned int cH = ((c & 0x0000FF00) >> 8);
-            unsigned int cL =  (c & 0x000000FF);
-
-            unsigned char c0 = 0xE0 | ((cH & 0xF0) >> 4); // obere 4 bits
-            unsigned char c1 = 0x80 | ((cL & 0xC0) >> 6) | ((cH & 0x0F) << 2); // untere 2 bits und obere 4 bits
-            unsigned char c2 = 0x80 |  (cL & 0x3F); // untere 6 bits
-
-            text.push_back(c0);
-            text.push_back(c1);
-            text.push_back(c2);
-        }
-        else if(c >= 0x10000 && c <= 0x1FFFFF) // 4 byte utf-8
-        {
-            //unsigned int cH1 = ((c & 0xFF000000) >> 24);
-            unsigned int cH  = ((c & 0x00FF0000) >> 16);
-            unsigned int cL1 = ((c & 0x0000FF00) >> 8);
-            unsigned int cL2 =  (c & 0x000000FF);
-
-            unsigned char c0 = 0xF0 | ((cH & 0x3C) >> 2); // obere 4 bits xxHHHHhh -> xxxxHHHH
-            unsigned char c1 = 0x80 | ((cL1 & 0xF0) >> 4) | ((cH & 0x03) << 4); // untere1 4 bits und obere 2 bits LLLLllll xxhhhhHH -> xxHHLLLL
-            unsigned char c2 = 0x80 | ((cL2 & 0xC0) >> 6) | ((cL1 & 0x0F) << 2); // untere2 2 bits und untere1 4 bits
-            unsigned char c3 = 0x80 |  (cL2 & 0x3F); // untere2 6 bits
-
-            text.push_back(c0);
-            text.push_back(c1);
-            text.push_back(c2);
-            text.push_back(c3);
-        }
-    }
-    else
-        text.push_back(c & 0xFF);
-
-    return text;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  @brief wandelt ein UTF-8 Zeichen nach Unicode um
- *
- *  @author FloSoft
- */
-unsigned int glArchivItem_Font::Utf8_to_Unicode(const std::string& text, unsigned int& i) const
-{
-    unsigned int c = (text[i] & 0xFF);
-    // qx: fix für namen in der Kartenübersicht
-    if(c == 0xF6 || c == 0xDF)return c; // if we accidentally try to convert an already unicode text including ö (0xF6) this will catch it (todo: find a better way to do this that includes other cases)
-    if( (c & 0x80) == 0x80) // 1Xxxxxxx
-    {
-
-        if( (c & 0xC0) == 0x80) // 10xxxxxx
-        {
-// Disabled this message since it is repeated for ages and does not really help :-)
-//          if(!CharExist(c)) // some hardcoded non utf-8 characters may be here ...
-//              LOG.lprintf("woops, corrupt utf-8 stream: %02x / %d\n", c, c);
-        }
-        else if( (c & 0xE0) == 0xC0) // 110xxxxx
-        {
-            // 2 byte sequence 110xxxxx 10xxxxxx
-            unsigned int c2 = (text[++i] & 0xFF);
-            c =  ((c & 0x1F ) << 6) | (c2 & 0x3F);
-        }
-        else if( (c & 0xF0) == 0xE0) // 1110xxxx
-        {
-            // 3 byte sequence 1110xxxx 10xxxxxx 10xxxxxx
-            unsigned int c2 = (text[++i] & 0xFF);
-            unsigned int c3 = (text[++i] & 0xFF);
-
-            c =  ((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F);
-        }
-        else if( (c & 0xF8) == 0xF0) // 11110xxx
-        {
-            // 4 byte sequence 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-            unsigned int c2 = (text[++i] & 0xFF);
-            unsigned int c3 = (text[++i] & 0xFF);
-            unsigned int c4 = (text[++i] & 0xFF);
-            c =  ((c & 0x0F) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) << 6) | (c4 & 0x3F);
-        }
-        else
-        {
-            if(!CharExist(c)) // some hardcoded non utf-8 characters may be here ...
-                LOG.lprintf("unknown utf-8 sequence: %02x / %d\n", c, c);
-        }
-    }
-    return c;
-}
-
 inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned int c) const
 {
     std::map<unsigned int, CharInfo>::const_iterator it = utf8_mapping.find(c);
@@ -181,15 +80,13 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
  *
  *  @author Marcus
  */
-inline void glArchivItem_Font::DrawChar(const std::string& text,
-                                        unsigned int& i,
+inline void glArchivItem_Font::DrawChar(const unsigned c,
                                         std::vector<GL_T2F_V3F_Struct>& vertices,
                                         short& cx,
                                         short& cy, //-V669
                                         float tw,
-                                        float th)
+                                        float th) const
 {
-    unsigned int c = Utf8_to_Unicode(text, i);
     CharInfo ci = GetCharInfo(c);
 
     float tx1 = static_cast<float>(ci.x) / tw;
@@ -237,26 +134,18 @@ inline void glArchivItem_Font::DrawChar(const std::string& text,
  */
 void glArchivItem_Font::Draw(short x,
                              short y,
-                             const std::wstring& wtext,
+                             const ucString& wtext,
                              unsigned int format,
                              unsigned int color,
                              unsigned short length,
                              unsigned short max,
-                             const std::wstring& wend,
-                             unsigned short end_length)
+                             const ucString& wend)
 {
     // etwas dämlich, aber einfach ;)
     // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
-
-    std::string text;
-    for(unsigned int i = 0; i < wtext.length(); ++i)
-        text += Unicode_to_Utf8(wtext[i]);
-
-    std::string end;
-    for(unsigned int i = 0; i < wend.length(); ++i)
-        end += Unicode_to_Utf8(wend[i]);
-
-    Draw(x, y, text, format, color, length, max, end, end_length);
+    std::string text = cvUnicodeToUTF8(wtext);
+    std::string end = cvUnicodeToUTF8(wend);
+    Draw(x, y, text, format, color, length, max, end);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -287,37 +176,39 @@ void glArchivItem_Font::Draw(short x,
                              unsigned int color,
                              unsigned short length,
                              unsigned short max,
-                             const std::string& end,
-                             unsigned short endLen)
+                             const std::string& end)
 {
     if(!fontNoOutline)
         initFont();
 
+    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle unicode strings!
+
     // Breite bestimmen
     if(length == 0)
         length = (unsigned short)text.length();
-    if(endLen == 0)
-        endLen = (unsigned short)end.length();
 
     unsigned maxNumChars = 0;
     unsigned short textWidth = getWidth(text, length, max, &maxNumChars);
 
-    // text_max ist die maximale Indexzahl, nicht mehr die Breite in Pixel!
-    if(endLen > 0 && maxNumChars < length)
+    bool drawEnd;
+    if(!end.empty() && maxNumChars < length)
     {
-        unsigned short endWidth = getWidth(end, endLen, max);
+        unsigned short endWidth = getWidth(end, 0, max);
 
         // If "end" does not fit, draw nothing
         if(textWidth < endWidth)
             return;
 
         // Wieviele Buchstaben gehen in den "Rest" (ohne "end")
-         textWidth = getWidth(text, length, textWidth - endWidth, &maxNumChars) + endWidth;
+        textWidth = getWidth(text, length, textWidth - endWidth, &maxNumChars) + endWidth;
+        drawEnd = true;
     } else
-        endLen = 0;
+        drawEnd = false;
 
     if(maxNumChars == 0)
         return;
+    std::string::const_iterator itEnd = text.begin();
+    std::advance(itEnd, maxNumChars);
 
     if( (format & 3) == DF_RIGHT)
         x -= textWidth;
@@ -330,51 +221,52 @@ void glArchivItem_Font::Draw(short x,
     if( (format & 3) == DF_CENTER)
     {
         unsigned short line_width;
-        size_t nlPos = text.find('\n');
-        if(nlPos != std::string::npos)
-            line_width = getWidth(text, nlPos);
+        std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
+        if(itNl != itEnd)
+            line_width = getWidthInternal(text.begin(), itNl);
         else
             line_width = textWidth;
         cx = x - line_width / 2;
     }
 
     std::vector<GL_T2F_V3F_Struct> texList;
-    texList.reserve((maxNumChars + endLen) * 4);
+    texList.reserve((maxNumChars + end.length()) * 4);
     float tw = fontNoOutline->GetTexWidth();
     float th = fontNoOutline->GetTexHeight();
-
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-
-    for(unsigned int i = 0; i < maxNumChars; ++i)
+    
+    for(std::string::const_iterator it = text.begin(); it != itEnd;)
     {
-        if(text[i] == '\n')
+        const uint32_t curChar = utf8::next(it, text.end());
+        if(curChar == '\n')
         {
             cy += dy;
             if( (format & 3) == DF_CENTER)
             {
                 unsigned short line_width;
-                size_t nlPos = text.find('\n', i + 1);
-                if(nlPos != std::string::npos)
-                    line_width = getWidth(&text[i + 1], nlPos - i - 1);
-                else
-                    line_width = getWidth(&text[i + 1], maxNumChars - i - 1);
+                std::string::const_iterator itNext = it + 1;
+                std::string::const_iterator itNl = std::find(itNext, itEnd, '\n');
+                line_width = getWidthInternal(itNext, itNl);
                 cx = x - line_width / 2;
             }
             else
                 cx = x;
         }
         else
-            DrawChar(text, i, texList, cx, cy, tw, th);
+            DrawChar(curChar, texList, cx, cy, tw, th);
     }
 
-    for(unsigned int i = 0; i < endLen; ++i)
+    if(drawEnd)
     {
-        if(end[i] == '\n')
+        for(std::string::const_iterator it = end.begin(); it != end.end();)
         {
-            cy += dy;
-            cx = x;
-        } else
-            DrawChar(end, i, texList, cx, cy, tw, th);
+            const uint32_t curChar = utf8::next(it, end.end());
+            if(curChar == '\n')
+            {
+                cy += dy;
+                cx = x;
+            } else
+                DrawChar(curChar, texList, cx, cy, tw, th);
+        }
     }
 
     if(texList.empty())
@@ -388,7 +280,42 @@ void glArchivItem_Font::Draw(short x,
 
     glInterleavedArrays(GL_T2F_V3F, 0, &texList.front());
     VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? fontNoOutline->GetTexture() : fontWithOutline->GetTexture());
+    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.size());
+}
+
+template<class T_Iterator>
+unsigned glArchivItem_Font::getWidthInternal(T_Iterator begin, const T_Iterator end, unsigned maxWidth, unsigned* maxNumChars) const
+{
+    unsigned curLineLen = 0, maxLineLen = 0, numChars = 0;
+    for(; begin != end; ++begin, ++numChars)
+    {
+        if(*begin == '\n')
+        {
+            if(curLineLen > maxLineLen) // Längste Zeile
+                maxLineLen = curLineLen;
+            curLineLen = 0;
+        } else
+        {
+            const unsigned cw = CharWidth(*begin);
+            // haben wir das maximum erreicht?
+            if(curLineLen + cw > maxWidth && numChars > 0)
+            {
+                if(maxNumChars)
+                    *maxNumChars = numChars;
+                return curLineLen;
+            }
+            curLineLen += cw;
+        }
+    }
+
+    if(curLineLen > maxLineLen) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
+        maxLineLen = curLineLen;
+
+    if(maxNumChars)
+        *maxNumChars = numChars;
+
+    return maxLineLen;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -404,40 +331,12 @@ void glArchivItem_Font::Draw(short x,
  *
  *  @author OLiver
  */
-unsigned short glArchivItem_Font::getWidth(const std::wstring& text, unsigned length, unsigned max_width, unsigned* max) const
+unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned max_width, unsigned* max) const
 {
     if(length == 0)
         length = unsigned(text.length());
 
-    unsigned curLineLen = 0, maxLineLen = 0;
-    for(unsigned int i = 0; i < length; ++i)
-    {
-        if(text[i] == '\n')
-        {
-            if(curLineLen > maxLineLen) // Längste Zeile
-                maxLineLen = curLineLen;
-            curLineLen = 0;
-        } else
-        {
-            const unsigned cw = CharWidth(text[i]);
-            // haben wir das maximum erreicht?
-            if(curLineLen + cw > max_width)
-            {
-                if(max)
-                    *max = i;
-                return curLineLen;
-            }
-            curLineLen += cw;
-        }
-    }
-
-    if(curLineLen > maxLineLen) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
-        maxLineLen = curLineLen;
-
-    if(max)
-        *max = length;
-
-    return maxLineLen;
+    return getWidthInternal(text.begin(), text.begin() + length, max_width, max);
 }
 
 unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned* max) const
@@ -445,35 +344,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     if(length == 0)
         length = unsigned(text.length());
 
-    unsigned curLineLen = 0, maxLineLen = 0;
-    for(unsigned int i = 0; i < length; ++i)
-    {
-        if(text[i] == '\n')
-        {
-            if(curLineLen > maxLineLen) // Längste Zeile
-                maxLineLen = curLineLen;
-            curLineLen = 0;
-        } else
-        {
-            const unsigned cw = CharWidth(Utf8_to_Unicode(text, i));
-            // haben wir das maximum erreicht?
-            if(curLineLen + cw > max_width && length > 1)
-            {
-                if(max)
-                    *max = i;
-                return curLineLen;
-            }
-            curLineLen += cw;
-        }
-    }
-
-    if(curLineLen > maxLineLen) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
-        maxLineLen = curLineLen;
-
-    if(max)
-        *max = length;
-
-    return maxLineLen;
+    return getWidthInternal(text.begin(), text.begin() + length, max_width, max);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -503,6 +374,13 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     return destStrings;
 }
 
+template<class T_Iterator>
+T_Iterator nextIt(T_Iterator it, typename std::iterator_traits<T_Iterator>::difference_type n = 1)
+{
+    std::advance(it, n);
+    return it;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Infos, über die Unterbrechungspunkte in einem Text
@@ -514,118 +392,114 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *
  *  @author OLiver
  */
-glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text,
-                                    const unsigned short primary_width, const unsigned short secondary_width)
+glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width)
 {
     if(!fontNoOutline)
         initFont();
 
-    // Breite der aktuellen Zeile
-    unsigned short line_width = 0;
-    // Breite des aktuellen Wortes
-    unsigned short word_width = 0;
-    // Beginn des aktuellen Wortes
-    unsigned word_start = 0;
+    // Current line width
+    unsigned line_width = 0;
+    // Width of current word
+    unsigned word_width = 0;
 
-    // Logischerweise fangen wir in der ersten Zeile an
     WrapInfo wi;
+    // We start the first line at the first char (so wi.positions.size() == numLines)
     wi.positions.push_back(0);
 
-    // Länge des Strings
-    unsigned int length = (unsigned int)text.length();
+    utf8Iterator it(text.begin(), text.begin(), text.end());
+    utf8Iterator itEnd(text.begin(), text.begin(), text.end());
+    utf8Iterator itWordStart = it;
 
-    for(unsigned i = 0; i <= length; ++i)
+    uint32_t curChar = 1;
+    for(; curChar != 0; ++it)
     {
-        // Leerzeichen, Umbruch oder ende?
-        if(text[i] == '\n' || text[i] == ' ' || i == length)
+        curChar = (it != itEnd) ? *it : 0;
+        // Word ended
+        if(curChar == 0 || curChar == '\n' || curChar == ' ')
         {
-            // Passt das letzte Wort mit auf die Zeile? (bzw bei newline immer neue zeile anfangen)
+            // Does the last word fit on the curent line
             if(word_width + line_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
             {
-                // Länge des Leerzeichens mit draufaddieren
-                line_width += word_width;
-                line_width += CharWidth(' ');
-
-                // neues Wort fängt dann nach dem Leerzeichen an (falls wir nicht schon am Ende vom Text sind)
-                if(i < length - 1)
+                // Add it to current line if at space (text end and line break are handled below)
+                if(curChar == ' ')
                 {
+                    // Add length of word and whitespace
+                    line_width += word_width + CharWidth(' ');
+
+                    // Start new word (after whitespace)
                     word_width = 0;
-                    word_start = i + 1;
+                    itWordStart = nextIt(it);
                 }
             }
             else
             {
-                // Ansonsten neue Zeile anfangen
+                // Word does not fit -> Start new line
 
-                // Passt das Wort wenigsens komplett überhaupt in die nächste Zeile?
+                // Can we fit the word in one line?
                 if(word_width <= secondary_width)
                 {
-                    // neue Zeile anfangen mit diesem Wort
-                    wi.positions.push_back(word_start);
-                    // In der Zeile ist schon das Wort und das jetzige Leerzeichen mit drin
-                    line_width = word_width + CharWidth(' ');
-                    // Neues Wort beginnen (falls wir nicht schon am Ende vom Text sind)
-                    if(i < length - 1)
+                    // New line starts at index of word start
+                    wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
+                    // Set up this line if we are going to continue it (not at line break or text end)
+                    if(curChar == ' ')
                     {
-                        word_start = i + 1;
+                        // Line contains word and whitespace
+                        line_width = word_width + CharWidth(' ');
                         word_width = 0;
+                        itWordStart = nextIt(it);
                     }
                 }
                 else
                 {
-                    // ansonsten muss das Wort zwangsläufig auf mehrere Zeilen verteilt werden
-                    for(unsigned z = word_start; z < i; ++z)
+                    // Word does not even fit on one line -> Put as many letters in one line as possible
+                    for(utf8Iterator itWord = itWordStart; itWord != it; ++itWord)
                     {
-                        unsigned short letter_width = CharWidth(Utf8_to_Unicode(text, z));
+                        unsigned letter_width = CharWidth(*itWord);
 
-                        // passt der neue Buchstabe noch mit drauf?
+                        // Can we fit the letter onto current line?
                         if(line_width + letter_width <= ( (wi.positions.size() == 1) ? primary_width : secondary_width))
-                            line_width += letter_width;
+                            line_width += letter_width; // Add it
                         else
                         {
-                            // wenn nicht, muss hier ein Umbruch erfolgen
-
-                            // neue Zeile anfangen mit diesem Buchstaben
-                            wi.positions.push_back(z);
+                            // Create new line at this letter
+                            wi.positions.push_back(static_cast<unsigned>(itWord.base() - text.begin()));
                             line_width = letter_width;
-                            word_start = z + 1;
+                            itWordStart = nextIt(itWord);
                         }
                     }
 
-                    // Leerzeichen nicht vergessen
-                    line_width += CharWidth(' ');
+                    // Word(part) is as long as the current line
+                    word_width = line_width;
 
-                    // Neues Wort beginnen (falls wir nicht schon am Ende vom Text sind)
-                    if(i < length - 1)
+                    if(curChar == ' ')
                     {
-                        word_start = i + 1;
+                        // Line contains word and whitespace
+                        line_width = word_width + CharWidth(' ');
                         word_width = 0;
+                        itWordStart = nextIt(it);
                     }
                 }
             }
-            // Bei Newline immer neue Zeile anfangen, aber erst jetzt
-            // und nicht schon oben in diesem if-Zweig
-            if(text[i] == '\n')
+            // If line break add new line (after all the word-breaking above)
+            if(curChar == '\n')
             {
-                if(i + 1 >= length)
+                itWordStart = nextIt(it);
+                if(itWordStart == itEnd)
                     break; // Reached end
-                word_start = i + 1;
                 word_width = 0;
                 line_width = 0;
-                wi.positions.push_back(word_start);
+                wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
             }
         }
         else
         {
-            // Anderes Zeichen --> einfach dessen Breite mit addieren
-            unsigned int c = Utf8_to_Unicode(text, i);
-            if( CharExist(c) )
-                word_width += CharWidth(c);
+            // Some char -> Add its width
+            word_width += CharWidth(curChar);
         }
     }
 
     // Ignore trailing newline
-    if(wi.positions.back() + 1 >= length && wi.positions.size() > 1)
+    if(wi.positions.back() + 1 >= text.length() && wi.positions.size() > 1)
         wi.positions.pop_back();
     return wi;
 }

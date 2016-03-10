@@ -24,6 +24,7 @@
 #include "colors.h"
 #include "ogl/oglIncludes.h"
 #include "helpers/containerUtils.h"
+#include "libutil/src/ucString.h"
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
 #include <vector>
@@ -41,11 +42,11 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         glArchivItem_Font& operator=(const glArchivItem_Font& obj);
 
         /// Zeichnet einen Text.
-        void Draw(short x, short y, const std::wstring& wtext, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::wstring& wend = L"...", unsigned short end_length = 0);
-        void Draw(short x, short y, const std::string& text,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end   = "...",  unsigned short end_length = 0);
+        void Draw(short x, short y, const ucString& wtext,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
+        void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
 
         /// liefert die Länge einer Zeichenkette.
-        unsigned short getWidth(const std::wstring& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* max = NULL) const;
+        unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* max = NULL) const;
         unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* max = NULL) const;
         /// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
         inline unsigned short getHeight() const { return dy + 1; }
@@ -101,9 +102,6 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         inline unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
         inline unsigned int CharWidth(CharInfo ci) const { return ci.width; }
 
-        std::string Unicode_to_Utf8(unsigned int c) const;
-        unsigned int Utf8_to_Unicode(const std::string& text, unsigned int& i) const;
-
     private:
 
         struct GL_T2F_V3F_Struct
@@ -115,13 +113,18 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         void initFont();
         /// liefert das Char-Info eines Zeichens
         const CharInfo& GetCharInfo(unsigned int c) const;
-        void DrawChar(const std::string& text, unsigned int& i, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th);
+        void DrawChar(const unsigned c, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th) const;
 
         boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
         boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
         std::map<unsigned int, CharInfo> utf8_mapping;
         CharInfo placeHolder; /// Placeholder if glyph is missing
+
+        /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)
+        /// The width will be <= maxWidth. The number of chars (actually codepoints) is returned in maxNumChars (if specified)
+        template<class T_Iterator>
+        unsigned getWidthInternal(T_Iterator begin, const T_Iterator end, unsigned maxWidth = 0xffffffff, unsigned* maxNumChars = NULL) const;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED
