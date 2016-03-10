@@ -181,7 +181,7 @@ void glArchivItem_Font::Draw(short x,
     if(!fontNoOutline)
         initFont();
 
-    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle unicode strings!
+    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
 
     // Breite bestimmen
     if(length == 0)
@@ -284,25 +284,67 @@ void glArchivItem_Font::Draw(short x,
     glDrawArrays(GL_QUADS, 0, texList.size());
 }
 
-template<class T_Iterator>
-unsigned glArchivItem_Font::getWidthInternal(T_Iterator begin, const T_Iterator end, unsigned maxWidth, unsigned* maxNumChars) const
+template<typename T>
+struct GetNextCharAndIncIt;
+
+template<>
+struct GetNextCharAndIncIt<uint32_t>
 {
-    unsigned curLineLen = 0, maxLineLen = 0, numChars = 0;
-    for(; begin != end; ++begin, ++numChars)
+    template<class T_Iterator>
+    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
     {
-        if(*begin == '\n')
+        return *it++;
+    }
+};
+
+template<>
+struct GetNextCharAndIncIt<char>
+{
+    template<class T_Iterator>
+    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
+    {
+        return utf8::next(it, itEnd);
+    }
+};
+
+template<class T_Iterator>
+struct Distance
+{
+    size_t operator()(const T_Iterator& first, const T_Iterator& last) const
+    {
+        return std::distance(first, last);
+    }
+};
+
+template<class T_Iterator>
+struct Distance<utf8::iterator<T_Iterator> >
+{
+    size_t operator()(const utf8::iterator<T_Iterator>& first, const utf8::iterator<T_Iterator>& last) const
+    {
+        return std::distance(first.base(), last.base());
+    }
+};
+
+template<class T_Iterator>
+unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const
+{
+    unsigned curLineLen = 0, maxLineLen = 0;
+    for(T_Iterator it = begin; it != end;)
+    {
+        const uint32_t curChar = GetNextCharAndIncIt<typename std::iterator_traits<T_Iterator>::value_type>()(it, end);
+        if(curChar == '\n')
         {
             if(curLineLen > maxLineLen) // Längste Zeile
                 maxLineLen = curLineLen;
             curLineLen = 0;
         } else
         {
-            const unsigned cw = CharWidth(*begin);
+            const unsigned cw = CharWidth(curChar);
             // haben wir das maximum erreicht?
-            if(curLineLen + cw > maxWidth && numChars > 0)
+            if(curLineLen + cw > maxWidth && it != begin)
             {
                 if(maxNumChars)
-                    *maxNumChars = numChars;
+                    *maxNumChars = static_cast<unsigned>(std::distance(begin, it));
                 return curLineLen;
             }
             curLineLen += cw;
@@ -313,7 +355,7 @@ unsigned glArchivItem_Font::getWidthInternal(T_Iterator begin, const T_Iterator 
         maxLineLen = curLineLen;
 
     if(maxNumChars)
-        *maxNumChars = numChars;
+        *maxNumChars = static_cast<unsigned>(std::distance(begin, end));
 
     return maxLineLen;
 }
@@ -353,8 +395,10 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
  *
  *  @author OLiver
  */
-std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& origin_text)
+std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& text)
 {
+    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
+
     std::vector<std::string> destStrings;
     if(positions.empty())
         return destStrings;
@@ -364,13 +408,13 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
     {
         RTTR_Assert(*it >= curStart);
-        std::string curLine = origin_text.substr(curStart, *it - curStart);
+        std::string curLine = text.substr(curStart, *it - curStart);
         boost::algorithm::trim_right(curLine);
         destStrings.push_back(curLine);
         curStart = *it;
     }
     /* Push last part */
-    destStrings.push_back(origin_text.substr(curStart));
+    destStrings.push_back(text.substr(curStart));
     return destStrings;
 }
 
@@ -397,6 +441,8 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     if(!fontNoOutline)
         initFont();
 
+    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
+                                                           
     // Current line width
     unsigned line_width = 0;
     // Width of current word

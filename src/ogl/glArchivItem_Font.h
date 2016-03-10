@@ -122,9 +122,9 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         CharInfo placeHolder; /// Placeholder if glyph is missing
 
         /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)
-        /// The width will be <= maxWidth. The number of chars (actually codepoints) is returned in maxNumChars (if specified)
+        /// The width will be <= maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars (if specified)
         template<class T_Iterator>
-        unsigned getWidthInternal(T_Iterator begin, const T_Iterator end, unsigned maxWidth = 0xffffffff, unsigned* maxNumChars = NULL) const;
+        unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth = 0xffffffff, unsigned* maxNumChars = NULL) const;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED
