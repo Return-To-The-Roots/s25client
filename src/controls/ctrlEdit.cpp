@@ -24,6 +24,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
+#include "helpers/converters.h"
 #include <sstream>
 
 // Include last!
@@ -68,31 +69,27 @@ void ctrlEdit::SetText(const std::string& text)
     viewStart_ = 0;
 
     text_.clear();
+    ucString tmp = cvUTF8ToUnicode(text);
 
-    for(unsigned i = 0; i < unsigned(text.length()); ++i)
-        AddChar(text.at(i));
+    for(ucString::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
+        AddChar(*it);
 }
 
 void ctrlEdit::SetText(const unsigned int text)
 {
-    std::stringstream textt;
-    textt << text;
-
     cursorPos_ = 0;
     viewStart_ = 0;
 
     text_.clear();
 
-    for(unsigned i = 0; i < unsigned(textt.str().length()); ++i)
-        AddChar(textt.str().at(i));
+    std::string tmp = helpers::toString(text);
+    for(std::string::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
+        AddChar(*it);
 }
 
 std::string ctrlEdit::GetText() const
 {
-    std::string t;
-    for(unsigned int i = 0; i < text_.length(); ++i)
-        t += font_->Unicode_to_Utf8(text_[i]);
-    return t;
+    return cvUnicodeToUTF8(text_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -108,11 +105,11 @@ bool ctrlEdit::Draw_()
     // Box malen
     Draw3D(GetX(), GetY(), width_, height_, texColor_, 2);
 
-    std::wstring dtext;
+    ucString dtext;
 
     // Text zeichnen
     if(isPassword_)
-        dtext = std::wstring(text_.length(), '*');
+        dtext = ucString(text_.length(), '*');
     else
         dtext = text_;
 
