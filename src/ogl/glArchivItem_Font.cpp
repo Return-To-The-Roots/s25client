@@ -171,7 +171,7 @@ void glArchivItem_Font::Draw(short x,
  */
 void glArchivItem_Font::Draw(short x,
                              short y,
-                             const std::string& text,
+                             const std::string& textIn,
                              unsigned int format,
                              unsigned int color,
                              unsigned short length,
@@ -181,7 +181,18 @@ void glArchivItem_Font::Draw(short x,
     if(!fontNoOutline)
         initFont();
 
-    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
+    std::string text;
+    if(!utf8::is_valid(textIn.begin(), textIn.end()))
+    {
+        RTTR_Assert(false); // Can only handle UTF-8 strings!
+        // However old savegames/replays might contain invalid chars -> Replace
+        // TODO: Remove this after next savegame version bump (cur: 31)!
+        text.reserve(textIn.length());
+        utf8::replace_invalid(textIn.begin(), textIn.end(), std::back_inserter(text));
+    } else
+        text = textIn;
+
+    RTTR_Assert(utf8::is_valid(end.begin(), end.end()));
 
     // Breite bestimmen
     if(length == 0)
@@ -207,7 +218,7 @@ void glArchivItem_Font::Draw(short x,
 
     if(maxNumChars == 0)
         return;
-    std::string::const_iterator itEnd = text.begin();
+    std::string::iterator itEnd = text.begin();
     std::advance(itEnd, maxNumChars);
 
     if( (format & 3) == DF_RIGHT)
@@ -221,7 +232,7 @@ void glArchivItem_Font::Draw(short x,
     if( (format & 3) == DF_CENTER)
     {
         unsigned short line_width;
-        std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
+        std::string::iterator itNl = std::find(text.begin(), itEnd, '\n');
         if(itNl != itEnd)
             line_width = getWidthInternal(text.begin(), itNl);
         else
@@ -234,7 +245,7 @@ void glArchivItem_Font::Draw(short x,
     float tw = fontNoOutline->GetTexWidth();
     float th = fontNoOutline->GetTexHeight();
     
-    for(std::string::const_iterator it = text.begin(); it != itEnd;)
+    for(std::string::iterator it = text.begin(); it != itEnd;)
     {
         const uint32_t curChar = utf8::next(it, text.end());
         if(curChar == '\n')
@@ -243,8 +254,8 @@ void glArchivItem_Font::Draw(short x,
             if( (format & 3) == DF_CENTER)
             {
                 unsigned short line_width;
-                std::string::const_iterator itNext = it + 1;
-                std::string::const_iterator itNl = std::find(itNext, itEnd, '\n');
+                std::string::iterator itNext = nextIt(it);
+                std::string::iterator itNl = std::find(itNext, itEnd, '\n');
                 line_width = getWidthInternal(itNext, itNl);
                 cx = x - line_width / 2;
             }
