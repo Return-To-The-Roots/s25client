@@ -206,7 +206,7 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
             } break;
         }
 
-        file.ReadShortString(map_name);
+        map_name = file.ReadShortString();
 
         // Try to open precalculated pathfinding results
         pathfinding_results = pf_file.Open(filename + "_res", OFM_READ);
@@ -361,7 +361,7 @@ void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::
 {
     *player = file.ReadUnsignedChar();
     *dest = file.ReadUnsignedChar();
-    file.ReadLongString(str);
+    str = file.ReadLongString();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

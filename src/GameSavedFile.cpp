@@ -134,7 +134,7 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
 
         if(it->ps != PS_LOCKED)
         {
-            file.ReadShortString(it->name);
+            it->name = file.ReadShortString();
             it->nation = Nation(file.ReadUnsignedChar());
             it->color = file.ReadUnsignedChar();
             it->team = file.ReadUnsignedChar();
