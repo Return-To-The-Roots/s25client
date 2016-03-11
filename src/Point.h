@@ -27,6 +27,7 @@ struct Point
     T x, y;
     Point() {} //-V730
     Point(const T x, const T y): x(x), y(y) {}
+    Point(const Point& other): x(other.x), y(other.y){}
     template<typename U>
     explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
     bool operator==(const Point& second) const
