@@ -1366,7 +1366,9 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     if(!LoadFile(pfad, palette, newEntries))
         return false;
 
+#ifndef NDEBUG
     LOG.lprintf(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
+#endif // !NDEBUG
 
     libsiedler2::ArchivInfo* existing = GetInfoN(name);
     // *.bob archives have exactly 1 entry which is a 'folder' of the actual entries
@@ -1389,7 +1391,9 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     {
         if(newEntries.get(i))
         {
+#ifndef NDEBUG
             LOG.lprintf(_("Replacing entry %d with %s\n"), i, newEntries.get(i)->getName().c_str());
+#endif // !NDEBUG
             existing->setC(i, *newEntries.get(i));
         }
     }
