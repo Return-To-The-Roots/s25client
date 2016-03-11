@@ -25,6 +25,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "libutil/src/Log.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -70,7 +71,7 @@ void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
 {
     Serialize_noBaseBuilding(sgd);
 
-    sgd.PushUnsignedChar(opendoor);
+    sgd.PushSignedChar(opendoor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,8 +81,12 @@ void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
  *  @author OLiver
  */
 noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
-    opendoor(sgd.PopUnsignedChar())
+    opendoor(sgd.PopSignedChar())
 {
+    if(opendoor < 0){
+        LOG.lprintf("Bug detected: Door was closed to many times. Please report replay before this savegame/replay!");
+        opendoor = 0;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

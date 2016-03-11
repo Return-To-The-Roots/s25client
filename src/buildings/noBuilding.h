@@ -27,8 +27,8 @@ class noBuilding : public noBaseBuilding
 {
     protected:
 
-        /// Gibt an, wie viele Leute die Tür geöffnet haben (wenns 0 ist, ist die Tür zu, ansonsten offen)
-        unsigned char opendoor;
+        /// How many people opened the door. >0 Means door open, ==0 means door closed, <0 is an error
+        signed char opendoor;
 
         noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
         noBuilding(SerializedGameData& sgd, const unsigned obj_id);
