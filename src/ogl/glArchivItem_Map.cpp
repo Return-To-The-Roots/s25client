@@ -125,7 +125,7 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
  */
 const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
-    const libsiedler2::ArchivItem_Raw* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type));
+    const libsiedler2::ArchivItem_Raw* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
     RTTR_Assert(item);
     return item->getData();
 }
@@ -140,7 +140,7 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
  */
 std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
-    libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type));
+    libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
     RTTR_Assert(item);
     return item->getData();
 }
