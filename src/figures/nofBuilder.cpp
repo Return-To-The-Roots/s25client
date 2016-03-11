@@ -48,8 +48,11 @@ nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNod
     if(building_site)
     {
         if(pos == building_site->GetPos())
+        {
             // Dann gleich mit dem Bauprozess beginnen
+            fs = FS_JOB;
             GoalReached();
+        }
     }
 }
 
