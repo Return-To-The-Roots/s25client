@@ -30,6 +30,8 @@
 #include "buildings/nobHQ.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "Log.h"
+#include <queue>
+
 class noBase;
 class nobBaseWarehouse;
 
@@ -451,12 +453,8 @@ public:
 /// Calculate the distance from each harbor to the others
 void MapLoader::CalcHarborPosNeighbors()
 {
-    // A high performance open list:
-    // - open list is sorted through the way we insert points (we always only add score + 1 to the end of the list)
-    // - completed points are just skipped (todo_offset)
-    size_t todo_offset = 0;
-    size_t todo_length = 0;
-    std::vector<CalcHarborPosNeighborsNode> todo_list(world.nodes.size());
+    // FIFO queue used for a BFS
+    std::queue<CalcHarborPosNeighborsNode> todo_list;
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
     std::vector<unsigned int> flags_init(world.nodes.size()); //-V656
@@ -467,8 +465,7 @@ void MapLoader::CalcHarborPosNeighbors()
 
     for(size_t i = 1; i < world.harbor_pos.size(); ++i)
     {
-        todo_offset = 0;
-        todo_length = 0;
+        RTTR_Assert(todo_list.empty());
 
         // Copy sea points to working flags. Possible values are
         // 0 - visited or no sea point
@@ -496,7 +493,7 @@ void MapLoader::CalcHarborPosNeighbors()
                     if(nr == i)
                     {
                         // This is our start harbor. Add the sea points around it to our todo list.
-                        todo_list[todo_length++] = CalcHarborPosNeighborsNode(pa, 0);
+                        todo_list.push(CalcHarborPosNeighborsNode(pa, 0));
                         flags[world.GetIdx(pa)] = 0; // Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
                     } else
                     {
@@ -506,11 +503,10 @@ void MapLoader::CalcHarborPosNeighbors()
             }
         }
 
-        while(todo_length) // as long as there are sea points on our todo list...
+        while(!todo_list.empty()) // as long as there are sea points on our todo list...
         {
-            CalcHarborPosNeighborsNode p = todo_list[todo_offset];
-            todo_offset++;
-            todo_length--;
+            CalcHarborPosNeighborsNode p = todo_list.front();
+            todo_list.pop();
 
             for(size_t d = 0; d < 6; ++d)
             {
@@ -521,16 +517,14 @@ void MapLoader::CalcHarborPosNeighbors()
                 {
                     world.harbor_pos[i].neighbors[world.GetShipDir(Point<int>(world.harbor_pos[i].pos), Point<int>(pa))].push_back(HarborPos::Neighbor(flags[idx] - 1, p.way + 1));
 
-                    todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(pa, p.way + 1);
-                    todo_length++;
+                    todo_list.push(CalcHarborPosNeighborsNode(pa, p.way + 1));
 
                     found[flags[idx]] = 1;
 
                     flags[idx] = 0; // mark as visited, so we do not go here again
                 } else if(flags[idx])    // this detects any sea point plus harbors we already visited
                 {
-                    todo_list[todo_offset + todo_length] = CalcHarborPosNeighborsNode(pa, p.way + 1);
-                    todo_length++;
+                    todo_list.push(CalcHarborPosNeighborsNode(pa, p.way + 1));
 
                     flags[idx] = 0; // mark as visited, so we do not go here again
                 }
