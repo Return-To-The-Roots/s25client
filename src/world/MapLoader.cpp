@@ -413,10 +413,23 @@ void MapLoader::InitSeasAndHarbors()
     }
 
     /// Die Meere herausfinden, an die die Hafenpunkte grenzen
-    for(unsigned i = 1; i < world.harbor_pos.size(); ++i)
+    for(std::vector<HarborPos>::iterator it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
     {
+        bool foundCoast = false;
         for(unsigned z = 0; z < 6; ++z)
-            world.harbor_pos[i].cps[z].sea_id = world.IsCoastalPoint(world.GetNeighbour(world.harbor_pos[i].pos, z));
+        {
+            const unsigned short seaId = world.IsCoastalPoint(world.GetNeighbour(it->pos, z));
+            it->cps[z].sea_id = seaId;
+            if(seaId)
+                foundCoast = true;
+        }
+        if(!foundCoast)
+        {
+            LOG.lprintf("Map Bug: Found harbor without coast at %u:%u. Removing!\n", it->pos.x, it->pos.y);
+            world.GetNodeInt(it->pos).harbor_id = 0;
+            it = world.harbor_pos.erase(it);
+        } else
+            ++it;
     }
 
     // Nachbarn der einzelnen Hafenpl�tze ermitteln
