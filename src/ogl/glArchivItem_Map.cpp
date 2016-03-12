@@ -65,52 +65,8 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
     if(libsiedler2::ArchivItem_Map::load(file, only_header) != 0)
         return 1;
 
-    alloc_inc(2);
-
     header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
     RTTR_Assert(header);
-
-    if(only_header)
-        return 0;
-
-    /* TODO: Not required anymore? Then remove it
-    // Noch nicht am Ende der Datei?
-    unsigned curPos = 0, fileSize = 0;
-    if(!feof(file))
-    {
-      // Gucken, wieviel noch danach kommt
-      curPos = ftell(file);
-      fseek(file, 0L, SEEK_END);
-      fileSize = ftell(file);
-      fseek(file, i, SEEK_SET);
-    }
-
-    if((unsigned int)(fileSize - curPos) > (unsigned int)(header->getWidth() * header->getHeight() * 2))
-    {
-        // Wenn noch Platz ist, restliches Zeug noch auslesen
-        // @todo: Shouldn't we use libsiedler2::allocator?
-        libsiedler2::ArchivItem_Raw* reservations = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
-        if(reservations->load(file, header->getWidth() * header->getHeight()) != 0){
-            delete reservations;
-            return 2;
-        }
-        set(MAP_RESERVATIONS, reservations);
-
-        libsiedler2::ArchivItem_Raw* owner = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
-        if(owner->load(file, header->getWidth() * header->getHeight()) != 0){
-            delete owner;
-            return 3;
-        }
-        set(MAP_OWNER, owner);
-    }
-    else*/
-    {
-        libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(GlAllocator().create(libsiedler2::BOBTYPE_RAW));
-        item->getData().resize(header->getWidth() * header->getHeight()); // TODO: Really required?
-
-        set(MAP_RESERVATIONS, item);
-        setC(MAP_OWNER, *item);
-    }
 
     return 0;
 }
