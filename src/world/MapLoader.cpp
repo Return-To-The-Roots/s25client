@@ -95,12 +95,10 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
 
             // Hafenplatz?
             if(TerrainData::IsHarborSpot(t1))
-            {
-                HarborPos p(pt);
-                node.harbor_id = world.harbor_pos.size();
-                world.harbor_pos.push_back(p);
-            } else
-                node.harbor_id = 0;
+                world.harbor_pos.push_back(pt);
+            
+            // Will be set later
+            node.harbor_id = 0;
 
             node.t1 = TerrainData::MapIdx2Terrain(t1);
             node.t2 = TerrainData::MapIdx2Terrain(t2);
@@ -415,6 +413,7 @@ void MapLoader::InitSeasAndHarbors()
     }
 
     /// Die Meere herausfinden, an die die Hafenpunkte grenzen
+    unsigned curHarborId = 1;
     for(std::vector<HarborPos>::iterator it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
     {
         bool foundCoast = false;
@@ -428,10 +427,12 @@ void MapLoader::InitSeasAndHarbors()
         if(!foundCoast)
         {
             LOG.lprintf("Map Bug: Found harbor without coast at %u:%u. Removing!\n", it->pos.x, it->pos.y);
-            world.GetNodeInt(it->pos).harbor_id = 0;
             it = world.harbor_pos.erase(it);
         } else
+        {
+            world.GetNodeInt(it->pos).harbor_id = curHarborId++;
             ++it;
+        }
     }
 
     // Nachbarn der einzelnen Hafenpl�tze ermitteln
