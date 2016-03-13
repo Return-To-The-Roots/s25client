@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/World.h"
+#include "world/MapGeometry.h"
 #include "nodeObjs/noNothing.h"
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noFlag.h"
@@ -245,17 +246,7 @@ unsigned char World::GetShipDir(Point<int> pos1, Point<int> pos2)
 
 MapPoint World::MakeMapPoint(Point<int> pt) const
 {
-    // Shift into range
-    pt.x %= width_;
-    pt.y %= height_;
-    // Handle negative values (sign is implementation defined, but |value| < width)
-    if(pt.x < 0)
-        pt.x += width_;
-    if(pt.y < 0)
-        pt.y += height_;
-    RTTR_Assert(pt.x >= 0 && pt.y >= 0);
-    RTTR_Assert(pt.x < width_ && pt.y < height_);
-    return MapPoint(pt);
+    return ::MakeMapPoint(pt, width_, height_);
 }
 
 void World::AddFigure(noBase* fig, const MapPoint pt)

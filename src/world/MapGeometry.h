@@ -20,5 +20,6 @@
 #include "Point.h"
 
 Point<int> GetPointAround(const Point<int>& p, unsigned dir);
+Point<unsigned short> MakeMapPoint(Point<int> pt, const unsigned short width, const unsigned short height);
 
 #endif //!MAP_GEOMETRY_H_

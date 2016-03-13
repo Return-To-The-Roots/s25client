@@ -41,3 +41,17 @@ Point<int> GetPointAround(const Point<int>& p, unsigned dir)
     }
 }
 
+Point<unsigned short> MakeMapPoint(Point<int> pt, const unsigned short width, const unsigned short height)
+{
+    // Shift into range
+    pt.x %= width;
+    pt.y %= height;
+    // Handle negative values (sign is implementation defined, but |value| < width)
+    if(pt.x < 0)
+        pt.x += width;
+    if(pt.y < 0)
+        pt.y += height;
+    RTTR_Assert(pt.x >= 0 && pt.y >= 0);
+    RTTR_Assert(pt.x < width && pt.y < height);
+    return Point<unsigned short>(pt);
+}
