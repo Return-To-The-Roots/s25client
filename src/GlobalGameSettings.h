@@ -89,6 +89,8 @@ class GlobalGameSettings
         /// Get current maximum rank for soldiers
         /// 0 = Private, 1 = Private First Class, ...
         unsigned int GetMaxMilitaryRank() const;
+        /// Returns number of scouts required for exploration expeditions
+        unsigned int GetNumScoutsExedition() const;
 
     private:
         void registerAddon(Addon* addon);

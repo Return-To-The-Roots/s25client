@@ -129,10 +129,8 @@ void nobHarborBuilding::Destroy()
     if (exploration_expedition.active)
     {
 		inventory.real.Add(JOB_SCOUT, exploration_expedition.scouts);
-        for (unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
-        {
+        for (unsigned i = exploration_expedition.scouts; i < GAMECLIENT.GetGGS().GetNumScoutsExedition(); i++)
             owner.OneJobNotWanted(JOB_SCOUT, this);
-        }
     }
 	//cancel all jobs wanted for this building
 	owner.JobNotWanted(this,true);
@@ -431,9 +429,9 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // Look for missing scouts
-    if(inventory[JOB_SCOUT] < SCOUTS_EXPLORATION_EXPEDITION)
+    if(inventory[JOB_SCOUT] < GAMECLIENT.GetGGS().GetNumScoutsExedition())
     {
-        unsigned missing = SCOUTS_EXPLORATION_EXPEDITION - inventory[JOB_SCOUT];
+        unsigned missing = GAMECLIENT.GetGGS().GetNumScoutsExedition() - inventory[JOB_SCOUT];
         //got scouts in ANY storehouse?
         GameClientPlayer& owner = gwg->GetPlayer(player);
         for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
@@ -450,12 +448,12 @@ void nobHarborBuilding::StartExplorationExpedition()
         while(missing > 0 && TryRecruitJob(JOB_SCOUT))
             missing--;
         // Order scouts, we still requires
-        for(unsigned i = inventory[JOB_SCOUT]; i < SCOUTS_EXPLORATION_EXPEDITION; ++i)
+        for(unsigned i = inventory[JOB_SCOUT]; i < GAMECLIENT.GetGGS().GetNumScoutsExedition(); ++i)
             owner.AddJobWanted(JOB_SCOUT, this);
     }
     if(inventory[JOB_SCOUT])
     {
-        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], SCOUTS_EXPLORATION_EXPEDITION);
+        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], GAMECLIENT.GetGGS().GetNumScoutsExedition());
         inventory.real.Remove(JOB_SCOUT, exploration_expedition.scouts);
     }
 
@@ -467,7 +465,7 @@ void nobHarborBuilding::StopExplorationExpedition()
     // Dann diese stoppen
     exploration_expedition.active = false;
     // cancel order for scouts
-    for(unsigned i = exploration_expedition.scouts; i < SCOUTS_EXPLORATION_EXPEDITION; i++)
+    for(unsigned i = exploration_expedition.scouts; i < GAMECLIENT.GetGGS().GetNumScoutsExedition(); i++)
     {
         gwg->GetPlayer(player).OneJobNotWanted(JOB_SCOUT, this);
     }
@@ -776,7 +774,7 @@ bool nobHarborBuilding::IsExplorationExpeditionReady() const
     if(!exploration_expedition.active)
         return false;
     // Alles da?
-    if(exploration_expedition.scouts < SCOUTS_EXPLORATION_EXPEDITION)
+    if(exploration_expedition.scouts < GAMECLIENT.GetGGS().GetNumScoutsExedition())
         return false;
 
     return true;
@@ -838,17 +836,14 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
     else if(figure->GetJobType() == JOB_SCOUT && exploration_expedition.active)
     {
         unsigned scouts_coming = 0;
-        // Alle Figuren durchkommen, die noch hierher kommen wollen und gucken, ob ein
-        // Bauarbeiter dabei ist
         for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         {
             if((*it)->GetJobType() == JOB_SCOUT)
-                // Brauchen keinen bestellen, also raus
                 ++scouts_coming;
         }
 
         // Wenn nicht genug Erkunder mehr kommen, müssen wir einen neuen bestellen
-        if(exploration_expedition.scouts + scouts_coming < SCOUTS_EXPLORATION_EXPEDITION)
+        if(exploration_expedition.scouts + scouts_coming < GAMECLIENT.GetGGS().GetNumScoutsExedition())
             gwg->GetPlayer(player).AddJobWanted(JOB_SCOUT, this);
     }
 

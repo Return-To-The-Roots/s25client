@@ -33,6 +33,7 @@
 // 009 PoC
 // 00A Marcus
 // 00B Ribosom
+// 00C Flamefire
 
 // Do not forget to add your Addon to GlobalGameSettings::reset @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -85,7 +86,9 @@ enum AddonId
 
     ADDON_SHIP_SPEED                 = 0x00A00000,
 
-    ADDON_MILITARY_HITPOINTS         = 0x00B00000
+    ADDON_MILITARY_HITPOINTS         = 0x00B00000,
+
+    ADDON_NUM_SCOUTS_EXPLORATION     = 0x00C00000
 };
 
 enum AddonGroup

@@ -65,6 +65,8 @@
 
 #include "addons/AddonMilitaryHitpoints.h"
 
+#include "addons/AddonNumScoutsExploration.h"
+
 #include "Serializer.h"
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
@@ -173,7 +175,9 @@ void GlobalGameSettings::reset(bool recreate)
 		registerAddon(new AddonHalfCostMilEquip);
 		registerAddon(new AddonMilitaryControl);
 
-		registerAddon(new AddonMilitaryHitpoints);
+        registerAddon(new AddonMilitaryHitpoints);
+
+        registerAddon(new AddonNumScoutsExploration);
     }
 }
 
@@ -294,4 +298,9 @@ unsigned GlobalGameSettings::GetMaxMilitaryRank() const
     unsigned selection = getSelection(ADDON_MAX_RANK);
     RTTR_Assert(selection <= MAX_MILITARY_RANK);
     return MAX_MILITARY_RANK - selection;
+}
+unsigned GlobalGameSettings::GetNumScoutsExedition() const
+{
+    unsigned selection = getSelection(ADDON_NUM_SCOUTS_EXPLORATION);
+    return selection + 1;
 }

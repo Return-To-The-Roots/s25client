@@ -28,7 +28,6 @@
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
-#include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!
@@ -219,7 +218,7 @@ void iwShip::DrawCargo()
     }
     else if(ship->IsOnExplorationExpedition())
     {
-        orderedFigures[JOB_SCOUT] = SCOUTS_EXPLORATION_EXPEDITION;
+        orderedFigures[JOB_SCOUT] = GAMECLIENT.GetGGS().GetNumScoutsExedition();
     }
 
     // Start Offset zum malen

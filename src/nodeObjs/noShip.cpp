@@ -333,7 +333,7 @@ void noShip::HandleEvent(const unsigned int id)
             {
                 // Späher wieder entladen
                 Inventory goods;
-                goods.people[JOB_SCOUT] = SCOUTS_EXPLORATION_EXPEDITION;
+                goods.people[JOB_SCOUT] = GAMECLIENT.GetGGS().GetNumScoutsExedition();
                 static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
                 // Wieder idlen und ggf. neuen Job suchen
                 StartIdling();
