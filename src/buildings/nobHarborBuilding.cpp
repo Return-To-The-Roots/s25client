@@ -1013,6 +1013,9 @@ void nobHarborBuilding::OrderShip()
 /// (muss in dem Fall true zurückgeben)
 bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
 {
+    // If the ware is coming to us, there is nothing to do
+    if(&goal == this)
+        return false;
     // Evtl. muss die Ware gleich das Schiff nehmen -> dann zum Schiffsreservoir hinzufügen
     // Assert: This is a ware that got ordered. There MUST be a path to the goal
     //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
