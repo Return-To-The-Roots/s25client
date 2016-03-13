@@ -181,7 +181,7 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // Karte
         {
-            WINDOWMANAGER.Show(new iwMinimap(&minimap, *gwv));
+            WINDOWMANAGER.Show(new iwMinimap(minimap, *gwv));
         } break;
         case 1: // Optionen
         {
@@ -705,7 +705,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         } return true;
         case 'l': // Minimap anzeigen
         {
-            WINDOWMANAGER.Show(new iwMinimap(&minimap, *gwv));
+            WINDOWMANAGER.Show(new iwMinimap(minimap, *gwv));
         } return true;
         case 'm': // Hauptauswahl
         {

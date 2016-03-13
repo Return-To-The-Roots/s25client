@@ -18,7 +18,7 @@
 #define PREVIEWMINIMAP_H_
 
 #include "ctrlMinimap.h"
-#include "Minimap.h"
+#include "PreviewMinimap.h"
 #include "gameData/PlayerConsts.h"
 #include "ogl/glArchivItem_Map.h"
 class Window;

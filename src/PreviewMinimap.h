@@ -14,30 +14,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMINIMAP_H_
-#define iwMINIMAP_H_
 
-#include "IngameWindow.h"
+#ifndef PreviewMinimap_h__
+#define PreviewMinimap_h__
 
-class IngameMinimap;
-class GameWorldViewer;
+#include "Minimap.h"
+#include "gameTypes/LandscapeType.h"
 
-/// Fenster für die Minimap
-class iwMinimap : public IngameWindow
+class glArchivItem_Map;
+
+class PreviewMinimap: public Minimap
 {
-        /// Fenster vergrößert?
-        bool extended;
-    private:
+    LandscapeType lt;
+    std::vector<unsigned char> objects, terrain1, terrain2, shadows;
+public:
+    explicit PreviewMinimap(const glArchivItem_Map* const s2map);
 
-        /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
-        void ChangeWindowSize(const unsigned short width, const unsigned short height);
-
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-
-    public:
-        iwMinimap(IngameMinimap& minimap, GameWorldViewer& gwv);
+    void SetMap(const glArchivItem_Map& s2map) override;
+protected:
+    /// Berechnet die Farbe f�r einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
+    unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;
+private:
+    unsigned char CalcShading(const MapPoint t, const std::vector<unsigned char>& altitudes) const;
+    void CalcShadows(const std::vector<unsigned char>& altitudes);
 };
 
-
-
-#endif
+#endif // PreviewMinimap_h__

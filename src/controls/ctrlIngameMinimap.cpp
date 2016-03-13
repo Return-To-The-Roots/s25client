@@ -20,7 +20,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlIngameMinimap.h"
 #include "world/GameWorldViewer.h"
-#include "Minimap.h"
+#include "IngameMinimap.h"
 #include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
@@ -43,10 +43,10 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
                                       const unsigned short height,
                                       const unsigned short padding_x,
                                       const unsigned short padding_y,
-                                      IngameMinimap* minimap,
+                                      IngameMinimap& minimap,
                                       GameWorldViewer& gwv)
-    : ctrlMinimap(parent, id, x, y, width, height, padding_x, padding_y, minimap->GetMapWidth(),
-                  minimap->GetMapHeight()), minimap(minimap), gwv(gwv)
+    : ctrlMinimap(parent, id, x, y, width, height, padding_x, padding_y, minimap.GetMapWidth(),
+                  minimap.GetMapHeight()), minimap(minimap), gwv(gwv)
 {
 }
 
@@ -58,7 +58,7 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
  */
 bool ctrlIngameMinimap::Draw_()
 {
-    DrawMap(*minimap);
+    DrawMap(minimap);
 
     // Mittleren Punkt berechnen und dort hinscrollen
     Point<int> middlePt = (gwv.GetLastPt() + gwv.GetFirstPt()) / 2;
@@ -70,8 +70,8 @@ bool ctrlIngameMinimap::Draw_()
     glArchivItem_Bitmap* image = LOADER.GetMapImageN(23);
 
     // Position (relativ zum angezeigten Anfang der Karte) berechnen
-    short xpos = middle_corrected.x * width_show / minimap->GetMapWidth() + 2;
-    short ypos = middle_corrected.y * height_show / minimap->GetMapHeight() + 2;
+    short xpos = middle_corrected.x * width_show / minimap.GetMapWidth() + 2;
+    short ypos = middle_corrected.y * height_show / minimap.GetMapHeight() + 2;
 
     // Scroll-Auswahl-Bild an den Rändern verkleinern, damit es nicht über die Karte "überlappt"
     short src_x = 0, src_y = 0;
@@ -130,8 +130,8 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
         if(Coll(mc.x, mc.y, GetX() + GetLeft(), GetY() + GetTop(), width_show, height_show))
         {
             // Koordinate feststellen
-            unsigned short map_x = (mc.x - (GetX() + GetLeft())) * minimap->GetMapWidth() / width_show;
-            unsigned short map_y = (mc.y - (GetY() + GetTop())) * minimap->GetMapHeight() / height_show;
+            unsigned short map_x = (mc.x - (GetX() + GetLeft())) * minimap.GetMapWidth() / width_show;
+            unsigned short map_y = (mc.y - (GetY() + GetTop())) * minimap.GetMapHeight() / height_show;
 
             gwv.MoveToMapObject(MapPoint(map_x, map_y));
 
@@ -150,7 +150,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
  */
 void ctrlIngameMinimap::SetDisplaySize(const unsigned short width, const unsigned short height)
 {
-    ctrlMinimap::SetDisplaySize(width, height, minimap->GetMapWidth(), minimap->GetMapHeight());
+    ctrlMinimap::SetDisplaySize(width, height, minimap.GetMapWidth(), minimap.GetMapHeight());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ void ctrlIngameMinimap::SetDisplaySize(const unsigned short width, const unsigne
  */
 void ctrlIngameMinimap::ToggleTerritory()
 {
-    minimap->ToggleTerritory();
+    minimap.ToggleTerritory();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,7 +172,7 @@ void ctrlIngameMinimap::ToggleTerritory()
  */
 void ctrlIngameMinimap::ToggleHouses()
 {
-    minimap->ToggleHouses();
+    minimap.ToggleHouses();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -183,5 +183,5 @@ void ctrlIngameMinimap::ToggleHouses()
  */
 void ctrlIngameMinimap::ToggleRoads()
 {
-    minimap->ToggleRoads();
+    minimap.ToggleRoads();
 }

@@ -28,7 +28,7 @@ class Window;
 class ctrlIngameMinimap : public ctrlMinimap
 {
         /// Zeiger auf Minimap (die im Spiel dauerhaft!! gespeichert werden muss)
-        IngameMinimap* minimap;
+        IngameMinimap& minimap;
         /// Referenz auf GameWorldViewer, für das Gescrolle
         GameWorldViewer& gwv;
 
@@ -42,7 +42,7 @@ class ctrlIngameMinimap : public ctrlMinimap
                            const unsigned short height,
                            const unsigned short padding_x,
                            const unsigned short padding_y,
-                           IngameMinimap* minimap,
+                           IngameMinimap& minimap,
                            GameWorldViewer& gwv);
 
         /// Zeichnet die MapPreview

@@ -23,7 +23,7 @@
 #include "Messenger.h"
 #include "ingameWindows/iwAction.h"
 #include "gameTypes/MapTypes.h"
-#include "Minimap.h"
+#include "IngameMinimap.h"
 #include "customborderbuilder.h"
 #include "ClientInterface.h"
 #include "GameInterface.h"
