@@ -1619,22 +1619,19 @@ void GameWorldGame::RemoveHarborBuildingSiteFromSea(noBuildingSite* building_sit
     harbor_building_sites_from_sea.remove(building_site);
 }
 
-/// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
 bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const
 {
     return helpers::contains(harbor_building_sites_from_sea, building_site);
 }
 
-
-/// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
-std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned hp) const
+std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned hbId, const unsigned seaId) const
 {
     std::vector<unsigned> hps;
     for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
     {
-        if(i == hp)
+        if(i == hbId || !IsAtThisSea(i, seaId))
             continue;
-        unsigned dist = CalcHarborDistance(hp, i);
+        unsigned dist = CalcHarborDistance(hbId, i);
         if(dist == 0xffffffff)
             continue;
 

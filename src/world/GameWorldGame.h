@@ -187,7 +187,7 @@ public:
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const;
     /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
-    std::vector<unsigned> GetHarborPointsWithinReach(const unsigned hp) const;
+    std::vector<unsigned> GetHarborPointsWithinReach(const unsigned hbId, const unsigned seaId) const;
 
     /// Returns true, if the given (map)-resource is available at that node
     bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;

@@ -1223,7 +1223,7 @@ void noShip::ContinueExplorationExpedition()
         // Nächsten Zielpunkt bestimmen
         std::vector<unsigned> hps;
         if(goal_harbor_id)
-            hps = gwg->GetHarborPointsWithinReach(goal_harbor_id);
+            hps = gwg->GetHarborPointsWithinReach(goal_harbor_id, seaId_);
 
         // Keine möglichen Häfen gefunden?
         if(hps.empty())
