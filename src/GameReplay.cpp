@@ -156,11 +156,8 @@ bool Replay::LoadHeader(const std::string& filename, const bool load_extended_he
 
     // Version überprüfen
     // Signatur und Version einlesen
-    if(!ValidateFile(file, 6, REPLAY_SIGNATURE, REPLAY_VERSION))
-    {
-        LOG.lprintf("Replay::Load: ERROR: File \"%s\" is not a valid RTTR replay!\n", filename.c_str());
+    if(!ValidateFile(file, sizeof(REPLAY_SIGNATURE), REPLAY_SIGNATURE, REPLAY_VERSION))
         return false;
-    }
 
     // Zeitstempel
     file.ReadRawData(&save_time, 8);

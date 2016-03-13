@@ -119,11 +119,11 @@ bool Savegame::Save(BinaryFile& file)
  *
  *  @author OLiver
  */
-bool Savegame::Load(const std::string&  filename, const bool load_players, const bool load_sgd)
+bool Savegame::Load(const std::string& filePath, const bool load_players, const bool load_sgd)
 {
     BinaryFile file;
 
-    if(!file.Open(filename, OFM_READ))
+    if(!file.Open(filePath, OFM_READ))
         return false;
 
     bool ret = Load(file, load_players, load_sgd);
@@ -141,7 +141,7 @@ bool Savegame::Load(const std::string&  filename, const bool load_players, const
 bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_sgd)
 {
     // Signatur und Version einlesen
-    if(!ValidateFile(file, 8, SAVE_SIGNATURE, SAVE_VERSION))
+    if(!ValidateFile(file, sizeof(SAVE_SIGNATURE), SAVE_SIGNATURE, SAVE_VERSION))
         return false;
 
     // Zeitstempel

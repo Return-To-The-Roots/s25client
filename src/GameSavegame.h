@@ -34,7 +34,7 @@ class Savegame : public SavedFile
         bool Save(BinaryFile& file);
 
         /// Lädt Savegame oder Teile davon
-        bool Load(const std::string&  filename, const bool load_players, const bool load_sgd);
+        bool Load(const std::string& filename, const bool load_players, const bool load_sgd);
         bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
 
     public:
