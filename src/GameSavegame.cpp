@@ -149,7 +149,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     save_time = libendian::ConvertEndianess<false>::toNative(save_time);
 
     // Map-Name
-    file.ReadShortString(map_name);
+    map_name = file.ReadShortString();
 
     // Anzahl Spieler
     SetPlayerCount(file.ReadUnsignedChar());

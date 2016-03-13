@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+#include "libutil/src/ucString.h"
 class MouseCoords;
 class glArchivItem_Font;
 struct KeyEvent;
@@ -34,7 +35,6 @@ class ctrlEdit : public Window
         void SetText(const unsigned int text);
 
         std::string GetText() const;
-        const std::wstring& GetWText() const { return text_; }
         void SetFocus(bool focus = true) { newFocus_ = focus; }
         void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
         void SetNotify(bool notify = true) { this->notify_ = notify; }
@@ -67,7 +67,7 @@ class ctrlEdit : public Window
         bool newFocus_;
         bool notify_;
 
-        std::wstring text_;
+        ucString text_;
         unsigned cursorPos_;
         unsigned viewStart_;
 

@@ -1097,7 +1097,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
                 for(unsigned i = 0; i < header->getPlayer(); ++i)
                     players.push_back(GameClientPlayer(i));
 
-                mapinfo.title = header->getName();
+                mapinfo.title = cvStringToUTF8(header->getName());
 
             } break;
             case MAPTYPE_SAVEGAME:
