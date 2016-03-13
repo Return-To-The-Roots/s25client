@@ -636,7 +636,13 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 {
                     figures.push_back(it->fig);
                     it->fig->StartShipJourney();
-                    inventory.visual.Remove(it->fig->GetJobType());
+                    if(it->fig->GetJobType() != JOB_BOATCARRIER)
+                        inventory.visual.Remove(it->fig->GetJobType());
+                    else
+                    {
+                        inventory.visual.Remove(JOB_HELPER);
+                        inventory.visual.Remove(GD_BOAT);
+                    }
                     it = figures_for_ships.erase(it);
                 }
                 else
@@ -892,7 +898,13 @@ void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
     FigureForShip ffs = { fig, dest };
     figures_for_ships.push_back(ffs);
     // Anzahl visuell erhöhen
-    inventory.visual.Add(fig->GetJobType());
+    if(fig->GetJobType() != JOB_BOATCARRIER)
+        inventory.visual.Add(fig->GetJobType());
+    else
+    {
+        inventory.visual.Add(JOB_HELPER);
+        inventory.visual.Add(GD_BOAT);
+    }
     OrderShip();
 }
 
@@ -1044,9 +1056,15 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
     MapPoint next_harbor;
     if(gwg->FindHumanPathOnRoads(*this, goal, NULL, &next_harbor) == SHIP_DIR)
     {
-        // Reduce figure count because figues don't go through the house leaving process
+        // Reduce figure count because figures don't go through the house leaving process
         // And therefore the visual count reducement
-        inventory.visual.Remove(fig->GetJobType());
+        if(fig->GetJobType() != JOB_BOATCARRIER)
+            inventory.visual.Remove(fig->GetJobType());
+        else
+        {
+            inventory.visual.Remove(JOB_HELPER);
+            inventory.visual.Remove(GD_BOAT);
+        }
         // Dann fügen wir die mal bei uns hinzu
         AddFigureForShip(fig, next_harbor);
         return true;
