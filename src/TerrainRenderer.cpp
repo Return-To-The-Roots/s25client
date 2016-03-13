@@ -75,7 +75,7 @@ TerrainRenderer::~TerrainRenderer()
 
 TerrainRenderer::PointF TerrainRenderer::GetTerrainAround(MapPoint pt, const unsigned dir)
 {
-    PointI ptNb = GetPointAround(PointI(pt), dir);
+    PointI ptNb = GetNeighbour(PointI(pt), Direction::fromInt(dir));
 
     PointI offset;
     MapPoint t = ConvertCoords(ptNb, &offset);
@@ -85,7 +85,7 @@ TerrainRenderer::PointF TerrainRenderer::GetTerrainAround(MapPoint pt, const uns
 
 TerrainRenderer::PointF TerrainRenderer::GetBAround(const MapPoint pt, const unsigned char triangle, const unsigned char dir)
 {
-    PointI ptNb = GetPointAround(PointI(pt), dir);
+    PointI ptNb = GetNeighbour(PointI(pt), Direction::fromInt(dir));
 
     Point<int> offset;
     MapPoint t = ConvertCoords(ptNb, &offset);

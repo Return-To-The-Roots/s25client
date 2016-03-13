@@ -112,12 +112,12 @@ MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs:
     current row:    Even    Odd
-    W  -1|0   -1|0
+                 W  -1|0   -1|0
     D           NW  -1|-1   0|-1
     I           NE   0|-1   1|-1
     R            E   1|0    1|0
-    SE   0|1    1|1
-    SW  -1|1    0|1
+                SE   0|1    1|1
+                SW  -1|1    0|1
     */
 
     MapPoint res;
@@ -156,36 +156,14 @@ MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
         break;
     }
 
+    // This should be the same, but faster
+    RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Point<int>(pt), dir)));
     return res;
 }
 
 MapPoint World::GetNeighbour2(const MapPoint pt, unsigned dir) const
 {
-    if(dir >= 12)
-        throw std::logic_error("Invalid direction!");
-
-    static const int ADD_Y[12] =
-    { 0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1 };
-
-    int tx;
-    switch(dir)
-    {
-    default: throw std::logic_error("Invalid direction!");
-    case 0: tx = pt.x - 2; break;
-    case 1: tx = pt.x - 2 + ((pt.y & 1) ? 1 : 0); break;
-    case 2: tx = pt.x - 1; break;
-    case 3: tx = pt.x; break;
-    case 4: tx = pt.x + 1; break;
-    case 5: tx = pt.x + 2 - ((pt.y & 1) ? 0 : 1); break;
-    case 6: tx = pt.x + 2; break;
-    case 7: tx = pt.x - 2 + ((pt.y & 1) ? 1 : 0); break;
-    case 8: tx = pt.x - 1; break;
-    case 9: tx = pt.x; break;
-    case 10: tx = pt.x + 1; break;
-    case 11: tx = pt.x + 2 - ((pt.y & 1) ? 0 : 1);
-    }
-    MapPoint res = MakeMapPoint(Point<int>(tx, int(pt.y) + ADD_Y[dir]));
-    return res;
+    return MakeMapPoint(::GetNeighbour2(Point<int>(pt), dir));
 }
 
 /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung

@@ -633,7 +633,9 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
                 if(nbBoundStones[0] != owner)
                     continue;
 
-                Point<int> pa = GetPointAround(Point<int>(x, y), dir + 3);
+                Point<int> pa = ::GetNeighbour(Point<int>(x, y), Direction(dir + 3));
+                if(pa.x < x1 || pa.x >= x2 || pa.y < y1 || pa.y >= y2)
+                    continue;
                 // Hat der auch zu viele Nachbarn?
                 if(neighbors[(pa.y - y1)*width + (pa.x - x1)] > 2)
                 {

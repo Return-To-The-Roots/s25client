@@ -18,8 +18,10 @@
 #define MAP_GEOMETRY_H_
 
 #include "Point.h"
+#include "gameTypes/Direction.h"
 
-Point<int> GetPointAround(const Point<int>& p, unsigned dir);
+Point<int> GetNeighbour(const Point<int>& pt, const Direction dir);
+Point<int> GetNeighbour2(Point<int> pt, unsigned dir);
 Point<unsigned short> MakeMapPoint(Point<int> pt, const unsigned short width, const unsigned short height);
 
 #endif //!MAP_GEOMETRY_H_
