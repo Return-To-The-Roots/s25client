@@ -226,9 +226,6 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
             case 0xC8:
             case 0xC9: // Note: 0xC9 is actually a bug and should be 0xC8. But the random map generator produced that...
             {
-                /// @todo mis0bobs unvollst�ndig (dieses lagerzelt), 4 und 5 �berhaupt nicht erw�hnt
-                // mis1bobs, 2 und 3 sind vollst�ndig eingebaut
-
                 // Objekte aus der map_?_z.lst
                 if(lc <= 0x0A)
                     obj = new noEnvObject(pt, 500 + lc);
@@ -241,13 +238,13 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Objekte aus der map.lst
                 else if(lc >= 0x10 && lc <= 0x14)
                     obj = new noEnvObject(pt, 542 + lc - 0x10);
-                // gestrandetes Schiff (mis0bobs, unvollst�ndig)
+                // exists in mis0bobs-mis5bobs -> take stranded ship
                 else if(lc == 0x15)
-                    obj = new noStaticObject(pt, (lc - 0x15) * 2, 0, 1);
-                // das Tor aus der map_?_z.lst
+                    obj = new noStaticObject(pt, 0, 0, 1);
+                // gate
                 else if(lc == 0x16)
                     obj = new noStaticObject(pt, 560, 0xFFFF, 2);
-                // das ge�ffnete Tor aus map_?_z.lst
+                // open gate
                 else if(lc == 0x17)
                     obj = new noStaticObject(pt, 561, 0xFFFF, 2);
                 // Stalagmiten (mis1bobs)
@@ -265,18 +262,34 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Objekte aus der map.lst
                 else if(lc >= 0x28 && lc <= 0x2B)
                     obj = new noEnvObject(pt, 556 + lc - 0x28);
-                // die "kaputten" Geb�uderuinen usw (mis2bobs)
+                // tent and ruin of guardhouse
                 else if(lc >= 0x2C && lc <= 0x2D)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
+                // tower ruin
                 else if(lc == 0x2E)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 1);
+                // castle ruin
                 else if(lc == 0x2F)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 2);
+                // cross
                 else if(lc == 0x30)
                     obj = new noEnvObject(pt, (lc - 0x2C) * 2, 2);
-                // der Wikinger (mis3bobs)
+                // small wiking with boat
                 else if(lc == 0x31)
-                    obj = new noStaticObject(pt, 0, 2);
+                    obj = new noStaticObject(pt, 0, 3);
+                // Pile of wood
+                else if(lc == 0x32)
+                    obj = new noStaticObject(pt, 0, 4);
+                // whale skeleton (head right)
+                else if(lc == 0x33)
+                    obj = new noStaticObject(pt, 0, 5);
+                // The next 2 are non standard and only for access in RTTR (replace in original though
+                // whale skeleton (head left)
+                else if(lc == 0x34)
+                    obj = new noStaticObject(pt, 2, 5);
+                // Cave
+                else if(lc == 0x35)
+                    obj = new noStaticObject(pt, 4, 5);
                 else
                     LOG.lprintf("Unbekanntes Naturzeug auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
 
