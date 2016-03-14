@@ -195,7 +195,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc >= 0xF0 && lc <= 0xFD)
                     obj = new noTree(pt, 3, 3);
                 else
-                    LOG.lprintf("Unbekannter Baum1-4 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc, lc);
+                    LOG.lprintf("Unbekannter Baum1-4 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
             } break;
 
             // Baum 5-8
@@ -210,7 +210,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc >= 0xF0 && lc <= 0xFD)
                     obj = new noTree(pt, 7, 3);
                 else
-                    LOG.lprintf("Unbekannter Baum5-8 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc, lc);
+                    LOG.lprintf("Unbekannter Baum5-8 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
             } break;
 
             // Baum 9
@@ -219,7 +219,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x30 && lc <= 0x3D)
                     obj = new noTree(pt, 8, 3);
                 else
-                    LOG.lprintf("Unbekannter Baum9 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc, lc);
+                    LOG.lprintf("Unbekannter Baum9 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
             } break;
 
             // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
@@ -277,7 +277,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc == 0x31)
                     obj = new noStaticObject(pt, 0, 2);
                 else
-                    LOG.lprintf("Unbekanntes Naturzeug auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc, lc);
+                    LOG.lprintf("Unbekanntes Naturzeug auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
 
             } break;
 
@@ -287,7 +287,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x01 && lc <= 0x06)
                     obj = new noGranite(GT_1, lc - 1);
                 else
-                    LOG.lprintf("Unbekannter Granit1 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc, lc);
+                    LOG.lprintf("Unbekannter Granit1 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
             } break;
 
             // Granit Typ 2
@@ -296,7 +296,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x01 && lc <= 0x06)
                     obj = new noGranite(GT_2, lc - 1);
                 else
-                    LOG.lprintf("Unbekannter Granit2 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc, lc);
+                    LOG.lprintf("Unbekannter Granit2 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
             } break;
 
             // Nichts
@@ -306,7 +306,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
             default:
 #ifndef NDEBUG
                 unsigned char unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
-                LOG.lprintf("Unbekanntes Objekt (0x%0X) auf x=%d, y=%d: (0x%0X)\n", unknownObj, unknownObj, pt.x, pt.y, lc, lc);
+                LOG.lprintf("Unbekanntes Objekt (0x%0X) auf x=%d, y=%d: (0x%0X)\n", unknownObj, pt.x, pt.y, lc);
 #endif // !NDEBUG
                 break;
             }
