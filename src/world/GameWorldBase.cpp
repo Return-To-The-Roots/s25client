@@ -28,6 +28,7 @@
 #include "ai/AIEvents.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "buildings/nobHQ.h"
 #include "figures/nofPassiveSoldier.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noMovable.h"
@@ -79,6 +80,7 @@ GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), free
         {"AddStaticObject", LUA_AddStaticObject}, 
         {"AddEnvObject", LUA_AddEnvObject}, 
 		{"AIConstructionOrder", LUA_AIConstructionOrder}, 
+        {"ModifyPlayerHQ", LUA_ModifyPlayerHQ},
         {NULL, NULL}
     };
     
@@ -957,6 +959,47 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
     // Entsprechend nach Rang sortieren
     std::sort(attackers.begin(), attackers.end());
     return attackers;
+}
+
+int GameWorldBase::LUA_ModifyPlayerHQ(lua_State* L)
+{
+    int argc = lua_gettop(L);
+
+    if(argc != 2)
+    {
+        lua_pushstring(L, "too few or too many arguments!");
+        lua_error(L);
+        return(0);
+    }
+
+    unsigned playerIdx = (unsigned)luaL_checknumber(L, 1);
+    unsigned isTent = (unsigned)luaL_checknumber(L, 2);
+
+    if(playerIdx >= GAMECLIENT.GetPlayerCount())
+    {
+        lua_pushstring(L, "player number invalid!");
+        lua_error(L);
+        return(0);
+    }
+
+    if(isTent != 0 && isTent != 1)
+    {
+        lua_pushstring(L, "IsTent must be 0 or 1!");
+        lua_error(L);
+        return(0);
+    }
+
+    const MapPoint hqPos = GAMECLIENT.GetPlayer(playerIdx).hqPos;
+    if(hqPos.isValid())
+    {
+        GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((World*)lua_touserdata(L, lua_upvalueindex(1)));
+        nobHQ* hq = gwg->GetSpecObj<nobHQ>(hqPos);
+        if(hq)
+            hq->SetIsTent(isTent != 0);
+    }
+
+
+    return(0);
 }
 
 int GameWorldBase::LUA_EnableBuilding(lua_State* L)

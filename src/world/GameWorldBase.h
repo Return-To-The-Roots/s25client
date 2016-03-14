@@ -204,6 +204,7 @@ protected:
     static int LUA_AIConstructionOrder(lua_State *L);
     static int LUA_AddStaticObject(lua_State *L);
     static int LUA_PostNewBuildings(lua_State *L);
+    static int LUA_ModifyPlayerHQ(lua_State* L);
 
 public:
     void LUA_EventExplored(unsigned player, const MapPoint pt);
