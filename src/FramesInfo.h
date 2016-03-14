@@ -24,7 +24,7 @@ struct FramesInfo
 public:
     FramesInfo();
     void Clear();
-    /// Changes the GF length to GFLengthNEw and adapts the NWF length accordingly
+    /// Changes the GF length to GFLengthNew and adapts the NWF length accordingly
     void ApplyNewGFLength();
 
     /// Current GameFrame (GF) (from start of the game)
@@ -45,13 +45,15 @@ public:
     bool isPaused;
 };
 
-/// Same as FramesInfo but with additional data that is only meaningfull for the server
+/// Same as FramesInfo but with additional data that is only meaningfull for the client
 struct FramesInfoClient: public FramesInfo
 {
 public:
     FramesInfoClient();
     void Clear();
 
+    /// Requested length of GF (for multiple changes between a NWF)
+    unsigned gfLengthReq;
     /// Number of the GF that the server acknoledged -> Run only to this one -> gfNr <= gfNrServer
     unsigned gfNrServer;
     /// GF at wich we should pause the game
