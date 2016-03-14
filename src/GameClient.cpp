@@ -57,6 +57,7 @@
 #include <bzlib.h>
 #include <cerrno>
 #include <iostream>
+#include <fstream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -1016,22 +1017,23 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     mapinfo.length = msg.normal_length;
     
     // lua script file path
-    if (msg.script.length() > 0)
+    if (!msg.script.empty())
     {
         std::string lua_file = clientconfig.mapfilepath.substr(0, clientconfig.mapfilepath.length() - 3);
         lua_file.append("lua");
+        std::ofstream luaFile(lua_file);
 
-        FILE *lua_f = fopen(lua_file.c_str(), "wb");
-
-        if ((!lua_f) || (fwrite(msg.script.data(), 1, msg.script.length(), lua_f) != msg.script.length()))
+        if(!luaFile)
         {
-            LOG.lprintf("Fatal error: can't %s lua script to %s: %s\n", (!lua_f) ? "open" : "write to", lua_file.c_str(), strerror(errno));
-
+            LOG.lprintf("Fatal error: can't open lua script at %s: %s\n", lua_file.c_str(), strerror(errno));
+            Stop();
+            return;
+        } else if(!(luaFile << msg.script))
+        {
+            LOG.lprintf("Fatal error: can't write to lua script at %s: %s\n", lua_file.c_str(), strerror(errno));
             Stop();
             return;
         }
-        
-        fclose(lua_f);
     }
 
     mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength + 1]);

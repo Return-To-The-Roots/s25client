@@ -200,61 +200,36 @@ bool GameServer::Start()
     else
         mapinfo.name = serverconfig.mapname;
 
-    // mapinfo einlesen
-    FILE* map_f = fopen(serverconfig.mapname.c_str(), "rb");
-
-    // größe der map
-    fseek(map_f, 0, SEEK_END);
-    mapinfo.length = ftell(map_f);
-    fseek(map_f, 0, SEEK_SET);
+    std::ifstream mapFile(serverconfig.mapname, std::ios::binary | std::ios::ate);
+    mapinfo.length = static_cast<unsigned>(mapFile.tellg());
+    mapinfo.ziplength = mapinfo.length * 2 + 600;
+    mapFile.seekg(0);
 
     boost::interprocess::unique_ptr<char, Deleter<char[]> > map_data(new char[mapinfo.length + 1]);
-    mapinfo.zipdata.reset(new unsigned char[mapinfo.length * 2 + 600]); // + 1prozent + 600 ;)
+    mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength]);
 
-    mapinfo.ziplength = mapinfo.length * 2 + 600;
-
-    bool read_succeeded = ((unsigned int)libendian::le_read_c(map_data.get(), mapinfo.length, map_f) == mapinfo.length);
-    fclose(map_f);
+    if(!mapFile.read(map_data.get(), mapinfo.length))
+        return false;
+    mapFile.close();
 
     // read lua script - if any
+    mapinfo.script.clear();
     std::string lua_file = serverconfig.mapname.substr(0, serverconfig.mapname.length() - 3);
     lua_file.append("lua");
     
-    FILE *lua_f = fopen(lua_file.c_str(), "rb");
-    
-    if (lua_f)
+    std::ifstream luaFile(lua_file);
+
+    if (luaFile)
     {
-        size_t lua_len;
-        
-        fseek(lua_f, 0, SEEK_END);
-        lua_len = ftell(lua_f);
-        fseek(lua_f, 0, SEEK_SET);
-        
-        mapinfo.script.resize(lua_len);
-        
-        size_t offset = 0;
-        
-        while (offset < lua_len)
+        mapinfo.script.assign(std::istreambuf_iterator<char>(luaFile), std::istreambuf_iterator<char>());
+        if(!luaFile)
         {
-            size_t ret = fread(&(mapinfo.script[offset]), 1, lua_len - offset, lua_f);
-            
-            if (ret == 0)
-            {
-                return(false);
-            }
-            
-            offset += ret;
+            LOG.getlasterror("Could not read from lua file");
+            return false;
         }
-        
-        fclose(lua_f);
+        luaFile.close();
     } else
-    {
-        // just to be sure
-        mapinfo.script.clear();
-    }
-    
-    if(!read_succeeded)
-        return false;
+        mapinfo.script.clear(); // just to be sure
 
     // map mit bzip2 komprimieren
     int err = BZ_OK;
