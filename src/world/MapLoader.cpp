@@ -224,6 +224,7 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
 
             // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
             case 0xC8:
+            case 0xC9: // Note: 0xC9 is actually a bug and should be 0xC8. But the random map generator produced that...
             {
                 /// @todo mis0bobs unvollst�ndig (dieses lagerzelt), 4 und 5 �berhaupt nicht erw�hnt
                 // mis1bobs, 2 und 3 sind vollst�ndig eingebaut
