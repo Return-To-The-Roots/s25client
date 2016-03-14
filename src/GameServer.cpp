@@ -59,6 +59,7 @@
 #include "files.h"
 #include <boost/filesystem.hpp>
 #include <bzlib.h>
+#include <fstream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -200,7 +201,7 @@ bool GameServer::Start()
     else
         mapinfo.name = serverconfig.mapname;
 
-    std::ifstream mapFile(serverconfig.mapname, std::ios::binary | std::ios::ate);
+    std::ifstream mapFile(serverconfig.mapname.c_str(), std::ios::binary | std::ios::ate);
     mapinfo.length = static_cast<unsigned>(mapFile.tellg());
     mapinfo.ziplength = mapinfo.length * 2 + 600;
     mapFile.seekg(0);
@@ -217,7 +218,7 @@ bool GameServer::Start()
     std::string lua_file = serverconfig.mapname.substr(0, serverconfig.mapname.length() - 3);
     lua_file.append("lua");
     
-    std::ifstream luaFile(lua_file);
+    std::ifstream luaFile(lua_file.c_str());
 
     if (luaFile)
     {

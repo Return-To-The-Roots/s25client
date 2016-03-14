@@ -1021,7 +1021,7 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     {
         std::string lua_file = clientconfig.mapfilepath.substr(0, clientconfig.mapfilepath.length() - 3);
         lua_file.append("lua");
-        std::ofstream luaFile(lua_file);
+        std::ofstream luaFile(lua_file.c_str());
 
         if(!luaFile)
         {
