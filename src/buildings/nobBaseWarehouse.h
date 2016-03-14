@@ -81,9 +81,9 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
     protected:
 
         /// Soldaten-Reserve-Einstellung
-        unsigned reserve_soldiers_available[5]; /// einkassierte Soldaten zur Reserve
-        unsigned reserve_soldiers_claimed_visual[5]; /// geforderte Soldaten zur Reserve - visuell
-        unsigned reserve_soldiers_claimed_real[5]; /// geforderte Soldaten zur Reserve - real
+        boost::array<unsigned, 5> reserve_soldiers_available; /// einkassierte Soldaten zur Reserve
+        boost::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell
+        boost::array<unsigned, 5> reserve_soldiers_claimed_real; /// geforderte Soldaten zur Reserve - real
 
         /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
         VirtualInventory inventory;
