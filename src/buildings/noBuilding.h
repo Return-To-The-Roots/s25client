@@ -41,8 +41,10 @@ class noBuilding : public noBaseBuilding
     protected:  void Serialize_noBuilding(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuilding(sgd); }
 
-        /// Zeichnet das Gebäude an sich mit Tür ohne zusätzlichen Schnickschnack
+        /// Draws the basic building (no fires etc.) with the door
         void DrawBaseBuilding(int x, int y);
+        /// Draws the door only (if building is drawn at x, y)
+        void DrawDoor(int x, int y);
 
         void OpenDoor() {++opendoor;}
         void CloseDoor() {RTTR_Assert(opendoor); --opendoor;}
