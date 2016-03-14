@@ -790,7 +790,6 @@ void dskGameInterface::ActivateRoadMode(const RoadMode rm)
             road.start = gwv->GetNeighbour(road.start, road.route[i]);
         }
     }
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1037,7 +1036,6 @@ void dskGameInterface::CI_Async(const std::string& checksums_list)
     messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
     messenger.AddMessage("", 0, CD_SYSTEM, checksums_list, COLOR_YELLOW);
     messenger.AddMessage("", 0, CD_SYSTEM, _("A auto-savegame is created..."), COLOR_RED);
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1343,4 +1341,3 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
     }
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
-

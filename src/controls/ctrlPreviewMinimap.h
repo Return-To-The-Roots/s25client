@@ -55,10 +55,6 @@ class ctrlPreviewMinimap : public ctrlMinimap
         void SetPlayerColor(const unsigned id, const unsigned color)
         {
             players[id].color = color;
-
-///     if (players[id].color == COLOR_GHOST)           Demo's Ghost Farbe
-///         players[id].color = MakeColor(255,150,150,150);
-
         }
 
         void SetMap(const glArchivItem_Map* const s2map);

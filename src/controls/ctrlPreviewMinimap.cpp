@@ -26,22 +26,10 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 ctrlPreviewMinimap::Player::Player() : x(0), y(0), color(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
                                        const unsigned int id,
                                        const unsigned short x,
@@ -49,30 +37,9 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
                                        unsigned short width,
                                        unsigned short height,
                                        glArchivItem_Map* s2map) :
-    ctrlMinimap(parent, id, x, y, width, height, 2, 2, s2map ? s2map->getHeader().getWidth() : width, s2map ? s2map->getHeader().getHeight() : height),
-    minimap(s2map)
+    ctrlMinimap(parent, id, x, y, width, height, 2, 2, width, height), minimap(NULL)
 {
-    if(s2map)
-    {
-        unsigned short map_width = s2map->getHeader().getWidth();
-        unsigned short map_height = s2map->getHeader().getHeight();
-
-        // Startpositionen merken
-        for(unsigned short y = 0; y < map_height; ++y)
-        {
-            for(unsigned short x = 0; x < map_width; ++x)
-            {
-                // Startposition eines Spielers an dieser Stelle?
-                if(s2map->GetMapDataAt(MAP_TYPE, x, y) == 0x80)
-                {
-                    unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
-                    RTTR_Assert(player < MAX_PLAYERS);
-                    players[player].x = x;
-                    players[player].y = y;
-                }
-            }
-        }
-    }
+    SetMap(s2map);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,9 +73,31 @@ bool ctrlPreviewMinimap::Draw_()
 
 void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
 {
-    if(s2map)
+    if(!s2map)
+        return;
+
+    unsigned short map_width = s2map->getHeader().getWidth();
+    unsigned short map_height = s2map->getHeader().getHeight();
+    SetDisplaySize(width_, height_, map_width, map_height);
+    minimap.SetMap(*s2map);
+    for(int i = 0; i < MAX_PLAYERS; i++)
+        players[i].color = 0;
+
+    // Startpositionen merken
+    for(unsigned short y = 0; y < map_height; ++y)
     {
-        SetDisplaySize(width_, height_, s2map->getHeader().getWidth(), s2map->getHeader().getHeight());
-        minimap.SetMap(*s2map);
+        for(unsigned short x = 0; x < map_width; ++x)
+        {
+            // Startposition eines Spielers an dieser Stelle?
+            if(s2map->GetMapDataAt(MAP_TYPE, x, y) != 0x80)
+                continue;
+            unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
+            if(player < MAX_PLAYERS)
+            {
+                players[player].x = x;
+                players[player].y = y;
+                players[player].color = COLORS[player];
+            }
+        }
     }
 }
