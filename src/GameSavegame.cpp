@@ -29,7 +29,7 @@
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
 const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
 /// Version des Savegame-Formates
-const unsigned short Savegame::SAVE_VERSION = 31;
+const unsigned short Savegame::SAVE_VERSION = 32;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
