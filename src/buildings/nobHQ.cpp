@@ -27,13 +27,13 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "GlobalGameSettings.h"
+#include "SerializedGameData.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class SerializedGameData;
 
-nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation)
+nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
+    : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation), isTent_(isTent)
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
@@ -43,7 +43,6 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     switch(GAMECLIENT.GetGGS().start_wares)
     {
             //sehr wenig
-
         case 0:
             inventory.visual.goods[GD_BEER] = 0;
             inventory.visual.goods[GD_TONGS] = 1;
@@ -350,9 +349,10 @@ void nobHQ::Destroy_nobHQ()
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
 {
     Serialize_nobBaseWarehouse(sgd);
+    sgd.PushBool(isTent_);
 }
 
-nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
+nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.PopBool())
 {
     gwg->GetMilitarySquares().Add(this);
 
@@ -362,8 +362,10 @@ nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(
 
 void nobHQ::Draw(int x, int y)
 {
-    // Gebäude an sich zeichnen
-    DrawBaseBuilding(x, y);
+    if(isTent_)
+        LOADER.building_cache[nation][BLD_HEADQUARTERS][1].draw(x, y);
+    else
+        DrawBaseBuilding(x, y);
 
 
     // 4 Fähnchen zeichnen
@@ -380,11 +382,5 @@ void nobHQ::Draw(int x, int y)
 
 void nobHQ::HandleEvent(const unsigned int id)
 {
-    /*switch(id)
-    {
-    default:*/
     HandleBaseEvent(id);
-    /*break;
-    }*/
-
 }

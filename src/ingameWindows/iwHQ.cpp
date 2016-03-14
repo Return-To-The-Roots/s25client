@@ -84,8 +84,6 @@ void iwHQ::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int
         }
     }
 
-
-
     // an Basis weiterleiten
     iwBaseWarehouse::Msg_Group_ButtonClick(group_id, ctrl_id);
 }

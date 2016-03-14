@@ -24,10 +24,10 @@ class SerializedGameData;
 
 class nobHQ : public nobBaseWarehouse
 {
+    /// True if tent graphic should be used
+    bool isTent_;
     public:
-
-
-        nobHQ(const MapPoint pt, const unsigned char player, const Nation nation);
+        nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
         nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Aufräummethoden
@@ -40,13 +40,13 @@ class nobHQ : public nobBaseWarehouse
 
         GO_Type GetGOT() const override { return GOT_NOB_HQ; }
 
-
         void Draw(int x, int y) override;
 
         unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
 
         void HandleEvent(const unsigned int id) override;
-
+        bool IsTent() const { return isTent_; }
+        void SetIsTent(const bool isTent) { isTent_ = isTent; }
 };
 
 

@@ -537,8 +537,16 @@ void Loader::fillCaches()
             {
                 bmp.add(GetNationImage(nation, 250 + 5 * type));
                 bmp.addShadow(GetNationImage(nation, 250 + 5 * type + 1));
-                skel.add(GetNationImage(nation, 250 + 5 * type + 2));
-                skel.addShadow(GetNationImage(nation, 250 + 5 * type + 3));
+                if(type == BLD_HEADQUARTERS)
+                {
+                    // HQ has no skeleton, but we have a tent that can act as an HQ
+                    skel.add(GetImageN("mis0bobs", 6));
+                    skel.addShadow(GetImageN("mis0bobs", 7));
+                } else
+                {
+                    skel.add(GetNationImage(nation, 250 + 5 * type + 2));
+                    skel.addShadow(GetNationImage(nation, 250 + 5 * type + 3));
+                }
             }
 
             stp->add(bmp);
