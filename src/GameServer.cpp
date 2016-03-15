@@ -342,7 +342,8 @@ bool GameServer::Start()
     }
 
     // Zu sich selbst connecten als Host
-    GAMECLIENT.Connect("localhost", serverconfig.password, serverconfig.servertype, serverconfig.port, true, serverconfig.ipv6);
+    if(!GAMECLIENT.Connect("localhost", serverconfig.password, serverconfig.servertype, serverconfig.port, true, serverconfig.ipv6))
+        return false;
 
 // clear async logs if necessary
 
