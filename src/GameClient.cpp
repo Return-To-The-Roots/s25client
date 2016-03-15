@@ -36,7 +36,7 @@
 #include "EventManager.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
-
+#include "world/LuaInterface.h"
 #include "gameData/GameConsts.h"
 #include "PostMsg.h"
 #include "SerializedGameData.h"
@@ -1591,7 +1591,8 @@ void GameClient::NextGF()
         human_ai->FetchGameCommands();
     }
     
-    gw->LUA_EventGF(framesinfo.gf_nr);
+    if(gw->HasLua())
+        gw->GetLua().LUA_EventGF(framesinfo.gf_nr);
 }
 
 

@@ -36,6 +36,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noShip.h"
+#include "world/LuaInterface.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
 #include "gameData/MilitaryConsts.h"
@@ -471,8 +472,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                 sizeChanges[oldOwner - 1]--;
 
             // Event for map scripting
-            if(newOwner != 0)
-                LUA_EventOccupied(newOwner - 1, curPt);
+            if(newOwner != 0 && HasLua())
+                GetLua().LUA_EventOccupied(newOwner - 1, curPt);
         }
     }
 
@@ -1378,8 +1379,8 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     // Vollständig sichtbar --> vollständig sichtbar logischerweise
     if(visible)
     {
-        if (visibility_before != VIS_VISIBLE)
-            LUA_EventExplored(player, pt);
+        if (visibility_before != VIS_VISIBLE && HasLua())
+            GetLua().LUA_EventExplored(player, pt);
         SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
     }
     else
@@ -1422,8 +1423,8 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
     Visibility visibility_before = GetNode(pt).fow[player].visibility;
     SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
 
-    if (visibility_before != VIS_VISIBLE)
-        LUA_EventExplored(player, pt);
+    if (visibility_before != VIS_VISIBLE && HasLua())
+        GetLua().LUA_EventExplored(player, pt);
 
     // Minimap Bescheid sagen
     if(gi && visibility_before != GetNode(pt).fow[player].visibility)
