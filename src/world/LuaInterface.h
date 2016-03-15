@@ -30,36 +30,36 @@ public:
 
     bool LoadScript(const std::string& scriptPath);
 
-    void LUA_EventExplored(unsigned player, const MapPoint pt);
-    void LUA_EventOccupied(unsigned player, const MapPoint pt);
-    void LUA_EventStart();
-    void LUA_EventGF(unsigned number);
-    void LUA_EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
+    void EventExplored(unsigned player, const MapPoint pt);
+    void EventOccupied(unsigned player, const MapPoint pt);
+    void EventStart();
+    void EventGF(unsigned number);
+    void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 
 private:
     lua_State* lua;
 
-    static int LUA_DisableBuilding(lua_State* L);
-    static int LUA_EnableBuilding(lua_State* L);
-    static int LUA_SetRestrictedArea(lua_State* L);
-    static int LUA_ClearResources(lua_State *L);
-    static int LUA_AddWares(lua_State* L);
-    static int LUA_AddPeople(lua_State* L);
-    static int LUA_GetGF(lua_State *L);
-    static int LUA_Log(lua_State *L);
-    static int LUA_Chat(lua_State *L);
-    static int LUA_MissionStatement(lua_State *L);
-    static int LUA_PostMessage(lua_State *L);
-    static int LUA_PostMessageWithLocation(lua_State *L);
-    static int LUA_GetPlayerCount(lua_State *L);
-    static int LUA_GetBuildingCount(lua_State *L);
-    static int LUA_GetWareCount(lua_State *L);
-    static int LUA_GetPeopleCount(lua_State *L);
-    static int LUA_AddEnvObject(lua_State *L);
-    static int LUA_AIConstructionOrder(lua_State *L);
-    static int LUA_AddStaticObject(lua_State *L);
-    static int LUA_PostNewBuildings(lua_State *L);
-    static int LUA_ModifyPlayerHQ(lua_State* L);
+    static int DisableBuilding(lua_State* L);
+    static int EnableBuilding(lua_State* L);
+    static int SetRestrictedArea(lua_State* L);
+    static int ClearResources(lua_State *L);
+    static int AddWares(lua_State* L);
+    static int AddPeople(lua_State* L);
+    static int GetGF(lua_State *L);
+    static int Log(lua_State *L);
+    static int Chat(lua_State *L);
+    static int MissionStatement(lua_State *L);
+    static int PostMessageLua(lua_State *L);
+    static int PostMessageWithLocation(lua_State *L);
+    static int GetPlayerCount(lua_State *L);
+    static int GetBuildingCount(lua_State *L);
+    static int GetWareCount(lua_State *L);
+    static int GetPeopleCount(lua_State *L);
+    static int AddEnvObject(lua_State *L);
+    static int AIConstructionOrder(lua_State *L);
+    static int AddStaticObject(lua_State *L);
+    static int PostNewBuildings(lua_State *L);
+    static int ModifyPlayerHQ(lua_State* L);
 };
 
 #endif // LuaInterface_h__

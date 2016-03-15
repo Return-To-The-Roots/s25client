@@ -466,7 +466,7 @@ void nofGeologist::SetSign(const unsigned char resources)
     }
 
     if(gwg->HasLua())
-        gwg->GetLua().LUA_EventResourceFound(this->player, pos, type, quantity);
+        gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);
 
     // Schild setzen
     gwg->SetNO(pos, new noSign(pos, type, quantity));
