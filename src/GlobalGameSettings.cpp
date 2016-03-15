@@ -285,12 +285,9 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
 {
     std::vector<item>::iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
-    {
         std::cout << "Addon 0x" << std::hex << id << std::dec << " not found!" << std::endl;
-        return;
-    }
-
-    it->status = selection;
+    else
+        it->status = selection;
 }
 
 unsigned GlobalGameSettings::GetMaxMilitaryRank() const
