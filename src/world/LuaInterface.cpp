@@ -41,27 +41,27 @@ LuaInterface::LuaInterface(): lua(luaL_newstate())
 
     static const luaL_Reg meta[] =
     {
-        { "EnableBuilding", LUA_EnableBuilding },
-        { "DisableBuilding", LUA_DisableBuilding },
-        { "SetRestrictedArea", LUA_SetRestrictedArea },
-        { "ClearResources", LUA_ClearResources },
-        { "AddWares", LUA_AddWares },
-        { "AddPeople", LUA_AddPeople },
-        { "GetGF", LUA_GetGF },
-        { "GetPlayerCount", LUA_GetPlayerCount },
-        { "GetPeopleCount", LUA_GetPeopleCount },
-        { "GetWareCount", LUA_GetWareCount },
-        { "GetBuildingCount", LUA_GetBuildingCount },
-        { "Log", LUA_Log },
-        { "Chat", LUA_Chat },
-        { "MissionStatement", LUA_MissionStatement },
-        { "PostMessage", LUA_PostMessage },
-        { "PostMessageWithLocation", LUA_PostMessageWithLocation },
-        { "PostNewBuildings", LUA_PostNewBuildings },
-        { "AddStaticObject", LUA_AddStaticObject },
-        { "AddEnvObject", LUA_AddEnvObject },
-        { "AIConstructionOrder", LUA_AIConstructionOrder },
-        { "ModifyPlayerHQ", LUA_ModifyPlayerHQ },
+        { "EnableBuilding", EnableBuilding },
+        { "DisableBuilding", DisableBuilding },
+        { "SetRestrictedArea", SetRestrictedArea },
+        { "ClearResources", ClearResources },
+        { "AddWares", AddWares },
+        { "AddPeople", AddPeople },
+        { "GetGF", GetGF },
+        { "GetPlayerCount", GetPlayerCount },
+        { "GetPeopleCount", GetPeopleCount },
+        { "GetWareCount", GetWareCount },
+        { "GetBuildingCount", GetBuildingCount },
+        { "Log", Log },
+        { "Chat", Chat },
+        { "MissionStatement", MissionStatement },
+        { "PostMessage", PostMessageLua },
+        { "PostMessageWithLocation", PostMessageWithLocation },
+        { "PostNewBuildings", PostNewBuildings },
+        { "AddStaticObject", AddStaticObject },
+        { "AddEnvObject", AddEnvObject },
+        { "AIConstructionOrder", AIConstructionOrder },
+        { "ModifyPlayerHQ", ModifyPlayerHQ },
         { NULL, NULL }
     };
 
@@ -200,7 +200,7 @@ bool LuaInterface::LoadScript(const std::string& scriptPath)
         return true;
 }
 
-int LuaInterface::LUA_ModifyPlayerHQ(lua_State* L)
+int LuaInterface::ModifyPlayerHQ(lua_State* L)
 {
     int argc = lua_gettop(L);
 
@@ -241,7 +241,7 @@ int LuaInterface::LUA_ModifyPlayerHQ(lua_State* L)
     return(0);
 }
 
-int LuaInterface::LUA_EnableBuilding(lua_State* L)
+int LuaInterface::EnableBuilding(lua_State* L)
 {
     //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L);
@@ -294,7 +294,7 @@ int LuaInterface::LUA_EnableBuilding(lua_State* L)
     return(0);
 }
 
-int LuaInterface::LUA_DisableBuilding(lua_State* L)
+int LuaInterface::DisableBuilding(lua_State* L)
 {
     //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L);
@@ -348,7 +348,7 @@ int LuaInterface::LUA_DisableBuilding(lua_State* L)
 }
 
 
-int LuaInterface::LUA_SetRestrictedArea(lua_State* L)
+int LuaInterface::SetRestrictedArea(lua_State* L)
 {
     //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
@@ -389,7 +389,7 @@ int LuaInterface::LUA_SetRestrictedArea(lua_State* L)
     return(0);
 }
 
-int LuaInterface::LUA_ClearResources(lua_State *L)
+int LuaInterface::ClearResources(lua_State *L)
 {
     if(lua_gettop(L) > 0)
     {
@@ -424,7 +424,7 @@ int LuaInterface::LUA_ClearResources(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_AddWares(lua_State* L)
+int LuaInterface::AddWares(lua_State* L)
 {
     //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
@@ -477,7 +477,7 @@ int LuaInterface::LUA_AddWares(lua_State* L)
     return(1);
 }
 
-int LuaInterface::LUA_AddPeople(lua_State* L)
+int LuaInterface::AddPeople(lua_State* L)
 {
     //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
@@ -531,19 +531,19 @@ int LuaInterface::LUA_AddPeople(lua_State* L)
     return(1);
 }
 
-int LuaInterface::LUA_GetGF(lua_State *L)
+int LuaInterface::GetGF(lua_State *L)
 {
     lua_pushnumber(L, GAMECLIENT.GetGFNumber());
     return(1);
 }
 
-int LuaInterface::LUA_GetPlayerCount(lua_State *L)
+int LuaInterface::GetPlayerCount(lua_State *L)
 {
     lua_pushnumber(L, GAMECLIENT.GetPlayerCount());
     return(1);
 }
 
-int LuaInterface::LUA_GetBuildingCount(lua_State *L)
+int LuaInterface::GetBuildingCount(lua_State *L)
 {
     if(lua_gettop(L) < 2)
     {
@@ -579,7 +579,7 @@ int LuaInterface::LUA_GetBuildingCount(lua_State *L)
     return(1);
 }
 
-int LuaInterface::LUA_GetWareCount(lua_State *L)
+int LuaInterface::GetWareCount(lua_State *L)
 {
     if(lua_gettop(L) < 2)
     {
@@ -613,7 +613,7 @@ int LuaInterface::LUA_GetWareCount(lua_State *L)
     return(1);
 }
 
-int LuaInterface::LUA_GetPeopleCount(lua_State *L)
+int LuaInterface::GetPeopleCount(lua_State *L)
 {
     if(lua_gettop(L) < 2)
     {
@@ -647,7 +647,7 @@ int LuaInterface::LUA_GetPeopleCount(lua_State *L)
     return(1);
 }
 
-int LuaInterface::LUA_Log(lua_State *L)
+int LuaInterface::Log(lua_State *L)
 {
     int argc = lua_gettop(L);
 
@@ -663,7 +663,7 @@ int LuaInterface::LUA_Log(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_Chat(lua_State *L)
+int LuaInterface::Chat(lua_State *L)
 {
     int argc = lua_gettop(L);
 
@@ -693,7 +693,7 @@ int LuaInterface::LUA_Chat(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_MissionStatement(lua_State *L)
+int LuaInterface::MissionStatement(lua_State *L)
 {
     int argc = lua_gettop(L);
 
@@ -723,7 +723,8 @@ int LuaInterface::LUA_MissionStatement(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_PostMessage(lua_State *L)
+// Must not be PostMessage as this is a windows define :(
+int LuaInterface::PostMessageLua(lua_State *L)
 {
     int argc = lua_gettop(L);
 
@@ -751,7 +752,7 @@ int LuaInterface::LUA_PostMessage(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_PostMessageWithLocation(lua_State *L)
+int LuaInterface::PostMessageWithLocation(lua_State *L)
 {
     int argc = lua_gettop(L);
 
@@ -782,7 +783,7 @@ int LuaInterface::LUA_PostMessageWithLocation(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_PostNewBuildings(lua_State *L)
+int LuaInterface::PostNewBuildings(lua_State *L)
 {
     int argc = lua_gettop(L);
 
@@ -813,7 +814,7 @@ int LuaInterface::LUA_PostNewBuildings(lua_State *L)
     return(0);
 }
 
-int LuaInterface::LUA_AddStaticObject(lua_State *L)
+int LuaInterface::AddStaticObject(lua_State *L)
 {
     GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*)lua_touserdata(L, lua_upvalueindex(1)));
 
@@ -871,7 +872,7 @@ int LuaInterface::LUA_AddStaticObject(lua_State *L)
     return(1);
 }
 
-int LuaInterface::LUA_AddEnvObject(lua_State *L)
+int LuaInterface::AddEnvObject(lua_State *L)
 {
     GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*)lua_touserdata(L, lua_upvalueindex(1)));
 
@@ -916,7 +917,7 @@ int LuaInterface::LUA_AddEnvObject(lua_State *L)
     return(1);
 }
 
-int LuaInterface::LUA_AIConstructionOrder(lua_State *L)
+int LuaInterface::AIConstructionOrder(lua_State *L)
 {
     GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*)lua_touserdata(L, lua_upvalueindex(1)));
 
@@ -947,7 +948,7 @@ int LuaInterface::LUA_AIConstructionOrder(lua_State *L)
     return(1);
 }
 
-void LuaInterface::LUA_EventExplored(unsigned player, const MapPoint pt)
+void LuaInterface::EventExplored(unsigned player, const MapPoint pt)
 {
     lua_getglobal(lua, "onExplored");
 
@@ -969,7 +970,7 @@ void LuaInterface::LUA_EventExplored(unsigned player, const MapPoint pt)
     }
 }
 
-void LuaInterface::LUA_EventOccupied(unsigned player, const MapPoint pt)
+void LuaInterface::EventOccupied(unsigned player, const MapPoint pt)
 {
     lua_getglobal(lua, "onOccupied");
 
@@ -991,7 +992,7 @@ void LuaInterface::LUA_EventOccupied(unsigned player, const MapPoint pt)
     }
 }
 
-void LuaInterface::LUA_EventStart()
+void LuaInterface::EventStart()
 {
     lua_getglobal(lua, "onStart");
 
@@ -1009,7 +1010,7 @@ void LuaInterface::LUA_EventStart()
     }
 }
 
-void LuaInterface::LUA_EventGF(unsigned nr)
+void LuaInterface::EventGF(unsigned nr)
 {
     lua_getglobal(lua, "onGameFrame");
 
@@ -1029,7 +1030,7 @@ void LuaInterface::LUA_EventGF(unsigned nr)
     }
 }
 
-void LuaInterface::LUA_EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
+void LuaInterface::EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
 {
     lua_getglobal(lua, "onResourceFound");
 

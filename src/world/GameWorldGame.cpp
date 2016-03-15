@@ -473,7 +473,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
             // Event for map scripting
             if(newOwner != 0 && HasLua())
-                GetLua().LUA_EventOccupied(newOwner - 1, curPt);
+                GetLua().EventOccupied(newOwner - 1, curPt);
         }
     }
 
@@ -1380,7 +1380,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     if(visible)
     {
         if (visibility_before != VIS_VISIBLE && HasLua())
-            GetLua().LUA_EventExplored(player, pt);
+            GetLua().EventExplored(player, pt);
         SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
     }
     else
@@ -1424,7 +1424,7 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
     SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
 
     if (visibility_before != VIS_VISIBLE && HasLua())
-        GetLua().LUA_EventExplored(player, pt);
+        GetLua().EventExplored(player, pt);
 
     // Minimap Bescheid sagen
     if(gi && visibility_before != GetNode(pt).fow[player].visibility)

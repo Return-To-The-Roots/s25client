@@ -71,7 +71,7 @@ bool GameWorld::LoadMap(const std::string& filename)
         this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
 
     if(HasLua())
-        lua->LUA_EventStart();
+        lua->EventStart();
 
     return true;
 }

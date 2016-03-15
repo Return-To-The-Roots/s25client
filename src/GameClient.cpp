@@ -1592,7 +1592,7 @@ void GameClient::NextGF()
     }
     
     if(gw->HasLua())
-        gw->GetLua().LUA_EventGF(framesinfo.gf_nr);
+        gw->GetLua().EventGF(framesinfo.gf_nr);
 }
 
 
