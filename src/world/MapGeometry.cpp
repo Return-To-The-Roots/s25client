@@ -34,7 +34,7 @@ Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
                 SE   0|1    1|1
                 SW  -1|1    0|1
     */
-    switch(dir)
+    switch(Direction::Type(dir))
     {
     case Direction::WEST:
         return Point<int>(p.x - 1, p.y);
