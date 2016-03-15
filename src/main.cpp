@@ -228,7 +228,10 @@ bool InitProgram()
 {
     // Check and set locale (avoids errors caused by invalid locales later like #420)
     try{
-        std::locale::global(std::locale(""));
+        // Check for errors
+        std::locale("");
+        // But use classic locale to avoid e.g. thousand separator in int2string conversions via streams
+        std::locale::global(std::locale::classic());
     }catch(std::exception& e){
         std::cerr << "Error initializing your locale setting. ";
 #ifdef _WIN32
@@ -245,6 +248,7 @@ bool InitProgram()
         std::cerr << ")";
 #endif
         std::cerr << std::endl;
+        std::cerr << e.what() << std::endl;
         return false;
     }
 
