@@ -23,6 +23,7 @@
 #include "GameClient.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
+#include "world/LuaInterface.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Sound.h"
@@ -50,12 +51,12 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     bfs::path luaPath(filename);
     luaPath.replace_extension("lua");
-    std::string luaFilePath = luaPath.string();
 
-    if (bfs::exists(luaPath) && luaL_dofile(lua, luaFilePath.c_str()))
+    if (bfs::exists(luaPath))
     {
-        fprintf(stderr, "LUA ERROR: '%s'!\n", lua_tostring(lua, -1));
-        lua_pop(lua, 1);
+        lua.reset(new LuaInterface());
+        if(!lua->LoadScript(luaPath.string()))
+            lua.reset();
     }
 
     MapLoader loader(*this);
@@ -69,7 +70,8 @@ bool GameWorld::LoadMap(const std::string& filename)
     if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.isValid())
         this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
 
-    LUA_EventStart();
+    if(HasLua())
+        lua->LUA_EventStart();
 
     return true;
 }
