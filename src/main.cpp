@@ -67,6 +67,7 @@
 #include <ctime>
 #include <iostream>
 #include <limits>
+#include <cstdlib>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -223,8 +224,30 @@ void ExitHandler()
 #endif
 }
 
-void InitProgram()
+bool InitProgram()
 {
+    // Check and set locale (avoids errors caused by invalid locales later like #420)
+    try{
+        std::locale::global(std::locale(""));
+    }catch(std::exception& e){
+        std::cerr << "Error initializing your locale setting. ";
+#ifdef _WIN32
+        std::cerr << "Check your system language configuration!";
+#else
+        char* lcAll = getenv("LC_ALL");
+        char* lcLang = getenv("LC_LANG");
+        std::cerr << "Check your environment for invalid settings (e.g. LC_ALL";
+        if(lcAll)
+            std::cerr << "=" << lcAll;
+        std::cerr << " or LC_LANG";
+        if(lcLang)
+            std::cerr << "=" << lcLang;
+        std::cerr << ")";
+#endif
+        std::cerr << std::endl;
+        return false;
+    }
+
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
     _set_se_translator(ExceptionHandler);
 #endif // _WIN32 && _DEBUG && !NOHWETRANS
@@ -243,6 +266,8 @@ void InitProgram()
 #endif // _WIN32
 
     InstallSignalHandlers();
+
+    return true;
 }
 
 bool InitDirectories()
@@ -316,7 +341,8 @@ bool InitGame()
  */
 int main(int argc, char** argv)
 {
-    InitProgram();
+    if(!InitProgram())
+        return 1;
     if(!InitDirectories())
         return 1;
 
