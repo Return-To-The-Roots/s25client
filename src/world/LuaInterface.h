@@ -21,11 +21,12 @@
 #include "gameTypes/MapTypes.h"
 #include <string>
 struct lua_State;
+class GameWorldGame;
 
 class LuaInterface{
 public:
 
-    LuaInterface();
+    LuaInterface(GameWorldGame& gw);
     virtual ~LuaInterface();
 
     bool LoadScript(const std::string& scriptPath);
@@ -38,6 +39,7 @@ public:
 
 private:
     lua_State* lua;
+    GameWorldGame& gw;
 
     static int DisableBuilding(lua_State* L);
     static int EnableBuilding(lua_State* L);

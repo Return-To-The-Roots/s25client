@@ -31,7 +31,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-LuaInterface::LuaInterface(): lua(luaL_newstate())
+LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(luaL_newstate())
 {
     luaopen_base(lua);
     luaopen_package(lua);
@@ -231,8 +231,7 @@ int LuaInterface::ModifyPlayerHQ(lua_State* L)
     const MapPoint hqPos = GAMECLIENT.GetPlayer(playerIdx).hqPos;
     if(hqPos.isValid())
     {
-        GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((World*)lua_touserdata(L, lua_upvalueindex(1)));
-        nobHQ* hq = gwg->GetSpecObj<nobHQ>(hqPos);
+        nobHQ* hq = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw.GetSpecObj<nobHQ>(hqPos);
         if(hq)
             hq->SetIsTent(isTent != 0);
     }
@@ -243,7 +242,6 @@ int LuaInterface::ModifyPlayerHQ(lua_State* L)
 
 int LuaInterface::EnableBuilding(lua_State* L)
 {
-    //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L);
 
     if(argc < 1)
@@ -296,7 +294,6 @@ int LuaInterface::EnableBuilding(lua_State* L)
 
 int LuaInterface::DisableBuilding(lua_State* L)
 {
-    //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L);
 
     if(argc < 1)
@@ -350,7 +347,6 @@ int LuaInterface::DisableBuilding(lua_State* L)
 
 int LuaInterface::SetRestrictedArea(lua_State* L)
 {
-    //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
 
     if((argc < 0) || (argc % 2 == 1))
@@ -381,8 +377,6 @@ int LuaInterface::SetRestrictedArea(lua_State* L)
     {
         MapCoord x = (MapCoord)luaL_checknumber(L, cnt++);
         MapCoord y = (MapCoord)luaL_checknumber(L, cnt++);
-        //        fprintf(stderr, "RESTRICTED AREA - %u, %u\n", x, y);
-
         restricted_area.push_back(MapPoint(x, y));
     }
 
@@ -426,7 +420,6 @@ int LuaInterface::ClearResources(lua_State *L)
 
 int LuaInterface::AddWares(lua_State* L)
 {
-    //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
 
     if((argc < 0) || (argc % 2 == 1))
@@ -479,7 +472,6 @@ int LuaInterface::AddWares(lua_State* L)
 
 int LuaInterface::AddPeople(lua_State* L)
 {
-    //  GameWorldBase *gw = static_cast<GameWorldBase*>(lua_touserdata(L, lua_upvalueindex(1)));
     int argc = lua_gettop(L) - 1;
 
     if((argc < 0) || (argc % 2 == 1))
@@ -816,13 +808,6 @@ int LuaInterface::PostNewBuildings(lua_State *L)
 
 int LuaInterface::AddStaticObject(lua_State *L)
 {
-    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*)lua_touserdata(L, lua_upvalueindex(1)));
-
-    if(!gwg)
-    {
-        return(0);
-    }
-
     int argc = lua_gettop(L);
 
     if(argc < 3)
@@ -857,16 +842,18 @@ int LuaInterface::AddStaticObject(lua_State *L)
         }
     }
 
-    const MapNode& node = gwg->GetNode(pt);
+    GameWorldGame& gw = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw;
+
+    const MapNode& node = gw.GetNode(pt);
     if(node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
 
-    gwg->DestroyNO(pt, false);
-    gwg->SetNO(pt, new noStaticObject(pt, id, file, size));
-    gwg->RecalcBQAroundPoint(pt);
+    gw.DestroyNO(pt, false);
+    gw.SetNO(pt, new noStaticObject(pt, id, file, size));
+    gw.RecalcBQAroundPoint(pt);
 
     lua_pushnumber(L, 1);
     return(1);
@@ -874,12 +861,7 @@ int LuaInterface::AddStaticObject(lua_State *L)
 
 int LuaInterface::AddEnvObject(lua_State *L)
 {
-    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*)lua_touserdata(L, lua_upvalueindex(1)));
-
-    if(!gwg)
-    {
-        return(0);
-    }
+    GameWorldGame& gwg = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw;
 
     int argc = lua_gettop(L);
 
@@ -902,16 +884,16 @@ int LuaInterface::AddEnvObject(lua_State *L)
         file = (unsigned)luaL_checknumber(L, 4);
     }
 
-    const MapNode& node = gwg->GetNode(pt);
+    const MapNode& node = gwg.GetNode(pt);
     if(node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
     {
         lua_pushnumber(L, 0);
         return(1);
     }
 
-    gwg->DestroyNO(pt, false);
-    gwg->SetNO(pt, new noEnvObject(pt, id, file));
-    gwg->RecalcBQAroundPoint(pt);
+    gwg.DestroyNO(pt, false);
+    gwg.SetNO(pt, new noEnvObject(pt, id, file));
+    gwg.RecalcBQAroundPoint(pt);
 
     lua_pushnumber(L, 1);
     return(1);
@@ -919,12 +901,7 @@ int LuaInterface::AddEnvObject(lua_State *L)
 
 int LuaInterface::AIConstructionOrder(lua_State *L)
 {
-    GameWorldGame *gwg = dynamic_cast<GameWorldGame*>((GameWorldBase*)lua_touserdata(L, lua_upvalueindex(1)));
-
-    if(!gwg)
-    {
-        return(0);
-    }
+    GameWorldGame& gwg = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw;
 
     int argc = lua_gettop(L);
 

@@ -54,7 +54,7 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     if (bfs::exists(luaPath))
     {
-        lua.reset(new LuaInterface());
+        lua.reset(new LuaInterface(*this));
         if(!lua->LoadScript(luaPath.string()))
             lua.reset();
     }
