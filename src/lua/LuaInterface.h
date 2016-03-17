@@ -21,13 +21,18 @@
 #include "gameTypes/MapTypes.h"
 #include <kaguya/kaguya.hpp>
 #include <string>
+
 class GameWorldGame;
+class LuaPlayer;
+class LuaWorld;
 
 class LuaInterface{
 public:
 
     LuaInterface(GameWorldGame& gw);
     virtual ~LuaInterface();
+
+    static void Register(kaguya::State& state);
 
     bool LoadScript(const std::string& scriptPath);
 
@@ -41,27 +46,16 @@ private:
     kaguya::State lua;
     GameWorldGame& gw;
 
-    bool DisableBuilding(unsigned playerIdx, kaguya::VariadicArgType buildings);
-    static int EnableBuilding(lua_State* L);
-    static int SetRestrictedArea(lua_State* L);
-    static int ClearResources(lua_State *L);
-    static int AddWares(lua_State* L);
-    static int AddPeople(lua_State* L);
-    static int GetGF(lua_State *L);
-    static int Log(lua_State *L);
-    static int Chat(lua_State *L);
-    static int MissionStatement(lua_State *L);
-    static int PostMessageLua(lua_State *L);
-    static int PostMessageWithLocation(lua_State *L);
-    static int GetPlayerCount(lua_State *L);
-    static int GetBuildingCount(lua_State *L);
-    static int GetWareCount(lua_State *L);
-    static int GetPeopleCount(lua_State *L);
-    static int AddEnvObject(lua_State *L);
-    static int AIConstructionOrder(lua_State *L);
-    static int AddStaticObject(lua_State *L);
-    static int PostNewBuildings(lua_State *L);
-    static int ModifyPlayerHQ(lua_State* L);
+    void ClearResources();
+    unsigned GetGF();
+    unsigned GetPlayerCount();
+    void Log(const std::string& msg);
+    void Chat(int playerIdx, const std::string& msg);
+    void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
+    void PostMessageLua(unsigned playerIdx, const std::string& msg);
+    void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);
+    LuaPlayer GetPlayer(unsigned playerIdx);
+    LuaWorld GetWorld();
 };
 
 #endif // LuaInterface_h__

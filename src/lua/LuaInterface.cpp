@@ -17,12 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaInterface.h"
+#include "lua/LuaPlayer.h"
+#include "lua/LuaWorld.h"
 #include "GameClient.h"
 #include "ingameWindows/iwMissionStatement.h"
-#include "ai/AIEvents.h"
-#include "buildings/nobHQ.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noStaticObject.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"
 #include "PostMsg.h"
 #include "libutil/src/Log.h"
@@ -38,11 +37,7 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
     luaopen_table(lua.state());
     luaopen_math(lua.state());
 
-    lua["RTTR"].setClass(kaguya::ClassMetatable<LuaInterface>()
-        .addMemberFunction("DisableBuilding", &LuaInterface::DisableBuilding)
-        );
-    lua["rttr"] = this;
-
+#pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
 
     ADD_LUA_CONST(BLD_HEADQUARTERS);
@@ -149,718 +144,107 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
     ADD_LUA_CONST(GD_SHIELDJAPANESE);
 
 #undef ADD_LUA_CONST
+#pragma endregion ConstDefs
+
+    Register(lua);
+    LuaPlayer::Register(lua);
+    LuaWorld::Register(lua);
+
+    lua["rttr"] = this;
 }
 
 LuaInterface::~LuaInterface()
 {}
+
+void LuaInterface::Register(kaguya::State& state)
+{
+    state["RTTR"].setClass(kaguya::ClassMetatable<LuaInterface>()
+        .addMemberFunction("ClearResources", &ClearResources)
+        .addMemberFunction("GetGF", &GetGF)
+        .addMemberFunction("GetPlayerCount", &GetPlayerCount)
+        .addMemberFunction("Log", &Log)
+        .addMemberFunction("Chat", &Chat)
+        .addMemberFunction("MissionStatement", &MissionStatement)
+        .addMemberFunction("PostMessage", &PostMessageLua)
+        .addMemberFunction("PostMessageWithLocation", &PostMessageWithLocation)
+        .addMemberFunction("GetPlayer", &GetPlayer)
+        .addMemberFunction("GetWorld", &GetWorld)
+        );
+}
 
 bool LuaInterface::LoadScript(const std::string& scriptPath)
 {
     return lua.dofile(scriptPath);
 }
 
-int LuaInterface::ModifyPlayerHQ(lua_State* L)
+void LuaInterface::ClearResources()
 {
-    int argc = lua_gettop(L);
-
-    if(argc != 2)
+    for(unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); p++)
     {
-        lua_pushstring(L, "too few or too many arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned playerIdx = (unsigned)luaL_checknumber(L, 1);
-    unsigned isTent = (unsigned)luaL_checknumber(L, 2);
-
-    if(playerIdx >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    if(isTent != 0 && isTent != 1)
-    {
-        lua_pushstring(L, "IsTent must be 0 or 1!");
-        lua_error(L);
-        return(0);
-    }
-
-    const MapPoint hqPos = GAMECLIENT.GetPlayer(playerIdx).hqPos;
-    if(hqPos.isValid())
-    {
-        nobHQ* hq = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw.GetSpecObj<nobHQ>(hqPos);
-        if(hq)
-            hq->SetIsTent(isTent != 0);
-    }
-
-
-    return(0);
-}
-
-int LuaInterface::EnableBuilding(lua_State* L)
-{
-    int argc = lua_gettop(L);
-
-    if(argc < 1)
-    {
-        lua_pushstring(L, "too few or too many arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    // player
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
-
-    if(argc == 1)
-    {
-        for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
-        {
-            player.EnableBuilding(BuildingType(building_type));
-        }
-
-        return(0);
-    }
-
-    int cnt = 2;
-    while(cnt <= argc)
-    {
-        // building type
-        unsigned building_type = (unsigned)luaL_checknumber(L, cnt++);
-
-        if(building_type < BUILDING_TYPES_COUNT)
-        {
-            player.EnableBuilding(BuildingType(building_type));
-        } else
-        {
-            lua_pushstring(L, "building type invalid!");
-            lua_error(L);
-        }
-    }
-
-    return(0);
-}
-
-bool LuaInterface::DisableBuilding(unsigned playerIdx, kaguya::VariadicArgType buildings)
-{
-    if(playerIdx >= GAMECLIENT.GetPlayerCount())
-    {
-        LOG.lprintf("Player number invalid");
-        return false;
-    }
-
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(playerIdx);
-    try{
-        if(buildings.size() == 0)
-        {
-            for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
-                player.DisableBuilding(BuildingType(building_type));
-        } else
-        {
-            for(kaguya::VariadicArgType::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
-            {
-                if(unsigned(*it) < BUILDING_TYPES_COUNT)
-                    player.DisableBuilding(BuildingType(*it));
-                else
-                    LOG.lprintf("Invalid building type: %u\n", unsigned(*it));
-            }
-        }
-    } catch(...)
-    {
-        return false;
-    }
-    return true;
-}
-
-
-int LuaInterface::SetRestrictedArea(lua_State* L)
-{
-    int argc = lua_gettop(L) - 1;
-
-    if((argc < 0) || (argc % 2 == 1))
-    {
-        lua_pushstring(L, "wrong arguments: player, x1, y1, x2, y2, ...");
-        lua_error(L);
-        return(0);
-    }
-
-    // player
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
-
-    std::vector< MapPoint > &restricted_area = player.GetRestrictedArea();
-
-    restricted_area.clear();
-
-    unsigned cnt = 2;
-    for(argc >>= 1; argc > 0; --argc)
-    {
-        MapCoord x = (MapCoord)luaL_checknumber(L, cnt++);
-        MapCoord y = (MapCoord)luaL_checknumber(L, cnt++);
-        restricted_area.push_back(MapPoint(x, y));
-    }
-
-    return(0);
-}
-
-int LuaInterface::ClearResources(lua_State *L)
-{
-    if(lua_gettop(L) > 0)
-    {
-        unsigned p = (unsigned)luaL_checknumber(L, 1);
-
-        if(p >= GAMECLIENT.GetPlayerCount())
-        {
-            lua_pushstring(L, "player number invalid!");
-            lua_error(L);
-            return(0);
-        }
-
         const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p).GetStorehouses();
-
         for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-        {
             (*wh)->Clear();
-        }
-    } else
-    {
-        for(unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); p++)
-        {
-            const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p).GetStorehouses();
-
-            for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-            {
-                (*wh)->Clear();
-            }
-        }
     }
-
-    return(0);
 }
 
-int LuaInterface::AddWares(lua_State* L)
+unsigned LuaInterface::GetGF()
 {
-    int argc = lua_gettop(L) - 1;
-
-    if((argc < 0) || (argc % 2 == 1))
-    {
-        lua_pushstring(L, "wrong arguments: player, ware1, count1, ware2, count2, ...");
-        lua_error(L);
-        return(0);
-    }
-
-    // player
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
-
-    nobBaseWarehouse* warehouse = player.GetFirstWH();
-
-    if(!warehouse)
-    {
-        lua_pushnumber(L, 0);
-        return(1);
-    }
-
-    Inventory goods;
-
-    unsigned cnt = 2;
-    for(argc >>= 1; argc > 0; --argc)
-    {
-        unsigned type = (unsigned)luaL_checknumber(L, cnt++);
-        unsigned count = (unsigned)luaL_checknumber(L, cnt++);
-
-        if(type < WARE_TYPES_COUNT)
-        {
-            goods.Add(GoodType(type), count);
-            player.IncreaseInventoryWare(GoodType(type), count);
-        }
-    }
-
-    warehouse->AddGoods(goods);
-
-    lua_pushnumber(L, 1);
-    return(1);
+    return GAMECLIENT.GetGFNumber();
 }
 
-int LuaInterface::AddPeople(lua_State* L)
+unsigned LuaInterface::GetPlayerCount()
 {
-    int argc = lua_gettop(L) - 1;
-
-    if((argc < 0) || (argc % 2 == 1))
-    {
-        lua_pushstring(L, "wrong arguments: player, ware1, count1, ware2, count2, ...");
-        lua_error(L);
-        return(0);
-    }
-
-    // player
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
-
-    nobBaseWarehouse* warehouse = player.GetFirstWH();
-
-    if(!warehouse)
-    {
-        lua_pushnumber(L, 0);
-        return(1);
-    }
-
-    Inventory goods;
-
-    unsigned cnt = 2;
-    for(argc >>= 1; argc > 0; --argc)
-    {
-        unsigned type = (unsigned)luaL_checknumber(L, cnt++);
-        unsigned count = (unsigned)luaL_checknumber(L, cnt++);
-
-        if(type < JOB_TYPES_COUNT)
-        {
-            goods.Add(Job(type), count);
-            player.IncreaseInventoryJob(Job(type), count);
-        }
-    }
-
-    warehouse->AddGoods(goods);
-
-    lua_pushnumber(L, 1);
-
-    return(1);
+    return GAMECLIENT.GetPlayerCount();
 }
 
-int LuaInterface::GetGF(lua_State *L)
+void LuaInterface::Log(const std::string& msg)
 {
-    lua_pushnumber(L, GAMECLIENT.GetGFNumber());
-    return(1);
+    LOG.lprintf("%s\n", msg.c_str());
 }
 
-int LuaInterface::GetPlayerCount(lua_State *L)
+void LuaInterface::Chat(int playerIdx, const std::string& msg)
 {
-    lua_pushnumber(L, GAMECLIENT.GetPlayerCount());
-    return(1);
+    if(playerIdx >= 0 && GAMECLIENT.GetPlayerID() != unsigned(playerIdx))
+        return;
+
+    GAMECLIENT.SystemChat(msg);
 }
 
-int LuaInterface::GetBuildingCount(lua_State *L)
+void LuaInterface::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
 {
-    if(lua_gettop(L) < 2)
-    {
-        lua_pushstring(L, "need player number and building type!");
-        lua_error(L);
-        return(0);
-    }
+    if(playerIdx >= 0 && GAMECLIENT.GetPlayerID() != unsigned(playerIdx))
+        return;
 
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned building_type = (unsigned)luaL_checknumber(L, 2);
-
-    if(building_type >= BUILDING_TYPES_COUNT)
-    {
-        lua_pushstring(L, "invalid building type!");
-        lua_error(L);
-        return(0);
-    }
-
-    BuildingCount bc;
-
-    GAMECLIENT.GetPlayer(pnr).GetBuildingCount(bc);
-
-    lua_pushnumber(L, bc.building_counts[building_type]);
-
-    return(1);
-}
-
-int LuaInterface::GetWareCount(lua_State *L)
-{
-    if(lua_gettop(L) < 2)
-    {
-        lua_pushstring(L, "need player number and ware type!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned type = (unsigned)luaL_checknumber(L, 2);
-
-    if(type >= WARE_TYPES_COUNT)
-    {
-        lua_pushstring(L, "invalid ware type!");
-        lua_error(L);
-        return(0);
-    }
-
-    const Inventory& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
-
-    lua_pushnumber(L, goods.goods[type]);
-
-    return(1);
-}
-
-int LuaInterface::GetPeopleCount(lua_State *L)
-{
-    if(lua_gettop(L) < 2)
-    {
-        lua_pushstring(L, "need player number and job type!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned type = (unsigned)luaL_checknumber(L, 2);
-
-    if(type >= JOB_TYPES_COUNT)
-    {
-        lua_pushstring(L, "invalid job type!");
-        lua_error(L);
-        return(0);
-    }
-
-    const Inventory& goods = GAMECLIENT.GetPlayer(pnr).GetInventory();
-
-    lua_pushnumber(L, goods.people[type]);
-
-    return(1);
-}
-
-int LuaInterface::Log(lua_State *L)
-{
-    int argc = lua_gettop(L);
-
-    std::string message;
-
-    for(int n = 1; n <= argc; n++)
-    {
-        message.append(luaL_checklstring(L, n, NULL));
-    }
-
-    LOG.lprintf("%s\n", message.c_str());
-
-    return(0);
-}
-
-int LuaInterface::Chat(lua_State *L)
-{
-    int argc = lua_gettop(L);
-
-    if(argc < 2)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned player = (unsigned)luaL_checknumber(L, 1);
-
-    if((player != 0xFFFFFFFF) && (unsigned)GAMECLIENT.GetPlayerID() != player)
-    {
-        return(0);
-    }
-
-    std::string message;
-
-    for(int n = 2; n <= argc; n++)
-    {
-        message.append(luaL_checklstring(L, n, NULL));
-    }
-
-    GAMECLIENT.SystemChat(message);
-
-    return(0);
-}
-
-int LuaInterface::MissionStatement(lua_State *L)
-{
-    int argc = lua_gettop(L);
-
-    if(argc < 3)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned player = (unsigned)luaL_checknumber(L, 1);
-
-    if((player != 0xFFFFFFFF) && (unsigned)GAMECLIENT.GetPlayerID() != player)
-    {
-        return(0);
-    }
-
-    std::string message;
-
-    for(int n = 3; n <= argc; n++)
-    {
-        message.append(luaL_checklstring(L, n, NULL));
-    }
-
-    WINDOWMANAGER.Show(new iwMissionStatement(luaL_checklstring(L, 2, NULL), message));
-
-    return(0);
+    WINDOWMANAGER.Show(new iwMissionStatement(title, msg));
 }
 
 // Must not be PostMessage as this is a windows define :(
-int LuaInterface::PostMessageLua(lua_State *L)
+void LuaInterface::PostMessageLua(unsigned playerIdx, const std::string& msg)
 {
-    int argc = lua_gettop(L);
+    if(GAMECLIENT.GetPlayerID() != playerIdx)
+        return;
 
-    if(argc < 2)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    if((unsigned)GAMECLIENT.GetPlayerID() != (unsigned)luaL_checknumber(L, 1))
-    {
-        return(0);
-    }
-
-    std::string message;
-
-    for(int n = 2; n <= argc; n++)
-    {
-        message.append(luaL_checklstring(L, n, NULL));
-    }
-
-    GAMECLIENT.SendPostMessage(new PostMsg(message, PMC_OTHER));
-
-    return(0);
+    GAMECLIENT.SendPostMessage(new PostMsg(msg, PMC_OTHER));
 }
 
-int LuaInterface::PostMessageWithLocation(lua_State *L)
+void LuaInterface::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
 {
-    int argc = lua_gettop(L);
+    if(GAMECLIENT.GetPlayerID() != playerIdx)
+        return;
 
-    if(argc < 4)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    if((unsigned)GAMECLIENT.GetPlayerID() != (unsigned)luaL_checknumber(L, 1))
-    {
-        return(0);
-    }
-
-    MapCoord x = (MapCoord)luaL_checknumber(L, 2);
-    MapCoord y = (MapCoord)luaL_checknumber(L, 3);
-
-    std::string message;
-
-    for(int n = 4; n <= argc; n++)
-    {
-        message.append(luaL_checklstring(L, n, NULL));
-    }
-
-    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(message, PMC_OTHER, MapPoint(x, y)));
-
-    return(0);
+    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
 }
 
-int LuaInterface::PostNewBuildings(lua_State *L)
+LuaPlayer LuaInterface::GetPlayer(unsigned playerIdx)
 {
-    int argc = lua_gettop(L);
-
-    if(argc < 2)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    if((unsigned)GAMECLIENT.GetPlayerID() != (unsigned)luaL_checknumber(L, 1))
-    {
-        return(0);
-    }
-
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    for(int n = 2; n <= argc; n++)
-    {
-        unsigned building_type = (unsigned)luaL_checknumber(L, n);
-
-        if(building_type < BUILDING_TYPES_COUNT)
-        {
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(BUILDING_NAMES[building_type]), PMC_GENERAL, GAMECLIENT.GetPlayer(pnr).hqPos, (BuildingType)building_type, (Nation)GAMECLIENT.GetPlayer(pnr).nation));
-        }
-    }
-
-    return(0);
+    if(playerIdx >= GAMECLIENT.GetPlayerCount())
+        throw std::runtime_error("Invalid player idx");
+    return LuaPlayer(GAMECLIENT.GetPlayer(playerIdx));
 }
 
-int LuaInterface::AddStaticObject(lua_State *L)
+LuaWorld LuaInterface::GetWorld()
 {
-    int argc = lua_gettop(L);
-
-    if(argc < 3)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    MapCoord x = (MapCoord)luaL_checknumber(L, 1);
-    MapCoord y = (MapCoord)luaL_checknumber(L, 2);
-    unsigned id = (unsigned)luaL_checknumber(L, 3);
-    MapPoint pt(x, y);
-
-    unsigned file = 0xFFFF;
-    unsigned size = 0;
-
-    if(argc > 3)
-    {
-        file = (unsigned)luaL_checknumber(L, 4);
-
-        if(argc > 4)
-        {
-            size = (unsigned)luaL_checknumber(L, 5);
-
-            if(size > 2)
-            {
-                lua_pushstring(L, "Invalid size!");
-                lua_error(L);
-                return(0);
-            }
-        }
-    }
-
-    GameWorldGame& gw = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw;
-
-    const MapNode& node = gw.GetNode(pt);
-    if(node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
-    {
-        lua_pushnumber(L, 0);
-        return(1);
-    }
-
-    gw.DestroyNO(pt, false);
-    gw.SetNO(pt, new noStaticObject(pt, id, file, size));
-    gw.RecalcBQAroundPoint(pt);
-
-    lua_pushnumber(L, 1);
-    return(1);
-}
-
-int LuaInterface::AddEnvObject(lua_State *L)
-{
-    GameWorldGame& gwg = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw;
-
-    int argc = lua_gettop(L);
-
-    if(argc < 3)
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    MapCoord x = (MapCoord)luaL_checknumber(L, 1);
-    MapCoord y = (MapCoord)luaL_checknumber(L, 2);
-    unsigned id = (unsigned)luaL_checknumber(L, 3);
-    MapPoint pt(x, y);
-
-    unsigned file = 0xFFFF;
-
-    if(argc > 3)
-    {
-        file = (unsigned)luaL_checknumber(L, 4);
-    }
-
-    const MapNode& node = gwg.GetNode(pt);
-    if(node.obj && (node.obj->GetGOT() != GOT_NOTHING) && (node.obj->GetGOT() != GOT_STATICOBJECT) && (node.obj->GetGOT() != GOT_ENVOBJECT))
-    {
-        lua_pushnumber(L, 0);
-        return(1);
-    }
-
-    gwg.DestroyNO(pt, false);
-    gwg.SetNO(pt, new noEnvObject(pt, id, file));
-    gwg.RecalcBQAroundPoint(pt);
-
-    lua_pushnumber(L, 1);
-    return(1);
-}
-
-int LuaInterface::AIConstructionOrder(lua_State *L)
-{
-    GameWorldGame& gwg = static_cast<LuaInterface*>(lua_touserdata(L, lua_upvalueindex(1)))->gw;
-
-    int argc = lua_gettop(L);
-
-    if(argc < 4)//player, x, y, buildingtype
-    {
-        lua_pushstring(L, "Too few arguments!");
-        lua_error(L);
-        return(0);
-    }
-
-    unsigned pn = (unsigned)luaL_checknumber(L, 1);
-    MapCoord x = (MapCoord)luaL_checknumber(L, 2);
-    MapCoord y = (MapCoord)luaL_checknumber(L, 3);
-    unsigned id = (unsigned)luaL_checknumber(L, 4);
-    BuildingType bt = static_cast<BuildingType>(id);
-
-    if(!GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, MapPoint(x, y), bt), pn))
-        LOG.lprintf("Sending AIConstructionOrder to player %u failed", pn);
-
-    lua_pushnumber(L, 1);
-    return(1);
+    return LuaWorld(gw);
 }
 
 void LuaInterface::EventExplored(unsigned player, const MapPoint pt)
