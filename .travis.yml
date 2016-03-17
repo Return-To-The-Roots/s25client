@@ -1,0 +1,31 @@
+sudo: false
+language: cpp
+
+compiler:
+  - clang
+  - g++
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - libboost-all-dev
+    - g++-4.8
+    - cmake
+    - libsdl1.2-dev
+    - libsdl-mixer1.2-dev
+    - libcurl4-openssl-dev
+    - libbz2-dev
+    - libminiupnpc-dev
+    - liblua5.2-dev
+    
+env:
+  - BUILD_TYPE=Release CXX_FLAGS=-std=c++03
+  - BUILD_TYPE=Release CXX_FLAGS=-std=c++11
+  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++11
+
+script:
+  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} && make
+
