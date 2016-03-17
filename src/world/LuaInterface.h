@@ -19,8 +19,8 @@
 #define LuaInterface_h__
 
 #include "gameTypes/MapTypes.h"
+#include <kaguya/kaguya.hpp>
 #include <string>
-struct lua_State;
 class GameWorldGame;
 
 class LuaInterface{
@@ -38,10 +38,10 @@ public:
     void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 
 private:
-    lua_State* lua;
+    kaguya::State lua;
     GameWorldGame& gw;
 
-    static int DisableBuilding(lua_State* L);
+    bool DisableBuilding(unsigned playerIdx, kaguya::VariadicArgType buildings);
     static int EnableBuilding(lua_State* L);
     static int SetRestrictedArea(lua_State* L);
     static int ClearResources(lua_State *L);
