@@ -242,6 +242,13 @@ IF(HAVE_MEMCHECK_H)
     ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
 ENDIF()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
+    if(NOT ${CHECK_CLANG_INLINE})
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D__extern_always_inline=\"extern __always_inline __attribute__ ((__gnu_inline__))\"" )
+    endif()
+endif()
+
 ################################################################################
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"

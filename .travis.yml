@@ -1,31 +1,56 @@
 sudo: false
 language: cpp
 
+os:
+  - linux
+
 compiler:
   - clang
   - g++
 
+env:
+  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++11
+  - BUILD_TYPE=Release CXX_FLAGS=-std=c++03
+  - BUILD_TYPE=Release CXX_FLAGS=-std=c++11
+
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - boost-latest
+      - ubuntu-toolchain-r-test
     packages:
-    - libboost-all-dev
-    - g++-4.8
-    - cmake
-    - libsdl1.2-dev
-    - libsdl-mixer1.2-dev
-    - libcurl4-openssl-dev
-    - libbz2-dev
-    - libminiupnpc-dev
-    - liblua5.2-dev
-    
-env:
-  - BUILD_TYPE=Release CXX_FLAGS=-std=c++03
-  - BUILD_TYPE=Release CXX_FLAGS=-std=c++11
-  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
-  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++11
+      - libboost1.55-all-dev
+      - g++-4.8
+      - cmake
+      - libsdl1.2-dev
+      - libsdl-mixer1.2-dev
+      - libcurl4-openssl-dev
+      - libbz2-dev
+      - libminiupnpc-dev
+      - liblua5.2-dev
+      
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+      install:
+        - brew update
+        - brew install sdl
+        - brew install sdl_mixer
+        - brew install gettext
+        - brew install miniupnpc
+        - brew link --force gettext
+      env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+  exclude:
+    - compiler: clang
+      env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+    - compiler: clang
+      env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03      
 
 script:
-  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} && make
+  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} --generator="Unix Makefiles" --no-arch=i386 && make
+
+install:
+  - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
 
