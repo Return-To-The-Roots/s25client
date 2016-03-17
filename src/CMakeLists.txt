@@ -19,6 +19,7 @@ INCLUDE_DIRECTORIES(SYSTEM
 	${BZIP2_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIR}
+	${CMAKE_SOURCE_DIR}/contrib/kaguya/include
 	)
 
 LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")

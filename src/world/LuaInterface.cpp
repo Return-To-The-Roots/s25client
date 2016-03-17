@@ -26,55 +26,24 @@
 #include "WindowManager.h"
 #include "PostMsg.h"
 #include "libutil/src/Log.h"
-#include "luaIncludes.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(luaL_newstate())
+LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
 {
-    luaopen_base(lua);
-    luaopen_package(lua);
-    luaopen_string(lua);
-    luaopen_table(lua);
-    luaopen_math(lua);
+    luaopen_base(lua.state());
+    luaopen_package(lua.state());
+    luaopen_string(lua.state());
+    luaopen_table(lua.state());
+    luaopen_math(lua.state());
 
-    static const luaL_Reg meta[] =
-    {
-        { "EnableBuilding", EnableBuilding },
-        { "DisableBuilding", DisableBuilding },
-        { "SetRestrictedArea", SetRestrictedArea },
-        { "ClearResources", ClearResources },
-        { "AddWares", AddWares },
-        { "AddPeople", AddPeople },
-        { "GetGF", GetGF },
-        { "GetPlayerCount", GetPlayerCount },
-        { "GetPeopleCount", GetPeopleCount },
-        { "GetWareCount", GetWareCount },
-        { "GetBuildingCount", GetBuildingCount },
-        { "Log", Log },
-        { "Chat", Chat },
-        { "MissionStatement", MissionStatement },
-        { "PostMessage", PostMessageLua },
-        { "PostMessageWithLocation", PostMessageWithLocation },
-        { "PostNewBuildings", PostNewBuildings },
-        { "AddStaticObject", AddStaticObject },
-        { "AddEnvObject", AddEnvObject },
-        { "AIConstructionOrder", AIConstructionOrder },
-        { "ModifyPlayerHQ", ModifyPlayerHQ },
-        { NULL, NULL }
-    };
+    lua["RTTR"].setClass(kaguya::ClassMetatable<LuaInterface>()
+        .addMemberFunction("DisableBuilding", &LuaInterface::DisableBuilding)
+        );
+    lua["rttr"] = this;
 
-    luaL_newlibtable(lua, meta);
-
-    lua_setglobal(lua, "rttr");
-    lua_getglobal(lua, "rttr");
-
-    lua_pushlightuserdata(lua, this);
-
-    luaL_setfuncs(lua, meta, 1);
-
-#define ADD_LUA_CONST(name) lua_pushnumber(lua, name); lua_setglobal(lua, #name);
+#define ADD_LUA_CONST(name) lua[#name] = name
 
     ADD_LUA_CONST(BLD_HEADQUARTERS);
     ADD_LUA_CONST(BLD_BARRACKS);
@@ -180,24 +149,14 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(luaL_newstate())
     ADD_LUA_CONST(GD_SHIELDJAPANESE);
 
 #undef ADD_LUA_CONST
-
-    lua_settop(lua, 0);
 }
 
 LuaInterface::~LuaInterface()
-{
-    lua_close(lua);
-}
+{}
 
 bool LuaInterface::LoadScript(const std::string& scriptPath)
 {
-    if(luaL_dofile(lua, scriptPath.c_str()))
-    {
-        fprintf(stderr, "LUA ERROR: '%s'!\n", lua_tostring(lua, -1));
-        lua_pop(lua, 1);
-        return false;
-    } else
-        return true;
+    return lua.dofile(scriptPath);
 }
 
 int LuaInterface::ModifyPlayerHQ(lua_State* L)
@@ -292,56 +251,35 @@ int LuaInterface::EnableBuilding(lua_State* L)
     return(0);
 }
 
-int LuaInterface::DisableBuilding(lua_State* L)
+bool LuaInterface::DisableBuilding(unsigned playerIdx, kaguya::VariadicArgType buildings)
 {
-    int argc = lua_gettop(L);
-
-    if(argc < 1)
+    if(playerIdx >= GAMECLIENT.GetPlayerCount())
     {
-        lua_pushstring(L, "too few or too many arguments!");
-        lua_error(L);
-        return(0);
+        LOG.lprintf("Player number invalid");
+        return false;
     }
 
-    // player
-    unsigned pnr = (unsigned)luaL_checknumber(L, 1);
-
-    if(pnr >= GAMECLIENT.GetPlayerCount())
-    {
-        lua_pushstring(L, "player number invalid!");
-        lua_error(L);
-        return(0);
-    }
-
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(pnr);
-
-    if(argc == 1)
-    {
-        for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+    GameClientPlayer& player = GAMECLIENT.GetPlayer(playerIdx);
+    try{
+        if(buildings.size() == 0)
         {
-            player.DisableBuilding(BuildingType(building_type));
-        }
-
-        return(0);
-    }
-
-    int cnt = 2;
-    while(cnt <= argc)
-    {
-        // building type
-        unsigned building_type = (unsigned)luaL_checknumber(L, cnt++);
-
-        if(building_type < BUILDING_TYPES_COUNT)
-        {
-            player.DisableBuilding(BuildingType(building_type));
+            for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+                player.DisableBuilding(BuildingType(building_type));
         } else
         {
-            lua_pushstring(L, "building type invalid!");
-            lua_error(L);
+            for(kaguya::VariadicArgType::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
+            {
+                if(unsigned(*it) < BUILDING_TYPES_COUNT)
+                    player.DisableBuilding(BuildingType(*it));
+                else
+                    LOG.lprintf("Invalid building type: %u\n", unsigned(*it));
+            }
         }
+    } catch(...)
+    {
+        return false;
     }
-
-    return(0);
+    return true;
 }
 
 
@@ -927,106 +865,106 @@ int LuaInterface::AIConstructionOrder(lua_State *L)
 
 void LuaInterface::EventExplored(unsigned player, const MapPoint pt)
 {
-    lua_getglobal(lua, "onExplored");
+    lua_getglobal(lua.state(), "onExplored");
 
-    if(lua_isfunction(lua, -1))
+    if(lua_isfunction(lua.state(), -1))
     {
-        lua_pushnumber(lua, player);
-        lua_pushnumber(lua, pt.x);
-        lua_pushnumber(lua, pt.y);
+        lua_pushnumber(lua.state(), player);
+        lua_pushnumber(lua.state(), pt.x);
+        lua_pushnumber(lua.state(), pt.y);
 
         // 3 arguments, 0 return values, no error handler
-        if(lua_pcall(lua, 3, 0, 0))
+        if(lua_pcall(lua.state(), 3, 0, 0))
         {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
-            lua_pop(lua, 1);
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
+            lua_pop(lua.state(), 1);
         }
     } else
     {
-        lua_pop(lua, 1);
+        lua_pop(lua.state(), 1);
     }
 }
 
 void LuaInterface::EventOccupied(unsigned player, const MapPoint pt)
 {
-    lua_getglobal(lua, "onOccupied");
+    lua_getglobal(lua.state(), "onOccupied");
 
-    if(lua_isfunction(lua, -1))
+    if(lua_isfunction(lua.state(), -1))
     {
-        lua_pushnumber(lua, player);
-        lua_pushnumber(lua, pt.x);
-        lua_pushnumber(lua, pt.y);
+        lua_pushnumber(lua.state(), player);
+        lua_pushnumber(lua.state(), pt.x);
+        lua_pushnumber(lua.state(), pt.y);
 
         // 3 arguments, 0 return values, no error handler
-        if(lua_pcall(lua, 3, 0, 0))
+        if(lua_pcall(lua.state(), 3, 0, 0))
         {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
-            lua_pop(lua, 1);
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
+            lua_pop(lua.state(), 1);
         }
     } else
     {
-        lua_pop(lua, 1);
+        lua_pop(lua.state(), 1);
     }
 }
 
 void LuaInterface::EventStart()
 {
-    lua_getglobal(lua, "onStart");
+    lua_getglobal(lua.state(), "onStart");
 
-    if(lua_isfunction(lua, -1))
+    if(lua_isfunction(lua.state(), -1))
     {
         // 0 arguments, 0 return values, no error handler
-        if(lua_pcall(lua, 0, 0, 0))
+        if(lua_pcall(lua.state(), 0, 0, 0))
         {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
-            lua_pop(lua, 1);
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
+            lua_pop(lua.state(), 1);
         }
     } else
     {
-        lua_pop(lua, 1);
+        lua_pop(lua.state(), 1);
     }
 }
 
 void LuaInterface::EventGF(unsigned nr)
 {
-    lua_getglobal(lua, "onGameFrame");
+    lua_getglobal(lua.state(), "onGameFrame");
 
-    if(lua_isfunction(lua, -1))
+    if(lua_isfunction(lua.state(), -1))
     {
-        lua_pushnumber(lua, nr);
+        lua_pushnumber(lua.state(), nr);
 
         // 1 argument, 0 return values, no error handler
-        if(lua_pcall(lua, 1, 0, 0))
+        if(lua_pcall(lua.state(), 1, 0, 0))
         {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
-            lua_pop(lua, 1);
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
+            lua_pop(lua.state(), 1);
         }
     } else
     {
-        lua_pop(lua, 1);
+        lua_pop(lua.state(), 1);
     }
 }
 
 void LuaInterface::EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
 {
-    lua_getglobal(lua, "onResourceFound");
+    lua_getglobal(lua.state(), "onResourceFound");
 
-    if(lua_isfunction(lua, -1))
+    if(lua_isfunction(lua.state(), -1))
     {
-        lua_pushnumber(lua, player);
-        lua_pushnumber(lua, pt.x);
-        lua_pushnumber(lua, pt.y);
-        lua_pushnumber(lua, type);
-        lua_pushnumber(lua, quantity);
+        lua_pushnumber(lua.state(), player);
+        lua_pushnumber(lua.state(), pt.x);
+        lua_pushnumber(lua.state(), pt.y);
+        lua_pushnumber(lua.state(), type);
+        lua_pushnumber(lua.state(), quantity);
 
         // 5 arguments, 0 return values, no error handler
-        if(lua_pcall(lua, 5, 0, 0))
+        if(lua_pcall(lua.state(), 5, 0, 0))
         {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua, -1));
-            lua_pop(lua, 1);
+            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
+            lua_pop(lua.state(), 1);
         }
     } else
     {
-        lua_pop(lua, 1);
+        lua_pop(lua.state(), 1);
     }
 }
