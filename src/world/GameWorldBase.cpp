@@ -25,7 +25,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "nodeObjs/noMovable.h"
 #include "nodeObjs/noFlag.h"
-#include "world/LuaInterface.h"
+#include "lua/LuaInterface.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
 #include "gameData/TerrainData.h"

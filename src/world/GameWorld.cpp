@@ -23,7 +23,7 @@
 #include "GameClient.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-#include "world/LuaInterface.h"
+#include "lua/LuaInterface.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Sound.h"

@@ -32,7 +32,7 @@
 #include "PostMsg.h"
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "world/LuaInterface.h"
+#include "lua/LuaInterface.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
