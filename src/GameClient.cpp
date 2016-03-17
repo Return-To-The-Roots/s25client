@@ -36,7 +36,7 @@
 #include "EventManager.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
-#include "world/LuaInterface.h"
+#include "lua/LuaInterface.h"
 #include "gameData/GameConsts.h"
 #include "PostMsg.h"
 #include "SerializedGameData.h"
