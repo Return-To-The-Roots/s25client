@@ -39,7 +39,9 @@
 #include "ogl/glArchivItem_Font.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "gameData/GameConsts.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
+#include "helpers/converters.h"
 #include "Log.h"
 #include "libutil/src/error.h"
 #include "libutil/src/colors.h"
@@ -209,8 +211,23 @@ bool GameManager::Run()
             }
         }
 		WINDOWMANAGER.Draw();
-		if ((GAMECLIENT.GetState() == GameClient::CS_GAME) && (GAMECLIENT.GetGFLength() < 30))
-			LOADER.GetImageN("io", 164)->Draw(VIDEODRIVER.GetScreenWidth() - 55, 35, 0, 0, 0, 0);
+        if(GAMECLIENT.GetState() == GameClient::CS_GAME)
+        {
+            const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().game_speed];
+            const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
+            if(speedStep != 0)
+            {
+                glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
+                const short x = VIDEODRIVER.GetScreenWidth() - 55;
+                const short y = 35;
+                runnerImg->Draw(x, y, 0, 0, 0, 0);
+                if(speedStep != 1)
+                {
+                    std::string multiplier = helpers::toString(std::abs(speedStep));
+                    NormalFont->Draw(x - runnerImg->getNx() + 19, y - runnerImg->getNy() + 6, multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
+                }
+            }
+        }
 
 		DrawCursor();
     } else if(GAMECLIENT.GetGFNumber() % 5000 == 0)

@@ -327,6 +327,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
     // Je nach Geschwindigkeit GF-Länge einstellen
     framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
+    framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
     RANDOM.Init(random_init);
@@ -1185,19 +1186,18 @@ void GameClient::OnNMSServerSpeed(const GameMessage_Server_Speed&  /*msg*/)
 
 void GameClient::IncreaseSpeed()
 {
-    int gf_length = framesinfo.gf_length;
-    if(gf_length > 10)
-        gf_length -= 10;
+    if(framesinfo.gfLengthReq > 10)
+        framesinfo.gfLengthReq -= 10;
 
 #ifndef NDEBUG
-    else if (gf_length == 10)
-        gf_length = 1;
+    else if (framesinfo.gfLengthReq == 10)
+        framesinfo.gfLengthReq = 1;
 #endif
 
     else
-        gf_length = 70;
+        framesinfo.gfLengthReq = 70;
 
-    send_queue.push(new GameMessage_Server_Speed(gf_length));
+    send_queue.push(new GameMessage_Server_Speed(framesinfo.gfLengthReq));
 }
 
 void GameClient::IncreaseReplaySpeed()
@@ -1447,10 +1447,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     }
 
     if(framesinfo.isPaused)
-    {
-        // pause machen ;)
-        return;
-    }
+        return; // Pause
 
     if(framesinfo.forcePauseLen)
     {
@@ -1497,6 +1494,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                     unsigned oldGfLen = framesinfo.gf_length;
                     int oldNwfLen = framesinfo.nwf_length;
                     framesinfo.ApplyNewGFLength();
+                    framesinfo.gfLengthReq = framesinfo.gf_length;
 
                     // Adjust next confirmation for next NWF (if we have it already)
                     if(framesinfo.gfNrServer != framesinfo.gf_nr)
