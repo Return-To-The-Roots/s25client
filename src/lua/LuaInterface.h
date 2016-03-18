@@ -25,6 +25,7 @@
 class GameWorldGame;
 class LuaPlayer;
 class LuaWorld;
+class Serializer;
 
 class LuaInterface{
 public:
@@ -35,16 +36,22 @@ public:
     static void Register(kaguya::State& state);
 
     bool LoadScript(const std::string& scriptPath);
+    bool LoadScriptString(const std::string& script);
+    const std::string& GetScript() const { return script_; }
+
+    Serializer Serialize();
+    void Deserialize(Serializer& luaState);
 
     void EventExplored(unsigned player, const MapPoint pt);
     void EventOccupied(unsigned player, const MapPoint pt);
-    void EventStart();
+    void EventStart(bool isFirstStart);
     void EventGF(unsigned number);
     void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 
 private:
     GameWorldGame& gw;
     kaguya::State lua;
+    std::string script_;
 
     void ClearResources();
     unsigned GetGF();
@@ -58,6 +65,7 @@ private:
     LuaWorld GetWorld();
 
     static void ErrorHandler(int status, const char* message);
+    static void ErrorHandlerThrow(int status, const char* message);
 };
 
 #endif // LuaInterface_h__

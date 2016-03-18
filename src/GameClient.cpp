@@ -405,6 +405,9 @@ void GameClient::StartGame(const unsigned int random_init)
         mapinfo.zipdata.reset();
         replayinfo.replay.map_data.reset();
     }
+
+    if(gw->HasLua())
+        gw->GetLua().EventStart(!mapinfo.savegame);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

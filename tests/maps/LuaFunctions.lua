@@ -28,9 +28,32 @@ function testPlayerFuncs(pl)
 	pl:ModifyHQ(true)
 end
 
-function onStart()
+function onSave(saveGame)
+	saveGame:PushBool(true)
+	saveGame:PushInt(42)
+	saveGame:PushString("Hello RttR!")
+	return true
+end
+
+isLoaded = false
+
+function onLoad(saveGame)
+	assert(isLoaded == false)
+	isLoaded = true
+	assert(saveGame:PopBool() == true)
+	assert(saveGame:PopInt() == 42)
+	assert(saveGame:PopString() == "Hello RttR!")
+	rttr:Log("Lua state loaded!")
+	return true
+end
+
+function onStart(isFirstStart)
 	assert(gfCounter == 0)
-	assert(rttr:GetGF() == 0)
+	if(not isFirstStart) then
+		gfCounter = rttr:GetGF()
+	end
+	assert(rttr:GetGF() == gfCounter)
+	assert(isLoaded ~= isFirstStart)
 	rttr:ClearResources()
 	assert(rttr:GetPlayer(0):GetWareCount(GD_BEER) == 0)
 	addPlayerRes(rttr:GetPlayer(0))
@@ -44,7 +67,7 @@ end
 function onGameFrame()
 	gfCounter = gfCounter + 1
 	assert(gfCounter == rttr:GetGF())
-	if(gfCounter == 10) then
+	if(gfCounter == 50) then
 		assert(rttr:GetPlayer(0):AIConstructionOrder(10,10, BLD_WOODCUTTER) == false) -- Human
 		assert(rttr:GetPlayer(1):AIConstructionOrder(10,10, BLD_WOODCUTTER) == true)  -- AI	
 		
@@ -58,13 +81,13 @@ function onGameFrame()
 		rttr:Log("Showing mission statement!")
 		rttr:MissionStatement(0, "Test Mission", "Mission statement seems to be working")
 	end
-	if(gfCounter == 20) then
+	if(gfCounter == 100) then
 		rttr:Log("Send 2 post messages")
 		rttr:PostMessage(0, "Post message working")
 		x,y = rttr:GetPlayer(0):GetHQPos()
 		rttr:PostMessageWithLocation(0, "This should be a message at your HQ", x,y)
 	end
-	if(gfCounter == 30) then
+	if(gfCounter == 150) then
 		rttr:Log("\n\nYou can now close the game")
 	end
 end
