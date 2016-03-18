@@ -216,6 +216,8 @@ ELSE (MSVC)
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wno-long-long")
+CheckAndAddFlag("-Wno-deprecated-register")
+CheckAndAddFlag("-Wno-unknown-pragmas")
 CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
 
