@@ -28,8 +28,11 @@ class LuaWorld
 public:
     LuaWorld(GameWorldGame& gw): gw(gw){}
     static void Register(kaguya::State& state);
-    bool AddEnvObject(int x, int y, unsigned id, unsigned file = 0xFFFF);
-    bool AddStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 0);
+    bool AddEnvObject(int x, int y, unsigned id, unsigned file);
+    bool AddEnvObject2(int x, int y, unsigned id){ return AddEnvObject(x, y, id, 0xFFFF); }
+    bool AddStaticObject(int x, int y, unsigned id, unsigned file, unsigned size);
+    bool AddStaticObject2(int x, int y, unsigned id, unsigned file = 0xFFFF){ return AddStaticObject(x, y, id, file, 0); }
+    bool AddStaticObject3(int x, int y, unsigned id){ return AddStaticObject(x, y, id, 0xFFFF, 0); }
 };
 
 #endif // LuaWorld_h__
