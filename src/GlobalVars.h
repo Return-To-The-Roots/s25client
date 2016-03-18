@@ -33,6 +33,8 @@ class GlobalVars : public Singleton<GlobalVars>
         bool ingame;
         bool ext_vbo;
         bool ext_swapcontrol;
+        bool isTest; // Whether we are in test mode
+        bool errorOccured; // Whether an error has occured (for test validation)
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -56,6 +56,8 @@ private:
     void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);
     LuaPlayer GetPlayer(unsigned playerIdx);
     LuaWorld GetWorld();
+
+    static void ErrorHandler(int status, const char* message);
 };
 
 #endif // LuaInterface_h__
