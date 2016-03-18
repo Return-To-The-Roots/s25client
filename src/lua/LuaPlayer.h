@@ -22,6 +22,7 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include <kaguya/kaguya.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <map>
 
 class GameClientPlayer;
@@ -46,6 +47,7 @@ public:
     unsigned GetPeopleCount(Job job);
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
     void ModifyHQ(bool isTent);
+    boost::tuple<unsigned, unsigned> GetHQPos();
 };
 
 #endif // LuaPlayer_h__
