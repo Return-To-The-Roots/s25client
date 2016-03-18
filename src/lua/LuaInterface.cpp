@@ -25,7 +25,9 @@
 #include "WindowManager.h"
 #include "GlobalVars.h"
 #include "PostMsg.h"
+#include "libutil/src/Serializer.h"
 #include "libutil/src/Log.h"
+#include <fstream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -166,6 +168,14 @@ void LuaInterface::Register(kaguya::State& state)
         .addMemberFunction("GetPlayer", &LuaInterface::GetPlayer)
         .addMemberFunction("GetWorld", &LuaInterface::GetWorld)
         );
+    state["RTTR_Serializer"].setClass(kaguya::ClassMetatable<Serializer>()
+        .addMemberFunction("PushInt", &Serializer::PushSignedInt)
+        .addMemberFunction("PopInt", &Serializer::PopSignedInt)
+        .addMemberFunction("PushBool", &Serializer::PushBool)
+        .addMemberFunction("PopBool", &Serializer::PopBool)
+        .addMemberFunction("PushString", &Serializer::PushString)
+        .addMemberFunction("PopString", &Serializer::PopString)
+        );
     state.setErrorHandler(ErrorHandler);
 }
 
@@ -179,15 +189,79 @@ void LuaInterface::ErrorHandler(int status, const char* message)
     }
 }
 
+void LuaInterface::ErrorHandlerThrow(int status, const char* message)
+{
+    throw std::runtime_error(message);
+}
+
 bool LuaInterface::LoadScript(const std::string& scriptPath)
 {
-    if(!lua.dofile(scriptPath))
+    std::ifstream scriptFile(scriptPath.c_str());
+    script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
+    return LoadScriptString(script_);
+}
+
+bool LuaInterface::LoadScriptString(const std::string& script)
+{
+    if(!lua.dostring(script))
     {
+        script_.clear();
         if(GLOBALVARS.isTest)
             throw std::runtime_error("Could not load lua script");
         return false;
     } else
+    {
+        script_ = script;
         return true;
+    }
+}
+
+Serializer LuaInterface::Serialize()
+{
+    kaguya::LuaFunction save = lua["onSave"];
+    if(!save.isNilref())
+    {
+        Serializer luaSaveState;
+        lua.setErrorHandler(ErrorHandlerThrow);
+        try
+        {
+            if(!save.call<bool>(luaSaveState))
+            {
+                LOG.lprintf("Lua state could not be saved!");
+                luaSaveState.Clear();
+            }
+            lua.setErrorHandler(ErrorHandler);
+            return luaSaveState;
+        } catch(std::exception& e)
+        {
+            lua.setErrorHandler(ErrorHandler);
+            LOG.lprintf("Error during saving: %s\n", e.what());
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
+        }
+    }
+    return Serializer();
+}
+
+void LuaInterface::Deserialize(Serializer& luaSaveState)
+{
+    kaguya::LuaFunction load = lua["onLoad"];
+    if(!load.isNilref())
+    {
+        lua.setErrorHandler(ErrorHandlerThrow);
+        try
+        {
+            if(!load.call<bool>(luaSaveState))
+                LOG.lprintf("Lua state was not loaded correctly!");
+            lua.setErrorHandler(ErrorHandler);
+        } catch(std::exception& e)
+        {
+            lua.setErrorHandler(ErrorHandler);
+            LOG.lprintf("Error during loading: %s\n", e.what());
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
+        }
+    }
 }
 
 void LuaInterface::ClearResources()
@@ -308,24 +382,11 @@ void LuaInterface::EventOccupied(unsigned player, const MapPoint pt)
     }
 }
 
-void LuaInterface::EventStart()
+void LuaInterface::EventStart(bool isFirstStart)
 {
-    lua_getglobal(lua.state(), "onStart");
-
-    if(lua_isfunction(lua.state(), -1))
-    {
-        // 0 arguments, 0 return values, no error handler
-        if(lua_pcall(lua.state(), 0, 0, 0))
-        {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
-            lua_pop(lua.state(), 1);
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-        }
-    } else
-    {
-        lua_pop(lua.state(), 1);
-    }
+    kaguya::LuaFunction onStart = lua["onStart"];
+    if(!onStart.isNilref())
+        onStart.call<void>(isFirstStart);
 }
 
 void LuaInterface::EventGF(unsigned nr)
