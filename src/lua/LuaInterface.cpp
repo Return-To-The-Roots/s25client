@@ -159,6 +159,7 @@ void LuaInterface::Register(kaguya::State& state)
     state["RTTR"].setClass(kaguya::ClassMetatable<LuaInterface>()
         .addMemberFunction("ClearResources", &LuaInterface::ClearResources)
         .addMemberFunction("GetGF", &LuaInterface::GetGF)
+        .addMemberFunction("GetGameFrame", &LuaInterface::GetGF)
         .addMemberFunction("GetPlayerCount", &LuaInterface::GetPlayerCount)
         .addMemberFunction("Log", &LuaInterface::Log)
         .addMemberFunction("Chat", &LuaInterface::Chat)
@@ -336,50 +337,16 @@ LuaWorld LuaInterface::GetWorld()
 
 void LuaInterface::EventExplored(unsigned player, const MapPoint pt)
 {
-    lua_getglobal(lua.state(), "onExplored");
-
-    if(lua_isfunction(lua.state(), -1))
-    {
-        lua_pushnumber(lua.state(), player);
-        lua_pushnumber(lua.state(), pt.x);
-        lua_pushnumber(lua.state(), pt.y);
-
-        // 3 arguments, 0 return values, no error handler
-        if(lua_pcall(lua.state(), 3, 0, 0))
-        {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
-            lua_pop(lua.state(), 1);
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-        }
-    } else
-    {
-        lua_pop(lua.state(), 1);
-    }
+    kaguya::LuaFunction onExplored = lua["onExplored"];
+    if(!onExplored.isNilref())
+        onExplored.call<void>(player, pt.x, pt.y);
 }
 
 void LuaInterface::EventOccupied(unsigned player, const MapPoint pt)
 {
-    lua_getglobal(lua.state(), "onOccupied");
-
-    if(lua_isfunction(lua.state(), -1))
-    {
-        lua_pushnumber(lua.state(), player);
-        lua_pushnumber(lua.state(), pt.x);
-        lua_pushnumber(lua.state(), pt.y);
-
-        // 3 arguments, 0 return values, no error handler
-        if(lua_pcall(lua.state(), 3, 0, 0))
-        {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
-            lua_pop(lua.state(), 1);
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-        }
-    } else
-    {
-        lua_pop(lua.state(), 1);
-    }
+    kaguya::LuaFunction onOccupied = lua["onOccupied"];
+    if(!onOccupied.isNilref())
+        onOccupied.call<void>(player, pt.x, pt.y);
 }
 
 void LuaInterface::EventStart(bool isFirstStart)
@@ -389,50 +356,16 @@ void LuaInterface::EventStart(bool isFirstStart)
         onStart.call<void>(isFirstStart);
 }
 
-void LuaInterface::EventGF(unsigned nr)
+void LuaInterface::EventGameFrame(unsigned nr)
 {
-    lua_getglobal(lua.state(), "onGameFrame");
-
-    if(lua_isfunction(lua.state(), -1))
-    {
-        lua_pushnumber(lua.state(), nr);
-
-        // 1 argument, 0 return values, no error handler
-        if(lua_pcall(lua.state(), 1, 0, 0))
-        {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
-            lua_pop(lua.state(), 1);
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-        }
-    } else
-    {
-        lua_pop(lua.state(), 1);
-    }
+    kaguya::LuaFunction onGameFrame = lua["onGameFrame"];
+    if(!onGameFrame.isNilref())
+        onGameFrame.call<void>(nr);
 }
 
 void LuaInterface::EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
 {
-    lua_getglobal(lua.state(), "onResourceFound");
-
-    if(lua_isfunction(lua.state(), -1))
-    {
-        lua_pushnumber(lua.state(), player);
-        lua_pushnumber(lua.state(), pt.x);
-        lua_pushnumber(lua.state(), pt.y);
-        lua_pushnumber(lua.state(), type);
-        lua_pushnumber(lua.state(), quantity);
-
-        // 5 arguments, 0 return values, no error handler
-        if(lua_pcall(lua.state(), 5, 0, 0))
-        {
-            fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
-            lua_pop(lua.state(), 1);
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-        }
-    } else
-    {
-        lua_pop(lua.state(), 1);
-    }
+    kaguya::LuaFunction onResourceFound = lua["onResourceFound"];
+    if(!onResourceFound.isNilref())
+        onResourceFound.call<void>(player, pt.x, pt.y, type, quantity);
 }

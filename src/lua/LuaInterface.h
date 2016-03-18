@@ -45,7 +45,7 @@ public:
     void EventExplored(unsigned player, const MapPoint pt);
     void EventOccupied(unsigned player, const MapPoint pt);
     void EventStart(bool isFirstStart);
-    void EventGF(unsigned number);
+    void EventGameFrame(unsigned number);
     void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 
 private:
