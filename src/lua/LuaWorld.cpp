@@ -29,7 +29,10 @@ void LuaWorld::Register(kaguya::State& state)
 {
     state["World"].setClass(kaguya::ClassMetatable<LuaWorld>()
         .addMemberFunction("AddEnvObject", &AddEnvObject)
+        .addMemberFunction("AddEnvObject", &AddEnvObject2)
         .addMemberFunction("AddStaticObject", &AddStaticObject)
+        .addMemberFunction("AddStaticObject", &AddStaticObject2)
+        .addMemberFunction("AddStaticObject", &AddStaticObject3)
         );
 }
 

@@ -24,6 +24,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
 #include "PostMsg.h"
+#include "helpers/converters.h"
 #include "libutil/src/Log.h"
 #include <stdexcept>
 
@@ -52,6 +53,7 @@ void LuaPlayer::Register(kaguya::State& state)
         .addMemberFunction("GetPeopleCount", &GetPeopleCount)
         .addMemberFunction("AIConstructionOrder", &AIConstructionOrder)
         .addMemberFunction("ModifyHQ", &ModifyHQ)
+        .addMemberFunction("GetHQPos", &GetHQPos)
         );
 }
 
@@ -90,7 +92,19 @@ void LuaPlayer::DisableAllBuildings()
 
 void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType points)
 {
-    player.GetRestrictedArea() = points;
+    if(points.size() % 2)
+        throw std::runtime_error("Invalid number of points given");
+    std::vector<MapPoint> pts;
+    for(kaguya::VariadicArgType::const_iterator it = points.begin(); it != points.end(); ++it)
+    {
+        int x = *it;
+        ++it;
+        int y = *it;
+        if(x < 0 || y < 0)
+            throw std::runtime_error("Points must be non-negative");
+        pts.push_back(MapPoint(x, y));
+    }
+    player.GetRestrictedArea() = pts;
 }
 
 void LuaPlayer::ClearResources()
@@ -116,7 +130,7 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
             goods.Add(it->first, it->second);
             player.IncreaseInventoryWare(it->first, it->second);
         } else
-            LOG.lprintf("Invalid ware in AddWares: %u\n", unsigned(it->first));
+            throw std::runtime_error((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
     }
 
     warehouse->AddGoods(goods);
@@ -139,7 +153,7 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
             goods.Add(it->first, it->second);
             player.IncreaseInventoryJob(it->first, it->second);
         } else
-            LOG.lprintf("Invalid job in AddPeople: %u\n", unsigned(it->first));
+            throw std::runtime_error((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
     }
 
     warehouse->AddGoods(goods);
@@ -191,7 +205,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     }
 }
 
-boost::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
+kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
 {
-    return boost::tuple<unsigned, unsigned>(player.hqPos.x, player.hqPos.y);
+    return kaguya::standard::tuple<unsigned, unsigned>(player.hqPos.x, player.hqPos.y);
 }

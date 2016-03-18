@@ -181,7 +181,13 @@ void LuaInterface::ErrorHandler(int status, const char* message)
 
 bool LuaInterface::LoadScript(const std::string& scriptPath)
 {
-    return lua.dofile(scriptPath);
+    if(!lua.dofile(scriptPath))
+    {
+        if(GLOBALVARS.isTest)
+            throw std::runtime_error("Could not load lua script");
+        return false;
+    } else
+        return true;
 }
 
 void LuaInterface::ClearResources()
@@ -269,6 +275,8 @@ void LuaInterface::EventExplored(unsigned player, const MapPoint pt)
         {
             fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
             lua_pop(lua.state(), 1);
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
         }
     } else
     {
@@ -291,6 +299,8 @@ void LuaInterface::EventOccupied(unsigned player, const MapPoint pt)
         {
             fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
             lua_pop(lua.state(), 1);
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
         }
     } else
     {
@@ -309,6 +319,8 @@ void LuaInterface::EventStart()
         {
             fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
             lua_pop(lua.state(), 1);
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
         }
     } else
     {
@@ -329,6 +341,8 @@ void LuaInterface::EventGF(unsigned nr)
         {
             fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
             lua_pop(lua.state(), 1);
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
         }
     } else
     {
@@ -353,6 +367,8 @@ void LuaInterface::EventResourceFound(const unsigned char player, const MapPoint
         {
             fprintf(stderr, "ERROR: '%s'!\n", lua_tostring(lua.state(), -1));
             lua_pop(lua.state(), 1);
+            if(GLOBALVARS.isTest)
+                throw std::runtime_error("Error during lua call");
         }
     } else
     {
