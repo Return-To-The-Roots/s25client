@@ -39,6 +39,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "gameData/GameConsts.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include "helpers/converters.h"
 #include "Log.h"
@@ -212,7 +213,8 @@ bool GameManager::Run()
 		WINDOWMANAGER.Draw();
         if(GAMECLIENT.GetState() == GameClient::CS_GAME)
         {
-            const int speedStep = (30 - static_cast<int>(GAMECLIENT.GetGFLength())) / 10;
+            const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().game_speed];
+            const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
             if(speedStep != 0)
             {
                 glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
@@ -222,7 +224,7 @@ bool GameManager::Run()
                 if(speedStep != 1)
                 {
                     std::string multiplier = helpers::toString(std::abs(speedStep));
-                    SmallFont->Draw(x - runnerImg->getNx() + 19, y - runnerImg->getNy() + 9, multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
+                    NormalFont->Draw(x - runnerImg->getNx() + 19, y - runnerImg->getNy() + 6, multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
                 }
             }
         }
