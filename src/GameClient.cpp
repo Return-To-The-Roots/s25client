@@ -1584,7 +1584,7 @@ void GameClient::NextGF()
     }
     
     if(gw->HasLua())
-        gw->GetLua().EventGF(framesinfo.gf_nr);
+        gw->GetLua().EventGameFrame(framesinfo.gf_nr);
 }
 
 
