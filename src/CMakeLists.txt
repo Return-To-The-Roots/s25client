@@ -2,7 +2,7 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system REQUIRED)
+FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system program_options REQUIRED)
 
 ################################################################################
 

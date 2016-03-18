@@ -23,6 +23,7 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"
+#include "GlobalVars.h"
 #include "PostMsg.h"
 #include "libutil/src/Log.h"
 
@@ -104,7 +105,6 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
     ADD_LUA_CONST(JOB_SHIPWRIGHT);
     ADD_LUA_CONST(JOB_SCOUT);
     ADD_LUA_CONST(JOB_PACKDONKEY);
-    ADD_LUA_CONST(JOB_BOATCARRIER);
     ADD_LUA_CONST(JOB_CHARBURNER);
 
     ADD_LUA_CONST(GD_BEER);
@@ -117,7 +117,6 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
     ADD_LUA_CONST(GD_CRUCIBLE);
     ADD_LUA_CONST(GD_RODANDLINE);
     ADD_LUA_CONST(GD_SCYTHE);
-    ADD_LUA_CONST(GD_WATEREMPTY);
     ADD_LUA_CONST(GD_WATER);
     ADD_LUA_CONST(GD_CLEAVER);
     ADD_LUA_CONST(GD_ROLLINGPIN);
@@ -128,12 +127,10 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
     ADD_LUA_CONST(GD_FLOUR);
     ADD_LUA_CONST(GD_FISH);
     ADD_LUA_CONST(GD_BREAD);
-    ADD_LUA_CONST(GD_SHIELDROMANS);
+    lua["GD_SHIELD"] = GD_SHIELDROMANS;
     ADD_LUA_CONST(GD_WOOD);
     ADD_LUA_CONST(GD_BOARDS);
     ADD_LUA_CONST(GD_STONES);
-    ADD_LUA_CONST(GD_SHIELDVIKINGS);
-    ADD_LUA_CONST(GD_SHIELDAFRICANS);
     ADD_LUA_CONST(GD_GRAIN);
     ADD_LUA_CONST(GD_COINS);
     ADD_LUA_CONST(GD_GOLD);
@@ -141,7 +138,6 @@ LuaInterface::LuaInterface(GameWorldGame& gw): gw(gw), lua(kaguya::NoLoadLib())
     ADD_LUA_CONST(GD_COAL);
     ADD_LUA_CONST(GD_MEAT);
     ADD_LUA_CONST(GD_HAM);
-    ADD_LUA_CONST(GD_SHIELDJAPANESE);
 
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
@@ -170,6 +166,17 @@ void LuaInterface::Register(kaguya::State& state)
         .addMemberFunction("GetPlayer", &GetPlayer)
         .addMemberFunction("GetWorld", &GetWorld)
         );
+    state.setErrorHandler(ErrorHandler);
+}
+
+void LuaInterface::ErrorHandler(int status, const char* message)
+{
+    LOG.lprintf("Lua error: %s\n", message);
+    if(GLOBALVARS.isTest)
+    {
+        GLOBALVARS.errorOccured = true;
+        throw std::runtime_error(message);
+    }
 }
 
 bool LuaInterface::LoadScript(const std::string& scriptPath)
