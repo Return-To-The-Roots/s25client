@@ -190,3 +190,8 @@ void LuaPlayer::ModifyHQ(bool isTent)
             hq->SetIsTent(isTent);
     }
 }
+
+boost::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
+{
+    return boost::tuple<unsigned, unsigned>(player.hqPos.x, player.hqPos.y);
+}
