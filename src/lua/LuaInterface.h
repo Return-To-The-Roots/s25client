@@ -43,8 +43,8 @@ public:
     void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 
 private:
-    kaguya::State lua;
     GameWorldGame& gw;
+    kaguya::State lua;
 
     void ClearResources();
     unsigned GetGF();
