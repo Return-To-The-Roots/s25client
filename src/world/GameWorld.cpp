@@ -38,24 +38,21 @@
 #include "DebugNew.h" // IWYU pragma: keep
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(const std::string& filename)
+bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::ArchivInfo mapArchiv;
 
     // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(filename, mapArchiv) != 0)
+    if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
         return false;
 
     const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
 
-    bfs::path luaPath(filename);
-    luaPath.replace_extension("lua");
-
-    if (bfs::exists(luaPath))
+    if (bfs::exists(luaFilePath))
     {
         lua.reset(new LuaInterfaceGame(*this));
-        if(!lua->LoadScript(luaPath.string()))
+        if(!lua->LoadScript(luaFilePath))
             lua.reset();
     }
 
