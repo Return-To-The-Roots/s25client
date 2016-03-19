@@ -180,9 +180,7 @@ enum ChatDestination
 enum MapType
 {
     MAPTYPE_OLDMAP = 0,
-    MAPTYPE_SAVEGAME,
-    MAPTYPE_RTTRMAP,
-    MAPTYPE_RANDOMMAP
+    MAPTYPE_SAVEGAME
 };
 
 /// Größe eines Map-Paketes

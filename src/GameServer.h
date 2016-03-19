@@ -165,7 +165,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 unsigned int ziplength;
                 unsigned int length;
                 unsigned int checksum;
-                std::string name;
+                std::string fileName;
                 std::string title; // Titel der Karte (nicht der Dateiname!)
                 boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
                 MapType map_type;
