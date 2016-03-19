@@ -349,7 +349,7 @@ void GameClient::StartGame(const unsigned int random_init)
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
             players[i].MakeStartPacts();
 
-        gw->LoadMap(mapinfo.filepath);
+        gw->LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
 
         /// Evtl. Goldvorkommen ändern
         unsigned char target = 0xFF; // löschen

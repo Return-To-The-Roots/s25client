@@ -30,7 +30,7 @@ class GameWorld : public GameWorldViewer, public GameWorldGame
     public:
 
         /// Lädt eine Karte
-        bool LoadMap(const std::string& filename);
+        bool LoadMap(const std::string& mapFilePath, const std::string& luaFilePath);
 
         /// Serialisiert den gesamten GameWorld
         void Serialize(SerializedGameData& sgd) const;
