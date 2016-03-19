@@ -15,23 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaInterface_h__
-#define LuaInterface_h__
+#ifndef LuaInterfaceBase_h__
+#define LuaInterfaceBase_h__
 
-#include "gameTypes/MapTypes.h"
 #include <kaguya/kaguya.hpp>
 #include <string>
 
-class GameWorldGame;
-class LuaPlayer;
-class LuaWorld;
-class Serializer;
-
-class LuaInterface{
+class LuaInterfaceBase{
 public:
 
-    LuaInterface(GameWorldGame& gw);
-    virtual ~LuaInterface();
+    LuaInterfaceBase();
+    virtual ~LuaInterfaceBase();
 
     static void Register(kaguya::State& state);
 
@@ -39,33 +33,14 @@ public:
     bool LoadScriptString(const std::string& script);
     const std::string& GetScript() const { return script_; }
 
-    Serializer Serialize();
-    void Deserialize(Serializer& luaState);
-
-    void EventExplored(unsigned player, const MapPoint pt);
-    void EventOccupied(unsigned player, const MapPoint pt);
-    void EventStart(bool isFirstStart);
-    void EventGameFrame(unsigned number);
-    void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
-
-private:
-    GameWorldGame& gw;
+protected:
     kaguya::State lua;
     std::string script_;
 
-    void ClearResources();
-    unsigned GetGF();
-    unsigned GetPlayerCount();
     void Log(const std::string& msg);
-    void Chat(int playerIdx, const std::string& msg);
-    void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
-    void PostMessageLua(unsigned playerIdx, const std::string& msg);
-    void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);
-    LuaPlayer GetPlayer(unsigned playerIdx);
-    LuaWorld GetWorld();
 
     static void ErrorHandler(int status, const char* message);
     static void ErrorHandlerThrow(int status, const char* message);
 };
 
-#endif // LuaInterface_h__
+#endif // LuaInterfaceBase_h__

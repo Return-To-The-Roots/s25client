@@ -36,7 +36,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noShip.h"
-#include "lua/LuaInterface.h"
+#include "lua/LuaInterfaceGame.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
 #include "gameData/MilitaryConsts.h"

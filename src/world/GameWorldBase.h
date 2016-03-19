@@ -34,7 +34,7 @@ class nofPassiveSoldier;
 class nobHarborBuilding;
 class noFlag;
 class noBase;
-class LuaInterface;
+class LuaInterfaceGame;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase: public World
@@ -42,7 +42,7 @@ class GameWorldBase: public World
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
 protected:
-    boost::interprocess::unique_ptr<LuaInterface, Deleter<LuaInterface> > lua;
+    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
 
     TerrainRenderer tr;
 
@@ -175,7 +175,7 @@ public:
     unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
 
     bool HasLua() const { return lua.get() != NULL; }
-    LuaInterface& GetLua() const { return *lua.get(); }
+    LuaInterfaceGame& GetLua() const { return *lua.get(); }
 protected:
 
     /// F�r abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
