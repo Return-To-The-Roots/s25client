@@ -978,27 +978,15 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
     // full path
     mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + msg.map_name;
     mapinfo.type = msg.mt;
-    mapinfo.mapData.data.resize(msg.ziplength);
-    mapinfo.mapData.length = msg.normal_length;
-    
-    // lua script file path
-    if (!msg.script.empty())
-    {
-        mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
-        std::ofstream luaFile(mapinfo.luaFilepath.c_str());
+    mapinfo.mapData.data.resize(msg.mapCompressedLen);
+    mapinfo.mapData.length = msg.mapLen;
+    mapinfo.luaData.data.resize(msg.luaCompressedLen);
+    mapinfo.luaData.length = msg.luaLen;
 
-        if(!luaFile)
-        {
-            LOG.lprintf("Fatal error: can't open lua script at %s: %s\n", mapinfo.luaFilepath.c_str(), strerror(errno));
-            Stop();
-            return;
-        } else if(!(luaFile << msg.script))
-        {
-            LOG.lprintf("Fatal error: can't write to lua script at %s: %s\n", mapinfo.luaFilepath.c_str(), strerror(errno));
-            Stop();
-            return;
-        }
-    } else
+    // lua script file path
+    if (msg.luaLen > 0)
+        mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+    else
         mapinfo.luaFilepath.clear();
 }
 
@@ -1007,16 +995,26 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
 {
-    LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.map_data.size());
+    LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.data.size());
+    if(msg.isMapData)
+        std::copy(msg.data.begin(), msg.data.end(), mapinfo.mapData.data.begin() + msg.offset);
+    else
+        std::copy(msg.data.begin(), msg.data.end(), mapinfo.luaData.data.begin() + msg.offset);
 
-    std::copy(msg.map_data.begin(), msg.map_data.end(), mapinfo.mapData.data.begin() + msg.offset);
-    if(msg.offset + msg.map_data.size() == mapinfo.mapData.data.size())
+    if(msg.isMapData && mapinfo.luaFilepath.empty() &&  msg.offset + msg.data.size() == mapinfo.mapData.data.size() ||
+        !msg.isMapData && msg.offset + msg.data.size() == mapinfo.luaData.data.size())
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
             Stop();
             return;
         }
+        if(!mapinfo.luaFilepath.empty() && !mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath, &mapinfo.luaChecksum))
+        {
+            Stop();
+            return;
+        }
+        RTTR_Assert(!mapinfo.luaFilepath.empty() || mapinfo.luaChecksum == 0);
 
         // Map-Typ unterscheiden
         switch(mapinfo.type)
@@ -1062,7 +1060,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
             } break;
         }
 
-        send_queue.push(new GameMessage_Map_Checksum(mapinfo.mapChecksum));
+        send_queue.push(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
 
         LOG.write(">>>NMS_MAP_CHECKSUM(%u)\n", mapinfo.mapChecksum);
     }

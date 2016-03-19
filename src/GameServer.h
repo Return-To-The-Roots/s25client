@@ -26,7 +26,7 @@
 
 #include "GlobalGameSettings.h"
 #include "GamePlayerList.h"
-
+#include "gameTypes/MapInfo.h"
 #include "FramesInfo.h"
 #include "helpers/Deleter.h"
 #include <LANDiscoveryService.h>
@@ -149,28 +149,12 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 unsigned char playercount;
                 std::string gamename;
                 std::string password;
-                std::string mapname;
                 unsigned short port;
                 bool ipv6;
                 bool use_upnp;
         } serverconfig;
 
-        class MapInfo
-        {
-            public:
-
-                MapInfo();
-                void Clear();
-
-                unsigned int ziplength;
-                unsigned int length;
-                unsigned int checksum;
-                std::string fileName;
-                std::string title; // Titel der Karte (nicht der Dateiname!)
-                boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
-                MapType map_type;
-                std::string script;
-        } mapinfo;
+        MapInfo mapinfo;
 
         Socket serversocket;
         GameServerPlayerList players;

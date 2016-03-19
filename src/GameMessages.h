@@ -749,16 +749,12 @@ public:
 	std::string map_name;
 	/// Kartentyp (alte Karte neue Karte, Savegame usw.)
 	MapType mt;
-	/// Größe der Zip-komprimierten Date
-	unsigned ziplength;
-	/// Größe der dekomprimierten Daten
-	unsigned normal_length;
-	/// LUA script
-	std::string script;
+    unsigned mapLen, mapCompressedLen;
+    unsigned luaLen, luaCompressedLen;
 
 	GameMessage_Map_Info(): GameMessage(NMS_MAP_INFO) { } //-V730
-	GameMessage_Map_Info(const std::string& map_name, const MapType mt, const unsigned ziplength, const unsigned normal_length, const std::string& script)
-		: GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), ziplength(ziplength), normal_length(normal_length), script(script)
+	GameMessage_Map_Info(const std::string& map_name, const MapType mt, const unsigned mapLen, const unsigned mapCompressedLen, const unsigned luaLen, const unsigned luaCompressedLen)
+		: GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), mapLen(mapLen), mapCompressedLen(mapCompressedLen), luaLen(luaLen), luaCompressedLen(luaCompressedLen)
 	{
 		LOG.write(">>> NMS_MAP_INFO\n");
 	}
@@ -768,9 +764,10 @@ public:
         GameMessage::Serialize(ser);
         ser.PushString(map_name);
         ser.PushUnsignedChar(static_cast<unsigned char>(mt));
-        ser.PushUnsignedInt(ziplength);
-        ser.PushUnsignedInt(normal_length);
-        ser.PushString(script);
+        ser.PushUnsignedInt(mapLen);
+        ser.PushUnsignedInt(mapCompressedLen);
+        ser.PushUnsignedInt(luaLen);
+        ser.PushUnsignedInt(luaCompressedLen);
     }
 
     void Deserialize(Serializer& ser) override
@@ -778,10 +775,11 @@ public:
 		GameMessage::Deserialize(ser);
         map_name = ser.PopString();
         mt = MapType(ser.PopUnsignedChar());
-        ziplength = ser.PopUnsignedInt();
-        normal_length = ser.PopUnsignedInt();
-        script = ser.PopString();
-	}
+        mapLen = ser.PopUnsignedInt();
+        mapCompressedLen = ser.PopUnsignedInt();
+        luaLen = ser.PopUnsignedInt();
+        luaCompressedLen = ser.PopUnsignedInt();
+    }
 
 	void Run(MessageInterface* callback) override
 	{
@@ -793,14 +791,16 @@ public:
 class GameMessage_Map_Data : public GameMessage
 {
 public:
-	/// Offset into map buffer
+    bool isMapData;
+    /// Offset into map buffer
 	unsigned offset;
 	/// Kartendaten
-	std::vector<unsigned char> map_data;
+	std::vector<char> data;
+    /// True for map data, false for luaData
 
 	GameMessage_Map_Data(): GameMessage(NMS_MAP_DATA) { } //-V730
-	GameMessage_Map_Data(const unsigned offset, const unsigned char* const map_data, const unsigned length)
-		: GameMessage(NMS_MAP_DATA, 0xFF), offset(offset), map_data(map_data, map_data + length)
+	GameMessage_Map_Data(bool isMapData, const unsigned offset, const char* const data, const unsigned length)
+		: GameMessage(NMS_MAP_DATA, 0xFF), isMapData(isMapData), offset(offset), data(data, data + length)
 	{
 		LOG.write(">>> NMS_MAP_DATA\n");
 	}
@@ -808,17 +808,19 @@ public:
 	void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
+        ser.PushBool(isMapData);
         ser.PushUnsignedInt(offset);
-        ser.PushUnsignedInt(map_data.size());
-        ser.PushRawData(&map_data.front(), map_data.size());
+        ser.PushUnsignedInt(data.size());
+        ser.PushRawData(&data.front(), data.size());
     }
 
     void Deserialize(Serializer& ser) override
 	{
 		GameMessage::Deserialize(ser);
+        isMapData = ser.PopBool();
         offset = ser.PopUnsignedInt();
-        map_data.resize(ser.PopUnsignedInt());
-        ser.PopRawData(&map_data.front(), map_data.size());
+        data.resize(ser.PopUnsignedInt());
+        ser.PopRawData(&data.front(), data.size());
     }
 
 	void Run(MessageInterface* callback) override
@@ -832,10 +834,10 @@ class GameMessage_Map_Checksum : public GameMessage
 {
 public:
 	/// Checksumme, die vom Client berechnt wurde
-	unsigned checksum;
+	unsigned mapChecksum, luaChecksum;
 
 	GameMessage_Map_Checksum(): GameMessage(NMS_MAP_CHECKSUM) { } //-V730
-	GameMessage_Map_Checksum(const unsigned checksum): GameMessage(NMS_MAP_CHECKSUM, 0xFF), checksum(checksum)
+	GameMessage_Map_Checksum(const unsigned mapChecksum, const unsigned luaChecksum): GameMessage(NMS_MAP_CHECKSUM, 0xFF), mapChecksum(mapChecksum), luaChecksum(luaChecksum)
 	{
 		LOG.write(">>> NMS_MAP_CHECKSUM\n");
 	}
@@ -843,14 +845,16 @@ public:
 	void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(checksum);
+        ser.PushUnsignedInt(mapChecksum);
+        ser.PushUnsignedInt(luaChecksum);
     }
 
     void Deserialize(Serializer& ser) override
 	{
 		GameMessage::Deserialize(ser);
-        checksum = ser.PopUnsignedInt();
-	}
+        mapChecksum = ser.PopUnsignedInt();
+        luaChecksum = ser.PopUnsignedInt();
+    }
 
 	void Run(MessageInterface* callback) override
 	{

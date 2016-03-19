@@ -43,8 +43,10 @@ public:
     std::string luaFilepath;
     /// map data as received from server
     CompressedData mapData;
+    /// lua script as received from server
+    CompressedData luaData;
     /// Checksum of map data
-    unsigned mapChecksum;
+    unsigned mapChecksum, luaChecksum;
     /// Savegame (set if type == MAP_SAVEGAME)
     boost::interprocess::unique_ptr<Savegame, Deleter<Savegame> > savegame;
 };
