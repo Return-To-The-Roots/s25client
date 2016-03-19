@@ -22,6 +22,9 @@
 #include <bzlib.h>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <fstream>
+#include <cerrno>
+#include <cmath>
+#include <cstring>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
