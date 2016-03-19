@@ -176,8 +176,8 @@ void LuaInterfaceGame::Register(kaguya::State& state)
 
 Serializer LuaInterfaceGame::Serialize()
 {
-    kaguya::LuaFunction save = lua["onSave"];
-    if(!save.isNilref())
+    kaguya::LuaRef save = lua["onSave"];
+    if(save.type() == LUA_TFUNCTION)
     {
         Serializer luaSaveState;
         lua.setErrorHandler(ErrorHandlerThrow);
@@ -203,8 +203,8 @@ Serializer LuaInterfaceGame::Serialize()
 
 void LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
 {
-    kaguya::LuaFunction load = lua["onLoad"];
-    if(!load.isNilref())
+    kaguya::LuaRef load = lua["onLoad"];
+    if(load.type() == LUA_TFUNCTION)
     {
         lua.setErrorHandler(ErrorHandlerThrow);
         try
@@ -289,35 +289,35 @@ LuaWorld LuaInterfaceGame::GetWorld()
 
 void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt)
 {
-    kaguya::LuaFunction onExplored = lua["onExplored"];
-    if(!onExplored.isNilref())
+    kaguya::LuaRef onExplored = lua["onExplored"];
+    if(onExplored.type() == LUA_TFUNCTION)
         onExplored.call<void>(player, pt.x, pt.y);
 }
 
 void LuaInterfaceGame::EventOccupied(unsigned player, const MapPoint pt)
 {
-    kaguya::LuaFunction onOccupied = lua["onOccupied"];
-    if(!onOccupied.isNilref())
+    kaguya::LuaRef onOccupied = lua["onOccupied"];
+    if(onOccupied.type() == LUA_TFUNCTION)
         onOccupied.call<void>(player, pt.x, pt.y);
 }
 
 void LuaInterfaceGame::EventStart(bool isFirstStart)
 {
-    kaguya::LuaFunction onStart = lua["onStart"];
-    if(!onStart.isNilref())
+    kaguya::LuaRef onStart = lua["onStart"];
+    if(onStart.type() == LUA_TFUNCTION)
         onStart.call<void>(isFirstStart);
 }
 
 void LuaInterfaceGame::EventGameFrame(unsigned nr)
 {
-    kaguya::LuaFunction onGameFrame = lua["onGameFrame"];
-    if(!onGameFrame.isNilref())
+    kaguya::LuaRef onGameFrame = lua["onGameFrame"];
+    if(onGameFrame.type() == LUA_TFUNCTION)
         onGameFrame.call<void>(nr);
 }
 
 void LuaInterfaceGame::EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
 {
-    kaguya::LuaFunction onResourceFound = lua["onResourceFound"];
-    if(!onResourceFound.isNilref())
+    kaguya::LuaRef onResourceFound = lua["onResourceFound"];
+    if(onResourceFound.type() == LUA_TFUNCTION)
         onResourceFound.call<void>(player, pt.x, pt.y, type, quantity);
 }
