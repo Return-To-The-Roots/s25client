@@ -28,7 +28,6 @@
 #include "SocketSet.h"
 #include "Loader.h"
 #include "Settings.h"
-#include "FileChecksum.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "desktops/dskGameInterface.h"
 #include "Random.h"
@@ -55,7 +54,6 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/filesystem.hpp>
-#include <bzlib.h>
 #include <cerrno>
 #include <iostream>
 #include <fstream>
@@ -1014,39 +1012,11 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
     std::copy(msg.map_data.begin(), msg.map_data.end(), mapinfo.mapData.data.begin() + msg.offset);
     if(msg.offset + msg.map_data.size() == mapinfo.mapData.data.size())
     {
-        FILE* map_f = fopen(mapinfo.filepath.c_str(), "wb");
-
-        if(!map_f)
+        if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
-            LOG.lprintf("Fatal error: can't write map to %s: %s\n", mapinfo.filepath.c_str(), strerror(errno));
-
             Stop();
             return;
         }
-
-        boost::scoped_array<char> mapData(new char[mapinfo.mapData.length]);
-
-        unsigned int length = mapinfo.mapData.length;
-
-        int err = BZ2_bzBuffToBuffDecompress(mapData.get(), &length, &mapinfo.mapData.data[0], mapinfo.mapData.length, 0, 0);
-        if(err != BZ_OK)
-        {
-            LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
-            Stop();
-            return;
-        }
-        if(length != mapinfo.mapData.length)
-        {
-            LOG.lprintf("FATAL ERROR: Length mismatch after decompressing. Expected: %u, got %u\n", mapinfo.mapData.length, length);
-            Stop();
-            return;
-        }
-        if(fwrite(mapData.get(), 1, length, map_f) != length)
-            LOG.lprintf("ERROR: fwrite failed\n");
-
-        mapinfo.mapChecksum = CalcChecksumOfBuffer((unsigned char*)mapData.get(), length);
-
-        fclose(map_f);
 
         // Map-Typ unterscheiden
         switch(mapinfo.type)
@@ -1699,34 +1669,16 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             break;
         case MAPTYPE_OLDMAP:
         {
-            // Mapdaten auslesen und entpacken
-            boost::interprocess::unique_ptr<char, Deleter<char[]> > real_data(new char[mapinfo.mapData.length]);
-
-            int err = BZ2_bzBuffToBuffDecompress(real_data.get(), &mapinfo.mapData.length, &mapinfo.mapData.data[0], mapinfo.mapData.data.size(), 0, 0);
-            if(err != BZ_OK)
+            // Richtigen Pfad zur Map erstellen
+            mapinfo.filepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.mapFileName;
+            if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
-                LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
                 Stop();
                 return 4;
             }
-
-            // Richtigen Pfad zur Map erstellen
-            mapinfo.filepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.mapFileName;
-
-            // Und entpackte Mapdaten speichern
-            BinaryFile map_f;
-            if(!map_f.Open(mapinfo.filepath, OFM_WRITE))
-            {
-                LOG.lprintf("GameClient::StartReplay: ERROR: Couldn't open file \'%s\' for writing!\n", mapinfo.filepath.c_str());
-                Stop();
-                return 7;
-            }
-            map_f.WriteRawData(real_data.get(), mapinfo.mapData.length);
-            map_f.Close();
         } break;
         case MAPTYPE_SAVEGAME:
-        {
-        } break;
+            break;
     }
 
     replay_mode = true;
