@@ -23,7 +23,7 @@
 #include "GameClient.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-#include "lua/LuaInterface.h"
+#include "lua/LuaInterfaceGame.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Sound.h"
@@ -54,7 +54,7 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     if (bfs::exists(luaPath))
     {
-        lua.reset(new LuaInterface(*this));
+        lua.reset(new LuaInterfaceGame(*this));
         if(!lua->LoadScript(luaPath.string()))
             lua.reset();
     }
@@ -131,7 +131,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
             throw SerializedGameData::Error("Invalid end-id for lua data");
 
         // Now init and load lua
-        lua.reset(new LuaInterface(*this));
+        lua.reset(new LuaInterfaceGame(*this));
         if(!lua->LoadScriptString(luaScript))
             lua.reset();
         else
