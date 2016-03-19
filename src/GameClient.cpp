@@ -1672,7 +1672,16 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 Stop();
-                return 4;
+                return 2;
+            }
+            if(mapinfo.luaData.length)
+            {
+                mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+                if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
+                {
+                    Stop();
+                    return 2;
+                }
             }
         } break;
         case MAPTYPE_SAVEGAME:

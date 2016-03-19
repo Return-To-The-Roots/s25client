@@ -118,6 +118,12 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
             file.WriteUnsignedInt(mapInfo.mapData.length);
             file.WriteUnsignedInt(mapInfo.mapData.data.size());
             file.WriteRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
+            file.WriteUnsignedInt(mapInfo.luaData.length);
+            if(mapInfo.luaData.length)
+            {
+                file.WriteUnsignedInt(mapInfo.luaData.data.size());
+                file.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
+            }
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -193,6 +199,12 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
                 mapInfo->mapData.length = file.ReadUnsignedInt();
                 mapInfo->mapData.data.resize(file.ReadUnsignedInt());
                 file.ReadRawData(&mapInfo->mapData.data[0], mapInfo->mapData.data.size());
+                mapInfo->luaData.length = file.ReadUnsignedInt();
+                if(mapInfo->luaData.length)
+                {
+                    mapInfo->luaData.data.resize(file.ReadUnsignedInt());
+                    file.ReadRawData(&mapInfo->luaData.data[0], mapInfo->luaData.data.size());
+                }
             } break;
             case MAPTYPE_SAVEGAME:
             {
