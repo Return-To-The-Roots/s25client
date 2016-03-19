@@ -64,3 +64,32 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
     return true;
 }
+
+bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = NULL */)
+{
+    std::ifstream file(filePath.c_str(), std::ios::binary | std::ios::ate);
+    length = static_cast<unsigned>(file.tellg());
+    data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
+    file.seekg(0);
+
+    boost::scoped_array<char> uncompressedData(new char[length]);
+
+    if(!file.read(uncompressedData.get(), length))
+    {
+        LOG.lprintf("Could not read from %s\n", filePath.c_str());
+        return false;
+    }
+
+    unsigned compressedLen = data.size();
+    int err = BZ2_bzBuffToBuffCompress(&data[0], &compressedLen, uncompressedData.get(), length, 9, 0, 250);
+    if(err != BZ_OK)
+    {
+        LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n", err);
+        return false;
+    }
+    data.resize(compressedLen);
+
+    if(checksum)
+        *checksum = CalcChecksumOfBuffer(uncompressedData.get(), length);
+    return true;
+}

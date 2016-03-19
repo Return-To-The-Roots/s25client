@@ -30,7 +30,6 @@
 #include "GameMessages.h"
 #include "GameClient.h"
 
-#include "FileChecksum.h"
 #include "GlobalGameSettings.h"
 #include "LobbyClient.h"
 #include "ingameWindows/iwDirectIPCreate.h"
@@ -58,7 +57,6 @@
 
 #include "files.h"
 #include <boost/filesystem.hpp>
-#include <bzlib.h>
 #include <fstream>
 
 // Include last!
@@ -74,24 +72,9 @@ void GameServer::ServerConfig::Clear()
     playercount = 0;
     gamename.clear();
     password.clear();
-    mapname.clear();
     port = 0;
     ipv6 = false;
     use_upnp = false;
-}
-GameServer::MapInfo::MapInfo()
-{
-    Clear();
-}
-
-void GameServer::MapInfo::Clear()
-{
-    ziplength = 0;
-    length = 0;
-    checksum = 0;
-    fileName.clear();
-    zipdata.reset();
-    map_type = MAPTYPE_OLDMAP;
 }
 
 GameServer::CountDown::CountDown()
@@ -137,26 +120,26 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
     // Name, Password und Kartenname kopieren
     serverconfig.gamename = csi.gamename;
     serverconfig.password = csi.password;
-    serverconfig.mapname = map_path;
     serverconfig.servertype = csi.type;
     serverconfig.port = csi.port;
     serverconfig.ipv6 = csi.ipv6;
     serverconfig.use_upnp = csi.use_upnp;
-    mapinfo.map_type = map_type;
+    mapinfo.type = map_type;
+    mapinfo.filepath = map_path;
 
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
-    switch(mapinfo.map_type)
+    switch(mapinfo.type)
     {
-        default: LOG.lprintf("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.map_type); return false;
+        default: LOG.lprintf("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.type); return false;
         // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {
             libsiedler2::ArchivInfo map;
 
             // Karteninformationen laden
-            if(libsiedler2::loader::LoadMAP(serverconfig.mapname, map, true) != 0)
+            if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
             {
-                LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", serverconfig.mapname.c_str());
+                LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
                 return false;
             }
             const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
@@ -170,13 +153,13 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         {
             Savegame save;
 
-            if(!save.Load(serverconfig.mapname, false, false))
+            if(!save.Load(mapinfo.filepath, false, false))
                 return false;
 
             // Spieleranzahl
             serverconfig.playercount = save.GetPlayerCount();
             bfs::path mapPath = map_path;
-            mapinfo.title = mapPath.stem().string(); // Get name only
+            mapinfo.title = save.mapName;
         } break;
     }
 
@@ -194,53 +177,17 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
 
 bool GameServer::Start()
 {
-    // map-shortname füllen
-    bfs::path mapPath = serverconfig.mapname;
-    if(mapPath.has_filename())
-        mapinfo.fileName =  mapPath.filename().string();
-    else
-        mapinfo.fileName = serverconfig.mapname;
-
-    std::ifstream mapFile(serverconfig.mapname.c_str(), std::ios::binary | std::ios::ate);
-    mapinfo.length = static_cast<unsigned>(mapFile.tellg());
-    mapinfo.ziplength = mapinfo.length * 2 + 600;
-    mapFile.seekg(0);
-
-    boost::interprocess::unique_ptr<char, Deleter<char[]> > map_data(new char[mapinfo.length + 1]);
-    mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength]);
-
-    if(!mapFile.read(map_data.get(), mapinfo.length))
+    if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
-    mapFile.close();
 
-    // read lua script - if any
-    mapinfo.script.clear();
-    std::string lua_file = serverconfig.mapname.substr(0, serverconfig.mapname.length() - 3);
-    lua_file.append("lua");
-    
-    std::ifstream luaFile(lua_file.c_str());
-
-    if (luaFile)
+    std::string luaFilePath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+    if(bfs::exists(luaFilePath))
     {
-        mapinfo.script.assign(std::istreambuf_iterator<char>(luaFile), std::istreambuf_iterator<char>());
-        if(!luaFile)
-        {
-            LOG.getlasterror("Could not read from lua file");
+        if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
             return false;
-        }
-        luaFile.close();
+        mapinfo.luaFilepath = luaFilePath;
     } else
-        mapinfo.script.clear(); // just to be sure
-
-    // map mit bzip2 komprimieren
-    int err = BZ_OK;
-    if( (err = BZ2_bzBuffToBuffCompress( (char*)mapinfo.zipdata.get(), (unsigned int*)&mapinfo.ziplength, map_data.get(), mapinfo.length, 9, 0, 250)) != BZ_OK)
-    {
-        LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n", err);
-        return false;
-    }
-
-    mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)map_data.get(), mapinfo.length);
+        RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
     // Speicher für Spieler anlegen
     for(unsigned i = 0; i < serverconfig.playercount; ++i)
@@ -252,7 +199,7 @@ bool GameServer::Start()
     bool host_found = false;
 
     //// Spieler 0 erstmal der Host
-    switch(mapinfo.map_type)
+    switch(mapinfo.type)
     {
         default:
             break;
@@ -270,7 +217,7 @@ bool GameServer::Start()
         case MAPTYPE_SAVEGAME:
         {
             Savegame save;
-            if(!save.Load(serverconfig.mapname, true, false))
+            if(!save.Load(mapinfo.filepath, true, false))
                 return false;
 
             // Bei Savegames die Originalspieldaten noch mit auslesen
@@ -568,7 +515,7 @@ bool GameServer::StartGame()
     lanAnnouncer.Stop();
 
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
-    unsigned random_init = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
+    unsigned random_init = (mapinfo.type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
@@ -624,7 +571,7 @@ bool GameServer::StartGame()
     }
 
     // read back gf_nr (if savegame)
-    if(mapinfo.map_type == MAPTYPE_SAVEGAME)
+    if(mapinfo.type == MAPTYPE_SAVEGAME)
         framesinfo.gf_nr = GAMECLIENT.GetGFNumber();
 
     // Erste KI-Nachrichten schicken
@@ -693,13 +640,13 @@ void GameServer::TogglePlayerState(unsigned char client)
                     SetAIName(client);
                     break;
                 case AI::DUMMY:
-                    if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                    if(mapinfo.type != MAPTYPE_SAVEGAME)
                         player.ps = PS_LOCKED;
                     else
                         player.ps = PS_FREE;
                     break;
                 default:
-                    if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                    if(mapinfo.type != MAPTYPE_SAVEGAME)
                         player.ps = PS_LOCKED;
                     else
                         player.ps = PS_FREE;
@@ -714,7 +661,7 @@ void GameServer::TogglePlayerState(unsigned char client)
             // Im Savegame können auf geschlossene Slots keine Spieler
             // gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf
             // der Karte!
-            if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+            if(mapinfo.type != MAPTYPE_SAVEGAME)
                 player.ps = PS_FREE;
         } break;
     }
@@ -1288,19 +1235,38 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
     player.name = msg.playername;
 
     // Als Antwort Karteninformationen übertragen
-    player.send_queue.push(new GameMessage_Map_Info(mapinfo.fileName, mapinfo.map_type, mapinfo.ziplength, mapinfo.length, mapinfo.script));
+    player.send_queue.push(new GameMessage_Map_Info(bfs::path(mapinfo.filepath).filename().string(), mapinfo.type,
+        mapinfo.mapData.length, mapinfo.mapData.data.size(),
+        mapinfo.luaData.length, mapinfo.luaData.data.size()
+        ));
 
-    // Und Kartendaten
+    // Send map data
     unsigned curPos = 0;
-    do
+    const unsigned compressedMapSize = mapinfo.mapData.data.size();
+    while(curPos < compressedMapSize)
     {
-        unsigned dataSize = (mapinfo.ziplength - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (mapinfo.ziplength - curPos);
+        unsigned chunkSize = (compressedMapSize - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (compressedMapSize - curPos);
 
-        player.send_queue.push(new GameMessage_Map_Data(curPos, mapinfo.zipdata.get() + curPos, dataSize));
-        curPos += dataSize;
-    }while(curPos < mapinfo.ziplength);
-    
-    RTTR_Assert(curPos == mapinfo.ziplength);
+        player.send_queue.push(new GameMessage_Map_Data(true, curPos, &mapinfo.mapData.data[curPos], chunkSize));
+        curPos += chunkSize;
+    }
+
+    RTTR_Assert(curPos == compressedMapSize);
+
+    // And lua data (if there is any)
+    RTTR_Assert(mapinfo.luaFilepath.empty() == mapinfo.luaData.data.empty());
+    RTTR_Assert(mapinfo.luaData.data.empty() == (mapinfo.luaData.length == 0));
+    curPos = 0;
+    const unsigned compressedLuaSize = mapinfo.luaData.data.size();
+    while(curPos < compressedLuaSize)
+    {
+        unsigned chunkSize = (compressedLuaSize - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (compressedLuaSize - curPos);
+
+        player.send_queue.push(new GameMessage_Map_Data(false, curPos, &mapinfo.luaData.data[curPos], chunkSize));
+        curPos += chunkSize;
+    }
+
+    RTTR_Assert(curPos == compressedLuaSize);
 }
 
 
@@ -1389,12 +1355,9 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 {
     GameServerPlayer& player = players[msg.player];
 
-    bool checksumok = false;
+    bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
 
-    if(msg.checksum == mapinfo.checksum)
-        checksumok = true;
-
-    LOG.write("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n", msg.player, msg.checksum, mapinfo.checksum, checksumok ? "yes" : "no");
+    LOG.write("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n", msg.player, msg.mapChecksum, mapinfo.mapChecksum, checksumok ? "yes" : "no");
 
     // Antwort senden
     player.send_queue.push(new GameMessage_Map_ChecksumOK(checksumok));

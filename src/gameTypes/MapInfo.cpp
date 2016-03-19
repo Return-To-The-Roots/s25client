@@ -39,6 +39,8 @@ void MapInfo::Clear()
     filepath.clear();
     luaFilepath.clear();
     mapData.Clear();
+    luaData.Clear();
     mapChecksum = 0;
+    luaChecksum = 0;
     savegame.reset();
 }
