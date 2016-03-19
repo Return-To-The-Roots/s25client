@@ -138,7 +138,7 @@ void iwSaveLoad::RefreshTable()
         std::string startGF = helpers::toString(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow(0, fileNameStr.c_str(), save.map_name.c_str(), dateStr.c_str(), startGF.c_str(), it->c_str());
+        GetCtrl<ctrlTable>(0)->AddRow(0, fileNameStr.c_str(), save.mapName.c_str(), dateStr.c_str(), startGF.c_str(), it->c_str());
     }
 
     // Nach Zeit Sortieren

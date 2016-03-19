@@ -29,13 +29,13 @@
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/MapInfo.h"
 #include "gameData/PlayerConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "FramesInfo.h"
 
 class AIBase;
 class ClientInterface;
-class Savegame;
 class GameMessage_GameCommand;
 class GameWorldViewer;
 class PostMsg;
@@ -63,9 +63,9 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         ~GameClient() override;
 
         void SetInterface(ClientInterface* ci) { this->ci = ci; }
-        bool IsHost() const { return clientconfig.host; }
-        bool IsSavegame() const { return mapinfo.map_type == MAPTYPE_SAVEGAME; }
-        std::string GetGameName() const { return clientconfig.gamename; }
+        bool IsHost() const { return clientconfig.isHost; }
+        bool IsSavegame() const { return mapinfo.type == MAPTYPE_SAVEGAME; }
+        std::string GetGameName() const { return clientconfig.gameName; }
 
         inline unsigned char GetPlayerID() const { return playerId_; }
         inline unsigned GetPlayerCount() const { return players.getCount(); }
@@ -89,9 +89,9 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Gibt Map-Titel zurück
         const std::string& GetMapTitle() const { return mapinfo.title; }
         /// Gibt Pfad zu der Map zurück
-        const std::string& GetMapPath() const  { return clientconfig.mapfilepath; }
+        const std::string& GetMapPath() const  { return mapinfo.filepath; }
         /// Gibt Map-Typ zurück
-        const MapType GetMapType() const { return mapinfo.map_type; }
+        const MapType GetMapType() const { return mapinfo.type; }
 
         // Initialisiert und startet das Spiel
         void StartGame(const unsigned random_init);
@@ -296,30 +296,14 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 void Clear();
 
                 std::string server;
-                std::string gamename;
+                std::string gameName;
                 std::string password;
-                std::string mapfile;
-                std::string mapfilepath;
                 ServerType servertyp;
                 unsigned short port;
-                bool host;
+                bool isHost;
         } clientconfig;
 
-        class MapInfo
-        {
-            public:
-                MapInfo() { Clear(); }
-                void Clear();
-
-                MapType map_type;
-                unsigned partcount;
-                unsigned ziplength;
-                unsigned length;
-                unsigned checksum;
-                std::string title;
-                boost::shared_array<unsigned char> zipdata;
-                boost::shared_ptr<Savegame> savegame;
-        } mapinfo;
+        MapInfo mapinfo;
 
         FramesInfoClient framesinfo;
 

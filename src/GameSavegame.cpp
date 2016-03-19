@@ -83,7 +83,7 @@ bool Savegame::Save(BinaryFile& file)
     file.WriteRawData(&tmpTime, 8);
 
     // Mapname
-    file.WriteShortString(map_name);
+    file.WriteShortString(mapName);
 
     // Anzahl Spieler
     file.WriteUnsignedChar(GetPlayerCount());
@@ -149,7 +149,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     save_time = libendian::ConvertEndianess<false>::toNative(save_time);
 
     // Map-Name
-    map_name = file.ReadShortString();
+    mapName = file.ReadShortString();
 
     // Anzahl Spieler
     SetPlayerCount(file.ReadUnsignedChar());

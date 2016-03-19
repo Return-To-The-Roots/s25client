@@ -54,6 +54,7 @@
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/filesystem.hpp>
 #include <bzlib.h>
 #include <cerrno>
 #include <iostream>
@@ -73,30 +74,10 @@ class GameWorldViewer;
 void GameClient::ClientConfig::Clear()
 {
     server.clear();
-    gamename.clear();
+    gameName.clear();
     password.clear();
-    mapfile.clear();
-    mapfilepath.clear();
     port = 0;
-    host = false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author
- */
-void GameClient::MapInfo::Clear()
-{
-    map_type = MAPTYPE_OLDMAP;
-    partcount = 0;
-    ziplength = 0;
-    length = 0;
-    checksum = 0;
-    title.clear();
-    zipdata.reset();
-    savegame.reset();
+    isHost = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,7 +160,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
 
     clientconfig.servertyp = servertyp;
     clientconfig.port = port;
-    clientconfig.host = host;
+    clientconfig.isHost = host;
 
     // Verbinden
     if(!socket.Connect(server, port, use_ipv6, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port)) //-V807
@@ -322,7 +303,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
     // framesinfo vorinitialisieren
     // bei gespeicherten Spielen mit einem bestimmten GF natürlich beginnen!
-    framesinfo.gf_nr = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
+    framesinfo.gf_nr = (mapinfo.type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
     framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
@@ -365,12 +346,12 @@ void GameClient::StartGame(const unsigned int random_init)
     }
     else
     {
-        RTTR_Assert(mapinfo.map_type != MAPTYPE_SAVEGAME);
+        RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
         /// Startbündnisse setzen
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
             players[i].MakeStartPacts();
 
-        gw->LoadMap(clientconfig.mapfilepath);
+        gw->LoadMap(mapinfo.filepath);
 
         /// Evtl. Goldvorkommen ändern
         unsigned char target = 0xFF; // löschen
@@ -400,11 +381,7 @@ void GameClient::StartGame(const unsigned int random_init)
     }
 
     // Daten nach dem Schreiben des Replays ggf wieder löschen
-    if(mapinfo.zipdata)
-    {
-        mapinfo.zipdata.reset();
-        replayinfo.replay.map_data.reset();
-    }
+    mapinfo.mapData.Clear();
 
     if(gw->HasLua())
         gw->GetLua().EventStart(!mapinfo.savegame);
@@ -599,13 +576,13 @@ void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& m
                         }
                         break;
                     case AI::DUMMY:
-                            if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                            if(mapinfo.type != MAPTYPE_SAVEGAME)
                                 player->ps = PS_LOCKED;
                             else
                                 player->ps = PS_FREE;
                             break;
                         default:
-                            if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                            if(mapinfo.type != MAPTYPE_SAVEGAME)
                                 player->ps = PS_LOCKED;
                             else
                                 player->ps = PS_FREE;
@@ -618,7 +595,7 @@ void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& m
                     // Im Savegame können auf geschlossene Slots keine Spieler
                     // gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf
                     // der Karte!
-                    if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                    if(mapinfo.type != MAPTYPE_SAVEGAME)
                         player->ps = PS_FREE;
                 } break;
                 default: break;
@@ -854,7 +831,7 @@ void GameClient::OnNMSServerPassword(const GameMessage_Server_Password& msg)
  */
 void GameClient::OnNMSServerName(const GameMessage_Server_Name& msg)
 {
-    clientconfig.gamename = msg.name;
+    clientconfig.gameName = msg.name;
 
     if(ci)
         ci->CI_NextConnectState(CS_QUERYPLAYERLIST);
@@ -1000,36 +977,31 @@ void GameClient::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCount
  */
 inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
 {
-    // shortname
-    clientconfig.mapfile = msg.map_name;
     // full path
-    clientconfig.mapfilepath = GetFilePath(FILE_PATHS[48]) + clientconfig.mapfile;
-
-    mapinfo.map_type = msg.mt;
-    mapinfo.ziplength = msg.ziplength;
-    mapinfo.length = msg.normal_length;
+    mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + msg.map_name;
+    mapinfo.type = msg.mt;
+    mapinfo.mapData.data.resize(msg.ziplength);
+    mapinfo.mapData.length = msg.normal_length;
     
     // lua script file path
     if (!msg.script.empty())
     {
-        std::string lua_file = clientconfig.mapfilepath.substr(0, clientconfig.mapfilepath.length() - 3);
-        lua_file.append("lua");
-        std::ofstream luaFile(lua_file.c_str());
+        mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+        std::ofstream luaFile(mapinfo.luaFilepath.c_str());
 
         if(!luaFile)
         {
-            LOG.lprintf("Fatal error: can't open lua script at %s: %s\n", lua_file.c_str(), strerror(errno));
+            LOG.lprintf("Fatal error: can't open lua script at %s: %s\n", mapinfo.luaFilepath.c_str(), strerror(errno));
             Stop();
             return;
         } else if(!(luaFile << msg.script))
         {
-            LOG.lprintf("Fatal error: can't write to lua script at %s: %s\n", lua_file.c_str(), strerror(errno));
+            LOG.lprintf("Fatal error: can't write to lua script at %s: %s\n", mapinfo.luaFilepath.c_str(), strerror(errno));
             Stop();
             return;
         }
-    }
-
-    mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength + 1]);
+    } else
+        mapinfo.luaFilepath.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1039,48 +1011,54 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
 {
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.map_data.size());
 
-    std::copy(msg.map_data.begin(), msg.map_data.end(), mapinfo.zipdata.get() + msg.offset);
-    if(msg.offset + msg.map_data.size() == mapinfo.ziplength)
+    std::copy(msg.map_data.begin(), msg.map_data.end(), mapinfo.mapData.data.begin() + msg.offset);
+    if(msg.offset + msg.map_data.size() == mapinfo.mapData.data.size())
     {
-        FILE* map_f = fopen(clientconfig.mapfilepath.c_str(), "wb");
+        FILE* map_f = fopen(mapinfo.filepath.c_str(), "wb");
 
         if(!map_f)
         {
-            LOG.lprintf("Fatal error: can't write map to %s: %s\n", clientconfig.mapfilepath.c_str(), strerror(errno));
+            LOG.lprintf("Fatal error: can't write map to %s: %s\n", mapinfo.filepath.c_str(), strerror(errno));
 
             Stop();
             return;
         }
 
-        boost::scoped_array<char> mapData(new char[mapinfo.length + 1]);
+        boost::scoped_array<char> mapData(new char[mapinfo.mapData.length]);
 
-        unsigned int length = mapinfo.length;
+        unsigned int length = mapinfo.mapData.length;
 
-        int err = BZ_OK;
-        if( (err = BZ2_bzBuffToBuffDecompress(mapData.get(), &length, (char*)mapinfo.zipdata.get(), mapinfo.ziplength, 0, 0)) != BZ_OK)
+        int err = BZ2_bzBuffToBuffDecompress(mapData.get(), &length, &mapinfo.mapData.data[0], mapinfo.mapData.length, 0, 0);
+        if(err != BZ_OK)
         {
             LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
             Stop();
             return;
         }
-        if(fwrite(mapData.get(), 1, mapinfo.length, map_f) != mapinfo.length)
+        if(length != mapinfo.mapData.length)
+        {
+            LOG.lprintf("FATAL ERROR: Length mismatch after decompressing. Expected: %u, got %u\n", mapinfo.mapData.length, length);
+            Stop();
+            return;
+        }
+        if(fwrite(mapData.get(), 1, length, map_f) != length)
             LOG.lprintf("ERROR: fwrite failed\n");
 
-        mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)mapData.get(), mapinfo.length);
+        mapinfo.mapChecksum = CalcChecksumOfBuffer((unsigned char*)mapData.get(), length);
 
         fclose(map_f);
 
         // Map-Typ unterscheiden
-        switch(mapinfo.map_type)
+        switch(mapinfo.type)
         {
             case MAPTYPE_OLDMAP:
             {
                 libsiedler2::ArchivInfo map;
 
                 // Karteninformationen laden
-                if(libsiedler2::loader::LoadMAP(clientconfig.mapfilepath, map, true) != 0)
+                if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
                 {
-                    LOG.lprintf("GameClient::OnNMSMapData: ERROR: Map \"%s\", couldn't load header!\n", clientconfig.mapfilepath.c_str());
+                    LOG.lprintf("GameClient::OnNMSMapData: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
                     Stop();
                     return;
                 }
@@ -1098,7 +1076,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
             case MAPTYPE_SAVEGAME:
             {
                 mapinfo.savegame.reset(new Savegame);
-                if(!mapinfo.savegame->Load(clientconfig.mapfilepath, true, true))
+                if(!mapinfo.savegame->Load(mapinfo.filepath, true, true))
                 {
                     Stop();
                     return;
@@ -1108,19 +1086,15 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
                 for(unsigned i = 0; i < mapinfo.savegame->GetPlayerCount(); ++i)
                     players.push_back(GameClientPlayer(i));
 
-                mapinfo.title = mapinfo.savegame->map_name;
+                mapinfo.title = mapinfo.savegame->mapName;
 
 
             } break;
-            case MAPTYPE_RTTRMAP:
-                break;
-            case MAPTYPE_RANDOMMAP:
-                break;
         }
 
-        send_queue.push(new GameMessage_Map_Checksum(mapinfo.checksum));
+        send_queue.push(new GameMessage_Map_Checksum(mapinfo.mapChecksum));
 
-        LOG.write(">>>NMS_MAP_CHECKSUM(%u)\n", mapinfo.checksum);
+        LOG.write(">>>NMS_MAP_CHECKSUM(%u)\n", mapinfo.mapChecksum);
     }
 }
 
@@ -1653,44 +1627,22 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
     // GGS-Daten
     replayinfo.replay.ggs = ggs;
 
-    // Map
-    replayinfo.replay.map_type = MapType(mapinfo.map_type);
-
-    switch(replayinfo.replay.map_type)
-    {
-        default:
-            break;
-
-        case MAPTYPE_OLDMAP:
-        {
-            // Größe der entpackten Map
-            replayinfo.replay.map_length  = mapinfo.length;
-            // Größe der gepackten Map
-            replayinfo.replay.map_zip_length = mapinfo.ziplength;
-            // Gepackte Map
-            replayinfo.replay.map_data = mapinfo.zipdata;
-        } break;
-        case MAPTYPE_SAVEGAME:
-        {
-            replayinfo.replay.savegame = mapinfo.savegame;
-        } break;
-    }
-
-
     // Mapname
-    replayinfo.replay.map_name = clientconfig.mapfile;
+    replayinfo.replay.mapName = mapinfo.title;
+    replayinfo.replay.mapFileName = bfs::path(mapinfo.filepath).filename().string();
 
     // Datei speichern
-    if(!replayinfo.replay.WriteHeader(fileName))
+    if(!replayinfo.replay.WriteHeader(fileName, mapinfo))
         LOG.lprintf("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
 }
 
 unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 {
     replayinfo.Clear();
+    mapinfo.Clear();
     replayinfo.filename = path;
 
-    if(!replayinfo.replay.LoadHeader(path, true))
+    if(!replayinfo.replay.LoadHeader(path, &mapinfo))
         return 2;
 
     // NWF-Länge
@@ -1741,22 +1693,16 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     // GGS-Daten
     ggs = replayinfo.replay.ggs;
 
-    // Map-Type auslesen
-    mapinfo.Clear();
-    mapinfo.map_type = replayinfo.replay.map_type;
-    mapinfo.title = replayinfo.replay.map_name;
-    mapinfo.savegame = replayinfo.replay.savegame;
-
-    switch(replayinfo.replay.map_type)
+    switch(mapinfo.type)
     {
         default:
             break;
         case MAPTYPE_OLDMAP:
         {
             // Mapdaten auslesen und entpacken
-            boost::interprocess::unique_ptr<char, Deleter<char[]> > real_data(new char[replayinfo.replay.map_length]);
+            boost::interprocess::unique_ptr<char, Deleter<char[]> > real_data(new char[mapinfo.mapData.length]);
 
-            int err = BZ2_bzBuffToBuffDecompress(real_data.get(), &replayinfo.replay.map_length, (char*)replayinfo.replay.map_data.get(), replayinfo.replay.map_zip_length, 0, 0);
+            int err = BZ2_bzBuffToBuffDecompress(real_data.get(), &mapinfo.mapData.length, &mapinfo.mapData.data[0], mapinfo.mapData.data.size(), 0, 0);
             if(err != BZ_OK)
             {
                 LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
@@ -1765,18 +1711,17 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             }
 
             // Richtigen Pfad zur Map erstellen
-            clientconfig.mapfile = replayinfo.replay.map_name;
-            clientconfig.mapfilepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.map_name;
+            mapinfo.filepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.mapFileName;
 
             // Und entpackte Mapdaten speichern
             BinaryFile map_f;
-            if(!map_f.Open(clientconfig.mapfilepath, OFM_WRITE))
+            if(!map_f.Open(mapinfo.filepath, OFM_WRITE))
             {
-                LOG.lprintf("GameClient::StartReplay: ERROR: Couldn't open file \'%s\' for writing!\n", clientconfig.mapfilepath.c_str());
+                LOG.lprintf("GameClient::StartReplay: ERROR: Couldn't open file \'%s\' for writing!\n", mapinfo.filepath.c_str());
                 Stop();
                 return 7;
             }
-            map_f.WriteRawData(real_data.get(), replayinfo.replay.map_length);
+            map_f.WriteRawData(real_data.get(), mapinfo.mapData.length);
             map_f.Close();
         } break;
         case MAPTYPE_SAVEGAME:
@@ -1808,13 +1753,6 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 
     return 0;
 }
-//
-//unsigned GameClient::GetGlobalAnimation(8,unsigned time_part_nominator, unsigned time_part_denominator,
-//      unsigned divide_nominator, unsigned divide_denominator, unsigned offset)
-//{
-//  //return ((networkframe.nr * networkframe.length + networkframe.frame_time+offset) % time_part) / divide;
-//  return ((networkframe.nr * networkframe.length + networkframe.frame_time+offset) % (networkframe.length*time_part_nominator/time_part_denominator)) / (networkframe.length*time_part_nominator/time_part_denominator);
-//}
 
 unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset)
 {
@@ -1948,7 +1886,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     // Timestamp der Aufzeichnung
     save.save_time = TIME.CurrentTime();
     // Mapname
-    save.map_name = this->mapinfo.title;
+    save.mapName = this->mapinfo.title;
 
     WritePlayerInfo(save);
 
@@ -2083,22 +2021,6 @@ bool GameClient::IsSinglePlayer() const
 /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
 AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
 {
-    /*
-    unsigned int level = AI::MEDIUM;
-
-    switch(level)
-    {
-    case AI::EASY:
-        {
-            return new AIPlayer(playerid, gw,&players[playerid],&players,&ggs, AI::EASY);
-        } break;
-    default:
-        {
-            return new AIPlayerJH(playerid, gw,&players[playerid],&players,&ggs, (AI::Level)level);
-        } break;
-    }
-    */
-
     switch (players[playerid].aiInfo.type)
     {
     case AI::DUMMY:

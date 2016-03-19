@@ -89,7 +89,7 @@ void GameServer::MapInfo::Clear()
     ziplength = 0;
     length = 0;
     checksum = 0;
-    name.clear();
+    fileName.clear();
     zipdata.reset();
     map_type = MAPTYPE_OLDMAP;
 }
@@ -197,9 +197,9 @@ bool GameServer::Start()
     // map-shortname füllen
     bfs::path mapPath = serverconfig.mapname;
     if(mapPath.has_filename())
-        mapinfo.name =  mapPath.filename().string();
+        mapinfo.fileName =  mapPath.filename().string();
     else
-        mapinfo.name = serverconfig.mapname;
+        mapinfo.fileName = serverconfig.mapname;
 
     std::ifstream mapFile(serverconfig.mapname.c_str(), std::ios::binary | std::ios::ate);
     mapinfo.length = static_cast<unsigned>(mapFile.tellg());
@@ -1288,7 +1288,7 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
     player.name = msg.playername;
 
     // Als Antwort Karteninformationen übertragen
-    player.send_queue.push(new GameMessage_Map_Info(mapinfo.name, mapinfo.map_type, mapinfo.ziplength, mapinfo.length, mapinfo.script));
+    player.send_queue.push(new GameMessage_Map_Info(mapinfo.fileName, mapinfo.map_type, mapinfo.ziplength, mapinfo.length, mapinfo.script));
 
     // Und Kartendaten
     unsigned curPos = 0;
