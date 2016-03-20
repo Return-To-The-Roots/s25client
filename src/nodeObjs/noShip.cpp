@@ -87,7 +87,7 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos),
       player(player), state(STATE_IDLE), seaId_(0), goal_harbor_id(0), goal_dir(0),
       name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_count)]),
-      lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
+      curRouteIdx(0), lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(unsigned i = 0; i < 6; ++i)

@@ -79,7 +79,7 @@ void iwPlayReplay::PopulateTable()
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(*it, false))
+        if(!replay.LoadHeader(*it))
         {
             numInvalid++;
             continue;
@@ -211,7 +211,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
         {
             Replay replay;
-            if(!replay.LoadHeader(*it, false))
+            if(!replay.LoadHeader(*it))
             {
                 replay.StopRecording();
                 boost::system::error_code ec;
