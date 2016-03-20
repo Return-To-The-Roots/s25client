@@ -228,9 +228,7 @@ bool InitProgram()
 {
     // Check and set locale (avoids errors caused by invalid locales later like #420)
     try{
-        // Check for errors
-        std::locale("");
-        // But use classic locale to avoid e.g. thousand separator in int2string conversions via streams
+        // Check for errors and use classic locale to avoid e.g. thousand separator in int2string conversions via streams
         std::locale::global(std::locale::classic());
     }catch(std::exception& e){
         std::cerr << "Error initializing your locale setting. ";
