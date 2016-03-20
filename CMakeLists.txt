@@ -222,6 +222,10 @@ CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
 CheckAndAddFlag("-Qunused-arguments")
 
+# Variadic macros are part of C99 but supported by all big compilers in C++03
+CheckAndAddFlag("-Wno-variadic-macros")
+ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
+
 # avoid lhs-path bug in windows
 IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(RTTR_BINDIR "." CACHE STRING "" FORCE)

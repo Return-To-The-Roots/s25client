@@ -950,8 +950,14 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
     else
         std::copy(msg.data.begin(), msg.data.end(), mapinfo.luaData.data.begin() + msg.offset);
 
-    if(msg.isMapData && mapinfo.luaFilepath.empty() &&  msg.offset + msg.data.size() == mapinfo.mapData.data.size() ||
-        !msg.isMapData && msg.offset + msg.data.size() == mapinfo.luaData.data.size())
+    const unsigned curSize = msg.offset + msg.data.size();
+    bool isCompleted;
+    if(msg.isMapData)
+        isCompleted = mapinfo.luaFilepath.empty() && curSize == mapinfo.mapData.data.size();
+    else
+        isCompleted = curSize == mapinfo.luaData.data.size();
+
+    if(isCompleted)
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {

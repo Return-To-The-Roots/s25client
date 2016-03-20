@@ -244,7 +244,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
         ser.PushUnsignedInt(it->addon->getId());
         ser.PushUnsignedInt(it->status);
 
-        LOG.write("\t0x%08X=%d\n", it->addon->getId(), it->status);
+        LOG.write("\t0x%08X=%d\n", AddonId::type_(it->addon->getId()), it->status);
     }
 }
 
@@ -276,7 +276,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
         unsigned int status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
-        LOG.write("\t0x%08X=%d\n", addon, status);
+        LOG.write("\t0x%08X=%d\n", AddonId::type_(addon), status);
     }
 }
 
