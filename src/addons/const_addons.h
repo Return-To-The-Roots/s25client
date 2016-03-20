@@ -91,7 +91,7 @@ ENUM_WITH_STRING(AddonId,
     MILITARY_HITPOINTS         = 0x00B00000,
 
     NUM_SCOUTS_EXPLORATION     = 0x00C00000
-);
+)
 
 enum AddonGroup
 {
