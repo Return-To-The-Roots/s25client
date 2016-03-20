@@ -7,6 +7,12 @@ So you will still need an original "The Settlers 2 Gold Edition" version to play
 
 see more information on http://www.rttr.info
 
+# Current Build Info
+
+Travis CI: ![Travis CI Build Info](https://travis-ci.org/Return-To-The-Roots/s25client.svg?branch=master)
+
+Appveyor: ![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)
+
 # How to build
 
 ## On Linux or Darwin/MacOSX
