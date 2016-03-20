@@ -220,6 +220,7 @@ CheckAndAddFlag("-Wno-deprecated-register")
 CheckAndAddFlag("-Wno-unknown-pragmas")
 CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
+CheckAndAddFlag("-Qunused-arguments")
 
 # avoid lhs-path bug in windows
 IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")

@@ -31,6 +31,6 @@
  */
 GlobalVars::GlobalVars()
     : notdone(true), ingame(false),
-      ext_vbo(false), ext_swapcontrol(false)
+      ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false)
 {
 }

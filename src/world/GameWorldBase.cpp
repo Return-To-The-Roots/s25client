@@ -33,7 +33,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), gi(NULL)
+GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), gi(NULL), players(NULL)
 {}
 
 GameWorldBase::~GameWorldBase()
