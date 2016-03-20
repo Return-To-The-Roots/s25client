@@ -19,14 +19,16 @@
 #define WP_HOSTGAME_H_
 
 #include "Desktop.h"
-
+#include "ClientInterface.h"
+#include "LobbyInterface.h"
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
-#include "LobbyInterface.h"
-#include "ClientInterface.h"
 class GameWorldViewer;
 class LobbyPlayerInfo;
+class LuaInterfaceSettings;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame :
@@ -96,6 +98,8 @@ class dskHostGame :
         GlobalGameSettings ggs_;
         bool hasCountdown_;
         const ServerType serverType;
+        boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
+        bool allowAddonChange;
 };
 
 
