@@ -18,44 +18,12 @@
 #ifndef GAMEPLAYERINFO_H_INCLUDED
 #define GAMEPLAYERINFO_H_INCLUDED
 
+#include "gameTypes/AIInfo.h"
+#include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
 #include "gameData/PlayerConsts.h"
 
 class Serializer;
-
-enum PlayerState
-{
-    PS_FREE = 0,
-    PS_RESERVED,
-    PS_OCCUPIED,
-    PS_LOCKED,
-    PS_KI
-};
-
-namespace AI
-{
-    enum Level
-    {
-        EASY = 0,
-        MEDIUM,
-        HARD
-    };
-
-    enum Type
-    {
-        DUMMY = 0,
-        DEFAULT
-    };
-
-    struct Info
-    {
-        Type type;
-        Level level;
-        Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) { }
-    };
-}
-
-
 
 class GamePlayerInfo
 {

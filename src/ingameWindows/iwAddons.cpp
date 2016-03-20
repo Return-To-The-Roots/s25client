@@ -37,8 +37,8 @@ class MouseCoords;
  *
  *  @author FloSoft
  */
-iwAddons::iwAddons(GlobalGameSettings* ggs, ChangePolicy policy)
-    : IngameWindow(CGI_ADDONS, 0xFFFF, 0xFFFF, 700, 500, _("Addon Settings"), LOADER.GetImageN("resource", 41), true), ggs(ggs), policy(policy)
+iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vector<unsigned>& addonIds)
+    : IngameWindow(CGI_ADDONS, 0xFFFF, 0xFFFF, 700, 500, _("Addon Settings"), LOADER.GetImageN("resource", 41), true), ggs(ggs), policy(policy), addonIds(addonIds)
 {
     AddText(0, 20, 30, _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
 
@@ -64,7 +64,7 @@ iwAddons::iwAddons(GlobalGameSettings* ggs, ChangePolicy policy)
     optiongroup->AddTextButton(ADDONGROUP_OTHER, 560, 50, 120, 22, TC_GREEN2, _("Other"), NormalFont);
 
     ctrlScrollBar* scrollbar = AddScrollBar(6, width_ - SCROLLBAR_WIDTH - 20, 90, SCROLLBAR_WIDTH, height_ - 140, SCROLLBAR_WIDTH, TC_GREEN2, (height_ - 140) / 30 - 1);
-    scrollbar->SetRange(ggs->getCount());
+    scrollbar->SetRange(ggs.getCount());
 
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
 }
@@ -98,18 +98,18 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                 Close();
 
             // Einstellungen in ADDONMANAGER übertragen
-            for(unsigned int i = 0; i < ggs->getCount(); ++i)
+            for(unsigned int i = 0; i < ggs.getCount(); ++i)
             {
                 unsigned int status;
-                const Addon* addon = ggs->getAddon(i, status);
+                const Addon* addon = ggs.getAddon(i, status);
 
                 if(!addon)
                     continue;
 
                 bool failed = false;
-                status = addon->getGuiStatus(this, 10 + 20 * (ggs->getCount() - i - 1), failed);
+                status = addon->getGuiStatus(this, 10 + 20 * (ggs.getCount() - i - 1), failed);
                 if(!failed)
-                    ggs->setSelection(addon->getId(), status);
+                    ggs.setSelection(addon->getId(), status);
             }
 
             switch(policy)
@@ -118,13 +118,13 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                     break;
                 case SETDEFAULTS:
                 {
-                    ggs->SaveSettings();
+                    ggs.SaveSettings();
                 } break;
                 case HOSTGAME:
+                case HOSTGAME_WHITELIST:
                 {
                     // send message via msgboxresult
-                    MsgboxResult mbr = MSR_YES;
-                    parent_->Msg_MsgBoxResult(GetID(), mbr);
+                    parent_->Msg_MsgBoxResult(GetID(), MSR_YES);
                 } break;
             }
             Close();
@@ -138,15 +138,17 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
         case 3: // Load S2 Defaults
         {
             // Standardeinstellungen aufs Fenster übertragen
-            for(unsigned int i = 0; i < ggs->getCount(); ++i)
+            for(unsigned int i = 0; i < ggs.getCount(); ++i)
             {
                 unsigned int status;
-                const Addon* addon = ggs->getAddon(i, status);
+                const Addon* addon = ggs.getAddon(i, status);
 
                 if(!addon)
                     continue;
+                if(policy == HOSTGAME_WHITELIST && !helpers::contains(addonIds, addon->getId()))
+                    continue;
 
-                addon->setGuiStatus(this, 10 + 20 * (ggs->getCount() - i - 1), addon->getDefaultStatus());
+                addon->setGuiStatus(this, 10 + 20 * (ggs.getCount() - i - 1), addon->getDefaultStatus());
             }
         } break;
     }
@@ -155,46 +157,37 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
 /// Aktualisiert die Addons, die angezeigt werden sollen
 void iwAddons::UpdateView(const unsigned short selection)
 {
-    //LOG.lprintf("\nUpdateView start\n");
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
-    unsigned short inthiscategory = 0;
-    //LOG.lprintf("Page range: %u - %u\n", scrollbar->GetPos().x, scrollbar->GetPos().y, (unsigned int)(scrollbar->GetPos()+scrollbar->GetPageSize()));
-    for(unsigned int i = 0; i < ggs->getCount(); ++i)
+    unsigned short numAddonsInCurCategory = 0;
+    for(unsigned int i = 0; i < ggs.getCount(); ++i)
     {
-        unsigned int id = 10 + 20 * (ggs->getCount() - i - 1);
+        unsigned int id = 10 + 20 * (ggs.getCount() - i - 1);
         unsigned int status;
-        const Addon* addon = ggs->getAddon(i, status);
+        const Addon* addon = ggs.getAddon(i, status);
 
         if(!addon)
             continue;
         unsigned int groups = addon->getGroups();
 
         if( (groups & selection) == selection)
-        {
-            ++inthiscategory;
-            //LOG.lprintf("ADD  addon: %s - falls in this category \n",addon->getName().c_str());
-        }
+            ++numAddonsInCurCategory;
         //hide addon's gui if addon is beyond selected group or is beyond current page scope
-        if( ((groups & selection) != selection) || inthiscategory < scrollbar->GetPos() + 1
-                || inthiscategory > (unsigned int)(scrollbar->GetPos() + scrollbar->GetPageSize()) + 1 )
+        if( ((groups & selection) != selection) || numAddonsInCurCategory < scrollbar->GetPos() + 1
+                || numAddonsInCurCategory > (unsigned int)(scrollbar->GetPos() + scrollbar->GetPageSize()) + 1 )
         {
-            //if((groups & selection) != selection)
-            //  LOG.lprintf("HIDE addon: %s - category mismatch\n",addon->getName().c_str());
-            //else
-            //  LOG.lprintf("HIDE addon: %s - no available space on page\n",addon->getName().c_str());
             addon->hideGui(this, id);
             continue;
         }
 
-        addon->createGui(this, id, y, (policy == READONLY), status);
+        bool isReadOnly = policy == READONLY || (policy == HOSTGAME_WHITELIST && !helpers::contains(addonIds, addon->getId()));
+        addon->createGui(this, id, y, isReadOnly, status);
     }
-    if(_inthiscategory != inthiscategory)
+    if(numAddonsInCurCategory_ != numAddonsInCurCategory)
     {
-        _inthiscategory = inthiscategory;
-        scrollbar->SetRange(inthiscategory);
+        numAddonsInCurCategory_ = numAddonsInCurCategory;
+        scrollbar->SetRange(numAddonsInCurCategory);
     }
-    //LOG.lprintf("UpdateView end\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

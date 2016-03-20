@@ -29,7 +29,7 @@
 class AddonAsyncDebug : public AddonBool
 {
     public:
-        AddonAsyncDebug() : AddonBool(ADDON_ASYNC_DEBUG,
+        AddonAsyncDebug() : AddonBool(AddonId::ASYNC_DEBUG,
                                           ADDONGROUP_OTHER,
                                           gettext_noop("Async debugging (REALLY SLOW!)"),
                                           gettext_noop("Enables extra stuff to debug asyncs. Do not enable unless you know what you are doing!"),

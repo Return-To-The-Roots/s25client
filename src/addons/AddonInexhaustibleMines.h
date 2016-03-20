@@ -31,7 +31,7 @@
 class AddonInexhaustibleMines : public AddonBool
 {
     public:
-        AddonInexhaustibleMines() : AddonBool(ADDON_INEXHAUSTIBLE_MINES,
+        AddonInexhaustibleMines() : AddonBool(AddonId::INEXHAUSTIBLE_MINES,
                                                   ADDONGROUP_ECONOMY,
                                                   gettext_noop("Inexhaustible Mines"),
                                                   gettext_noop("Allows to have unlimited resources.\n\n"

@@ -668,24 +668,27 @@ void GameServer::TogglePlayerState(unsigned char client)
     player.ready = (player.ps == PS_KI);
 
     // Tat verkünden
-    SendToAll(GameMessage_Player_Toggle_State(client));
-
-    // freie farbe suchen lassen
-    bool reserved_colors[PLAYER_COLORS_COUNT];
-    memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-    for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-    {
-        GameServerPlayer& ki = players[cl];
-
-        if( (client != cl) && ( (ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI) ) )
-            reserved_colors[ki.color] = true;
-    }
+    SendToAll(GameMessage_Player_Set_State(client, player.ps, player.aiInfo));
     AnnounceStatusChange();
 
-    // bis wir eine freie farbe gefunden haben!
-    if(reserved_colors[player.color] && (player.ps == PS_KI || player.ps == PS_OCCUPIED) )
-        OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(client, player.color));
+    if(player.ps == PS_OCCUPIED || player.ps == PS_KI)
+    {
+        // freie farbe suchen lassen
+        bool reserved_colors[PLAYER_COLORS_COUNT];
+        memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
+
+        for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
+        {
+            GameServerPlayer& ki = players[cl];
+
+            if((client != cl) && ((ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI)))
+                reserved_colors[ki.color] = true;
+        }
+
+        // If player color is taken -> toggle
+        if(reserved_colors[player.color])
+            OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(client, player.color));
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -419,7 +419,7 @@ void noShip::StartDriving(const unsigned char dir)
 {
     const unsigned SHIP_SPEEDS[] = {35, 25, 20, 10, 5};
 
-    StartMoving(dir, SHIP_SPEEDS[GAMECLIENT.GetGGS().getSelection(ADDON_SHIP_SPEED)]);
+    StartMoving(dir, SHIP_SPEEDS[GAMECLIENT.GetGGS().getSelection(AddonId::SHIP_SPEED)]);
 }
 
 void noShip::Driven()

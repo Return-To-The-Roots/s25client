@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include <vector>
 
 class GlobalGameSettings;
 class MouseCoords;
@@ -28,19 +29,18 @@ class iwAddons : public IngameWindow
 {
         /// Breite der Scrollbar
         static const unsigned short SCROLLBAR_WIDTH = 20;
-        /// Pointer to the settings we edit in this window
-        GlobalGameSettings* ggs;
-
     public:
         enum ChangePolicy
         {
             HOSTGAME,
+            /// Allow only whitelisted addons to change
+            HOSTGAME_WHITELIST,
             READONLY,
             SETDEFAULTS
         };
 
     public:
-        iwAddons(GlobalGameSettings* ggs, ChangePolicy policy = SETDEFAULTS);
+        iwAddons(GlobalGameSettings& ggs, ChangePolicy policy = SETDEFAULTS, const std::vector<unsigned>& addonIds = std::vector<unsigned>());
         ~iwAddons() override;
 
     protected:
@@ -54,8 +54,13 @@ class iwAddons : public IngameWindow
         void UpdateView(const unsigned short selection);
 
     private:
+        void createGui();
+
+        /// settings we edit in this window
+        GlobalGameSettings& ggs;
         ChangePolicy policy;
-        unsigned short _inthiscategory;
+        std::vector<unsigned> addonIds;
+        unsigned short numAddonsInCurCategory_;
 };
 
 #endif // !iwENHANCEMENTS_H_INCLUDED

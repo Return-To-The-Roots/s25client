@@ -624,7 +624,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
         case 14: // Addons
         {
             ggs.LoadSettings();
-            WINDOWMANAGER.Show(new iwAddons(&ggs));
+            WINDOWMANAGER.Show(new iwAddons(ggs));
 
         } break;
     }

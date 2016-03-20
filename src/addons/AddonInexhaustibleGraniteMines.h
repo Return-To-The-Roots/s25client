@@ -15,7 +15,7 @@
 class AddonInexhaustibleGraniteMines : public AddonBool
 {
     public:
-        AddonInexhaustibleGraniteMines() : AddonBool(ADDON_INEXHAUSTIBLE_GRANITEMINES,
+        AddonInexhaustibleGraniteMines() : AddonBool(AddonId::INEXHAUSTIBLE_GRANITEMINES,
                     ADDONGROUP_ECONOMY,
                     gettext_noop("Inexhaustible Granite Mines"),
                     gettext_noop("Allows to have unlimited Granite resources.\n\n"

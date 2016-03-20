@@ -482,7 +482,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     const Inventory& inventory = aii.GetInventory();
     if (((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15) && (inventory.goods[GD_STONES] > 6 || GetBuildingCount(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
-	if (aijh.HarborPosClose(pt,20) && rand()%10!=0 && aijh.ggs.getSelection(ADDON_SEA_ATTACK) != 2)
+	if (aijh.HarborPosClose(pt,20) && rand()%10!=0 && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
 	{
         if(aii.CanBuildBuildingtype(BLD_WATCHTOWER))
 		    return BLD_WATCHTOWER;
@@ -667,10 +667,10 @@ void AIConstruction::RefreshBuildingCount()
         buildingsWanted[BLD_MINT] = GetBuildingCount(BLD_GOLDMINE);
         //armory count = smelter -metalworks if there is more than 1 smelter or 1 if there is just 1.
         buildingsWanted[BLD_ARMORY] = (GetBuildingCount(BLD_IRONSMELTER) > 1) ? GetBuildingCount(BLD_IRONSMELTER) - GetBuildingCount(BLD_METALWORKS) : GetBuildingCount(BLD_IRONSMELTER);
-		if(aijh.ggs.isEnabled(ADDON_HALF_COST_MIL_EQUIP))
+		if(aijh.ggs.isEnabled(AddonId::HALF_COST_MIL_EQUIP))
 			buildingsWanted[BLD_ARMORY]*=2;
         //brewery count = 1+(armory/5) if there is at least 1 armory or armory /6 for exhaustible mines
-        if(aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES))
+        if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
             buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1 + (GetBuildingCount(BLD_ARMORY) / 5) : 0;
         else
             buildingsWanted[BLD_BREWERY] = (GetBuildingCount(BLD_ARMORY) > 0 && GetBuildingCount(BLD_FARM) > 0) ? 1 + (GetBuildingCount(BLD_ARMORY) / 6) : 0;
@@ -715,14 +715,14 @@ void AIConstruction::RefreshBuildingCount()
 				buildingsWanted[BLD_COALMINE]=(aii.GetBuildings(BLD_FARM).size()+aii.GetBuildings(BLD_FISHERY).size())/2+2;
             if (GetBuildingCount(BLD_FARM) > 7) //quite the empire just scale mines with farms
             {
-                if(aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES)) //inexhaustible mines? -> more farms required for each mine
+                if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)) //inexhaustible mines? -> more farms required for each mine
                     buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM) * 2 / 5 > GetBuildingCount(BLD_IRONSMELTER) + 1) ? GetBuildingCount(BLD_IRONSMELTER) + 1 : GetBuildingCount(BLD_FARM) * 2 / 5;
                 else
                     buildingsWanted[BLD_IRONMINE] = (GetBuildingCount(BLD_FARM) / 2 > GetBuildingCount(BLD_IRONSMELTER) + 1) ? GetBuildingCount(BLD_IRONSMELTER) + 1 : GetBuildingCount(BLD_FARM) / 2;
                 buildingsWanted[BLD_GOLDMINE] = (GetBuildingCount(BLD_MINT) > 0) ? GetBuildingCount(BLD_IRONSMELTER) > 6 && GetBuildingCount(BLD_MINT) > 1 ? GetBuildingCount(BLD_IRONSMELTER) > 10 ? 4 : 3 : 2 : 1;
                 buildingsWanted[BLD_DONKEYBREEDER] = 1;
                 resourcelimit = inventory.people[JOB_CHARBURNER] + inventory.goods[GD_SHOVEL] + 1;
-                if(aijh.ggs.isEnabled(ADDON_CHARBURNER) && (buildingsWanted[BLD_COALMINE] > GetBuildingCount(BLD_COALMINE) + 4))
+                if(aijh.ggs.isEnabled(AddonId::CHARBURNER) && (buildingsWanted[BLD_COALMINE] > GetBuildingCount(BLD_COALMINE) + 4))
                     buildingsWanted[BLD_CHARBURNER] = min<int>(min<int>(buildingsWanted[BLD_COALMINE] - (GetBuildingCount(BLD_COALMINE) + 1), 3), resourcelimit);
             }
             else
@@ -731,7 +731,7 @@ void AIConstruction::RefreshBuildingCount()
                 buildingsWanted[BLD_IRONMINE] = (inventory.people[JOB_MINER] + inventory.goods[GD_PICKAXE] - (GetBuildingCount(BLD_COALMINE) + GetBuildingCount(BLD_GOLDMINE)) > 1 && GetBuildingCount(BLD_BAKERY) + GetBuildingCount(BLD_SLAUGHTERHOUSE) + GetBuildingCount(BLD_HUNTER) + GetBuildingCount(BLD_FISHERY) > 4) ? 2 : 1;
                 buildingsWanted[BLD_GOLDMINE] = (inventory.people[JOB_MINER] > 2) ? 1 : 0;				
                 resourcelimit = inventory.people[JOB_CHARBURNER] + inventory.goods[GD_SHOVEL];
-                if(aijh.ggs.isEnabled(ADDON_CHARBURNER) && (GetBuildingCount(BLD_COALMINE) < 1 && (GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_GOLDMINE) > 0)))
+                if(aijh.ggs.isEnabled(AddonId::CHARBURNER) && (GetBuildingCount(BLD_COALMINE) < 1 && (GetBuildingCount(BLD_IRONMINE) + GetBuildingCount(BLD_GOLDMINE) > 0)))
                     buildingsWanted[BLD_CHARBURNER] = min<int>(1, resourcelimit);
             }
 			if(GetBuildingCount(BLD_QUARRY)+1 < buildingsWanted[BLD_QUARRY] && aijh.AmountInStorage(GD_STONES,0)<100) //no quarry and low stones -> try granitemines.

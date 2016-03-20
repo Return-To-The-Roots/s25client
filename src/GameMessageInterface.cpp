@@ -40,7 +40,7 @@ void GameMessageInterface::OnNMSServerCancelCountdown(const GameMessage_Server_C
 void GameMessageInterface::OnNMSPlayerId(const GameMessage_Player_Id&  /*msg*/) {}
 void GameMessageInterface::OnNMSPlayerName(const GameMessage_Player_Name&  /*msg*/) {}
 void GameMessageInterface::OnNMSPlayerList(const GameMessage_Player_List&  /*msg*/) {}
-void GameMessageInterface::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State&  /*msg*/) {}
+void GameMessageInterface::OnNMSPlayerSetState(const GameMessage_Player_Set_State&  /*msg*/) {}
 void GameMessageInterface::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation&  /*msg*/) {}
 void GameMessageInterface::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team&  /*msg*/) {}
 void GameMessageInterface::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color&  /*msg*/) {}

@@ -14,30 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONTRADE_H_INCLUDED
-#define ADDONTRADE_H_INCLUDED
 
+#ifndef PlayerState_h__
+#define PlayerState_h__
 
-#include "Addons.h"
-#include "../mygettext/src/mygettext.h"
-
-///////////////////////////S////////////////////////////////////////////////////
-/**
- *  Addon for a Charburner
- *
- *  @author OLiver
- */
-class AddonTrade : public AddonBool
+enum PlayerState
 {
-    public:
-        AddonTrade() : AddonBool(AddonId::TRADE,
-                                     ADDONGROUP_ECONOMY,
-                                     gettext_noop("Trade"),
-                                     gettext_noop("Allows to send wares/figures to allied warehouses"),
-                                     0
-                                    )
-        {
-        }
+    PS_FREE = 0,
+    PS_RESERVED,
+    PS_OCCUPIED,
+    PS_LOCKED,
+    PS_KI
 };
 
-#endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED
+#endif // PlayerState_h__

@@ -31,7 +31,7 @@
 class AddonCustomBuildSequence : public AddonBool
 {
     public:
-        AddonCustomBuildSequence() : AddonBool(ADDON_CUSTOM_BUILD_SEQUENCE,
+        AddonCustomBuildSequence() : AddonBool(AddonId::CUSTOM_BUILD_SEQUENCE,
                                                    ADDONGROUP_ECONOMY | ADDONGROUP_GAMEPLAY,
                                                    gettext_noop("Custom build sequence"),
                                                    gettext_noop("Allows every player to control whether building sites\n"

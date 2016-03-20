@@ -30,7 +30,7 @@
 class AddonMilitaryHitpoints : public AddonBool
 {
 public:
-	AddonMilitaryHitpoints() : AddonBool(ADDON_MILITARY_HITPOINTS,
+	AddonMilitaryHitpoints() : AddonBool(AddonId::MILITARY_HITPOINTS,
 		ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
 		gettext_noop("Military Hitpoints"),
 		gettext_noop("Allows you to see the hitpoints of units in military buildings."),

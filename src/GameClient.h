@@ -92,6 +92,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         const std::string& GetMapPath() const  { return mapinfo.filepath; }
         /// Gibt Map-Typ zurück
         const MapType GetMapType() const { return mapinfo.type; }
+        const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
 
         // Initialisiert und startet das Spiel
         void StartGame(const unsigned random_init);
@@ -208,7 +209,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         void OnNMSPlayerId(const GameMessage_Player_Id& msg) override;
         void OnNMSPlayerList(const GameMessage_Player_List& msg) override;
-        void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg) override;
+        void OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg) override;
         void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) override;
         void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
         void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;

@@ -14,30 +14,31 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONTRADE_H_INCLUDED
-#define ADDONTRADE_H_INCLUDED
 
+#ifndef AIInfo_h__
+#define AIInfo_h__
 
-#include "Addons.h"
-#include "../mygettext/src/mygettext.h"
-
-///////////////////////////S////////////////////////////////////////////////////
-/**
- *  Addon for a Charburner
- *
- *  @author OLiver
- */
-class AddonTrade : public AddonBool
+namespace AI
 {
-    public:
-        AddonTrade() : AddonBool(AddonId::TRADE,
-                                     ADDONGROUP_ECONOMY,
-                                     gettext_noop("Trade"),
-                                     gettext_noop("Allows to send wares/figures to allied warehouses"),
-                                     0
-                                    )
-        {
-        }
-};
+    enum Level
+    {
+        EASY = 0,
+        MEDIUM,
+        HARD
+    };
 
-#endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED
+    enum Type
+    {
+        DUMMY = 0,
+        DEFAULT
+    };
+
+    struct Info
+    {
+        Type type;
+        Level level;
+        Info(Type t = DUMMY, Level l = EASY): type(t), level(l) { }
+    };
+}
+
+#endif // AIInfo_h__

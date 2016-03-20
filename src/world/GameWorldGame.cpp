@@ -437,7 +437,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 	
     const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
     const unsigned char newOwnerOfTriggerBld = region.GetOwner(building.GetPos().x, building.GetPos().y);
-    const bool noAlliedBorderPush = GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH);
+    const bool noAlliedBorderPush = GAMECLIENT.GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
 
     for(int y = region.y1; y < region.y2; ++y)
     {
@@ -980,7 +980,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers)
 {
     //sea attack abgeschaltet per addon?
-    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
+    if(GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return;
     // Verzögerungsbug-Abfrage:
     // Existiert das angegriffenen Gebäude überhaupt noch?
@@ -1662,7 +1662,7 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
 void GameWorldGame::CreateTradeGraphs()
 {
     // Only if trade is enabled
-    if(!GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
+    if(!GAMECLIENT.GetGGS().isEnabled(AddonId::TRADE))
         return;
 
     TradePathCache::inst().Clear();
