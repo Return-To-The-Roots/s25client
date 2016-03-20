@@ -78,6 +78,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         unsigned short GetPort() const { return serverconfig.port; }
         unsigned GetMaxPlayerCount() const { return serverconfig.playercount; }
 
+        const GlobalGameSettings& GetGGS(){ return ggs_; }
     protected:
 
         /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
