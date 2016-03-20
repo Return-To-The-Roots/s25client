@@ -31,7 +31,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-void check(bool testValue, const std::string& error)
+inline void check(bool testValue, const std::string& error)
 {
     if(!testValue)
         throw std::runtime_error(error);

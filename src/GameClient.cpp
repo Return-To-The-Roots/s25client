@@ -353,7 +353,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
         /// Evtl. Goldvorkommen ändern
         unsigned char target = 0xFF; // löschen
-        switch(GAMECLIENT.GetGGS().getSelection(ADDON_CHANGE_GOLD_DEPOSITS))
+        switch(GAMECLIENT.GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             case 0: target = 3; break; //in Gold   konvertieren bzw. nichts tun
             case 1: target = 0xFF; break; // löschen
@@ -539,102 +539,51 @@ void GameClient::OnNMSPlayerPing(const GameMessage_Player_Ping& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg)
+void GameClient::OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg)
 {
+    if(msg.player >= players.getCount())
+        return;
+
     GameClientPlayer* player = players.getElement(msg.player);
+    player->ps = msg.ps;
+    player->aiInfo = msg.aiInfo;
 
-    if(msg.player != 0xFF)
+    // Baby mit einem Namen Taufen ("Name (KI)")
+    if (player->aiInfo.type == AI::DEFAULT)
     {
-        if(msg.player < players.getCount())
+        char str[512];
+        sprintf(str, _("Computer %u"), unsigned(msg.player));
+        player->name = str;
+        player->name += _(" (AI)");
+        switch (player->aiInfo.level)
         {
-            switch(player->ps)
-            {
-                case PS_FREE:
-                {
-                    player->ps = PS_KI;
-                    player->aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
-                } break;
-                case PS_KI:
-                {
-                    // Verschiedene KIs durchgehen
-                    switch(player->aiInfo.type)
-                    {
-                    case AI::DEFAULT:
-                        switch(player->aiInfo.level)
-                        {
-                        case AI::EASY:
-                            player->aiInfo.level = AI::MEDIUM;
-                            break;
-                        case AI::MEDIUM:
-                            player->aiInfo.level = AI::HARD;
-                            break;
-                        case AI::HARD:
-                            player->aiInfo = AI::Info(AI::DUMMY);
-                            break;
-                        }
-                        break;
-                    case AI::DUMMY:
-                            if(mapinfo.type != MAPTYPE_SAVEGAME)
-                                player->ps = PS_LOCKED;
-                            else
-                                player->ps = PS_FREE;
-                            break;
-                        default:
-                            if(mapinfo.type != MAPTYPE_SAVEGAME)
-                                player->ps = PS_LOCKED;
-                            else
-                                player->ps = PS_FREE;
-                            break;
-                    }
-                    break;
-                }
-                case PS_LOCKED:
-                {
-                    // Im Savegame können auf geschlossene Slots keine Spieler
-                    // gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf
-                    // der Karte!
-                    if(mapinfo.type != MAPTYPE_SAVEGAME)
-                        player->ps = PS_FREE;
-                } break;
-                default: break;
-            }
-
-            // Baby mit einem Namen Taufen ("Name (KI)")
-            if (player->aiInfo.type == AI::DEFAULT)
-            {
-                char str[512];
-                sprintf(str, _("Computer %u"), unsigned(msg.player));
-                player->name = str;
-                player->name += _(" (AI)");
-                player->rating = 666;
-                switch (player->aiInfo.level)
-                {
-                case AI::EASY:
-                    player->name += _(" (easy)");
-                    break;
-                case AI::MEDIUM:
-                    player->name += _(" (medium)");
-                    break;
-                case AI::HARD:
-                    player->name += _(" (hard)");
-                    break;
-                }
-            }
-            else if (player->aiInfo.type == AI::DUMMY)
-            {
-                char str[512];
-                sprintf(str, _("Dummy %u"), unsigned(msg.player));
-                player->name = str;
-                player->rating = 0; // ;-)
-            }
-
-            if(ci)
-                ci->CI_PSChanged(msg.player, player->ps);
+        case AI::EASY:
+            player->name += _(" (easy)");
+            player->rating = 42;
+            break;
+        case AI::MEDIUM:
+            player->name += _(" (medium)");
+            player->rating = 666;
+            break;
+        case AI::HARD:
+            player->name += _(" (hard)");
+            player->rating = 1337;
+            break;
         }
-        player->ready = (player->ps == PS_KI);
+    }
+    else if (player->aiInfo.type == AI::DUMMY)
+    {
+        char str[512];
+        sprintf(str, _("Dummy %u"), unsigned(msg.player));
+        player->name = str;
+        player->rating = 0; // ;-)
+    }
 
-        if(ci)
-            ci->CI_ReadyChanged(msg.player, player->ready);
+    player->ready = (player->ps == PS_KI);
+    if(ci)
+    {
+        ci->CI_PSChanged(msg.player, player->ps);
+        ci->CI_ReadyChanged(msg.player, player->ready);
     }
 }
 

@@ -31,7 +31,7 @@
 class AddonLimitCatapults : public AddonList
 {
     public:
-        AddonLimitCatapults() : AddonList(ADDON_LIMIT_CATAPULTS,
+        AddonLimitCatapults() : AddonList(AddonId::LIMIT_CATAPULTS,
                                               ADDONGROUP_MILITARY,
                                               _("Limit number of catapults"),
                                               _("Limits the number of catapults per player.\n\n"

@@ -39,7 +39,7 @@ class GameMessage_Server_CancelCountdown;
 class GameMessage_Player_Id;
 class GameMessage_Player_Name;
 class GameMessage_Player_List;
-class GameMessage_Player_Toggle_State;
+class GameMessage_Player_Set_State;
 class GameMessage_Player_Toggle_Nation;
 class GameMessage_Player_Toggle_Team;
 class GameMessage_Player_Toggle_Color;
@@ -85,7 +85,7 @@ class GameMessageInterface : public MessageInterface
         virtual void OnNMSPlayerId(const GameMessage_Player_Id& msg);
         virtual void OnNMSPlayerName(const GameMessage_Player_Name& msg);
         virtual void OnNMSPlayerList(const GameMessage_Player_List& msg);
-        virtual void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg);
+        virtual void OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg);
         virtual void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg);
         virtual void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg);
         virtual void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg);

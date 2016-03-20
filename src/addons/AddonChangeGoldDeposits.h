@@ -32,7 +32,7 @@
 class AddonChangeGoldDeposits : public AddonList
 {
     public:
-        AddonChangeGoldDeposits() : AddonList(ADDON_CHANGE_GOLD_DEPOSITS,
+        AddonChangeGoldDeposits() : AddonList(AddonId::CHANGE_GOLD_DEPOSITS,
                                                   ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY,
                                                   _("Change gold deposits"),
                                                   _("You can remove gold resources completely or convert them into iron ore, coal or granite.\n\n"

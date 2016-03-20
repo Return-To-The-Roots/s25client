@@ -30,7 +30,7 @@
 class AddonHalfCostMilEquip : public AddonBool
 {
     public:
-        AddonHalfCostMilEquip() : AddonBool(ADDON_HALF_COST_MIL_EQUIP,
+        AddonHalfCostMilEquip() : AddonBool(AddonId::HALF_COST_MIL_EQUIP,
                                                   ADDONGROUP_ECONOMY,
                                                   _("Half cost recruits"),
                                                   _("Smith can create 1 shield & 1 sword "

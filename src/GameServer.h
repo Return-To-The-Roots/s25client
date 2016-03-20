@@ -40,6 +40,7 @@ namespace AIEvent { class Base; }
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {
+    friend class LuaServerPlayer;
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
 
@@ -75,6 +76,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         std::string GetGameName() const { return serverconfig.gamename; }
         bool HasPwd() const { return !serverconfig.password.empty(); }
         unsigned short GetPort() const { return serverconfig.port; }
+        unsigned GetMaxPlayerCount() const { return serverconfig.playercount; }
 
     protected:
 

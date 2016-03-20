@@ -14,29 +14,23 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONBATTLEFIELDPROMOTION_H_INCLUDED
-#define ADDONBATTLEFIELDPROMOTION_H_INCLUDED
 
+#include "defines.h" // IWYU pragma: keep
+#include "AIInfo.h"
+#include "Serializer.h"
 
-#include "Addons.h"
+// Include last!
+#include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Addon for Battlefield Promotions
- *
- *  @author PoC
- */
-class AddonBattlefieldPromotion : public AddonBool
-{
-    public:
-        AddonBattlefieldPromotion() : AddonBool(AddonId::BATTLEFIELD_PROMOTION,
-                                          ADDONGROUP_MILITARY,
-                                          _("Enable battlefield promotions"),
-                                          _("Soldiers winning a fight increase in rank."),
-                                          0
-                                         )
-        {
-        }
-};
+namespace AI{
+    Info::Info(Serializer& ser):
+                    type(static_cast<Type>(ser.PopUnsignedChar())),
+                    level(static_cast<Level>(ser.PopUnsignedChar()))
+    {}
 
-#endif
+    void Info::serialize(Serializer& ser) const
+    {
+        ser.PushUnsignedChar(static_cast<unsigned char>(type));
+        ser.PushUnsignedChar(static_cast<unsigned char>(level));
+    }
+}

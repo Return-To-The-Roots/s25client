@@ -467,19 +467,38 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 /// gehende -Nachricht
-class GameMessage_Player_Toggle_State : public GameMessage
+class GameMessage_Player_Set_State : public GameMessage
 {
 public:
-	GameMessage_Player_Toggle_State(): GameMessage(NMS_PLAYER_TOGGLESTATE) { }
-	GameMessage_Player_Toggle_State(const unsigned char player): GameMessage(NMS_PLAYER_TOGGLESTATE, player)
+    PlayerState ps;
+    AI::Info aiInfo;
+
+    GameMessage_Player_Set_State(): GameMessage(NMS_PLAYER_SETSTATE) { }
+    GameMessage_Player_Set_State(const unsigned char player, PlayerState ps, AI::Info aiInfo): GameMessage(NMS_PLAYER_SETSTATE, player), ps(ps), aiInfo(aiInfo)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLESTATE(%d)\n", player);
+		LOG.write(">>> NMS_PLAYER_SETSTATE(%d)\n", player);
 	}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessage::Serialize(ser);
+        ser.PushUnsignedChar(static_cast<unsigned char>(ps));
+        ser.PushUnsignedChar(static_cast<unsigned char>(aiInfo.level));
+        ser.PushUnsignedChar(static_cast<unsigned char>(aiInfo.type));
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessage::Deserialize(ser);
+        ps = PlayerState(ser.PopUnsignedChar());
+        aiInfo.level = AI::Level(ser.PopUnsignedChar());
+        aiInfo.type = AI::Type(ser.PopUnsignedChar());
+    }
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLESTATE(%d)\n", player);
-		GetInterface(callback)->OnNMSPlayerToggleState(*this);
+		LOG.write("<<< NMS_PLAYER_SETSTATE(%d)\n", player);
+		GetInterface(callback)->OnNMSPlayerSetState(*this);
 	}
 };
 

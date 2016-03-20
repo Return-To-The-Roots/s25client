@@ -33,7 +33,7 @@
 class AddonCatapultGraphics : public AddonBool
 {
     public:
-        AddonCatapultGraphics() : AddonBool(ADDON_CATAPULT_GRAPHICS,
+        AddonCatapultGraphics() : AddonBool(AddonId::CATAPULT_GRAPHICS,
                                                 ADDONGROUP_GAMEPLAY,
                                                 _("Race specific catapult graphics"),
                                                 _("Adds new race-specific graphics for catapults to the game."),

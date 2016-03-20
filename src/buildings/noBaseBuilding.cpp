@@ -106,8 +106,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     // Baukosten zurückerstatten (nicht bei Baustellen)
     const GlobalGameSettings& settings = GAMECLIENT.GetGGS();
     if( (GetGOT() != GOT_BUILDINGSITE) &&
-            ( settings.isEnabled(ADDON_REFUND_MATERIALS) ||
-              settings.isEnabled(ADDON_REFUND_ON_EMERGENCY) ) )
+            ( settings.isEnabled(AddonId::REFUND_MATERIALS) ||
+              settings.isEnabled(AddonId::REFUND_ON_EMERGENCY) ) )
     {
         // lebt unsere Flagge noch?
         noFlag* flag = GetFlag();
@@ -116,10 +116,10 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             unsigned int percent_index = 0;
 
             // wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
-            if(settings.isEnabled(ADDON_REFUND_MATERIALS))
-                percent_index = settings.getSelection(ADDON_REFUND_MATERIALS);
+            if(settings.isEnabled(AddonId::REFUND_MATERIALS))
+                percent_index = settings.getSelection(AddonId::REFUND_MATERIALS);
             // wenn Rückerstattung bei Notprogramm aktiv ist, 50% zurückerstatten
-            else if(gwg->GetPlayer(player).hasEmergency() && settings.isEnabled(ADDON_REFUND_ON_EMERGENCY))
+            else if(gwg->GetPlayer(player).hasEmergency() && settings.isEnabled(AddonId::REFUND_ON_EMERGENCY))
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?

@@ -25,19 +25,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-namespace AI{
-    Info::Info(Serializer& ser):
-                    type(static_cast<Type>(ser.PopUnsignedChar())),
-                    level(static_cast<Level>(ser.PopUnsignedChar()))
-    {}
-
-    void Info::serialize(Serializer& ser) const
-    {
-        ser.PushUnsignedChar(static_cast<unsigned char>(type));
-        ser.PushUnsignedChar(static_cast<unsigned char>(level));
-    }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :

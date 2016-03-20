@@ -31,7 +31,7 @@
 class AddonStatisticsVisibility : public AddonList
 {
     public:
-        AddonStatisticsVisibility() : AddonList(ADDON_STATISTICS_VISIBILITY,
+        AddonStatisticsVisibility() : AddonList(AddonId::STATISTICS_VISIBILITY,
                                                     ADDONGROUP_OTHER,
                                                     _("Change the visibility of your ingame statistics"),
                                                     _("Decides to whom your statistics are visible.\n\n"

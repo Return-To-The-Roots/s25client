@@ -14,29 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONBATTLEFIELDPROMOTION_H_INCLUDED
-#define ADDONBATTLEFIELDPROMOTION_H_INCLUDED
 
+#ifndef PlayerState_h__
+#define PlayerState_h__
 
-#include "Addons.h"
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Addon for Battlefield Promotions
- *
- *  @author PoC
- */
-class AddonBattlefieldPromotion : public AddonBool
+enum PlayerState
 {
-    public:
-        AddonBattlefieldPromotion() : AddonBool(AddonId::BATTLEFIELD_PROMOTION,
-                                          ADDONGROUP_MILITARY,
-                                          _("Enable battlefield promotions"),
-                                          _("Soldiers winning a fight increase in rank."),
-                                          0
-                                         )
-        {
-        }
+    PS_FREE = 0,
+    PS_RESERVED,
+    PS_OCCUPIED,
+    PS_LOCKED,
+    PS_KI
 };
 
-#endif
+#endif // PlayerState_h__

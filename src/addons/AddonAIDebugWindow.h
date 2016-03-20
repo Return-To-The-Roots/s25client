@@ -32,7 +32,7 @@
 class AddonAIDebugWindow : public AddonBool
 {
     public:
-        AddonAIDebugWindow() : AddonBool(ADDON_AI_DEBUG_WINDOW,
+        AddonAIDebugWindow() : AddonBool(AddonId::AI_DEBUG_WINDOW,
                                              ADDONGROUP_OTHER,
                                              _("AI Debugging Window"),
                                              _("Enable AI Debugging Window\n"

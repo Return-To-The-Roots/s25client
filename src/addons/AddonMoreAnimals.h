@@ -31,7 +31,7 @@
 class AddonMoreAnimals : public AddonList
 {
     public:
-        AddonMoreAnimals() : AddonList(ADDON_MORE_ANIMALS,
+        AddonMoreAnimals() : AddonList(AddonId::MORE_ANIMALS,
                                                ADDONGROUP_ECONOMY,
                                                _("More trees spawn animals"),
                                                _("Adjust the fraction of trees that spawn animals."),

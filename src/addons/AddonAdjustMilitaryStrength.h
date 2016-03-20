@@ -43,7 +43,7 @@
 class AddonAdjustMilitaryStrength : public AddonList
 {
     public:
-        AddonAdjustMilitaryStrength() : AddonList(ADDON_ADJUST_MILITARY_STRENGTH,
+        AddonAdjustMilitaryStrength() : AddonList(AddonId::ADJUST_MILITARY_STRENGTH,
                     ADDONGROUP_MILITARY,
                     _("Adjust military strength"),
                     _("Modify the strength increase of military ranks"),

@@ -55,7 +55,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
     // Jeder 20. Baum produziert Tiere, aber keine Palmen und Ananas!
 	const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
-    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[GAMECLIENT.GetGGS().getSelection(ADDON_MORE_ANIMALS)] == 0);
+    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[GAMECLIENT.GetGGS().getSelection(AddonId::MORE_ANIMALS)] == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
