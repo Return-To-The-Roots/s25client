@@ -224,6 +224,7 @@ CheckAndAddFlag("-Qunused-arguments")
 
 # Variadic macros are part of C99 but supported by all big compilers in C++03
 CheckAndAddFlag("-Wno-variadic-macros")
+CheckAndAddFlag("-Wno-c99-extensions")
 ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
 # avoid lhs-path bug in windows
