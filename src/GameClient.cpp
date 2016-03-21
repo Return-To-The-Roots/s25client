@@ -1054,7 +1054,7 @@ void GameClient::OnNMSGGSChange(const GameMessage_GGSChange& msg)
 
 void GameClient::OnNMSRemoveLua(const GameMessage_RemoveLua& msg)
 {
-    RTTR_Assert(state == CS_CONFIG);
+    RTTR_Assert(state == CS_CONNECT || state == CS_CONFIG);
     mapinfo.luaFilepath.clear();
     mapinfo.luaData.Clear();
     mapinfo.luaChecksum = 0;
