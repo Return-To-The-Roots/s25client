@@ -234,6 +234,8 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     }
 
     GAMECLIENT.SetInterface(this);
+    if(lua)
+        lua->EventSettingsReady();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -331,14 +333,14 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         {
             if(GAMECLIENT.GetPlayerID() == row)
             {
-                allowNationChange &= lua->IsChangeAllowed("ownNation");
-                allowColorChange &= lua->IsChangeAllowed("ownColor");
-                allowTeamChange &= lua->IsChangeAllowed("ownTeam");
+                allowNationChange &= lua->IsChangeAllowed("ownNation", true);
+                allowColorChange &= lua->IsChangeAllowed("ownColor", true);
+                allowTeamChange &= lua->IsChangeAllowed("ownTeam", true);
             } else
             {
-                allowNationChange &= lua->IsChangeAllowed("otherNation");
-                allowColorChange &= lua->IsChangeAllowed("otherColor");
-                allowTeamChange &= lua->IsChangeAllowed("otherTeam");
+                allowNationChange &= lua->IsChangeAllowed("aiNation", true);
+                allowColorChange &= lua->IsChangeAllowed("aiColor", true);
+                allowTeamChange &= lua->IsChangeAllowed("aiTeam", true);
             }
         }
 

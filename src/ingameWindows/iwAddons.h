@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "addons/const_addons.h"
 #include <vector>
 
 class GlobalGameSettings;
@@ -40,7 +41,7 @@ class iwAddons : public IngameWindow
         };
 
     public:
-        iwAddons(GlobalGameSettings& ggs, ChangePolicy policy = SETDEFAULTS, const std::vector<unsigned>& addonIds = std::vector<unsigned>());
+        iwAddons(GlobalGameSettings& ggs, ChangePolicy policy = SETDEFAULTS, const std::vector<AddonId>& addonIds = std::vector<AddonId>());
         ~iwAddons() override;
 
     protected:
@@ -54,12 +55,10 @@ class iwAddons : public IngameWindow
         void UpdateView(const unsigned short selection);
 
     private:
-        void createGui();
-
         /// settings we edit in this window
         GlobalGameSettings& ggs;
         ChangePolicy policy;
-        std::vector<unsigned> addonIds;
+        std::vector<AddonId> addonIds;
         unsigned short numAddonsInCurCategory_;
 };
 

@@ -33,14 +33,20 @@ public:
     static void Register(kaguya::State& state);
 
     // Interface for C++
-    /// Returns whether the named change is allowed
+    /// Return whether the named change is allowed
     bool IsChangeAllowed(const std::string& name, const bool defaultVal = false);
-    std::vector<unsigned> GetAllowedAddons();
+    /// Get addons that are allowed to be changed
+    std::vector<AddonId> GetAllowedAddons();
+    /// Called when the settings screen is ready
+    void EventSettingsReady();
 
     // Callable from Lua
     unsigned GetPlayerCount();
     LuaServerPlayer GetPlayer(unsigned idx);
     void SetAddon(AddonId id, unsigned value);
+    void SetBoolAddon(AddonId id, bool enabled); // Alias
+    void ResetAddons();
+    void SetGameSettings(const kaguya::LuaTable& settings);
 
 private:
     kaguya::LuaRef GetAllowedChanges();
