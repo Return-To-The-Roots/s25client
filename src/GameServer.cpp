@@ -773,6 +773,15 @@ void GameServer::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
     LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
 }
 
+void GameServer::RemoveLuaScript()
+{
+    RTTR_Assert(status == SS_CONFIG);
+    mapinfo.luaFilepath.clear();
+    mapinfo.luaData.Clear();
+    mapinfo.luaChecksum = 0;
+    SendToAll(GameMessage_RemoveLua());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Nachricht an Alle

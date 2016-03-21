@@ -147,6 +147,22 @@ kaguya::LuaRef LuaInterfaceSettings::GetAllowedChanges()
     return kaguya::LuaRef();
 }
 
+bool LuaInterfaceSettings::EventSettingsInit(bool isSinglePlayer)
+{
+    kaguya::LuaRef func = lua["onSettingsInit"];
+    if(func.type() == LUA_TFUNCTION)
+        return func.call<bool>(isSinglePlayer);
+    else
+        return true;
+}
+
+void LuaInterfaceSettings::EventSettingsReady()
+{
+    kaguya::LuaRef func = lua["onSettingsReady"];
+    if(func.type() == LUA_TFUNCTION)
+        func.call<void>();
+}
+
 bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool defaultVal/* = false*/)
 {
     kaguya::LuaRef cfg = GetAllowedChanges();
@@ -171,12 +187,4 @@ std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
             LOG.lprintf("Invalid type returned by getAllowedAddons");
     }
     return std::vector<AddonId>();
-}
-
-void LuaInterfaceSettings::EventSettingsReady()
-{
-    kaguya::LuaRef onGameFrame = lua["onSettingsReady"];
-    if(onGameFrame.type() == LUA_TFUNCTION)
-        onGameFrame.call<void>();
-
 }

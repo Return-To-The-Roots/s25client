@@ -910,7 +910,6 @@ public:
 	}
 };
 
-
 class GameMessage_GGSChange : public GameMessage
 {
 public:
@@ -940,6 +939,17 @@ public:
 		LOG.write("<<< NMS_GGS_CHANGE\n");
 		GetInterface(callback)->OnNMSGGSChange(*this);
 	}
+};
+
+class GameMessage_RemoveLua: public GameMessage
+{
+public:
+    GameMessage_RemoveLua(): GameMessage(NMS_REMOVE_LUA, 0xFF) {}
+
+    void Run(MessageInterface* callback) override
+    {
+        GetInterface(callback)->OnNMSRemoveLua(*this);
+    }
 };
 
 class GameMessage_Server_Speed : public GameMessage

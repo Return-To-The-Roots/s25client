@@ -229,6 +229,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
 
         void OnNMSGGSChange(const GameMessage_GGSChange& msg) override;
+        void OnNMSRemoveLua(const GameMessage_RemoveLua& msg) override;
 
         void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg) override;
 

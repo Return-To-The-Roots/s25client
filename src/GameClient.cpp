@@ -1052,6 +1052,14 @@ void GameClient::OnNMSGGSChange(const GameMessage_GGSChange& msg)
         ci->CI_GGSChanged(ggs);
 }
 
+void GameClient::OnNMSRemoveLua(const GameMessage_RemoveLua& msg)
+{
+    RTTR_Assert(state == CS_CONFIG);
+    mapinfo.luaFilepath.clear();
+    mapinfo.luaData.Clear();
+    mapinfo.luaChecksum = 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// NFC Antwort vom Server
 /// @param message  Nachricht, welche ausgeführt wird
