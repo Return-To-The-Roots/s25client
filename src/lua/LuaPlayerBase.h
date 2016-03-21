@@ -40,6 +40,7 @@ public:
     bool IsHuman() const;
     bool IsAI() const;
     bool IsClosed() const;
+    bool IsFree() const;
     int GetAILevel() const;
 };
 
