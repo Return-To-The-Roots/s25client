@@ -57,7 +57,7 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
     for(unsigned i = 0; i < AddonId::count_; ++i)
     {
         AddonId id = AddonId::type_(AddonId::values_()[i]);
-        state[std::string("ADDON_") + id.toString()] = static_cast<AddonId const&>(id);
+        state[std::string("ADDON_") + id.toString()] = id;
     }
 }
 
