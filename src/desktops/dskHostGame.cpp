@@ -72,6 +72,14 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         {
             WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
+        } else if(!GAMECLIENT.IsSavegame() && !lua->EventSettingsInit(serverType == ServerType::LOCAL))
+        {
+            RTTR_Assert(GAMECLIENT.IsHost()); // This should be done first for the host so others won't even see the script
+            LOG.lprintf("Lua was disabled by the script itself\n");
+            lua.reset();
+            // Double check...
+            if(GAMECLIENT.IsHost())
+                GAMESERVER.RemoveLuaScript();
         }
     }
 
@@ -234,7 +242,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     }
 
     GAMECLIENT.SetInterface(this);
-    if(lua)
+    if(lua && GAMECLIENT.IsHost())
         lua->EventSettingsReady();
 }
 

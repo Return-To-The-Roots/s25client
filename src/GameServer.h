@@ -67,6 +67,8 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void TogglePlayerColor(unsigned char client);
         void TogglePlayerState(unsigned char client);
         void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
+        /// Removes the lua script for the currently loaded map (only valid in config mode)
+        void RemoveLuaScript();
 
         /// Tauscht Spieler(positionen) bei Savegames in dskHostGame
         void SwapPlayer(const unsigned char player1, const unsigned char player2);

@@ -76,6 +76,7 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_SERVER_SPEED:              { msg = new GameMessage_Server_Speed; } break;
 
         case NMS_GGS_CHANGE:                { msg = new GameMessage_GGSChange; } break;
+        case NMS_REMOVE_LUA:                { msg = new GameMessage_RemoveLua; } break;
 
         case NMS_GET_ASYNC_LOG:             { msg = new GameMessage_GetAsyncLog(); } break;
         case NMS_SEND_ASYNC_LOG:            { msg = new GameMessage_SendAsyncLog(); } break;

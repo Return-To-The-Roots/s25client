@@ -33,12 +33,14 @@ public:
     static void Register(kaguya::State& state);
 
     // Interface for C++
+    /// Called when settings are entered. Returns whether script should be executed
+    bool EventSettingsInit(bool isSinglePlayer);
+    /// Called when the settings screen is ready
+    void EventSettingsReady();
     /// Return whether the named change is allowed
     bool IsChangeAllowed(const std::string& name, const bool defaultVal = false);
     /// Get addons that are allowed to be changed
     std::vector<AddonId> GetAllowedAddons();
-    /// Called when the settings screen is ready
-    void EventSettingsReady();
 
     // Callable from Lua
     unsigned GetPlayerCount();
