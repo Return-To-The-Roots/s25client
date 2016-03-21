@@ -38,6 +38,8 @@ protected:
     std::string script_;
 
     void Log(const std::string& msg);
+    bool IsHost() const;
+    unsigned GetLocalPlayerIdx() const;
 
     static void ErrorHandler(int status, const char* message);
     static void ErrorHandlerThrow(int status, const char* message);

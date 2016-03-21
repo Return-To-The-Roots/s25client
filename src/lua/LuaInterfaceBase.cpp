@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
 #include "GlobalVars.h"
+#include "GameClient.h"
 #include "libutil/src/Log.h"
 #include <fstream>
 
@@ -42,6 +43,8 @@ void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::ClassMetatable<LuaInterfaceBase>()
         .addMemberFunction("Log", &LuaInterfaceBase::Log)
+        .addMemberFunction("IsHost", &LuaInterfaceBase::IsHost)
+        .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
         );
     state.setErrorHandler(ErrorHandler);
 }
@@ -81,6 +84,16 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script)
         script_ = script;
         return true;
     }
+}
+
+bool LuaInterfaceBase::IsHost() const
+{
+    return GAMECLIENT.IsHost();
+}
+
+unsigned LuaInterfaceBase::GetLocalPlayerIdx() const
+{
+    return GAMECLIENT.GetPlayerID();
 }
 
 void LuaInterfaceBase::Log(const std::string& msg)
