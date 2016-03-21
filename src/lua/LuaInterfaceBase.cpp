@@ -66,9 +66,18 @@ void LuaInterfaceBase::ErrorHandlerThrow(int status, const char* message)
 
 bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
 {
-    std::ifstream scriptFile(scriptPath.c_str());
-    script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
-    return LoadScriptString(script_);
+    if(!lua.dofile(scriptPath))
+    {
+        script_.clear();
+        if(GLOBALVARS.isTest)
+            throw std::runtime_error("Could not load lua script");
+        return false;
+    } else
+    {
+        std::ifstream scriptFile(scriptPath.c_str());
+        script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
+        return true;
+    }
 }
 
 bool LuaInterfaceBase::LoadScriptString(const std::string& script)
