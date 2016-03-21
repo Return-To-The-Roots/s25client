@@ -1,6 +1,7 @@
 gfCounter = 0
+isSinglePlayer = false
 
-rttr:Log("Test Log from Lua")
+rttr:Log("LUA: Test Log from Lua")
 
 function getAllowedAddons()
 	return {ADDON_LIMIT_CATAPULTS, ADDON_CHARBURNER, ADDON_TRADE}
@@ -10,9 +11,15 @@ function getAllowedChanges()
 	return {general=true, addonsAll=false, addonsSome=true, swapping=false, playerState=false, ownNation = true, ownColor=true, ownTeam=false, aiNation = false, aiColor=false, aiTeam=false}
 end
 
+function onSettingsInit(isSinglePlayerArg)
+	isSinglePlayer = isSinglePlayerArg
+	return true
+end
+
 function onSettingsReady()
-	rttr:Log("Starting a game with "..rttr:GetPlayerCount().." players")
-	assert(rttr:GetPlayerCount() == 2)
+	rttr:Log("LUA: Starting a game with "..rttr:GetPlayerCount().." players")
+	assert(rttr:IsHost())
+	assert(rttr:GetPlayerCount() == 3)
 	
 	-- Human
 	player = rttr:GetPlayer(0)
@@ -31,6 +38,15 @@ function onSettingsReady()
 	
 	-- AI
 	player = rttr:GetPlayer(1)
+	if(not isSinglePlayer) then
+		assert(not player:IsAI())
+		assert(player:IsFree())
+		player:SetAI(1)
+		assert(not rttr:GetPlayer(2):IsAI())
+		assert(rttr:GetPlayer(2):IsFree())
+		rttr:GetPlayer(2):SetAI(3)
+	end
+	
 	assert(not player:IsHuman())
 	assert(player:IsAI())
 	assert(not player:IsClosed())
@@ -43,10 +59,38 @@ function onSettingsReady()
 	assert(not player:IsClosed())
 	assert(player:GetAILevel() == 2)
 	
+	rttr:ResetAddons()
 	rttr:SetAddon(ADDON_MILITARY_AID, true);
 	rttr:SetAddon(ADDON_MILITARY_HITPOINTS, true);
 	
-	rttr:Log("Setting changes verified. Please check the other settings (Addons: Catapult, Charburner, Trade should be changeable, rest not)")
+	settings = {speed=GS_VERYFAST, objective=GO_TOTALDOMINATION, startWares=SWR_VLOW, fow=EXP_FOGOFWAR, lockedTeams=true, teamView=true, randomStartPosition=false}
+	rttr:SetGameSettings(settings)
+	
+	settingStr = ""
+		for key,val in pairs(settings) do
+		settingsStr = settingsStr..key.."="..value..", "
+	end
+	rttr:Log("LUA: Settings changed to: "..settingsStr)
+	rttr:Log("LUA: Setting changes verified. Please check the other settings (Addons: Catapult, Charburner, Trade should be changeable, rest not)")
+end
+
+function onPlayerJoined(idx)
+	assert(rttr:IsHost())
+	assert(rttr:GetPlayer(id):IsHuman())
+	rttr:Log("LUA: Player "..idx.." is joined")
+end
+
+function onPlayerLeft(idx)
+	assert(rttr:IsHost())
+	assert(not rttr:GetPlayer(id):IsHuman())
+	rttr:Log("LUA: Player "..idx.." is left")
+end
+
+function onPlayerReady(idx)
+	rttr:Log("LUA: Player "..idx.." is ready")
+	if(rttr:GetLocalPlayerIdx() == idx) then
+		rttr:Log("LUA: Game is starting")
+	end
 end
 
 function addPlayerRes(pl)
@@ -90,7 +134,7 @@ function onLoad(saveGame)
 	assert(saveGame:PopBool() == true)
 	assert(saveGame:PopInt() == 42)
 	assert(saveGame:PopString() == "Hello RttR!")
-	rttr:Log("Lua state loaded!")
+	rttr:Log("LUA: Lua state loaded!")
 	return true
 end
 
@@ -125,17 +169,17 @@ function onGameFrame()
 		if(pcall(ASO, world, 21,17,12,1,5)) then -- Fail due to invalid size
 			assert(false)
 		end
-		rttr:Log("Showing mission statement!")
+		rttr:Log("LUA: Showing mission statement!")
 		rttr:MissionStatement(0, "Test Mission", "Mission statement seems to be working")
 	end
 	if(gfCounter == 100) then
-		rttr:Log("Send 2 post messages")
+		rttr:Log("LUA: Send 2 post messages")
 		rttr:PostMessage(0, "Post message working")
 		x,y = rttr:GetPlayer(0):GetHQPos()
 		rttr:PostMessageWithLocation(0, "This should be a message at your HQ", x,y)
 	end
 	if(gfCounter == 150) then
-		rttr:Log("\n\nYou can now close the game")
+		rttr:Log("\n\nLUA: You can now close the game")
 	end
 end
 
