@@ -59,6 +59,32 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
         AddonId id = AddonId::type_(AddonId::values_()[i]);
         state[std::string("ADDON_") + id.toString()] = id;
     }
+
+#pragma region ConstDefs
+#define ADD_LUA_CONST(name) state[#name] = GlobalGameSettings::name
+
+    ADD_LUA_CONST(GS_VERYSLOW);
+    ADD_LUA_CONST(GS_SLOW);
+    ADD_LUA_CONST(GS_NORMAL);
+    ADD_LUA_CONST(GS_FAST);
+    ADD_LUA_CONST(GS_VERYFAST);
+
+    ADD_LUA_CONST(GO_NONE);
+    ADD_LUA_CONST(GO_CONQUER3_4);
+    ADD_LUA_CONST(GO_TOTALDOMINATION);
+
+    ADD_LUA_CONST(SWR_VLOW);
+    ADD_LUA_CONST(SWR_LOW);
+    ADD_LUA_CONST(SWR_NORMAL);
+    ADD_LUA_CONST(SWR_ALOT);
+
+    ADD_LUA_CONST(EXP_DISABLED);
+    ADD_LUA_CONST(EXP_CLASSIC);
+    ADD_LUA_CONST(EXP_FOGOFWAR);
+    ADD_LUA_CONST(EXP_FOGOFWARE_EXPLORED);
+
+#undef ADD_LUA_CONST
+#pragma endregion ConstDefs
 }
 
 unsigned LuaInterfaceSettings::GetPlayerCount()
@@ -161,6 +187,27 @@ void LuaInterfaceSettings::EventSettingsReady()
     kaguya::LuaRef func = lua["onSettingsReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>();
+}
+
+void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
+{
+    kaguya::LuaRef func = lua["onPlayerJoined"];
+    if(func.type() == LUA_TFUNCTION)
+        func.call<void>(playerIdx);
+}
+
+void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
+{
+    kaguya::LuaRef func = lua["onPlayerLeft"];
+    if(func.type() == LUA_TFUNCTION)
+        func.call<void>(playerIdx);
+}
+
+void LuaInterfaceSettings::EventPlayerReady(unsigned playerIdx)
+{
+    kaguya::LuaRef func = lua["onPlayerReady"];
+    if(func.type() == LUA_TFUNCTION)
+        func.call<void>(playerIdx);
 }
 
 bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool defaultVal/* = false*/)

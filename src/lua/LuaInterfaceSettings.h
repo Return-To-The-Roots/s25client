@@ -35,8 +35,12 @@ public:
     // Interface for C++
     /// Called when settings are entered. Returns whether script should be executed
     bool EventSettingsInit(bool isSinglePlayer);
+    // Other events are only called for the host
     /// Called when the settings screen is ready
     void EventSettingsReady();
+    void EventPlayerJoined(unsigned playerIdx);
+    void EventPlayerLeft(unsigned playerIdx);
+    void EventPlayerReady(unsigned playerIdx);
     /// Return whether the named change is allowed
     bool IsChangeAllowed(const std::string& name, const bool defaultVal = false);
     /// Get addons that are allowed to be changed

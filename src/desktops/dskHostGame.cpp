@@ -641,6 +641,8 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
             ctrlTextButton* ready = GetCtrl<ctrlTextButton>(2);
             if(GAMECLIENT.IsHost())
             {
+                if(lua)
+                    lua->EventPlayerReady(GAMECLIENT.GetPlayerID());
                 if(ready->GetText() == _("Start game"))
                 {
                     if(GAMESERVER.StartCountdown())
@@ -857,12 +859,12 @@ void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
  */
 void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
 {
-    ctrlCheck* check;
-    if( (check = GetCtrl<ctrlGroup>(58 - player)->GetCtrl<ctrlCheck>(6)))
+    ctrlCheck* check = GetCtrl<ctrlGroup>(58 - player)->GetCtrl<ctrlCheck>(6);
+    if(check)
         check->SetCheck(ready);
 
-    ctrlTextButton* start;
-    if(player == GAMECLIENT.GetPlayerID() && (start = GetCtrl<ctrlTextButton>(2)))
+    ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
+    if(player == GAMECLIENT.GetPlayerID())
     {
         if(GAMECLIENT.IsHost())
             start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
@@ -954,6 +956,8 @@ void dskHostGame::CI_NewPlayer(const unsigned player_id)
                 LOBBYCLIENT.SendRankingInfoRequest(player.name);
         }
     }
+    if(lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
+        lua->EventPlayerJoined(player_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -965,6 +969,8 @@ void dskHostGame::CI_NewPlayer(const unsigned player_id)
 void dskHostGame::CI_PlayerLeft(const unsigned player_id)
 {
     UpdatePlayerRow(player_id);
+    if(lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
+        lua->EventPlayerLeft(player_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1046,6 +1052,8 @@ void dskHostGame::CI_PingChanged(const unsigned player_id, const unsigned short 
 void dskHostGame::CI_ReadyChanged(const unsigned player_id, const bool ready)
 {
     ChangeReady(player_id, ready);
+    if(ready && lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
+        lua->EventPlayerReady(player_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
