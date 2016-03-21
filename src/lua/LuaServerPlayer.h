@@ -31,11 +31,17 @@ public:
     LuaServerPlayer(unsigned playerIdx);
     static void Register(kaguya::State& state);
 
+    Nation GetNation() const;
     void SetNation(Nation nat);
+    Team GetTeam() const;
     void SetTeam(Team team);
-    void SetColor(unsigned colorIdx);
     unsigned GetColor() const;
+    void SetColor(unsigned colorIdx);
+    bool IsHuman() const;
+    bool IsAI() const;
+    bool IsClosed() const;
     void Close();
+    int GetAILevel() const;
     void SetAI(unsigned level);
 };
 
