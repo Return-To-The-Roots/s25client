@@ -40,11 +40,17 @@ LuaServerPlayer::LuaServerPlayer(unsigned playerIdx): player(*GAMESERVER.players
 void LuaServerPlayer::Register(kaguya::State& state)
 {
     state["Player"].setClass(kaguya::ClassMetatable<LuaServerPlayer>()
+        .addMemberFunction("GetNation", &LuaServerPlayer::GetNation)
         .addMemberFunction("SetNation", &LuaServerPlayer::SetNation)
+        .addMemberFunction("GetTeam", &LuaServerPlayer::GetTeam)
         .addMemberFunction("SetTeam", &LuaServerPlayer::SetTeam)
-        .addMemberFunction("SetColor", &LuaServerPlayer::SetColor)
         .addMemberFunction("GetColor", &LuaServerPlayer::GetColor)
+        .addMemberFunction("SetColor", &LuaServerPlayer::SetColor)
+        .addMemberFunction("IsHuman", &LuaServerPlayer::IsHuman)
+        .addMemberFunction("IsAI", &LuaServerPlayer::IsAI)
+        .addMemberFunction("IsClosed", &LuaServerPlayer::IsClosed)
         .addMemberFunction("Close", &LuaServerPlayer::Close)
+        .addMemberFunction("GetAILevel", &LuaServerPlayer::GetAILevel)
         .addMemberFunction("SetAI", &LuaServerPlayer::SetAI)
         );
 
@@ -71,10 +77,20 @@ void LuaServerPlayer::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 }
 
+Nation LuaServerPlayer::GetNation() const
+{
+    return player.nation;
+}
+
 void LuaServerPlayer::SetNation(Nation nat)
 {
     check(unsigned(nat) < NAT_COUNT, "Invalid Nation");
     GAMESERVER.OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(player.getPlayerID(), nat));
+}
+
+Team LuaServerPlayer::GetTeam() const
+{
+    return player.team;
 }
 
 void LuaServerPlayer::SetTeam(Team team)
@@ -88,6 +104,21 @@ void LuaServerPlayer::SetColor(unsigned colorIdx)
     check(colorIdx < PLAYER_COLORS_COUNT, "Invalid color");
     player.color = colorIdx;
     GAMESERVER.SendToAll(GameMessage_Player_Toggle_Color(player.getPlayerID(), colorIdx));
+}
+
+bool LuaServerPlayer::IsHuman() const
+{
+    return player.ps == PS_OCCUPIED;
+}
+
+bool LuaServerPlayer::IsAI() const
+{
+    return player.ps == PS_KI;
+}
+
+bool LuaServerPlayer::IsClosed() const
+{
+    return player.ps == PS_LOCKED;
 }
 
 unsigned LuaServerPlayer::GetColor() const
@@ -109,6 +140,22 @@ void LuaServerPlayer::Close()
 
     GAMESERVER.SendToAll(GameMessage_Player_Set_State(player.getPlayerID(), player.ps, player.aiInfo));
     GAMESERVER.AnnounceStatusChange();
+}
+
+int LuaServerPlayer::GetAILevel() const
+{
+    if(player.ps != PS_KI)
+        return -1;
+    if(player.aiInfo.type == AI::DUMMY)
+        return 0;
+    switch(player.aiInfo.level)
+    {
+    case AI::EASY: return 1;
+    case AI::MEDIUM: return 2;
+    case AI::HARD: return 3;
+    }
+    RTTR_Assert(false);
+    return -1;
 }
 
 void LuaServerPlayer::SetAI(unsigned level)
