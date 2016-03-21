@@ -37,9 +37,15 @@ inline void check(bool testValue, const std::string& error)
         throw std::runtime_error(error);
 }
 
+const GamePlayerInfo& LuaPlayer::GetPlayer() const
+{
+    return player;
+}
+
 void LuaPlayer::Register(kaguya::State& state)
 {
-    state["Player"].setClass(kaguya::ClassMetatable<LuaPlayer>()
+    LuaPlayerBase::Register(state);
+    state["Player"].setClass(kaguya::ClassMetatable<LuaPlayer, LuaPlayerBase>()
         .addMemberFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
         .addMemberFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
         .addMemberFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
