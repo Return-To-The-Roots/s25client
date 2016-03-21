@@ -20,6 +20,7 @@
 #include "GameServer.h"
 #include "LuaServerPlayer.h"
 #include "addons/const_addons.h"
+#include "libutil/src/Log.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -33,6 +34,7 @@ inline void check(bool testValue, const std::string& error)
 LuaInterfaceSettings::LuaInterfaceSettings()
 {
     Register(lua);
+    LuaServerPlayer::Register(lua);
     lua["rttr"] = this;
 }
 
@@ -44,12 +46,18 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
     state["RTTRSettings"].setClass(kaguya::ClassMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
         .addMemberFunction("GetPlayerCount", &LuaInterfaceSettings::GetPlayerCount)
         .addMemberFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
+        .addMemberFunction("SetAddon", &LuaInterfaceSettings::SetAddon)
+        .addMemberFunction("SetAddon", &LuaInterfaceSettings::SetBoolAddon)
+        .addMemberFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
+        .addMemberFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
         );
+
+    state["AddonId"].setClass(kaguya::ClassMetatable<AddonId>());
 
     for(unsigned i = 0; i < AddonId::count_; ++i)
     {
         AddonId id = AddonId::type_(AddonId::values_()[i]);
-        state[std::string("ADDON_") + id.toString()] = id;
+        state[std::string("ADDON_") + id.toString()] = static_cast<AddonId const&>(id);
     }
 }
 
@@ -66,9 +74,64 @@ LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
 
 void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
 {
-    check(unsigned(id) < AddonId::count_, "Invalid addon id");
     GlobalGameSettings ggs = GAMESERVER.GetGGS();
     ggs.setSelection(id, value);
+    GAMESERVER.ChangeGlobalGameSettings(ggs);
+}
+
+void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
+{
+    SetAddon(id, 1);
+}
+
+void LuaInterfaceSettings::ResetAddons()
+{
+    GlobalGameSettings ggs = GAMESERVER.GetGGS();
+    for(unsigned i = 0; i < ggs.getCount(); ++i)
+    {
+        unsigned int status;
+        const Addon* addon = ggs.getAddon(i, status);
+
+        if(!addon)
+            continue;
+        ggs.setSelection(addon->getId(), addon->getDefaultStatus());
+    }
+    GAMESERVER.ChangeGlobalGameSettings(ggs);
+}
+
+void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
+{
+    GlobalGameSettings ggs = GAMESERVER.GetGGS();
+    if(settings.getField("speed"))
+    {
+        GlobalGameSettings::GameSpeed speed = settings.getField("speed");
+        check(unsigned(speed) <= GlobalGameSettings::GS_VERYFAST, "Speed is invalid");
+        ggs.game_speed = speed;
+    }
+    if(settings.getField("objective"))
+    {
+        GlobalGameSettings::GameObjective objective = settings.getField("objective");
+        check(unsigned(objective) <= GlobalGameSettings::GO_TOTALDOMINATION, "Objective is invalid");
+        ggs.game_objective = objective;
+    }
+    if(settings.getField("startWares"))
+    {
+        GlobalGameSettings::StartWares wares = settings.getField("startWares");
+        check(unsigned(wares) <= GlobalGameSettings::SWR_ALOT, "Start wares is invalid");
+        ggs.start_wares = wares;
+    }
+    if(settings.getField("fow"))
+    {
+        GlobalGameSettings::Exploration fow = settings.getField("fow");
+        check(unsigned(fow) <= GlobalGameSettings::EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
+        ggs.exploration = fow;
+    }
+    if(settings.getField("lockedTeams"))
+        ggs.lock_teams = settings.getField("lockedTeams");
+    if(settings.getField("teamView"))
+        ggs.team_view = settings.getField("teamView");
+    if(settings.getField("randomStartPosition"))
+        ggs.random_location = settings.getField("randomStartPosition");
     GAMESERVER.ChangeGlobalGameSettings(ggs);
 }
 
@@ -96,10 +159,24 @@ bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool d
         return defaultVal;
 }
 
-std::vector<unsigned> LuaInterfaceSettings::GetAllowedAddons()
+std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
 {
     kaguya::LuaRef getAllowedAddons = lua["getAllowedAddons"];
     if(getAllowedAddons.type() == LUA_TFUNCTION)
-        return getAllowedAddons();
-    return std::vector<unsigned>();
+    {
+        kaguya::LuaRef addons = getAllowedAddons();
+        if(addons.typeTest<std::vector<AddonId> >())
+            return addons;
+        else
+            LOG.lprintf("Invalid type returned by getAllowedAddons");
+    }
+    return std::vector<AddonId>();
+}
+
+void LuaInterfaceSettings::EventSettingsReady()
+{
+    kaguya::LuaRef onGameFrame = lua["onSettingsReady"];
+    if(onGameFrame.type() == LUA_TFUNCTION)
+        onGameFrame.call<void>();
+
 }
