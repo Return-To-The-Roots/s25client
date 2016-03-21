@@ -21,6 +21,6 @@
 #include <string>
 
 /// Tries to start a game (map, savegame or replay) and returns whether this was successfull
-bool QuickStartGame(const std::string& filePath);
+bool QuickStartGame(const std::string& filePath, bool singlePlayer = false);
 
 #endif // QuickStartGame_h__
