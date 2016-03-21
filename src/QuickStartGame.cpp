@@ -30,13 +30,13 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class GameWorldViewer;
 
-bool QuickStartGame(const std::string& filePath)
+bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 {
     CreateServerInfo csi;
     csi.gamename = _("Unlimited Play");
     csi.password = "localgame";
     csi.port = 3665;
-    csi.type = ServerType::LOCAL;
+    csi.type = singlePlayer ? ServerType::LOCAL : ServerType::DIRECT;
     csi.ipv6 = false;
     csi.use_upnp = false;
 
