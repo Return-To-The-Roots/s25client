@@ -15,28 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaServerPlayer_h__
-#define LuaServerPlayer_h__
+#ifndef LuaPlayerBase_h__
+#define LuaPlayerBase_h__
 
-#include "LuaPlayerBase.h"
+#include "gameData/NationConsts.h"
+#include "gameData/PlayerConsts.h"
 #include <kaguya/kaguya.hpp>
 
-class GameServerPlayer;
+class GamePlayerInfo;
 
-class LuaServerPlayer: public LuaPlayerBase
+class LuaPlayerBase
 {
-    GameServerPlayer& player;
 protected:
-    const GamePlayerInfo& GetPlayer() const override;
+    LuaPlayerBase(){}
+    virtual ~LuaPlayerBase(){}
+
+    virtual const GamePlayerInfo& GetPlayer() const = 0;
 public:
-    LuaServerPlayer(unsigned playerIdx);
     static void Register(kaguya::State& state);
 
-    void SetNation(Nation nat);
-    void SetTeam(Team team);
-    void SetColor(unsigned colorIdx);
-    void Close();
-    void SetAI(unsigned level);
+    Nation GetNation() const;
+    Team GetTeam() const;
+    unsigned GetColor() const;
+    bool IsHuman() const;
+    bool IsAI() const;
+    bool IsClosed() const;
+    int GetAILevel() const;
 };
 
-#endif // LuaServerPlayer_h__
+#endif // LuaPlayerBase_h__

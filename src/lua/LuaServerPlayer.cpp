@@ -34,63 +34,30 @@ inline void check(bool testValue, const std::string& error)
         throw std::runtime_error(error);
 }
 
+const GamePlayerInfo& LuaServerPlayer::GetPlayer() const
+{
+    return player;
+}
+
 LuaServerPlayer::LuaServerPlayer(unsigned playerIdx): player(*GAMESERVER.players.getElement(playerIdx))
 {}
 
 void LuaServerPlayer::Register(kaguya::State& state)
 {
-    state["Player"].setClass(kaguya::ClassMetatable<LuaServerPlayer>()
-        .addMemberFunction("GetNation", &LuaServerPlayer::GetNation)
+    LuaPlayerBase::Register(state);
+    state["Player"].setClass(kaguya::ClassMetatable<LuaServerPlayer, LuaPlayerBase>()
         .addMemberFunction("SetNation", &LuaServerPlayer::SetNation)
-        .addMemberFunction("GetTeam", &LuaServerPlayer::GetTeam)
         .addMemberFunction("SetTeam", &LuaServerPlayer::SetTeam)
-        .addMemberFunction("GetColor", &LuaServerPlayer::GetColor)
         .addMemberFunction("SetColor", &LuaServerPlayer::SetColor)
-        .addMemberFunction("IsHuman", &LuaServerPlayer::IsHuman)
-        .addMemberFunction("IsAI", &LuaServerPlayer::IsAI)
-        .addMemberFunction("IsClosed", &LuaServerPlayer::IsClosed)
         .addMemberFunction("Close", &LuaServerPlayer::Close)
-        .addMemberFunction("GetAILevel", &LuaServerPlayer::GetAILevel)
         .addMemberFunction("SetAI", &LuaServerPlayer::SetAI)
         );
-
-#pragma region ConstDefs
-#define ADD_LUA_CONST(name) state[#name] = name
-
-    ADD_LUA_CONST(NAT_AFRICANS);
-    ADD_LUA_CONST(NAT_JAPANESE);
-    ADD_LUA_CONST(NAT_ROMANS);
-    ADD_LUA_CONST(NAT_VIKINGS);
-    ADD_LUA_CONST(NAT_BABYLONIANS);
-
-    ADD_LUA_CONST(TM_NOTEAM);
-    ADD_LUA_CONST(TM_RANDOMTEAM);
-    ADD_LUA_CONST(TM_RANDOMTEAM2);
-    ADD_LUA_CONST(TM_RANDOMTEAM3);
-    ADD_LUA_CONST(TM_RANDOMTEAM4);
-    ADD_LUA_CONST(TM_TEAM1);
-    ADD_LUA_CONST(TM_TEAM2);
-    ADD_LUA_CONST(TM_TEAM3);
-    ADD_LUA_CONST(TM_TEAM4);
-
-#undef ADD_LUA_CONST
-#pragma endregion ConstDefs
-}
-
-Nation LuaServerPlayer::GetNation() const
-{
-    return player.nation;
 }
 
 void LuaServerPlayer::SetNation(Nation nat)
 {
     check(unsigned(nat) < NAT_COUNT, "Invalid Nation");
     GAMESERVER.OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(player.getPlayerID(), nat));
-}
-
-Team LuaServerPlayer::GetTeam() const
-{
-    return player.team;
 }
 
 void LuaServerPlayer::SetTeam(Team team)
@@ -104,26 +71,6 @@ void LuaServerPlayer::SetColor(unsigned colorIdx)
     check(colorIdx < PLAYER_COLORS_COUNT, "Invalid color");
     player.color = colorIdx;
     GAMESERVER.SendToAll(GameMessage_Player_Toggle_Color(player.getPlayerID(), colorIdx));
-}
-
-bool LuaServerPlayer::IsHuman() const
-{
-    return player.ps == PS_OCCUPIED;
-}
-
-bool LuaServerPlayer::IsAI() const
-{
-    return player.ps == PS_KI;
-}
-
-bool LuaServerPlayer::IsClosed() const
-{
-    return player.ps == PS_LOCKED;
-}
-
-unsigned LuaServerPlayer::GetColor() const
-{
-    return player.color;
 }
 
 void LuaServerPlayer::Close()
@@ -140,22 +87,6 @@ void LuaServerPlayer::Close()
 
     GAMESERVER.SendToAll(GameMessage_Player_Set_State(player.getPlayerID(), player.ps, player.aiInfo));
     GAMESERVER.AnnounceStatusChange();
-}
-
-int LuaServerPlayer::GetAILevel() const
-{
-    if(player.ps != PS_KI)
-        return -1;
-    if(player.aiInfo.type == AI::DUMMY)
-        return 0;
-    switch(player.aiInfo.level)
-    {
-    case AI::EASY: return 1;
-    case AI::MEDIUM: return 2;
-    case AI::HARD: return 3;
-    }
-    RTTR_Assert(false);
-    return -1;
 }
 
 void LuaServerPlayer::SetAI(unsigned level)

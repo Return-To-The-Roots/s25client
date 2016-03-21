@@ -18,6 +18,7 @@
 #ifndef LuaPlayer_h__
 #define LuaPlayer_h__
 
+#include "LuaPlayerBase.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -26,9 +27,11 @@
 
 class GameClientPlayer;
 
-class LuaPlayer
+class LuaPlayer: public LuaPlayerBase
 {
     GameClientPlayer& player;
+protected:
+    const GamePlayerInfo& GetPlayer() const override;
 public:
     LuaPlayer(GameClientPlayer& player): player(player){}
     static void Register(kaguya::State& state);
