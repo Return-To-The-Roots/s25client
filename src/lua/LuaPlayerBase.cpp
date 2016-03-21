@@ -35,6 +35,7 @@ void LuaPlayerBase::Register(kaguya::State& state)
         .addMemberFunction("GetNation", &LuaPlayerBase::GetNation)
         .addMemberFunction("GetTeam", &LuaPlayerBase::GetTeam)
         .addMemberFunction("GetColor", &LuaPlayerBase::GetColor)
+        .addMemberFunction("IsHuman", &LuaPlayerBase::IsFree)
         .addMemberFunction("IsHuman", &LuaPlayerBase::IsHuman)
         .addMemberFunction("IsAI", &LuaPlayerBase::IsAI)
         .addMemberFunction("IsClosed", &LuaPlayerBase::IsClosed)
@@ -92,6 +93,11 @@ bool LuaPlayerBase::IsAI() const
 bool LuaPlayerBase::IsClosed() const
 {
     return GetPlayer().ps == PS_LOCKED;
+}
+
+bool LuaPlayerBase::IsFree() const
+{
+    return GetPlayer().ps == PS_FREE;
 }
 
 int LuaPlayerBase::GetAILevel() const
