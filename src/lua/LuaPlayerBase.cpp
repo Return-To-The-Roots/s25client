@@ -32,6 +32,7 @@ inline void check(bool testValue, const std::string& error)
 void LuaPlayerBase::Register(kaguya::State& state)
 {
     state["PlayerBase"].setClass(kaguya::ClassMetatable<LuaPlayerBase>()
+        .addMemberFunction("GetName", &LuaPlayerBase::GetName)
         .addMemberFunction("GetNation", &LuaPlayerBase::GetNation)
         .addMemberFunction("GetTeam", &LuaPlayerBase::GetTeam)
         .addMemberFunction("GetColor", &LuaPlayerBase::GetColor)
@@ -63,6 +64,11 @@ void LuaPlayerBase::Register(kaguya::State& state)
 
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
+}
+
+std::string LuaPlayerBase::GetName() const
+{
+    return GetPlayer().name;
 }
 
 Nation LuaPlayerBase::GetNation() const
