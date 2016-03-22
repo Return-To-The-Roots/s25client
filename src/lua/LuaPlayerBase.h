@@ -34,6 +34,7 @@ protected:
 public:
     static void Register(kaguya::State& state);
 
+    std::string GetName() const;
     Nation GetNation() const;
     Team GetTeam() const;
     unsigned GetColor() const;

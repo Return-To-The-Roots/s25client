@@ -87,7 +87,7 @@ function onPlayerLeft(idx)
 end
 
 function onPlayerReady(idx)
-	rttr:Log("LUA: Player "..idx.." is ready")
+	rttr:Log("LUA: Player "..idx.." "..rttr:GetPlayer(idx):GetName().." is ready")
 	if(rttr:GetLocalPlayerIdx() == idx) then
 		rttr:Log("LUA: Game is starting")
 	end
