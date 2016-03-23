@@ -47,6 +47,7 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
         {
             unsigned int submit_debug_data;
             unsigned int use_upnp;
+            bool disableMouseJump;
             bool debugMode;
         } global;
 

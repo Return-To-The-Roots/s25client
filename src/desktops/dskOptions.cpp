@@ -173,6 +173,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->AddTextButton(10001, 480, 385, 190, 22, TC_GREY, _("On"), NormalFont);
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
+    groupAllgemein->AddText(10100, 80, 420, _("Disable Mouse Jumping"), COLOR_YELLOW, 0, NormalFont);
+    ctrlOptionGroup* disableMouseJump = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
+    disableMouseJump->AddTextButton(10102, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont);
+    disableMouseJump->AddTextButton(10103, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont);
+    disableMouseJump->SetSelection(SETTINGS.global.disableMouseJump ? 10103 : 10102);    
 
     if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
@@ -539,6 +544,14 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, c
             {
                 case 10001: SETTINGS.global.use_upnp = 1; break;
                 case 10002: SETTINGS.global.use_upnp = 0; break;
+            }
+        } break;
+        case 10101:
+        {
+            switch(selection)
+            {
+                case 10103: SETTINGS.global.disableMouseJump = true; break;
+                case 10102: SETTINGS.global.disableMouseJump = false; break;
             }
         } break;
     }
