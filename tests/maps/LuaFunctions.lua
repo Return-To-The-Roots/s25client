@@ -41,18 +41,22 @@ function onSettingsReady()
 	if(not isSinglePlayer) then
 		assert(not player:IsAI())
 		assert(player:IsFree())
+		rttr:Log("LUA: Adding easy AI to slot 1")
 		player:SetAI(1)
 		assert(not rttr:GetPlayer(2):IsAI())
 		assert(rttr:GetPlayer(2):IsFree())
+		rttr:Log("LUA: Adding hard AI to slot 2")
 		rttr:GetPlayer(2):SetAI(3)
 	end
 	
 	assert(not player:IsHuman())
 	assert(player:IsAI())
 	assert(not player:IsClosed())
+	rttr:Log("LUA: Closing slot 1")
 	player:Close()
 	assert(not player:IsAI())
 	assert(player:IsClosed())
+	rttr:Log("LUA: Adding medium AI to slot 1")
 	player:SetAI(2) -- Medium
 	assert(not player:IsHuman())
 	assert(player:IsAI())
@@ -66,9 +70,9 @@ function onSettingsReady()
 	settings = {speed=GS_VERYFAST, objective=GO_TOTALDOMINATION, startWares=SWR_VLOW, fow=EXP_FOGOFWAR, lockedTeams=true, teamView=true, randomStartPosition=false}
 	rttr:SetGameSettings(settings)
 	
-	settingStr = ""
-		for key,val in pairs(settings) do
-		settingsStr = settingsStr..key.."="..value..", "
+	settingsStr = ""
+	for key,value in pairs(settings) do
+		settingsStr = settingsStr..key.."="..tostring(value)..", "
 	end
 	rttr:Log("LUA: Settings changed to: "..settingsStr)
 	rttr:Log("LUA: Setting changes verified. Please check the other settings (Addons: Catapult, Charburner, Trade should be changeable, rest not)")
@@ -162,8 +166,10 @@ function onGameFrame()
 		assert(rttr:GetPlayer(0):AIConstructionOrder(10,10, BLD_WOODCUTTER) == false) -- Human
 		assert(rttr:GetPlayer(1):AIConstructionOrder(10,10, BLD_WOODCUTTER) == true)  -- AI	
 		
-		assert(rttr:GetWorld():AddEnvObject(20,30,12,1))
-		assert(rttr:GetWorld():AddStaticObject(19,24,12,1,2))
+		rttr:Log("Adding wiking at 49:29")
+		assert(rttr:GetWorld():AddEnvObject(49,29,0,3))
+		rttr:Log("Adding broken castle at 46:37")
+		assert(rttr:GetWorld():AddStaticObject(46,37,6,2,2))
 		world = rttr:GetWorld()
 		ASO = world.AddStaticObject
 		if(pcall(ASO, world, 21,17,12,1,5)) then -- Fail due to invalid size

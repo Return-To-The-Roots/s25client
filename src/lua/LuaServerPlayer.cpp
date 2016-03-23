@@ -102,10 +102,15 @@ void LuaServerPlayer::SetAI(unsigned level)
     }
     if(player.ps == PS_OCCUPIED)
         GAMESERVER.KickPlayer(player.getPlayerID(), NP_NOCAUSE, 0);
+    bool wasUsed = player.isUsed();
     player.ps = PS_KI;
     player.aiInfo = info;
     player.ready = true;
     GAMESERVER.SetAIName(player.getPlayerID());
     GAMESERVER.SendToAll(GameMessage_Player_Set_State(player.getPlayerID(), player.ps, player.aiInfo));
+    // If we added a new AI, set an initial color
+    // Do this after(!) the player state was set
+    if(!wasUsed)
+        GAMESERVER.CheckAndSetColor(player.getPlayerID(), player.color);
     GAMESERVER.AnnounceStatusChange();
 }
