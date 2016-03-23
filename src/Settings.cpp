@@ -206,7 +206,7 @@ bool Settings::Load()
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
-    global.disableMouseJump = iniGlobal->getValueI("disableMouseJump");
+    global.disableMouseJump = (iniGlobal->getValueI("disableMouseJump") != 0);
     global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
 
     // };
