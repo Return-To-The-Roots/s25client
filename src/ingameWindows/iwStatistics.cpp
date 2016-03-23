@@ -47,8 +47,7 @@ iwStatistics::iwStatistics()
     numPlayingPlayers = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        PlayerState plState = GAMECLIENT.GetPlayer(i).ps;
-        if (plState == PS_KI || plState == PS_OCCUPIED)
+        if (GAMECLIENT.GetPlayer(i).isUsed())
             numPlayingPlayers++;
     }
 
@@ -59,7 +58,7 @@ iwStatistics::iwStatistics()
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // nicht belegte Spielplätze rauswerfen
-        if (!(GAMECLIENT.GetPlayer(i).ps == PS_KI || GAMECLIENT.GetPlayer(i).ps == PS_OCCUPIED))
+        if (!GAMECLIENT.GetPlayer(i).isUsed())
         {
             activePlayers[i] = false;
             continue;
@@ -274,10 +273,9 @@ void iwStatistics::Msg_PaintAfter()
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
-        if (!(player.ps == PS_KI || player.ps == PS_OCCUPIED))
-        {
+        if (!player.isUsed())
             continue;
-        }
+
         if (activePlayers[i])
         {
             DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[player.color]);

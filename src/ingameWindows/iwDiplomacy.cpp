@@ -75,7 +75,7 @@ iwDiplomacy::iwDiplomacy()
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
-        if(player.ps == PS_KI || player.ps == PS_OCCUPIED)
+        if(player.isUsed())
         {
             // Einzelne Spielernamen
             AddText(100 + i, LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2,
