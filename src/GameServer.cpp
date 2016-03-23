@@ -464,21 +464,18 @@ bool GameServer::StartCountdown()
             playerCount++;
     }
 
-    bool reserved_colors[PLAYER_COLORS_COUNT];
-    memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
+    boost::array<bool, PLAYER_COLORS_COUNT> takenColors;
+    std::fill(takenColors.begin(), takenColors.end(), false);
 
-    // Alle ne andere Farbe?
-    for(client = 0; client < serverconfig.playercount; ++client)
+    // Check all players have different colors
+    for(unsigned p = 0; p < serverconfig.playercount; ++p)
     {
-        GameServerPlayer& player = players[client];
-
-        if( (player.ps == PS_OCCUPIED) || (player.ps == PS_KI) )
+        GameServerPlayer& player = players[p];
+        if(player.isUsed())
         {
-            // farbe schon belegt -> und tschüss
-            if(reserved_colors[player.color])
+            if(takenColors[player.color])
                 return false;
-
-            reserved_colors[player.color] = true;
+            takenColors[player.color] = true;
         }
     }
 
@@ -671,24 +668,9 @@ void GameServer::TogglePlayerState(unsigned char client)
     SendToAll(GameMessage_Player_Set_State(client, player.ps, player.aiInfo));
     AnnounceStatusChange();
 
-    if(player.ps == PS_OCCUPIED || player.ps == PS_KI)
-    {
-        // freie farbe suchen lassen
-        bool reserved_colors[PLAYER_COLORS_COUNT];
-        memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-        for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-        {
-            GameServerPlayer& ki = players[cl];
-
-            if((client != cl) && ((ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI)))
-                reserved_colors[ki.color] = true;
-        }
-
-        // If player color is taken -> toggle
-        if(reserved_colors[player.color])
-            OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(client, player.color));
-    }
+    // If slot is filled, check current color
+    if(player.isUsed())
+        CheckAndSetColor(client, player.color);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -746,8 +728,7 @@ void GameServer::TogglePlayerColor(unsigned char client)
     if(player.ps != PS_KI)
         return;
 
-    // Farbe suchen lassen
-    OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(client, (player.color + 1) % PLAYER_COLORS_COUNT));
+    CheckAndSetColor(client, player.color + 1); // Check for valid index will be done in the function
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -859,7 +840,7 @@ void GameServer::ClientWatchDog()
     // sockets zum set hinzufügen
     for(unsigned char client = 0; client < serverconfig.playercount; ++client)
     {
-        if( players[client].isValid() )
+        if( players[client].isHuman() )
         {
             // zum set hinzufügen
             set.Add(players[client].so);
@@ -1133,7 +1114,7 @@ void GameServer::FillPlayerQueues()
         // sockets zum set hinzufügen
         for(client = 0; client < serverconfig.playercount; ++client)
         {
-            if( players[client].isValid() )
+            if( players[client].isHuman() )
             {
                 // zum set hinzufügen
                 set.Add(players[client].so);
@@ -1147,7 +1128,7 @@ void GameServer::FillPlayerQueues()
         {
             for(client = 0; client < serverconfig.playercount; ++client)
             {
-                if( players[client].isValid() && set.InSet(players[client].so) )
+                if( players[client].isHuman() && set.InSet(players[client].so) )
                 {
                     // nachricht empfangen
                     if(!players[client].recv_queue.recv(players[client].so))
@@ -1315,28 +1296,8 @@ inline void GameServer::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Te
 // Farbe weiterwechseln
 inline void GameServer::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg)
 {
-    GameServerPlayer& player = players[msg.player];
-
-    // ist die farbe auch frei, wenn nicht, "überspringen"?
-    bool reserved_colors[PLAYER_COLORS_COUNT];
-    memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-    for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-    {
-        GameServerPlayer& ki = players[cl];
-
-        if( (msg.player != cl) && ( (ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI) ) )
-            reserved_colors[ki.color] = true;
-    }
-    do
-    {
-        player.color = (player.color + 1) % PLAYER_COLORS_COUNT;
-    }
-    while(reserved_colors[player.color]);
-
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLECOLOR\n", msg.player);
-    SendToAll(GameMessage_Player_Toggle_Color(msg.player, player.color));
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", msg.player, player.color);
+    LOG.write("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
+    CheckAndSetColor(msg.player, msg.color);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1392,25 +1353,11 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
         // Servername senden
         player.send_queue.push(new GameMessage_Server_Name(serverconfig.gamename));
 
-        // freie farbe suchen lassen
-        bool reserved_colors[PLAYER_COLORS_COUNT];
-        memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-        for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-        {
-            GameServerPlayer& ki = players[cl];
-
-            if( (msg.player != cl) && ( (ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI) ) )
-                reserved_colors[ki.color] = true;
-        }
-
         // Spielerliste senden
         player.send_queue.push(new GameMessage_Player_List(players));
 
-        // bis wir eine freie farbe gefunden haben!
-        // (while-schleife obwohl OnNMSPlayerToggleColor selbst schon eine freie sucht)
-        while(reserved_colors[player.color])
-            OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(msg.player, player.color));
+        // Assign unique color
+        CheckAndSetColor(msg.player, player.color);
 
         // GGS senden
         player.send_queue.push(new GameMessage_GGSChange(ggs_));
@@ -1570,6 +1517,44 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     async_player2_log.clear();
 
     KickPlayer(msg.player, NP_ASYNC, 0);
+}
+
+void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColorIdx)
+{
+    RTTR_Assert(playerIdx < serverconfig.playercount);
+    RTTR_Assert(serverconfig.playercount <= PLAYER_COLORS_COUNT); // Else we may not find a valid color!
+
+    GameServerPlayer& player = players[playerIdx];
+    RTTR_Assert(player.isUsed()); // Should only set colors for taken spots
+
+    boost::array<bool, PLAYER_COLORS_COUNT> takenColors;
+    std::fill(takenColors.begin(), takenColors.end(), false);
+
+    // Get colors used by other players
+    for(unsigned p = 0; p < serverconfig.playercount; ++p)
+    {
+        // Skip self
+        if(p == playerIdx)
+            continue;
+
+        GameServerPlayer& otherPlayer = players[p];
+        if(otherPlayer.isUsed())
+            takenColors[otherPlayer.color] = true;
+    }
+
+    // Make sure color is valid
+    newColorIdx = newColorIdx % PLAYER_COLORS_COUNT;
+    // Look for a unique color
+    while(takenColors[newColorIdx])
+        newColorIdx = (newColorIdx + 1) % PLAYER_COLORS_COUNT;
+
+    if(player.color == newColorIdx)
+        return;
+
+    player.color = newColorIdx;
+
+    SendToAll(GameMessage_Player_Toggle_Color(playerIdx, player.color));
+    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
 }
 
 void GameServer::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)

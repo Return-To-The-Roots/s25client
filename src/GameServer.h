@@ -119,18 +119,17 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg) override;
         void OnNMSGameCommand(const GameMessage_GameCommand& msg) override;
         void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
-
         void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last) override;
+
+        /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
+        /// Sends a notification to all players if the color was changed
+        void CheckAndSetColor(unsigned playerIdx, unsigned newColorIdx);
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();
-
         void RunGF( bool isNWF );
-
         void ExecuteNWF(const unsigned currentTime);
-
         void CheckAndKickLaggingPlayer(const unsigned char playerIdx);
-
         unsigned char GetLaggingPlayer() const;
 
     private:
