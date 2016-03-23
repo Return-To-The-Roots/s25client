@@ -1227,7 +1227,7 @@ bool GameClient::IsPlayerLagging()
 
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
-        if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
+        if(players[i].isUsed())
         {
             if(players[i].gc_queue.empty())
             {
@@ -1470,7 +1470,7 @@ void GameClient::NextGF()
     // Notfallprogramm durchlaufen lassen
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
-        if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
+        if(players[i].isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
             players[i].TestForEmergencyProgramm();

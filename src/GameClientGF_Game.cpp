@@ -33,7 +33,7 @@ void GameClient::ExecuteNWF()
 
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
-        if(players[i].ps == PS_OCCUPIED || players[i].ps == PS_KI)
+        if(players[i].isUsed())
         {
             GameMessage_GameCommand& msg = players[i].gc_queue.front();
 
