@@ -34,8 +34,8 @@ class AddonDisableAutomaticMousePos : public AddonBool
     public:
         AddonDisableAutomaticMousePos() : AddonBool(ADDON_DISABLE_AUTOMATIC_MOUSE_POS,
                                              ADDONGROUP_OTHER,
-                                             gettext_noop("Disable Automatic Mouse Positioning"),
-                                             gettext_noop("Disable automatic mouse positioning for modals\n"
+                                             _("Disable Automatic Mouse Positioning"),
+                                             _("Disable automatic mouse positioning for modals\n"
                                                      "Useful for local split-screen multiplayer, e.g. with xinput"),
                                              0
                                             )
