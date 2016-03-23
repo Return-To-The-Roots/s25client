@@ -576,6 +576,8 @@ bool VideoDriverWrapper::IsRightDown()
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
+    return;
+
     if(!videodriver)
         return;
 
