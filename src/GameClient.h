@@ -116,7 +116,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void Command_Chat(const std::string& text, const ChatDestination cd );
         void Command_ToggleNation();
         void Command_ToggleTeam(Team newteam);
-        void Command_ToggleColor();
+        void Command_SetColor();
         void Command_ToggleReady();
 
         void IncreaseSpeed();

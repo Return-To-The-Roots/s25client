@@ -307,7 +307,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
     if(GetCtrl<ctrlPreviewMinimap>(70))
     {
-        if(player.ps == PS_OCCUPIED || player.ps == PS_KI)
+        if(player.isUsed())
             // Nur KIs und richtige Spieler haben eine Farbe auf der Karte
             GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(row, COLORS[player.color]);
         else
@@ -327,7 +327,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         text->SetColor(0xFF00FF00);
 
     // Bei geschlossenem nicht sichtbar
-    if(player.ps == PS_OCCUPIED || player.ps == PS_KI)
+    if(player.isUsed())
     {
         /// Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
         group->AddVarDeepening(2, 180, cy, 50, 22, tc, (LOBBYCLIENT.LoggedIn() || player.ps == PS_KI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
@@ -459,32 +459,33 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
         {
             TogglePlayerReady(player_id, false);
 
-            if(GAMECLIENT.IsHost())
-                GAMESERVER.TogglePlayerColor(player_id);
             if(player_id == GAMECLIENT.GetPlayerID())
             {
-                GAMECLIENT.Command_ToggleColor();
+                boost::array<bool, PLAYER_COLORS_COUNT> takenColors;
+                std::fill(takenColors.begin(), takenColors.end(), false);
+
+                // Get colors used by other players
+                for(unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); ++p)
+                {
+                    // Skip self
+                    if(p == GAMECLIENT.GetPlayerID())
+                        continue;
+
+                    GameClientPlayer& otherPlayer = GAMECLIENT.GetPlayer(p);
+                    if(otherPlayer.isUsed())
+                        takenColors[otherPlayer.color] = true;
+                }
 
                 GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
-                bool reserved_colors[PLAYER_COLORS_COUNT];
-                memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-                for(unsigned char cl = 0; cl < GAMECLIENT.GetPlayerCount(); ++cl)
-                {
-                    if(cl == GAMECLIENT.GetPlayerID())
-                        continue;
-                    GameClientPlayer& others = GAMECLIENT.GetPlayer(cl);
-
-                    if((others.ps == PS_OCCUPIED) || (others.ps == PS_KI) )
-                        reserved_colors[others.color] = true;
-                }
                 do
                 {
                     player.color = (player.color + 1) % PLAYER_COLORS_COUNT;
                 }
-                while(reserved_colors[player.color]);
+                while(takenColors[player.color]);
+                GAMECLIENT.Command_SetColor();
                 ChangeColor(GAMECLIENT.GetPlayerID(), player.color);
-            }
+            } else if(GAMECLIENT.IsHost())
+                GAMESERVER.TogglePlayerColor(player_id);
 
             // Start-Farbe der Minimap ändern
         } break;
@@ -929,7 +930,11 @@ void dskHostGame::TogglePlayerReady(unsigned char player, bool ready)
 {
     if(player == GAMECLIENT.GetPlayerID())
     {
-        GAMECLIENT.GetLocalPlayer().ready = (GAMECLIENT.IsHost() ? true : ready);
+        if(GAMECLIENT.IsHost())
+            ready = true;
+        if(GAMECLIENT.GetLocalPlayer().ready == ready)
+            return;
+        GAMECLIENT.GetLocalPlayer().ready = ready;
         GAMECLIENT.Command_ToggleReady();
         ChangeReady(GAMECLIENT.GetPlayerID(), GAMECLIENT.GetLocalPlayer().ready);
     }
@@ -1052,7 +1057,9 @@ void dskHostGame::CI_PingChanged(const unsigned player_id, const unsigned short 
 void dskHostGame::CI_ReadyChanged(const unsigned player_id, const bool ready)
 {
     ChangeReady(player_id, ready);
-    if(ready && lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
+    // Event only called for other players (host ready is done in start game)
+    // Also only for host and non-savegames
+    if(ready && lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() && player_id != GAMECLIENT.GetPlayerID())
         lua->EventPlayerReady(player_id);
 }
 
