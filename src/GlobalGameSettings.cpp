@@ -67,6 +67,8 @@
 
 #include "addons/AddonNumScoutsExploration.h"
 
+#include "addons/AddonDisableAutomaticMousePos.h"
+
 #include "Serializer.h"
 #include "Log.h"
 #include "gameData/MilitaryConsts.h"
@@ -178,6 +180,8 @@ void GlobalGameSettings::reset(bool recreate)
         registerAddon(new AddonMilitaryHitpoints);
 
         registerAddon(new AddonNumScoutsExploration);
+
+        registerAddon(new AddonDisableAutomaticMousePos);
     }
 }
 

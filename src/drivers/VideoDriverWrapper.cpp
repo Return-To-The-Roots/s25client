@@ -26,6 +26,7 @@
 #include "../driver/src/VideoInterface.h"
 
 #include "WindowManager.h"
+#include "GameClient.h"
 #include "error.h"
 #include "Log.h"
 
@@ -576,9 +577,7 @@ bool VideoDriverWrapper::IsRightDown()
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
-    return;
-
-    if(!videodriver)
+    if(!videodriver || GAMECLIENT.GetGGS().isEnabled(ADDON_DISABLE_AUTOMATIC_MOUSE_POS))
         return;
 
     videodriver->SetMousePos(x, y);
