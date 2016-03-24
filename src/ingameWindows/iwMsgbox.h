@@ -35,7 +35,7 @@ class iwMsgbox : public IngameWindow
         Window* msgHandler_;
 
     public:
-        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
+        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned int msgboxid = 0);
         ~iwMsgbox() override;
 
     private:
