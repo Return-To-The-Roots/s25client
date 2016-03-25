@@ -79,6 +79,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         bool HasPwd() const { return !serverconfig.password.empty(); }
         unsigned short GetPort() const { return serverconfig.port; }
         unsigned GetMaxPlayerCount() const { return serverconfig.playercount; }
+        bool IsRunning() const { return status != SS_STOPPED; }
 
         const GlobalGameSettings& GetGGS(){ return ggs_; }
     protected:

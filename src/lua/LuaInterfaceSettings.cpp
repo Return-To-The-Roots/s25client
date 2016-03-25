@@ -89,17 +89,20 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 
 unsigned LuaInterfaceSettings::GetPlayerCount()
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     return GAMESERVER.GetMaxPlayerCount();
 }
 
 LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     check(idx < GetPlayerCount(), "Invalid player idx");
     return LuaServerPlayer(idx);
 }
 
 void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     GlobalGameSettings ggs = GAMESERVER.GetGGS();
     ggs.setSelection(id, value);
     GAMESERVER.ChangeGlobalGameSettings(ggs);
@@ -107,11 +110,13 @@ void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
 
 void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     SetAddon(id, 1);
 }
 
 void LuaInterfaceSettings::ResetAddons()
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     GlobalGameSettings ggs = GAMESERVER.GetGGS();
     for(unsigned i = 0; i < ggs.getCount(); ++i)
     {
@@ -127,6 +132,7 @@ void LuaInterfaceSettings::ResetAddons()
 
 void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     GlobalGameSettings ggs = GAMESERVER.GetGGS();
     if(settings.getField("speed"))
     {
@@ -184,6 +190,7 @@ bool LuaInterfaceSettings::EventSettingsInit(bool isSinglePlayer)
 
 void LuaInterfaceSettings::EventSettingsReady()
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     kaguya::LuaRef func = lua["onSettingsReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>();
@@ -191,6 +198,7 @@ void LuaInterfaceSettings::EventSettingsReady()
 
 void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     kaguya::LuaRef func = lua["onPlayerJoined"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
@@ -198,6 +206,7 @@ void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
 
 void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     kaguya::LuaRef func = lua["onPlayerLeft"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
@@ -205,6 +214,7 @@ void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
 
 void LuaInterfaceSettings::EventPlayerReady(unsigned playerIdx)
 {
+    RTTR_Assert(GAMESERVER.IsRunning());
     kaguya::LuaRef func = lua["onPlayerReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);

@@ -8,7 +8,7 @@ function getAllowedAddons()
 end
 
 function getAllowedChanges()
-	return {general=true, addonsAll=false, addonsSome=true, swapping=false, playerState=false, ownNation = true, ownColor=true, ownTeam=false, aiNation = false, aiColor=false, aiTeam=false}
+	return {general=true, addonsAll=false, addonsSome=true, swapping=false, playerState = not isSinglePlayer, ownNation = true, ownColor=true, ownTeam=false, aiNation = false, aiColor=false, aiTeam=false}
 end
 
 function onSettingsInit(isSinglePlayerArg)
@@ -76,18 +76,21 @@ function onSettingsReady()
 	end
 	rttr:Log("LUA: Settings changed to: "..settingsStr)
 	rttr:Log("LUA: Setting changes verified. Please check the other settings (Addons: Catapult, Charburner, Trade should be changeable, rest not)")
+	if(not isSinglePlayer) then
+		rttr:MsgBox("Lua status", "You should now test player joining by opening a spot and join from a 2nd instance")
+	end
 end
 
 function onPlayerJoined(idx)
 	assert(rttr:IsHost())
-	assert(rttr:GetPlayer(id):IsHuman())
-	rttr:Log("LUA: Player "..idx.." is joined")
+	assert(rttr:GetPlayer(idx):IsHuman())
+	rttr:Log("LUA: Player "..idx.." joined")
 end
 
 function onPlayerLeft(idx)
 	assert(rttr:IsHost())
-	assert(not rttr:GetPlayer(id):IsHuman())
-	rttr:Log("LUA: Player "..idx.." is left")
+	assert(not rttr:GetPlayer(idx):IsHuman())
+	rttr:Log("LUA: Player "..idx.." left")
 end
 
 function onPlayerReady(idx)
