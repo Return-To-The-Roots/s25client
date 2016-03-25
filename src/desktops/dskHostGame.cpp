@@ -63,7 +63,7 @@ class GameWorldViewer;
  *  @author FloSoft
  */
 dskHostGame::dskHostGame(const ServerType serverType) :
-    Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType)
+    Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType), wasActivated(false)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -242,8 +242,6 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     }
 
     GAMECLIENT.SetInterface(this);
-    if(lua && GAMECLIENT.IsHost())
-        lua->EventSettingsReady();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -260,6 +258,16 @@ void dskHostGame::Resize_(unsigned short  /*width*/, unsigned short  /*height*/)
     ctrlText* text = GetCtrl<ctrlText>(71);
     if(preview && text)
         text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
+}
+
+void dskHostGame::SetActive(bool activate /*= true*/)
+{
+    Desktop::SetActive(activate);
+    if(activate && !wasActivated && lua && GAMECLIENT.IsHost())
+    {
+        wasActivated = true;
+        lua->EventSettingsReady();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

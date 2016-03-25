@@ -43,6 +43,7 @@ class dskHostGame :
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
         void Resize_(unsigned short width, unsigned short height) override;
+        void SetActive(bool activate = true) override;
     private:
 
         void TogglePlayerReady(unsigned char player, bool ready);
@@ -99,7 +100,7 @@ class dskHostGame :
         bool hasCountdown_;
         const ServerType serverType;
         boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
-        bool allowAddonChange;
+        bool wasActivated, allowAddonChange;
 };
 
 
