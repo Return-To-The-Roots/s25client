@@ -142,7 +142,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Wird ein Replay abgespielt?
         bool IsReplayModeOn() const { return replay_mode; }
 
-        const Replay GetReplay() const { return replayinfo.replay; }
+        Replay& GetReplay() { return replayinfo.replay; }
 
         /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
         unsigned GetTournamentModeDuration() const;
