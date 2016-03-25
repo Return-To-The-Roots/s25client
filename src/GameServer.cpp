@@ -801,6 +801,8 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     // send-queue flushen
     player.send_queue.flush(player.so);
 
+    PlayerState oldPs = player.ps;
+
     // töten, falls außerhalb
     if(status == SS_GAME)
     {
@@ -817,13 +819,12 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     else
         player.clear();
 
-    // trauern
-    // beleidskarte verschicken
+    // Do not send notifications if the player was not already there
+    if(oldPs == PS_RESERVED)
+        return;
+
     SendToAll(GameMessage_Player_Kicked(npk.playerid, npk.cause, npk.param));
-
     AnnounceStatusChange();
-
-
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", npk.playerid, npk.cause, npk.param);
 
     if(status == SS_GAME)
@@ -1481,7 +1482,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
         di.SendReplay();
     }
 
-    std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + ".log";
+    std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
     FILE* file = fopen(fileName.c_str(), "w");
@@ -1491,15 +1492,15 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
         // print identical lines, they help in tracing the bug
         for(unsigned i = 0; i < identical; i++)
         {
-            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, Random::GetValueFromState(it1->rngState, it1->max), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, it1->GetValue(), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
             
             ++it1; ++it2;
         }
 
         while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
         {
-            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, Random::GetValueFromState(it1->rngState, it1->max), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
-            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it2->counter, it2->max, Random::GetValueFromState(it2->rngState, it2->max), it2->rngState, it2->src_name.c_str(), it2->src_line, it2->obj_id);
+            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, it1->GetValue(), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it2->counter, it2->max, it2->GetValue(), it2->rngState, it2->src_name.c_str(), it2->src_line, it2->obj_id);
 
             ++it1; ++it2;
         }
