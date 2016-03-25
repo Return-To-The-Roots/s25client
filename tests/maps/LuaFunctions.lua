@@ -166,8 +166,10 @@ function onGameFrame()
 	gfCounter = gfCounter + 1
 	assert(gfCounter == rttr:GetGF())
 	if(gfCounter == 50) then
-		assert(rttr:GetPlayer(0):AIConstructionOrder(10,10, BLD_WOODCUTTER) == false) -- Human
-		assert(rttr:GetPlayer(1):AIConstructionOrder(10,10, BLD_WOODCUTTER) == true)  -- AI	
+		if(rttr:IsHost()) then
+			assert(rttr:GetPlayer(0):AIConstructionOrder(10,10, BLD_WOODCUTTER) == false) -- Human
+			assert(rttr:GetPlayer(1):AIConstructionOrder(10,10, BLD_WOODCUTTER) == true)  -- AI
+		end
 		
 		rttr:Log("Adding wiking at 49:29")
 		assert(rttr:GetWorld():AddEnvObject(49,29,0,3))
@@ -175,17 +177,17 @@ function onGameFrame()
 		assert(rttr:GetWorld():AddStaticObject(46,37,6,2,2))
 		world = rttr:GetWorld()
 		ASO = world.AddStaticObject
-		if(pcall(ASO, world, 21,17,12,1,5)) then -- Fail due to invalid size
+		if(pcall(ASO, world, 46,37,6,2,5)) then -- Fail due to invalid size
 			assert(false)
 		end
 		rttr:Log("LUA: Showing mission statement!")
-		rttr:MissionStatement(0, "Test Mission", "Mission statement seems to be working")
+		rttr:MissionStatement(rttr:GetLocalPlayerIdx(), "Test Mission", "Mission statement seems to be working")
 	end
 	if(gfCounter == 100) then
 		rttr:Log("LUA: Send 2 post messages")
-		rttr:PostMessage(0, "Post message working")
-		x,y = rttr:GetPlayer(0):GetHQPos()
-		rttr:PostMessageWithLocation(0, "This should be a message at your HQ", x,y)
+		rttr:PostMessage(rttr:GetLocalPlayerIdx(), "Post message working")
+		x,y = rttr:GetPlayer(rttr:GetLocalPlayerIdx()):GetHQPos()
+		rttr:PostMessageWithLocation(rttr:GetLocalPlayerIdx(), "This should be a message at your HQ", x,y)
 	end
 	if(gfCounter == 150) then
 		rttr:Log("\n\nLUA: You can now close the game")
