@@ -72,7 +72,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         {
             WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
-        } else if(!GAMECLIENT.IsSavegame() && !lua->EventSettingsInit(serverType == ServerType::LOCAL))
+        } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, GAMECLIENT.IsSavegame()))
         {
             RTTR_Assert(GAMECLIENT.IsHost()); // This should be done first for the host so others won't even see the script
             LOG.lprintf("Lua was disabled by the script itself\n");
@@ -969,7 +969,7 @@ void dskHostGame::CI_NewPlayer(const unsigned player_id)
                 LOBBYCLIENT.SendRankingInfoRequest(player.name);
         }
     }
-    if(lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
+    if(lua && GAMECLIENT.IsHost())
         lua->EventPlayerJoined(player_id);
 }
 
@@ -982,7 +982,7 @@ void dskHostGame::CI_NewPlayer(const unsigned player_id)
 void dskHostGame::CI_PlayerLeft(const unsigned player_id)
 {
     UpdatePlayerRow(player_id);
-    if(lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
+    if(lua && GAMECLIENT.IsHost())
         lua->EventPlayerLeft(player_id);
 }
 
@@ -1067,7 +1067,7 @@ void dskHostGame::CI_ReadyChanged(const unsigned player_id, const bool ready)
     ChangeReady(player_id, ready);
     // Event only called for other players (host ready is done in start game)
     // Also only for host and non-savegames
-    if(ready && lua && GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() && player_id != GAMECLIENT.GetPlayerID())
+    if(ready && lua && GAMECLIENT.IsHost() && player_id != GAMECLIENT.GetPlayerID())
         lua->EventPlayerReady(player_id);
 }
 
