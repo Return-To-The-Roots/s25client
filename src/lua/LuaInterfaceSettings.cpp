@@ -179,11 +179,11 @@ kaguya::LuaRef LuaInterfaceSettings::GetAllowedChanges()
     return kaguya::LuaRef();
 }
 
-bool LuaInterfaceSettings::EventSettingsInit(bool isSinglePlayer)
+bool LuaInterfaceSettings::EventSettingsInit(bool isSinglePlayer, bool isSavegame)
 {
     kaguya::LuaRef func = lua["onSettingsInit"];
     if(func.type() == LUA_TFUNCTION)
-        return func.call<bool>(isSinglePlayer);
+        return func.call<bool>(isSinglePlayer, isSavegame);
     else
         return true;
 }
