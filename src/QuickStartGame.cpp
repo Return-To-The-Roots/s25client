@@ -34,7 +34,7 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 {
     CreateServerInfo csi;
     csi.gamename = _("Unlimited Play");
-    csi.password = "localgame";
+    csi.password = "";
     csi.port = 3665;
     csi.type = singlePlayer ? ServerType::LOCAL : ServerType::DIRECT;
     csi.ipv6 = false;
