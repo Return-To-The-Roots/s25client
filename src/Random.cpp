@@ -84,24 +84,39 @@ std::vector<RandomEntry> Random::GetAsyncLog()
 {
     std::vector<RandomEntry> ret;
 
-    unsigned int max = (counter > async_log.size() ? async_log.size() : counter);
-    for (unsigned int i = 0; i < max; ++i)
+    unsigned begin, end;
+    if(counter > async_log.size())
     {
-        ret.push_back(async_log[(i + counter) % async_log.size()]);
+        // Ringbuffer filled -> Start from next entry (which is the one written longest time ago)
+        // and go one full cycle (to the entry written last)
+        begin = counter;
+        end = counter + async_log.size();
+    } else
+    {
+        // Ringbuffer not filled -> Start from 0 till number of entries
+        begin = 0;
+        end = counter;
     }
+
+    for (unsigned i = begin; i < end; ++i)
+        ret.push_back(async_log[i % async_log.size()]);
 
     return ret;
 }
 
 void Random::SaveLog(const std::string& filename)
 {
+    std::vector<RandomEntry> log = GetAsyncLog();
     FILE* file = fopen(filename.c_str(), "w");
 
     unsigned int max = (counter > async_log.size() ? async_log.size() : counter);
-    for (unsigned int i = 0; i < max; ++i)
+    for(std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
     {
-        RandomEntry& it = async_log[(i + counter) % async_log.size()];
-        fprintf(file, "%u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it.counter, it.max, GetValueFromState(it.rngState, it.max), it.rngState, it.src_name.c_str(), it.src_line, it.obj_id);
+        fprintf(file, "%u:R(%d)=%d,z=%d | %s#%u|id=%u\n",
+            it->counter,
+            it->max, it->GetValue(), it->rngState,
+            it->src_name.c_str(), it->src_line,
+            it->obj_id);
     }
 
     fclose(file);
