@@ -1,5 +1,6 @@
 gfCounter = 0
 isSinglePlayer = false
+isSavegame = false
 
 rttr:Log("LUA: Test Log from Lua")
 
@@ -11,13 +12,18 @@ function getAllowedChanges()
 	return {general=true, addonsAll=false, addonsSome=true, swapping=false, playerState = not isSinglePlayer, ownNation = true, ownColor=true, ownTeam=false, aiNation = false, aiColor=false, aiTeam=false}
 end
 
-function onSettingsInit(isSinglePlayerArg)
+function onSettingsInit(isSinglePlayerArg, isSavegameArg)
 	isSinglePlayer = isSinglePlayerArg
+	isSavegame = isSavegameArg
 	return true
 end
 
 function onSettingsReady()
 	rttr:Log("LUA: Starting a game with "..rttr:GetPlayerCount().." players")
+	if(isSavegame) then
+		return
+	end
+	
 	assert(rttr:IsHost())
 	assert(rttr:GetPlayerCount() == 3)
 	

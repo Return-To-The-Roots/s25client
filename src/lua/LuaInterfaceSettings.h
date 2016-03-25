@@ -34,7 +34,7 @@ public:
 
     // Interface for C++
     /// Called when settings are entered. Returns whether script should be executed
-    bool EventSettingsInit(bool isSinglePlayer);
+    bool EventSettingsInit(bool isSinglePlayer, bool isSavegame);
     // Other events are only called for the host
     /// Called when the settings screen is ready
     void EventSettingsReady();
