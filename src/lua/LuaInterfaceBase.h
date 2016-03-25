@@ -37,9 +37,16 @@ protected:
     kaguya::State lua;
     std::string script_;
 
+    /// Write a string to log and stdout
     void Log(const std::string& msg);
+    /// Return true, if local player is the host
     bool IsHost() const;
+    /// Return the index of the local player
     unsigned GetLocalPlayerIdx() const;
+    /// Show a message box with given title and text.
+    /// If isError is true, a red exclamation mark is shown, otherwise a green one is shown
+    void MsgBox(const std::string& title, const std::string& msg, bool isError);
+    void MsgBox2(const std::string& title, const std::string& msg){ MsgBox(title, msg, false); }
 
     static void ErrorHandler(int status, const char* message);
     static void ErrorHandlerThrow(int status, const char* message);

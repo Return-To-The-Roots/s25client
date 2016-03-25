@@ -19,6 +19,8 @@
 #include "LuaInterfaceBase.h"
 #include "GlobalVars.h"
 #include "GameClient.h"
+#include "WindowManager.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "libutil/src/Log.h"
 #include <fstream>
 
@@ -45,6 +47,8 @@ void LuaInterfaceBase::Register(kaguya::State& state)
         .addMemberFunction("Log", &LuaInterfaceBase::Log)
         .addMemberFunction("IsHost", &LuaInterfaceBase::IsHost)
         .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
+        .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox)
+        .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox2)
         );
     state.setErrorHandler(ErrorHandler);
 }
@@ -103,6 +107,11 @@ bool LuaInterfaceBase::IsHost() const
 unsigned LuaInterfaceBase::GetLocalPlayerIdx() const
 {
     return GAMECLIENT.GetPlayerID();
+}
+
+void LuaInterfaceBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
+{
+    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
 }
 
 void LuaInterfaceBase::Log(const std::string& msg)
