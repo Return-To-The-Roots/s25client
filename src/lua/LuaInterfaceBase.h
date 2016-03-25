@@ -47,6 +47,9 @@ protected:
     /// If isError is true, a red exclamation mark is shown, otherwise a green one is shown
     void MsgBox(const std::string& title, const std::string& msg, bool isError);
     void MsgBox2(const std::string& title, const std::string& msg){ MsgBox(title, msg, false); }
+    /// Shows a message with a custom icon. Image with iconIdx must exist in iconFile and iconFile must be loaded!
+    void MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx);
+    void MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY);
 
     static void ErrorHandler(int status, const char* message);
     static void ErrorHandlerThrow(int status, const char* message);

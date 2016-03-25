@@ -188,9 +188,11 @@ function onGameFrame()
 		rttr:PostMessage(rttr:GetLocalPlayerIdx(), "Post message working")
 		x,y = rttr:GetPlayer(rttr:GetLocalPlayerIdx()):GetHQPos()
 		rttr:PostMessageWithLocation(rttr:GetLocalPlayerIdx(), "This should be a message at your HQ", x,y)
+		rttr:MsgBoxEx("Wise guy", "This guy tells you to check the log for any lua errors or assertion failures!", "io", 259)
 	end
-	if(gfCounter == 150) then
+	if(gfCounter == 500) then
 		rttr:Log("\n\nLUA: You can now close the game")
+		rttr:MsgBoxEx("Wise guy", "And now he is on the right O.o", "io", 259, 420 - 34, 20 + 23)
 	end
 end
 

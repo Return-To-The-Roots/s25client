@@ -49,6 +49,8 @@ void LuaInterfaceBase::Register(kaguya::State& state)
         .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
         .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox)
         .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox2)
+        .addMemberFunction("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx)
+        .addMemberFunction("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx2)
         );
     state.setErrorHandler(ErrorHandler);
 }
@@ -112,6 +114,18 @@ unsigned LuaInterfaceBase::GetLocalPlayerIdx() const
 void LuaInterfaceBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
 {
     WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
+}
+
+void LuaInterfaceBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx)
+{
+    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx));
+}
+
+void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY)
+{
+    iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
+    msgBox->MoveIcon(iconX, iconY);
+    WINDOWMANAGER.Show(msgBox);
 }
 
 void LuaInterfaceBase::Log(const std::string& msg)
