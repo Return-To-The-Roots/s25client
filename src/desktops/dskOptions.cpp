@@ -173,11 +173,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->AddTextButton(10001, 480, 385, 190, 22, TC_GREY, _("On"), NormalFont);
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
-    groupAllgemein->AddText(10100, 80, 420, _("Disable Mouse Jumping"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(10100, 80, 420, _("Smart Mouse Placement"), COLOR_YELLOW, 0, NormalFont);
     ctrlOptionGroup* disableMouseJump = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
-    disableMouseJump->AddTextButton(10102, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont);
-    disableMouseJump->AddTextButton(10103, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont);
-    disableMouseJump->SetSelection(SETTINGS.global.disableMouseJump ? 10103 : 10102);    
+    disableMouseJump->AddTextButton(10103, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont,
+        _("Without smart mouse placement, your mouse cursor isn't automatically placed on the first available button or action when you open a dialog / modal window. Useful e.g. for local split-screen multiplayer on Linux."));
+    disableMouseJump->AddTextButton(10102, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont,
+        _("When you open a dialog / modal window, the mouse cursor is automatically placed on the first available button or action it contains."));
+    disableMouseJump->SetSelection(SETTINGS.global.disableMouseJump ? 10103 : 10102);
 
     if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
