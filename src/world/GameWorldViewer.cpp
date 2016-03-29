@@ -103,7 +103,7 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
     // Scrollen
     if(scroll)
     {
-        unsigned acceleration = SETTINGS.global.disableMouseJump ? 3 : 2;
+        unsigned acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
         if(SETTINGS.interface.revert_mouse)
             MoveTo( ( sx - mc.x) * acceleration,  ( sy - mc.y) * acceleration);
@@ -111,7 +111,7 @@ void GameWorldViewer::MouseMove(const MouseCoords& mc)
             MoveTo(-( sx - mc.x) * acceleration, -( sy - mc.y) * acceleration);
         VIDEODRIVER.SetMousePos(sx, sy);
 
-        if (SETTINGS.global.disableMouseJump) {
+        if (!SETTINGS.global.smartCursor) {
             sx = mc.x;
             sy = mc.y;
         }

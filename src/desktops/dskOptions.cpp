@@ -173,13 +173,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->AddTextButton(10001, 480, 385, 190, 22, TC_GREY, _("On"), NormalFont);
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
-    groupAllgemein->AddText(10100, 80, 420, _("Smart Mouse Placement"), COLOR_YELLOW, 0, NormalFont);
-    ctrlOptionGroup* disableMouseJump = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
-    disableMouseJump->AddTextButton(10103, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont,
-        _("Without smart mouse placement, your mouse cursor isn't automatically placed on the first available button or action when you open a dialog / modal window. Useful e.g. for local split-screen multiplayer on Linux."));
-    disableMouseJump->AddTextButton(10102, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont,
+    groupAllgemein->AddText(10100, 80, 420, _("Smart Cursor"), COLOR_YELLOW, 0, NormalFont);
+    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
+    smartCursor->AddTextButton(10103, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont,
+        _("Without smart cursor, your mouse cursor isn't automatically placed on the first available button or action when you open a dialog / modal window. Useful e.g. for local split-screen multiplayer on Linux."));
+    smartCursor->AddTextButton(10102, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont,
         _("When you open a dialog / modal window, the mouse cursor is automatically placed on the first available button or action it contains."));
-    disableMouseJump->SetSelection(SETTINGS.global.disableMouseJump ? 10103 : 10102);
+    smartCursor->SetSelection(SETTINGS.global.smartCursor ? 10102 : 10103);
 
     if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
@@ -552,8 +552,8 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, c
         {
             switch(selection)
             {
-                case 10103: SETTINGS.global.disableMouseJump = true; break;
-                case 10102: SETTINGS.global.disableMouseJump = false; break;
+                case 10102: SETTINGS.global.smartCursor = true; break;
+                case 10103: SETTINGS.global.smartCursor = false; break;
             }
         } break;
     }
