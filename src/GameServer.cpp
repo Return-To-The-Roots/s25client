@@ -1388,13 +1388,13 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
     }
 }
 
-void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& in, bool last)
+void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg)
 {
     if (msg.player == async_player1)
     {
-        async_player1_log.insert(async_player1_log.end(), in.begin(), in.end());
+        async_player1_log.insert(async_player1_log.end(), msg.entries.begin(), msg.entries.end());
 
-        if (last)
+        if (msg.last)
         {
             LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player1, async_player1_log.size());
             async_player1_done = true;
@@ -1402,9 +1402,9 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     }
     else if (msg.player == async_player2)
     {
-        async_player2_log.insert(async_player2_log.end(), in.begin(), in.end());
+        async_player2_log.insert(async_player2_log.end(), msg.entries.begin(), msg.entries.end());
 
-        if (last)
+        if (msg.last)
         {
             LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player2, async_player2_log.size());
             async_player2_done = true;

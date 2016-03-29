@@ -1070,13 +1070,13 @@ public:
 class GameMessage_SendAsyncLog : public GameMessage
 {
 public:
-	std::vector<RandomEntry> recved_log;
+	std::vector<RandomEntry> entries;
     bool last;
 
 	GameMessage_SendAsyncLog(): GameMessage(NMS_SEND_ASYNC_LOG) {} //-V730
 
 	GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last):
-        GameMessage(NMS_SEND_ASYNC_LOG, 0xFF), recved_log(async_log), last(last)
+        GameMessage(NMS_SEND_ASYNC_LOG, 0xFF), entries(async_log), last(last)
 	{
 		LOG.write(">>> NMS_SEND_ASYNC_LOG\n");
 	}
@@ -1085,9 +1085,9 @@ public:
     {
         GameMessage::Serialize(ser);
         ser.PushBool(last);
-        ser.PushUnsignedInt(recved_log.size());
+        ser.PushUnsignedInt(entries.size());
 
-        for(std::vector<RandomEntry>::const_iterator it = recved_log.begin(); it != recved_log.end(); ++it)
+        for(std::vector<RandomEntry>::const_iterator it = entries.begin(); it != entries.end(); ++it)
         {
             ser.PushUnsignedInt(it->counter);
             ser.PushSignedInt(it->max);
@@ -1103,8 +1103,8 @@ public:
 		GameMessage::Deserialize(ser);
         last = ser.PopBool();
         unsigned cnt = ser.PopUnsignedInt();
-        recved_log.clear();
-        recved_log.reserve(cnt);
+        entries.clear();
+        entries.reserve(cnt);
 
         while (cnt--)
         {
@@ -1115,15 +1115,15 @@ public:
             unsigned src_line = ser.PopUnsignedInt();
             unsigned obj_id = ser.PopUnsignedInt();
 
-            recved_log.push_back(RandomEntry(counter, max, rngState, src_name, src_line, obj_id));
+            entries.push_back(RandomEntry(counter, max, rngState, src_name, src_line, obj_id));
         }
 
 	}
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", recved_log.size(), last ? "last" : "non-last");
-		GetInterface(callback)->OnNMSSendAsyncLog(*this, recved_log, last);
+		LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", entries.size(), last ? "last" : "non-last");
+		GetInterface(callback)->OnNMSSendAsyncLog(*this);
 	}
 };
 

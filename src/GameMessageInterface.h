@@ -111,7 +111,7 @@ class GameMessageInterface : public MessageInterface
         virtual void OnNMSRemoveLua(const GameMessage_RemoveLua& msg){}
 
         virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg){}
-        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last){}
+        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg){}
 
         virtual void OnNMSSystemChat(const GameMessage_System_Chat& msg) = 0;
 };
