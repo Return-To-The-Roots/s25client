@@ -504,16 +504,16 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 /// gehende -Nachricht
-class GameMessage_Player_Toggle_Nation : public GameMessage
+class GameMessage_Player_Set_Nation : public GameMessage
 {
 public:
 	/// Das zu setzende Volk
 	Nation nation;
 
-	GameMessage_Player_Toggle_Nation(): GameMessage(NMS_PLAYER_TOGGLENATION) {} //-V730
-	GameMessage_Player_Toggle_Nation(const unsigned char player, const Nation nation): GameMessage(NMS_PLAYER_TOGGLENATION, player), nation(nation)
+	GameMessage_Player_Set_Nation(): GameMessage(NMS_PLAYER_SET_NATION) {} //-V730
+	GameMessage_Player_Set_Nation(const unsigned char player, const Nation nation): GameMessage(NMS_PLAYER_SET_NATION, player), nation(nation)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLENATION\n");
+		LOG.write(">>> NMS_PLAYER_SET_NATION\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -530,23 +530,21 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLENATION\n");
-		GetInterface(callback)->OnNMSPlayerToggleNation(*this);
+		LOG.write("<<< NMS_PLAYER_SET_NATION\n");
+		GetInterface(callback)->OnNMSPlayerSetNation(*this);
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// gehende Player-Toggle-Team-Nachricht
-class GameMessage_Player_Toggle_Team : public GameMessage
+class GameMessage_Player_Set_Team : public GameMessage
 {
 public:
 	/// Das zu setzende Team
 	Team team;
 
-	GameMessage_Player_Toggle_Team(): GameMessage(NMS_PLAYER_TOGGLETEAM) { } //-V730
-	GameMessage_Player_Toggle_Team(const unsigned char player, const Team team): GameMessage(NMS_PLAYER_TOGGLETEAM, player), team(team)
+	GameMessage_Player_Set_Team(): GameMessage(NMS_PLAYER_SET_TEAM) { } //-V730
+	GameMessage_Player_Set_Team(const unsigned char player, const Team team): GameMessage(NMS_PLAYER_SET_TEAM, player), team(team)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLETEAM\n");
+		LOG.write(">>> NMS_PLAYER_SET_TEAM\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -563,22 +561,20 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLETEAM\n");
-		GetInterface(callback)->OnNMSPlayerToggleTeam(*this);
+		LOG.write("<<< NMS_PLAYER_SET_TEAM\n");
+		GetInterface(callback)->OnNMSPlayerSetTeam(*this);
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// gehende Player-Toggle-Color-Nachricht
-class GameMessage_Player_Toggle_Color : public GameMessage
+class GameMessage_Player_Set_Color : public GameMessage
 {
 public:
 	unsigned color;
 
-	GameMessage_Player_Toggle_Color(): GameMessage(NMS_PLAYER_TOGGLECOLOR) { } //-V730
-	GameMessage_Player_Toggle_Color(const unsigned char player, const unsigned color): GameMessage(NMS_PLAYER_TOGGLECOLOR, player), color(color)
+	GameMessage_Player_Set_Color(): GameMessage(NMS_PLAYER_SET_COLOR) { } //-V730
+	GameMessage_Player_Set_Color(const unsigned char player, const unsigned color): GameMessage(NMS_PLAYER_SET_COLOR, player), color(color)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLECOLOR\n");
+		LOG.write(">>> NMS_PLAYER_SET_COLOR\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -595,8 +591,8 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLECOLOR\n");
-		GetInterface(callback)->OnNMSPlayerToggleColor(*this);
+		LOG.write("<<< NMS_PLAYER_SET_COLOR\n");
+		GetInterface(callback)->OnNMSPlayerSetColor(*this);
 	}
 };
 

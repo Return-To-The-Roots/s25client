@@ -590,7 +590,7 @@ void GameClient::OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// nation button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg)
+inline void GameClient::OnNMSPlayerSetNation(const GameMessage_Player_Set_Nation& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -607,7 +607,7 @@ inline void GameClient::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_
 ///////////////////////////////////////////////////////////////////////////////
 /// team button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg)
+inline void GameClient::OnNMSPlayerSetTeam(const GameMessage_Player_Set_Team& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -624,7 +624,7 @@ inline void GameClient::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Te
 ///////////////////////////////////////////////////////////////////////////////
 /// color button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg)
+inline void GameClient::OnNMSPlayerSetColor(const GameMessage_Player_Set_Color& msg)
 {
     if(msg.player != 0xFF)
     {

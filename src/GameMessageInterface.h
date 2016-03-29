@@ -40,9 +40,9 @@ class GameMessage_Player_Id;
 class GameMessage_Player_Name;
 class GameMessage_Player_List;
 class GameMessage_Player_Set_State;
-class GameMessage_Player_Toggle_Nation;
-class GameMessage_Player_Toggle_Team;
-class GameMessage_Player_Toggle_Color;
+class GameMessage_Player_Set_Nation;
+class GameMessage_Player_Set_Team;
+class GameMessage_Player_Set_Color;
 class GameMessage_Player_Kicked;
 class GameMessage_Player_Ping;
 class GameMessage_Player_New;
@@ -87,9 +87,9 @@ class GameMessageInterface : public MessageInterface
         virtual void OnNMSPlayerName(const GameMessage_Player_Name& msg){}
         virtual void OnNMSPlayerList(const GameMessage_Player_List& msg){}
         virtual void OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg){}
-        virtual void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg){}
-        virtual void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg){}
-        virtual void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg){}
+        virtual void OnNMSPlayerSetNation(const GameMessage_Player_Set_Nation& msg){}
+        virtual void OnNMSPlayerSetTeam(const GameMessage_Player_Set_Team& msg){}
+        virtual void OnNMSPlayerSetColor(const GameMessage_Player_Set_Color& msg){}
         virtual void OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg){}
         virtual void OnNMSPlayerPing(const GameMessage_Player_Ping& msg){}
         virtual void OnNMSPlayerNew(const GameMessage_Player_New& msg){}

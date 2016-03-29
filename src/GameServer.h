@@ -112,9 +112,9 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void OnNMSServerChat(const GameMessage_Server_Chat& msg) override;
         void OnNMSSystemChat(const GameMessage_System_Chat& msg) override;
         void OnNMSPlayerName(const GameMessage_Player_Name& msg) override;
-        void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) override;
-        void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
-        void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;
+        void OnNMSPlayerSetNation(const GameMessage_Player_Set_Nation& msg) override;
+        void OnNMSPlayerSetTeam(const GameMessage_Player_Set_Team& msg) override;
+        void OnNMSPlayerSetColor(const GameMessage_Player_Set_Color& msg) override;
         void OnNMSPlayerReady(const GameMessage_Player_Ready& msg) override;
         void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg) override;
         void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg) override;

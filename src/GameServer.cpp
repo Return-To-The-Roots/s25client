@@ -686,7 +686,7 @@ void GameServer::TogglePlayerTeam(unsigned char client)
     //random team special case
     //switch from random team?
     if(player.team == TM_RANDOMTEAM || player.team == TM_RANDOMTEAM2 || player.team == TM_RANDOMTEAM3 || player.team == TM_RANDOMTEAM4)
-        OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, Team((TM_RANDOMTEAM + 1) % TEAM_COUNT)));
+        OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, Team((TM_RANDOMTEAM + 1) % TEAM_COUNT)));
     else
     {
         if(player.team == TM_NOTEAM) //switch to random team?
@@ -695,25 +695,25 @@ void GameServer::TogglePlayerTeam(unsigned char client)
             switch(rand)
             {
                 case 0:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM));
+                    OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM));
                     break;
                 case 1:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM2));
+                    OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM2));
                     break;
                 case 2:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM3));
+                    OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM3));
                     break;
                 case 3:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM4));
+                    OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM4));
                     break;
                 default:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM));
+                    OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM));
                     break;
             }
 
         }
         else
-            OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, Team((player.team + 1) % TEAM_COUNT)));
+            OnNMSPlayerSetTeam(GameMessage_Player_Set_Team(client, Team((player.team + 1) % TEAM_COUNT)));
     }
 }
 
@@ -741,7 +741,7 @@ void GameServer::TogglePlayerNation(unsigned char client)
         return;
 
     // Nation wechseln
-    OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(client, Nation((player.nation + 1) % NAT_COUNT)));
+    OnNMSPlayerSetNation(GameMessage_Player_Set_Nation(client, Nation((player.nation + 1) % NAT_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1255,7 +1255,7 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Nation weiterwechseln
-inline void GameServer::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg)
+inline void GameServer::OnNMSPlayerSetNation(const GameMessage_Player_Set_Nation& msg)
 {
     GameServerPlayer& player = players[msg.player];
 
@@ -1264,27 +1264,27 @@ inline void GameServer::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_
     LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLENATION\n", msg.player);
 
     // Nation-Change senden
-    SendToAll(GameMessage_Player_Toggle_Nation(msg.player, msg.nation));
+    SendToAll(GameMessage_Player_Set_Nation(msg.player, msg.nation));
 
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n", msg.player, player.nation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Team weiterwechseln
-inline void GameServer::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg)
+inline void GameServer::OnNMSPlayerSetTeam(const GameMessage_Player_Set_Team& msg)
 {
     GameServerPlayer& player = players[msg.player];
 
     player.team = msg.team;
 
     LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLETEAM\n", msg.player);
-    SendToAll(GameMessage_Player_Toggle_Team(msg.player, msg.team));
+    SendToAll(GameMessage_Player_Set_Team(msg.player, msg.team));
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n", msg.player, player.team);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Farbe weiterwechseln
-inline void GameServer::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg)
+inline void GameServer::OnNMSPlayerSetColor(const GameMessage_Player_Set_Color& msg)
 {
     LOG.write("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
     CheckAndSetColor(msg.player, msg.color);
@@ -1540,7 +1540,7 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 
     player.color = newColor;
 
-    SendToAll(GameMessage_Player_Toggle_Color(playerIdx, player.color));
+    SendToAll(GameMessage_Player_Set_Color(playerIdx, player.color));
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
 }
 
