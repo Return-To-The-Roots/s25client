@@ -176,9 +176,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupAllgemein->AddText(10100, 80, 420, _("Smart Cursor"), COLOR_YELLOW, 0, NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
     smartCursor->AddTextButton(10103, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont,
-        _("Without smart cursor, your mouse cursor isn't automatically placed on the first available button or action when you open a dialog / modal window. Useful e.g. for local split-screen multiplayer on Linux."));
+        _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
     smartCursor->AddTextButton(10102, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont,
-        _("When you open a dialog / modal window, the mouse cursor is automatically placed on the first available button or action it contains."));
+        _("Place cursor on default button for new dialogs / action windows (default)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor ? 10102 : 10103);
 
     if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
