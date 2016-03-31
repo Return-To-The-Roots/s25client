@@ -97,7 +97,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
     {
         case STATE_WAITING1:
         {
-			if(!GAMECLIENT.GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
+			if(!GAMECLIENT.GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) || !sword_shield)
 			{
 				//LOG.lprintf("armorer handlewait1 - consume wares %i \n",player);
 				nofWorkman::HandleStateWaiting1();
@@ -126,7 +126,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
 
 bool nofArmorer::AreWaresAvailable()
 {
-    return workplace->WaresAvailable() || (GAMECLIENT.GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield );
+    return workplace->WaresAvailable() || (GAMECLIENT.GetGGS().isEnabled(ADDON_HALF_COST_MIL_EQUIP) && sword_shield );
 }
 
 GoodType nofArmorer::ProduceWare()

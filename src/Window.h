@@ -94,7 +94,7 @@ class Window
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
         bool RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc);
         /// aktiviert das Fenster.
-        virtual void SetActive(bool activate = true);
+        void SetActive(bool activate = true);
         /// aktiviert die Steuerelemente des Fensters.
         void ActivateControls(bool activate = true);
         /// Sperrt eine bestimmte Region für Mausereignisse.

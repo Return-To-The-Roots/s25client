@@ -79,14 +79,14 @@ iwMainMenu::iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi)
     AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
 
     // Baureihenfolge
-    if(GAMECLIENT.GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
+    if(GAMECLIENT.GetGGS().isEnabled(ADDON_CUSTOM_BUILD_SEQUENCE))
         AddImageButton( 10,  12, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
 
     // Diplomatie (todo: besseres Bild suchen)
     AddImageButton( 11,  68, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
     // AI-Debug
-    if(GAMECLIENT.IsHost() && GAMECLIENT.GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW))
+    if(GAMECLIENT.IsHost() && GAMECLIENT.GetGGS().isEnabled(ADDON_AI_DEBUG_WINDOW))
         AddImageButton( 13,  80, 210,  20, 20, TC_GREY, NULL, _("AI Debug Window"));
 
     // Optionen

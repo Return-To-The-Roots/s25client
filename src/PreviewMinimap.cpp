@@ -32,6 +32,8 @@ PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
         SetMap(*s2map);
 }
 
+#include <iostream>
+
 void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
 {
     map_width = s2map.getHeader().getWidth();

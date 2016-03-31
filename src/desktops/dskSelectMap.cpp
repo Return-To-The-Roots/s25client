@@ -301,14 +301,10 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     {
         GAMECLIENT.Stop();
 
-        if(csi.type == ServerType::LOBBY &&  LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
+        if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
-        else if(csi.type == ServerType::LOBBY)
-            WINDOWMANAGER.Switch(new dskDirectIP);
-        else if(csi.type == ServerType::LAN)
-            WINDOWMANAGER.Switch(new dskLAN);
         else
-            WINDOWMANAGER.Switch(new dskSinglePlayer);
+            WINDOWMANAGER.Switch(new dskDirectIP);
     }
 }
 
@@ -342,7 +338,6 @@ void dskSelectMap::CI_Error(const ClientError ce)
     {
         case CE_INCOMPLETEMESSAGE:
         case CE_CONNECTIONLOST:
-        case CE_WRONGMAP:
         {
             // Verbindung zu Server/Lobby abgebrochen
             const std::string errors[] =
@@ -350,12 +345,10 @@ void dskSelectMap::CI_Error(const ClientError ce)
                 _("Incomplete message was received!"),
                 "",
                 "",
-                _("Lost connection to server!"),
-                "",
-                _("Map transmission was corrupt!")
+                _("Lost connection to server!")
             };
 
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, id_));
         } break;
         default: break;
     }

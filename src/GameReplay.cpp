@@ -20,7 +20,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameReplay.h"
 #include "GameSavegame.h"
-#include "gameTypes/MapInfo.h"
 #include "Log.h"
 #include <boost/filesystem.hpp>
 
@@ -30,14 +29,14 @@
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
 /// Version des Replay-Formates
-const unsigned short Replay::REPLAY_VERSION = 28;
+const unsigned short Replay::REPLAY_VERSION = 27;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *
  *  @author OLiver
  */
-Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false),
+Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false), map_type(MAPTYPE_SAVEGAME), map_length(0), map_zip_length(0),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
@@ -63,6 +62,8 @@ void Replay::StopRecording()
     pf_file.Close();
 
     SetPlayerCount(0);
+    map_data.reset();
+    savegame.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,7 +71,7 @@ void Replay::StopRecording()
  *
  *  @author OLiver
  */
-bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
+bool Replay::WriteHeader(const std::string& filename)
 {
     // Deny overwrite, also avoids double-opening by different processes
     if(bfs::exists(filename))
@@ -105,37 +106,29 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
     WriteGGS(file);
 
     // Map-Type
-    file.WriteUnsignedShort(static_cast<unsigned short>(mapInfo.type));
+    file.WriteUnsignedShort(static_cast<unsigned short>(map_type));
 
-    switch(mapInfo.type)
+    switch(map_type)
     {
         default:
             break;
         case MAPTYPE_OLDMAP:
         {
-            RTTR_Assert(!mapInfo.savegame);
             // Map-Daten
-            file.WriteUnsignedInt(mapInfo.mapData.length);
-            file.WriteUnsignedInt(mapInfo.mapData.data.size());
-            file.WriteRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
-            file.WriteUnsignedInt(mapInfo.luaData.length);
-            if(mapInfo.luaData.length)
-            {
-                file.WriteUnsignedInt(mapInfo.luaData.data.size());
-                file.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
-            }
+            file.WriteUnsignedInt(map_length);
+            file.WriteUnsignedInt(map_zip_length);
+            file.WriteRawData(map_data.get(), map_zip_length);
         } break;
         case MAPTYPE_SAVEGAME:
         {
             // Savegame speichern
-            if(!mapInfo.savegame->Save(file))
+            if(!savegame->Save(file))
                 return false;
         } break;
     }
 
     // Mapname
-    file.WriteShortString(mapFileName);
-    file.WriteShortString(mapName);
+    file.WriteShortString(map_name);
 
     // Alles sofort reinschreiben
     file.Flush();
@@ -154,7 +147,7 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
  *
  *  @author OLiver
  */
-bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
+bool Replay::LoadHeader(const std::string& filename, const bool load_extended_header)
 {
     this->fileName_ = filename;
     // Datei öffnen
@@ -185,47 +178,39 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
     ReadGGS(file);
 
     // Map-Type
-    MapType mapType = static_cast<MapType>(file.ReadUnsignedShort());
+    map_type = static_cast<MapType>(file.ReadUnsignedShort());
 
-    if(mapInfo)
+    if(load_extended_header)
     {
-        switch(mapType)
+        switch(map_type)
         {
             default:
                 break;
             case MAPTYPE_OLDMAP:
             {
                 // Map-Daten
-                mapInfo->mapData.length = file.ReadUnsignedInt();
-                mapInfo->mapData.data.resize(file.ReadUnsignedInt());
-                file.ReadRawData(&mapInfo->mapData.data[0], mapInfo->mapData.data.size());
-                mapInfo->luaData.length = file.ReadUnsignedInt();
-                if(mapInfo->luaData.length)
-                {
-                    mapInfo->luaData.data.resize(file.ReadUnsignedInt());
-                    file.ReadRawData(&mapInfo->luaData.data[0], mapInfo->luaData.data.size());
-                }
+                map_length = file.ReadUnsignedInt();
+                map_zip_length = file.ReadUnsignedInt();
+                map_data.reset(new unsigned char[map_zip_length]);
+                file.ReadRawData(map_data.get(), map_zip_length);
             } break;
             case MAPTYPE_SAVEGAME:
             {
                 // Load savegame
-                mapInfo->savegame.reset(new Savegame);
-                if(!mapInfo->savegame->Load(file, true, true))
+                savegame.reset(new Savegame);
+                if(!savegame->Load(file, true, true))
                     return false;
             } break;
         }
 
-        mapFileName = file.ReadShortString();
-        mapName = file.ReadShortString();
-        mapInfo->title = mapName;
-        mapInfo->type = mapType;
+        map_name = file.ReadShortString();
 
         // Try to open precalculated pathfinding results
         pathfinding_results = pf_file.Open(filename + "_res", OFM_READ);
 
         if(!pathfinding_results)
             pf_file.Open(filename + "_res", OFM_WRITE);
-    } else if(mapType == MAPTYPE_SAVEGAME)
+    } else if(map_type == MAPTYPE_SAVEGAME)
     {
         // Validate savegame
         Savegame save;

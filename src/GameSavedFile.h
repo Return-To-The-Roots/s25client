@@ -66,7 +66,7 @@ public:
     /// Zeitpunkt der Aufnahme
     unser_time_t save_time;
     /// Mapname
-    std::string mapName;
+    std::string map_name;
     /// GGS
     GlobalGameSettings ggs;
 

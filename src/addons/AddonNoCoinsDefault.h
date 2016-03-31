@@ -15,7 +15,7 @@
 class AddonNoCoinsDefault : public AddonBool
 {
     public:
-        AddonNoCoinsDefault() : AddonBool(AddonId::NO_COINS_DEFAULT,
+        AddonNoCoinsDefault() : AddonBool(ADDON_NO_COINS_DEFAULT,
                                               ADDONGROUP_MILITARY,
                                               gettext_noop("Disable coins by default"),
                                               gettext_noop("Receiving coins is disabled\n"

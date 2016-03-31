@@ -29,7 +29,7 @@
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
 const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
 /// Version des Savegame-Formates
-const unsigned short Savegame::SAVE_VERSION = 33;
+const unsigned short Savegame::SAVE_VERSION = 32;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -83,7 +83,7 @@ bool Savegame::Save(BinaryFile& file)
     file.WriteRawData(&tmpTime, 8);
 
     // Mapname
-    file.WriteShortString(mapName);
+    file.WriteShortString(map_name);
 
     // Anzahl Spieler
     file.WriteUnsignedChar(GetPlayerCount());
@@ -149,7 +149,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     save_time = libendian::ConvertEndianess<false>::toNative(save_time);
 
     // Map-Name
-    mapName = file.ReadShortString();
+    map_name = file.ReadShortString();
 
     // Anzahl Spieler
     SetPlayerCount(file.ReadUnsignedChar());

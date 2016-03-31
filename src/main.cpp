@@ -41,7 +41,6 @@
 #include "Debug.h"
 
 #include "QuickStartGame.h"
-#include "GlobalVars.h"
 #include "fileFuncs.h"
 
 #include "ogl/glAllocator.h"
@@ -54,7 +53,6 @@
 #endif
 
 #include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
 
 #ifdef __APPLE__
 #   include <SDL_main.h>
@@ -73,8 +71,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
-namespace po = boost::program_options;
 
 void WaitForEnter()
 {
@@ -123,16 +119,6 @@ WinExceptionHandler(
 #endif
 )
 {
-    if(GLOBALVARS.isTest)
-    {
-        std::cerr << std::endl << "ERROR: Test failed!" << std::endl;
-        _exit(1);
-
-#ifdef _MSC_VER
-        return(EXCEPTION_EXECUTE_HANDLER);
-#endif
-    }
-
     if ((SETTINGS.global.submit_debug_data == 1) ||
             MessageBoxA(NULL,
                         _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
@@ -162,12 +148,6 @@ WinExceptionHandler(
 #else
 void LinExceptionHandler(int  /*sig*/)
 {
-    if(GLOBALVARS.isTest)
-    {
-        std::cerr << std::endl << "ERROR: Test failed!" << std::endl;
-        abort();
-    }
-
     if (SETTINGS.global.submit_debug_data == 1)
     {
         DebugInfo di;
@@ -349,7 +329,19 @@ bool InitGame()
     return true;
 }
 
-int RunProgram(po::variables_map& options)
+///////////////////////////////////////////////////////////////////////////////
+/**
+ *  Hauptfunktion von Siedler II.5 Return to the Roots
+ *
+ *  @param[in] argc Anzahl übergebener Argumente
+ *  @param[in] argv Array der übergebenen Argumente
+ *
+ *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
+ *
+ *  @author FloSoft
+ *  @author OLiver
+ */
+int main(int argc, char** argv)
 {
     if(!InitProgram())
         return 1;
@@ -366,8 +358,10 @@ int RunProgram(po::variables_map& options)
         if(!InitGame())
             return 2;
 
-        if(options.count("map"))
-            QuickStartGame(options["map"].as<std::string>());
+#ifndef NDEBUG
+        if (argc > 1)
+            QuickStartGame(argv[1]);
+#endif
 
         // Hauptschleife
         while(GAMEMANAGER.Run())
@@ -381,64 +375,14 @@ int RunProgram(po::variables_map& options)
         // Spiel beenden
         GAMEMANAGER.Stop();
         libsiedler2::setAllocator(NULL);
-    } catch(RTTR_AssertError& error)
+    }catch(RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too
         try{
             LOG.write(error.what());
-        } catch(...){} //-V565
+        }catch(...){} //-V565
         return 42;
     }
+
     return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Hauptfunktion von Siedler II.5 Return to the Roots
- *
- *  @param[in] argc Anzahl übergebener Argumente
- *  @param[in] argv Array der übergebenen Argumente
- *
- *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
- *
- *  @author FloSoft
- *  @author OLiver
- */
-int main(int argc, char** argv)
-{
-    po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help,h", "Show help")
-        ("map,m", po::value<std::string>(), "Map to load")
-        ("test", "Run in test mode (shows errors during run)")
-        ;
-    po::positional_options_description positionalOptions;
-    positionalOptions.add("map", 1);
-
-    po::variables_map options;
-    po::store(po::command_line_parser(argc, argv).options(desc)
-        .positional(positionalOptions).run(),
-        options);
-    po::notify(options);
-
-    if(options.count("help")) {
-        std::cout << desc << "\n";
-        return 1;
-    }
-
-    GLOBALVARS.isTest = options.count("test") > 0;
-    GLOBALVARS.errorOccured = false;
-
-    int result = RunProgram(options);
-    if(GLOBALVARS.isTest)
-    {
-        if(result || GLOBALVARS.errorOccured)
-        {
-            std::cerr << std::endl << std::endl << "ERROR: Test failed!" << std::endl;
-            result = result || 1;
-        } else
-            std::cout << std::endl << std::endl << "Test passed!" << std::endl;
-    }    
-
-    return result;
 }

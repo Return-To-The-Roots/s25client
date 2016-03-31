@@ -98,9 +98,13 @@ void GameServerPlayer::doTimeout()
 void GameServerPlayer::reserve(const Socket& sock, unsigned char id)
 {
     clear();
+
     playerid = id;
+
     connecttime = VIDEODRIVER.GetTickCount();
+
     so = sock;
+
     ps = PS_RESERVED;
 }
 

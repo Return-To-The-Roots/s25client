@@ -6,7 +6,7 @@
 class AddonMetalworksBehaviorOnZero : public AddonList
 {
 public:
-	AddonMetalworksBehaviorOnZero() : AddonList(AddonId::METALWORKSBEHAVIORONZERO,
+	AddonMetalworksBehaviorOnZero() : AddonList(ADDON_METALWORKSBEHAVIORONZERO,
 		ADDONGROUP_GAMEPLAY,
 		gettext_noop("Change metalworks behavior on zero"),
 		gettext_noop("Change the working behavior of metalworks if all sliders in the tools window are set to zero.\n"

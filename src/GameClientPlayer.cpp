@@ -2335,8 +2335,8 @@ void GameClientPlayer::TestPacts()
 
 bool GameClientPlayer::CanBuildCatapult() const
 {
-    // Wenn AddonId::LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-    if(!GAMECLIENT.GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
+    // Wenn ADDON_LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
+    if(!GAMECLIENT.GetGGS().isEnabled(ADDON_LIMIT_CATAPULTS)) //-V807
         return true;
 
     BuildingCount bc;
@@ -2345,17 +2345,17 @@ bool GameClientPlayer::CanBuildCatapult() const
     unsigned int max = 0;
 
     // proportional?
-    if(GAMECLIENT.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
+    if(GAMECLIENT.GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) == 1)
     {
         max = int(bc.building_counts[BLD_BARRACKS] * 0.125 +
                   bc.building_counts[BLD_GUARDHOUSE] * 0.25 +
                   bc.building_counts[BLD_WATCHTOWER] * 0.5 +
                   bc.building_counts[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     }
-    else if(GAMECLIENT.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
+    else if(GAMECLIENT.GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) < 8)
     {
         const boost::array<unsigned, 6> limits = {{ 0, 3, 5, 10, 20, 30}};
-        max = limits[GAMECLIENT.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
+        max = limits[GAMECLIENT.GetGGS().getSelection(ADDON_LIMIT_CATAPULTS) - 2];
     }
 
     return bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] < max;

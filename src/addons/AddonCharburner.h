@@ -30,7 +30,7 @@
 class AddonCharburner : public AddonBool
 {
     public:
-        AddonCharburner() : AddonBool(AddonId::CHARBURNER,
+        AddonCharburner() : AddonBool(ADDON_CHARBURNER,
                                           ADDONGROUP_ECONOMY,
                                           gettext_noop("Enable charburner"),
                                           gettext_noop("Allows to build the charburner."),
