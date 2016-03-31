@@ -30,7 +30,7 @@
 class AddonTrade : public AddonBool
 {
     public:
-        AddonTrade() : AddonBool(AddonId::TRADE,
+        AddonTrade() : AddonBool(ADDON_TRADE,
                                      ADDONGROUP_ECONOMY,
                                      gettext_noop("Trade"),
                                      gettext_noop("Allows to send wares/figures to allied warehouses"),

@@ -32,7 +32,7 @@
 class AddonRefundOnEmergency : public AddonBool
 {
     public:
-        AddonRefundOnEmergency() : AddonBool(AddonId::REFUND_ON_EMERGENCY,
+        AddonRefundOnEmergency() : AddonBool(ADDON_REFUND_ON_EMERGENCY,
                                                  ADDONGROUP_ECONOMY,
                                                  gettext_noop("Refund materials when emergency program is active"),
                                                  gettext_noop("Allows you to get building materials back if the building is destroyed\n"

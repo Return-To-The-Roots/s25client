@@ -134,9 +134,9 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
                 return;
             }
 
-            if(GAMECLIENT.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+            if(GAMECLIENT.GetGGS().isEnabled(ADDON_CATAPULT_GRAPHICS))
             {
-                if(!LOADER.LoadFilesFromAddon(AddonId::CATAPULT_GRAPHICS))
+                if(!LOADER.LoadFilesFromAddon(ADDON_CATAPULT_GRAPHICS))
                 {
                     LC_Status_Error(_("Failed to load addon objects."));
                     return;

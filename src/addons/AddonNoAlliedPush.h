@@ -14,7 +14,7 @@
 class AddonNoAlliedPush : public AddonBool
 {
     public:
-        AddonNoAlliedPush() : AddonBool(AddonId::NO_ALLIED_PUSH,
+        AddonNoAlliedPush() : AddonBool(ADDON_NO_ALLIED_PUSH,
                                               ADDONGROUP_MILITARY,
                                               gettext_noop("Improved Alliance"),
                                               gettext_noop("Allied players can no longer push\n"

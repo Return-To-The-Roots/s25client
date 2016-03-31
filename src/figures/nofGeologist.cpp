@@ -32,7 +32,6 @@
 #include "PostMsg.h"
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "lua/LuaInterfaceGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -465,8 +464,7 @@ void nofGeologist::SetSign(const unsigned char resources)
         resAlreadyFound[type] = true;
     }
 
-    if(gwg->HasLua())
-        gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);
+    gwg->LUA_EventResourceFound(this->player, pos, type, quantity);
 
     // Schild setzen
     gwg->SetNO(pos, new noSign(pos, type, quantity));

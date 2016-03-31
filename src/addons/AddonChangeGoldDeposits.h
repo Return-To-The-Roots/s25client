@@ -32,7 +32,7 @@
 class AddonChangeGoldDeposits : public AddonList
 {
     public:
-        AddonChangeGoldDeposits() : AddonList(AddonId::CHANGE_GOLD_DEPOSITS,
+        AddonChangeGoldDeposits() : AddonList(ADDON_CHANGE_GOLD_DEPOSITS,
                                                   ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY,
                                                   gettext_noop("Change gold deposits"),
                                                   gettext_noop("Allows to play games without gold.\n\n"

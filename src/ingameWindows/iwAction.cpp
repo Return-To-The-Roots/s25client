@@ -195,7 +195,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
         }
 
         // Mint and Goldmine
-        if(GAMECLIENT.GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
+        if(GAMECLIENT.GetGGS().isEnabled(ADDON_CHANGE_GOLD_DEPOSITS))
         {
             building_available[1][7] = false;
             building_available[3][0] = false;
@@ -206,7 +206,7 @@ iwAction::iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const
             building_available[1][12] = false;
 
         // Charburner
-        if(!GAMECLIENT.GetGGS().isEnabled(AddonId::CHARBURNER))
+        if(!GAMECLIENT.GetGGS().isEnabled(ADDON_CHARBURNER))
             building_available[2][3] = false;
 
         for(unsigned char i = 0; i < TABS_COUNT[tabs.build_tabs]; ++i)
@@ -350,7 +350,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 {
     RTTR_Assert(group);
 
-    if(GAMECLIENT.GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
+    if(GAMECLIENT.GetGGS().isEnabled(ADDON_MANUAL_ROAD_ENLARGEMENT))
     {
         unsigned char flag_dir = 0;
         noFlag* flag = gwv->GetRoadFlag(selectedPt, flag_dir);

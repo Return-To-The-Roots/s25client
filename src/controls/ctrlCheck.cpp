@@ -88,8 +88,7 @@ bool ctrlCheck::Draw_()
     if(font)
         font->Draw(GetX() + 4, GetY() + height_ / 2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB) );
 
-    if(!readonly)
-        Draw3D(GetX() + width_ - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
+    Draw3D(GetX() + width_ - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
 
     if(check)
         LOADER.GetImageN("io", 32)->Draw(GetX() + width_ - distance - box_size / 2, GetY() + distance + box_size / 2, 0, 0, 0, 0, 0, 0);

@@ -31,7 +31,7 @@
 class AddonRefundMaterials : public AddonList
 {
     public:
-        AddonRefundMaterials() : AddonList(AddonId::REFUND_MATERIALS,
+        AddonRefundMaterials() : AddonList(ADDON_REFUND_MATERIALS,
                                                ADDONGROUP_ECONOMY,
                                                gettext_noop("Refund materials when building is destroyed"),
                                                gettext_noop("Allows you to get building materials back if the building is destroyed."),

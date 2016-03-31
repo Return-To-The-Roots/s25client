@@ -183,7 +183,7 @@ void GameWorldView::Draw(const unsigned char  /*player*/, unsigned* water, const
                     //Draw building quality icon
                     bm->Draw(curPos.x, curPos.y, 0, 0, 0, 0, 0, 0);
                     //Show ability to construct military buildings
-                    if(GAMECLIENT.GetGGS().isEnabled(AddonId::MILITARY_AID))
+                    if(GAMECLIENT.GetGGS().isEnabled(ADDON_MILITARY_AID))
                     {
                         if(!gwv->IsMilitaryBuildingNearNode(t, GAMECLIENT.GetPlayerID()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
                             LOADER.GetImageN("map_new", 20000)->Draw(curPos.x + 1, curPos.y - bm->getHeight() - 5, 0, 0, 0, 0, 0, 0);
@@ -416,7 +416,7 @@ void GameWorldView::Draw(const unsigned char  /*player*/, unsigned* water, const
                 int altitude = gwv->GetNode(rb.point).altitude;
 
                 const unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into dskGameInterface.cpp, too
-                const unsigned char index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
+                const unsigned char index = GAMECLIENT.GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
                 RTTR_Assert(index <= sizeof(waterway_lengthes) - 1);
                 const unsigned char max_length = waterway_lengthes[index];
 

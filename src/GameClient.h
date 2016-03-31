@@ -29,13 +29,13 @@
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/SettingsTypes.h"
-#include "gameTypes/MapInfo.h"
 #include "gameData/PlayerConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "FramesInfo.h"
 
 class AIBase;
 class ClientInterface;
+class Savegame;
 class GameMessage_GameCommand;
 class GameWorldViewer;
 class PostMsg;
@@ -63,9 +63,9 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         ~GameClient() override;
 
         void SetInterface(ClientInterface* ci) { this->ci = ci; }
-        bool IsHost() const { return clientconfig.isHost; }
-        bool IsSavegame() const { return mapinfo.type == MAPTYPE_SAVEGAME; }
-        std::string GetGameName() const { return clientconfig.gameName; }
+        bool IsHost() const { return clientconfig.host; }
+        bool IsSavegame() const { return mapinfo.map_type == MAPTYPE_SAVEGAME; }
+        std::string GetGameName() const { return clientconfig.gamename; }
 
         inline unsigned char GetPlayerID() const { return playerId_; }
         inline unsigned GetPlayerCount() const { return players.getCount(); }
@@ -89,10 +89,9 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Gibt Map-Titel zurück
         const std::string& GetMapTitle() const { return mapinfo.title; }
         /// Gibt Pfad zu der Map zurück
-        const std::string& GetMapPath() const  { return mapinfo.filepath; }
+        const std::string& GetMapPath() const  { return clientconfig.mapfilepath; }
         /// Gibt Map-Typ zurück
-        const MapType GetMapType() const { return mapinfo.type; }
-        const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
+        const MapType GetMapType() const { return mapinfo.map_type; }
 
         // Initialisiert und startet das Spiel
         void StartGame(const unsigned random_init);
@@ -116,7 +115,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void Command_Chat(const std::string& text, const ChatDestination cd );
         void Command_ToggleNation();
         void Command_ToggleTeam(Team newteam);
-        void Command_SetColor();
+        void Command_ToggleColor();
         void Command_ToggleReady();
 
         void IncreaseSpeed();
@@ -142,7 +141,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Wird ein Replay abgespielt?
         bool IsReplayModeOn() const { return replay_mode; }
 
-        Replay& GetReplay() { return replayinfo.replay; }
+        const Replay GetReplay() const { return replayinfo.replay; }
 
         /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
         unsigned GetTournamentModeDuration() const;
@@ -209,7 +208,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         void OnNMSPlayerId(const GameMessage_Player_Id& msg) override;
         void OnNMSPlayerList(const GameMessage_Player_List& msg) override;
-        void OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg) override;
+        void OnNMSPlayerToggleState(const GameMessage_Player_Toggle_State& msg) override;
         void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg) override;
         void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg) override;
         void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg) override;
@@ -229,7 +228,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
 
         void OnNMSGGSChange(const GameMessage_GGSChange& msg) override;
-        void OnNMSRemoveLua(const GameMessage_RemoveLua& msg) override;
 
         void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg) override;
 
@@ -298,14 +296,30 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 void Clear();
 
                 std::string server;
-                std::string gameName;
+                std::string gamename;
                 std::string password;
+                std::string mapfile;
+                std::string mapfilepath;
                 ServerType servertyp;
                 unsigned short port;
-                bool isHost;
+                bool host;
         } clientconfig;
 
-        MapInfo mapinfo;
+        class MapInfo
+        {
+            public:
+                MapInfo() { Clear(); }
+                void Clear();
+
+                MapType map_type;
+                unsigned partcount;
+                unsigned ziplength;
+                unsigned length;
+                unsigned checksum;
+                std::string title;
+                boost::shared_array<unsigned char> zipdata;
+                boost::shared_ptr<Savegame> savegame;
+        } mapinfo;
 
         FramesInfoClient framesinfo;
 

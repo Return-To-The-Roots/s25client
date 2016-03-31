@@ -134,7 +134,7 @@ void nofFisher::WorkFinished()
     // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
     if(successful)
     {
-        if(!GAMECLIENT.GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
+        if(!GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
             gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
     }

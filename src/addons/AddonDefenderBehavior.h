@@ -32,7 +32,7 @@
 class AddonDefenderBehavior : public AddonList
 {
     public:
-        AddonDefenderBehavior() : AddonList(AddonId::DEFENDER_BEHAVIOR,
+        AddonDefenderBehavior() : AddonList(ADDON_DEFENDER_BEHAVIOR,
                                                 ADDONGROUP_MILITARY,
                                                 gettext_noop("Change defender behavior"),
                                                 gettext_noop("Allows to change the military setting 'defender'.\n\n"

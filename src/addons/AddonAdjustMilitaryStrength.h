@@ -43,7 +43,7 @@
 class AddonAdjustMilitaryStrength : public AddonList
 {
     public:
-        AddonAdjustMilitaryStrength() : AddonList(AddonId::ADJUST_MILITARY_STRENGTH,
+        AddonAdjustMilitaryStrength() : AddonList(ADDON_ADJUST_MILITARY_STRENGTH,
                     ADDONGROUP_MILITARY,
                     gettext_noop("Adjust military strength"),
                     gettext_noop("Allows you to modify the strength increase of military ranks\n\n"),

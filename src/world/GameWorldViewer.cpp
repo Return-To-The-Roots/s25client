@@ -215,7 +215,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt, const unsigned char player) 
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
         const MapPoint pt) const
 {
-    if(GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
+    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
     return unsigned(GetAvailableSoldiersForSeaAttack(player_attacker, pt).size());
 }

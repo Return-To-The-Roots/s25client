@@ -342,11 +342,8 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
     // ist das zuletzt aktiv gewesene Fenster Modal?
     IngameWindow& lastActiveWnd = *windows.back();
-    if(lastActiveWnd.GetModal())
+    if( lastActiveWnd.GetModal())
     {
-        if(!lastActiveWnd.GetActive())
-            lastActiveWnd.SetActive();
-
         // ja es ist modal, ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
         {
@@ -860,7 +857,7 @@ void WindowManager::Close(IngameWindow* window)
         return;
 
     IgwListIterator it = std::find(windows.begin(), windows.end(), window);
-    if(it == windows.end())
+    if( it == windows.end())
         return; // Window already closed -> Out
 
     SetToolTip(NULL, "");
