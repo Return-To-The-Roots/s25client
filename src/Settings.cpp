@@ -67,6 +67,7 @@ bool Settings::LoadDefaults()
     // 0 = ask user at start,1 = enabled, 2 = disabled
     global.submit_debug_data = 0;
     global.use_upnp = 2;
+    global.smartCursor = true;
     global.debugMode = false;
     // }
 
@@ -205,6 +206,7 @@ bool Settings::Load()
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
+    global.smartCursor = (iniGlobal->getValue("smartCursor") == "" || iniGlobal->getValueI("smartCursor") != 0);
     global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
 
     // };
@@ -358,6 +360,7 @@ void Settings::Save()
     iniGlobal->setValue("gameversion", GetWindowRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);
+    iniGlobal->setValue("smartCursor", global.smartCursor ? 1 : 0);
     iniGlobal->setValue("debugMode", global.debugMode ? 1 : 0);
     // };
 

@@ -173,6 +173,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     upnp->AddTextButton(10001, 480, 385, 190, 22, TC_GREY, _("On"), NormalFont);
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
+    groupAllgemein->AddText(10100, 80, 420, _("Smart Cursor"), COLOR_YELLOW, 0, NormalFont);
+    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
+    smartCursor->AddTextButton(10103, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont,
+        _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
+    smartCursor->AddTextButton(10102, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont,
+        _("Place cursor on default button for new dialogs / action windows (default)"));
+    smartCursor->SetSelection(SETTINGS.global.smartCursor ? 10102 : 10103);
 
     if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
@@ -539,6 +546,14 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, c
             {
                 case 10001: SETTINGS.global.use_upnp = 1; break;
                 case 10002: SETTINGS.global.use_upnp = 0; break;
+            }
+        } break;
+        case 10101:
+        {
+            switch(selection)
+            {
+                case 10102: SETTINGS.global.smartCursor = true; break;
+                case 10103: SETTINGS.global.smartCursor = false; break;
             }
         } break;
     }
