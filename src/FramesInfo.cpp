@@ -56,6 +56,7 @@ FramesInfoClient::FramesInfoClient()
 void FramesInfoClient::Clear()
 {
     FramesInfo::Clear();
+    gfLengthReq = 0;
     gfNrServer = 0;
     pause_gf = 0;
     forcePauseStart = forcePauseLen = 0;

@@ -19,14 +19,16 @@
 #define WP_HOSTGAME_H_
 
 #include "Desktop.h"
-
+#include "ClientInterface.h"
+#include "LobbyInterface.h"
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
-#include "LobbyInterface.h"
-#include "ClientInterface.h"
 class GameWorldViewer;
 class LobbyPlayerInfo;
+class LuaInterfaceSettings;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame :
@@ -41,6 +43,7 @@ class dskHostGame :
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
         void Resize_(unsigned short width, unsigned short height) override;
+        void SetActive(bool activate = true) override;
     private:
 
         void TogglePlayerReady(unsigned char player, bool ready);
@@ -96,6 +99,8 @@ class dskHostGame :
         GlobalGameSettings ggs_;
         bool hasCountdown_;
         const ServerType serverType;
+        boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
+        bool wasActivated, allowAddonChange;
 };
 
 

@@ -23,6 +23,7 @@
 #include "GameClient.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
+#include "lua/LuaInterfaceGame.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Sound.h"
@@ -37,25 +38,22 @@
 #include "DebugNew.h" // IWYU pragma: keep
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(const std::string& filename)
+bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::ArchivInfo mapArchiv;
 
     // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(filename, mapArchiv) != 0)
+    if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
         return false;
 
     const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
 
-    bfs::path luaPath(filename);
-    luaPath.replace_extension("lua");
-    std::string luaFilePath = luaPath.string();
-
-    if (bfs::exists(luaPath) && luaL_dofile(lua, luaFilePath.c_str()))
+    if (bfs::exists(luaFilePath))
     {
-        fprintf(stderr, "LUA ERROR: '%s'!\n", lua_tostring(lua, -1));
-        lua_pop(lua, 1);
+        lua.reset(new LuaInterfaceGame(*this));
+        if(!lua->LoadScript(luaFilePath))
+            lua.reset();
     }
 
     MapLoader loader(*this);
@@ -68,8 +66,6 @@ bool GameWorld::LoadMap(const std::string& filename)
 
     if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.isValid())
         this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
-
-    LUA_EventStart();
 
     return true;
 }
@@ -87,6 +83,18 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     MapSerializer::Serialize(*this, sgd);
 
     sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
+
+    if(!lua)
+        sgd.PushUnsignedInt(0);
+    else
+    {
+        sgd.PushString(lua->GetScript());
+        Serializer luaSaveState = lua->Serialize();
+        sgd.PushUnsignedInt(0xC0DEBA5E);  // Start Lua identifier
+        sgd.PushUnsignedInt(luaSaveState.GetLength());
+        sgd.PushRawData(luaSaveState.GetData(), luaSaveState.GetLength());
+        sgd.PushUnsignedInt(0xC001C0DE); // End Lua identifier
+    }
 }
 
 void GameWorld::Deserialize(SerializedGameData& sgd)
@@ -106,6 +114,27 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
 
     sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 
+    std::string luaScript = sgd.PopString();
+    if(!luaScript.empty())
+    {
+        if(sgd.PopUnsignedInt() != 0xC0DEBA5E)
+            throw SerializedGameData::Error("Invalid id for lua data");
+        // If there is a script, there is also save data. Pop that first
+        unsigned luaSaveSize = sgd.PopUnsignedInt();
+        Serializer luaSaveState;
+        sgd.PopRawData(luaSaveState.GetDataWritable(luaSaveSize), luaSaveSize);
+        luaSaveState.SetLength(luaSaveSize);
+        if(sgd.PopUnsignedInt() != 0xC001C0DE)
+            throw SerializedGameData::Error("Invalid end-id for lua data");
+
+        // Now init and load lua
+        lua.reset(new LuaInterfaceGame(*this));
+        if(!lua->LoadScriptString(luaScript))
+            lua.reset();
+        else
+            lua->Deserialize(luaSaveState);
+    }
+
     // BQ neu berechnen
     for(unsigned y = 0; y < GetHeight(); ++y)
     {
@@ -118,7 +147,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
     tr.GenerateOpenGL(*this);
 
     // Zum HQ am Anfang springen, falls dieses existiert
-    if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.x != 0xFFFF)
+    if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.isValid())
         this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
 }
 

@@ -399,7 +399,7 @@ void MapLoader::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.hqPos.isValid())
         {
-            if(player.ps == PS_OCCUPIED || player.ps == PS_KI)
+            if(player.isUsed())
             {
                 nobHQ* hq = new nobHQ(player.hqPos, i, player.nation);
                 world.SetNO(player.hqPos, hq);

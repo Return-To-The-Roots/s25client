@@ -36,6 +36,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noShip.h"
+#include "lua/LuaInterfaceGame.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
 #include "gameData/MilitaryConsts.h"
@@ -436,7 +437,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 	
     const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
     const unsigned char newOwnerOfTriggerBld = region.GetOwner(building.GetPos().x, building.GetPos().y);
-    const bool noAlliedBorderPush = GAMECLIENT.GetGGS().isEnabled(ADDON_NO_ALLIED_PUSH);
+    const bool noAlliedBorderPush = GAMECLIENT.GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
 
     for(int y = region.y1; y < region.y2; ++y)
     {
@@ -471,8 +472,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                 sizeChanges[oldOwner - 1]--;
 
             // Event for map scripting
-            if(newOwner != 0)
-                LUA_EventOccupied(newOwner - 1, curPt);
+            if(newOwner != 0 && HasLua())
+                GetLua().EventOccupied(newOwner - 1, curPt);
         }
     }
 
@@ -979,7 +980,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers)
 {
     //sea attack abgeschaltet per addon?
-    if(GAMECLIENT.GetGGS().getSelection(ADDON_SEA_ATTACK) == 2)
+    if(GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return;
     // Verzögerungsbug-Abfrage:
     // Existiert das angegriffenen Gebäude überhaupt noch?
@@ -1378,8 +1379,8 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     // Vollständig sichtbar --> vollständig sichtbar logischerweise
     if(visible)
     {
-        if (visibility_before != VIS_VISIBLE)
-            LUA_EventExplored(player, pt);
+        if (visibility_before != VIS_VISIBLE && HasLua())
+            GetLua().EventExplored(player, pt);
         SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
     }
     else
@@ -1422,8 +1423,8 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
     Visibility visibility_before = GetNode(pt).fow[player].visibility;
     SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
 
-    if (visibility_before != VIS_VISIBLE)
-        LUA_EventExplored(player, pt);
+    if (visibility_before != VIS_VISIBLE && HasLua())
+        GetLua().EventExplored(player, pt);
 
     // Minimap Bescheid sagen
     if(gi && visibility_before != GetNode(pt).fow[player].visibility)
@@ -1661,7 +1662,7 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
 void GameWorldGame::CreateTradeGraphs()
 {
     // Only if trade is enabled
-    if(!GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
+    if(!GAMECLIENT.GetGGS().isEnabled(AddonId::TRADE))
         return;
 
     TradePathCache::inst().Clear();

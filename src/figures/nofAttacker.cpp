@@ -416,7 +416,7 @@ void nofAttacker::HomeDestroyedAtBegin()
 void nofAttacker::WonFighting()
 {
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GAMECLIENT.GetGGS().isEnabled(ADDON_BATTLEFIELD_PROMOTION))
+	if(GAMECLIENT.GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building && state != STATE_ATTACKING_FIGHTINGVSDEFENDER)

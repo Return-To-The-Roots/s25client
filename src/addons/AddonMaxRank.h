@@ -41,7 +41,7 @@
 class AddonMaxRank : public AddonList
 {
     public:
-        AddonMaxRank() : AddonList(ADDON_MAX_RANK,
+        AddonMaxRank() : AddonList(AddonId::MAX_RANK,
                                        ADDONGROUP_MILITARY,
                                        gettext_noop("Set max rank"),
                                        gettext_noop("Allows you to select the highest rank for soldiers\n\n"),

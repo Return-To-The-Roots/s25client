@@ -33,8 +33,8 @@ class GameClientPlayer;
 class nofPassiveSoldier;
 class nobHarborBuilding;
 class noFlag;
-struct lua_State;
 class noBase;
+class LuaInterfaceGame;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase: public World
@@ -42,6 +42,7 @@ class GameWorldBase: public World
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
 protected:
+    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
 
     TerrainRenderer tr;
 
@@ -173,6 +174,8 @@ public:
     /// Gibt Anzahl oder gesch�tzte St�rke(rang summe + anzahl) der verf�gbaren Soldaten die zu einem Schiffsangriff starten k�nnen von einer bestimmten sea id aus
     unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
 
+    bool HasLua() const { return lua.get() != NULL; }
+    LuaInterfaceGame& GetLua() const { return *lua.get(); }
 protected:
 
     /// F�r abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
@@ -182,36 +185,6 @@ protected:
     unsigned GetNextHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir,
         const unsigned char player, bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const;
 
-    lua_State* lua;
-
-    static int LUA_DisableBuilding(lua_State* L);
-    static int LUA_EnableBuilding(lua_State* L);
-    static int LUA_SetRestrictedArea(lua_State* L);
-    static int LUA_ClearResources(lua_State *L);
-    static int LUA_AddWares(lua_State* L);
-    static int LUA_AddPeople(lua_State* L);
-    static int LUA_GetGF(lua_State *L);
-    static int LUA_Log(lua_State *L);
-    static int LUA_Chat(lua_State *L);
-    static int LUA_MissionStatement(lua_State *L);
-    static int LUA_PostMessage(lua_State *L);
-    static int LUA_PostMessageWithLocation(lua_State *L);
-    static int LUA_GetPlayerCount(lua_State *L);
-    static int LUA_GetBuildingCount(lua_State *L);
-    static int LUA_GetWareCount(lua_State *L);
-    static int LUA_GetPeopleCount(lua_State *L);
-    static int LUA_AddEnvObject(lua_State *L);
-    static int LUA_AIConstructionOrder(lua_State *L);
-    static int LUA_AddStaticObject(lua_State *L);
-    static int LUA_PostNewBuildings(lua_State *L);
-    static int LUA_ModifyPlayerHQ(lua_State* L);
-
-public:
-    void LUA_EventExplored(unsigned player, const MapPoint pt);
-    void LUA_EventOccupied(unsigned player, const MapPoint pt);
-    void LUA_EventStart();
-    void LUA_EventGF(unsigned number);
-    void LUA_EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
 };
 
 #endif // GameWorldBase_h__

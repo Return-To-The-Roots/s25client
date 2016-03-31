@@ -216,8 +216,16 @@ ELSE (MSVC)
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wno-long-long")
+CheckAndAddFlag("-Wno-deprecated-register")
+CheckAndAddFlag("-Wno-unknown-pragmas")
 CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
+CheckAndAddFlag("-Qunused-arguments")
+
+# Variadic macros are part of C99 but supported by all big compilers in C++03
+CheckAndAddFlag("-Wno-variadic-macros")
+CheckAndAddFlag("-Wno-c99-extensions")
+ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
 # avoid lhs-path bug in windows
 IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")

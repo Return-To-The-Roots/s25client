@@ -36,7 +36,7 @@ noFire::noFire(const MapPoint pos, const unsigned char size)
 {
     // Bestimmte Zeit lang brennen
 	const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
-    dead_event = em->AddEvent(this, FIREDURATION[GAMECLIENT.GetGGS().getSelection(ADDON_BURN_DURATION)]);
+    dead_event = em->AddEvent(this, FIREDURATION[GAMECLIENT.GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
 noFire::~noFire()
 {
@@ -76,9 +76,9 @@ void noFire::Draw(int x, int y)
 {
     //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
 	const unsigned FIREANIMATIONDURATION[] = {1000, 750, 500, 250, 100, 1500, 2000};
-    unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(ADDON_BURN_DURATION)], dead_event);
+    unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
 
-    if(id < FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(ADDON_BURN_DURATION)]*2/3)
+    if(id < FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(AddonId::BURN_DURATION)]*2/3)
     {
         // Loderndes Feuer
         LOADER.GetMapImageN(2500 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0);

@@ -23,12 +23,10 @@
 #include "GameSavedFile.h"
 #include "GameProtocol.h"
 #include "gameTypes/MapTypes.h"
-#include <boost/smart_ptr/shared_array.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
-class Savegame;
+class MapInfo;
 
 /// Klasse für geladene bzw. zu speichernde Replays
 class Replay : public SavedFile
@@ -54,9 +52,9 @@ class Replay : public SavedFile
         bool IsValid() const { return file.IsValid(); }
 
         /// Beginnt die Save-Datei und schreibt den Header
-        bool WriteHeader(const std::string& filename);
-        /// Lädt den Header
-        bool LoadHeader(const std::string& filename, const bool load_extended_header);
+        bool WriteHeader(const std::string& filename, const MapInfo& mapInfo);
+        /// Loads the header and optionally the mapInfo (former "extended header")
+        bool LoadHeader(const std::string& filename, MapInfo* mapInfo = NULL);
 
         /// Fügt ein Chat-Kommando hinzu (schreibt)
         void AddChatCommand(const unsigned gf, const unsigned char player, const unsigned char dest, const std::string& str);
@@ -81,20 +79,13 @@ class Replay : public SavedFile
         BinaryFile* GetFile() { return &file; }
 
     public:
+        std::string mapFileName;
         /// NWF-Länge
         unsigned short nwf_length;
         /// Zufallsgeneratorinitialisierung
         unsigned random_init;
         /// Bestimmt, ob Pathfinding-Ergebnisse in diesem Replay gespeichert sind
         bool pathfinding_results;
-
-        /// Gespeichertes Spiel, Zufallskarte, normale Karte...?
-        MapType map_type;
-        /// Gepackte Map - Daten (für alte Karte)
-        unsigned map_length, map_zip_length;
-        boost::shared_array<unsigned char> map_data;
-        /// Savegame (für gespeichertes Spiel)
-        boost::shared_ptr<Savegame> savegame;
 
         /// End-GF
         unsigned lastGF_;

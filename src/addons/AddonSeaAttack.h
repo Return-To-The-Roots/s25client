@@ -37,7 +37,7 @@
 class AddonSeaAttack : public AddonList
 {
     public:
-        AddonSeaAttack() : AddonList(ADDON_SEA_ATTACK,
+        AddonSeaAttack() : AddonList(AddonId::SEA_ATTACK,
                                          ADDONGROUP_MILITARY,
                                          gettext_noop("Sea attack settings"),
                                          gettext_noop("set restriction level for sea attacks\n\n"),

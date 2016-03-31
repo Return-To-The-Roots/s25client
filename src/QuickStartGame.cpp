@@ -30,13 +30,13 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class GameWorldViewer;
 
-bool QuickStartGame(const std::string& filePath)
+bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 {
     CreateServerInfo csi;
     csi.gamename = _("Unlimited Play");
-    csi.password = "localgame";
+    csi.password = "";
     csi.port = 3665;
-    csi.type = ServerType::LOCAL;
+    csi.type = singlePlayer ? ServerType::LOCAL : ServerType::DIRECT;
     csi.ipv6 = false;
     csi.use_upnp = false;
 
@@ -44,7 +44,8 @@ bool QuickStartGame(const std::string& filePath)
 
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
-    if(GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME) || GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP))
+    if((filePath.find(".sav") != std::string::npos && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
+        || ((filePath.find(".swd") != std::string::npos || filePath.find(".wld") != std::string::npos) && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
     {
         WINDOWMANAGER.Draw();
         WINDOWMANAGER.Show(new iwPleaseWait);

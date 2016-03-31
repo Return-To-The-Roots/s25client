@@ -31,7 +31,7 @@
 class AddonMaxWaterwayLength : public AddonList
 {
     public:
-        AddonMaxWaterwayLength() : AddonList(ADDON_MAX_WATERWAY_LENGTH,
+        AddonMaxWaterwayLength() : AddonList(AddonId::MAX_WATERWAY_LENGTH,
                                                  ADDONGROUP_GAMEPLAY,
                                                  gettext_noop("Set maximum waterway length"),
                                                  gettext_noop("Limits the distance settlers may travel per boat.\n\n"

@@ -31,7 +31,7 @@
 class AddonStatisticsVisibility : public AddonList
 {
     public:
-        AddonStatisticsVisibility() : AddonList(ADDON_STATISTICS_VISIBILITY,
+        AddonStatisticsVisibility() : AddonList(AddonId::STATISTICS_VISIBILITY,
                                                     ADDONGROUP_OTHER,
                                                     gettext_noop("Change the visibility of your ingame statistics"),
                                                     gettext_noop("Decides to whom your statistics is visible.\n\n"
