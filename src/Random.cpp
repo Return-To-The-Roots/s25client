@@ -109,7 +109,6 @@ void Random::SaveLog(const std::string& filename)
     std::vector<RandomEntry> log = GetAsyncLog();
     FILE* file = fopen(filename.c_str(), "w");
 
-    unsigned int max = (counter > async_log.size() ? async_log.size() : counter);
     for(std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
     {
         fprintf(file, "%u:R(%d)=%d,z=%d | %s#%u|id=%u\n",
