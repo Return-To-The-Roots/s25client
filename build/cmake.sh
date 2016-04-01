@@ -139,10 +139,6 @@ while test $# != 0 ; do
 	shift
 done
 
-if [ -z "$GENERATOR" ] && [ "$(uname -s)" = "Darwin" ] ; then
-	GENERATOR="Xcode"
-fi
-
 if [ -z "$RTTR_BINDIR" ] ; then
 	RTTR_BINDIR=$RTTR_PREFIX/bin
 fi
@@ -220,11 +216,16 @@ esac
 
 ###############################################################################
 
-if [ ! -z "$GENERATOR" ] ; then
-	echo "Generating files for \"$GENERATOR\""
-else
+if [ -z "$GENERATOR" ] && [ "$(uname -s)" = "Darwin" ] ; then
+	# Check for existance of xcodebuild
+	command -v xcodebuild >/dev/null 2>&1 && GENERATOR="Xcode"
+fi
+
+if [ -z "$GENERATOR" ] ; then
 	GENERATOR="Unix Makefiles"
 fi
+
+echo "Generating files for \"$GENERATOR\""
 
 mecho --blue "Running \"cmake -G '$GENERATOR' -DCMAKE_INSTALL_PREFIX= ${PARAMS} '${RTTR_SRCDIR}'\""
 $CMAKE_COMMAND -G "$GENERATOR" -DCMAKE_INSTALL_PREFIX= $PARAMS "${RTTR_SRCDIR}"
@@ -234,9 +235,10 @@ if [ $? != 0 ] ; then
 	exit 1
 fi
 
-MAKE="make"
-if [ "$(uname -s)" = "Darwin" ] && ["$GENERATOR" = "Xcode" ]; then
+if [ "$GENERATOR" = "Xcode" ]; then
 	MAKE="xcodebuild"
+else
+	MAKE="make"
 fi
 
 mecho --blue "Now type \"$MAKE\" to build project"
