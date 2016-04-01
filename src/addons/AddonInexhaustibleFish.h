@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -17,8 +17,8 @@ class AddonInexhaustibleFish : public AddonBool
     public:
         AddonInexhaustibleFish() : AddonBool(ADDON_INEXHAUSTIBLE_FISH,
                                                  ADDONGROUP_ECONOMY,
-                                                 gettext_noop("Inexhaustible Fish"),
-                                                 gettext_noop("Deactivates reduction of fish population.\n"),
+                                                 _("Inexhaustible Fish"),
+                                                 _("Deactivates reduction of fish population."),
                                                  0
                                                 )
         {

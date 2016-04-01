@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,8 +33,8 @@ class AddonCustomBuildSequence : public AddonBool
     public:
         AddonCustomBuildSequence() : AddonBool(ADDON_CUSTOM_BUILD_SEQUENCE,
                                                    ADDONGROUP_ECONOMY | ADDONGROUP_GAMEPLAY,
-                                                   gettext_noop("Custom build sequence"),
-                                                   gettext_noop("Allows every player to control whether building sites\n"
+                                                   _("Custom build sequence"),
+                                                   _("Allows every player to control whether building sites\n"
                                                            "should be supplied in sequence of given order or in a definable\n"
                                                            "sequence based on the building type."),
                                                    0

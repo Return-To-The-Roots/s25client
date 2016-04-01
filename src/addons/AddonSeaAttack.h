@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -39,14 +39,14 @@ class AddonSeaAttack : public AddonList
     public:
         AddonSeaAttack() : AddonList(ADDON_SEA_ATTACK,
                                          ADDONGROUP_MILITARY,
-                                         gettext_noop("Sea attack settings"),
-                                         gettext_noop("set restriction level for sea attacks\n\n"),
+                                         _("Sea attack settings"),
+                                         _("set restriction level for sea attacks"),
                                          2
                                         )
         {
-            addOption(gettext_noop("enemy harbors don't block"));
-            addOption(gettext_noop("enemy harbors block"));
-            addOption(gettext_noop("no sea attacks"));
+            addOption(_("enemy harbors don't block"));
+            addOption(_("enemy harbors block"));
+            addOption(_("no sea attacks"));
         }
 };
 

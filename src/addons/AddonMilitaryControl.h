@@ -34,8 +34,8 @@ class AddonMilitaryControl : public AddonBool
     public:
         AddonMilitaryControl() : AddonBool(ADDON_MILITARY_CONTROL,
                                            ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
-                                           gettext_noop("Military Control"),
-                                           gettext_noop("Adds the 'send home' button to military buildings.\n Pressing this button will send all soldiers of the highest available rank to a warehouse \n (at least 1 Soldier will remain in the building)"),
+                                           _("Military Control"),
+                                           _("Adds the 'send home' button to military buildings.\n Pressing this button will send all soldiers of the highest available rank to a warehouse \n (at least 1 Soldier will remain in the building)"),
                                            0
                                           )
         {

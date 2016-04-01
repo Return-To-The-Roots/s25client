@@ -21,7 +21,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -34,9 +34,8 @@ class AddonAIDebugWindow : public AddonBool
     public:
         AddonAIDebugWindow() : AddonBool(ADDON_AI_DEBUG_WINDOW,
                                              ADDONGROUP_OTHER,
-                                             gettext_noop("AI Debugging Window"),
-                                             gettext_noop("Enable AI Debugging Window\n"
-                                                     "(possible cheating)"),
+                                             _("AI Debugging Window"),
+                                             _("Enable AI Debugging Window\n(possible cheating)"),
                                              0
                                             )
         {

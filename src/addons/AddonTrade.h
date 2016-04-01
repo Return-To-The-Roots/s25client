@@ -19,7 +19,7 @@
 
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////S////////////////////////////////////////////////////
 /**
@@ -32,8 +32,8 @@ class AddonTrade : public AddonBool
     public:
         AddonTrade() : AddonBool(ADDON_TRADE,
                                      ADDONGROUP_ECONOMY,
-                                     gettext_noop("Trade"),
-                                     gettext_noop("Allows to send wares/figures to allied warehouses"),
+                                     _("Trade"),
+                                     _("Allows to send wares/figures to allied warehouses"),
                                      0
                                     )
         {

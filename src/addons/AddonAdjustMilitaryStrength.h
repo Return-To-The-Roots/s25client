@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -45,14 +45,13 @@ class AddonAdjustMilitaryStrength : public AddonList
     public:
         AddonAdjustMilitaryStrength() : AddonList(ADDON_ADJUST_MILITARY_STRENGTH,
                     ADDONGROUP_MILITARY,
-                    gettext_noop("Adjust military strength"),
-                    gettext_noop("Allows you to modify the strength increase of military ranks\n\n"),
-                    1
-                                                     )
+                    _("Adjust military strength"),
+                    _("Allows you to modify the strength increase of military ranks"),
+                    1)
         {
-            addOption(gettext_noop("Maximum strength"));
-            addOption(gettext_noop("Medium strength"));
-            addOption(gettext_noop("Minimum strength"));
+            addOption(_("Maximum strength"));
+            addOption(_("Medium strength"));
+            addOption(_("Minimum strength"));
         }
 };
 

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -34,8 +34,8 @@ class AddonChangeGoldDeposits : public AddonList
     public:
         AddonChangeGoldDeposits() : AddonList(ADDON_CHANGE_GOLD_DEPOSITS,
                                                   ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY,
-                                                  gettext_noop("Change gold deposits"),
-                                                  gettext_noop("Allows to play games without gold.\n\n"
+                                                  _("Change gold deposits"),
+                                                  _("Allows to play games without gold.\n\n"
                                                           "You can choose to remove gold resources completely,\n"
                                                           "to convert them into iron ore, coal or granite.\n\n"
                                                           "You'll probably want to convert gold to iron ore, as this (on most maps)\n"
@@ -43,11 +43,11 @@ class AddonChangeGoldDeposits : public AddonList
                                                   0
                                                  )
         {
-            addOption(gettext_noop("No change"));
-            addOption(gettext_noop("Remove gold completely"));
-            addOption(gettext_noop("Convert to iron ore"));
-            addOption(gettext_noop("Convert to coal"));
-            addOption(gettext_noop("Convert to granite"));
+            addOption(_("No change"));
+            addOption(_("Remove gold completely"));
+            addOption(_("Convert to iron ore"));
+            addOption(_("Convert to coal"));
+            addOption(_("Convert to granite"));
         }
 };
 

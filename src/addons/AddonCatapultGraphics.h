@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -35,8 +35,8 @@ class AddonCatapultGraphics : public AddonBool
     public:
         AddonCatapultGraphics() : AddonBool(ADDON_CATAPULT_GRAPHICS,
                                                 ADDONGROUP_GAMEPLAY,
-                                                gettext_noop("Race specific catapult graphics"),
-                                                gettext_noop("Adds new graphics for catapults to the game."),
+                                                _("Race specific catapult graphics"),
+                                                _("Adds new graphics for catapults to the game."),
                                                 0
                                                )
         {

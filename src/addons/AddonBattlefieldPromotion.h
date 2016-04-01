@@ -31,8 +31,8 @@ class AddonBattlefieldPromotion : public AddonBool
     public:
         AddonBattlefieldPromotion() : AddonBool(ADDON_BATTLEFIELD_PROMOTION,
                                           ADDONGROUP_MILITARY,
-                                          gettext_noop("Enable battlefield promotions"),
-                                          gettext_noop("Soldiers winning a fight increase in rank."),
+                                          _("Enable battlefield promotions"),
+                                          _("Soldiers winning a fight increase in rank."),
                                           0
                                          )
         {

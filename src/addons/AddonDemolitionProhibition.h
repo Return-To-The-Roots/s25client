@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,14 +33,14 @@ class AddonDemolitionProhibition : public AddonList
     public:
         AddonDemolitionProhibition() : AddonList(ADDON_DEMOLITION_PROHIBITION,
                     ADDONGROUP_MILITARY,
-                    gettext_noop("Disable Demolition of military buildings"),
-                    gettext_noop("Allows to disable the demolition of military buildings under attack or near frontiers."),
+                    _("Disable Demolition of military buildings"),
+                    _("Allows to disable the demolition of military buildings under attack or near frontiers."),
                     0
                                                     )
         {
-            addOption(gettext_noop("Off"));
-            addOption(gettext_noop("Active if attacked"));
-            addOption(gettext_noop("Active near frontiers"));
+            addOption(_("Off"));
+            addOption(_("Active if attacked"));
+            addOption(_("Active near frontiers"));
         }
 };
 

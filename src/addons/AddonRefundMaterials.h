@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,16 +33,16 @@ class AddonRefundMaterials : public AddonList
     public:
         AddonRefundMaterials() : AddonList(ADDON_REFUND_MATERIALS,
                                                ADDONGROUP_ECONOMY,
-                                               gettext_noop("Refund materials when building is destroyed"),
-                                               gettext_noop("Allows you to get building materials back if the building is destroyed."),
+                                               _("Refund materials when building is destroyed"),
+                                               _("Allows you to get building materials back if the building is destroyed."),
                                                0
                                               )
         {
-            addOption(gettext_noop("No refund"));
-            addOption(gettext_noop("Refund 25%"));
-            addOption(gettext_noop("Refund 50%"));
-            addOption(gettext_noop("Refund 75%"));
-            addOption(gettext_noop("Get all back"));
+            addOption(_("No refund"));
+            addOption(_("Refund 25%"));
+            addOption(_("Refund 50%"));
+            addOption(_("Refund 75%"));
+            addOption(_("Get all back"));
         }
 };
 
