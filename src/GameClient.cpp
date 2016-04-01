@@ -425,7 +425,7 @@ void GameClient::ExitGame()
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPing(const GameMessage_Ping&  /*msg*/)
+void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
 {
     send_queue.push(new GameMessage_Pong(0xFF));
 }
@@ -436,7 +436,7 @@ void GameClient::OnNMSPing(const GameMessage_Ping&  /*msg*/)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPlayerId(const GameMessage_Player_Id& msg)
+void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
     if(msg.playerid == 0xFFFFFFFF)
@@ -460,7 +460,7 @@ void GameClient::OnNMSPlayerId(const GameMessage_Player_Id& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
+void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 {
     for(unsigned int i = 0; i < players.getCount(); ++i)
     {
@@ -497,7 +497,7 @@ void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// player joined
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerNew(const GameMessage_Player_New& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_New& msg)
 {
     LOG.write("<<< NMS_PLAYER_NEW(%d)\n", msg.player );
 
@@ -519,7 +519,7 @@ inline void GameClient::OnNMSPlayerNew(const GameMessage_Player_New& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// player joined
 /// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnNMSPlayerPing(const GameMessage_Player_Ping& msg)
+void GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -539,7 +539,7 @@ void GameClient::OnNMSPlayerPing(const GameMessage_Player_Ping& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg)
+void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
 {
     if(msg.player >= players.getCount())
         return;
@@ -590,7 +590,7 @@ void GameClient::OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// nation button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerSetNation(const GameMessage_Player_Set_Nation& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -607,7 +607,7 @@ inline void GameClient::OnNMSPlayerSetNation(const GameMessage_Player_Set_Nation
 ///////////////////////////////////////////////////////////////////////////////
 /// team button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerSetTeam(const GameMessage_Player_Set_Team& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -624,7 +624,7 @@ inline void GameClient::OnNMSPlayerSetTeam(const GameMessage_Player_Set_Team& ms
 ///////////////////////////////////////////////////////////////////////////////
 /// color button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerSetColor(const GameMessage_Player_Set_Color& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -646,7 +646,7 @@ inline void GameClient::OnNMSPlayerSetColor(const GameMessage_Player_Set_Color& 
  *
  *  @author FloSoft
  */
-inline void GameClient::OnNMSPlayerReady(const GameMessage_Player_Ready& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
     LOG.write("<<< NMS_PLAYER_READY(%d, %s)\n", msg.player, (msg.ready ? "true" : "false"));
 
@@ -665,7 +665,7 @@ inline void GameClient::OnNMSPlayerReady(const GameMessage_Player_Ready& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// player gekickt
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 {
     LOG.write("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n", msg.player, msg.cause, msg.param);
 
@@ -687,7 +687,7 @@ inline void GameClient::OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg)
     }
 }
 
-inline void GameClient::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
     LOG.write("<<< NMS_PLAYER_SWAP(%u, %u)\n", msg.player, msg.player2);
 
@@ -716,7 +716,7 @@ inline void GameClient::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
  *
  *  @author FloSoft
  */
-inline void GameClient::OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
 {
     switch(msg.err_code)
     {
@@ -753,7 +753,7 @@ inline void GameClient::OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerPassword(const GameMessage_Server_Password& msg)
+void GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 {
     if(msg.password != "true")
     {
@@ -776,7 +776,7 @@ void GameClient::OnNMSServerPassword(const GameMessage_Server_Password& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerName(const GameMessage_Server_Name& msg)
+void GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
 {
     clientconfig.gameName = msg.name;
 
@@ -791,7 +791,7 @@ void GameClient::OnNMSServerName(const GameMessage_Server_Name& msg)
  *  @author FloSoft
  *  @author OLiver
  */
-inline void GameClient::OnNMSServerStart(const GameMessage_Server_Start& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 {
     // NWF-Länge bekommen wir vom Server
     framesinfo.nwf_length = msg.nwf_length;
@@ -821,7 +821,7 @@ inline void GameClient::OnNMSServerStart(const GameMessage_Server_Start& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
+void GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -849,7 +849,7 @@ void GameClient::OnNMSServerChat(const GameMessage_Server_Chat& msg)
     }
 }
 
-void GameClient::OnNMSSystemChat(const GameMessage_System_Chat& msg)
+void GameClient::OnGameMessage(const GameMessage_System_Chat& msg)
 {
     SystemChat(msg.text, msg.player);
 }
@@ -860,7 +860,7 @@ void GameClient::OnNMSSystemChat(const GameMessage_System_Chat& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
+void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 {
     // Liste mit Namen und Checksummen erzeugen
     std::stringstream checksum_list;
@@ -895,7 +895,7 @@ void GameClient::OnNMSServerAsync(const GameMessage_Server_Async& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerCountdown(const GameMessage_Server_Countdown& msg)
+void GameClient::OnGameMessage(const GameMessage_Server_Countdown& msg)
 {
     if(ci)
         ci->CI_Countdown(msg.countdown);
@@ -907,7 +907,7 @@ void GameClient::OnNMSServerCountdown(const GameMessage_Server_Countdown& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown&  /*msg*/)
+void GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown&  /*msg*/)
 {
     if(ci)
         ci->CI_CancelCountdown();
@@ -922,7 +922,7 @@ void GameClient::OnNMSServerCancelCountdown(const GameMessage_Server_CancelCount
  *
  *  @author FloSoft
  */
-inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 {
     // full path
     mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + msg.map_name;
@@ -942,7 +942,7 @@ inline void GameClient::OnNMSMapInfo(const GameMessage_Map_Info& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// Kartendaten
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 {
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.data.size());
     if(msg.isMapData)
@@ -981,7 +981,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
                 // Karteninformationen laden
                 if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
                 {
-                    LOG.lprintf("GameClient::OnNMSMapData: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
+                    LOG.lprintf("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
                     Stop();
                     return;
                 }
@@ -1024,7 +1024,7 @@ inline void GameClient::OnNMSMapData(const GameMessage_Map_Data& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// map-checksum
 /// @param message  Nachricht, welche ausgeführt wird
-inline void GameClient::OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg)
+inline void GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 {
     LOG.write("<<< NMS_MAP_CHECKSUM(%d)\n", msg.correct ? 1 : 0);
 
@@ -1042,7 +1042,7 @@ inline void GameClient::OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg
 ///////////////////////////////////////////////////////////////////////////////
 /// server typ
 /// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnNMSGGSChange(const GameMessage_GGSChange& msg)
+void GameClient::OnGameMessage(const GameMessage_GGSChange& msg)
 {
     LOG.write("<<< NMS_GGS_CHANGE\n");
 
@@ -1052,7 +1052,7 @@ void GameClient::OnNMSGGSChange(const GameMessage_GGSChange& msg)
         ci->CI_GGSChanged(ggs);
 }
 
-void GameClient::OnNMSRemoveLua(const GameMessage_RemoveLua& msg)
+void GameClient::OnGameMessage(const GameMessage_RemoveLua& msg)
 {
     RTTR_Assert(state == CS_CONNECT || state == CS_CONFIG);
     mapinfo.luaFilepath.clear();
@@ -1063,7 +1063,7 @@ void GameClient::OnNMSRemoveLua(const GameMessage_RemoveLua& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// NFC Antwort vom Server
 /// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
+void GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 {
     if(msg.player != 0xFF)
     {
@@ -1077,7 +1077,7 @@ void GameClient::OnNMSGameCommand(const GameMessage_GameCommand& msg)
 ///////////////////////////////////////////////////////////////////////////////
 /// Speed change message vom Server
 /// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnNMSServerSpeed(const GameMessage_Server_Speed&  /*msg*/)
+void GameClient::OnGameMessage(const GameMessage_Server_Speed&  /*msg*/)
 {
 }
 
@@ -1129,7 +1129,7 @@ void GameClient::DecreaseReplaySpeed()
 ///////////////////////////////////////////////////////////////////////////////
 /// NFC Done vom Server
 /// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
+void GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
 {
     // Emulate a push of the new gf length
     if(!framesinfo.gfLenghtNew)
@@ -1170,7 +1170,7 @@ void GameClient::OnNMSServerDone(const GameMessage_Server_NWFDone& msg)
  *
  *  @author FloSoft
  */
-void GameClient::OnNMSPause(const GameMessage_Pause& msg)
+void GameClient::OnGameMessage(const GameMessage_Pause& msg)
 {
     //framesinfo.pause =  msg.paused;
     if(msg.paused)
@@ -1198,7 +1198,7 @@ void GameClient::OnNMSPause(const GameMessage_Pause& msg)
  *
  *  @author Maqs
  */
-void GameClient::OnNMSGetAsyncLog(const GameMessage_GetAsyncLog&  /*msg*/)
+void GameClient::OnGameMessage(const GameMessage_GetAsyncLog&  /*msg*/)
 {
     // AsyncLog an den Server senden
 

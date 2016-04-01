@@ -25,6 +25,7 @@
 #include "GameCommand.h"
 #include "GameObject.h"
 #include "libutil/src/Serializer.h"
+#include <vector>
 
 /*
  * das Klassenkommentar ist alles Client-Sicht, für Server-Sicht ist alles andersrum
@@ -94,7 +95,7 @@ class GameMessage_GameCommand : public GameMessage
 
         void Run(MessageInterface* callback) override
         {
-            GetInterface(callback)->OnNMSGameCommand(*this);
+            GetInterface(callback)->OnGameMessage(*this);
         }
 };
 
