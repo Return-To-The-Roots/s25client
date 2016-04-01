@@ -226,7 +226,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void OnGameMessage(const GameMessage_Pause& msg) override;
         void OnGameMessage(const GameMessage_Server_NWFDone& msg) override;
         void OnGameMessage(const GameMessage_GameCommand& msg) override;
-        void OnGameMessage(const GameMessage_Server_Speed& msg) override;
 
         void OnGameMessage(const GameMessage_GGSChange& msg) override;
         void OnGameMessage(const GameMessage_RemoveLua& msg) override;

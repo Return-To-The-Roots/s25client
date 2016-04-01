@@ -439,7 +439,7 @@ void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
 void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
-    if(msg.playerid == 0xFFFFFFFF)
+    if(msg.playerid == 0xFFFFFFFF || msg.playerid >= GetPlayerCount())
     {
         if(ci)
             ci->CI_Error(CE_SERVERFULL);
@@ -501,19 +501,16 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_New& msg)
 {
     LOG.write("<<< NMS_PLAYER_NEW(%d)\n", msg.player );
 
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            players[msg.player].name = msg.name;
-            players[msg.player].ps = PS_OCCUPIED;
-            players[msg.player].ping = 0;
-            players[msg.player].rating = 1000;
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_NewPlayer(msg.player);
-        }
-    }
+    players[msg.player].name = msg.name;
+    players[msg.player].ps = PS_OCCUPIED;
+    players[msg.player].ping = 0;
+    players[msg.player].rating = 1000;
+
+    if(ci)
+        ci->CI_NewPlayer(msg.player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -521,16 +518,13 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_New& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
 {
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            players[msg.player].ping = msg.ping;
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_PingChanged(msg.player, msg.ping);
-        }
-    }
+    players[msg.player].ping = msg.ping;
+
+    if(ci)
+        ci->CI_PingChanged(msg.player, msg.ping);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -592,16 +586,13 @@ void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 {
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            players[msg.player].nation = msg.nation;
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_NationChanged(msg.player, msg.nation);
-        }
-    }
+    players[msg.player].nation = msg.nation;
+
+    if(ci)
+        ci->CI_NationChanged(msg.player, msg.nation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -609,16 +600,13 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 {
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            players[msg.player].team = msg.team;
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_TeamChanged(msg.player, msg.team);
-        }
-    }
+    players[msg.player].team = msg.team;
+
+    if(ci)
+        ci->CI_TeamChanged(msg.player, msg.team);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -626,16 +614,13 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 {
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            players[msg.player].color = msg.color;
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_ColorChanged(msg.player, msg.color);
-        }
-    }
+    players[msg.player].color = msg.color;
+
+    if(ci)
+        ci->CI_ColorChanged(msg.player, msg.color);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -650,16 +635,13 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
     LOG.write("<<< NMS_PLAYER_READY(%d, %s)\n", msg.player, (msg.ready ? "true" : "false"));
 
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            players[msg.player].ready = msg.ready;
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_ReadyChanged(msg.player, players[msg.player].ready);
-        }
-    }
+    players[msg.player].ready = msg.ready;
+
+    if(ci)
+        ci->CI_ReadyChanged(msg.player, players[msg.player].ready);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -669,27 +651,27 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 {
     LOG.write("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n", msg.player, msg.cause, msg.param);
 
-    if(msg.player != 0xFF)
-    {
-        if(msg.player < players.getCount())
-        {
-            if(state == CS_GAME && GLOBALVARS.ingame)
-            {
-                // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
-                players[msg.player].ps = PS_KI;
-            }
-            else
-                players[msg.player].clear();
+    if(msg.player >= GetPlayerCount())
+        return;
 
-            if(ci)
-                ci->CI_PlayerLeft(msg.player);
-        }
+    if(state == CS_GAME && GLOBALVARS.ingame)
+    {
+        // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
+        players[msg.player].ps = PS_KI;
     }
+    else
+        players[msg.player].clear();
+
+    if(ci)
+        ci->CI_PlayerLeft(msg.player);
 }
 
 inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
     LOG.write("<<< NMS_PLAYER_SWAP(%u, %u)\n", msg.player, msg.player2);
+
+    if(msg.player >= GetPlayerCount() || msg.player2 >= GetPlayerCount())
+        return;
 
     if(state == CS_GAME)
     {
@@ -823,30 +805,29 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
-    if(msg.player != 0xFF)
-    {
-        if(state == CS_GAME)
-            /// Mit im Replay aufzeichnen
-            replayinfo.replay.AddChatCommand(framesinfo.gf_nr, msg.player, msg.destination, msg.text);
+    if(msg.player >= GetPlayerCount())
+        return;
 
-        GameClientPlayer& player = GetPlayer(msg.player);
+    if(state == CS_GAME)
+        /// Mit im Replay aufzeichnen
+        replayinfo.replay.AddChatCommand(framesinfo.gf_nr, msg.player, msg.destination, msg.text);
 
-        // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-        if(player.isDefeated() && msg.destination != CD_ALL)
-            return;
-        // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
-        bool ally = GetLocalPlayer().IsAlly(msg.player);
+    GameClientPlayer& player = GetPlayer(msg.player);
 
-        // Chatziel unerscheiden und ggf. nicht senden
-        if(!ally && msg.destination == CD_ALLIES)
-            return;
-        if(ally && msg.destination == CD_ENEMIES && msg.player != playerId_)
-            return;
+    // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
+    if(player.isDefeated() && msg.destination != CD_ALL)
+        return;
+    // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
+    bool ally = GetLocalPlayer().IsAlly(msg.player);
 
-        if(ci)
-            ci->CI_Chat(msg.player, msg.destination, msg.text);
+    // Chatziel unerscheiden und ggf. nicht senden
+    if(!ally && msg.destination == CD_ALLIES)
+        return;
+    if(ally && msg.destination == CD_ENEMIES && msg.player != playerId_)
+        return;
 
-    }
+    if(ci)
+        ci->CI_Chat(msg.player, msg.destination, msg.text);
 }
 
 void GameClient::OnGameMessage(const GameMessage_System_Chat& msg)
@@ -1065,20 +1046,12 @@ void GameClient::OnGameMessage(const GameMessage_RemoveLua& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 {
-    if(msg.player != 0xFF)
-    {
-        LOG.write("CLIENT <<< GC %u\n", msg.player);
-        // Nachricht in Queue einhängen
-        players[msg.player].gc_queue.push(msg);
-        RTTR_Assert(msg.player != playerId_ || players[msg.player].gc_queue.size() == 1);
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// Speed change message vom Server
-/// @param message  Nachricht, welche ausgeführt wird
-void GameClient::OnGameMessage(const GameMessage_Server_Speed&  /*msg*/)
-{
+    if(msg.player >= GetPlayerCount())
+        return;
+    LOG.write("CLIENT <<< GC %u\n", msg.player);
+    // Nachricht in Queue einhängen
+    players[msg.player].gc_queue.push(msg);
+    RTTR_Assert(msg.player != playerId_ || players[msg.player].gc_queue.size() == 1);
 }
 
 void GameClient::IncreaseSpeed()
@@ -1102,12 +1075,9 @@ void GameClient::IncreaseReplaySpeed()
     if (replay_mode)
     {
         if (framesinfo.gf_length > 10)
-        {
             framesinfo.gf_length -= 10;
-        } else if (framesinfo.gf_length == 10)
-        {
+        else if (framesinfo.gf_length == 10)
             framesinfo.gf_length = 1;
-        }
     }
 }
 
@@ -1116,12 +1086,9 @@ void GameClient::DecreaseReplaySpeed()
     if (replay_mode)
     {
         if (framesinfo.gf_length == 1)
-        {
             framesinfo.gf_length = 10;
-        } else if (framesinfo.gf_length < 1000)
-        {
+        else if (framesinfo.gf_length < 1000)
             framesinfo.gf_length += 10;
-        }
     }
 }
 

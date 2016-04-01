@@ -1140,6 +1140,9 @@ void GameServer::FillPlayerQueues()
 // pongnachricht
 inline void GameServer::OnGameMessage(const GameMessage_Pong& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     unsigned int currenttime = VIDEODRIVER.GetTickCount();
@@ -1158,6 +1161,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Pong& msg)
 // servertype
 inline void GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     int typok = 0;
@@ -1180,6 +1186,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
  */
 void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     std::string passwordok = (serverconfig.password == msg.password ? "true" : "false");
@@ -1211,6 +1220,9 @@ void GameServer::OnGameMessage(const GameMessage_System_Chat& msg)
 // Spielername
 inline void GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n", msg.player, msg.playername.c_str());
@@ -1257,6 +1269,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 // Nation weiterwechseln
 inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     player.nation = msg.nation;
@@ -1273,6 +1288,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 // Team weiterwechseln
 inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     player.team = msg.team;
@@ -1286,6 +1304,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 // Farbe weiterwechseln
 inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     LOG.write("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
     CheckAndSetColor(msg.player, msg.color);
 }
@@ -1298,6 +1319,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
  */
 inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     player.ready = msg.ready;
@@ -1316,6 +1340,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 // Checksumme
 inline void GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
@@ -1366,6 +1393,9 @@ void GameServer::OnGameMessage(const GameMessage_Server_Speed& msg)
 
 void GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
     LOG.write("SERVER <<< GC %u\n", msg.player);
 
@@ -1546,6 +1576,9 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 
 void GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
+    if(msg.player >= GetMaxPlayerCount() || msg.player2 >= GetMaxPlayerCount())
+        return;
+
     if(status != SS_GAME)
         return;
     if(msg.player == msg.player2)
