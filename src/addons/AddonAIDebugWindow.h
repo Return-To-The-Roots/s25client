@@ -35,7 +35,8 @@ class AddonAIDebugWindow : public AddonBool
         AddonAIDebugWindow() : AddonBool(ADDON_AI_DEBUG_WINDOW,
                                              ADDONGROUP_OTHER,
                                              _("AI Debugging Window"),
-                                             _("Enable AI Debugging Window\n(possible cheating)"),
+                                             _("Enable AI Debugging Window\n"
+                                                     "(possible cheating)"),
                                              0
                                             )
         {

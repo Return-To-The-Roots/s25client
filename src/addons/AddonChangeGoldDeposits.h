@@ -35,9 +35,7 @@ class AddonChangeGoldDeposits : public AddonList
         AddonChangeGoldDeposits() : AddonList(ADDON_CHANGE_GOLD_DEPOSITS,
                                                   ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY,
                                                   _("Change gold deposits"),
-                                                  _("Allows to play games without gold.\n\n"
-                                                          "You can choose to remove gold resources completely,\n"
-                                                          "to convert them into iron ore, coal or granite.\n\n"
+                                                  _("You can remove gold resources completely or convert them into iron ore, coal or granite.\n\n"
                                                           "You'll probably want to convert gold to iron ore, as this (on most maps)\n"
                                                           "allows you to utilize the additional coal not needed for minting anymore."),
                                                   0

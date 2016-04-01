@@ -34,10 +34,9 @@ class AddonManualRoadEnlargement : public AddonBool
         AddonManualRoadEnlargement() : AddonBool(ADDON_MANUAL_ROAD_ENLARGEMENT,
                     ADDONGROUP_ECONOMY,
                     _("Manual road enlargement"),
-                    _("Allows you to manually upgrade your roads\n"
-                                 "and build donkey roads directly."),
+                    _("Manually upgrade your roads and directly build donkey roads."),
                     0
-                                                    )
+                    )
         {
         }
 };

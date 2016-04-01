@@ -34,7 +34,7 @@ class AddonShipSpeed : public AddonList
         AddonShipSpeed() : AddonList(ADDON_SHIP_SPEED,
                                          ADDONGROUP_ECONOMY,
                                          _("Set ship speed"),
-                                         _("Allows you to set ship movement speed"),
+                                         _("Changes the ship movement speed"),
                                          2
                                         )
         {

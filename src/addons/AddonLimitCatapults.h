@@ -33,12 +33,13 @@ class AddonLimitCatapults : public AddonList
     public:
         AddonLimitCatapults() : AddonList(ADDON_LIMIT_CATAPULTS,
                                               ADDONGROUP_MILITARY,
-                                              _("Limit count of catapults"),
-                                              _("Limits the count of catapults per player.\n\n"
-                                                      "Proportional uses 0.125 catapult per barrack (you need 8 baracks for one catapult)\n"
-                                                      "                  0.25           per guardhouse (4 guardhouses per catapult)\n"
-                                                      "                  0.5            per watchtower (2 watchtower per catapult)\n"
-                                                      "                  1              per fortress (1 fortress per catapult)"),
+                                              _("Limit number of catapults"),
+                                              _("Limits the number of catapults per player.\n\n"
+                                                      "Proportional uses the following ratios of military buildings to catapults:\n"
+                                                      "Barracks: 8\n"
+                                                      "Guardhouse: 4\n"
+                                                      "Watchtower: 2\n"
+                                                      "Fortress: 1"),
                                               0
                                              )
         {

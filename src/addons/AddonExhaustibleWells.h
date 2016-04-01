@@ -34,8 +34,7 @@ class AddonExhaustibleWells : public AddonBool
         AddonExhaustibleWells() : AddonBool(ADDON_EXHAUSTIBLE_WELLS,
                                                 ADDONGROUP_ECONOMY,
                                                 _("Exhaustible Wells"),
-                                                _("Allows to have limited water.\n\n"
-                                                        "Wells will now dry out."),
+                                                _("Wells will now dry out, limiting the available water"),
                                                 0
                                                )
         {

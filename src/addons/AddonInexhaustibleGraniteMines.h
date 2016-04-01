@@ -18,8 +18,7 @@ class AddonInexhaustibleGraniteMines : public AddonBool
         AddonInexhaustibleGraniteMines() : AddonBool(ADDON_INEXHAUSTIBLE_GRANITEMINES,
                     ADDONGROUP_ECONOMY,
                     _("Inexhaustible Granite Mines"),
-                    _("Allows to have unlimited Granite resources.\n\n"
-                                 "Granite mines will never be depleted."),
+                    _("Granite mines will never be depleted."),
                     0
                                                         )
         {

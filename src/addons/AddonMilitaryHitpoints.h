@@ -33,7 +33,7 @@ public:
 	AddonMilitaryHitpoints() : AddonBool(ADDON_MILITARY_HITPOINTS,
 		ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
 		_("Military Hitpoints"),
-		_("Allows you to see the hitpoints of units in military buildings."),
+		_("Display the hitpoints of units in military buildings."),
 		0
 		)
 	{

@@ -18,8 +18,7 @@ class AddonNoCoinsDefault : public AddonBool
         AddonNoCoinsDefault() : AddonBool(ADDON_NO_COINS_DEFAULT,
                                               ADDONGROUP_MILITARY,
                                               _("Disable coins by default"),
-                                              _("Receiving coins is disabled\n"
-                                                      "for military buildings by default."),
+                                              _("Receiving coins is disabled for military buildings by default."),
                                               0
                                              )
         {

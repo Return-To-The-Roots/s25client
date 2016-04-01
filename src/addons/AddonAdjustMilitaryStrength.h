@@ -46,7 +46,7 @@ class AddonAdjustMilitaryStrength : public AddonList
         AddonAdjustMilitaryStrength() : AddonList(ADDON_ADJUST_MILITARY_STRENGTH,
                     ADDONGROUP_MILITARY,
                     _("Adjust military strength"),
-                    _("Allows you to modify the strength increase of military ranks"),
+                    _("Modify the strength increase of military ranks"),
                     1)
         {
             addOption(_("Maximum strength"));

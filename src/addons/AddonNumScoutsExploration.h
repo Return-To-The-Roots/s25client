@@ -34,7 +34,8 @@ class AddonNumScoutsExploration: public AddonList
             AddonList(ADDON_NUM_SCOUTS_EXPLORATION,
                       ADDONGROUP_ECONOMY,
                       _("Number of scouts required for exploration expedition"),
-                      _("Allows to change the required number of scouts for an exploration via ship\nNote: Setting this to low might make some maps imbalanced!"),
+                      _("Change the required number of scouts for an exploration via ship\n"
+                        "Note: Setting this to low might make some maps imbalanced!"),
                       2)
         {
             addOption(_("Minimal"));

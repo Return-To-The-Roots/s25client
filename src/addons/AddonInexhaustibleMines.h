@@ -34,8 +34,7 @@ class AddonInexhaustibleMines : public AddonBool
         AddonInexhaustibleMines() : AddonBool(ADDON_INEXHAUSTIBLE_MINES,
                                                   ADDONGROUP_ECONOMY,
                                                   _("Inexhaustible Mines"),
-                                                  _("Allows to have unlimited resources.\n\n"
-                                                          "Mines will never be depleted."),
+                                                  _("Mines will never be depleted."),
                                                   0
                                                  )
         {

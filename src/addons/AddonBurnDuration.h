@@ -33,15 +33,7 @@ class AddonBurnDuration : public AddonList
         AddonBurnDuration() : AddonList(ADDON_BURN_DURATION,
                                                  ADDONGROUP_GAMEPLAY,
                                                  _("Set duration fires burn"),
-                                                 _("adjusts how long a building will burn for when it is destroyed.\n\n"
-                                                         "Possible values are:\n"
-														 "Default\n"
-														 "Reduced by 25%\n"
-                                                         "Reduced by 50%\n"
-                                                         "Reduced by 75%\n"
-                                                         "Reduced by 90%\n"
-														 "Increased by 50%\n"
-														 "Increased by 100%"),
+                                                 _("Adjusts how long a building will burn for when it is destroyed"),
                                                  0
                                                 )
         {

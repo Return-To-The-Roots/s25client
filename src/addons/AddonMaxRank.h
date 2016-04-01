@@ -44,7 +44,7 @@ class AddonMaxRank : public AddonList
         AddonMaxRank() : AddonList(ADDON_MAX_RANK,
                                        ADDONGROUP_MILITARY,
                                        _("Set max rank"),
-                                       _("Allows you to select the highest rank for soldiers"),
+                                       _("Limit the rank for soldiers"),
                                        0
                                       )
         {

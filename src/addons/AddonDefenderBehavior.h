@@ -35,9 +35,9 @@ class AddonDefenderBehavior : public AddonList
         AddonDefenderBehavior() : AddonList(ADDON_DEFENDER_BEHAVIOR,
                                                 ADDONGROUP_MILITARY,
                                                 _("Change defender behavior"),
-                                                _("Allows to change the military setting 'defender'.\n\n"
-                                                        "You can choose to disallow any changes to that setting\n"
-                                                        "or you can limit the amount of reoccupying troops\n"
+                                                _("Change the military setting 'defender'.\n\n"
+                                                        "You can choose to disallow any changes to that setting "
+                                                        "or you can limit the amount of reoccupying troops "
                                                         "(during an attack) according to the defender setting."),
                                                 0
                                                )

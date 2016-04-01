@@ -34,9 +34,9 @@ class AddonDemolitionProhibition : public AddonList
         AddonDemolitionProhibition() : AddonList(ADDON_DEMOLITION_PROHIBITION,
                     ADDONGROUP_MILITARY,
                     _("Disable Demolition of military buildings"),
-                    _("Allows to disable the demolition of military buildings under attack or near frontiers."),
+                    _("Disable the demolition of military buildings under attack or near frontiers."),
                     0
-                                                    )
+                    )
         {
             addOption(_("Off"));
             addOption(_("Active if attacked"));
