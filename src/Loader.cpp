@@ -45,7 +45,6 @@
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Palette.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
-#include "libutil/src/colors.h"
 #include <boost/filesystem.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <iomanip>

@@ -573,11 +573,10 @@ public:
 class GameMessage_Player_Toggle_Color : public GameMessage
 {
 public:
-	/// Das zu setzende Team
-	unsigned char color;
+	unsigned color;
 
 	GameMessage_Player_Toggle_Color(): GameMessage(NMS_PLAYER_TOGGLECOLOR) { } //-V730
-	GameMessage_Player_Toggle_Color(const unsigned char player, const unsigned char color): GameMessage(NMS_PLAYER_TOGGLECOLOR, player), color(color)
+	GameMessage_Player_Toggle_Color(const unsigned char player, const unsigned color): GameMessage(NMS_PLAYER_TOGGLECOLOR, player), color(color)
 	{
 		LOG.write(">>> NMS_PLAYER_TOGGLECOLOR\n");
 	}
@@ -585,13 +584,13 @@ public:
 	void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedChar(color);
+        ser.PushUnsignedInt(color);
     }
 
     void Deserialize(Serializer& ser) override
 	{
 		GameMessage::Deserialize(ser);
-        color = ser.PopUnsignedChar();
+        color = ser.PopUnsignedInt();
     }
 
 	void Run(MessageInterface* callback) override

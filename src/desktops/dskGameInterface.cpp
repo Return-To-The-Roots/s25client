@@ -281,7 +281,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.is_lagging)
-            LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player.color]);
+            LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
     }
 }
 
@@ -381,7 +381,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = gwv->GetShip(cSel, GAMECLIENT.GetPlayerID()))
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, this, ship));
+            WINDOWMANAGER.Show(new iwShip(*gwv, ship));
             return true;
         }
 
@@ -1021,8 +1021,7 @@ void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination c
 {
     char from[256];
     snprintf(from, sizeof(from), _("<%s> "), GAMECLIENT.GetPlayer(player_id).name.c_str());
-    messenger.AddMessage(from,
-                         COLORS[GAMECLIENT.GetPlayer(player_id).color], cd, msg);
+    messenger.AddMessage(from, GAMECLIENT.GetPlayer(player_id).color, cd, msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -839,7 +839,7 @@ void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
     if(!waiting_for_free_node || pause_walked_gf)
         realPos += CalcFigurRelative();
 
-    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(realPos.x, realPos.y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(realPos.x, realPos.y, COLOR_WHITE, gwg->GetPlayer(player).color);
 }
 
 
@@ -860,7 +860,7 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
     if(!waiting_for_free_node || pause_walked_gf)
         realPos += CalcFigurRelative();
 
-    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y, 0xFFFFFFFF, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 }
 
 
@@ -874,7 +874,7 @@ void noFigure::DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int id
     if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
         realPos += CalcFigurRelative();
     if(file)
-        file->Draw(id, GetCurMoveDir(), fat, ani_step, realPos.x, realPos.y, COLORS[gwg->GetPlayer(player).color]);
+        file->Draw(id, GetCurMoveDir(), fat, ani_step, realPos.x, realPos.y, gwg->GetPlayer(player).color);
     DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
 }
 
@@ -889,7 +889,7 @@ void noFigure::DrawWalking(int x, int y, const char* const file, unsigned int id
     if(!waiting_for_free_node || pause_walked_gf)
         realPos += CalcFigurRelative();
 
-    LOADER.GetPlayerImage(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.GetPlayerImage(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
     DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
 }
 

@@ -60,7 +60,8 @@ public:
         std::string name;
         /// Volk, Farbe, Team
         Nation nation;
-        unsigned char color, team;
+        unsigned color;
+        unsigned char team;
     };
 
     /// Zeitpunkt der Aufnahme

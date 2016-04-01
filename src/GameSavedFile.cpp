@@ -23,8 +23,8 @@
 #include "GameSavedFile.h"
 #include "GamePlayerInfo.h"
 #include "helpers/Deleter.h"
-#include "../libutil/src/Serializer.h"
-#include "../libutil/src/Log.h"
+#include "libutil/src/Serializer.h"
+#include "libutil/src/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
 
@@ -115,7 +115,7 @@ void SavedFile::WritePlayerData(BinaryFile& file)
         {
             file.WriteShortString(it->name);
             file.WriteUnsignedChar(it->nation);
-            file.WriteUnsignedChar(it->color);
+            file.WriteUnsignedInt(it->color);
             file.WriteUnsignedChar(it->team);
         }
     }
@@ -136,7 +136,7 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
         {
             it->name = file.ReadShortString();
             it->nation = Nation(file.ReadUnsignedChar());
-            it->color = file.ReadUnsignedChar();
+            it->color = file.ReadUnsignedInt();
             it->team = file.ReadUnsignedChar();
         }
     }
@@ -173,4 +173,3 @@ void SavedFile::ReadGGS(BinaryFile& file)
 
     ggs.Deserialize(ser);
 }
-

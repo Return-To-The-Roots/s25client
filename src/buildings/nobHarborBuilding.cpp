@@ -295,17 +295,17 @@ void nobHarborBuilding::Draw(int x, int y)
 
             if(id < 500)
             {
-                LOADER.bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(right_point - walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(right_point - walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, gwg->GetPlayer(player).color);
 //              LOADER.GetBobN("jobs")->Draw(23,0,false,walking_id,right_point-walking_distance,
-//                  y+BUILDER_POS[nation].y,COLORS[gwg->GetPlayer(player).color]);
+//                  y+BUILDER_POS[nation].y,gwg->GetPlayer(player).color);
                 //DrawShadow(right_point-walking_distance,y,walking_id,0);
             }
             else
             {
-                LOADER.bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(right_point - WALKING_DISTANCE + walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(right_point - WALKING_DISTANCE + walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, gwg->GetPlayer(player).color);
 //              LOADER.GetBobN("jobs")->Draw(23,3,false,walking_id,
 //                  right_point-WALKING_DISTANCE+walking_distance,y+BUILDER_POS[nation].y,
-//                  COLORS[gwg->GetPlayer(player).color]);
+//                  gwg->GetPlayer(player).color);
                 //DrawShadow(right_point-WALKING_DISTANCE+walking_distance,y,walking_id,0);
             }
         }

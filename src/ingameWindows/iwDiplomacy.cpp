@@ -79,7 +79,7 @@ iwDiplomacy::iwDiplomacy()
         {
             // Einzelne Spielernamen
             AddText(100 + i, LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2,
-                    player.name, COLORS[player.color], glArchivItem_Font::DF_VCENTER,
+                    player.name, player.color, glArchivItem_Font::DF_VCENTER,
                     NormalFont);
 
             if(player.ps == PS_OCCUPIED)
@@ -123,7 +123,7 @@ void iwDiplomacy::Msg_PaintBefore()
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
         Window::DrawRectangle(GetX() + LINE_DISTANCE_TO_MARGINS, GetY() + FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT), width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT,
-                              (COLORS[GAMECLIENT.GetPlayer(i).color] & 0x00FFFFFF) | 0x40000000);
+                              (GAMECLIENT.GetPlayer(i).color & 0x00FFFFFF) | 0x40000000);
     }
 }
 
@@ -263,7 +263,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const unsigned char player) : In
     AddText(1, 100, 30, _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
     AddText(2, 100, 45, _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
     AddText(3, 100, 70, _("To player:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(4, 100, 85, GAMECLIENT.GetPlayer(player).name, COLORS[GAMECLIENT.GetPlayer(player).color], 0, NormalFont);
+    AddText(4, 100, 85, GAMECLIENT.GetPlayer(player).name, GAMECLIENT.GetPlayer(player).color, 0, NormalFont);
     AddText(5, 100, 110, _("Duration:"), COLOR_YELLOW, 0, NormalFont);
     ctrlComboBox* combo = AddComboBox(6, 100, 125, 190, 22, TC_GREEN2, NormalFont, 100);
 

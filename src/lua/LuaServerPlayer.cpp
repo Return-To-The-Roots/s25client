@@ -66,11 +66,15 @@ void LuaServerPlayer::SetTeam(Team team)
     GAMESERVER.OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(player.getPlayerID(), team));
 }
 
-void LuaServerPlayer::SetColor(unsigned colorIdx)
+void LuaServerPlayer::SetColor(unsigned colorOrIdx)
 {
-    check(colorIdx < PLAYER_COLORS_COUNT, "Invalid color");
-    player.color = colorIdx;
-    GAMESERVER.SendToAll(GameMessage_Player_Toggle_Color(player.getPlayerID(), colorIdx));
+    if(GetAlpha(colorOrIdx) == 0)
+    {
+        check(colorOrIdx < PLAYER_COLORS.size(), "Invalid color");
+        player.color = PLAYER_COLORS[colorOrIdx];
+    } else
+        player.color = colorOrIdx;
+    GAMESERVER.SendToAll(GameMessage_Player_Toggle_Color(player.getPlayerID(), player.color));
 }
 
 void LuaServerPlayer::Close()

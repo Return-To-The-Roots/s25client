@@ -194,7 +194,7 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
     // Spielerfarbe mit einberechnen
-    unsigned player_color = COLORS[GAMECLIENT.GetPlayer(player - 1).color];
+    unsigned player_color = GAMECLIENT.GetPlayer(player - 1).color;
 
     return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2,
         (GetGreen(color) + GetGreen(player_color)) / 2,

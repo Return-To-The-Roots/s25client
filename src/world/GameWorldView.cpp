@@ -489,7 +489,7 @@ void GameWorldView::DrawBoundaryStone(const int  /*x*/, const int  /*y*/, const 
     if(owner)
     {
         unsigned nation = gwv->GetPlayer(owner - 1).nation;
-        unsigned player_color = COLORS[gwv->GetPlayer(owner - 1).color];
+        unsigned player_color = gwv->GetPlayer(owner - 1).color;
 
         LOADER.boundary_stone_cache[nation].draw(curPos.x, curPos.y, fow ? FOW_DRAW_COLOR : COLOR_WHITE, fow ? CalcPlayerFOWDrawColor(player_color) : player_color);
 

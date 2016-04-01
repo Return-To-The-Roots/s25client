@@ -33,7 +33,7 @@ void ClientInterface::CI_GameStarted(GameWorldViewer*  /*gwv*/) {}
 
 void ClientInterface::CI_PSChanged(const unsigned  /*player_id*/, const PlayerState  /*ps*/) {}
 void ClientInterface::CI_NationChanged(const unsigned  /*player_id*/, const Nation  /*nation*/) {}
-void ClientInterface::CI_ColorChanged(const unsigned  /*player_id*/, const unsigned char  /*color*/) {}
+void ClientInterface::CI_ColorChanged(const unsigned  /*player_id*/, const unsigned  /*color*/) {}
 void ClientInterface::CI_TeamChanged(const unsigned  /*player_id*/, const unsigned char  /*team*/) {}
 void ClientInterface::CI_PingChanged(const unsigned  /*player_id*/, const unsigned short  /*ping*/) {}
 void ClientInterface::CI_ReadyChanged(const unsigned  /*player_id*/, const bool  /*ready*/) {}

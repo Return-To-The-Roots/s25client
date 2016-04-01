@@ -34,7 +34,7 @@ public:
 
     void SetNation(Nation nat);
     void SetTeam(Team team);
-    void SetColor(unsigned colorIdx);
+    void SetColor(unsigned colorOrIdx);
     void Close();
     void SetAI(unsigned level);
 };

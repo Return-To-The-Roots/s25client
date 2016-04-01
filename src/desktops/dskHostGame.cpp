@@ -317,7 +317,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     {
         if(player.isUsed())
             // Nur KIs und richtige Spieler haben eine Farbe auf der Karte
-            GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(row, COLORS[player.color]);
+            GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(row, player.color);
         else
             // Keine richtigen Spieler --> Startposition auf der Karte ausblenden
             GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(row, 0);
@@ -469,10 +469,8 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 
             if(player_id == GAMECLIENT.GetPlayerID())
             {
-                boost::array<bool, PLAYER_COLORS_COUNT> takenColors;
-                std::fill(takenColors.begin(), takenColors.end(), false);
-
                 // Get colors used by other players
+                std::set<unsigned> takenColors;
                 for(unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); ++p)
                 {
                     // Skip self
@@ -481,15 +479,16 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 
                     GameClientPlayer& otherPlayer = GAMECLIENT.GetPlayer(p);
                     if(otherPlayer.isUsed())
-                        takenColors[otherPlayer.color] = true;
+                        takenColors.insert(otherPlayer.color);
                 }
 
-                GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
-                do
-                {
-                    player.color = (player.color + 1) % PLAYER_COLORS_COUNT;
-                }
-                while(takenColors[player.color]);
+                // Look for a unique color
+                GameClientPlayer& player = GAMECLIENT.GetLocalPlayer(); 
+                int newColorIdx = player.GetColorIdx(player.color);
+                do{
+                    player.color = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
+                } while(helpers::contains(takenColors, player.color));
+
                 GAMECLIENT.Command_SetColor();
                 ChangeColor(GAMECLIENT.GetPlayerID(), player.color);
             } else if(GAMECLIENT.IsHost())
@@ -919,13 +918,13 @@ void dskHostGame::ChangePing(const unsigned i)
  *
  *  @author OLiver
  */
-void dskHostGame::ChangeColor(const unsigned i, const unsigned char color)
+void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
 {
-    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ColorControlInterface>(4)->SetColor(COLORS[color]);
+    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ColorControlInterface>(4)->SetColor(color);
 
     // Minimap-Startfarbe ändern
     if(GetCtrl<ctrlPreviewMinimap>(70))
-        GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(i, COLORS[color]);
+        GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(i, color);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1040,7 +1039,7 @@ void dskHostGame::CI_TeamChanged(const unsigned player_id, const unsigned char t
  *
  *  @author OLiver
  */
-void dskHostGame::CI_ColorChanged(const unsigned player_id, const unsigned char color)
+void dskHostGame::CI_ColorChanged(const unsigned player_id, const unsigned color)
 {
     ChangeColor(player_id, color);
 }
@@ -1125,7 +1124,7 @@ void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination  /*cd*
         std::string time = TIME.FormatTime("(%H:%i:%s)");
 
         GetCtrl<ctrlChat>(1)->AddMessage(time, GAMECLIENT.GetPlayer(player_id).name,
-                                         COLORS[GAMECLIENT.GetPlayer(player_id).color], msg, 0xFFFFFF00);
+                                         GAMECLIENT.GetPlayer(player_id).color, msg, 0xFFFFFF00);
     }
 }
 

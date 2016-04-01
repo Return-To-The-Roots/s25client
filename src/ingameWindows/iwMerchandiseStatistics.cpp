@@ -27,7 +27,6 @@
 #include "controls/ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

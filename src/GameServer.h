@@ -124,7 +124,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
         /// Sends a notification to all players if the color was changed
-        void CheckAndSetColor(unsigned playerIdx, unsigned newColorIdx);
+        void CheckAndSetColor(unsigned playerIdx, unsigned newColor);
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();

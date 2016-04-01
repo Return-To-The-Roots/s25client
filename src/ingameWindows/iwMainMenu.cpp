@@ -125,7 +125,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 5: // Gebäudestatistik
         {
-            WINDOWMANAGER.Show(new iwBuildings(gwv,gi));
+            WINDOWMANAGER.Show(new iwBuildings(gwv, gi));
         } break;
         case 6: // Inventur
         {
@@ -141,7 +141,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 9: // Schiffe
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, gi, GAMECLIENT.GetLocalPlayer().GetShipByID(0)));
+            WINDOWMANAGER.Show(new iwShip(*gwv, GAMECLIENT.GetLocalPlayer().GetShipByID(0)));
         } break;
         case 10: // Baureihenfolge
         {

@@ -96,7 +96,7 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
             {
                 players[player].x = x;
                 players[player].y = y;
-                players[player].color = COLORS[player];
+                players[player].color = PLAYER_COLORS[player % PLAYER_COLORS.size()];
             }
         }
     }

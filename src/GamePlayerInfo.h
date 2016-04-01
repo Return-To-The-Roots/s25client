@@ -51,6 +51,9 @@ class GamePlayerInfo
 
         /// Wechselt Spieler
         void SwapInfo(GamePlayerInfo& two);
+        /// Returns index of color in PLAYER_COLORS array or -1 if not found
+        int GetColorIdx() const;
+        static int GetColorIdx(unsigned color);
 
     protected:
         /// Player-ID
@@ -73,7 +76,8 @@ class GamePlayerInfo
 
         Nation nation;
         Team team;
-        unsigned char color;
+        /// Actual color (ARGB)
+        unsigned color;
 
         unsigned ping;
         unsigned int rating;

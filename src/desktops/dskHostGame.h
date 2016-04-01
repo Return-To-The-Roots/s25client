@@ -57,7 +57,7 @@ class dskHostGame :
         void ChangeReady(const unsigned i, const bool ready);
         void ChangeNation(const unsigned i, const Nation nation);
         void ChangePing(const unsigned i);
-        void ChangeColor(const unsigned i, const unsigned char color);
+        void ChangeColor(const unsigned i, const unsigned color);
 
         void Msg_PaintBefore() override;
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
@@ -82,7 +82,7 @@ class dskHostGame :
         void CI_NationChanged(const unsigned player_id, const Nation nation) override;
         void CI_TeamChanged(const unsigned player_id, const unsigned char team) override;
         void CI_PingChanged(const unsigned player_id, const unsigned short ping) override;
-        void CI_ColorChanged(const unsigned player_id, const unsigned char color) override;
+        void CI_ColorChanged(const unsigned player_id, const unsigned color) override;
         void CI_ReadyChanged(const unsigned player_id, const bool ready) override;
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
         void CI_GGSChanged(const GlobalGameSettings& ggs) override;

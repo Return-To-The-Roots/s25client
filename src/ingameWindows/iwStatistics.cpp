@@ -278,7 +278,7 @@ void iwStatistics::Msg_PaintAfter()
 
         if (activePlayers[i])
         {
-            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, COLORS[player.color]);
+            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, player.color);
         }
         pos++;
     }
@@ -366,13 +366,13 @@ void iwStatistics::DrawStatistic(StatisticType type)
                 {
                     DrawLine(topLeftX + (STAT_STEP_COUNT - i) * stepX,
                              topLeftY + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)] - min)*sizeY) / (max - min),
-                             previousX, previousY, 2, COLORS[GAMECLIENT.GetPlayer(p).color]);
+                             previousX, previousY, 2, GAMECLIENT.GetPlayer(p).color);
                 }
                 else
                 {
                     DrawLine(topLeftX + (STAT_STEP_COUNT - i) * stepX,
                              topLeftY + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])*sizeY) / max,
-                             previousX, previousY, 2, COLORS[GAMECLIENT.GetPlayer(p).color]);
+                             previousX, previousY, 2, GAMECLIENT.GetPlayer(p).color);
                 }
             }
             previousX = topLeftX + (STAT_STEP_COUNT - i) * stepX;

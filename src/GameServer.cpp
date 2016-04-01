@@ -464,8 +464,7 @@ bool GameServer::StartCountdown()
             playerCount++;
     }
 
-    boost::array<bool, PLAYER_COLORS_COUNT> takenColors;
-    std::fill(takenColors.begin(), takenColors.end(), false);
+    std::set<unsigned> takenColors;
 
     // Check all players have different colors
     for(unsigned p = 0; p < serverconfig.playercount; ++p)
@@ -473,9 +472,9 @@ bool GameServer::StartCountdown()
         GameServerPlayer& player = players[p];
         if(player.isUsed())
         {
-            if(takenColors[player.color])
+            if(helpers::contains(takenColors, player.color))
                 return false;
-            takenColors[player.color] = true;
+            takenColors.insert(player.color);
         }
     }
 
@@ -728,7 +727,7 @@ void GameServer::TogglePlayerColor(unsigned char client)
     if(player.ps != PS_KI)
         return;
 
-    CheckAndSetColor(client, player.color + 1); // Check for valid index will be done in the function
+    CheckAndSetColor(client, PLAYER_COLORS[(player.GetColorIdx() + 1) % PLAYER_COLORS.size()]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1520,18 +1519,16 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     KickPlayer(msg.player, NP_ASYNC, 0);
 }
 
-void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColorIdx)
+void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 {
     RTTR_Assert(playerIdx < serverconfig.playercount);
-    RTTR_Assert(serverconfig.playercount <= PLAYER_COLORS_COUNT); // Else we may not find a valid color!
+    RTTR_Assert(serverconfig.playercount <= PLAYER_COLORS.size()); // Else we may not find a valid color!
 
     GameServerPlayer& player = players[playerIdx];
     RTTR_Assert(player.isUsed()); // Should only set colors for taken spots
 
-    boost::array<bool, PLAYER_COLORS_COUNT> takenColors;
-    std::fill(takenColors.begin(), takenColors.end(), false);
-
     // Get colors used by other players
+    std::set<unsigned> takenColors;
     for(unsigned p = 0; p < serverconfig.playercount; ++p)
     {
         // Skip self
@@ -1540,19 +1537,18 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColorIdx)
 
         GameServerPlayer& otherPlayer = players[p];
         if(otherPlayer.isUsed())
-            takenColors[otherPlayer.color] = true;
+            takenColors.insert(otherPlayer.color);
     }
 
-    // Make sure color is valid
-    newColorIdx = newColorIdx % PLAYER_COLORS_COUNT;
     // Look for a unique color
-    while(takenColors[newColorIdx])
-        newColorIdx = (newColorIdx + 1) % PLAYER_COLORS_COUNT;
+    int newColorIdx = player.GetColorIdx(newColor);
+    while(helpers::contains(takenColors, newColor))
+        newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
 
-    if(player.color == newColorIdx)
+    if(player.color == newColor)
         return;
 
-    player.color = newColorIdx;
+    player.color = newColor;
 
     SendToAll(GameMessage_Player_Toggle_Color(playerIdx, player.color));
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
@@ -1637,7 +1633,6 @@ void GameServer::SetAIName(const unsigned player_id)
     }
 
 }
-
 
 bool GameServer::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {
