@@ -29,7 +29,7 @@ void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
-    int checksum = RANDOM.GetCurrentRandomValue();
+    AsyncChecksum checksum(RANDOM.GetCurrentRandomValue());
 
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {

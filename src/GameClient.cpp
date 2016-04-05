@@ -1514,7 +1514,7 @@ void GameClient::SendNothingNC(int checksum)
     if(checksum == -1)
         checksum = RANDOM.GetCurrentRandomValue();
 
-    send_queue.push(new GameMessage_GameCommand(playerId_, checksum, std::vector<gc::GameCommandPtr>()));
+    send_queue.push(new GameMessage_GameCommand(playerId_, AsyncChecksum(checksum), std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WritePlayerInfo(SavedFile& file)

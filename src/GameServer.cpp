@@ -923,12 +923,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
 
     // We take the checksum of the first human player as the reference
     unsigned char referencePlayerIdx = 0xFF;
-    struct AsyncChecksum{
-        int checksum;
-        unsigned objCt;
-        unsigned objIdCt;
-    };
-    AsyncChecksum referenceChecksum = {0, 0, 0};
+    AsyncChecksum referenceChecksum;
     std::vector<int> checksums;
     checksums.reserve(serverconfig.playercount);
 
@@ -941,7 +936,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         if(player.ps == PS_KI)
         {
             LOG.write("SERVER >>> GC %u\n", client);
-            SendToAll(GameMessage_GameCommand(client, 0, ai_players[client]->GetGameCommands()));
+            SendToAll(GameMessage_GameCommand(client, AsyncChecksum(0), ai_players[client]->GetGameCommands()));
             ai_players[client]->FetchGameCommands();
             RTTR_Assert(player.gc_queue.empty());
             continue; // No GCs in the queue for KIs
@@ -956,11 +951,8 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         player.NotLagging();
 
         const GameMessage_GameCommand& frontGC = player.gc_queue.front();
-        AsyncChecksum curChecksum;
-        curChecksum.checksum = frontGC.checksum;
-        curChecksum.objCt = frontGC.obj_cnt;
-        curChecksum.objIdCt = frontGC.obj_id_cnt;
-        checksums.push_back(curChecksum.checksum);
+        AsyncChecksum curChecksum = frontGC.checksum;
+        checksums.push_back(curChecksum.randState);
 
         // Checksumme des ersten Spielers als Richtwert
         if (referencePlayerIdx == 0xFF)
@@ -973,12 +965,10 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         RTTR_Assert(player.gc_queue.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
 
         // Checksummen nicht gleich?
-        if (curChecksum.checksum != referenceChecksum.checksum ||
-            curChecksum.objCt    != referenceChecksum.objCt ||
-            curChecksum.objIdCt  != referenceChecksum.objIdCt)
+        if (curChecksum != referenceChecksum)
         {
             LOG.lprintf("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", framesinfo.gf_nr, client, referencePlayerIdx,
-                curChecksum.checksum, referenceChecksum.checksum,
+                curChecksum.randState, referenceChecksum.randState,
                 curChecksum.objCt, referenceChecksum.objCt,
                 curChecksum.objIdCt, referenceChecksum.objIdCt);
 
@@ -1055,7 +1045,7 @@ unsigned char GameServer::GetLaggingPlayer() const
  */
 void GameServer::SendNothingNC(const unsigned int& id)
 {
-    SendToAll(GameMessage_GameCommand(id, 0, std::vector<gc::GameCommandPtr>()));
+    SendToAll(GameMessage_GameCommand(id, AsyncChecksum(0), std::vector<gc::GameCommandPtr>()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
