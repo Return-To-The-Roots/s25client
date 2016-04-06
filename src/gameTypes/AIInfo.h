@@ -18,6 +18,8 @@
 #ifndef AIInfo_h__
 #define AIInfo_h__
 
+class Serializer;
+
 namespace AI
 {
     enum Level
