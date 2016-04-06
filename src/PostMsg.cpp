@@ -126,7 +126,7 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(const unsigned id, const unsigned c
     type = PMT_DIPLOMACYQUESTION;
 
     char msg[512];
-    sprintf(msg, _("The player '%s' want to cancel the '%s' between you both primaturely. Do you agree?"), GAMECLIENT.GetPlayer(player).name.c_str(),
+    sprintf(msg, _("The player '%s' want to cancel the '%s' between you both prematurely. Do you agree?"), GAMECLIENT.GetPlayer(player).name.c_str(),
             _(PACT_TITLES[pt]));
 
     text = msg;
