@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -17,9 +17,8 @@ class AddonNoCoinsDefault : public AddonBool
     public:
         AddonNoCoinsDefault() : AddonBool(ADDON_NO_COINS_DEFAULT,
                                               ADDONGROUP_MILITARY,
-                                              gettext_noop("Disable coins by default"),
-                                              gettext_noop("Receiving coins is disabled\n"
-                                                      "for military buildings by default."),
+                                              _("Disable coins by default"),
+                                              _("Receiving coins is disabled for military buildings by default."),
                                               0
                                              )
         {

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,16 +33,16 @@ class AddonShipSpeed : public AddonList
     public:
         AddonShipSpeed() : AddonList(ADDON_SHIP_SPEED,
                                          ADDONGROUP_ECONOMY,
-                                         gettext_noop("Set ship speed"),
-                                         gettext_noop("Allows you to set ship movement speed\n\n"),
+                                         _("Set ship speed"),
+                                         _("Changes the ship movement speed"),
                                          2
                                         )
         {
-            addOption(gettext_noop("Very slow"));
-            addOption(gettext_noop("Slow"));
-            addOption(gettext_noop("Normal"));
-            addOption(gettext_noop("Fast"));
-            addOption(gettext_noop("Very fast"));
+            addOption(_("Very slow"));
+            addOption(_("Slow"));
+            addOption(_("Normal"));
+            addOption(_("Fast"));
+            addOption(_("Very fast"));
         }
 };
 

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,9 +33,8 @@ class AddonExhaustibleWells : public AddonBool
     public:
         AddonExhaustibleWells() : AddonBool(ADDON_EXHAUSTIBLE_WELLS,
                                                 ADDONGROUP_ECONOMY,
-                                                gettext_noop("Exhaustible Wells"),
-                                                gettext_noop("Allows to have limited water.\n\n"
-                                                        "Wells will now dry out."),
+                                                _("Exhaustible Wells"),
+                                                _("Wells will now dry out, limiting the available water"),
                                                 0
                                                )
         {

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,17 +33,17 @@ class AddonMoreAnimals : public AddonList
     public:
         AddonMoreAnimals() : AddonList(ADDON_MORE_ANIMALS,
                                                ADDONGROUP_ECONOMY,
-                                               gettext_noop("More trees spawn animals"),
-                                               gettext_noop("Allows you to adjust the percentage of trees that spawn animals."),
+                                               _("More trees spawn animals"),
+                                               _("Adjust the fraction of trees that spawn animals."),
                                                0
                                               )
         {
-            addOption(gettext_noop("default"));
-            addOption(gettext_noop("Increase 50%"));
-            addOption(gettext_noop("Increase 100%"));
-            addOption(gettext_noop("Increase 200%"));
-			addOption(gettext_noop("Increase 500%"));
-            addOption(gettext_noop("Increase 1000%"));
+            addOption(_("default"));
+            addOption(_("+50%"));
+            addOption(_("+100%"));
+            addOption(_("+200%"));
+			addOption(_("+500%"));
+            addOption(_("+1000%"));
         }
 };
 

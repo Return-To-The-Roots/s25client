@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -34,8 +34,8 @@ class AddonRefundOnEmergency : public AddonBool
     public:
         AddonRefundOnEmergency() : AddonBool(ADDON_REFUND_ON_EMERGENCY,
                                                  ADDONGROUP_ECONOMY,
-                                                 gettext_noop("Refund materials when emergency program is active"),
-                                                 gettext_noop("Allows you to get building materials back if the building is destroyed\n"
+                                                 _("Refund materials in emergency program"),
+                                                 _("Get building materials back when a building is destroyed "
                                                          "and your emergency program is active."),
                                                  0
                                                 )

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,16 +33,15 @@ class AddonStatisticsVisibility : public AddonList
     public:
         AddonStatisticsVisibility() : AddonList(ADDON_STATISTICS_VISIBILITY,
                                                     ADDONGROUP_OTHER,
-                                                    gettext_noop("Change the visibility of your ingame statistics"),
-                                                    gettext_noop("Decides to whom your statistics is visible.\n\n"
-                                                            "\"Allies\" applies to team members as well as "
-                                                            "to allies by treaty."),
+                                                    _("Change the visibility of your ingame statistics"),
+                                                    _("Decides to whom your statistics are visible.\n\n"
+                                                            "\"Allies\" applies to team members as well as to allies by treaty."),
                                                     0
                                                    )
         {
-            addOption(gettext_noop("Everyone"));
-            addOption(gettext_noop("Allies"));
-            addOption(gettext_noop("Nobody else but you"));
+            addOption(_("Everyone"));
+            addOption(_("Allies"));
+            addOption(_("Nobody else but you"));
         }
 };
 

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Addons.h"
-#include "../mygettext/src/mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -34,17 +34,17 @@ class AddonDefenderBehavior : public AddonList
     public:
         AddonDefenderBehavior() : AddonList(ADDON_DEFENDER_BEHAVIOR,
                                                 ADDONGROUP_MILITARY,
-                                                gettext_noop("Change defender behavior"),
-                                                gettext_noop("Allows to change the military setting 'defender'.\n\n"
-                                                        "You can choose to disallow any changes to that setting\n"
-                                                        "or you can limit the amount of reoccupying troops\n"
+                                                _("Change defender behavior"),
+                                                _("Change the military setting 'defender'.\n\n"
+                                                        "You can choose to disallow any changes to that setting "
+                                                        "or you can limit the amount of reoccupying troops "
                                                         "(during an attack) according to the defender setting."),
                                                 0
                                                )
         {
-            addOption(gettext_noop("No change"));
-            addOption(gettext_noop("Disallow change"));
-            addOption(gettext_noop("Reduce reoccupying troops accordingly"));
+            addOption(_("No change"));
+            addOption(_("Disallow change"));
+            addOption(_("Reduce reoccupying troops accordingly"));
         }
 };
 

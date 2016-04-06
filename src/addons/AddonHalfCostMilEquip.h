@@ -32,8 +32,8 @@ class AddonHalfCostMilEquip : public AddonBool
     public:
         AddonHalfCostMilEquip() : AddonBool(ADDON_HALF_COST_MIL_EQUIP,
                                                   ADDONGROUP_ECONOMY,
-                                                  gettext_noop("Half cost recruits"),
-                                                  gettext_noop("Allows a smith to create 1 shield & 1 sword\n\n"
+                                                  _("Half cost recruits"),
+                                                  _("Smith can create 1 shield & 1 sword "
                                                           "for 1 iron + 1 coal instead of 2 iron + 2 coal"),
                                                   0
                                                  )

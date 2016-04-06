@@ -68,7 +68,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
 	ctrlComboBox* players = AddComboBox(1, 15, 30, 250, 20, TC_GREY, NormalFont, 100);
     for (std::vector<AIPlayerJH*>::iterator it = ais.begin(); it != ais.end(); ++it)
     {
-        players->AddString(_((*it)->GetPlayerName()));
+        players->AddString((*it)->GetPlayerName());
     }
 
     selection = 0;

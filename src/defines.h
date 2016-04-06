@@ -71,12 +71,6 @@
 #   include <build_paths.h>
 #endif
 
-#ifdef _MSC_VER
-#   define FORCE_INLINE __forceinline
-#else
-#   define FORCE_INLINE inline __attribute__((__always_inline__))
-#endif // _MSC_VER
-
 #include "macros.h"
 #include "RTTR_Assert.h"
 
