@@ -60,7 +60,8 @@ GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned 
 	terrain_list(0),
 	terrainLastOffset(0, 0),
 	terrain_last_global_animation(0),
-	terrain_last_water(0)
+	terrain_last_water(0),
+    zoomFactor(1.f)
 {
 }
 
@@ -89,13 +90,23 @@ void GameWorldView::Draw(unsigned* water, const bool draw_selected, const MapPoi
 {
     int shortestDistToMouse = 100000;
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
+    mousePos -= Point<int>(pos);
 
     glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
+    if(zoomFactor != 1.f)
+    {
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glScalef(zoomFactor, zoomFactor, 1);
+        glMatrixMode(GL_MODELVIEW);
+    }
 
+    glTranslatef(static_cast<GLfloat>(pos.x) / zoomFactor, static_cast<GLfloat>(pos.y) / zoomFactor, 0.0f);
+
+    glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     TerrainRenderer& terrainRenderer = *gwv->GetTerrainRenderer();
     terrainRenderer.Draw(*this, water);
-
-    glTranslatef(static_cast<GLfloat>(pos.x), static_cast<GLfloat>(pos.y), 0.0f);
+    glTranslatef(static_cast<GLfloat>(offset.x), static_cast<GLfloat>(offset.y), 0.0f);
 
     for(int y = firstPt.y; y < lastPt.y; ++y)
     {
@@ -149,11 +160,8 @@ void GameWorldView::Draw(unsigned* water, const bool draw_selected, const MapPoi
             between_lines[i].obj->Draw(between_lines[i].pos.x, between_lines[i].pos.y);
     }
 
-    // Names & Productivity overlay
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
-
-    // GUI-Symbole auf der Map zeichnen
 
     DrawGUI(rb, terrainRenderer, draw_selected, selected);
 
@@ -161,7 +169,13 @@ void GameWorldView::Draw(unsigned* water, const bool draw_selected, const MapPoi
     for(std::list<CatapultStone*>::iterator it = gwv->catapult_stones.begin(); it != gwv->catapult_stones.end(); ++it)
         (*it)->Draw(*this, offset.x, offset.y);
 
-    glTranslatef(-static_cast<GLfloat>(pos.x), -static_cast<GLfloat>(pos.y), 0.0f);
+    if(zoomFactor != 1.f)
+    {
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+    }
+    glTranslatef(-static_cast<GLfloat>(pos.x) / zoomFactor, -static_cast<GLfloat>(pos.y) / zoomFactor, 0.0f);
 
     glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 }

@@ -34,10 +34,9 @@
 
 // 260x190, 300x250, 340x310
 
-//IngameWindow::IngameWindow(unsigned int id, const MapPoint pt, unsigned short width, unsigned short height, const std::string& title, glArchivItem_Bitmap *background, bool modal)
 iwObservate::iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt)
     : IngameWindow(gwv->CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
-      view(new GameWorldView(MapPoint(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false)
+      view(new GameWorldView(MapPoint(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
 {
     view->SetGameWorldViewer(gwv);
     view->MoveToMapObject(selectedPt);
@@ -59,6 +58,18 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
     switch (ctrl_id)
     {
         case 1:
+            if(++zoomLvl > 4)
+                zoomLvl = 0;
+            if(zoomLvl == 0)
+                view->zoomFactor = 1.f;
+            else if(zoomLvl == 1)
+                view->zoomFactor = 1.3f;
+            else if(zoomLvl == 2)
+                view->zoomFactor = 1.6f;
+            else if(zoomLvl == 3)
+                view->zoomFactor = 1.9f;
+            else
+                view->zoomFactor = 2.3f;
             break;
         case 2:
             break;

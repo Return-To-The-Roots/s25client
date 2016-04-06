@@ -74,6 +74,7 @@ public:
     Point<int> terrainLastOffset;
     unsigned int terrain_last_global_animation;
     unsigned int terrain_last_water;
+    float zoomFactor;
 
     GameWorldView(const MapPoint pt, unsigned short width, unsigned short height);
     ~GameWorldView();
