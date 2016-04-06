@@ -20,8 +20,8 @@
 #ifndef NationConsts_h__
 #define NationConsts_h__
 
+#include "mygettext/src/mygettext.h"
 #include <boost/array.hpp>
-#include <string>
 
 /// Völker (dont forget to change shield-count in iwWares too ...)
 enum Nation
@@ -35,7 +35,13 @@ enum Nation
 	NAT_INVALID = 0xFFFFFFFF
 };
 
-const boost::array<std::string, NAT_COUNT> SUPPRESS_UNUSED NationNames = {{ std::string("Africans"), std::string("Japanese"), std::string("Romans"), std::string("Vikings"), std::string("Babylonians") }};
+const boost::array<const char*, NAT_COUNT> SUPPRESS_UNUSED NationNames = {{
+        gettext_noop("Africans"),
+        gettext_noop("Japanese"),
+        gettext_noop("Romans"),
+        gettext_noop("Vikings"),
+        gettext_noop("Babylonians")
+}};
 
 #define NATIVE_NAT_COUNT 4
 
