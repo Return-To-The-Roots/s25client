@@ -116,7 +116,7 @@ int GamePlayerInfo::GetColorIdx() const
 
 int GamePlayerInfo::GetColorIdx(unsigned color)
 {
-    for(int i = 0; i < PLAYER_COLORS.size(); ++i)
+    for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
     {
         if(PLAYER_COLORS[i] == color)
             return i;
