@@ -498,19 +498,8 @@ void GameClient::OnNMSPlayerList(const GameMessage_Player_List& msg)
         player.ping = msgPlayer.ping;
         player.rating = msgPlayer.rating;
         player.ps = msgPlayer.ps;
-        if(player.ps == PS_KI)
-        {
-            if(!strncmp(player.name.c_str(), "Computer", 7))
-            {
-                player.aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
-                player.rating = 666;
-            }
-            else
-            {
-                player.aiInfo = AI::Info(AI::DUMMY, AI::EASY);
-                player.rating = 0;
-            }
-        }
+        player.aiInfo = msgPlayer.aiInfo;
+        player.rating = msgPlayer.rating;
 
         if(ci)
             ci->CI_PSChanged(i, player.ps);

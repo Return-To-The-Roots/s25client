@@ -25,6 +25,19 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
+namespace AI{
+    Info::Info(Serializer& ser):
+                    type(static_cast<Type>(ser.PopUnsignedChar())),
+                    level(static_cast<Level>(ser.PopUnsignedChar()))
+    {}
+
+    void Info::serialize(Serializer& ser) const
+    {
+        ser.PushUnsignedChar(static_cast<unsigned char>(type));
+        ser.PushUnsignedChar(static_cast<unsigned char>(level));
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
@@ -47,7 +60,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     playerid(playerid),
     defeated(false),
     ps(PlayerState(ser.PopUnsignedChar())),
-    aiInfo(),
+    aiInfo(ser),
     name(ser.PopString()),
     origin_name(ser.PopString()),
     is_host(ser.PopBool()),
@@ -58,6 +71,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     rating(ser.PopUnsignedInt()),
     ready(ser.PopBool())
 {
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,6 +96,7 @@ void GamePlayerInfo::clear()
 void GamePlayerInfo::serialize(Serializer& ser) const
 {
     ser.PushUnsignedChar(static_cast<unsigned char>(ps));
+    aiInfo.serialize(ser);
     ser.PushString(name);
     ser.PushString(origin_name);
     ser.PushBool(is_host);

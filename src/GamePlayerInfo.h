@@ -52,6 +52,8 @@ namespace AI
         Type type;
         Level level;
         Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) { }
+        Info(Serializer& ser);
+        void serialize(Serializer& ser) const;
     };
 }
 
