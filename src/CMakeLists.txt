@@ -53,27 +53,10 @@ AddDirectory(world)
 
 ################################################################################
 
+FILE(GLOB RTTR_PO_FILES ../RTTR/languages/*.po)
+
 GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
-							../RTTR/languages/rttr-de.po
-							../RTTR/languages/rttr-es.po
-							../RTTR/languages/rttr-sv.po
-							../RTTR/languages/rttr-fi.po
-							../RTTR/languages/rttr-fr.po
-							../RTTR/languages/rttr-ru.po
-							../RTTR/languages/rttr-nl.po
-							../RTTR/languages/rttr-et.po
-							../RTTR/languages/rttr-en_GB.po
-							../RTTR/languages/rttr-sk.po
-							../RTTR/languages/rttr-nds.po
-							../RTTR/languages/rttr-tr.po
-							../RTTR/languages/rttr-pl.po
-							../RTTR/languages/rttr-pt.po
-							../RTTR/languages/rttr-he.po
-							../RTTR/languages/rttr-cs.po
-							../RTTR/languages/rttr-hu.po
-							../RTTR/languages/rttr-it.po
-							../RTTR/languages/rttr-sl.po
-							../RTTR/languages/rttr-nb.po
+							${RTTR_PO_FILES}
 						   )
 
 ################################################################################
