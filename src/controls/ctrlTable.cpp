@@ -154,10 +154,10 @@ void ctrlTable::DeleteAllItems()
  */
 void ctrlTable::SetSelection(int selection)
 {
-    if(selection >= rows.size())
-        return;
-    else if(selection < 0)
+    if(selection < 0)
         selection_ = -1;
+    else if(static_cast<unsigned>(selection) >= rows.size())
+        return;
     else
     {
         selection_ = selection;
@@ -241,7 +241,7 @@ void ctrlTable::SortRows(int column, bool* direction)
         return;
     if(rows.empty())
         return;
-    if(column >= columns.size())
+    if(column >= static_cast<int>(columns.size()))
         column = 0;
 
     if(direction)
