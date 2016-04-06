@@ -103,7 +103,7 @@ void iwBuildOrder::Msg_Timer(const unsigned int  /*ctrl_id*/)
 }
 
 
-void iwBuildOrder::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void iwBuildOrder::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

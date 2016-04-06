@@ -134,7 +134,7 @@ iwSettings::~iwSettings()
  *
  *  @author NastX
  */
-void iwSettings::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void iwSettings::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

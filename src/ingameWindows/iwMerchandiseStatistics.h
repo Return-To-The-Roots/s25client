@@ -52,7 +52,7 @@ class iwMerchandiseStatistics : public IngameWindow
 
         // Durchgereichte Methoden vom Window
         void Msg_PaintAfter() override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 

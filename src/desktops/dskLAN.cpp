@@ -107,7 +107,7 @@ void dskLAN::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void dskLAN::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+void dskLAN::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == tblServerId && selection != 0xFFFF) // Server list
         ConnectToSelectedGame();

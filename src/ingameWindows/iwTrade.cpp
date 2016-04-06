@@ -126,7 +126,7 @@ void iwTrade::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
     }
 }
 
-void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection)
+void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

@@ -394,7 +394,7 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, cons
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection)
+void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection)
 {
     ctrlGroup* group = GetCtrl<ctrlGroup>(group_id);
     ctrlComboBox* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
@@ -475,7 +475,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -565,7 +565,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, c
  *
  *  @author FloSoft
  */
-void dskOptions::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void dskOptions::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

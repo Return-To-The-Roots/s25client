@@ -507,7 +507,7 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const un
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const unsigned short selection)
+void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const int selection)
 {
     unsigned player_id = 8 - (group_id - 50);
 
@@ -723,7 +723,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
  *
  *  @author OLiver
  */
-void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short  /*selection*/)
+void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const int  /*selection*/)
 {
     switch(ctrl_id)
     {

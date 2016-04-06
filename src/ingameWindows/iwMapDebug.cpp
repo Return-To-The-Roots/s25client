@@ -100,11 +100,12 @@ iwMapDebug::~iwMapDebug()
     delete printer;
 }
 
-void iwMapDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short select)
+void iwMapDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select)
 {
     if(ctrl_id != 1)
         return;
-    printer->showDataIdx = select;
+    if(select >= 0)
+        printer->showDataIdx = static_cast<unsigned>(select);
 }
 
 void iwMapDebug::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)

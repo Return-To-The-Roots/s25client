@@ -60,8 +60,8 @@ class dskLobby :
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection) override;
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection) override;
+        void Msg_TableRightButton(const unsigned int ctrl_id, const int selection) override;
+        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
         /**
          * Connectes to the currently selected game and returns true on success

@@ -247,7 +247,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
  *
  *  @author FloSoft
  */
-void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

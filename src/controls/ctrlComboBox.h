@@ -46,7 +46,7 @@ class ctrlComboBox : public Window
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
-        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ListSelectItem(const unsigned int ctrl_id, const int selection) override;
 
     protected:
         bool Draw_() override;

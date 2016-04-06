@@ -42,7 +42,7 @@ ctrlList::ctrlList(Window* parent,
                    TextureColor tc,
                    glArchivItem_Font* font)
     : Window(x, y, id, parent, width, height),
-      tc(tc), font(font), selection_(0xFFFF), mouseover(0xFFFF)
+      tc(tc), font(font), selection_(-1), mouseover(-1)
 {
     pagesize = (height - 4) / font->getHeight();
 
@@ -82,7 +82,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     }
 
     // Mouse-Over deaktivieren und Tooltip entfernen
-    mouseover = 0xFFFF;
+    mouseover = -1;
     WINDOWMANAGER.SetToolTip(this, "");
 
     // Für die Scrollbar weiterleiten
@@ -158,7 +158,7 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && parent_)
+        if(mc.dbl_click && parent_ && selection_ >= 0)
             parent_->Msg_ListChooseItem(id_, selection_);
 
         return true;
@@ -281,7 +281,7 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
 void ctrlList::DeleteAllItems()
 {
     lines.clear();
-    selection_ = 0xFFFF;
+    selection_ = -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -364,6 +364,6 @@ void ctrlList::Remove(const unsigned short index)
         if(selection_)
             --selection_;
         else
-            selection_ = 0xFFFF;
+            selection_ = -1;
     }
 }

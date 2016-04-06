@@ -30,7 +30,7 @@ class iwAIDebug : public IngameWindow
         iwAIDebug(GameWorldViewer* const gwv);
 
     private:
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short select) override;
+        void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
         //void Msg_ButtonClick(const unsigned int ctrl_id);
         //void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
         void Msg_PaintBefore() override;

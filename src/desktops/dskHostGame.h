@@ -59,11 +59,11 @@ class dskHostGame :
         void Msg_PaintBefore() override;
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
         void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked) override;
-        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_EditEnter(const unsigned int ctrl_id) override;
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
         void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
 
         void LC_RankingInfo(const LobbyPlayerInfo& player) override;

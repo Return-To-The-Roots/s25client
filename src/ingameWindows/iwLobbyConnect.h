@@ -38,7 +38,7 @@ class iwLobbyConnect : public IngameWindow, public LobbyInterface
         void Msg_EditChange(const unsigned int ctrl_id) override;
         void Msg_EditEnter(const unsigned int ctrl_id) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
 
     private:
         void SetText(const std::string& text, unsigned int color, bool button);

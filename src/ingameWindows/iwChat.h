@@ -33,7 +33,7 @@ class iwChat : public IngameWindow
     private:
 
         void Msg_PaintBefore() override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
         void Msg_EditEnter(const unsigned int ctrl_id) override;
 };
 

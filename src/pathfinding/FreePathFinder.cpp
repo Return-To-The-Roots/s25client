@@ -181,7 +181,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         }
 
         // Maximaler Weg schon erreicht ? In dem Fall brauchen wir keine weiteren Knoten von diesem aus bilden
-        if((prevStepEven && nodes[bestId].wayEven) == maxLength || (!prevStepEven && nodes[bestId].way == maxLength))
+        if((prevStepEven && nodes[bestId].wayEven == maxLength) || (!prevStepEven && nodes[bestId].way == maxLength))
             continue;
 
         //LOG.lprintf("pf get neighbor nodes %i, %i id: %i \n", best.x, best.y, best_id);

@@ -237,7 +237,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
     if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Scrolled without list opened
-        if (list->GetSelection() < list->GetLineCount() - 1)
+        if (list->GetSelection() + 1 < list->GetLineCount())
             Msg_ListSelectItem(GetID(), list->GetSelection() + 1);
         return true;
     }
@@ -251,7 +251,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
  *
  *  @author OLiver
  */
-void ctrlComboBox::Msg_ListSelectItem(const unsigned int  /*ctrl_id*/, const unsigned short selection)
+void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
 {
     // Liste wieder ausblenden
     ShowList(false);

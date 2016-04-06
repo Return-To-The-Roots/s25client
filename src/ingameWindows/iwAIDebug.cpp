@@ -109,7 +109,7 @@ iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
  *
  *  @author jh
  */
-void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short select)
+void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -118,12 +118,12 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned s
 
         case 1:
         {
-            selection = select;
+            this->selection = selection;
             gwv->SetAIDebug(overlay, ais[selection]->GetPlayerID(), false);
         } break;
         case 0:
         {
-            overlay = select;
+            overlay = selection;
             gwv->SetAIDebug(overlay, ais[selection]->GetPlayerID(), true);
         } break;
     }

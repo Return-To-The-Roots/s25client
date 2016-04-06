@@ -49,8 +49,8 @@ ctrlTable::ctrlTable(Window* parent,
                      va_list liste)
     : Window(x, y, id, parent, width, height),
       tc(tc), font(font),
-      row_l_selection(0xFFFF), row_r_selection(0xFFFF),
-      sort_column(0xFFFF), sort_direction(true)
+      selection_(-1),
+      sort_column(-1), sort_direction(true)
 {
     header_height = font->getHeight() + 10;
     line_count = (height - header_height - 2) / font->getHeight();
@@ -138,9 +138,8 @@ void ctrlTable::DeleteAllItems()
 
     GetCtrl<ctrlScrollBar>(0)->SetRange(0);
 
-    row_l_selection = 0xFFFF;
-    row_r_selection = 0xFFFF;
-    sort_column = 0xFFFF;
+    SetSelection(-1);
+    sort_column = -1;
     sort_direction = true;
 }
 
@@ -149,23 +148,19 @@ void ctrlTable::DeleteAllItems()
  *  setzt die Auswahl.
  *
  *  @param[in] selection Der Auswahlindex
- *  @param[in] left      Auswahl für linke (@p true) oder rechte (@p false) Maustaste setzen.
  *
  *  @author FloSoft
  *  @author OLiver
  */
-void ctrlTable::SetSelection(unsigned short selection, bool left)
+void ctrlTable::SetSelection(int selection)
 {
     if(selection >= rows.size())
         return;
 
-    if(left)
-        row_l_selection = selection;
-    else
-        row_r_selection = selection;
+    selection_ = selection;
 
     if(parent_)
-        parent_->Msg_TableSelectItem(id_, selection);
+        parent_->Msg_TableSelectItem(id_, selection_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -230,7 +225,7 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *
  *  @author OLiver
  */
-void ctrlTable::SortRows(unsigned short column, bool* direction)
+void ctrlTable::SortRows(int column, bool* direction)
 {
     if(columns.empty())
         return;
@@ -246,6 +241,9 @@ void ctrlTable::SortRows(unsigned short column, bool* direction)
     else
         sort_direction = true;
     sort_column = column;
+
+    if(sort_column < 0 || sort_column >= GetColumnCount())
+        return;
 
     bool done;
     do{
@@ -284,12 +282,13 @@ bool ctrlTable::Draw_()
 
     DrawControls();
 
-    unsigned short lines = static_cast<unsigned short>((line_count > rows.size() ? rows.size() : line_count));
+    int lines = static_cast<int>(line_count > rows.size() ? rows.size() : line_count);
     ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);
 
-    for(unsigned short i = 0; i < lines; ++i)
+    for(int i = 0; i < lines; ++i)
     {
-        if(row_l_selection == i + scroll->GetPos())
+        bool isSelected = selection_ == i + scroll->GetPos();
+        if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
             DrawRectangle(GetX() + 2, GetY() + 2 + header_height + i * font->getHeight(), width_ - 4 - (scroll->GetVisible() ? 24 : 0), font->getHeight(), 0x80000000);
@@ -298,11 +297,12 @@ bool ctrlTable::Draw_()
         unsigned short pos = 0;
         for(unsigned short c = 0; c < columns.size(); ++c)
         {
-            if(columns.at(c).width == 0)
+            if(columns[c].width == 0)
                 continue;
 
-            font->Draw(GetX() + 2 + pos, GetY() + 2 + header_height + i * font->getHeight(), rows.at(i + scroll->GetPos()).columns.at(c), 0, (row_l_selection == i + scroll->GetPos() ? 0xFFFFAA00 : COLOR_YELLOW), 0, GetCtrl<ctrlButton>(c + 1)->GetWidth(), "");
-            pos += GetCtrl<ctrlButton>(c + 1)->GetWidth();
+            ctrlButton* bt = GetCtrl<ctrlButton>(c + 1);
+            font->Draw(GetX() + 2 + pos, GetY() + 2 + header_height + i * font->getHeight(), rows[i + scroll->GetPos()].columns[c], 0, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetWidth(), "");
+            pos += bt->GetWidth();
         }
     }
 
@@ -318,8 +318,7 @@ bool ctrlTable::Draw_()
 void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     SortRows(ctrl_id - 1);
-    SetSelection(row_l_selection);
-    SetSelection(row_r_selection, false);
+    SetSelection(selection_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -334,7 +333,7 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(parent_)
-            parent_->Msg_TableLeftButton(this->id_, row_l_selection);
+            parent_->Msg_TableLeftButton(this->id_, selection_);
 
         return true;
     }
@@ -352,9 +351,9 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_))
     {
-        SetSelection(GetSelectionFromMouse(mc), false);
+        SetSelection(GetSelectionFromMouse(mc));
         if(parent_)
-            parent_->Msg_TableRightButton(this->id_, row_r_selection);
+            parent_->Msg_TableRightButton(this->id_, selection_);
 
         return true;
     }
@@ -362,7 +361,7 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
         return RelayMouseMessage(&Window::Msg_RightDown, mc);
 }
 
-unsigned short ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
+int ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
 {
     return (mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos();
 }
@@ -417,7 +416,8 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
     {
         if(mc.dbl_click && parent_){
             SetSelection(GetSelectionFromMouse(mc));
-            parent_->Msg_TableChooseItem(this->id_, row_l_selection);
+            if(selection_ >= 0)
+                parent_->Msg_TableChooseItem(this->id_, selection_);
         }
 
         return true;
@@ -606,20 +606,20 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
         default: return false;
         case KT_UP:
         {
-            if(row_l_selection < unsigned(rows.size()) && row_l_selection)
-                --row_l_selection;
+            if(selection_ > 0)
+                --selection_;
 
             if(parent_)
-                parent_->Msg_TableSelectItem(id_, row_l_selection);
+                parent_->Msg_TableSelectItem(id_, selection_);
 
         } return true;
         case KT_DOWN:
         {
-            if(unsigned(row_l_selection) + 1 < unsigned(rows.size()))
-                ++row_l_selection;
+            if(static_cast<size_t>(selection_ + 1) < rows.size())
+                ++selection_;
 
             if(parent_)
-                parent_->Msg_TableSelectItem(id_, row_l_selection);
+                parent_->Msg_TableSelectItem(id_, selection_);
 
         } return true;
     }

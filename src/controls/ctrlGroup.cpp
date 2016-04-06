@@ -138,7 +138,7 @@ void ctrlGroup::Msg_TabChange(const unsigned int ctrl_id, const unsigned short t
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
 }
@@ -149,7 +149,7 @@ void ctrlGroup::Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned sh
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
 }
@@ -193,7 +193,7 @@ void ctrlGroup::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
 }
@@ -215,7 +215,7 @@ void ctrlGroup::Msg_Timer(const unsigned int ctrl_id)
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_TableSelectItem(const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
 }
@@ -226,7 +226,7 @@ void ctrlGroup::Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned s
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_TableRightButton(const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
 }
@@ -237,7 +237,7 @@ void ctrlGroup::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned 
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_TableLeftButton(const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
 }
@@ -381,7 +381,7 @@ void ctrlGroup::Msg_Group_TabChange(const unsigned int  /*group_id*/, const unsi
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_Group_ListSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_Group_ListSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
 }
@@ -392,7 +392,7 @@ void ctrlGroup::Msg_Group_ListSelectItem(const unsigned int  /*group_id*/, const
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_Group_ComboSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_Group_ComboSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
 }
@@ -436,7 +436,7 @@ void ctrlGroup::Msg_Group_ScrollShow(const unsigned int  /*group_id*/, const uns
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
 }
@@ -458,7 +458,7 @@ void ctrlGroup::Msg_Group_Timer(const unsigned int  /*group_id*/, const unsigned
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_Group_TableSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_Group_TableSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
 }
@@ -469,7 +469,7 @@ void ctrlGroup::Msg_Group_TableSelectItem(const unsigned int  /*group_id*/, cons
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_Group_TableRightButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_Group_TableRightButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
 }
@@ -480,7 +480,7 @@ void ctrlGroup::Msg_Group_TableRightButton(const unsigned int  /*group_id*/, con
  *
  *  @author OLiver
  */
-void ctrlGroup::Msg_Group_TableLeftButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short selection)
+void ctrlGroup::Msg_Group_TableLeftButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
 }

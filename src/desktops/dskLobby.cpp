@@ -157,14 +157,14 @@ void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short  /*selection*/)
+void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const int selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
         case 10: // Server list
         {
-            const std::string item = table->GetItemText(table->GetSelection(false), 0);
+            const std::string item = table->GetItemText(selection, 0);
 
             if(atoi(item.c_str()) != 0)
             {
@@ -179,7 +179,7 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
                 serverinfo = new iwLobbyServerInfo();
                 serverinfo->SetParent(this);
                 serverinfo->Set(NULL, atoi(item.c_str()));
-                serverinfo->SetTitle(table->GetItemText(table->GetSelection(false), 1));
+                serverinfo->SetTitle(table->GetItemText(selection, 1));
 
                 LOBBYCLIENT.SendServerInfoRequest(atoi(item.c_str()));
                 WINDOWMANAGER.Show(serverinfo, true);
@@ -188,7 +188,7 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const unsigned s
     }
 }
 
-void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection)
+void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == 10 && selection != 0xFFFF) // Server list
         ConnectToSelectedGame();

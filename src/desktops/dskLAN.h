@@ -38,7 +38,7 @@ protected:
     void Msg_Timer(const unsigned int ctrl_id) override;
     void Msg_PaintBefore() override;
     void Msg_ButtonClick(const unsigned int ctrl_id) override;
-    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection) override;
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
     /**
         * Connects to the currently selected game and returns true on success

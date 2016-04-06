@@ -52,12 +52,12 @@ class ctrlList : public Window
         void Remove(const unsigned short index);
 
         unsigned short GetLineCount() const { return static_cast<unsigned short>(lines.size()); }
-        unsigned short GetSelection() const { return static_cast<unsigned short>(selection_); };
-        void SetSelection(unsigned short selection)
+        int GetSelection() const { return selection_; };
+        void SetSelection(unsigned selection)
         {
-            if(selection != this->selection_ && selection < lines.size())
+            if(static_cast<int>(selection) != selection_ && selection < lines.size())
             {
-                this->selection_ = selection;
+                selection_ = selection;
                 if(parent_)
                     parent_->Msg_ListSelectItem(id_, selection);
             }
@@ -79,8 +79,8 @@ class ctrlList : public Window
 
         std::vector<std::string> lines;
 
-        unsigned short selection_;
-        unsigned short mouseover;
+        int selection_;
+        int mouseover;
         unsigned int pagesize;
 
 };

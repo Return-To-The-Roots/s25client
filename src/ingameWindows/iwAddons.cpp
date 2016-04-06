@@ -203,7 +203,7 @@ void iwAddons::UpdateView(const unsigned short selection)
  *
  *  @author FloSoft
  */
-void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection)
+void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

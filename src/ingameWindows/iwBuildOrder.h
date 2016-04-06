@@ -38,7 +38,7 @@ class iwBuildOrder : public IngameWindow
         void TransmitSettings();
 
         void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_ListSelectItem(const unsigned int ctrl_id, const int selection) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 

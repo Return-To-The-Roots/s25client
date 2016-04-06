@@ -223,59 +223,59 @@ class Window
         // GUI-Notify-Messages
 
         // Nachrichten, die von oben (WindowManager) nach unten (zu Controls) gereicht werden
-        virtual void Msg_PaintBefore();
-        virtual void Msg_PaintAfter();
-        virtual bool Msg_LeftDown(const MouseCoords& mc);
-        virtual bool Msg_RightDown(const MouseCoords& mc);
-        virtual bool Msg_LeftUp(const MouseCoords& mc);
-        virtual bool Msg_RightUp(const MouseCoords& mc);
-        virtual bool Msg_WheelUp(const MouseCoords& mc);
-        virtual bool Msg_WheelDown(const MouseCoords& mc);
-        virtual bool Msg_MouseMove(const MouseCoords& mc);
-        virtual bool Msg_KeyDown(const KeyEvent& ke);
+        virtual void Msg_PaintBefore(){}
+        virtual void Msg_PaintAfter(){}
+        virtual bool Msg_LeftDown(const MouseCoords& mc){ return false; }
+        virtual bool Msg_RightDown(const MouseCoords& mc){ return false; }
+        virtual bool Msg_LeftUp(const MouseCoords& mc){ return false; }
+        virtual bool Msg_RightUp(const MouseCoords& mc){ return false; }
+        virtual bool Msg_WheelUp(const MouseCoords& mc){ return false; }
+        virtual bool Msg_WheelDown(const MouseCoords& mc){ return false; }
+        virtual bool Msg_MouseMove(const MouseCoords& mc){ return false; }
+        virtual bool Msg_KeyDown(const KeyEvent& ke){ return false; }
         // Wird aufgerufen, nachdem schon ein Mausklick behandelt wurde
         // NUR VORÜBERGEHEND für Edit-Controls, bis richtiger Steuerelement-Fokus
         // eingebaut wurde!
-        virtual bool Msg_LeftDown_After(const MouseCoords& mc);
-        virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
+        virtual bool Msg_LeftDown_After(const MouseCoords& mc){ return false; }
+        virtual void Msg_ScreenResize(const ScreenResizeEvent& sr){}
 
         // Nachrichten, die von unten (Controls) nach oben (Fenster) gereicht werden
-        virtual void Msg_ButtonClick(const unsigned int ctrl_id);
-        virtual void Msg_EditEnter(const unsigned int ctrl_id);
-        virtual void Msg_EditChange(const unsigned int ctrl_id);
-        virtual void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id);
-        virtual void Msg_ListSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_ComboSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked);
-        virtual void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-        virtual void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position);
-        virtual void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible);
-        virtual void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Timer(const unsigned int ctrl_id);
-        virtual void Msg_TableSelectItem(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned short selection);
-        virtual void Msg_TableRightButton(const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_TableLeftButton(const unsigned int ctrl_id, const unsigned short selection);
+        virtual void Msg_ButtonClick(const unsigned int ctrl_id){}
+        virtual void Msg_EditEnter(const unsigned int ctrl_id){}
+        virtual void Msg_EditChange(const unsigned int ctrl_id){}
+        virtual void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id){}
+        virtual void Msg_ListSelectItem(const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned selection){}
+        virtual void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked){}
+        virtual void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position){}
+        virtual void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position){}
+        virtual void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible){}
+        virtual void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_Timer(const unsigned int ctrl_id){}
+        virtual void Msg_TableSelectItem(const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection){}
+        virtual void Msg_TableRightButton(const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_TableLeftButton(const unsigned int ctrl_id, const int selection){}
 
         // Sonstiges
-        virtual void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr);
+        virtual void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr){}
 
         // Nachrichten, die von Controls von ctrlGroup weitergeleitet werden
-        virtual void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id);
-        virtual void Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked);
-        virtual void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position);
-        virtual void Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible);
-        virtual void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id);
-        virtual void Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
-        virtual void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short selection);
+        virtual void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id){}
+        virtual void Msg_Group_EditEnter(const unsigned int group_id, const unsigned int ctrl_id){}
+        virtual void Msg_Group_EditChange(const unsigned int group_id, const unsigned int ctrl_id){}
+        virtual void Msg_Group_TabChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short tab_id){}
+        virtual void Msg_Group_ListSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked){}
+        virtual void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position){}
+        virtual void Msg_Group_ScrollShow(const unsigned int group_id, const unsigned int ctrl_id, const bool visible){}
+        virtual void Msg_Group_OptionGroupChange(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_Group_Timer(const unsigned int group_id, const unsigned int ctrl_id){}
+        virtual void Msg_Group_TableSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_Group_TableRightButton(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
+        virtual void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
 
     protected:
 

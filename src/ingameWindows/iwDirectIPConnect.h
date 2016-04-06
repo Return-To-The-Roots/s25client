@@ -40,7 +40,7 @@ class iwDirectIPConnect : public IngameWindow, public ClientInterface
         void Msg_EditChange(const unsigned int ctrl_id) override;
         void Msg_EditEnter(const unsigned int ctrl_id) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const unsigned short selection) override;
+        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
 
         void CI_Error(const ClientError ce) override;
         void CI_NextConnectState(const ConnectState cs) override;

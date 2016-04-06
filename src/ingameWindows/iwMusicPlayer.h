@@ -62,8 +62,8 @@ class iwMusicPlayer : public IngameWindow
 
     private:
 
-        void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned short selection) override;
-        void Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned short selection) override;
+        void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned selection) override;
+        void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 
         void Msg_Input(const unsigned int win_id, const std::string& msg);

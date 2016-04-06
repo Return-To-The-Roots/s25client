@@ -37,19 +37,18 @@ class ctrlTable : public Window
 
         /// löscht alle Items.
         void DeleteAllItems();
-        /// setzt die Auswahl.
-        void SetSelection(unsigned short selection, bool left = true);
         /// fügt eine Zeile hinzu.
         void AddRow(unsigned alwaysnull, ...);
         /// liefert den Wert eines Feldes.
         const std::string& GetItemText(unsigned short row, unsigned short column) const;
         /// sortiert die Zeilen.
-        void SortRows(unsigned short column, bool* direction = NULL);
-        unsigned short GetSortColumn() { return sort_column; }
-        bool GetSortDirection() { return sort_direction; }
-        unsigned short GetRowCount() { return static_cast<unsigned short>(rows.size()); }
-        unsigned short GetColumnCount() { return static_cast<unsigned short>(columns.size()); }
-        unsigned short GetSelection(bool left = true) { return (left ? row_l_selection : row_r_selection); }
+        void SortRows(int column, bool* direction = NULL);
+        int GetSortColumn() const { return sort_column; }
+        bool GetSortDirection() const { return sort_direction; }
+        unsigned short GetRowCount() const { return static_cast<unsigned short>(rows.size()); }
+        unsigned short GetColumnCount() const { return static_cast<unsigned short>(columns.size()); }
+        int GetSelection() const { return selection_; }
+        void SetSelection(int selection);
 
         bool Msg_LeftDown(const MouseCoords& mc) override;
         bool Msg_RightDown(const MouseCoords& mc) override;
@@ -78,7 +77,7 @@ class ctrlTable : public Window
         void Resize_(unsigned short width, unsigned short height) override;
         /// Setzt die Breite und Position der Buttons ohne Scrolleiste
         void ResetButtonWidths();
-        unsigned short GetSelectionFromMouse(const MouseCoords &mc);
+        int GetSelectionFromMouse(const MouseCoords &mc);
 
     private:
         TextureColor tc;
@@ -96,10 +95,10 @@ class ctrlTable : public Window
         };
         std::vector<COLUMN> columns;
 
-        unsigned short row_l_selection;
-        unsigned short row_r_selection;
-
-        unsigned short sort_column;
+        /// Selected row. -1 for none
+        int selection_;
+        /// Column to sort by. -1 for none
+        int sort_column;
         bool sort_direction;
 
         struct ROW
