@@ -38,12 +38,12 @@ class AddonBurnDuration : public AddonList
                                                 )
         {
             addOption(_("Default"));
-            addOption(gettext_noop("-25%"));
-            addOption(gettext_noop("-50%"));
-            addOption(gettext_noop("-75%"));
-            addOption(gettext_noop("-90%"));            
-			addOption(gettext_noop("+50%"));
-			addOption(gettext_noop("+100%"));
+            addOption(_("-25%"));
+            addOption(_("-50%"));
+            addOption(_("-75%"));
+            addOption(_("-90%"));
+			addOption(_("+50%"));
+			addOption(_("+100%"));
         }
 };
 

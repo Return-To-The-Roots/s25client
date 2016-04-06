@@ -39,11 +39,11 @@ class AddonMoreAnimals : public AddonList
                                               )
         {
             addOption(_("default"));
-            addOption(gettext_noop("+50%"));
-            addOption(gettext_noop("+100%"));
-            addOption(gettext_noop("+200%"));
-			addOption(gettext_noop("+500%"));
-            addOption(gettext_noop("+1000%"));
+            addOption(_("+50%"));
+            addOption(_("+100%"));
+            addOption(_("+200%"));
+			addOption(_("+500%"));
+            addOption(_("+1000%"));
         }
 };
 
