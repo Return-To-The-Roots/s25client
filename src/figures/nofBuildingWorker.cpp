@@ -414,7 +414,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
             else
                 error = _("This mine is exhausted");
 
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_(error), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
+            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(error, PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
         }
 
         outOfRessourcesMsgSent = true;

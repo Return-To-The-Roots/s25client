@@ -58,14 +58,14 @@ void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  
 {
     ctrlText* text = window->GetCtrl<ctrlText>(id);
     if(!text)
-        text = window->AddText(id, 52, y + 4, _(name_), COLOR_YELLOW, 0, NormalFont);
+        text = window->AddText(id, 52, y + 4, name_, COLOR_YELLOW, 0, NormalFont);
 
     text->SetVisible(true);
     text->Move(52, y + 4);
 
     ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
     if(!button)
-        button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), _(description_));
+        button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), description_);
 
     button->SetVisible(true);
     button->Move(20, y);
@@ -101,7 +101,7 @@ void AddonList::createGui(Window* window, unsigned int id, unsigned short& y, bo
     {
         combo = window->AddComboBox(id + 2, 450, y, 220, 20,  TC_GREY, NormalFont, 100, readonly );
         for(std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
-            combo->AddString(_(*it));
+            combo->AddString(*it);
 
         setGuiStatus(window, id, status);
     }
