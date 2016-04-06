@@ -156,8 +156,18 @@ void ctrlTable::SetSelection(int selection)
 {
     if(selection >= rows.size())
         return;
-
-    selection_ = selection;
+    else if(selection < 0)
+        selection_ = -1;
+    else
+    {
+        selection_ = selection;
+        // Scroll into view
+        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        if(selection_ < scrollbar->GetPos())
+            scrollbar->SetPos(selection_);
+        else if(selection_ >= scrollbar->GetPos() + scrollbar->GetPageSize())
+            scrollbar->SetPos(selection_ - scrollbar->GetPageSize() + 1);
+    }
 
     if(parent_)
         parent_->Msg_TableSelectItem(id_, selection_);
@@ -287,7 +297,9 @@ bool ctrlTable::Draw_()
 
     for(int i = 0; i < lines; ++i)
     {
-        bool isSelected = selection_ == i + scroll->GetPos();
+        const int curRow = i + scroll->GetPos();
+        RTTR_Assert(curRow >= 0 && curRow < GetRowCount());
+        bool isSelected = selection_ == curRow;
         if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
@@ -301,7 +313,7 @@ bool ctrlTable::Draw_()
                 continue;
 
             ctrlButton* bt = GetCtrl<ctrlButton>(c + 1);
-            font->Draw(GetX() + 2 + pos, GetY() + 2 + header_height + i * font->getHeight(), rows[i + scroll->GetPos()].columns[c], 0, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetWidth(), "");
+            font->Draw(GetX() + 2 + pos, GetY() + 2 + header_height + i * font->getHeight(), rows[curRow].columns[c], 0, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetWidth(), "");
             pos += bt->GetWidth();
         }
     }
@@ -415,8 +427,9 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
     {
         if(mc.dbl_click && parent_){
-            SetSelection(GetSelectionFromMouse(mc));
-            if(selection_ >= 0)
+            int selection = GetSelectionFromMouse(mc);
+            SetSelection(selection);
+            if(selection_ >= 0 && selection == selection_)
                 parent_->Msg_TableChooseItem(this->id_, selection_);
         }
 
@@ -457,12 +470,12 @@ void ctrlTable::Msg_ScrollShow(const unsigned int  /*ctrl_id*/, const bool visib
 
         for(unsigned i = 0; i < columns.size(); ++i)
         {
-            if(GetCtrl<ctrlButton>(i + 1)->GetWidth() > width_col_minus)
+            ctrlButton* bt = GetCtrl<ctrlButton>(i + 1);
+            if(bt->GetWidth() > width_col_minus)
 
-                GetCtrl<ctrlButton>(i + 1)->SetWidth(GetCtrl<ctrlButton>(i + 1)->GetWidth() - width_col_minus);
+                bt->SetWidth(bt->GetWidth() - width_col_minus);
             else
                 rest += width_col_minus;
-
         }
 
 
@@ -605,22 +618,10 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
     {
         default: return false;
         case KT_UP:
-        {
-            if(selection_ > 0)
-                --selection_;
-
-            if(parent_)
-                parent_->Msg_TableSelectItem(id_, selection_);
-
-        } return true;
+            SetSelection(selection_ - 1);
+            return true;
         case KT_DOWN:
-        {
-            if(static_cast<size_t>(selection_ + 1) < rows.size())
-                ++selection_;
-
-            if(parent_)
-                parent_->Msg_TableSelectItem(id_, selection_);
-
-        } return true;
+            SetSelection(selection_ + 1);
+            return true;
     }
 }

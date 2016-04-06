@@ -174,7 +174,7 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 1: // Downwards
         {
-            if(scroll_pos < scroll_range - pagesize)
+            if(scroll_pos + pagesize < scroll_range)
             {
                 ++scroll_pos;
                 parent_->Msg_ScrollChange(id_, scroll_pos);
@@ -195,7 +195,6 @@ void ctrlScrollBar::SetPos(unsigned short scroll_pos)
 {
     this->scroll_pos = scroll_pos;
     CalculateScrollBar();
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
