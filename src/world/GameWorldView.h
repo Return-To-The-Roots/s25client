@@ -20,9 +20,12 @@
 
 #include "gameTypes/MapTypes.h"
 #include "Point.h"
+#include <vector>
 
 class GameWorldViewer;
 struct RoadsBuilding;
+class TerrainRenderer;
+class noBaseBuilding;
 
 class IDebugNodePrinter{
 public:
@@ -31,6 +34,8 @@ public:
     /// Can e.g. print coordinates
     virtual void print(const MapPoint& pt, const Point<int>& displayPt) = 0;
 };
+
+struct ObjectBetweenLines;
 
 class GameWorldView
 {
@@ -89,7 +94,7 @@ public:
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ShowNamesAndProductivity();
 
-    void Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb);
+    void Draw(unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
@@ -100,8 +105,6 @@ public:
 
     inline void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : offset.x) + x, offset.y, true); }
     inline void MoveToY(int y, bool absolute = false) { MoveTo( offset.x, (absolute ? 0 : offset.y) + y, true); }
-
-    void CalcFxLx();
 
     /// Koordinatenanzeige ein/aus
     void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }
@@ -122,14 +125,24 @@ public:
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
     inline Point<int> GetLastPt() const { return lastPt; }
 
-    void DrawBoundaryStone(const int x, const int y, const MapPoint t, const Point<int> pos, Visibility vis);
-
     void Resize(unsigned short width, unsigned short height);
 
     void SetAIDebug(unsigned what, unsigned player, bool active)
     {
         d_what = what; d_player = player; d_active = active;
     }
+
+private:
+    void CalcFxLx();
+    void DrawAIDebug(const MapPoint& pt, const Point<int>& curPos);
+    void DrawBoundaryStone(const MapPoint& pt, const Point<int> pos, Visibility vis);
+    void DrawObject(const MapPoint& pt, const Point<int>& curPos);
+    void DrawConstructionAid(const MapPoint& pt, const Point<int>& curPos);
+    void DrawFigures(const MapPoint& pt, const Point<int>&curPos, std::vector<ObjectBetweenLines>& between_lines);
+    void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
+    void DrawProductivity(const noBaseBuilding& no, const Point<int>& curPos);
+    void DrawGUI(const RoadsBuilding& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt);
+
 };
 
 #endif // GameWorldView_h__

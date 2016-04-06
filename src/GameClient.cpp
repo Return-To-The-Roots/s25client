@@ -1766,7 +1766,7 @@ void GameClient::SkipGF(unsigned int gf)
             road.start = MapPoint(0, 0);
 
             // spiel aktualisieren
-            gw->Draw(GetPlayerID(), &water_percent, false, MapPoint(0, 0), road);
+            gw->Draw(&water_percent, false, MapPoint(0, 0), road);
 
             // text oben noch hinschreiben
             snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );            

@@ -125,7 +125,7 @@ bool iwObservate::Draw_()
         road.point = MapPoint(0, 0);
         road.start = MapPoint(0, 0);
 
-        view->Draw(GAMECLIENT.GetPlayerID(), NULL, true, view->GetGameWorldViewer().GetSel(), road);
+        view->Draw(NULL, true, view->GetGameWorldViewer().GetSel(), road);
     }
 
     return(IngameWindow::Draw_());

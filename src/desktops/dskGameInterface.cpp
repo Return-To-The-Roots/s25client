@@ -54,6 +54,7 @@
 #include "ingameWindows/iwTrade.h"
 #include "ingameWindows/iwMapDebug.h"
 #include "nodeObjs/noFlag.h"
+#include "nodeObjs/noTree.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/noBuildingSite.h"
@@ -753,11 +754,15 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
  */
 void dskGameInterface::Run()
 {
+    // Reset draw counter of the trees before drawing
+    noTree::ResetDrawCounter();
+
     unsigned water_percent;
-    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow != NULL, selected, road);
+    gwv->Draw(&water_percent, actionwindow != NULL, selected, road);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
+    SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 
     messenger.Draw();
 }

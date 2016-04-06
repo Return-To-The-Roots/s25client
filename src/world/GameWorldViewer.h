@@ -40,9 +40,9 @@ public:
 
     GameWorldViewer();
 
-    void Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
+    void Draw(unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
     {
-        view.Draw(player, water, draw_selected, selected, rb);
+        view.Draw(water, draw_selected, selected, rb);
     }
 
     inline GameWorldView* GetView() {return(&view);}
