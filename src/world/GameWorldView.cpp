@@ -43,7 +43,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned short height):
+GameWorldView::GameWorldView(const Point<int>& pos, unsigned width, unsigned height):
 	selPt(0, 0),
 	debugNodePrinter(NULL),
 	show_bq(false),
@@ -57,18 +57,12 @@ GameWorldView::GameWorldView(const MapPoint pos, unsigned short width, unsigned 
 	d_active(false),
 	pos(pos),
 	width(width), height(height),
-	terrain_list(0),
-	terrainLastOffset(0, 0),
-	terrain_last_global_animation(0),
-	terrain_last_water(0),
     zoomFactor(1.f)
 {
 }
 
 GameWorldView::~GameWorldView()
 {
-    if (terrain_list != 0)
-        glDeleteLists(terrain_list, 1);
 }
 
 void GameWorldView::SetGameWorldViewer(GameWorldViewer* viewer)
@@ -76,6 +70,12 @@ void GameWorldView::SetGameWorldViewer(GameWorldViewer* viewer)
     if(gwv)
         throw::std::logic_error("Tried to set gwv multiple times!");
     gwv = viewer;
+}
+
+void GameWorldView::SetZoomFactor(float zoomFactor)
+{
+    this->zoomFactor = zoomFactor;
+    CalcFxLx();
 }
 
 struct ObjectBetweenLines
@@ -124,7 +124,7 @@ void GameWorldView::Draw(unsigned* water, const bool draw_selected, const MapPoi
             if(std::abs(mouseDist.x) + std::abs(mouseDist.y) < shortestDistToMouse)
             {
                 selPt = curPt;
-                selO = curOffset;
+                selPtOffset = curOffset;
                 shortestDistToMouse = std::abs(mouseDist.x) + std::abs(mouseDist.y);
             }
 
@@ -493,7 +493,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const Point<int> pos, 
 }
 
 /// Schaltet Produktivitäten/Namen komplett aus oder an
-void GameWorldView::ShowNamesAndProductivity()
+void GameWorldView::ToggleShowNamesAndProductivity()
 {
     if(show_productivity && show_names)
         show_productivity = show_names = false;
@@ -522,7 +522,7 @@ void GameWorldView::MoveTo(int x, int y, bool absolute)
     CalcFxLx();
 }
 
-void GameWorldView::MoveToMapObject(const MapPoint pt)
+void GameWorldView::MoveToMapPt(const MapPoint pt)
 {
     lastOffset = offset;
     Point<int> nodePos = static_cast<Point<int> >(gwv->GetNodePos(pt));
@@ -549,13 +549,13 @@ void GameWorldView::MoveToLastPosition()
 void GameWorldView::CalcFxLx()
 {
     if(offset.x < 0)
-    	offset.x = gwv->GetWidth() * TR_W + offset.x;
+    	offset.x += gwv->GetWidth() * TR_W;
     if(offset.y < 0)
-    	offset.y = gwv->GetHeight() * TR_H + offset.y;
-    if(offset.x > gwv->GetWidth() * TR_W + width)
-    	offset.x -= (gwv->GetWidth() * TR_W);
-    if(offset.y > gwv->GetHeight() * TR_H + height)
-    	offset.y -= (gwv->GetHeight() * TR_H);
+    	offset.y += gwv->GetHeight() * TR_H;
+    if(offset.x > gwv->GetWidth() * TR_W + static_cast<int>(width))
+    	offset.x -= gwv->GetWidth() * TR_W;
+    if(offset.y > gwv->GetHeight() * TR_H + static_cast<int>(height))
+    	offset.y -= gwv->GetHeight() * TR_H;
 
     firstPt.x = offset.x / TR_W - 1;
     firstPt.y = (offset.y - 0x20 * HEIGHT_FACTOR) / TR_H;
@@ -563,7 +563,7 @@ void GameWorldView::CalcFxLx()
     lastPt.y = (offset.y + height + 0x40 * HEIGHT_FACTOR) / TR_H;
 }
 
-void GameWorldView::Resize(unsigned short width, unsigned short height)
+void GameWorldView::Resize(unsigned width, unsigned height)
 {
     this->width  = width;
     this->height = height;

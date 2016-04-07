@@ -39,94 +39,89 @@ struct ObjectBetweenLines;
 
 class GameWorldView
 {
-    /// Selektierter Punkt
+    /// Currently selected point (where the mouse points to)
     MapPoint selPt;
-    Point<int> selO;
+    /// Offset to selected point
+    Point<int> selPtOffset;
 
-    /// Koordinaten auf der Map anzeigen (zum Debuggen)?
+    /// Class for printing debug map data
     IDebugNodePrinter* debugNodePrinter;
 
-    bool show_bq;    ///< Bauqualitäten-Anzeigen ein oder aus
-    bool show_names; ///< Gebäudenamen-Anzeigen ein oder aus
-    bool show_productivity; ///< Produktivität-Anzeigen ein oder aus
+    /// Show building quality icons
+    bool show_bq;
+    /// Show building names
+    bool show_names;
+    /// Show productivities
+    bool show_productivity;
 
-    /// Scrolling-Zeug
+    /// Offset from world origin in screen units (not map units): "scroll position"
     Point<int> offset;
-    /// Letzte Scrollposition, an der man war, bevor man weggesprungen ist
+    /// Last scroll position (before jump)
     Point<int> lastOffset;
-    /// Erster gezeichneter Map-Punkt
+    /// First drawn map point (might be slightly outside map -> Wrapping)
     Point<int> firstPt;
-    /// Letzter gezeichneter Map-Punkt
+    /// Last drawn map point
     Point<int> lastPt;
 
     GameWorldViewer* gwv;
 
-protected:
     unsigned d_what;
     unsigned d_player;
     bool d_active;
 
-    MapPoint pos;
-    unsigned short width, height;
+    /// Top-Left position of the view (window)
+    Point<int> pos;
+    /// Size of the view
+    unsigned width, height;
 
-public:
-    unsigned int terrain_list;
-    Point<int> terrainLastOffset;
-    unsigned int terrain_last_global_animation;
-    unsigned int terrain_last_water;
+    /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor;
 
-    GameWorldView(const MapPoint pt, unsigned short width, unsigned short height);
+public:
+    GameWorldView(const Point<int>& pos, unsigned width, unsigned height);
     ~GameWorldView();
 
     GameWorldViewer& GetGameWorldViewer() const {return *gwv;}
     void SetGameWorldViewer(GameWorldViewer* viewer);
 
+    void SetPos(const Point<int>& newPos) { pos = newPos; }
+    Point<int> GetPos() const { return pos; }
 
-    inline void SetPos(MapPoint newPos) { pos = newPos; }
-    inline MapPoint GetPos() const {return pos;}
+    void SetZoomFactor(float zoomFactor);
 
     /// Bauqualitäten anzeigen oder nicht
-    inline void ShowBQ() { show_bq = !show_bq; }
+    void ToggleShowBQ() { show_bq = !show_bq; }
     /// Gebäudenamen zeigen oder nicht
-    inline void ShowNames() { show_names = !show_names; }
+    void ToggleShowNames() { show_names = !show_names; }
     /// Produktivität zeigen oder nicht
-    inline void ShowProductivity() { show_productivity = !show_productivity; };
+    void ToggleShowProductivity() { show_productivity = !show_productivity; };
     /// Schaltet Produktivitäten/Namen komplett aus oder an
-    void ShowNamesAndProductivity();
+    void ToggleShowNamesAndProductivity();
 
     void Draw(unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
     /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
-    void MoveToMapObject(const MapPoint pt);
+    void MoveToMapPt(const MapPoint pt);
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
     void MoveToLastPosition();
 
-    inline void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : offset.x) + x, offset.y, true); }
-    inline void MoveToY(int y, bool absolute = false) { MoveTo( offset.x, (absolute ? 0 : offset.y) + y, true); }
+    void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : offset.x) + x, offset.y, true); }
+    void MoveToY(int y, bool absolute = false) { MoveTo( offset.x, (absolute ? 0 : offset.y) + y, true); }
 
-    /// Koordinatenanzeige ein/aus
+    /// Set the debug node printer used. Max. 1 at a time. NULL for disabling
     void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }
 
     /// Gibt selektierten Punkt zurück
-    inline MapCoord GetSelX() const { return selPt.x; }
-    inline MapCoord GetSelY() const { return selPt.y; }
-    inline MapPoint GetSel() const { return selPt; }
+    MapPoint GetSelectedPt() const { return selPt; }
 
-    inline Point<int> GetSelo() const { return selO; }
-
-    /// Gibt Scrolling-Offset zurück
-    inline int GetXOffset() const { return offset.x - pos.x; }
-    inline int GetYOffset() const { return offset.y - pos.y; }
-    inline Point<int> GetOffset() const { return offset - Point<int>(pos); }
     /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-    inline Point<int> GetFirstPt() const { return firstPt; }
+    Point<int> GetFirstPt() const { return firstPt; }
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-    inline Point<int> GetLastPt() const { return lastPt; }
+    Point<int> GetLastPt() const { return lastPt; }
 
-    void Resize(unsigned short width, unsigned short height);
+    void Resize(unsigned width, unsigned height);
 
     void SetAIDebug(unsigned what, unsigned player, bool active)
     {

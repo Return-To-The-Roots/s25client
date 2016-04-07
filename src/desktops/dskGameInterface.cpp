@@ -309,7 +309,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     if(road.mode)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
-        MapPoint cSel = gwv->GetSel();
+        MapPoint cSel = gwv->GetSelectedPt();
         // Um auf Wasserweglängenbegrenzun reagieren zu können:
         MapPoint cSel2(cSel);
 
@@ -377,7 +377,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         iwAction::Tabs action_tabs;
 
-        const MapPoint cSel = gwv->GetSel();
+        const MapPoint cSel = gwv->GetSelectedPt();
 
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = gwv->GetShip(cSel, GAMECLIENT.GetPlayerID()))

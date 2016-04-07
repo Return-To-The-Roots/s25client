@@ -36,10 +36,10 @@
 
 iwObservate::iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt)
     : IngameWindow(gwv->CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
-      view(new GameWorldView(MapPoint(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
+      view(new GameWorldView(Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
 {
     view->SetGameWorldViewer(gwv);
-    view->MoveToMapObject(selectedPt);
+    view->MoveToMapPt(selectedPt);
     SetCloseOnRightClick(false);
 
     // Lupe: 36
@@ -61,15 +61,15 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             if(++zoomLvl > 4)
                 zoomLvl = 0;
             if(zoomLvl == 0)
-                view->zoomFactor = 1.f;
+                view->SetZoomFactor(1.f);
             else if(zoomLvl == 1)
-                view->zoomFactor = 1.3f;
+                view->SetZoomFactor(1.3f);
             else if(zoomLvl == 2)
-                view->zoomFactor = 1.6f;
+                view->SetZoomFactor(1.6f);
             else if(zoomLvl == 3)
-                view->zoomFactor = 1.9f;
+                view->SetZoomFactor(1.9f);
             else
-                view->zoomFactor = 2.3f;
+                view->SetZoomFactor(2.3f);
             break;
         case 2:
             break;
@@ -123,7 +123,7 @@ bool iwObservate::Draw_()
 {
     if ((x_ != last_x) || (y_ != last_y))
     {
-        view->SetPos(MapPoint(GetX() + 10, GetY() + 15));
+        view->SetPos(Point<int>(GetX() + 10, GetY() + 15));
         last_x = x_;
         last_y = y_;
     }
@@ -136,7 +136,7 @@ bool iwObservate::Draw_()
         road.point = MapPoint(0, 0);
         road.start = MapPoint(0, 0);
 
-        view->Draw(NULL, true, view->GetGameWorldViewer().GetSel(), road);
+        view->Draw(NULL, true, view->GetGameWorldViewer().GetSelectedPt(), road);
     }
 
     return(IngameWindow::Draw_());
