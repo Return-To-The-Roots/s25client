@@ -98,6 +98,12 @@ void GameWorldView::Draw(unsigned* water, const bool draw_selected, const MapPoi
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glScalef(zoomFactor, zoomFactor, 1);
+        // Offset to center view
+        Point<float> diff(width - width / zoomFactor, height - height / zoomFactor);
+        diff = diff / 2.f;
+        glTranslatef(-diff.x, -diff.y, 0.f);
+        // Also adjust mouse
+        mousePos = Point<int>(Point<float>(mousePos) / zoomFactor + diff);
         glMatrixMode(GL_MODELVIEW);
     }
 
@@ -573,10 +579,11 @@ void GameWorldView::CalcFxLx()
         // Greater zoom reduces visible area
         Point<float> reducedSize = size / zoomFactor;
         // Difference we need to remove
-        Point<float> diff = size - reducedSize;
+        Point<float> diff = (size - reducedSize) / 2.f;
         // Don't remove to much
         diff.x = std::floor(diff.x);
         diff.y = std::floor(diff.y);
+        firstPt = Point<int>(Point<float>(firstPt) + diff);
         lastPt = Point<int>(Point<float>(lastPt) - diff);
     }
 }
