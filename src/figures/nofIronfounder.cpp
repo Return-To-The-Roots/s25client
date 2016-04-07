@@ -49,7 +49,7 @@ void nofIronfounder::DrawWorking(int x, int y)
     if(now_id < 182)
     {
         LOADER.GetPlayerImage("rom_bobs", 100 + (now_id % 8))
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 16 == 3)

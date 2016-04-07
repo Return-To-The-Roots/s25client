@@ -281,7 +281,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.is_lagging)
-            LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, COLORS[player.color]);
+            LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
     }
 }
 
@@ -381,7 +381,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = gwv->GetShip(cSel, GAMECLIENT.GetPlayerID()))
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, this, ship));
+            WINDOWMANAGER.Show(new iwShip(*gwv, ship));
             return true;
         }
 
@@ -469,7 +469,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
-                if(GAMECLIENT.GetGGS().isEnabled(ADDON_TRADE))
+                if(GAMECLIENT.GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
                     if(GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())
@@ -811,7 +811,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     if(road.mode == RM_BOAT)
     {
         unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into GameWorldViewer.cpp, too
-        unsigned char index = GAMECLIENT.GetGGS().getSelection(ADDON_MAX_WATERWAY_LENGTH);
+        unsigned char index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
         RTTR_Assert(index <= sizeof(waterway_lengthes) - 1);
         const unsigned char max_length = waterway_lengthes[index];
@@ -1021,8 +1021,7 @@ void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination c
 {
     char from[256];
     snprintf(from, sizeof(from), _("<%s> "), GAMECLIENT.GetPlayer(player_id).name.c_str());
-    messenger.AddMessage(from,
-                         COLORS[GAMECLIENT.GetPlayer(player_id).color], cd, msg);
+    messenger.AddMessage(from, GAMECLIENT.GetPlayer(player_id).color, cd, msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,8 @@
+
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system REQUIRED)
+FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system program_options REQUIRED)
 
 ################################################################################
 
@@ -18,6 +19,7 @@ INCLUDE_DIRECTORIES(SYSTEM
 	${BZIP2_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIR}
+	${CMAKE_SOURCE_DIR}/contrib/kaguya/include
 	)
 
 LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
@@ -46,6 +48,7 @@ AddDirectory(gameData)
 AddDirectory(gameTypes)
 AddDirectory(helpers)
 AddDirectory(ingameWindows)
+AddDirectory(lua)
 AddDirectory(nodeObjs)
 AddDirectory(ogl)
 AddDirectory(pathfinding)

@@ -35,10 +35,16 @@ class iwMsgbox : public IngameWindow
         Window* msgHandler_;
 
     public:
-        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, unsigned short icon, unsigned int msgboxid = 0);
+        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned msgboxid = 0);
+        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile, unsigned iconIdx, unsigned msgboxid = 0);
+
         ~iwMsgbox() override;
 
+        /// Moves the icon to given position
+        void MoveIcon(int x, int y);
+
     private:
+        void Init(const std::string& text, const std::string& iconFile, unsigned iconIdx);
 
         void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
 

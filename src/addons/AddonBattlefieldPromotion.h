@@ -29,7 +29,7 @@
 class AddonBattlefieldPromotion : public AddonBool
 {
     public:
-        AddonBattlefieldPromotion() : AddonBool(ADDON_BATTLEFIELD_PROMOTION,
+        AddonBattlefieldPromotion() : AddonBool(AddonId::BATTLEFIELD_PROMOTION,
                                           ADDONGROUP_MILITARY,
                                           _("Enable battlefield promotions"),
                                           _("Soldiers winning a fight increase in rank."),

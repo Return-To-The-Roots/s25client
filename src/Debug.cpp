@@ -273,7 +273,7 @@ bool DebugInfo::SendReplay()
     // Replay mode is on, no recording of replays active
     if (!GAMECLIENT.IsReplayModeOn())
     {
-        Replay rpl = GAMECLIENT.GetReplay();
+        Replay& rpl = GAMECLIENT.GetReplay();
 
         if(!rpl.IsValid())
             return true;

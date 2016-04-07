@@ -18,46 +18,12 @@
 #ifndef GAMEPLAYERINFO_H_INCLUDED
 #define GAMEPLAYERINFO_H_INCLUDED
 
+#include "gameTypes/AIInfo.h"
+#include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
 #include "gameData/PlayerConsts.h"
 
 class Serializer;
-
-enum PlayerState
-{
-    PS_FREE = 0,
-    PS_RESERVED,
-    PS_OCCUPIED,
-    PS_LOCKED,
-    PS_KI
-};
-
-namespace AI
-{
-    enum Level
-    {
-        EASY = 0,
-        MEDIUM,
-        HARD
-    };
-
-    enum Type
-    {
-        DUMMY = 0,
-        DEFAULT
-    };
-
-    struct Info
-    {
-        Type type;
-        Level level;
-        Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) { }
-        Info(Serializer& ser);
-        void serialize(Serializer& ser) const;
-    };
-}
-
-
 
 class GamePlayerInfo
 {
@@ -70,8 +36,10 @@ class GamePlayerInfo
 
         void clear();
 
-        /// Spielerplatz belegt?
-        bool isValid() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
+        /// Slot used by a human player (has socket etc)
+        bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
+        /// Slot filled (Used by human or AI, but excludes currently connecting humans)
+        bool isUsed() const { return (ps == PS_KI || ps == PS_OCCUPIED); }
 
         /// Ist Spieler besiegt?
         bool isDefeated() const { return defeated; }
@@ -83,6 +51,9 @@ class GamePlayerInfo
 
         /// Wechselt Spieler
         void SwapInfo(GamePlayerInfo& two);
+        /// Returns index of color in PLAYER_COLORS array or -1 if not found
+        int GetColorIdx() const;
+        static int GetColorIdx(unsigned color);
 
     protected:
         /// Player-ID
@@ -105,7 +76,8 @@ class GamePlayerInfo
 
         Nation nation;
         Team team;
-        unsigned char color;
+        /// Actual color (ARGB)
+        unsigned color;
 
         unsigned ping;
         unsigned int rating;

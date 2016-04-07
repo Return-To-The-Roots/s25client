@@ -26,7 +26,7 @@
 
 #include "GlobalGameSettings.h"
 #include "GamePlayerList.h"
-
+#include "gameTypes/MapInfo.h"
 #include "FramesInfo.h"
 #include "helpers/Deleter.h"
 #include <LANDiscoveryService.h>
@@ -40,6 +40,7 @@ namespace AIEvent { class Base; }
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {
+    friend class LuaServerPlayer;
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
 
@@ -66,6 +67,8 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void TogglePlayerColor(unsigned char client);
         void TogglePlayerState(unsigned char client);
         void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
+        /// Removes the lua script for the currently loaded map (only valid in config mode)
+        void RemoveLuaScript();
 
         /// Tauscht Spieler(positionen) bei Savegames in dskHostGame
         void SwapPlayer(const unsigned char player1, const unsigned char player2);
@@ -75,7 +78,10 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         std::string GetGameName() const { return serverconfig.gamename; }
         bool HasPwd() const { return !serverconfig.password.empty(); }
         unsigned short GetPort() const { return serverconfig.port; }
+        unsigned GetMaxPlayerCount() const { return serverconfig.playercount; }
+        bool IsRunning() const { return status != SS_STOPPED; }
 
+        const GlobalGameSettings& GetGGS(){ return ggs_; }
     protected:
 
         /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
@@ -114,18 +120,17 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg) override;
         void OnNMSGameCommand(const GameMessage_GameCommand& msg) override;
         void OnNMSServerSpeed(const GameMessage_Server_Speed& msg) override;
-
         void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last) override;
+
+        /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
+        /// Sends a notification to all players if the color was changed
+        void CheckAndSetColor(unsigned playerIdx, unsigned newColor);
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();
-
         void RunGF( bool isNWF );
-
         void ExecuteNWF(const unsigned currentTime);
-
         void CheckAndKickLaggingPlayer(const unsigned char playerIdx);
-
         unsigned char GetLaggingPlayer() const;
 
     private:
@@ -149,28 +154,12 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 unsigned char playercount;
                 std::string gamename;
                 std::string password;
-                std::string mapname;
                 unsigned short port;
                 bool ipv6;
                 bool use_upnp;
         } serverconfig;
 
-        class MapInfo
-        {
-            public:
-
-                MapInfo();
-                void Clear();
-
-                unsigned int ziplength;
-                unsigned int length;
-                unsigned int checksum;
-                std::string name;
-                std::string title; // Titel der Karte (nicht der Dateiname!)
-                boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > zipdata;
-                MapType map_type;
-                std::string script;
-        } mapinfo;
+        MapInfo mapinfo;
 
         Socket serversocket;
         GameServerPlayerList players;

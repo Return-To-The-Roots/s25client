@@ -375,7 +375,7 @@ void nobHQ::Draw(int x, int y)
         {
             glArchivItem_Bitmap_Player* bitmap = LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
             if(bitmap)
-                bitmap->Draw(x + TROOPS_FLAGS_HQ[nation][0], y + TROOPS_FLAGS_HQ[nation][1] + (i - 1) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[GAMECLIENT.GetPlayer(player).color]);
+                bitmap->Draw(x + TROOPS_FLAGS_HQ[nation][0], y + TROOPS_FLAGS_HQ[nation][1] + (i - 1) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, GAMECLIENT.GetPlayer(player).color);
         }
     }
 }

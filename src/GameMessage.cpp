@@ -55,7 +55,7 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_PLAYER_ID:                 { msg = new GameMessage_Player_Id(); } break;
         case NMS_PLAYER_NAME:               { msg = new GameMessage_Player_Name(); } break;
         case NMS_PLAYER_LIST:               { msg = new GameMessage_Player_List(); } break;
-        case NMS_PLAYER_TOGGLESTATE:        { msg = new GameMessage_Player_Toggle_State(); } break;
+        case NMS_PLAYER_SETSTATE:           { msg = new GameMessage_Player_Set_State(); } break;
         case NMS_PLAYER_TOGGLENATION:       { msg = new GameMessage_Player_Toggle_Nation(); } break;
         case NMS_PLAYER_TOGGLETEAM:         { msg = new GameMessage_Player_Toggle_Team(); } break;
         case NMS_PLAYER_TOGGLECOLOR:        { msg = new GameMessage_Player_Toggle_Color(); } break;
@@ -76,6 +76,7 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_SERVER_SPEED:              { msg = new GameMessage_Server_Speed; } break;
 
         case NMS_GGS_CHANGE:                { msg = new GameMessage_GGSChange; } break;
+        case NMS_REMOVE_LUA:                { msg = new GameMessage_RemoveLua; } break;
 
         case NMS_GET_ASYNC_LOG:             { msg = new GameMessage_GetAsyncLog(); } break;
         case NMS_SEND_ASYNC_LOG:            { msg = new GameMessage_SendAsyncLog(); } break;

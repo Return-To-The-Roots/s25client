@@ -60,13 +60,14 @@ public:
         std::string name;
         /// Volk, Farbe, Team
         Nation nation;
-        unsigned char color, team;
+        unsigned color;
+        unsigned char team;
     };
 
     /// Zeitpunkt der Aufnahme
     unser_time_t save_time;
     /// Mapname
-    std::string map_name;
+    std::string mapName;
     /// GGS
     GlobalGameSettings ggs;
 

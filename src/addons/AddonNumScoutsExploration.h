@@ -31,7 +31,7 @@ class AddonNumScoutsExploration: public AddonList
 {
     public:
         AddonNumScoutsExploration() :
-            AddonList(ADDON_NUM_SCOUTS_EXPLORATION,
+            AddonList(AddonId::NUM_SCOUTS_EXPLORATION,
                       ADDONGROUP_ECONOMY,
                       _("Number of scouts required for exploration expedition"),
                       _("Change the required number of scouts for an exploration via ship\n"
@@ -42,7 +42,7 @@ class AddonNumScoutsExploration: public AddonList
             addOption(_("Fewer"));
             addOption(_("Normal"));
             addOption(_("More"));
-            addOption(_("Max"));
+            addOption(_("Maximal"));
         }
 };
 

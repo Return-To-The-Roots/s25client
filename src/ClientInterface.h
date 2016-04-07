@@ -69,7 +69,7 @@ class ClientInterface
 
         virtual void CI_PSChanged(const unsigned player_id, const PlayerState ps);
         virtual void CI_NationChanged(const unsigned player_id, const Nation nation);
-        virtual void CI_ColorChanged(const unsigned player_id, const unsigned char color);
+        virtual void CI_ColorChanged(const unsigned player_id, const unsigned color);
         virtual void CI_TeamChanged(const unsigned player_id, const unsigned char team);
         virtual void CI_PingChanged(const unsigned player_id, const unsigned short ping);
         virtual void CI_ReadyChanged(const unsigned player_id, const bool ready);

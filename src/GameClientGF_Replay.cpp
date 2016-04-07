@@ -24,6 +24,7 @@
 #include "Random.h"
 #include "GameManager.h"
 #include "ClientInterface.h"
+#include "libutil/src/Log.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -31,6 +32,7 @@
 void GameClient::ExecuteGameFrame_Replay()
 {
     randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
+    AsyncChecksum checksum(randcheckinfo.rand);
 
     RTTR_Assert(replayinfo.next_gf >= framesinfo.gf_nr || framesinfo.gf_nr > replayinfo.replay.lastGF_);
 
@@ -67,7 +69,7 @@ void GameClient::ExecuteGameFrame_Replay()
             ExecuteAllGCs(msg);
 
             // Replay ist NSYNC äh ASYNC!
-            if(msg.checksum != 0 && msg.checksum != (unsigned)randcheckinfo.rand)
+            if(msg.checksum.randState != 0 &&  msg.checksum != checksum)
             {
                 if(replayinfo.async == 0)
                 {
@@ -78,6 +80,11 @@ void GameClient::ExecuteGameFrame_Replay()
                     // Messenger im Game (prints to console too)
                     if(ci && GLOBALVARS.ingame)
                         ci->CI_ReplayAsync(text);
+
+                    LOG.lprintf("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", framesinfo.gf_nr,
+                        msg.checksum.randState, checksum.randState,
+                        msg.checksum.objCt, checksum.objCt,
+                        msg.checksum.objIdCt, checksum.objIdCt);
 
                     // pausieren
                     framesinfo.isPaused = true;

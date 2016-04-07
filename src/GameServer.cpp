@@ -30,7 +30,6 @@
 #include "GameMessages.h"
 #include "GameClient.h"
 
-#include "FileChecksum.h"
 #include "GlobalGameSettings.h"
 #include "LobbyClient.h"
 #include "ingameWindows/iwDirectIPCreate.h"
@@ -58,7 +57,6 @@
 
 #include "files.h"
 #include <boost/filesystem.hpp>
-#include <bzlib.h>
 #include <fstream>
 
 // Include last!
@@ -74,24 +72,9 @@ void GameServer::ServerConfig::Clear()
     playercount = 0;
     gamename.clear();
     password.clear();
-    mapname.clear();
     port = 0;
     ipv6 = false;
     use_upnp = false;
-}
-GameServer::MapInfo::MapInfo()
-{
-    Clear();
-}
-
-void GameServer::MapInfo::Clear()
-{
-    ziplength = 0;
-    length = 0;
-    checksum = 0;
-    name.clear();
-    zipdata.reset();
-    map_type = MAPTYPE_OLDMAP;
 }
 
 GameServer::CountDown::CountDown()
@@ -137,26 +120,26 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
     // Name, Password und Kartenname kopieren
     serverconfig.gamename = csi.gamename;
     serverconfig.password = csi.password;
-    serverconfig.mapname = map_path;
     serverconfig.servertype = csi.type;
     serverconfig.port = csi.port;
     serverconfig.ipv6 = csi.ipv6;
     serverconfig.use_upnp = csi.use_upnp;
-    mapinfo.map_type = map_type;
+    mapinfo.type = map_type;
+    mapinfo.filepath = map_path;
 
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
-    switch(mapinfo.map_type)
+    switch(mapinfo.type)
     {
-        default: LOG.lprintf("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.map_type); return false;
+        default: LOG.lprintf("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.type); return false;
         // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {
             libsiedler2::ArchivInfo map;
 
             // Karteninformationen laden
-            if(libsiedler2::loader::LoadMAP(serverconfig.mapname, map, true) != 0)
+            if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
             {
-                LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", serverconfig.mapname.c_str());
+                LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
                 return false;
             }
             const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
@@ -170,13 +153,13 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         {
             Savegame save;
 
-            if(!save.Load(serverconfig.mapname, false, false))
+            if(!save.Load(mapinfo.filepath, false, false))
                 return false;
 
             // Spieleranzahl
             serverconfig.playercount = save.GetPlayerCount();
             bfs::path mapPath = map_path;
-            mapinfo.title = mapPath.stem().string(); // Get name only
+            mapinfo.title = save.mapName;
         } break;
     }
 
@@ -194,53 +177,17 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
 
 bool GameServer::Start()
 {
-    // map-shortname füllen
-    bfs::path mapPath = serverconfig.mapname;
-    if(mapPath.has_filename())
-        mapinfo.name =  mapPath.filename().string();
-    else
-        mapinfo.name = serverconfig.mapname;
-
-    std::ifstream mapFile(serverconfig.mapname.c_str(), std::ios::binary | std::ios::ate);
-    mapinfo.length = static_cast<unsigned>(mapFile.tellg());
-    mapinfo.ziplength = mapinfo.length * 2 + 600;
-    mapFile.seekg(0);
-
-    boost::interprocess::unique_ptr<char, Deleter<char[]> > map_data(new char[mapinfo.length + 1]);
-    mapinfo.zipdata.reset(new unsigned char[mapinfo.ziplength]);
-
-    if(!mapFile.read(map_data.get(), mapinfo.length))
+    if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
-    mapFile.close();
 
-    // read lua script - if any
-    mapinfo.script.clear();
-    std::string lua_file = serverconfig.mapname.substr(0, serverconfig.mapname.length() - 3);
-    lua_file.append("lua");
-    
-    std::ifstream luaFile(lua_file.c_str());
-
-    if (luaFile)
+    std::string luaFilePath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+    if(bfs::exists(luaFilePath))
     {
-        mapinfo.script.assign(std::istreambuf_iterator<char>(luaFile), std::istreambuf_iterator<char>());
-        if(!luaFile)
-        {
-            LOG.getlasterror("Could not read from lua file");
+        if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
             return false;
-        }
-        luaFile.close();
+        mapinfo.luaFilepath = luaFilePath;
     } else
-        mapinfo.script.clear(); // just to be sure
-
-    // map mit bzip2 komprimieren
-    int err = BZ_OK;
-    if( (err = BZ2_bzBuffToBuffCompress( (char*)mapinfo.zipdata.get(), (unsigned int*)&mapinfo.ziplength, map_data.get(), mapinfo.length, 9, 0, 250)) != BZ_OK)
-    {
-        LOG.lprintf("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n", err);
-        return false;
-    }
-
-    mapinfo.checksum = CalcChecksumOfBuffer((unsigned char*)map_data.get(), mapinfo.length);
+        RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
     // Speicher für Spieler anlegen
     for(unsigned i = 0; i < serverconfig.playercount; ++i)
@@ -252,7 +199,7 @@ bool GameServer::Start()
     bool host_found = false;
 
     //// Spieler 0 erstmal der Host
-    switch(mapinfo.map_type)
+    switch(mapinfo.type)
     {
         default:
             break;
@@ -270,7 +217,7 @@ bool GameServer::Start()
         case MAPTYPE_SAVEGAME:
         {
             Savegame save;
-            if(!save.Load(serverconfig.mapname, true, false))
+            if(!save.Load(mapinfo.filepath, true, false))
                 return false;
 
             // Bei Savegames die Originalspieldaten noch mit auslesen
@@ -517,21 +464,17 @@ bool GameServer::StartCountdown()
             playerCount++;
     }
 
-    bool reserved_colors[PLAYER_COLORS_COUNT];
-    memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
+    std::set<unsigned> takenColors;
 
-    // Alle ne andere Farbe?
-    for(client = 0; client < serverconfig.playercount; ++client)
+    // Check all players have different colors
+    for(unsigned p = 0; p < serverconfig.playercount; ++p)
     {
-        GameServerPlayer& player = players[client];
-
-        if( (player.ps == PS_OCCUPIED) || (player.ps == PS_KI) )
+        GameServerPlayer& player = players[p];
+        if(player.isUsed())
         {
-            // farbe schon belegt -> und tschüss
-            if(reserved_colors[player.color])
+            if(helpers::contains(takenColors, player.color))
                 return false;
-
-            reserved_colors[player.color] = true;
+            takenColors.insert(player.color);
         }
     }
 
@@ -568,7 +511,7 @@ bool GameServer::StartGame()
     lanAnnouncer.Stop();
 
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
-    unsigned random_init = (mapinfo.map_type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
+    unsigned random_init = (mapinfo.type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
@@ -624,7 +567,7 @@ bool GameServer::StartGame()
     }
 
     // read back gf_nr (if savegame)
-    if(mapinfo.map_type == MAPTYPE_SAVEGAME)
+    if(mapinfo.type == MAPTYPE_SAVEGAME)
         framesinfo.gf_nr = GAMECLIENT.GetGFNumber();
 
     // Erste KI-Nachrichten schicken
@@ -693,13 +636,13 @@ void GameServer::TogglePlayerState(unsigned char client)
                     SetAIName(client);
                     break;
                 case AI::DUMMY:
-                    if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                    if(mapinfo.type != MAPTYPE_SAVEGAME)
                         player.ps = PS_LOCKED;
                     else
                         player.ps = PS_FREE;
                     break;
                 default:
-                    if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+                    if(mapinfo.type != MAPTYPE_SAVEGAME)
                         player.ps = PS_LOCKED;
                     else
                         player.ps = PS_FREE;
@@ -714,31 +657,19 @@ void GameServer::TogglePlayerState(unsigned char client)
             // Im Savegame können auf geschlossene Slots keine Spieler
             // gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf
             // der Karte!
-            if(mapinfo.map_type != MAPTYPE_SAVEGAME)
+            if(mapinfo.type != MAPTYPE_SAVEGAME)
                 player.ps = PS_FREE;
         } break;
     }
     player.ready = (player.ps == PS_KI);
 
     // Tat verkünden
-    SendToAll(GameMessage_Player_Toggle_State(client));
-
-    // freie farbe suchen lassen
-    bool reserved_colors[PLAYER_COLORS_COUNT];
-    memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-    for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-    {
-        GameServerPlayer& ki = players[cl];
-
-        if( (client != cl) && ( (ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI) ) )
-            reserved_colors[ki.color] = true;
-    }
+    SendToAll(GameMessage_Player_Set_State(client, player.ps, player.aiInfo));
     AnnounceStatusChange();
 
-    // bis wir eine freie farbe gefunden haben!
-    if(reserved_colors[player.color] && (player.ps == PS_KI || player.ps == PS_OCCUPIED) )
-        OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(client, player.color));
+    // If slot is filled, check current color
+    if(player.isUsed())
+        CheckAndSetColor(client, player.color);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -796,8 +727,7 @@ void GameServer::TogglePlayerColor(unsigned char client)
     if(player.ps != PS_KI)
         return;
 
-    // Farbe suchen lassen
-    OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(client, (player.color + 1) % PLAYER_COLORS_COUNT));
+    CheckAndSetColor(client, PLAYER_COLORS[(player.GetColorIdx() + 1) % PLAYER_COLORS.size()]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -821,6 +751,15 @@ void GameServer::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
     this->ggs_ = ggs;
     SendToAll(GameMessage_GGSChange(ggs));
     LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
+}
+
+void GameServer::RemoveLuaScript()
+{
+    RTTR_Assert(status == SS_CONFIG);
+    mapinfo.luaFilepath.clear();
+    mapinfo.luaData.Clear();
+    mapinfo.luaChecksum = 0;
+    SendToAll(GameMessage_RemoveLua());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -861,6 +800,8 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     // send-queue flushen
     player.send_queue.flush(player.so);
 
+    PlayerState oldPs = player.ps;
+
     // töten, falls außerhalb
     if(status == SS_GAME)
     {
@@ -877,13 +818,12 @@ void GameServer::KickPlayer(NS_PlayerKicked npk)
     else
         player.clear();
 
-    // trauern
-    // beleidskarte verschicken
+    // Do not send notifications if the player was not already there
+    if(oldPs == PS_RESERVED)
+        return;
+
     SendToAll(GameMessage_Player_Kicked(npk.playerid, npk.cause, npk.param));
-
     AnnounceStatusChange();
-
-
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", npk.playerid, npk.cause, npk.param);
 
     if(status == SS_GAME)
@@ -900,7 +840,7 @@ void GameServer::ClientWatchDog()
     // sockets zum set hinzufügen
     for(unsigned char client = 0; client < serverconfig.playercount; ++client)
     {
-        if( players[client].isValid() )
+        if( players[client].isHuman() )
         {
             // zum set hinzufügen
             set.Add(players[client].so);
@@ -983,12 +923,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
 
     // We take the checksum of the first human player as the reference
     unsigned char referencePlayerIdx = 0xFF;
-    struct AsyncChecksum{
-        int checksum;
-        unsigned objCt;
-        unsigned objIdCt;
-    };
-    AsyncChecksum referenceChecksum = {0, 0, 0};
+    AsyncChecksum referenceChecksum;
     std::vector<int> checksums;
     checksums.reserve(serverconfig.playercount);
 
@@ -1001,7 +936,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         if(player.ps == PS_KI)
         {
             LOG.write("SERVER >>> GC %u\n", client);
-            SendToAll(GameMessage_GameCommand(client, 0, ai_players[client]->GetGameCommands()));
+            SendToAll(GameMessage_GameCommand(client, AsyncChecksum(0), ai_players[client]->GetGameCommands()));
             ai_players[client]->FetchGameCommands();
             RTTR_Assert(player.gc_queue.empty());
             continue; // No GCs in the queue for KIs
@@ -1016,11 +951,8 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         player.NotLagging();
 
         const GameMessage_GameCommand& frontGC = player.gc_queue.front();
-        AsyncChecksum curChecksum;
-        curChecksum.checksum = frontGC.checksum;
-        curChecksum.objCt = frontGC.obj_cnt;
-        curChecksum.objIdCt = frontGC.obj_id_cnt;
-        checksums.push_back(curChecksum.checksum);
+        AsyncChecksum curChecksum = frontGC.checksum;
+        checksums.push_back(curChecksum.randState);
 
         // Checksumme des ersten Spielers als Richtwert
         if (referencePlayerIdx == 0xFF)
@@ -1033,12 +965,10 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         RTTR_Assert(player.gc_queue.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
 
         // Checksummen nicht gleich?
-        if (curChecksum.checksum != referenceChecksum.checksum ||
-            curChecksum.objCt    != referenceChecksum.objCt ||
-            curChecksum.objIdCt  != referenceChecksum.objIdCt)
+        if (curChecksum != referenceChecksum)
         {
             LOG.lprintf("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", framesinfo.gf_nr, client, referencePlayerIdx,
-                curChecksum.checksum, referenceChecksum.checksum,
+                curChecksum.randState, referenceChecksum.randState,
                 curChecksum.objCt, referenceChecksum.objCt,
                 curChecksum.objIdCt, referenceChecksum.objIdCt);
 
@@ -1115,7 +1045,7 @@ unsigned char GameServer::GetLaggingPlayer() const
  */
 void GameServer::SendNothingNC(const unsigned int& id)
 {
-    SendToAll(GameMessage_GameCommand(id, 0, std::vector<gc::GameCommandPtr>()));
+    SendToAll(GameMessage_GameCommand(id, AsyncChecksum(0), std::vector<gc::GameCommandPtr>()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1174,7 +1104,7 @@ void GameServer::FillPlayerQueues()
         // sockets zum set hinzufügen
         for(client = 0; client < serverconfig.playercount; ++client)
         {
-            if( players[client].isValid() )
+            if( players[client].isHuman() )
             {
                 // zum set hinzufügen
                 set.Add(players[client].so);
@@ -1188,7 +1118,7 @@ void GameServer::FillPlayerQueues()
         {
             for(client = 0; client < serverconfig.playercount; ++client)
             {
-                if( players[client].isValid() && set.InSet(players[client].so) )
+                if( players[client].isHuman() && set.InSet(players[client].so) )
                 {
                     // nachricht empfangen
                     if(!players[client].recv_queue.recv(players[client].so))
@@ -1288,19 +1218,38 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
     player.name = msg.playername;
 
     // Als Antwort Karteninformationen übertragen
-    player.send_queue.push(new GameMessage_Map_Info(mapinfo.name, mapinfo.map_type, mapinfo.ziplength, mapinfo.length, mapinfo.script));
+    player.send_queue.push(new GameMessage_Map_Info(bfs::path(mapinfo.filepath).filename().string(), mapinfo.type,
+        mapinfo.mapData.length, mapinfo.mapData.data.size(),
+        mapinfo.luaData.length, mapinfo.luaData.data.size()
+        ));
 
-    // Und Kartendaten
+    // Send map data
     unsigned curPos = 0;
-    do
+    const unsigned compressedMapSize = mapinfo.mapData.data.size();
+    while(curPos < compressedMapSize)
     {
-        unsigned dataSize = (mapinfo.ziplength - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (mapinfo.ziplength - curPos);
+        unsigned chunkSize = (compressedMapSize - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (compressedMapSize - curPos);
 
-        player.send_queue.push(new GameMessage_Map_Data(curPos, mapinfo.zipdata.get() + curPos, dataSize));
-        curPos += dataSize;
-    }while(curPos < mapinfo.ziplength);
-    
-    RTTR_Assert(curPos == mapinfo.ziplength);
+        player.send_queue.push(new GameMessage_Map_Data(true, curPos, &mapinfo.mapData.data[curPos], chunkSize));
+        curPos += chunkSize;
+    }
+
+    RTTR_Assert(curPos == compressedMapSize);
+
+    // And lua data (if there is any)
+    RTTR_Assert(mapinfo.luaFilepath.empty() == mapinfo.luaData.data.empty());
+    RTTR_Assert(mapinfo.luaData.data.empty() == (mapinfo.luaData.length == 0));
+    curPos = 0;
+    const unsigned compressedLuaSize = mapinfo.luaData.data.size();
+    while(curPos < compressedLuaSize)
+    {
+        unsigned chunkSize = (compressedLuaSize - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (compressedLuaSize - curPos);
+
+        player.send_queue.push(new GameMessage_Map_Data(false, curPos, &mapinfo.luaData.data[curPos], chunkSize));
+        curPos += chunkSize;
+    }
+
+    RTTR_Assert(curPos == compressedLuaSize);
 }
 
 
@@ -1337,28 +1286,8 @@ inline void GameServer::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Te
 // Farbe weiterwechseln
 inline void GameServer::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg)
 {
-    GameServerPlayer& player = players[msg.player];
-
-    // ist die farbe auch frei, wenn nicht, "überspringen"?
-    bool reserved_colors[PLAYER_COLORS_COUNT];
-    memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-    for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-    {
-        GameServerPlayer& ki = players[cl];
-
-        if( (msg.player != cl) && ( (ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI) ) )
-            reserved_colors[ki.color] = true;
-    }
-    do
-    {
-        player.color = (player.color + 1) % PLAYER_COLORS_COUNT;
-    }
-    while(reserved_colors[player.color]);
-
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLECOLOR\n", msg.player);
-    SendToAll(GameMessage_Player_Toggle_Color(msg.player, player.color));
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", msg.player, player.color);
+    LOG.write("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
+    CheckAndSetColor(msg.player, msg.color);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1389,12 +1318,9 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 {
     GameServerPlayer& player = players[msg.player];
 
-    bool checksumok = false;
+    bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
 
-    if(msg.checksum == mapinfo.checksum)
-        checksumok = true;
-
-    LOG.write("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n", msg.player, msg.checksum, mapinfo.checksum, checksumok ? "yes" : "no");
+    LOG.write("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n", msg.player, msg.mapChecksum, mapinfo.mapChecksum, checksumok ? "yes" : "no");
 
     // Antwort senden
     player.send_queue.push(new GameMessage_Map_ChecksumOK(checksumok));
@@ -1417,25 +1343,11 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
         // Servername senden
         player.send_queue.push(new GameMessage_Server_Name(serverconfig.gamename));
 
-        // freie farbe suchen lassen
-        bool reserved_colors[PLAYER_COLORS_COUNT];
-        memset(reserved_colors, 0, sizeof(bool) * PLAYER_COLORS_COUNT);
-
-        for(unsigned char cl = 0; cl < serverconfig.playercount; ++cl)
-        {
-            GameServerPlayer& ki = players[cl];
-
-            if( (msg.player != cl) && ( (ki.ps == PS_OCCUPIED) || (ki.ps == PS_KI) ) )
-                reserved_colors[ki.color] = true;
-        }
-
         // Spielerliste senden
         player.send_queue.push(new GameMessage_Player_List(players));
 
-        // bis wir eine freie farbe gefunden haben!
-        // (while-schleife obwohl OnNMSPlayerToggleColor selbst schon eine freie sucht)
-        while(reserved_colors[player.color])
-            OnNMSPlayerToggleColor(GameMessage_Player_Toggle_Color(msg.player, player.color));
+        // Assign unique color
+        CheckAndSetColor(msg.player, player.color);
 
         // GGS senden
         player.send_queue.push(new GameMessage_GGSChange(ggs_));
@@ -1559,7 +1471,7 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
         di.SendReplay();
     }
 
-    std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + ".log";
+    std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
     FILE* file = fopen(fileName.c_str(), "w");
@@ -1569,15 +1481,15 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
         // print identical lines, they help in tracing the bug
         for(unsigned i = 0; i < identical; i++)
         {
-            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, Random::GetValueFromState(it1->rngState, it1->max), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, it1->GetValue(), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
             
             ++it1; ++it2;
         }
 
         while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
         {
-            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, Random::GetValueFromState(it1->rngState, it1->max), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
-            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it2->counter, it2->max, Random::GetValueFromState(it2->rngState, it2->max), it2->rngState, it2->src_name.c_str(), it2->src_line, it2->obj_id);
+            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, it1->GetValue(), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
+            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it2->counter, it2->max, it2->GetValue(), it2->rngState, it2->src_name.c_str(), it2->src_line, it2->obj_id);
 
             ++it1; ++it2;
         }
@@ -1595,6 +1507,41 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     async_player2_log.clear();
 
     KickPlayer(msg.player, NP_ASYNC, 0);
+}
+
+void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
+{
+    RTTR_Assert(playerIdx < serverconfig.playercount);
+    RTTR_Assert(serverconfig.playercount <= PLAYER_COLORS.size()); // Else we may not find a valid color!
+
+    GameServerPlayer& player = players[playerIdx];
+    RTTR_Assert(player.isUsed()); // Should only set colors for taken spots
+
+    // Get colors used by other players
+    std::set<unsigned> takenColors;
+    for(unsigned p = 0; p < serverconfig.playercount; ++p)
+    {
+        // Skip self
+        if(p == playerIdx)
+            continue;
+
+        GameServerPlayer& otherPlayer = players[p];
+        if(otherPlayer.isUsed())
+            takenColors.insert(otherPlayer.color);
+    }
+
+    // Look for a unique color
+    int newColorIdx = player.GetColorIdx(newColor);
+    while(helpers::contains(takenColors, newColor))
+        newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
+
+    if(player.color == newColor)
+        return;
+
+    player.color = newColor;
+
+    SendToAll(GameMessage_Player_Toggle_Color(playerIdx, player.color));
+    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
 }
 
 void GameServer::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
@@ -1676,7 +1623,6 @@ void GameServer::SetAIName(const unsigned player_id)
     }
 
 }
-
 
 bool GameServer::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
 {

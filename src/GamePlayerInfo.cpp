@@ -20,23 +20,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GamePlayerInfo.h"
 #include "Serializer.h"
+#include "libutil/src/colors.h"
 #include <algorithm>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
-namespace AI{
-    Info::Info(Serializer& ser):
-                    type(static_cast<Type>(ser.PopUnsignedChar())),
-                    level(static_cast<Level>(ser.PopUnsignedChar()))
-    {}
-
-    void Info::serialize(Serializer& ser) const
-    {
-        ser.PushUnsignedChar(static_cast<unsigned char>(type));
-        ser.PushUnsignedChar(static_cast<unsigned char>(level));
-    }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstruktor
@@ -48,7 +36,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     is_host(false),
     nation(NAT_ROMANS),
     team(TM_NOTEAM),
-    color(0),
+    color(PLAYER_COLORS[0]),
     ping(0),
     rating(0),
     ready(false)
@@ -66,7 +54,7 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     is_host(ser.PopBool()),
     nation(Nation(ser.PopUnsignedChar())),
     team(Team(ser.PopUnsignedChar())),
-    color(ser.PopUnsignedChar()),
+    color(ser.PopUnsignedInt()),
     ping(ser.PopUnsignedInt()),
     rating(ser.PopUnsignedInt()),
     ready(ser.PopBool())
@@ -102,7 +90,7 @@ void GamePlayerInfo::serialize(Serializer& ser) const
     ser.PushBool(is_host);
     ser.PushUnsignedChar(static_cast<unsigned char>(nation));
     ser.PushUnsignedChar(team);
-    ser.PushUnsignedChar(color);
+    ser.PushUnsignedInt(color);
     ser.PushUnsignedInt(ping);
     ser.PushUnsignedInt(rating);
     ser.PushBool(ready);
@@ -121,3 +109,17 @@ void GamePlayerInfo::SwapInfo(GamePlayerInfo& two)
     swap(ready, two.ready);
 }
 
+int GamePlayerInfo::GetColorIdx() const
+{
+    return GetColorIdx(color);
+}
+
+int GamePlayerInfo::GetColorIdx(unsigned color)
+{
+    for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
+    {
+        if(PLAYER_COLORS[i] == color)
+            return i;
+    }
+    return -1;
+}

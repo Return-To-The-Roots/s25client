@@ -65,7 +65,7 @@ void nofMetalworker::DrawWorking(int x, int y)
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
     LOADER.GetPlayerImage("rom_bobs", 190 + (now_id % 23))
-    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(workplace->GetPlayer()).color]);
+    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
@@ -170,7 +170,7 @@ GoodType nofMetalworker::GetRandomTool()
     if(all_size == 0)
 	{
 	    // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
-		if (GAMECLIENT.GetGGS().isEnabled(ADDON_METALWORKSBEHAVIORONZERO) && GAMECLIENT.GetGGS().getSelection(ADDON_METALWORKSBEHAVIORONZERO) == 1)
+		if (GAMECLIENT.GetGGS().isEnabled(AddonId::METALWORKSBEHAVIORONZERO) && GAMECLIENT.GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
 			return GD_NOTHING;
 		else
 			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 12)];

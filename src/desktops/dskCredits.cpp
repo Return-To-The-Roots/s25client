@@ -298,7 +298,7 @@ void dskCredits::Msg_PaintAfter()
             b.direction = 6;
         }
 
-        b.color = COLORS[rand() % PLAYER_COLORS_COUNT];
+        b.color = PLAYER_COLORS[rand() % PLAYER_COLORS.size()];
         unsigned int job = rand() % 29;
 
         // exclude "headless" bobs

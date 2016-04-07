@@ -25,3 +25,6 @@
 [submodule "RTTR/languages"]
 	url = https://github.com/Return-To-The-Roots/languages.git
 	path = RTTR/languages
+[submodule "contrib/kaguya"]
+	path = contrib/kaguya
+	url = https://github.com/satoren/kaguya.git

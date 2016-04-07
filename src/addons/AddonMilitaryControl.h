@@ -32,7 +32,7 @@
 class AddonMilitaryControl : public AddonBool
 {
     public:
-        AddonMilitaryControl() : AddonBool(ADDON_MILITARY_CONTROL,
+        AddonMilitaryControl() : AddonBool(AddonId::MILITARY_CONTROL,
                                            ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
                                            _("Military Control"),
                                            _("Adds the 'send home' button to military buildings.\n"

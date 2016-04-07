@@ -97,7 +97,7 @@ void nofFisher::DrawWorking(int x, int y)
         }
     }
 
-    LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+    LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
     DrawShadow(x, y, 0, fishing_dir);
 }
 
@@ -134,7 +134,7 @@ void nofFisher::WorkFinished()
     // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
     if(successful)
     {
-        if(!GAMECLIENT.GetGGS().isEnabled(ADDON_INEXHAUSTIBLE_FISH))
+        if(!GAMECLIENT.GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
             gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
     }

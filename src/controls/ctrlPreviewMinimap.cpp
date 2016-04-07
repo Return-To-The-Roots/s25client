@@ -80,7 +80,7 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
     unsigned short map_height = s2map->getHeader().getHeight();
     SetDisplaySize(width_, height_, map_width, map_height);
     minimap.SetMap(*s2map);
-    for(int i = 0; i < MAX_PLAYERS; i++)
+    for(unsigned i = 0; i < MAX_PLAYERS; i++)
         players[i].color = 0;
 
     // Startpositionen merken
@@ -96,7 +96,7 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
             {
                 players[player].x = x;
                 players[player].y = y;
-                players[player].color = COLORS[player];
+                players[player].color = PLAYER_COLORS[player % PLAYER_COLORS.size()];
             }
         }
     }

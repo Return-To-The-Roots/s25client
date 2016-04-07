@@ -171,14 +171,17 @@ void nofPlaner::Draw(int x, int y)
                 278
             };
 
+
+            unsigned bobId;
             if(now_id < 20)
-                LOADER.GetPlayerImage("rom_bobs", 253 + now_id)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                bobId = 253 + now_id;
             else if(now_id < 41)
-                LOADER.GetPlayerImage("rom_bobs", ANIMATION[now_id - 20])->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                bobId = ANIMATION[now_id - 20];
             else if(now_id < 55)
-                LOADER.GetPlayerImage("rom_bobs", 253 + now_id - 41)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                bobId = 253 + now_id - 41;
             else
-                LOADER.GetPlayerImage("rom_bobs", 253 + now_id - 55)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, COLORS[gwg->GetPlayer(building_site->GetPlayer()).color]);
+                bobId = 253 + now_id - 55;
+            LOADER.GetPlayerImage("rom_bobs", bobId)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)

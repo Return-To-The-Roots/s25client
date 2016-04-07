@@ -205,7 +205,7 @@ void AIJH::BuildJob::TryToBuild()
                 foundPos = aijh.FindBestPosition(bPos, AIJH::IRONORE, BQ_MINE, 11, true);
                 break;
             case BLD_GRANITEMINE:
-                if(!aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
+                if(!aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES)) //inexhaustible granite mines do not require granite
                     foundPos = aijh.FindBestPosition(bPos, AIJH::GRANITE, BQ_MINE, 11, true);
                 else
                     foundPos = aijh.SimpleFindPosition(bPos, BQ_MINE, 11);
@@ -358,7 +358,7 @@ std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot 
         case BLD_COALMINE:
             break;
         case BLD_IRONMINE:
-            //if(!(aijh.ggs.isEnabled(ADDON_INEXHAUSTIBLE_MINES)))
+            //if(!(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)))
             break;
         case BLD_GRANITEMINE:
             break;

@@ -204,7 +204,7 @@ void GlobalGameSettings::LoadSettings()
     reset();
 
     for( std::map<unsigned int, unsigned int>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
-        setSelection((AddonId)it->first, it->second);
+        setSelection((AddonId::type_)it->first, it->second);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
         ser.PushUnsignedInt(it->addon->getId());
         ser.PushUnsignedInt(it->status);
 
-        LOG.write("\t0x%08X=%d\n", it->addon->getId(), it->status);
+        LOG.write("\t0x%08X=%d\n", AddonId::type_(it->addon->getId()), it->status);
     }
 }
 
@@ -272,11 +272,11 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     for(unsigned int i = 0; i < count; ++i)
     {
-        AddonId addon = AddonId(ser.PopUnsignedInt());
+        AddonId addon = AddonId::type_(ser.PopUnsignedInt());
         unsigned int status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
-        LOG.write("\t0x%08X=%d\n", addon, status);
+        LOG.write("\t0x%08X=%d\n", AddonId::type_(addon), status);
     }
 }
 
@@ -292,12 +292,12 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
 
 unsigned GlobalGameSettings::GetMaxMilitaryRank() const
 {
-    unsigned selection = getSelection(ADDON_MAX_RANK);
+    unsigned selection = getSelection(AddonId::MAX_RANK);
     RTTR_Assert(selection <= MAX_MILITARY_RANK);
     return MAX_MILITARY_RANK - selection;
 }
 unsigned GlobalGameSettings::GetNumScoutsExedition() const
 {
-    unsigned selection = getSelection(ADDON_NUM_SCOUTS_EXPLORATION);
+    unsigned selection = getSelection(AddonId::NUM_SCOUTS_EXPLORATION);
     return selection + 1;
 }

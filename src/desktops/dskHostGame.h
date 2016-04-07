@@ -19,14 +19,16 @@
 #define WP_HOSTGAME_H_
 
 #include "Desktop.h"
-
+#include "ClientInterface.h"
+#include "LobbyInterface.h"
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
-#include "LobbyInterface.h"
-#include "ClientInterface.h"
 class GameWorldViewer;
 class LobbyPlayerInfo;
+class LuaInterfaceSettings;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame :
@@ -41,6 +43,7 @@ class dskHostGame :
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
         void Resize_(unsigned short width, unsigned short height) override;
+        void SetActive(bool activate = true) override;
     private:
 
         void TogglePlayerReady(unsigned char player, bool ready);
@@ -54,7 +57,7 @@ class dskHostGame :
         void ChangeReady(const unsigned i, const bool ready);
         void ChangeNation(const unsigned i, const Nation nation);
         void ChangePing(const unsigned i);
-        void ChangeColor(const unsigned i, const unsigned char color);
+        void ChangeColor(const unsigned i, const unsigned color);
 
         void Msg_PaintBefore() override;
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
@@ -79,7 +82,7 @@ class dskHostGame :
         void CI_NationChanged(const unsigned player_id, const Nation nation) override;
         void CI_TeamChanged(const unsigned player_id, const unsigned char team) override;
         void CI_PingChanged(const unsigned player_id, const unsigned short ping) override;
-        void CI_ColorChanged(const unsigned player_id, const unsigned char color) override;
+        void CI_ColorChanged(const unsigned player_id, const unsigned color) override;
         void CI_ReadyChanged(const unsigned player_id, const bool ready) override;
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
         void CI_GGSChanged(const GlobalGameSettings& ggs) override;
@@ -96,6 +99,8 @@ class dskHostGame :
         GlobalGameSettings ggs_;
         bool hasCountdown_;
         const ServerType serverType;
+        boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
+        bool wasActivated, allowAddonChange;
 };
 
 

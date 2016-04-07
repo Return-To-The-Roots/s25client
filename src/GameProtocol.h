@@ -41,7 +41,7 @@ enum
     NMS_PLAYER_ID = 0x0201, // 1 playerid
     NMS_PLAYER_NAME, // x playername
     NMS_PLAYER_LIST, // 1 playercount | x GamePlayerInfo
-    NMS_PLAYER_TOGGLESTATE, // 1 playerid
+    NMS_PLAYER_SETSTATE, // 1 playerid
     NMS_PLAYER_TOGGLENATION, // 0 | 1 playerid
     NMS_PLAYER_TOGGLETEAM, // 0 | 1 playerid
     NMS_PLAYER_TOGGLECOLOR, // 0 | 1 playerid
@@ -63,6 +63,7 @@ enum
     NMS_SERVER_SPEED,
 
     NMS_GGS_CHANGE = 0x0501, //
+    NMS_REMOVE_LUA,
 
     NMS_GET_ASYNC_LOG = 0x0600,
     NMS_SEND_ASYNC_LOG,
@@ -85,7 +86,7 @@ NMS_NULL_MSG            --> ignore
 NMS_PING                --> NMS_PONG
 
 NMS_PLAYER_ID           --> ok ? NMS_SERVER_TYP : disconnect
-NMS_PLAYER_TOGGLESTATE  -->
+NMS_PLAYER_SETSTATE  -->
 NMS_PLAYER_TOGGLENATION --> NMS_PLAYER_TOGGLENATION
 NMS_PLAYER_TOGGLETEAM   --> NMS_PLAYER_TOGGLETEAM
 NMS_PLAYER_TOGGLECOLOR  --> NMS_PLAYER_TOGGLECOLOR
@@ -120,7 +121,7 @@ NMS_SERVER_PASSWORD     --> NMS_SERVER_PASSWORD, ( !ok ) ? kick
 NMS_SERVER_CHAT         --> toteam ? tc(NMS_SERVER_CHAT) : toenemy ? ec(NMS_SERVER_CHAT) : bc(NMS_SERVER_CHAT)
 
 NMS_PLAYER_NAME         --> NMS_MAP_NAME
-NMS_PLAYER_TOGGLESTATE  --> (playerstate != KI) ? kick(playerid) : bc(NMS_PLAYER_TOGGLESTATE)
+NMS_PLAYER_SETSTATE  --> (playerstate != KI) ? kick(playerid) : bc(NMS_PLAYER_SETSTATE)
 NMS_PLAYER_TOGGLENATION --> bc(NMS_PLAYER_TOGGLENATION)
 NMS_PLAYER_TOGGLETEAM   --> bc(NMS_PLAYER_TOGGLETEAM)
 NMS_PLAYER_TOGGLECOLOR  --> bc(NMS_PLAYER_TOGGLECOLOR)
@@ -180,9 +181,7 @@ enum ChatDestination
 enum MapType
 {
     MAPTYPE_OLDMAP = 0,
-    MAPTYPE_SAVEGAME,
-    MAPTYPE_RTTRMAP,
-    MAPTYPE_RANDOMMAP
+    MAPTYPE_SAVEGAME
 };
 
 /// Größe eines Map-Paketes

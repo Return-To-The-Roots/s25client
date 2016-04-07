@@ -47,7 +47,7 @@ void nofBrewer::DrawWorking(int x, int y)
 
     if(now_id < 16)
         LOADER.GetPlayerImage("rom_bobs", now_id)
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[GAMECLIENT.GetPlayer(workplace->GetPlayer()).color]);
+        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id == 5)
     {

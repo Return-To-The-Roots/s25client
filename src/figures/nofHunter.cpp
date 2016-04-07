@@ -82,7 +82,7 @@ void nofHunter::DrawWorking(int x, int y)
             {
                 // die Animation in dieser Richtung ist etwas anders als die in den restlichen
                 unsigned short id = GAMECLIENT.Interpolate(13, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 219 + id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.GetPlayerImage("rom_bobs", 219 + id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
                 if(id == 12)
                 {
@@ -93,7 +93,7 @@ void nofHunter::DrawWorking(int x, int y)
             else
             {
                 unsigned short id = GAMECLIENT.Interpolate(8, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 1686 + ((shooting_dir + 2) % 6) * 8 + id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+                LOADER.GetPlayerImage("rom_bobs", 1686 + ((shooting_dir + 2) % 6) * 8 + id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
                 if(id == 7)
                 {
@@ -114,7 +114,7 @@ void nofHunter::DrawWorking(int x, int y)
             else if(id < 36) draw_id = 236 + (id - 4) % 8;
             else draw_id = 244 + id - 36;
 
-            LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+            LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
         } break;
     }
 }

@@ -15,7 +15,7 @@
 class AddonInexhaustibleFish : public AddonBool
 {
     public:
-        AddonInexhaustibleFish() : AddonBool(ADDON_INEXHAUSTIBLE_FISH,
+        AddonInexhaustibleFish() : AddonBool(AddonId::INEXHAUSTIBLE_FISH,
                                                  ADDONGROUP_ECONOMY,
                                                  _("Inexhaustible Fish"),
                                                  _("Deactivates reduction of fish population."),

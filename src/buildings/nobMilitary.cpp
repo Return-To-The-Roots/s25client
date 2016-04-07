@@ -77,7 +77,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
 
     // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
     // Ansonsten neue Goldmünzen anfordern
-    if(GAMECLIENT.GetGGS().isEnabled(ADDON_NO_COINS_DEFAULT))
+    if(GAMECLIENT.GetGGS().isEnabled(AddonId::NO_COINS_DEFAULT))
     {
         coinsDisabled = true;
         coinsDisabledVirtual = true;
@@ -220,7 +220,7 @@ void nobMilitary::Draw(int x, int y)
     unsigned flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
-        LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLORS[gwg->GetPlayer(player).color]);
+        LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     unsigned frontier_distance_tmp = frontier_distance;
@@ -511,7 +511,7 @@ void nobMilitary::RegulateTroops()
 
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -582,7 +582,7 @@ void nobMilitary::OrderNewSoldiers()
 		// Zu wenig Truppen
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(ADDON_DEFENDER_BEHAVIOR) == 2)
+        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -1257,7 +1257,7 @@ void nobMilitary::HitOfCatapultStone()
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {
-    switch(GAMECLIENT.GetGGS().getSelection(ADDON_DEMOLITION_PROHIBITION))
+    switch(GAMECLIENT.GetGGS().getSelection(AddonId::DEMOLITION_PROHIBITION))
     {
         default: // off
             break;

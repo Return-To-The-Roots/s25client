@@ -91,7 +91,7 @@ void GameClient::Command_ToggleTeam(Team newteam)
  */
 void GameClient::Command_ToggleReady()
 {
-    send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer().ready ));
+    send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer().ready));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,9 +100,9 @@ void GameClient::Command_ToggleReady()
  *
  *  @author FloSoft
  */
-void GameClient::Command_ToggleColor()
+void GameClient::Command_SetColor()
 {
-    send_queue.push(new GameMessage_Player_Toggle_Color(0xFF, 0xFF));
+    send_queue.push(new GameMessage_Player_Toggle_Color(0xFF, GetLocalPlayer().color));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

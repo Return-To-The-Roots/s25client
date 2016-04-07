@@ -14,7 +14,7 @@
 class AddonNoAlliedPush : public AddonBool
 {
     public:
-        AddonNoAlliedPush() : AddonBool(ADDON_NO_ALLIED_PUSH,
+        AddonNoAlliedPush() : AddonBool(AddonId::NO_ALLIED_PUSH,
                                               ADDONGROUP_MILITARY,
                                               _("Improved Alliance"),
                                               _("Allied players can no longer push your borders back with new buildings."),
