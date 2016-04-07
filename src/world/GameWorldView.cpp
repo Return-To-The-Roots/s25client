@@ -108,13 +108,13 @@ void GameWorldView::Draw(unsigned* water, const bool draw_selected, const MapPoi
     terrainRenderer.Draw(*this, water);
     glTranslatef(static_cast<GLfloat>(offset.x), static_cast<GLfloat>(offset.y), 0.0f);
 
-    for(int y = firstPt.y; y < lastPt.y; ++y)
+    for(int y = firstPt.y; y <= lastPt.y; ++y)
     {
         // Figuren speichern, die in dieser Zeile gemalt werden müssen
         // und sich zwischen zwei Zeilen befinden, da sie dazwischen laufen
         std::vector<ObjectBetweenLines> between_lines;
 
-        for(int x = firstPt.x; x < lastPt.x; ++x)
+        for(int x = firstPt.x; x <= lastPt.x; ++x)
         {
             Point<int> curOffset;
             const MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
@@ -197,9 +197,9 @@ void GameWorldView::DrawGUI(const RoadsBuilding& rb, const TerrainRenderer& terr
         maxWaterWayLen = waterwayLengths[index];
     }
 
-    for(int x = firstPt.x; x < lastPt.x; ++x)
+    for(int x = firstPt.x; x <= lastPt.x; ++x)
     {
-        for(int y = firstPt.y; y < lastPt.y; ++y)
+        for(int y = firstPt.y; y <= lastPt.y; ++y)
         {
             // Coordinates transform
             Point<int> curOffset;
@@ -282,9 +282,9 @@ void GameWorldView::DrawGUI(const RoadsBuilding& rb, const TerrainRenderer& terr
 
 void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer)
 {
-    for(int x = firstPt.x; x < lastPt.x; ++x)
+    for(int x = firstPt.x; x <= lastPt.x; ++x)
     {
-        for(int y = firstPt.y; y < lastPt.y; ++y)
+        for(int y = firstPt.y; y <= lastPt.y; ++y)
         {
             // Coordinate transform
             Point<int> curOffset;
@@ -519,6 +519,18 @@ void GameWorldView::MoveTo(int x, int y, bool absolute)
     	offset.y += y;
     }
 
+    Point<int> size(gwv->GetWidth() * TR_W, gwv->GetHeight() * TR_H);
+    if(size.x && size.y)
+    {
+        offset.x %= size.x;
+        offset.y %= size.y;
+
+        if(offset.x < 0)
+            offset.x += size.x;
+        if(offset.y < 0)
+            offset.y += size.y;
+    }
+
     CalcFxLx();
 }
 
@@ -548,19 +560,25 @@ void GameWorldView::MoveToLastPosition()
  */
 void GameWorldView::CalcFxLx()
 {
-    if(offset.x < 0)
-    	offset.x += gwv->GetWidth() * TR_W;
-    if(offset.y < 0)
-    	offset.y += gwv->GetHeight() * TR_H;
-    if(offset.x > gwv->GetWidth() * TR_W + static_cast<int>(width))
-    	offset.x -= gwv->GetWidth() * TR_W;
-    if(offset.y > gwv->GetHeight() * TR_H + static_cast<int>(height))
-    	offset.y -= gwv->GetHeight() * TR_H;
-
+    // Calc first and last point in map units (with 1 extra for incomplete triangles)
     firstPt.x = offset.x / TR_W - 1;
-    firstPt.y = (offset.y - 0x20 * HEIGHT_FACTOR) / TR_H;
-    lastPt.x = (offset.x + width) / TR_W + 2;
-    lastPt.y = (offset.y + height + 0x40 * HEIGHT_FACTOR) / TR_H;
+    firstPt.y = (offset.y - 10 * HEIGHT_FACTOR) / TR_H - 1; // base altitude = 10
+    lastPt.x = (offset.x + width) / TR_W + 1;
+    lastPt.y = (offset.y + height + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
+
+    if(zoomFactor != 1.f)
+    {
+        // Map area drawn
+        Point<float> size(lastPt - firstPt);
+        // Greater zoom reduces visible area
+        Point<float> reducedSize = size / zoomFactor;
+        // Difference we need to remove
+        Point<float> diff = size - reducedSize;
+        // Don't remove to much
+        diff.x = std::floor(diff.x);
+        diff.y = std::floor(diff.y);
+        lastPt = Point<int>(Point<float>(lastPt) - diff);
+    }
 }
 
 void GameWorldView::Resize(unsigned width, unsigned height)

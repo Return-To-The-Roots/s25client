@@ -676,12 +676,12 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     Point<int> lastOffset(0, 0);
  
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
-    for(int y = gwv.GetFirstPt().y; y < gwv.GetLastPt().y; ++y)
+    for(int y = gwv.GetFirstPt().y; y <= gwv.GetLastPt().y; ++y)
     {
         unsigned char lastTerrain = 255;
         unsigned char lastBorder  = 255;
 
-        for(int x = gwv.GetFirstPt().x; x < gwv.GetLastPt().x; ++x)
+        for(int x = gwv.GetFirstPt().x; x <= gwv.GetLastPt().x; ++x)
         {
             Point<int> posOffset;
             MapPoint tP = ConvertCoords(Point<int>(x, y), &posOffset);
