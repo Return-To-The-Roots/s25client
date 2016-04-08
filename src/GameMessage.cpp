@@ -56,9 +56,9 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_PLAYER_NAME:               { msg = new GameMessage_Player_Name(); } break;
         case NMS_PLAYER_LIST:               { msg = new GameMessage_Player_List(); } break;
         case NMS_PLAYER_SETSTATE:           { msg = new GameMessage_Player_Set_State(); } break;
-        case NMS_PLAYER_TOGGLENATION:       { msg = new GameMessage_Player_Toggle_Nation(); } break;
-        case NMS_PLAYER_TOGGLETEAM:         { msg = new GameMessage_Player_Toggle_Team(); } break;
-        case NMS_PLAYER_TOGGLECOLOR:        { msg = new GameMessage_Player_Toggle_Color(); } break;
+        case NMS_PLAYER_SET_NATION:       { msg = new GameMessage_Player_Set_Nation(); } break;
+        case NMS_PLAYER_SET_TEAM:         { msg = new GameMessage_Player_Set_Team(); } break;
+        case NMS_PLAYER_SET_COLOR:        { msg = new GameMessage_Player_Set_Color(); } break;
         case NMS_PLAYER_KICKED:             { msg = new GameMessage_Player_Kicked(); } break;
         case NMS_PLAYER_PING:               { msg = new GameMessage_Player_Ping(); } break;
         case NMS_PLAYER_NEW:                { msg = new GameMessage_Player_New(); } break;

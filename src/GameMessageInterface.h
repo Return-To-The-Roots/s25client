@@ -20,103 +20,77 @@
 #pragma once
 
 #include "MessageInterface.h"
-#include <vector>
+#include <boost/preprocessor.hpp>
 
-class GameMessage_Ping;
-class GameMessage_Pong;
+#define __GENERATE_FWD_DECL_SINGLE(s, data, expression) class expression;
+#define __GENERATE_FWD_DECL(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_FWD_DECL_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
-class GameMessage_Server_Type;
-class GameMessage_Server_TypeOK;
-class GameMessage_Server_Password;
-class GameMessage_Server_Name;
-class GameMessage_Server_Start;
-class GameMessage_Server_Chat;
-class GameMessage_System_Chat;
-class GameMessage_Server_Async;
-class GameMessage_Server_Countdown;
-class GameMessage_Server_CancelCountdown;
+#define __GENERATE_CALLBACK_SINGLE(s, data, expression) virtual void OnGameMessage(const expression& /*msg*/){}
+#define __GENERATE_CALLBACKS(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_CALLBACK_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
-class GameMessage_Player_Id;
-class GameMessage_Player_Name;
-class GameMessage_Player_List;
-class GameMessage_Player_Set_State;
-class GameMessage_Player_Toggle_Nation;
-class GameMessage_Player_Toggle_Team;
-class GameMessage_Player_Toggle_Color;
-class GameMessage_Player_Kicked;
-class GameMessage_Player_Ping;
-class GameMessage_Player_New;
-class GameMessage_Player_Ready;
-class GameMessage_Player_Swap;
+/// Generates the class "GameMessageInterface" with one virtual method "OnGameMessage" for each parameter
+/// Also handles the required forward declaration of the classes
+/// Example: GENERATE_GAME_MESSAGE_INTERFACE(GM_Foo, GM_Bar) -->
+///     class GM_Foo; class GM_Bar;
+///     class GameMessageInterface (...)
+///         virtual void OnGameMessage(const GM_Foo& /*msg*/){}
+///         virtual void OnGameMessage(const GM_Bar& /*msg*/){}
+///     };
+///
+#define GENERATE_GAME_MESSAGE_INTERFACE(...)                \
+    __GENERATE_FWD_DECL(__VA_ARGS__)                        \
+    class GameMessageInterface : public MessageInterface    \
+    {                                                       \
+    protected:                                              \
+        ~GameMessageInterface() override {}                 \
+                                                            \
+    public:                                                 \
+        __GENERATE_CALLBACKS(__VA_ARGS__)                   \
+    };
 
-class GameMessage_Map_Info;
-class GameMessage_Map_Data;
-class GameMessage_Map_Checksum;
-class GameMessage_Map_ChecksumOK;
-class GameMessage_GGSChange;
-class GameMessage_RemoveLua;
-class GameMessage_Pause;
-class GameMessage_Server_NWFDone;
-class GameMessage_GameCommand;
-class GameMessage_Server_Speed;
+GENERATE_GAME_MESSAGE_INTERFACE(
+    GameMessage_Ping,
+    GameMessage_Pong,
 
-class GameMessage_GetAsyncLog;
-class GameMessage_SendAsyncLog;
-struct RandomEntry;
+    GameMessage_Server_Type,
+    GameMessage_Server_TypeOK,
+    GameMessage_Server_Password,
+    GameMessage_Server_Name,
+    GameMessage_Server_Start,
+    GameMessage_Server_Chat,
+    GameMessage_System_Chat,
+    GameMessage_Server_Async,
+    GameMessage_Server_Countdown,
+    GameMessage_Server_CancelCountdown,
 
-class GameMessageInterface : public MessageInterface
-{
-    protected:
-        ~GameMessageInterface() override {}
+    GameMessage_Player_Id,
+    GameMessage_Player_Name,
+    GameMessage_Player_List,
+    GameMessage_Player_Set_State,
+    GameMessage_Player_Set_Nation,
+    GameMessage_Player_Set_Team,
+    GameMessage_Player_Set_Color,
+    GameMessage_Player_Kicked,
+    GameMessage_Player_Ping,
+    GameMessage_Player_New,
+    GameMessage_Player_Ready,
+    GameMessage_Player_Swap,
 
-    public:
-        virtual void OnNMSPing(const GameMessage_Ping& msg){}
-        virtual void OnNMSPong(const GameMessage_Pong& msg){}
+    GameMessage_Map_Info,
+    GameMessage_Map_Data,
+    GameMessage_Map_Checksum,
+    GameMessage_Map_ChecksumOK,
+    GameMessage_GGSChange,
+    GameMessage_RemoveLua,
+    GameMessage_Pause,
+    GameMessage_Server_NWFDone,
+    GameMessage_GameCommand,
+    GameMessage_Server_Speed,
 
-        virtual void OnNMSServerType(const GameMessage_Server_Type& msg){}
-        virtual void OnNMSServerTypeOK(const GameMessage_Server_TypeOK& msg){}
-        virtual void OnNMSServerPassword(const GameMessage_Server_Password& msg){}
-        virtual void OnNMSServerName(const GameMessage_Server_Name& msg){}
-        virtual void OnNMSServerStart(const GameMessage_Server_Start& msg){}
-        virtual void OnNMSServerChat(const GameMessage_Server_Chat& msg){}
-        virtual void OnNMSServerAsync(const GameMessage_Server_Async& msg){}
-        virtual void OnNMSServerCountdown(const GameMessage_Server_Countdown& msg){}
-        virtual void OnNMSServerCancelCountdown(const GameMessage_Server_CancelCountdown& msg){}
+    GameMessage_GetAsyncLog,
+    GameMessage_SendAsyncLog)
 
-        virtual void OnNMSPlayerId(const GameMessage_Player_Id& msg){}
-        virtual void OnNMSPlayerName(const GameMessage_Player_Name& msg){}
-        virtual void OnNMSPlayerList(const GameMessage_Player_List& msg){}
-        virtual void OnNMSPlayerSetState(const GameMessage_Player_Set_State& msg){}
-        virtual void OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg){}
-        virtual void OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg){}
-        virtual void OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg){}
-        virtual void OnNMSPlayerKicked(const GameMessage_Player_Kicked& msg){}
-        virtual void OnNMSPlayerPing(const GameMessage_Player_Ping& msg){}
-        virtual void OnNMSPlayerNew(const GameMessage_Player_New& msg){}
-        virtual void OnNMSPlayerReady(const GameMessage_Player_Ready& msg){}
-        virtual void OnNMSPlayerSwap(const GameMessage_Player_Swap& msg){}
-
-        virtual void OnNMSMapInfo(const GameMessage_Map_Info& msg){}
-        virtual void OnNMSMapData(const GameMessage_Map_Data& msg){}
-        virtual void OnNMSMapChecksum(const GameMessage_Map_Checksum& msg){}
-        virtual void OnNMSMapChecksumOK(const GameMessage_Map_ChecksumOK& msg){}
-
-
-        virtual void OnNMSPause(const GameMessage_Pause& msg){}
-        virtual void OnNMSServerDone(const GameMessage_Server_NWFDone& msg){}
-        virtual void OnNMSGameCommand(const GameMessage_GameCommand& msg){}
-        virtual void OnNMSServerSpeed(const GameMessage_Server_Speed& msg){}
-
-        virtual void OnNMSGGSChange(const GameMessage_GGSChange& msg){}
-        virtual void OnNMSRemoveLua(const GameMessage_RemoveLua& msg){}
-
-        virtual void OnNMSGetAsyncLog(const GameMessage_GetAsyncLog& msg){}
-        virtual void OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& his, bool last){}
-
-        virtual void OnNMSSystemChat(const GameMessage_System_Chat& msg) = 0;
-};
-
-/// Castet das allgemeine Message-Interface in ein GameMessage-Interface
+/// Casts the general MessageInterface to GameMessageInterface
 inline GameMessageInterface* GetInterface(MessageInterface* callback)
 {
     return dynamic_cast<GameMessageInterface*>(callback);

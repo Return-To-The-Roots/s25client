@@ -686,7 +686,7 @@ void GameServer::TogglePlayerTeam(unsigned char client)
     //random team special case
     //switch from random team?
     if(player.team == TM_RANDOMTEAM || player.team == TM_RANDOMTEAM2 || player.team == TM_RANDOMTEAM3 || player.team == TM_RANDOMTEAM4)
-        OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, Team((TM_RANDOMTEAM + 1) % TEAM_COUNT)));
+        OnGameMessage(GameMessage_Player_Set_Team(client, Team((TM_RANDOMTEAM + 1) % TEAM_COUNT)));
     else
     {
         if(player.team == TM_NOTEAM) //switch to random team?
@@ -695,25 +695,25 @@ void GameServer::TogglePlayerTeam(unsigned char client)
             switch(rand)
             {
                 case 0:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM));
+                    OnGameMessage(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM));
                     break;
                 case 1:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM2));
+                    OnGameMessage(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM2));
                     break;
                 case 2:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM3));
+                    OnGameMessage(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM3));
                     break;
                 case 3:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM4));
+                    OnGameMessage(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM4));
                     break;
                 default:
-                    OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, TM_RANDOMTEAM));
+                    OnGameMessage(GameMessage_Player_Set_Team(client, TM_RANDOMTEAM));
                     break;
             }
 
         }
         else
-            OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(client, Team((player.team + 1) % TEAM_COUNT)));
+            OnGameMessage(GameMessage_Player_Set_Team(client, Team((player.team + 1) % TEAM_COUNT)));
     }
 }
 
@@ -741,7 +741,7 @@ void GameServer::TogglePlayerNation(unsigned char client)
         return;
 
     // Nation wechseln
-    OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(client, Nation((player.nation + 1) % NAT_COUNT)));
+    OnGameMessage(GameMessage_Player_Set_Nation(client, Nation((player.nation + 1) % NAT_COUNT)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1138,8 +1138,11 @@ void GameServer::FillPlayerQueues()
 
 ///////////////////////////////////////////////////////////////////////////////
 // pongnachricht
-inline void GameServer::OnNMSPong(const GameMessage_Pong& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Pong& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     unsigned int currenttime = VIDEODRIVER.GetTickCount();
@@ -1156,8 +1159,11 @@ inline void GameServer::OnNMSPong(const GameMessage_Pong& msg)
 
 ///////////////////////////////////////////////////////////////////////////////
 // servertype
-inline void GameServer::OnNMSServerType(const GameMessage_Server_Type& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     int typok = 0;
@@ -1178,8 +1184,11 @@ inline void GameServer::OnNMSServerType(const GameMessage_Server_Type& msg)
  *
  *  @author FloSoft
  */
-void GameServer::OnNMSServerPassword(const GameMessage_Server_Password& msg)
+void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     std::string passwordok = (serverconfig.password == msg.password ? "true" : "false");
@@ -1197,20 +1206,23 @@ void GameServer::OnNMSServerPassword(const GameMessage_Server_Password& msg)
  *  @author FloSoft
  *  @author OLiver
  */
-void GameServer::OnNMSServerChat(const GameMessage_Server_Chat& msg)
+void GameServer::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
     SendToAll(msg);
 }
 
-void GameServer::OnNMSSystemChat(const GameMessage_System_Chat& msg)
+void GameServer::OnGameMessage(const GameMessage_System_Chat& msg)
 {
     SendToAll(msg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spielername
-inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n", msg.player, msg.playername.c_str());
@@ -1255,8 +1267,11 @@ inline void GameServer::OnNMSPlayerName(const GameMessage_Player_Name& msg)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Nation weiterwechseln
-inline void GameServer::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_Nation& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     player.nation = msg.nation;
@@ -1264,28 +1279,34 @@ inline void GameServer::OnNMSPlayerToggleNation(const GameMessage_Player_Toggle_
     LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLENATION\n", msg.player);
 
     // Nation-Change senden
-    SendToAll(GameMessage_Player_Toggle_Nation(msg.player, msg.nation));
+    SendToAll(GameMessage_Player_Set_Nation(msg.player, msg.nation));
 
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n", msg.player, player.nation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Team weiterwechseln
-inline void GameServer::OnNMSPlayerToggleTeam(const GameMessage_Player_Toggle_Team& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     player.team = msg.team;
 
     LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLETEAM\n", msg.player);
-    SendToAll(GameMessage_Player_Toggle_Team(msg.player, msg.team));
+    SendToAll(GameMessage_Player_Set_Team(msg.player, msg.team));
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n", msg.player, player.team);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Farbe weiterwechseln
-inline void GameServer::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_Color& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     LOG.write("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
     CheckAndSetColor(msg.player, msg.color);
 }
@@ -1296,8 +1317,11 @@ inline void GameServer::OnNMSPlayerToggleColor(const GameMessage_Player_Toggle_C
  *
  *  @author FloSoft
  */
-inline void GameServer::OnNMSPlayerReady(const GameMessage_Player_Ready& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     player.ready = msg.ready;
@@ -1314,8 +1338,11 @@ inline void GameServer::OnNMSPlayerReady(const GameMessage_Player_Ready& msg)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Checksumme
-inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
+inline void GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
 
     bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
@@ -1359,13 +1386,16 @@ inline void GameServer::OnNMSMapChecksum(const GameMessage_Map_Checksum& msg)
 }
 
 // speed change message
-void GameServer::OnNMSServerSpeed(const GameMessage_Server_Speed& msg)
+void GameServer::OnGameMessage(const GameMessage_Server_Speed& msg)
 {
     framesinfo.gfLenghtNew2 = msg.gf_length;
 }
 
-void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
+void GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
 {
+    if(msg.player >= GetMaxPlayerCount())
+        return;
+
     GameServerPlayer& player = players[msg.player];
     LOG.write("SERVER <<< GC %u\n", msg.player);
 
@@ -1388,13 +1418,13 @@ void GameServer::OnNMSGameCommand(const GameMessage_GameCommand& msg)
     }
 }
 
-void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const std::vector<RandomEntry>& in, bool last)
+void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 {
     if (msg.player == async_player1)
     {
-        async_player1_log.insert(async_player1_log.end(), in.begin(), in.end());
+        async_player1_log.insert(async_player1_log.end(), msg.entries.begin(), msg.entries.end());
 
-        if (last)
+        if (msg.last)
         {
             LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player1, async_player1_log.size());
             async_player1_done = true;
@@ -1402,9 +1432,9 @@ void GameServer::OnNMSSendAsyncLog(const GameMessage_SendAsyncLog& msg, const st
     }
     else if (msg.player == async_player2)
     {
-        async_player2_log.insert(async_player2_log.end(), in.begin(), in.end());
+        async_player2_log.insert(async_player2_log.end(), msg.entries.begin(), msg.entries.end());
 
-        if (last)
+        if (msg.last)
         {
             LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player2, async_player2_log.size());
             async_player2_done = true;
@@ -1540,12 +1570,15 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 
     player.color = newColor;
 
-    SendToAll(GameMessage_Player_Toggle_Color(playerIdx, player.color));
+    SendToAll(GameMessage_Player_Set_Color(playerIdx, player.color));
     LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
 }
 
-void GameServer::OnNMSPlayerSwap(const GameMessage_Player_Swap& msg)
+void GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
+    if(msg.player >= GetMaxPlayerCount() || msg.player2 >= GetMaxPlayerCount())
+        return;
+
     if(status != SS_GAME)
         return;
     if(msg.player == msg.player2)

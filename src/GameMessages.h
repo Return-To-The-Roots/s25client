@@ -46,7 +46,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		//LOG.write("<<< NMS_PING\n");
-		GetInterface(callback)->OnNMSPing(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -60,7 +60,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		//LOG.write("<<< NMS_PONG\n");
-		GetInterface(callback)->OnNMSPong(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -95,7 +95,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_Type(%d, %s)\n", boost::underlying_cast<int>(type), version.c_str());
-		GetInterface(callback)->OnNMSServerType(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -123,7 +123,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		GetInterface(callback)->OnNMSServerTypeOK(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -153,7 +153,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_PASSWORD(%s)\n", "********");
-		GetInterface(callback)->OnNMSServerPassword(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -183,7 +183,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_NAME(%s)\n", name.c_str());
-		GetInterface(callback)->OnNMSServerName(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -216,7 +216,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_START(%d, %d)\n", random_init, nwf_length);
-		GetInterface(callback)->OnNMSServerStart(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -246,7 +246,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_COUNTDOWN(%d)\n", countdown);
-		GetInterface(callback)->OnNMSServerCountdown(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -260,7 +260,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_CANCELCOUNTDOWN\n");
-		GetInterface(callback)->OnNMSServerCancelCountdown(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -296,7 +296,7 @@ public:
     void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
-        GetInterface(callback)->OnNMSServerChat(*this);
+        GetInterface(callback)->OnGameMessage(*this);
     }
 };
 
@@ -322,7 +322,7 @@ public:
 
     void Run(MessageInterface* callback) override
     {
-        GetInterface(callback)->OnNMSSystemChat(*this);
+        GetInterface(callback)->OnGameMessage(*this);
     }
 };
 
@@ -359,7 +359,7 @@ public:
     void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_SERVER_ASYNC(%d)\n", checksums.size());
-        GetInterface(callback)->OnNMSServerAsync(*this);
+        GetInterface(callback)->OnGameMessage(*this);
     }
 };
 
@@ -391,7 +391,7 @@ public:
     void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_PLAYER_ID(%d)\n", playerid);
-        GetInterface(callback)->OnNMSPlayerId(*this);
+        GetInterface(callback)->OnGameMessage(*this);
     }
 };
 
@@ -424,7 +424,7 @@ public:
     void Run(MessageInterface* callback) override
     {
         LOG.write("<<< NMS_PLAYER_NAME(%s)\n", playername.c_str());
-        GetInterface(callback)->OnNMSPlayerName(*this);
+        GetInterface(callback)->OnGameMessage(*this);
     }
 };
 
@@ -461,7 +461,7 @@ public:
 			const GamePlayerInfo* playerInfo = gpl.getElement(i);
 			LOG.write("    %d: %s %d %d %d %d %d %d %s\n", i, playerInfo->name.c_str(), playerInfo->ps, playerInfo->rating, playerInfo->ping, playerInfo->nation, playerInfo->color, playerInfo->team, (playerInfo->ready ? "true" : "false") );
 		}
-		GetInterface(callback)->OnNMSPlayerList(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -498,22 +498,22 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_SETSTATE(%d)\n", player);
-		GetInterface(callback)->OnNMSPlayerSetState(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 /// gehende -Nachricht
-class GameMessage_Player_Toggle_Nation : public GameMessage
+class GameMessage_Player_Set_Nation : public GameMessage
 {
 public:
 	/// Das zu setzende Volk
 	Nation nation;
 
-	GameMessage_Player_Toggle_Nation(): GameMessage(NMS_PLAYER_TOGGLENATION) {} //-V730
-	GameMessage_Player_Toggle_Nation(const unsigned char player, const Nation nation): GameMessage(NMS_PLAYER_TOGGLENATION, player), nation(nation)
+	GameMessage_Player_Set_Nation(): GameMessage(NMS_PLAYER_SET_NATION) {} //-V730
+	GameMessage_Player_Set_Nation(const unsigned char player, const Nation nation): GameMessage(NMS_PLAYER_SET_NATION, player), nation(nation)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLENATION\n");
+		LOG.write(">>> NMS_PLAYER_SET_NATION\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -530,23 +530,21 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLENATION\n");
-		GetInterface(callback)->OnNMSPlayerToggleNation(*this);
+		LOG.write("<<< NMS_PLAYER_SET_NATION\n");
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// gehende Player-Toggle-Team-Nachricht
-class GameMessage_Player_Toggle_Team : public GameMessage
+class GameMessage_Player_Set_Team : public GameMessage
 {
 public:
 	/// Das zu setzende Team
 	Team team;
 
-	GameMessage_Player_Toggle_Team(): GameMessage(NMS_PLAYER_TOGGLETEAM) { } //-V730
-	GameMessage_Player_Toggle_Team(const unsigned char player, const Team team): GameMessage(NMS_PLAYER_TOGGLETEAM, player), team(team)
+	GameMessage_Player_Set_Team(): GameMessage(NMS_PLAYER_SET_TEAM) { } //-V730
+	GameMessage_Player_Set_Team(const unsigned char player, const Team team): GameMessage(NMS_PLAYER_SET_TEAM, player), team(team)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLETEAM\n");
+		LOG.write(">>> NMS_PLAYER_SET_TEAM\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -563,22 +561,20 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLETEAM\n");
-		GetInterface(callback)->OnNMSPlayerToggleTeam(*this);
+		LOG.write("<<< NMS_PLAYER_SET_TEAM\n");
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/// gehende Player-Toggle-Color-Nachricht
-class GameMessage_Player_Toggle_Color : public GameMessage
+class GameMessage_Player_Set_Color : public GameMessage
 {
 public:
 	unsigned color;
 
-	GameMessage_Player_Toggle_Color(): GameMessage(NMS_PLAYER_TOGGLECOLOR) { } //-V730
-	GameMessage_Player_Toggle_Color(const unsigned char player, const unsigned color): GameMessage(NMS_PLAYER_TOGGLECOLOR, player), color(color)
+	GameMessage_Player_Set_Color(): GameMessage(NMS_PLAYER_SET_COLOR) { } //-V730
+	GameMessage_Player_Set_Color(const unsigned char player, const unsigned color): GameMessage(NMS_PLAYER_SET_COLOR, player), color(color)
 	{
-		LOG.write(">>> NMS_PLAYER_TOGGLECOLOR\n");
+		LOG.write(">>> NMS_PLAYER_SET_COLOR\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -595,8 +591,8 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_PLAYER_TOGGLECOLOR\n");
-		GetInterface(callback)->OnNMSPlayerToggleColor(*this);
+		LOG.write("<<< NMS_PLAYER_SET_COLOR\n");
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -629,7 +625,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_KICKED\n");
-		GetInterface(callback)->OnNMSPlayerKicked(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -658,7 +654,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		//LOG.write("<<< NMS_PLAYER_PING\n");
-		GetInterface(callback)->OnNMSPlayerPing(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -691,7 +687,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_NEW\n");
-		GetInterface(callback)->OnNMSPlayerNew(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -724,7 +720,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_READY\n");
-		GetInterface(callback)->OnNMSPlayerReady(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -756,7 +752,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PLAYER_SWAP\n");
-		GetInterface(callback)->OnNMSPlayerSwap(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -802,7 +798,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_MAP_INFO\n");
-		GetInterface(callback)->OnNMSMapInfo(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -844,7 +840,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_MAP_DATA\n");
-		GetInterface(callback)->OnNMSMapData(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -877,7 +873,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_MAP_CHECKSUM\n");
-		GetInterface(callback)->OnNMSMapChecksum(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -905,7 +901,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		GetInterface(callback)->OnNMSMapChecksumOK(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -936,7 +932,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_GGS_CHANGE\n");
-		GetInterface(callback)->OnNMSGGSChange(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -947,7 +943,7 @@ public:
 
     void Run(MessageInterface* callback) override
     {
-        GetInterface(callback)->OnNMSRemoveLua(*this);
+        GetInterface(callback)->OnGameMessage(*this);
     }
 };
 
@@ -977,7 +973,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_SERVER_SPEED(%d)\n", gf_length);
-		GetInterface(callback)->OnNMSServerSpeed(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -1014,7 +1010,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_NWF_DONE(%d, %d, %d)\n", nr, gf_length, (first ? 1 : 0));
-		GetInterface(callback)->OnNMSServerDone(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -1048,7 +1044,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_PAUSE(%d)\n", paused ? 1 : 0);
-		GetInterface(callback)->OnNMSPause(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -1065,7 +1061,7 @@ public:
 	void Run(MessageInterface* callback) override
 	{
 		LOG.write("<<< NMS_GET_ASYNC_LOG\n");
-		GetInterface(callback)->OnNMSGetAsyncLog(*this);
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 
@@ -1074,13 +1070,13 @@ public:
 class GameMessage_SendAsyncLog : public GameMessage
 {
 public:
-	std::vector<RandomEntry> recved_log;
+	std::vector<RandomEntry> entries;
     bool last;
 
 	GameMessage_SendAsyncLog(): GameMessage(NMS_SEND_ASYNC_LOG) {} //-V730
 
 	GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last):
-        GameMessage(NMS_SEND_ASYNC_LOG, 0xFF), recved_log(async_log), last(last)
+        GameMessage(NMS_SEND_ASYNC_LOG, 0xFF), entries(async_log), last(last)
 	{
 		LOG.write(">>> NMS_SEND_ASYNC_LOG\n");
 	}
@@ -1089,9 +1085,9 @@ public:
     {
         GameMessage::Serialize(ser);
         ser.PushBool(last);
-        ser.PushUnsignedInt(recved_log.size());
+        ser.PushUnsignedInt(entries.size());
 
-        for(std::vector<RandomEntry>::const_iterator it = recved_log.begin(); it != recved_log.end(); ++it)
+        for(std::vector<RandomEntry>::const_iterator it = entries.begin(); it != entries.end(); ++it)
         {
             ser.PushUnsignedInt(it->counter);
             ser.PushSignedInt(it->max);
@@ -1107,8 +1103,8 @@ public:
 		GameMessage::Deserialize(ser);
         last = ser.PopBool();
         unsigned cnt = ser.PopUnsignedInt();
-        recved_log.clear();
-        recved_log.reserve(cnt);
+        entries.clear();
+        entries.reserve(cnt);
 
         while (cnt--)
         {
@@ -1119,15 +1115,15 @@ public:
             unsigned src_line = ser.PopUnsignedInt();
             unsigned obj_id = ser.PopUnsignedInt();
 
-            recved_log.push_back(RandomEntry(counter, max, rngState, src_name, src_line, obj_id));
+            entries.push_back(RandomEntry(counter, max, rngState, src_name, src_line, obj_id));
         }
 
 	}
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", recved_log.size(), last ? "last" : "non-last");
-		GetInterface(callback)->OnNMSSendAsyncLog(*this, recved_log, last);
+		LOG.write("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", entries.size(), last ? "last" : "non-last");
+		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
 

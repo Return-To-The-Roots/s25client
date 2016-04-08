@@ -68,7 +68,7 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
  */
 void GameClient::Command_ToggleNation()
 {
-    send_queue.push(new GameMessage_Player_Toggle_Nation
+    send_queue.push(new GameMessage_Player_Set_Nation
                     (0xff, Nation((this->GetLocalPlayer().nation + 1) % NAT_COUNT)));
 }
 
@@ -80,7 +80,7 @@ void GameClient::Command_ToggleNation()
  */
 void GameClient::Command_ToggleTeam(Team newteam)
 {
-    send_queue.push(new GameMessage_Player_Toggle_Team(0xff, newteam));
+    send_queue.push(new GameMessage_Player_Set_Team(0xff, newteam));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ void GameClient::Command_ToggleReady()
  */
 void GameClient::Command_SetColor()
 {
-    send_queue.push(new GameMessage_Player_Toggle_Color(0xFF, GetLocalPlayer().color));
+    send_queue.push(new GameMessage_Player_Set_Color(0xFF, GetLocalPlayer().color));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

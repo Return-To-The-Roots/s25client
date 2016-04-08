@@ -57,13 +57,15 @@ void LuaServerPlayer::Register(kaguya::State& state)
 void LuaServerPlayer::SetNation(Nation nat)
 {
     check(unsigned(nat) < NAT_COUNT, "Invalid Nation");
-    GAMESERVER.OnNMSPlayerToggleNation(GameMessage_Player_Toggle_Nation(player.getPlayerID(), nat));
+    player.nation = nat;
+    GAMESERVER.SendToAll(GameMessage_Player_Set_Nation(player.getPlayerID(), nat));
 }
 
 void LuaServerPlayer::SetTeam(Team team)
 {
     check(unsigned(team) < TEAM_COUNT, "Invalid team");
-    GAMESERVER.OnNMSPlayerToggleTeam(GameMessage_Player_Toggle_Team(player.getPlayerID(), team));
+    player.team = team;
+    GAMESERVER.SendToAll(GameMessage_Player_Set_Team(player.getPlayerID(), team));
 }
 
 void LuaServerPlayer::SetColor(unsigned colorOrIdx)
@@ -74,7 +76,7 @@ void LuaServerPlayer::SetColor(unsigned colorOrIdx)
         player.color = PLAYER_COLORS[colorOrIdx];
     } else
         player.color = colorOrIdx;
-    GAMESERVER.SendToAll(GameMessage_Player_Toggle_Color(player.getPlayerID(), player.color));
+    GAMESERVER.SendToAll(GameMessage_Player_Set_Color(player.getPlayerID(), player.color));
 }
 
 void LuaServerPlayer::Close()
