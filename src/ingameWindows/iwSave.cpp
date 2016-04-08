@@ -61,10 +61,6 @@ iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& windo
     : IngameWindow(CGI_SAVE, 0xFFFF, 0xFFFF, 600, 400 + add_height, window_title, LOADER.GetImageN("resource", 41))
 {
     AddTable(0, 20, 30, 560, 300, TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250, ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER,  "", 0, ctrlTable::SRT_STRING);
-
-
-    // Tabelle ausfüllen beim Start
-    RefreshTable();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -98,8 +94,7 @@ void iwSaveLoad::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 void iwSaveLoad::Msg_TableSelectItem(const unsigned int  /*ctrl_id*/, const int selection)
 {
     // Dateiname ins Edit schreiben, wenn wir entsprechende Einträge auswählen
-    GetCtrl<ctrlEdit>(1)->SetText
-    (GetCtrl<ctrlTable>(0)->GetItemText(selection, 0));
+    GetCtrl<ctrlEdit>(1)->SetText(GetCtrl<ctrlTable>(0)->GetItemText(selection, 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -223,6 +218,9 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     // Ungültig oder 0 --> Deaktiviert auswählen
     if(!found)
         combo->SetSelection(0);
+
+    // Tabelle ausfüllen beim Start
+    RefreshTable();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -252,6 +250,8 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  c
 {
     AddEdit(1, 20, 350, 510, 22, TC_GREEN2, NormalFont);
     AddImageButton(2, 540, 346, 40, 40, TC_GREEN2, LOADER.GetImageN("io", 48));
+    // Tabelle ausfüllen beim Start
+    RefreshTable();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
