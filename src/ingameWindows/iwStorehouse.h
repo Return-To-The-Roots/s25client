@@ -28,7 +28,7 @@ class dskGameInterface;
 class iwStorehouse : public iwBaseWarehouse
 {
     public:
-        iwStorehouse(GameWorldView& gwv, dskGameInterface& gi, nobStorehouse* sh);
+        iwStorehouse(GameWorldView& gwv, nobStorehouse* sh);
 };
 
 #endif // !iwHQ_H_INCLUDED

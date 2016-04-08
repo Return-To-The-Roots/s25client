@@ -48,9 +48,9 @@ const unsigned IODAT_SHIP_ID = 218;
  *
  *  @author OLiver
  */
-iwBuilding::iwBuilding(GameWorldView& gwv, dskGameInterface& gi, nobUsual* const building)
+iwBuilding::iwBuilding(GameWorldView& gwv, nobUsual* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gi(gi), building(building)
+      gwv(gwv), building(building)
 {
     // Arbeitersymbol
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -237,7 +237,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 					if(it == buildings.end()) //was last entry in list -> goto first
 						it=buildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
-					iwBuilding* nextscrn=new iwBuilding(gwv, gi, (*it));
+					iwBuilding* nextscrn=new iwBuilding(gwv, *it);
 					nextscrn->Move(x_,y_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;

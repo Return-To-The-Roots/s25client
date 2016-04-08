@@ -52,9 +52,9 @@
  *
  *  @author OLiver
 */
-iwMainMenu::iwMainMenu(GameWorldView& gwv, dskGameInterface& gi)
+iwMainMenu::iwMainMenu(GameWorldView& gwv)
     : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
-      gwv(gwv), gi(gi)
+      gwv(gwv)
 {
     // Verteilung
     AddImageButton( 0,  12,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
@@ -125,7 +125,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 5: // Gebäudestatistik
         {
-            WINDOWMANAGER.Show(new iwBuildings(gwv, gi));
+            WINDOWMANAGER.Show(new iwBuildings(gwv));
         } break;
         case 6: // Inventur
         {

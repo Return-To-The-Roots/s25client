@@ -90,7 +90,7 @@ const unsigned short font_distance_y = 20;
 
 
 /// Konstruktor von @p iwMilitary.
-iwBuildings::iwBuildings(GameWorldView& gwv, dskGameInterface& gi) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv),gi(gi)
+iwBuildings::iwBuildings(GameWorldView& gwv) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv)
 {
     // Symbole für die einzelnen Gebäude erstellen
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
@@ -147,7 +147,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			if((*it)->GetBuildingType()==bts[ctrl_id]) // got first of type -> open building window (military)
 			{
 				gwv.MoveToMapPt((*it)->GetPos());
-				iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, *it);
+				iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, *it);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
 			}
@@ -159,7 +159,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	{
 		nobUsual* it=*GAMECLIENT.GetLocalPlayer().GetBuildings(bts[ctrl_id]).begin();
 		gwv.MoveToMapPt(it->GetPos());
-		iwBuilding* nextscrn=new iwBuilding(gwv, gi, (it));
+		iwBuilding* nextscrn=new iwBuilding(gwv, it);
 		WINDOWMANAGER.Show(nextscrn);
 		return;
 	}
@@ -171,7 +171,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
 				gwv.MoveToMapPt((*it)->GetPos());
-				iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>(*it));
+				iwStorehouse* nextscrn=new iwStorehouse(gwv, dynamic_cast<nobStorehouse*>(*it));
 				nextscrn->Move(x_,y_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
@@ -186,7 +186,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
 				gwv.MoveToMapPt((*it)->GetPos());
-				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>(*it));
+				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, dynamic_cast<nobHarborBuilding*>(*it));
 				nextscrn->Move(x_,y_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;

@@ -28,12 +28,11 @@ class dskGameInterface;
 class iwMilitaryBuilding : public IngameWindow
 {
     private:
-        nobMilitary* const building;
-		dskGameInterface& gi;
         GameWorldView& gwv;
+        nobMilitary* const building;
 
     public:
-        iwMilitaryBuilding(GameWorldView& gwv, dskGameInterface& gi, nobMilitary* const building);
+        iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building);
 
         /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
         static void DemolitionNotAllowed();

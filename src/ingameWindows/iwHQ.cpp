@@ -36,8 +36,8 @@ class dskGameInterface;
  *
  *  @author OLiver
  */
-iwHQ::iwHQ(GameWorldView& gwv, dskGameInterface& gi, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
-    : iwBaseWarehouse(gwv, gi, title, pages_count, wh)
+iwHQ::iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
+    : iwBaseWarehouse(gwv, title, pages_count, wh)
 {
     // Soldaten Reservierungsseite
     ctrlGroup* reserve = AddGroup(102);

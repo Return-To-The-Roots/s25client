@@ -193,7 +193,7 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             break;
         case 1: // Optionen
-            WINDOWMANAGER.Show(new iwMainMenu(gwv, *this));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv));
             break;
         case 2: // Baukosten
             if(WINDOWMANAGER.IsDesktopActive())
@@ -400,18 +400,18 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(new iwHQ(gwv, *this, gwb.GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
+                WINDOWMANAGER.Show(new iwHQ(gwv, gwb.GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwStorehouse(gwv, *this, gwb.GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(new iwStorehouse(gwv, gwb.GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, *this, gwb.GetSpecObj<nobHarborBuilding>(cSel)));
+                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, gwb.GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(bt <= BLD_FORTRESS)
-                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, *this, gwb.GetSpecObj<nobMilitary>(cSel)));
+                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, gwb.GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(new iwBuilding(gwv, *this, gwb.GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.Show(new iwBuilding(gwv, gwb.GetSpecObj<nobUsual>(cSel)));
             return true;
         }
 
@@ -700,7 +700,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             return true;
         case 'm': // Hauptauswahl
-            WINDOWMANAGER.Show(new iwMainMenu(gwv, *this));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv));
             return true;
         case 'n': // Show Post window
             WINDOWMANAGER.Show(new iwPostWindow(gwv));

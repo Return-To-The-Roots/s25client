@@ -49,10 +49,9 @@
  *
  *  @author OLiver
  */
-iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, dskGameInterface& gi, const char* const title,
+iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, const std::string& title,
                                  unsigned char page_count,
-                                 nobBaseWarehouse* wh)
-    : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv), gi(gi), wh(wh)
+                                 nobBaseWarehouse* wh) : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv),  wh(wh)
 {
     wh->AddListener(this);
 
@@ -225,19 +224,19 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					gwv.MoveToMapPt((*it)->GetPos());
 					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
-						iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);
+						iwHQ* nextscrn=new iwHQ(gwv, (*it),_("Headquarters"), 3);
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 					{
-						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>(*it));
+						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, dynamic_cast<nobHarborBuilding*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 					{
-						iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>(*it));
+						iwStorehouse* nextscrn=new iwStorehouse(gwv, dynamic_cast<nobStorehouse*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}

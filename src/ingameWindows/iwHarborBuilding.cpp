@@ -38,8 +38,8 @@ class dskGameInterface;
  *
  *  @author OLiver
  */
-iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, dskGameInterface& gi, nobHarborBuilding* hb)
-    : iwHQ(gwv, gi, hb, _("Harbor building"), 4)
+iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
+    : iwHQ(gwv, hb, _("Harbor building"), 4)
 {
     // Zusätzliche Hafenseite
     ctrlGroup* harbor_page = AddGroup(103);

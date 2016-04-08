@@ -30,14 +30,13 @@ class dskGameInterface;
 class iwBaseWarehouse : public iwWares, public IDataChangedListener
 {
         GameWorldView& gwv;		
-		dskGameInterface& gi;
 
     protected:
         nobBaseWarehouse* wh; ///< Pointer zum entsprechenden Lagerhaus
 
     public:
         /// Konstruktor von @p iwBaseWarehouse.
-        iwBaseWarehouse(GameWorldView& gwv, dskGameInterface& gi, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
+        iwBaseWarehouse(GameWorldView& gwv, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh);
         ~iwBaseWarehouse() override;
 
         void OnChange(unsigned changeId) override;

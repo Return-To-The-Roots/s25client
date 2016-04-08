@@ -45,9 +45,9 @@
  *
  *  @author OLiver
  */
-iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, dskGameInterface& gi, nobMilitary* const building)
+iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      building(building),gi(gi), gwv(gwv)
+    gwv(gwv), building(building)
 {
     // Schwert
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -199,7 +199,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 					if(it == militaryBuildings.end()) //was last entry in list -> goto first												{
 						it=militaryBuildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
-					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
+					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, *it);
 					nextscrn->Move(x_,y_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;

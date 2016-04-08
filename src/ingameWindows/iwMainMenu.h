@@ -26,15 +26,10 @@ class dskGameInterface;
 
 class iwMainMenu : public IngameWindow
 {
-        // Interface für das Spiel (brauchen einige Fenster)
-        GameWorldView& gwv;
-        /// Spielinterface-Fenster (brauchen einige Fenster)
-        dskGameInterface& gi;
-
     public:
-        /// Konstruktor von @p iwMainMenu.
-        iwMainMenu(GameWorldView& gwv, dskGameInterface& gi);
+        iwMainMenu(GameWorldView& gwv);
     private:
+        GameWorldView& gwv;
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };

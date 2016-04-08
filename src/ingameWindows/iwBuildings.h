@@ -25,11 +25,10 @@ class GameWorldView;
 class iwBuildings : public IngameWindow
 {
 	GameWorldView& gwv;
-    dskGameInterface& gi;
     public:
 
         /// Konstruktor von @p iwMilitary.
-        iwBuildings(GameWorldView& gwv, dskGameInterface& gi);
+        iwBuildings(GameWorldView& gwv);
 
     private:
 
