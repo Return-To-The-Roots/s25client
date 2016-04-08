@@ -7,7 +7,7 @@ Eingeklammerte Belegungen funktionieren noch nicht.
 P:.................... Pause
 
 H:.................... Zum Hauptquartier springen
-B:.................... Zur Ausgangsposition zur�ckspringen
+B:.................... Zur Ausgangsposition zurückspringen
 
 N:.................... Nachrichtenfenster
 L:.................... Landkarte
@@ -15,13 +15,13 @@ M:.................... Hauptauswahl
 I:..................... Inventar
 
 SPACE:............ Haus-Bau-Hilfe an-/ausschalten
-C:.................... Bezeichnungen der H�user zeigen
-S:.................... Status der H�user zeigen
+C:.................... Bezeichnungen der Häuser zeigen
+S:.................... Status der Häuser zeigen
 
 Z:.................... (Zoomt das aktuelle Fenster)
 V:.................... (Spielgeschwindigkeit verstellen)
 
-Alt-W, Esc:...... Schlie�t aktives Fenster
+Alt-W, Esc:...... Schließt aktives Fenster
 Alt-Q:.............. Spiel verlassen
 
 F1:................... (Spiel laden)
@@ -33,13 +33,13 @@ F12:.................. Kontrollfenster
 
 Im Nachrichten Fenster:
 
-DEL:................ (Nachricht l�schen)
+DEL:................ (Nachricht lï¿½schen)
 G:.................... (Zum Ort der Nachricht gehen)
-+/-:.................. (N�chste/Vorherige Nachricht)
++/-:.................. (Nï¿½chste/Vorherige Nachricht)
 
 Cursortasten: Kartenausschnitt scrollen
 
-Im Replay Modus zus�tzlich:
+Im Replay Modus zusätzlich:
 
 D:.................... Karte auf- und zudecken
 J:.................... Zu einem bestimmten GF springen

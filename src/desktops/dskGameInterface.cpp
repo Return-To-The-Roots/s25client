@@ -54,6 +54,7 @@
 #include "ingameWindows/iwTrade.h"
 #include "ingameWindows/iwMapDebug.h"
 #include "nodeObjs/noFlag.h"
+#include "nodeObjs/noTree.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/noBuildingSite.h"
@@ -83,7 +84,7 @@ dskGameInterface::dskGameInterface()
     : Desktop(NULL),
       gwv(GAMECLIENT.QueryGameWorldViewer()), cbb(LOADER.GetPaletteN("pal5")),
       actionwindow(NULL), roadwindow(NULL),
-      selected(0, 0), minimap(*gwv)
+      selected(0, 0), minimap(*gwv), zoomLvl(0)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -308,7 +309,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     if(road.mode)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
-        MapPoint cSel = gwv->GetSel();
+        MapPoint cSel = gwv->GetSelectedPt();
         // Um auf Wasserweglängenbegrenzun reagieren zu können:
         MapPoint cSel2(cSel);
 
@@ -376,7 +377,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         iwAction::Tabs action_tabs;
 
-        const MapPoint cSel = gwv->GetSel();
+        const MapPoint cSel = gwv->GetSelectedPt();
 
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = gwv->GetShip(cSel, GAMECLIENT.GetPlayerID()))
@@ -740,6 +741,24 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         {
             gwv->ShowProductivity();
         } return true;
+        case 'z': // zoom
+            if(++zoomLvl > 5)
+                zoomLvl = 0;
+            float zoomFactor;
+            if(zoomLvl == 0)
+                zoomFactor = 1.f;
+            else if(zoomLvl == 1)
+                zoomFactor = 1.1f;
+            else if(zoomLvl == 2)
+                zoomFactor = 1.2f;
+            else if(zoomLvl == 3)
+                zoomFactor = 1.3f;
+            else if(zoomLvl == 4)
+                zoomFactor = 1.5f;
+            else
+                zoomFactor = 1.9f;
+            gwv->GetView()->SetZoomFactor(zoomFactor);
+            return true;
     }
 
     return false;
@@ -753,11 +772,15 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
  */
 void dskGameInterface::Run()
 {
+    // Reset draw counter of the trees before drawing
+    noTree::ResetDrawCounter();
+
     unsigned water_percent;
-    gwv->Draw(GAMECLIENT.GetPlayerID(), &water_percent, actionwindow != NULL, selected, road);
+    gwv->Draw(&water_percent, actionwindow != NULL, selected, road);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
+    SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 
     messenger.Draw();
 }

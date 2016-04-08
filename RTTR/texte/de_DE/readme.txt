@@ -10,17 +10,17 @@ C. Spiel
    2. Multiplayer-Spiele
    3. Replays
    4. Optionen
-D. Abstürze und Fehler
-E. Übersicht: Updates und Änderungen
+D. AbstÃ¼rze und Fehler
+E. Ãœbersicht: Updates und Ã„nderungen
 
 --------------------------------------------------------------------------------
 
 A. Allgemeine Hinweise
 
-   Das Spiel benötigt eine OpenGL-fähige Grafikkarte mit schätzungsweise
+   Das Spiel benÃ¶tigt eine OpenGL-fÃ¤hige Grafikkarte mit schÃ¤tzungsweise
    mindestens 64 MiB Grafikspeicher. Ein Prozessor mit 800 MHz reicht aus.
 
-   Weiterhin benötigt man eine installierte "Siedler 2 Gold-Edition" oder die
+   Weiterhin benÃ¶tigt man eine installierte "Siedler 2 Gold-Edition" oder die
    Originalversion + Missions-CD.
 
 --------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ B. Installation
 
    1. Windows
 
-      Windows 95/98/ME/Vista ist nicht offiziell unterstützt. Vista sollte
+      Windows 95/98/ME/Vista ist nicht offiziell unterstÃ¼tzt. Vista sollte
       aber eigentlich funktionieren.
 
       a) Zip-Archive
@@ -39,28 +39,28 @@ B. Installation
          der selben Ebene wie S2.EXE befindet).
 
          Darin kann man dann s25client.exe zum Spielen von Siedler II.5 RTTR
-         ausführen.
+         ausfÃ¼hren.
          
          (In Nightlies kann man mit RTTR.BAT updaten.)
 
       b) Setup
-         Setup ausführen und als Installationsverzeichnis die installierte
-         "Siedler 2 Gold-Edition" auswählen.
-         Alternativ kann man natürlich nachtäglich den Inhalt der
+         Setup ausfÃ¼hren und als Installationsverzeichnis die installierte
+         "Siedler 2 Gold-Edition" auswÃ¤hlen.
+         Alternativ kann man natÃ¼rlich nachtÃ¤glich den Inhalt der
          Gold-Edition in den Installationsordner von S25rttr kopieren.
 
          Das Spiel kann man dann bequem mit der installierten
-         Desktopverknüpfung starten.
+         DesktopverknÃ¼pfung starten.
 
-      Es werden KEINE originalen Spieldateien verändert. Man kann
-      weiterhin das Original ohne Beeinträchtigung spielen.
+      Es werden KEINE originalen Spieldateien verÃ¤ndert. Man kann
+      weiterhin das Original ohne BeeintrÃ¤chtigung spielen.
       
    -------------------------------------------------------------------------
 
    2. Linux
 
-      Zunächst benötigt man folgende Pakete
-      (ggf über Paketmanager/per Hand installieren):
+      ZunÃ¤chst benÃ¶tigt man folgende Pakete
+      (ggf Ã¼ber Paketmanager/per Hand installieren):
 
       libsndfile libsamplerate libsdl1.2 libsdl-mixer1.2 gettext timidity
 
@@ -89,7 +89,7 @@ B. Installation
       /opt/s25rttr/bin/rttr.sh
       
       (Nightly Versionen updaten sich selber. Wenn man rttr.sh mit der
-      Option noupdate startet, wird kein Update durchgeführt.)
+      Option noupdate startet, wird kein Update durchgefÃ¼hrt.)
 
 --------------------------------------------------------------------------------
 
@@ -98,25 +98,25 @@ C. Spiel
    1. Erstellen eines Spiels
 
       Einen richtigen Einzelspielermodus gibt es in dem Sinne noch nicht, man
-      kann aber trotzdem folgendermaßen alleine im Multiplayermodus siedeln:
+      kann aber trotzdem folgendermaÃŸen alleine im Multiplayermodus siedeln:
 
-      1. Im Hauptmenü auf Mehrspieler gehen
+      1. Im HauptmenÃ¼ auf Mehrspieler gehen
       2. Direkte IP
       3. Spiel erstellen
-      4. Im folgenden Fenster einen Namen für das Spiel eingeben (Passwort
+      4. Im folgenden Fenster einen Namen fÃ¼r das Spiel eingeben (Passwort
          kann weggelassen werden).
-      5. Im Kartenauswahl-Fenster kann oben eine Kategorie ausgewählt
-         werden, ähnlich wie im Original.
-         Alternativ kann unten über "Spiel laden" ein Spielstand geladen
+      5. Im Kartenauswahl-Fenster kann oben eine Kategorie ausgewÃ¤hlt
+         werden, Ã¤hnlich wie im Original.
+         Alternativ kann unten Ã¼ber "Spiel laden" ein Spielstand geladen
          werden.
       6. Nach der Auswahl der Karte und einem Klick auf "Weiter" gelangt man
-         ins Host-Menü, wo im oberen Teil die einzelnen Spieler samt ihrer
+         ins Host-MenÃ¼, wo im oberen Teil die einzelnen Spieler samt ihrer
          Eigenschaften aufgelistet sind.
-         Spielziel, Aufklärung und Teams sperren sind bisher noch ohne
+         Spielziel, AufklÃ¤rung und Teams sperren sind bisher noch ohne
          Bedeutung.
-         Achtung: Um das Spiel starten zu können, müssen entweder alle Plätze
+         Achtung: Um das Spiel starten zu kÃ¶nnen, mÃ¼ssen entweder alle PlÃ¤tze
          mit menschlichen oder KI-Spielern besetzt werden, oder die Slots
-         müssen geschlossen werden (mit Klick auf die Buttons unter
+         mÃ¼ssen geschlossen werden (mit Klick auf die Buttons unter
          "Spielername").
 
          Die KI-Spieler sind zur Zeit noch nicht lebendig.
@@ -128,95 +128,95 @@ C. Spiel
          weiteren Spieler gehen bei "Direkte IP" unter "Spiel beitreten" und
          geben die IP oder den Hostnamen des Spielerstellers (Host) ein.
 
-      b) Spielen über integrierte Lobby
-         Über die eingebaute Lobby kann man vorhandene Spiele einsehen,
-         diese eröffnen und auch beitreten. Weiterhin kann man sich hier
+      b) Spielen Ã¼ber integrierte Lobby
+         Ãœber die eingebaute Lobby kann man vorhandene Spiele einsehen,
+         diese erÃ¶ffnen und auch beitreten. Weiterhin kann man sich hier
          mit anderen Spielern direkt unterhalten.
 
-         Der Funktionsumfang der Lobby ist momentan noch sehr beschränkt
+         Der Funktionsumfang der Lobby ist momentan noch sehr beschrÃ¤nkt
          und es kann zeitweise zu Datenbank-Problemen kommen.
          Ein Punktesystem ist vorgesehen, aber noch nicht implementiert.
 
          Alle eingegebenen Daten werden nicht weitergegeben und dienen rein
          zur Identifikation des Spielers. Die zur Registrierung notwendige
          Emailadresse ist momentan nur ggf. zum Zusenden eines neuen
-         Passworts gedacht und ist nicht öffentlich einsehbar.
+         Passworts gedacht und ist nicht Ã¶ffentlich einsehbar.
 
-      Für das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
-      das Spiel eröffnen möchte, u.a. bei Verwendung eines Routers, einer
+      FÃ¼r das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
+      das Spiel erÃ¶ffnen mÃ¶chte, u.a. bei Verwendung eines Routers, einer
       Firewall usw. freigegeben werden!
       Router nennen diese Einstellung "Virtual Server" oder einfach nur
       "Port Forwarding". Dort ist dann Port 3665 vom Typ TCP auf die interne IP
       des Spiel-PCs weiterzuleiten.
 
-      Die Schneckensymbole im oberen Teil stehen für Lags der jeweiligen
+      Die Schneckensymbole im oberen Teil stehen fÃ¼r Lags der jeweiligen
       Spieler.
 
-      Wenn der Host das Spiel verlässt, können die übrigen Spieler noch nicht
-      das Spiel weiter fortführen.
+      Wenn der Host das Spiel verlÃ¤sst, kÃ¶nnen die Ã¼brigen Spieler noch nicht
+      das Spiel weiter fortfÃ¼hren.
 
-      Es sind sowohl Spiele über das Internet als auch über LAN möglich, wenn
+      Es sind sowohl Spiele Ã¼ber das Internet als auch Ã¼ber LAN mÃ¶glich, wenn
       die jeweilige IP bekannt ist.
 
-      Das Übertragen der Karte geschieht immer automatisch (auch wenn die
+      Das Ãœbertragen der Karte geschieht immer automatisch (auch wenn die
       Spielteilnehmer die Karte des Hosts schon besitzen).
 
-      Drücken der Taste "P" pausiert das Spiel (dies kann nur der Host tun),
-      weiteres Drücken von "P" lässt das spiel fortführen.
+      DrÃ¼cken der Taste "P" pausiert das Spiel (dies kann nur der Host tun),
+      weiteres DrÃ¼cken von "P" lÃ¤sst das spiel fortfÃ¼hren.
 
-      Zum Chatten muss man "Enter" drücken, dann kommt ein Chatfenster.
+      Zum Chatten muss man "Enter" drÃ¼cken, dann kommt ein Chatfenster.
 
    3. Replays
 
-      Replays sind Aufzeichnungen von gespielten Partien. Sie können unter
+      Replays sind Aufzeichnungen von gespielten Partien. Sie kÃ¶nnen unter
       "Einzelspieler", "Replay abspielen" angesehen werden.
 
-      Mit den Tasten [+] und [-] kann die Geschwindigkeit erhöht bzw.
-      verringert werden. Mit der Taste "J" ist es möglich, Abschnitte im
-      Replay zu überspringen.
+      Mit den Tasten [+] und [-] kann die Geschwindigkeit erhÃ¶ht bzw.
+      verringert werden. Mit der Taste "J" ist es mÃ¶glich, Abschnitte im
+      Replay zu Ã¼berspringen.
 
       Replays werden aufgezeichnet und im Verzeichnis RTTR/REPLAYS
       abgespeichert.
 
    4. Speichern
 
-      Speichern ist im Spielmenü an der "originalen" Stelle möglich.
-      Speichern ist auch aus dem Replaymodus an beliebiger Stelle möglich.
+      Speichern ist im SpielmenÃ¼ an der "originalen" Stelle mÃ¶glich.
+      Speichern ist auch aus dem Replaymodus an beliebiger Stelle mÃ¶glich.
       Laden von Spielen kann man nur aus dem Kartenauswahlbildschirm.
-      Mitspieler benötigen kein eigenes Savegame, dieses wird automatisch
-      beim Verbinden übertragen.
+      Mitspieler benÃ¶tigen kein eigenes Savegame, dieses wird automatisch
+      beim Verbinden Ã¼bertragen.
 
    5. Optionen
 
-      Die Einstellungen im Optionsmenü sollten so weit selbsterklärend sein.
+      Die Einstellungen im OptionsmenÃ¼ sollten so weit selbsterklÃ¤rend sein.
 
 
 --------------------------------------------------------------------------------
 
-D. Abstürze und Fehler
+D. AbstÃ¼rze und Fehler
 
    Es handelt sich selbst bei dieser Version zwar schon um eine stabilere
-   Variante. Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler
-   lassen sich aber leider immer noch nicht ausschließen.
+   Variante. AbstÃ¼rze, Asyncs, Speicherzugriffs- und sonstige Fehler
+   lassen sich aber leider immer noch nicht ausschlieÃŸen.
 
-   Durch Replays können Fehler leicht rekonstruiert werden. Ihr könnt uns
+   Durch Replays kÃ¶nnen Fehler leicht rekonstruiert werden. Ihr kÃ¶nnt uns
    mit dem Zusenden euer Replays helfen, weitere zu finden. Bitte stellt
    aber sicher, dass ihr immer die neuste Daily-Version verwendet. Fehler
-   aus möglicherweise veralteten Releaseversionen sind mitunter schon lange
+   aus mÃ¶glicherweise veralteten Releaseversionen sind mitunter schon lange
    behoben.
 
    Falls ein Async aufgetreten ist, findet ihr im RTTR/LOGS/-Verzeichnis
-   Log-Dateien. Schickt uns diese bitte von JEDEM(!) Spieler einschließlich
+   Log-Dateien. Schickt uns diese bitte von JEDEM(!) Spieler einschlieÃŸlich
    eines Replays (Verzeichnis RTTR/REPLAYS).
    Bitte stellt sicher, dass ihr den Async nicht absichtlich durch Spielen mit
-   verschiedenen Versionen oder Cheaten herbeigeführt habt!
+   verschiedenen Versionen oder Cheaten herbeigefÃ¼hrt habt!
 
    Wenn ihr Fehler findet, bitte diese im Launchpad posten:
 
                http://bugs.siedler25.org/
 
-   Das Launchpad erhöht die Übersichtlichkeit für Bugs und ermöglicht euch
-   zudem selber einsehen zu können, wann der Bug gefixt wurde.
+   Das Launchpad erhÃ¶ht die Ãœbersichtlichkeit fÃ¼r Bugs und ermÃ¶glicht euch
+   zudem selber einsehen zu kÃ¶nnen, wann der Bug gefixt wurde.
 
    Bei weiteren Fragen bitte an
         
@@ -224,8 +224,8 @@ D. Abstürze und Fehler
 
    wenden.
 
-   Alternativ könnt ihr euch auch im Forum oder im IRC-Channel unter
-   irc.freenode.net:6667/#siedler2.5 melden. Ihr könnt dem Chat auch über
+   Alternativ kÃ¶nnt ihr euch auch im Forum oder im IRC-Channel unter
+   irc.freenode.net:6667/#siedler2.5 melden. Ihr kÃ¶nnt dem Chat auch Ã¼ber
    unsere Seite beitreten.
 
    Vielen Dank!
@@ -235,7 +235,7 @@ D. Abstürze und Fehler
 
 --------------------------------------------------------------------------------
 
-E. Übersicht: Updates und Änderungen
+E. Ãœbersicht: Updates und Ã„nderungen
 
  * 0.7.2 - 17.01.2011 *
    --------------------------------------------------------------------------
@@ -244,57 +244,57 @@ E. Übersicht: Updates und Änderungen
  * 0.7 - Seventh version - 24.12.2010 *
    --------------------------------------------------------------------------
    - OpenSource!
-   - Übersetzung: Niederländisch
-   - Übersetzung: Russisch (Zeichensatz fehlt)
-   - Übersetzung: Czech
-   - Übersetzung: Estonian
-   - Übersetzung: Italian
-   - Übersetzung: Norwegian
-   - Übersetzung: Polish
-   - Übersetzung: Slovenian
-   - Übersetzung: Slovak
+   - Ãœbersetzung: NiederlÃ¤ndisch
+   - Ãœbersetzung: Russisch (Zeichensatz fehlt)
+   - Ãœbersetzung: Czech
+   - Ãœbersetzung: Estonian
+   - Ãœbersetzung: Italian
+   - Ãœbersetzung: Norwegian
+   - Ãœbersetzung: Polish
+   - Ãœbersetzung: Slovenian
+   - Ãœbersetzung: Slovak
    - Statistik
    - Post
    - Diplomatie - noch nicht fertig
    - Erste KI von jh
    - Seefahrt (noch nicht fertig)
-   - Addon Menü
+   - Addon MenÃ¼
 
  * 0.6 - Sechste Version - 25.01.2009 *
    -------------------------------------------------------------------------
    - viele Bugs behoben
    - Fog of War (mit Teamview-Option)
-   - Spähturm
+   - SpÃ¤hturm
    - Minimap
-   - Mapvorschau im Hostmenü
+   - Mapvorschau im HostmenÃ¼
    - Planierer
    - Balancing
-   - Trägeranimationen hinzugefügt
-   - Mehrsprachenunterstützung
-   - Übersetzung: Spanisch
-   - Übersetzung: Ungarisch
-   - Übersetzung: Schwedisch
-   - Übersetzung: Französisch (nicht abgeschlossen)
-   - Übersetzung: Finnisch (nicht abgeschlossen)
+   - TrÃ¤geranimationen hinzugefÃ¼gt
+   - MehrsprachenunterstÃ¼tzung
+   - Ãœbersetzung: Spanisch
+   - Ãœbersetzung: Ungarisch
+   - Ãœbersetzung: Schwedisch
+   - Ãœbersetzung: FranzÃ¶sisch (nicht abgeschlossen)
+   - Ãœbersetzung: Finnisch (nicht abgeschlossen)
    - Siegesmeldungen
    - Tastaturbefehle + Readme
-   - Option im Hostmenü: Abriss-Verbot
-   - Gebäude Info
-   - Einige Hausanimationen hinzugefügt
+   - Option im HostmenÃ¼: Abriss-Verbot
+   - GebÃ¤ude Info
+   - Einige Hausanimationen hinzugefÃ¼gt
    
-  * 0.5 - Fünfte Version - 27.01.2008 *
+  * 0.5 - FÃ¼nfte Version - 27.01.2008 *
    -------------------------------------------------------------------------
    - sehr viele Bugs behoben
-   - Eselstraßen, Eselzüchter
-   - Bootsstraßen mit Booten und Werft (baut nur Boote)
-   - Bergstraßen
+   - EselstraÃŸen, EselzÃ¼chter
+   - BootsstraÃŸen mit Booten und Werft (baut nur Boote)
+   - BergstraÃŸen
    - Katapulte
-   - Soldatenverhalten verändert, rücken nicht mehr so schnell nach
-   - beim Abbrennen von Lagerhäusern und dem Hauptquartier flüchten
-     nun alle Leute nach draußen wie im Original
+   - Soldatenverhalten verÃ¤ndert, rÃ¼cken nicht mehr so schnell nach
+   - beim Abbrennen von LagerhÃ¤usern und dem Hauptquartier flÃ¼chten
+     nun alle Leute nach drauÃŸen wie im Original
    - Async-Logdatei
    - diverse Kleinigkeiten wie ein das Original-Abfragefenster vor dem
-     Abbrennen von Gebäuden oder fehlende/falsche Tooltips
+     Abbrennen von GebÃ¤uden oder fehlende/falsche Tooltips
    - Sound an/aus Buttons im Spiel
 
    * 0.4 - Vierte Version - 09.10.2007 *
@@ -310,30 +310,30 @@ E. Übersicht: Updates und Änderungen
    -------------------------------------------------------------------------
    - diverse Absturzbugs behoben
    - Siedler warten nun, falls der Platz vor ihnen besetzt ist
-     (durch Kämpfe z.B.)
+     (durch KÃ¤mpfe z.B.)
    - Settings unter Linux im Home-Verzeichnis untergebracht
    - Settings in lesbares Format gebracht (GER-File)
    - Build-System unter Linux von autotools auf CMake umgestellt
-   - CIA-Bot für den IRC aktiviert
+   - CIA-Bot fÃ¼r den IRC aktiviert
    - Lobbygrundfunktionen fertiggestellt
-   - Vorbereitungen für Speichern und Laden getroffen
+   - Vorbereitungen fÃ¼r Speichern und Laden getroffen
 
    * 0.2 - Zweite Version - 15.07.2007 *
    -------------------------------------------------------------------------
-   - diverse Bugs behoben und diverse Verzögerungsbugs unterdrückt
-   - Menüs in variabler Auflösung
-   - Prüfen der Synchronität und Rausschmiss asynchroner Spieler
+   - diverse Bugs behoben und diverse VerzÃ¶gerungsbugs unterdrÃ¼ckt
+   - MenÃ¼s in variabler AuflÃ¶sung
+   - PrÃ¼fen der SynchronitÃ¤t und Rausschmiss asynchroner Spieler
    - Inventurfenster eingebaut
-   - "Nicht Einlagern"/"Auslagern" möglich
-   - Bereit-Button im Host-Menü
+   - "Nicht Einlagern"/"Auslagern" mÃ¶glich
+   - Bereit-Button im Host-MenÃ¼
    - Verteilung korrigiert
    - diverse fehlende Zierobjekte (z.B Stalagmiten, Ruinen) eingebaut
-   - zu allen GebÃ¤uden kann nun gesprungen werden
+   - zu allen GebÃƒÂ¤uden kann nun gesprungen werden
    - einige Zierobjekte werden beim Wegbau nun abgerissen
-   - Produktivitätsanzeige und Namenanzeige (C, S) teilweise schon korrekt
+   - ProduktivitÃ¤tsanzeige und Namenanzeige (C, S) teilweise schon korrekt
      implementiert
-   - Abrissbestätigung eingebaut
-   - RoadWindow schließt sich nun, wenn man woanders hinklickt
+   - AbrissbestÃ¤tigung eingebaut
+   - RoadWindow schlieÃŸt sich nun, wenn man woanders hinklickt
 
    * 0.1 - Erster Release - 01.07.2007 *
    -------------------------------------------------------------------------

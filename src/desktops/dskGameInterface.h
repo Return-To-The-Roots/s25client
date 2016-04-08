@@ -82,6 +82,7 @@ class dskGameInterface :
         /// Minimap-Instanz
         IngameMinimap minimap;
 
+        unsigned zoomLvl;
     public:
         /// Konstruktor von @p dskGameInterface.
         dskGameInterface();
@@ -95,11 +96,6 @@ class dskGameInterface :
 
         /// Lässt das Spiel laufen (zeichnen)
         void Run();
-
-        /// Wird aufgerufen, wenn eine Taste gedrückt wurde
-        void KeyPressed(KeyEvent ke);
-        /// Wird bei Linksmausklicks aufgerufen
-        void MouseClicked(MouseCoords* mc);
 
         /// Aktiviert Straßenbaumodus bzw gibt zurück, ob er aktiviert ist
         void ActivateRoadMode(const RoadMode rm);

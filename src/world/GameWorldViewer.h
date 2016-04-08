@@ -29,7 +29,7 @@ class TerrainRenderer;
 struct RoadsBuilding;
 
 /// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
-class GameWorldViewer : public virtual GameWorldBase
+class GameWorldViewer: public virtual GameWorldBase
 {
     /// Wird gerade gescrollt?
     bool scroll;
@@ -40,23 +40,23 @@ public:
 
     GameWorldViewer();
 
-    void Draw(const unsigned char player, unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
+    void Draw(unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
     {
-        view.Draw(player, water, draw_selected, selected, rb);
+        view.Draw(water, draw_selected, selected, rb);
     }
 
-    inline GameWorldView* GetView() {return(&view);}
+    GameWorldView* GetView() { return(&view); }
 
-    inline TerrainRenderer* GetTerrainRenderer() {return(&tr);}
+    TerrainRenderer* GetTerrainRenderer() { return(&tr); }
 
     /// Bauqualitäten anzeigen oder nicht
-    inline void ShowBQ() {view.ShowBQ();}
+    void ShowBQ() { view.ToggleShowBQ(); }
     /// Gebäudenamen zeigen oder nicht
-    inline void ShowNames() {view.ShowNames();}
+    void ShowNames() { view.ToggleShowNames(); }
     /// Produktivität zeigen oder nicht
-    inline void ShowProductivity() {view.ShowProductivity();};
+    void ShowProductivity() { view.ToggleShowProductivity(); };
     /// Schaltet Produktivitäten/Namen komplett aus oder an
-    inline void ShowNamesAndProductivity() {view.ShowNamesAndProductivity();}
+    void ShowNamesAndProductivity() { view.ToggleShowNamesAndProductivity(); }
 
     /// Wegfinden ( A* ) --> Wegfindung auf allgemeinen Terrain ( ohne Straäcn ) ( fr Wegebau oder frei herumlaufende )
     bool FindRoadPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>& route, const bool boat_road);
@@ -67,27 +67,25 @@ public:
     void MouseMove(const MouseCoords& mc);
     void MouseDown(const MouseCoords& mc);
     void MouseUp();
-    inline void DontScroll() { scroll = false; }
+    void DontScroll() { scroll = false; }
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
-    inline void MoveTo(int x, int y, bool absolute = false) {view.MoveTo(x, y, absolute);};
+    void MoveTo(int x, int y, bool absolute = false) { view.MoveTo(x, y, absolute); };
     /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
-    inline void MoveToMapObject(const MapPoint pt) {view.MoveToMapObject(pt);};
+    void MoveToMapObject(const MapPoint pt) { view.MoveToMapPt(pt); };
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
-    inline void MoveToLastPosition() {view.MoveToLastPosition();};
+    void MoveToLastPosition() { view.MoveToLastPosition(); };
 
-    void MoveToX(int x, bool absolute = false) {view.MoveToX(x, absolute);}
-    void MoveToY(int y, bool absolute = false) {view.MoveToY(y, absolute);}
+    void MoveToX(int x, bool absolute = false) { view.MoveToX(x, absolute); }
+    void MoveToY(int y, bool absolute = false) { view.MoveToY(y, absolute); }
 
     /// Gibt selektierten Punkt zurück
-    inline MapCoord GetSelX() const { return(view.GetSelX()); }
-    inline MapCoord GetSelY() const { return(view.GetSelY()); }
-    MapPoint GetSel() const { return view.GetSel(); }
+    MapPoint GetSelectedPt() const { return view.GetSelectedPt(); }
 
     /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-    inline Point<int> GetFirstPt() const { return(view.GetFirstPt()); }
+    Point<int> GetFirstPt() const { return(view.GetFirstPt()); }
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-    inline Point<int> GetLastPt() const { return(view.GetLastPt()); }
+    Point<int> GetLastPt() const { return(view.GetLastPt()); }
 
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
     Visibility GetVisibility(const MapPoint pt) const;
@@ -110,16 +108,15 @@ public:
     /// Schattierungen (vor allem FoW) neu berechnen
     void RecalcAllColors();
 
-    /// Gibt das erste Schiff, was gefunden wird von diesem Spieler, zurück, ansonsten NULL, falls es nicht
-    /// existiert
+    /// Gibt das erste Schiff, was gefunden wird von diesem Spieler, zurück, ansonsten NULL, falls es nicht existiert
     noShip* GetShip(const MapPoint pt, const unsigned char player) const;
 
     /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
     unsigned GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, const MapPoint pt) const;
 
-    inline void Resize(unsigned short width, unsigned short height) {view.Resize(width, height);}
+    void Resize(unsigned short width, unsigned short height) { view.Resize(width, height); }
 
-    inline void SetAIDebug(unsigned what, unsigned player, bool active) {view.SetAIDebug(what, player, active);}
+    void SetAIDebug(unsigned what, unsigned player, bool active) { view.SetAIDebug(what, player, active); }
 };
 
 #endif // GameWorldViewer_h__

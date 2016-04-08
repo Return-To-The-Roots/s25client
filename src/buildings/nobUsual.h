@@ -127,9 +127,9 @@ protected:
         /// Stoppt/Erlaubt Produktion (real)
         void SetProductionEnabled(const bool enabled);
         /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
-        bool IsProductionDisabledVirtual() { return disable_production_virtual; }
+        bool IsProductionDisabledVirtual() const { return disable_production_virtual; }
         /// Fragt ab, ob Produktion ausgeschaltet ist (real)
-        bool IsProductionDisabled() { return disable_production; }
+        bool IsProductionDisabled() const { return disable_production; }
         /// Setzt Produktivität instant auf 0 (Keine Ressourcen mehr)
         void SetProductivityToZero();
 

@@ -38,6 +38,8 @@ class iwObservate : public IngameWindow
         bool scroll;
         int sx, sy;
 
+        unsigned zoomLvl;
+
     public:
         iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt);
 
