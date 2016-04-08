@@ -25,7 +25,7 @@
 #include "Settings.h"
 #include "GameClient.h"
 #include "world/MapGeometry.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldView.h"
 #include "gameData/TerrainData.h"
 #include "ExtensionList.h"
 #include "Loader.h"

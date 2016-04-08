@@ -23,17 +23,17 @@
 
 class dskGameInterface;
 class nobUsual;
-class GameWorldViewer;
+class GameWorldView;
 
 class iwBuilding : public IngameWindow
 {
-        GameWorldViewer* const gwv;
-        dskGameInterface* const gi; ///< Das GameInterface
+        GameWorldView& gwv;
+        dskGameInterface& gi; ///< Das GameInterface
         nobUsual* const building;              ///< Das zugehörige Gebäudeobjekt
 
     public:
         /// Konstruktor von @p iwBuilding.
-        iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobUsual* const building);
+        iwBuilding(GameWorldView& gwv, dskGameInterface& gi, nobUsual* const building);
 
     private:
 

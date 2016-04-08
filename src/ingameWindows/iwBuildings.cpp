@@ -31,6 +31,7 @@
 #include "iwBuilding.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
+#include "world/GameWorldView.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "files.h"
@@ -89,7 +90,7 @@ const unsigned short font_distance_y = 20;
 
 
 /// Konstruktor von @p iwMilitary.
-iwBuildings::iwBuildings(GameWorldViewer* const gwv, dskGameInterface* const gi) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv),gi(gi)
+iwBuildings::iwBuildings(GameWorldView& gwv, dskGameInterface& gi) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv),gi(gi)
 {
     // Symbole für die einzelnen Gebäude erstellen
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
@@ -145,8 +146,8 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id]) // got first of type -> open building window (military)
 			{
-				gwv->MoveToMapObject((*it)->GetPos());
-				iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
+				gwv.MoveToMapPt((*it)->GetPos());
+				iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, *it);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
 			}
@@ -157,7 +158,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	if(ctrl_id != 21 && ctrl_id != 31)
 	{
 		nobUsual* it=*GAMECLIENT.GetLocalPlayer().GetBuildings(bts[ctrl_id]).begin();
-		gwv->MoveToMapObject(it->GetPos());
+		gwv.MoveToMapPt(it->GetPos());
 		iwBuilding* nextscrn=new iwBuilding(gwv, gi, (it));
 		WINDOWMANAGER.Show(nextscrn);
 		return;
@@ -169,8 +170,8 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
-				gwv->MoveToMapObject((*it)->GetPos());
-				iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>((*it)));
+				gwv.MoveToMapPt((*it)->GetPos());
+				iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>(*it));
 				nextscrn->Move(x_,y_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
@@ -184,8 +185,8 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
-				gwv->MoveToMapObject((*it)->GetPos());
-				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>((*it)));
+				gwv.MoveToMapPt((*it)->GetPos());
+				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>(*it));
 				nextscrn->Move(x_,y_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;

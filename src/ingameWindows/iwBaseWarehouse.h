@@ -23,21 +23,21 @@
 #include "IDataChangedListener.h"
 
 class nobBaseWarehouse;
-class GameWorldViewer;
+class GameWorldView;
 class dskGameInterface;
 
 /// Basisklasse für die HQ- und Lagerhäuserfenster
 class iwBaseWarehouse : public iwWares, public IDataChangedListener
 {
-        GameWorldViewer* const gwv;		
-		dskGameInterface* const gi;
+        GameWorldView& gwv;		
+		dskGameInterface& gi;
 
     protected:
         nobBaseWarehouse* wh; ///< Pointer zum entsprechenden Lagerhaus
 
     public:
         /// Konstruktor von @p iwBaseWarehouse.
-        iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
+        iwBaseWarehouse(GameWorldView& gwv, dskGameInterface& gi, const char* const title, unsigned char page_count, nobBaseWarehouse* wh);
         ~iwBaseWarehouse() override;
 
         void OnChange(unsigned changeId) override;

@@ -26,11 +26,11 @@ class dskGameInterface;
 class iwRoadWindow : public IngameWindow
 {
     private:
-        dskGameInterface* const GameInterface;
+        dskGameInterface& gi;
         Point<unsigned short> mousePosAtOpen_;
 
     public:
-        iwRoadWindow(dskGameInterface* const gi, bool flagpossible, int mouse_x, int mouse_y);
+        iwRoadWindow(dskGameInterface& gi, bool flagpossible, int mouse_x, int mouse_y);
         ~iwRoadWindow() override;
 
     private:

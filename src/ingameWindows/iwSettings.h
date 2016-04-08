@@ -22,14 +22,10 @@
 #include "IngameWindow.h"
 #include "driver/src/VideoInterface.h"
 
-class dskGameInterface;
-
-/// Fenster mit den Statistiken.
 class iwSettings : public IngameWindow
 {
     public:
-        /// Konstruktor von @p iwStatistics.
-        iwSettings(dskGameInterface* gameDesktop);
+        iwSettings();
         ~iwSettings() override;
 
     private:

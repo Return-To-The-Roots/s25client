@@ -22,18 +22,18 @@
 #include "IngameWindow.h"
 
 class nobMilitary;
-class GameWorldViewer;
+class GameWorldView;
 class dskGameInterface;
 
 class iwMilitaryBuilding : public IngameWindow
 {
     private:
         nobMilitary* const building;
-		dskGameInterface* const gi;
-        GameWorldViewer* const gwv;
+		dskGameInterface& gi;
+        GameWorldView& gwv;
 
     public:
-        iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobMilitary* const building);
+        iwMilitaryBuilding(GameWorldView& gwv, dskGameInterface& gi, nobMilitary* const building);
 
         /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
         static void DemolitionNotAllowed();

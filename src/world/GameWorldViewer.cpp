@@ -25,18 +25,12 @@
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
 
-#include "Settings.h"
-
-#include "driver/src/MouseCoords.h"
-
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 class FOWObject;
 
-GameWorldViewer::GameWorldViewer() : scroll(false), sx(0), sy(0), view(GameWorldView(Point<int>(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()))
+GameWorldViewer::GameWorldViewer()
 {
-    view.SetGameWorldViewer(this);
-    MoveTo(0, 0);
 }
 
 unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt)
@@ -63,59 +57,6 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     }
 
     return total_count;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void GameWorldViewer::MouseDown(const MouseCoords& mc)
-{
-    sx = mc.x;
-    sy = mc.y;
-
-    scroll = true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void GameWorldViewer::MouseUp()
-{
-    DontScroll();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void GameWorldViewer::MouseMove(const MouseCoords& mc)
-{
-    // Scrollen
-    if(scroll)
-    {
-        unsigned acceleration = SETTINGS.global.smartCursor ? 2 : 3;
-
-        if(SETTINGS.interface.revert_mouse)
-            MoveTo( ( sx - mc.x) * acceleration,  ( sy - mc.y) * acceleration);
-        else
-            MoveTo(-( sx - mc.x) * acceleration, -( sy - mc.y) * acceleration);
-        VIDEODRIVER.SetMousePos(sx, sy);
-
-        if (!SETTINGS.global.smartCursor) {
-            sx = mc.x;
-            sy = mc.y;
-        }
-    }
 }
 
 // Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann

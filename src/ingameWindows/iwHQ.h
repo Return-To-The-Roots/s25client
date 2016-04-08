@@ -29,7 +29,7 @@ class iwHQ : public iwBaseWarehouse
 {
     public:
         /// Konstruktor von @p iwHQ.
-        iwHQ(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
+        iwHQ(GameWorldView& gwv, dskGameInterface& gi, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
 
     protected:
 

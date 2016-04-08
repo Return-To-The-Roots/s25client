@@ -1694,7 +1694,7 @@ void GameClient::ServerLost()
  *  @author OLiver
  *  @author FloSoft
  */
-void GameClient::SkipGF(unsigned int gf)
+void GameClient::SkipGF(unsigned int gf, GameWorldView& gwv)
 {
     if(gf <= framesinfo.gf_nr)
         return;
@@ -1724,19 +1724,15 @@ void GameClient::SkipGF(unsigned int gf)
     {
         if(i % 1000 == 0)
         {
-            unsigned int water_percent;
-            RoadsBuilding road;
-            char nwf_string[256];
-
+            RoadBuildState road;
             road.mode = RM_DISABLED;
-            road.point = MapPoint(0, 0);
-            road.start = MapPoint(0, 0);
 
             // spiel aktualisieren
-            gw->Draw(&water_percent, false, MapPoint(0, 0), road);
+            gwv.Draw(road);
 
             // text oben noch hinschreiben
-            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );            
+            char nwf_string[256];
+            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );
             LargeFont->Draw(VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();

@@ -36,7 +36,7 @@ class dskGameInterface;
  *
  *  @author OLiver
  */
-iwHQ::iwHQ(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
+iwHQ::iwHQ(GameWorldView& gwv, dskGameInterface& gi, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
     : iwBaseWarehouse(gwv, gi, title, pages_count, wh)
 {
     // Soldaten Reservierungsseite

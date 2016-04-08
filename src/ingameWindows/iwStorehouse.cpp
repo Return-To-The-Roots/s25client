@@ -33,7 +33,7 @@ class dskGameInterface;
  *
  *  @author OLiver
  */
-iwStorehouse::iwStorehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, nobStorehouse* sh)
+iwStorehouse::iwStorehouse(GameWorldView& gwv, dskGameInterface& gi, nobStorehouse* sh)
     : iwBaseWarehouse(gwv, gi, _("Storehouse"), 2, sh)
 {
 }

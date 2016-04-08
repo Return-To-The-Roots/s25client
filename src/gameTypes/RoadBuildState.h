@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful,
+// Return To The Roots is distributed in the hope that it will be useful, 
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -15,21 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef iwOPTIONSWINDOW_H_INCLUDED
-#define iwOPTIONSWINDOW_H_INCLUDED
+#ifndef RoadBuildState_h__
+#define RoadBuildState_h__
 
-#include "IngameWindow.h"
+#include "gameTypes/RoadBuildMode.h"
+#include "gameTypes/MapTypes.h"
+#include <vector>
 
-class dskGameInterface;
-
-class iwOptionsWindow : public IngameWindow
+struct RoadBuildState
 {
-    public:
-        iwOptionsWindow();
+    RoadBuildMode mode;   ///< Straßenmodus
 
-    private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
+    MapPoint point, start;
+    std::vector<unsigned char> route;  ///< Richtungen der gebauten Straße
 };
 
-#endif
+#endif // RoadBuildState_h__

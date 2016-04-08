@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful,
+// Return To The Roots is distributed in the hope that it will be useful, 
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -15,21 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef iwOPTIONSWINDOW_H_INCLUDED
-#define iwOPTIONSWINDOW_H_INCLUDED
+#ifndef RoadBuildMode_h__
+#define RoadBuildMode_h__
 
-#include "IngameWindow.h"
-
-class dskGameInterface;
-
-class iwOptionsWindow : public IngameWindow
+enum RoadBuildMode
 {
-    public:
-        iwOptionsWindow();
-
-    private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
+    RM_DISABLED, // kein Straﬂenbau
+    RM_NORMAL, // Bau einer normalen Straﬂe
+    RM_BOAT // Bau einer Wasserstraﬂe
 };
 
-#endif
+#endif // RoadBuildMode_h__

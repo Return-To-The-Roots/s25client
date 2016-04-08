@@ -22,34 +22,21 @@
 #include "Desktop.h"
 #include "Messenger.h"
 #include "ingameWindows/iwAction.h"
-#include "gameTypes/MapTypes.h"
 #include "IngameMinimap.h"
 #include "customborderbuilder.h"
 #include "ClientInterface.h"
 #include "GameInterface.h"
 #include "LobbyInterface.h"
+#include "world/GameWorldView.h"
+#include "gameTypes/MapTypes.h"
+#include "gameTypes/RoadBuildState.h"
 #include "libsiedler2/src/ArchivInfo.h"
 
 class iwRoadWindow;
-class GameWorldViewer;
 class GlobalGameSettings;
 class MouseCoords;
+class GameWorldBase;
 struct KeyEvent;
-
-enum RoadMode
-{
-    RM_DISABLED, // kein Straßenbau
-    RM_NORMAL, // Bau einer normalen Straße
-    RM_BOAT // Bau einer Wasserstraße
-};
-
-struct RoadsBuilding
-{
-    RoadMode mode;   ///< Straßenmodus
-
-    MapPoint point, start;
-    std::vector<unsigned char> route;  ///< Richtungen der gebauten Straße
-};
 
 class dskGameInterface :
     public Desktop,
@@ -59,15 +46,15 @@ class dskGameInterface :
 {
     private:
 
-        // Interface für das Spiel
-        GameWorldViewer* gwv;
+        GameWorldView gwv;
+        GameWorldBase& gwb;
 
         CustomBorderBuilder cbb;
 
         libsiedler2::ArchivInfo borders;
 
         /// Straßenbauzeug
-        RoadsBuilding road;
+        RoadBuildState road;
 
         // Aktuell geöffnetes Aktionsfenster
         iwAction* actionwindow;
@@ -82,6 +69,8 @@ class dskGameInterface :
         /// Minimap-Instanz
         IngameMinimap minimap;
 
+        bool isScrolling;
+        Point<int> startScrollPt;
         unsigned zoomLvl;
     public:
         /// Konstruktor von @p dskGameInterface.
@@ -94,12 +83,9 @@ class dskGameInterface :
         /// Called whenever Settings are changed ingame
         void SettingsChanged();
 
-        /// Lässt das Spiel laufen (zeichnen)
-        void Run();
-
         /// Aktiviert Straßenbaumodus bzw gibt zurück, ob er aktiviert ist
-        void ActivateRoadMode(const RoadMode rm);
-        RoadMode GetRoadMode() const { return road.mode; }
+        void ActivateRoadMode(const RoadBuildMode rm);
+        RoadBuildMode GetRoadMode() const { return road.mode; }
 
         /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
         void CommandBuildRoad();
@@ -127,6 +113,9 @@ class dskGameInterface :
         void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
 
     private:
+
+        /// Lässt das Spiel laufen (zeichnen)
+        void Run();
 
         void Resize_(unsigned short width, unsigned short height) override;
 

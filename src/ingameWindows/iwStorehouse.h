@@ -22,13 +22,13 @@
 #include "iwBaseWarehouse.h"
 
 class nobStorehouse;
-class GameWorldViewer;
+class GameWorldView;
 class dskGameInterface;
 
 class iwStorehouse : public iwBaseWarehouse
 {
     public:
-        iwStorehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, nobStorehouse* sh);
+        iwStorehouse(GameWorldView& gwv, dskGameInterface& gi, nobStorehouse* sh);
 };
 
 #endif // !iwHQ_H_INCLUDED

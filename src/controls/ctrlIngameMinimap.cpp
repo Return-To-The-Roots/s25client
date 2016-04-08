@@ -19,7 +19,8 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlIngameMinimap.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldView.h"
+#include "world/MapGeometry.h"
 #include "IngameMinimap.h"
 #include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
@@ -44,7 +45,7 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
                                       const unsigned short padding_x,
                                       const unsigned short padding_y,
                                       IngameMinimap& minimap,
-                                      GameWorldViewer& gwv)
+                                      GameWorldView& gwv)
     : ctrlMinimap(parent, id, x, y, width, height, padding_x, padding_y, minimap.GetMapWidth(),
                   minimap.GetMapHeight()), minimap(minimap), gwv(gwv)
 {
@@ -64,7 +65,7 @@ bool ctrlIngameMinimap::Draw_()
     Point<int> middlePt = (gwv.GetLastPt() + gwv.GetFirstPt()) / 2;
 
     // Koordinaten korrigieren
-    MapPoint middle_corrected = gwv.MakeMapPoint(middlePt);
+    MapPoint middle_corrected = MakeMapPoint(middlePt, minimap.GetMapWidth(), minimap.GetMapHeight());
 
     // Scroll-Auswahl-Bild holen
     glArchivItem_Bitmap* image = LOADER.GetMapImageN(23);
@@ -133,7 +134,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
             unsigned short map_x = (mc.x - (GetX() + GetLeft())) * minimap.GetMapWidth() / width_show;
             unsigned short map_y = (mc.y - (GetY() + GetTop())) * minimap.GetMapHeight() / height_show;
 
-            gwv.MoveToMapObject(MapPoint(map_x, map_y));
+            gwv.MoveToMapPt(MapPoint(map_x, map_y));
 
             return true;
         }

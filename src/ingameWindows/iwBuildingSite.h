@@ -22,12 +22,12 @@
 #include "IngameWindow.h"
 
 class noBuildingSite;
-class GameWorldViewer;
+class GameWorldView;
 
 class iwBuildingSite : public IngameWindow
 {
     public:
-        iwBuildingSite(GameWorldViewer* const gwv, const noBuildingSite* const buildingsite);
+        iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite);
 
     protected:
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
@@ -35,7 +35,7 @@ class iwBuildingSite : public IngameWindow
         void Msg_PaintAfter() override;
 
     private:
-        GameWorldViewer* const gwv;
+        GameWorldView& gwv;
         const noBuildingSite* buildingsite;
 };
 

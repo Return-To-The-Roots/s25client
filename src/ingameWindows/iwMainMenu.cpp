@@ -52,7 +52,7 @@
  *
  *  @author OLiver
 */
-iwMainMenu::iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi)
+iwMainMenu::iwMainMenu(GameWorldView& gwv, dskGameInterface& gi)
     : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
       gwv(gwv), gi(gi)
 {
@@ -141,7 +141,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 9: // Schiffe
         {
-            WINDOWMANAGER.Show(new iwShip(*gwv, GAMECLIENT.GetLocalPlayer().GetShipByID(0)));
+            WINDOWMANAGER.Show(new iwShip(gwv, GAMECLIENT.GetLocalPlayer().GetShipByID(0)));
         } break;
         case 10: // Baureihenfolge
         {
@@ -158,7 +158,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 30: // Optionen
         {
-            WINDOWMANAGER.Show(new iwOptionsWindow(this->gi));
+            WINDOWMANAGER.Show(new iwOptionsWindow());
         } break;
     }
 }

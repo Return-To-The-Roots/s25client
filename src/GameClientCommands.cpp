@@ -150,10 +150,6 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
         {
             // Our currently accumulated gamecommands are invalid after the change, as they would modify the old player
             gameCommands_.clear();
-            // zum HQ hinscrollen
-            GameClientPlayer& player = players[playerId_];
-            if(player.hqPos.isValid())
-                gw->MoveToMapObject(player.hqPos);
         }
     }
 

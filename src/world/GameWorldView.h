@@ -23,7 +23,7 @@
 #include <vector>
 
 class GameWorldViewer;
-struct RoadsBuilding;
+struct RoadBuildState;
 class TerrainRenderer;
 class noBaseBuilding;
 
@@ -63,7 +63,7 @@ class GameWorldView
     /// Last drawn map point
     Point<int> lastPt;
 
-    GameWorldViewer* gwv;
+    GameWorldViewer& gwv;
 
     unsigned d_what;
     unsigned d_player;
@@ -78,11 +78,10 @@ class GameWorldView
     float zoomFactor;
 
 public:
-    GameWorldView(const Point<int>& pos, unsigned width, unsigned height);
+    GameWorldView(GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
     ~GameWorldView();
 
-    GameWorldViewer& GetGameWorldViewer() const {return *gwv;}
-    void SetGameWorldViewer(GameWorldViewer* viewer);
+    GameWorldViewer& GetGameWorldViewer() const { return gwv; }
 
     void SetPos(const Point<int>& newPos) { pos = newPos; }
     Point<int> GetPos() const { return pos; }
@@ -98,7 +97,7 @@ public:
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
-    void Draw(unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb);
+    void Draw(const RoadBuildState& rb, const bool draw_selected = false, const MapPoint selected = MapPoint::Invalid(), unsigned* water = NULL);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
@@ -137,7 +136,7 @@ private:
     void DrawFigures(const MapPoint& pt, const Point<int>&curPos, std::vector<ObjectBetweenLines>& between_lines);
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const Point<int>& curPos);
-    void DrawGUI(const RoadsBuilding& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt);
+    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt);
 
 };
 

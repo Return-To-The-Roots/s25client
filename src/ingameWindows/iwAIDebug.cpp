@@ -25,6 +25,7 @@
 #include "ai/AIPlayerJH.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
+#include "world/GameWorldView.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
@@ -39,7 +40,7 @@
  *
  *  @author jh
  */
-iwAIDebug::iwAIDebug(GameWorldViewer* const gwv)
+iwAIDebug::iwAIDebug(GameWorldView& gwv)
     : IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)
 {
@@ -119,12 +120,12 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
         case 1:
         {
             this->selection = selection;
-            gwv->SetAIDebug(overlay, ais[selection]->GetPlayerID(), false);
+            gwv.SetAIDebug(overlay, ais[selection]->GetPlayerID(), false);
         } break;
         case 0:
         {
             overlay = selection;
-            gwv->SetAIDebug(overlay, ais[selection]->GetPlayerID(), true);
+            gwv.SetAIDebug(overlay, ais[selection]->GetPlayerID(), true);
         } break;
     }
 }

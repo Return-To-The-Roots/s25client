@@ -21,27 +21,24 @@
 
 #include "IngameWindow.h"
 
-class GameWorldViewer;
+class GameWorldView;
 class noBaseBuilding;
 
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwDemolishBuilding : public IngameWindow
 {
-        GameWorldViewer* const gwv;
+        GameWorldView& gwv;
         const noBaseBuilding* building;
         const bool flag;
 
     public:
 
-        /// Konstruktor von @p iwBuilding.
-//  iwDemolishBuilding(GameWorldViewer * const gwv,const GO_Type got,const unsigned short building_x, const unsigned short building_y,const BuildingType building, const Nation nation, const unsigned guiid);
-        iwDemolishBuilding(GameWorldViewer* const gwv, const noBaseBuilding* building, const bool flag = false);
+        iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag = false);
 
     private:
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_PaintBefore() override;
-
 };
 
 #endif // !iwDEMOLISHBUILDING_H_INCLUDED

@@ -21,19 +21,19 @@
 
 #include "IngameWindow.h"
 
-class GameWorldViewer;
+class GameWorldView;
 class dskGameInterface;
 
 class iwMainMenu : public IngameWindow
 {
         // Interface für das Spiel (brauchen einige Fenster)
-        GameWorldViewer* gwv;
+        GameWorldView& gwv;
         /// Spielinterface-Fenster (brauchen einige Fenster)
-        dskGameInterface* gi;
+        dskGameInterface& gi;
 
     public:
         /// Konstruktor von @p iwMainMenu.
-        iwMainMenu(GameWorldViewer* const gwv, dskGameInterface* const gi);
+        iwMainMenu(GameWorldView& gwv, dskGameInterface& gi);
     private:
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;

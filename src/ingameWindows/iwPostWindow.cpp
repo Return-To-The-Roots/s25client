@@ -21,7 +21,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwPostWindow.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldView.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlImage.h"
@@ -38,7 +38,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-iwPostWindow::iwPostWindow(GameWorldViewer& gwv)
+iwPostWindow::iwPostWindow(GameWorldView& gwv)
     : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {
     AddImageButton( 0, 18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190));   // Viewer: 191 - Papier
@@ -115,7 +115,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             PostMsgWithLocation* pml = dynamic_cast<PostMsgWithLocation*>(pm);
             if (pml)
             {
-                gwv.MoveToMapObject(pml->GetPos());
+                gwv.MoveToMapPt(pml->GetPos());
             }
         }
         break;

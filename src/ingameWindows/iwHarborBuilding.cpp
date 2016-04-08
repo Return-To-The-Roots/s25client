@@ -38,7 +38,7 @@ class dskGameInterface;
  *
  *  @author OLiver
  */
-iwHarborBuilding::iwHarborBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobHarborBuilding* hb)
+iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, dskGameInterface& gi, nobHarborBuilding* hb)
     : iwHQ(gwv, gi, hb, _("Harbor building"), 4)
 {
     // Zusätzliche Hafenseite

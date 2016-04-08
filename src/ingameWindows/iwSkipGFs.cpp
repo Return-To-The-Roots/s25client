@@ -34,8 +34,8 @@
  *
  *  @author OLiver
  */
-iwSkipGFs::iwSkipGFs()
-    : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41))
+iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
+    : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {
     // Text vor Editfeld
     AddText(0, 50, 36, _("to GameFrame:"), COLOR_YELLOW, 0, NormalFont);
@@ -51,7 +51,7 @@ iwSkipGFs::iwSkipGFs()
 void iwSkipGFs::SkipGFs()
 {
     int gf = atoi(GetCtrl<ctrlEdit>(1)->GetText().c_str());
-    GAMECLIENT.SkipGF(gf);
+    GAMECLIENT.SkipGF(gf, gwv);
 }
 
 void iwSkipGFs::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
