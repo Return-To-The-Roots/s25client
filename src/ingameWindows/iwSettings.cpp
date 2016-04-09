@@ -32,7 +32,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -40,7 +39,7 @@ class dskGameInterface;
  *
  *  @author NastX
  */
-iwSettings::iwSettings(dskGameInterface*  /*gameDesktop*/)
+iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41))
 {
     AddText(  46,  15,  40, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);

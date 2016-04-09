@@ -20,7 +20,7 @@
 #include "IngameWindow.h"
 
 class IngameMinimap;
-class GameWorldViewer;
+class GameWorldView;
 
 /// Fenster für die Minimap
 class iwMinimap : public IngameWindow
@@ -35,7 +35,7 @@ class iwMinimap : public IngameWindow
         void Msg_ButtonClick(const unsigned ctrl_id) override;
 
     public:
-        iwMinimap(IngameMinimap& minimap, GameWorldViewer& gwv);
+        iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);
 };
 
 

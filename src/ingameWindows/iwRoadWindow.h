@@ -21,16 +21,16 @@
 
 #include "IngameWindow.h"
 
-class dskGameInterface;
+class GameInterface;
 
 class iwRoadWindow : public IngameWindow
 {
     private:
-        dskGameInterface* const GameInterface;
+        GameInterface& gi;
         Point<unsigned short> mousePosAtOpen_;
 
     public:
-        iwRoadWindow(dskGameInterface* const gi, bool flagpossible, int mouse_x, int mouse_y);
+        iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y);
         ~iwRoadWindow() override;
 
     private:

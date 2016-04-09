@@ -19,73 +19,25 @@
 #define GameWorldViewer_h__
 
 #include "world/GameWorldBase.h"
-#include "world/GameWorldView.h"
 #include "gameTypes/MapTypes.h"
 
 class MouseCoords;
 class noShip;
 class FOWObject;
 class TerrainRenderer;
-struct RoadsBuilding;
+struct RoadBuildState;
 
 /// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
 class GameWorldViewer: public virtual GameWorldBase
 {
-    /// Wird gerade gescrollt?
-    bool scroll;
-    int sx, sy;
-
-    GameWorldView view;
 public:
 
     GameWorldViewer();
 
-    void Draw(unsigned* water, const bool draw_selected, const MapPoint selected, const RoadsBuilding& rb)
-    {
-        view.Draw(water, draw_selected, selected, rb);
-    }
+    TerrainRenderer& GetTerrainRenderer() { return tr; }
 
-    GameWorldView* GetView() { return(&view); }
-
-    TerrainRenderer* GetTerrainRenderer() { return(&tr); }
-
-    /// Bauqualitäten anzeigen oder nicht
-    void ShowBQ() { view.ToggleShowBQ(); }
-    /// Gebäudenamen zeigen oder nicht
-    void ShowNames() { view.ToggleShowNames(); }
-    /// Produktivität zeigen oder nicht
-    void ShowProductivity() { view.ToggleShowProductivity(); };
-    /// Schaltet Produktivitäten/Namen komplett aus oder an
-    void ShowNamesAndProductivity() { view.ToggleShowNamesAndProductivity(); }
-
-    /// Wegfinden ( A* ) --> Wegfindung auf allgemeinen Terrain ( ohne Straäcn ) ( fr Wegebau oder frei herumlaufende )
-    bool FindRoadPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>& route, const bool boat_road);
     /// Sucht die Anzahl der verfügbaren Soldaten, um das Militärgebäude an diesem Punkt anzugreifen
     unsigned GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt);
-
-    /// Scrolling-Zeug
-    void MouseMove(const MouseCoords& mc);
-    void MouseDown(const MouseCoords& mc);
-    void MouseUp();
-    void DontScroll() { scroll = false; }
-
-    /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
-    void MoveTo(int x, int y, bool absolute = false) { view.MoveTo(x, y, absolute); };
-    /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
-    void MoveToMapObject(const MapPoint pt) { view.MoveToMapPt(pt); };
-    /// Springt zur letzten Position, bevor man "weggesprungen" ist
-    void MoveToLastPosition() { view.MoveToLastPosition(); };
-
-    void MoveToX(int x, bool absolute = false) { view.MoveToX(x, absolute); }
-    void MoveToY(int y, bool absolute = false) { view.MoveToY(y, absolute); }
-
-    /// Gibt selektierten Punkt zurück
-    MapPoint GetSelectedPt() const { return view.GetSelectedPt(); }
-
-    /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-    Point<int> GetFirstPt() const { return(view.GetFirstPt()); }
-    /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-    Point<int> GetLastPt() const { return(view.GetLastPt()); }
 
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
     Visibility GetVisibility(const MapPoint pt) const;
@@ -114,9 +66,6 @@ public:
     /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
     unsigned GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, const MapPoint pt) const;
 
-    void Resize(unsigned short width, unsigned short height) { view.Resize(width, height); }
-
-    void SetAIDebug(unsigned what, unsigned player, bool active) { view.SetAIDebug(what, player, active); }
 };
 
 #endif // GameWorldViewer_h__

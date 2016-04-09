@@ -48,11 +48,8 @@
  *
  *  @author OLiver
  */
-iwOptionsWindow::iwOptionsWindow(dskGameInterface* gameDesktop)
-    : IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("Game menu"), LOADER.GetImageN("resource", 41))
+iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("Game menu"), LOADER.GetImageN("resource", 41))
 {
-    this->gameDesktop = gameDesktop;
-
     // Der Soldat oben
     AddImage(1, 150, 36, LOADER.GetImageN("io", 30));
 
@@ -158,7 +155,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 18: // Advanced
         {
-            WINDOWMANAGER.Show(new iwSettings(this->gameDesktop));
+            WINDOWMANAGER.Show(new iwSettings());
             Close();
         } break;
 

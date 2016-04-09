@@ -23,7 +23,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/noBuildingSite.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldView.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -38,7 +38,7 @@
  *
  *  @author OLiver
  */
-iwBuildingSite::iwBuildingSite(GameWorldViewer* const gwv, const noBuildingSite* const buildingsite)
+iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
     : IngameWindow(buildingsite->CreateGUIID(), 0xFFFE, 0xFFFE, 226, 194, _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
@@ -80,7 +80,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 4: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(buildingsite->GetPos());
+            gwv.MoveToMapPt(buildingsite->GetPos());
         } break;
     }
 }

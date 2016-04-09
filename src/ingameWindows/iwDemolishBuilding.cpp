@@ -19,7 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwDemolishBuilding.h"
-
+#include "world/GameWorldView.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 #include "GameClient.h"
@@ -28,7 +28,7 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-iwDemolishBuilding::iwDemolishBuilding(GameWorldViewer* const gwv, const noBaseBuilding* building, const bool flag)
+iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
     : IngameWindow(building->CreateGUIID(), 0xFFFE, 0xFFFE, 200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
 {
     // Ja
@@ -52,7 +52,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             if (flag)
             {
                 // Flagge (mitsamt Gebäude) wegreißen
-                GAMECLIENT.DestroyFlag(gwv->GetNeighbour(building->GetPos(), 4));
+                GAMECLIENT.DestroyFlag(gwv.GetViewer().GetNeighbour(building->GetPos(), 4));
             }
             else
             {
@@ -70,7 +70,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
         {
             // Zum Ort gehen
-            gwv->MoveToMapObject(building->GetPos());
+            gwv.MoveToMapPt(building->GetPos());
         } break;
     }
 }
@@ -82,6 +82,5 @@ void iwDemolishBuilding::Msg_PaintBefore()
 
     if(bitmap)
         bitmap->Draw(GetX() + 104, GetY() + 109, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-
 }
 

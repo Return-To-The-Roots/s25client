@@ -24,21 +24,22 @@
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "GameClient.h"
-#include "desktops/dskGameInterface.h"
+#include "world/GameWorldView.h"
 #include "Settings.h"
 #include "controls/ctrlButton.h"
+#include "gameTypes/RoadBuildState.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
 // 260x190, 300x250, 340x310
 
-iwObservate::iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt)
-    : IngameWindow(gwv->CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
-      view(new GameWorldView(Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)), selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
+iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
+    IngameWindow(gwv.GetViewer().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
+    parentView(gwv),
+    view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
+    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
 {
-    view->SetGameWorldViewer(gwv);
     view->MoveToMapPt(selectedPt);
     SetCloseOnRightClick(false);
 
@@ -74,9 +75,7 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
         case 2:
             break;
         case 3:
-            view->GetGameWorldViewer().MoveToMapObject(
-                MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2)
-                );
+            parentView.MoveToMapPt( MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2) );
             break;
         case 4:
             int diff = width_;
@@ -130,26 +129,25 @@ bool iwObservate::Draw_()
 
     if (!GetMinimized())
     {
-        RoadsBuilding road;
-
+        RoadBuildState road;
         road.mode = RM_DISABLED;
-        road.point = MapPoint(0, 0);
-        road.start = MapPoint(0, 0);
 
-        view->Draw(NULL, true, view->GetGameWorldViewer().GetSelectedPt(), road);
+        view->Draw(road, true, parentView.GetSelectedPt());
     }
 
-    return(IngameWindow::Draw_());
+    return IngameWindow::Draw_();
 }
 
 bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 {
     if (scroll)
     {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+
         if(SETTINGS.interface.revert_mouse)
-            view->MoveTo( ( sx - mc.x) * 2,  ( sy - mc.y) * 2);
-        else
-            view->MoveTo(-( sx - mc.x) * 2, -( sy - mc.y) * 2);
+            acceleration = -acceleration;
+
+        view->MoveTo((mc.x - sx) * acceleration, (mc.y - sy) * acceleration);
         VIDEODRIVER.SetMousePos(sx, sy);
     }
 
@@ -172,5 +170,3 @@ bool iwObservate::Msg_RightUp(const MouseCoords&  /*mc*/)
 
     return(false);
 }
-
-

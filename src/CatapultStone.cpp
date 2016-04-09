@@ -28,6 +28,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "world/GameWorldView.h"
 #include "Random.h"
 #include "gameData/MapConsts.h"
 
@@ -80,8 +81,8 @@ void CatapultStone::Destroy()
 void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int yoffset)
 {
     // Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
-    if(gwv.GetGameWorldViewer().GetVisibility(dest_building) != VIS_VISIBLE &&
-            gwv.GetGameWorldViewer().GetVisibility(dest_map) != VIS_VISIBLE)
+    if(gwv.GetViewer().GetVisibility(dest_building) != VIS_VISIBLE &&
+            gwv.GetViewer().GetVisibility(dest_map) != VIS_VISIBLE)
         return;
 
     int world_width = gwg->GetWidth() * TR_W;

@@ -32,6 +32,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobStorehouse.h"
+#include "world/GameWorldView.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
@@ -48,10 +49,9 @@
  *
  *  @author OLiver
  */
-iwBaseWarehouse::iwBaseWarehouse(GameWorldViewer* const gwv, dskGameInterface* const gi, const char* const title,
+iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, const std::string& title,
                                  unsigned char page_count,
-                                 nobBaseWarehouse* wh)
-    : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv), gi(gi), wh(wh)
+                                 nobBaseWarehouse* wh) : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv),  wh(wh)
 {
     wh->AddListener(this);
 
@@ -205,7 +205,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 13: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(wh->GetPos());
+            gwv.MoveToMapPt(wh->GetPos());
         } break;
 		case 14: //go to next of same type
 		{
@@ -221,22 +221,22 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					++it;
 					if(it == storehouses.end()) //was last entry in list -> goto first												{
 						it=storehouses.begin();
-					gwv->MoveToMapObject((*it)->GetPos());
+					gwv.MoveToMapPt((*it)->GetPos());
 					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
-						iwHQ* nextscrn=new iwHQ(gwv, gi, (*it),_("Headquarters"), 3);
+						iwHQ* nextscrn=new iwHQ(gwv, (*it),_("Headquarters"), 3);
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 					{
-						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv,gi,dynamic_cast<nobHarborBuilding*>(*it));
+						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, dynamic_cast<nobHarborBuilding*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 					{
-						iwStorehouse* nextscrn=new iwStorehouse(gwv,gi,dynamic_cast<nobStorehouse*>(*it));
+						iwStorehouse* nextscrn=new iwStorehouse(gwv, dynamic_cast<nobStorehouse*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
@@ -256,7 +256,7 @@ void iwBaseWarehouse::UpdateOverlay(unsigned i)
     UpdateOverlay(i, this->page == 0);
 }
 
-void iwBaseWarehouse::UpdateOverlay(unsigned int i, bool isWare)
+void iwBaseWarehouse::UpdateOverlay(unsigned i, bool isWare)
 {
     ctrlGroup* group = GetCtrl<ctrlGroup>(isWare ? 100 : 101);
     // Einlagern verbieten-Bild (de)aktivieren

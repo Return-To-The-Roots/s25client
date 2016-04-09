@@ -85,7 +85,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void Stop();
 
         // Gibt GameWorldViewer zurück (VORLÄUFIG, soll später verschwinden!!)
-        GameWorldViewer* QueryGameWorldViewer() const { return static_cast<GameWorldViewer*>(gw); }
+        GameWorldViewer& QueryGameWorldViewer() const { return *static_cast<GameWorldViewer*>(gw); }
         /// Gibt Map-Titel zurück
         const std::string& GetMapTitle() const { return mapinfo.title; }
         /// Gibt Pfad zu der Map zurück
@@ -147,7 +147,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
         unsigned GetTournamentModeDuration() const;
 
-        void SkipGF(unsigned int gf);
+        void SkipGF(unsigned int gf, GameWorldView& gwv);
 
         /// Changes the player ingame (for replay or debugging)
         void ChangePlayerIngame(const unsigned char player1, const unsigned char player2);

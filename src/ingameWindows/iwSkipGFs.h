@@ -21,12 +21,15 @@
 
 #include "IngameWindow.h"
 
+class GameWorldView;
+
 class iwSkipGFs : public IngameWindow
 {
     public:
-        iwSkipGFs();
+        iwSkipGFs(GameWorldView& gwv);
 
     private:
+        GameWorldView& gwv;
 
         /// Teilt dem GameClient den Wert mit
         void SkipGFs();

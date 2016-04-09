@@ -29,6 +29,7 @@ class MouseCoords;
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwObservate : public IngameWindow
 {
+        GameWorldView& parentView;
         GameWorldView* view;
 
         const MapPoint selectedPt;
@@ -41,7 +42,7 @@ class iwObservate : public IngameWindow
         unsigned zoomLvl;
 
     public:
-        iwObservate(GameWorldViewer* const gwv, const MapPoint selectedPt);
+        iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
 
     private:
         bool Draw_() override;

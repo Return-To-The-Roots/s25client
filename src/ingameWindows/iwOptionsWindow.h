@@ -20,17 +20,12 @@
 
 #include "IngameWindow.h"
 
-class dskGameInterface;
-
 class iwOptionsWindow : public IngameWindow
 {
-
     public:
-
-        iwOptionsWindow(dskGameInterface* gameDesktop);
+        iwOptionsWindow();
 
     private:
-        dskGameInterface* gameDesktop;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
 };

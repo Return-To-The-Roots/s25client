@@ -29,6 +29,7 @@
 #include "iwMsgbox.h"
 #include "iwHelp.h"
 #include "buildings/nobMilitary.h"
+#include "world/GameWorldView.h"
 #include "figures/nofPassiveSoldier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
@@ -44,9 +45,9 @@
  *
  *  @author OLiver
  */
-iwMilitaryBuilding::iwMilitaryBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobMilitary* const building)
+iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      building(building),gi(gi), gwv(gwv)
+    gwv(gwv), building(building)
 {
     // Schwert
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -182,7 +183,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // "Gehe Zu Ort"
         {
-            gwv->MoveToMapObject(building->GetPos());
+            gwv.MoveToMapPt(building->GetPos());
         } break;
 		case 9: //go to next of same type
 		{
@@ -197,8 +198,8 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 					++it;
 					if(it == militaryBuildings.end()) //was last entry in list -> goto first												{
 						it=militaryBuildings.begin();
-					gwv->MoveToMapObject((*it)->GetPos());
-					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gi, (*it));
+					gwv.MoveToMapPt((*it)->GetPos());
+					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, *it);
 					nextscrn->Move(x_,y_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;

@@ -23,7 +23,7 @@
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "controls/ctrlButton.h"
-#include "desktops/dskGameInterface.h"
+#include "GameInterface.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!
@@ -35,9 +35,9 @@
  *
  *  @author OLiver
  */
-iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossible, int mouse_x, int mouse_y)
+iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
     : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
-      GameInterface(GameInterface), mousePosAtOpen_(mouse_x, mouse_y)
+      gi(gi), mousePosAtOpen_(mouse_x, mouse_y)
 {
     // Bau abbrechen
     ctrlButton* cancel = AddImageButton(1, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 110), _("Interrupt road building"));
@@ -60,7 +60,7 @@ iwRoadWindow::iwRoadWindow(dskGameInterface* const GameInterface, bool flagpossi
 
 iwRoadWindow::~iwRoadWindow()
 {
-    GameInterface->RoadWindowClosed();
+    gi.GI_WindowClosed(this);
 }
 
 void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -69,11 +69,11 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // Flagge & Weg bauen
         {
-            GameInterface->CommandBuildRoad();
+            gi.GI_BuildRoad();
         } break;
         case 1: // Bau abbrechen
         {
-            GameInterface->ActivateRoadMode(RM_DISABLED);
+            gi.GI_SetRoadBuildMode(RM_DISABLED);
         } break;
     }
 

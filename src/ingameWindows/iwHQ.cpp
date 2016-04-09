@@ -27,8 +27,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class GameWorldViewer;
-class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -36,8 +34,8 @@ class dskGameInterface;
  *
  *  @author OLiver
  */
-iwHQ::iwHQ(GameWorldViewer* const gwv, dskGameInterface* const gi, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
-    : iwBaseWarehouse(gwv, gi, title, pages_count, wh)
+iwHQ::iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
+    : iwBaseWarehouse(gwv, title, pages_count, wh)
 {
     // Soldaten Reservierungsseite
     ctrlGroup* reserve = AddGroup(102);

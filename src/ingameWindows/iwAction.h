@@ -22,8 +22,8 @@
 #include "IngameWindow.h"
 #include "gameTypes/MapTypes.h"
 
-class dskGameInterface;
-class GameWorldViewer;
+class GameInterface;
+class GameWorldView;
 class ctrlGroup;
 
 class iwAction : public IngameWindow
@@ -55,8 +55,8 @@ class iwAction : public IngameWindow
 
     private:
 
-        dskGameInterface* const gi;
-        GameWorldViewer* const gwv;
+        GameInterface& gi;
+        GameWorldView& gwv;
 
         MapPoint selectedPt;
         Point<unsigned short> mousePosAtOpen_;
@@ -71,12 +71,11 @@ class iwAction : public IngameWindow
         unsigned short building_tab_heights[4];
 
     public:
-        iwAction(dskGameInterface* const gi, GameWorldViewer* const gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
+        iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
         ~iwAction() override;
 
         /// Gibt zurück, auf welchen Punkt es sich bezieht
-        unsigned short GetSelectedX() const { return selectedPt.x; }
-        unsigned short GetSelectedY() const { return selectedPt.y; }
+        const MapPoint& GetSelectedPt() const { return selectedPt; }
 
     private:
 

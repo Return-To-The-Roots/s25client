@@ -7,35 +7,22 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful,
+// Return To The Roots is distributed in the hope that it will be useful, 
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwBUILDINGS_H_
-#define iwBUILDINGS_H_
 
-#include "IngameWindow.h"
-class GameWorldView;
+#ifndef RoadBuildMode_h__
+#define RoadBuildMode_h__
 
-/// Fenster, welches die Anzahl aller Geb√§ude und der Baustellena auflistet
-class iwBuildings : public IngameWindow
+enum RoadBuildMode
 {
-	GameWorldView& gwv;
-    public:
-
-        /// Konstruktor von @p iwMilitary.
-        iwBuildings(GameWorldView& gwv);
-
-    private:
-
-        /// Anzahlen der Geb√§ude zeichnen
-        void Msg_PaintAfter() override;
-		
-		void Msg_ButtonClick(const unsigned int ctrl_id) override;
-
+    RM_DISABLED, // kein Straﬂenbau
+    RM_NORMAL, // Bau einer normalen Straﬂe
+    RM_BOAT // Bau einer Wasserstraﬂe
 };
 
-#endif
+#endif // RoadBuildMode_h__

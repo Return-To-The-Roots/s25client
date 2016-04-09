@@ -18,6 +18,9 @@
 #define GAMEINTERFACE_H_
 
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/RoadBuildMode.h"
+
+class Window;
 
 /// Interface, welches vom Spiel angesprocehn werden kann, um beispielsweise GUI wichtige Nachrichten
 /// zu übermiteln
@@ -37,6 +40,13 @@ class GameInterface
 
         virtual void GI_Winner(const unsigned player_id) = 0;
         virtual void GI_TeamWinner(const unsigned player_id) = 0;
+
+        /// An important window was closed (currently iwAction, iwRoad)
+        virtual void GI_WindowClosed(Window* wnd) = 0;
+        /// Changes the road building mode
+        virtual void GI_SetRoadBuildMode(RoadBuildMode mode) = 0;
+        /// Executes the construction of a road
+        virtual void GI_BuildRoad() = 0;
 };
 
 

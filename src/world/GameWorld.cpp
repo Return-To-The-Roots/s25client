@@ -64,9 +64,6 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     tr.GenerateOpenGL(*this);
 
-    if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.isValid())
-        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
-
     return true;
 }
 
@@ -145,10 +142,6 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
     }
 
     tr.GenerateOpenGL(*this);
-
-    // Zum HQ am Anfang springen, falls dieses existiert
-    if(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos.isValid())
-        this->MoveToMapObject(GetPlayer(GAMECLIENT.GetPlayerID()).hqPos);
 }
 
 

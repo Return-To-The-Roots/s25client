@@ -27,6 +27,7 @@
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
 #include "buildings/nobShipYard.h"
+#include "world/GameWorldView.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "ogl/glArchivItem_Font.h"
@@ -47,9 +48,9 @@ const unsigned IODAT_SHIP_ID = 218;
  *
  *  @author OLiver
  */
-iwBuilding::iwBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobUsual* const building)
+iwBuilding::iwBuilding(GameWorldView& gwv, nobUsual* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), gi(gi), building(building)
+      gwv(gwv), building(building)
 {
     // Arbeitersymbol
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -207,7 +208,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // "Gehe Zum Ort"
         {
-            gwv->MoveToMapObject(building->GetPos());
+            gwv.MoveToMapPt(building->GetPos());
         } break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
@@ -228,15 +229,15 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 			//go through list once we get to current building -> open window for the next one and go to next location
 			for(std::list<nobUsual*>::const_iterator it=buildings.begin(); it != buildings.end(); ++it)
 			{
-				if((*it)->GetX()==building->GetX() && (*it)->GetY()==building->GetY()) //got to current building in the list?
+				if((*it)->GetPos()==building->GetPos()) //got to current building in the list?
 				{
 					//close old window, open new window (todo: only open if it isnt already open), move to location of next building
 					Close();
 					++it;
-					if(it == buildings.end()) //was last entry in list -> goto first												{
+					if(it == buildings.end()) //was last entry in list -> goto first
 						it=buildings.begin();
-					gwv->MoveToMapObject((*it)->GetPos());
-					iwBuilding* nextscrn=new iwBuilding(gwv, gi, (*it));
+					gwv.MoveToMapPt((*it)->GetPos());
+					iwBuilding* nextscrn=new iwBuilding(gwv, *it);
 					nextscrn->Move(x_,y_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;

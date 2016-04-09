@@ -22,12 +22,12 @@
 
 class AIPlayerJH;
 class ctrlText;
-class GameWorldViewer;
+class GameWorldView;
 
 class iwAIDebug : public IngameWindow
 {
     public:
-        iwAIDebug(GameWorldViewer* const gwv);
+        iwAIDebug(GameWorldView& gwv);
 
     private:
         void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
@@ -40,7 +40,7 @@ class iwAIDebug : public IngameWindow
         unsigned selection;
         unsigned overlay;
         ctrlText* text;
-        GameWorldViewer* gwv;
+        GameWorldView& gwv;
 };
 
 #endif

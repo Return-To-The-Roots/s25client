@@ -47,7 +47,7 @@ const unsigned short BUTTON_WINDOW_SPACE = 5;
 
 
 
-iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldViewer& gwv)
+iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     : IngameWindow(CGI_MINIMAP, 0xFFFF, 0xFFF, MINIMAP_WINDOW_WIDTH,
                    MINIMAP_WINDOW_HEIGHT, _("Outline map"), LOADER.GetImageN("resource", 41)), extended(false)
 {

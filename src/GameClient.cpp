@@ -29,7 +29,6 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "desktops/dskGameInterface.h"
 #include "Random.h"
 #include "GameServer.h"
 #include "EventManager.h"
@@ -43,12 +42,15 @@
 #include "files.h"
 #include "fileFuncs.h"
 #include "ClientInterface.h"
+#include "GameInterface.h"
+#include "gameTypes/RoadBuildState.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
 #include "helpers/Deleter.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Font.h"
-
+#include "world/GameWorldView.h"
+#include "world/GameWorld.h"
 #include "libsiedler2/src/prototypen.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include <boost/smart_ptr/scoped_array.hpp>
@@ -439,7 +441,7 @@ void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
 void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
-    if(msg.playerid == 0xFFFFFFFF || msg.playerid >= GetPlayerCount())
+    if(msg.playerid == 0xFFFFFFFF)
     {
         if(ci)
             ci->CI_Error(CE_SERVERFULL);
@@ -942,11 +944,15 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
+            if(ci)
+                ci->CI_Error(CE_WRONGMAP);
             Stop();
             return;
         }
         if(!mapinfo.luaFilepath.empty() && !mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath, &mapinfo.luaChecksum))
         {
+            if(ci)
+                ci->CI_Error(CE_WRONGMAP);
             Stop();
             return;
         }
@@ -963,6 +969,8 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
                 {
                     LOG.lprintf("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
+                    if(ci)
+                        ci->CI_Error(CE_WRONGMAP);
                     Stop();
                     return;
                 }
@@ -982,6 +990,8 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 mapinfo.savegame.reset(new Savegame);
                 if(!mapinfo.savegame->Load(mapinfo.filepath, true, true))
                 {
+                    if(ci)
+                        ci->CI_Error(CE_WRONGMAP);
                     Stop();
                     return;
                 }
@@ -996,6 +1006,13 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
             } break;
         }
 
+        if(playerId_ >= GetPlayerCount())
+        {
+            if(ci)
+                ci->CI_Error(CE_WRONGMAP);
+            Stop();
+            return;
+        }
         send_queue.push(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
 
         LOG.write(">>>NMS_MAP_CHECKSUM(%u)\n", mapinfo.mapChecksum);
@@ -1601,6 +1618,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             mapinfo.filepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.mapFileName;
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
+                if(ci)
+                    ci->CI_Error(CE_WRONGMAP);
                 Stop();
                 return 2;
             }
@@ -1609,6 +1628,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
                 mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
+                    if(ci)
+                        ci->CI_Error(CE_WRONGMAP);
                     Stop();
                     return 2;
                 }
@@ -1629,6 +1650,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     catch (SerializedGameData::Error& error)
     {
         LOG.lprintf("Error when loading game: %s\n", error.what());
+        if(ci)
+            ci->CI_Error(CE_WRONGMAP);
         Stop();
         return 1;
     }
@@ -1694,7 +1717,7 @@ void GameClient::ServerLost()
  *  @author OLiver
  *  @author FloSoft
  */
-void GameClient::SkipGF(unsigned int gf)
+void GameClient::SkipGF(unsigned int gf, GameWorldView& gwv)
 {
     if(gf <= framesinfo.gf_nr)
         return;
@@ -1724,19 +1747,15 @@ void GameClient::SkipGF(unsigned int gf)
     {
         if(i % 1000 == 0)
         {
-            unsigned int water_percent;
-            RoadsBuilding road;
-            char nwf_string[256];
-
+            RoadBuildState road;
             road.mode = RM_DISABLED;
-            road.point = MapPoint(0, 0);
-            road.start = MapPoint(0, 0);
 
             // spiel aktualisieren
-            gw->Draw(&water_percent, false, MapPoint(0, 0), road);
+            gwv.Draw(road);
 
             // text oben noch hinschreiben
-            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );            
+            char nwf_string[256];
+            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );
             LargeFont->Draw(VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();

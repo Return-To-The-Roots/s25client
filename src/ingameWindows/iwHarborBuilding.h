@@ -20,14 +20,13 @@
 #include "iwHQ.h"
 
 class nobHarborBuilding;
-class GameWorldViewer;
-class dskGameInterface;
+class GameWorldView;
 
 class iwHarborBuilding : public iwHQ
 {
     public:
         /// Konstruktor von @p nobHarborBuilding.
-        iwHarborBuilding(GameWorldViewer* const gwv, dskGameInterface* const gi, nobHarborBuilding* hb);
+        iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb);
 
     protected:
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;

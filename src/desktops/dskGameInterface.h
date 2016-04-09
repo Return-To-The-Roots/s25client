@@ -22,34 +22,21 @@
 #include "Desktop.h"
 #include "Messenger.h"
 #include "ingameWindows/iwAction.h"
-#include "gameTypes/MapTypes.h"
 #include "IngameMinimap.h"
 #include "customborderbuilder.h"
 #include "ClientInterface.h"
 #include "GameInterface.h"
 #include "LobbyInterface.h"
+#include "world/GameWorldView.h"
+#include "gameTypes/MapTypes.h"
+#include "gameTypes/RoadBuildState.h"
 #include "libsiedler2/src/ArchivInfo.h"
 
 class iwRoadWindow;
-class GameWorldViewer;
 class GlobalGameSettings;
 class MouseCoords;
+class GameWorldBase;
 struct KeyEvent;
-
-enum RoadMode
-{
-    RM_DISABLED, // kein Straßenbau
-    RM_NORMAL, // Bau einer normalen Straße
-    RM_BOAT // Bau einer Wasserstraße
-};
-
-struct RoadsBuilding
-{
-    RoadMode mode;   ///< Straßenmodus
-
-    MapPoint point, start;
-    std::vector<unsigned char> route;  ///< Richtungen der gebauten Straße
-};
 
 class dskGameInterface :
     public Desktop,
@@ -59,15 +46,15 @@ class dskGameInterface :
 {
     private:
 
-        // Interface für das Spiel
-        GameWorldViewer* gwv;
+        GameWorldView gwv;
+        GameWorldBase& gwb;
 
         CustomBorderBuilder cbb;
 
         libsiedler2::ArchivInfo borders;
 
         /// Straßenbauzeug
-        RoadsBuilding road;
+        RoadBuildState road;
 
         // Aktuell geöffnetes Aktionsfenster
         iwAction* actionwindow;
@@ -82,6 +69,8 @@ class dskGameInterface :
         /// Minimap-Instanz
         IngameMinimap minimap;
 
+        bool isScrolling;
+        Point<int> startScrollPt;
         unsigned zoomLvl;
     public:
         /// Konstruktor von @p dskGameInterface.
@@ -94,23 +83,35 @@ class dskGameInterface :
         /// Called whenever Settings are changed ingame
         void SettingsChanged();
 
-        /// Lässt das Spiel laufen (zeichnen)
-        void Run();
+        RoadBuildMode GetRoadMode() const { return road.mode; }
 
-        /// Aktiviert Straßenbaumodus bzw gibt zurück, ob er aktiviert ist
-        void ActivateRoadMode(const RoadMode rm);
-        RoadMode GetRoadMode() const { return road.mode; }
+        void CI_PlayerLeft(const unsigned player_id) override;
+        void CI_GGSChanged(const GlobalGameSettings& ggs) override;
+        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) override;
+        void CI_Async(const std::string& checksums_list) override;
+        void CI_ReplayAsync(const std::string& msg) override;
+        void CI_ReplayEndReached(const std::string& msg) override;
+        void CI_GamePaused() override;
+        void CI_GameResumed() override;
+        void CI_Error(const ClientError ce) override;
+        void CI_NewPostMessage(const unsigned postmessages_count) override;
+        void CI_PostMessageDeleted(const unsigned postmessages_count) override;
+        void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
 
+        /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
+        void GI_FlagDestroyed(const MapPoint pt) override;
+        /// Wenn ein Spieler verloren hat
+        void GI_PlayerDefeated(const unsigned player_id) override;
+        /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
+        void GI_UpdateMinimap(const MapPoint pt) override;
+        /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
+        void GI_TreatyOfAllianceChanged() override;
+        void GI_Winner(const unsigned player_id) override;
+        void GI_TeamWinner(const unsigned player_id) override;
+        void GI_SetRoadBuildMode(RoadBuildMode mode) override;
         /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
-        void CommandBuildRoad();
-
-        /// Wird aufgerufen, wenn die Fenster geschlossen werden
-        void ActionWindowClosed();
-        void RoadWindowClosed();
-
-        friend class GameClient;
-        friend class GameWorld;
-        friend class RoadSegment;
+        void GI_BuildRoad() override;
+        void GI_WindowClosed(Window* wnd) override;
 
         // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
         // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
@@ -127,6 +128,8 @@ class dskGameInterface :
         void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
 
     private:
+        /// Lässt das Spiel laufen (zeichnen)
+        void Run();
 
         void Resize_(unsigned short width, unsigned short height) override;
 
@@ -145,33 +148,6 @@ class dskGameInterface :
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
-
-        void CI_PlayerLeft(const unsigned player_id) override;
-        void CI_GGSChanged(const GlobalGameSettings& ggs) override;
-        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) override;
-        void CI_Async(const std::string& checksums_list) override;
-        void CI_ReplayAsync(const std::string& msg) override;
-        void CI_ReplayEndReached(const std::string& msg) override;
-        void CI_GamePaused() override;
-        void CI_GameResumed() override;
-        void CI_Error(const ClientError ce) override;
-        void CI_NewPostMessage(const unsigned postmessages_count) override;
-        void CI_PostMessageDeleted(const unsigned postmessages_count) override;
-
-        /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
-        void GI_FlagDestroyed(const MapPoint pt) override;
-        /// Spielerwechsel
-        void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
-
-        /// Wenn ein Spieler verloren hat
-        void GI_PlayerDefeated(const unsigned player_id) override;
-        /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        void GI_UpdateMinimap(const MapPoint pt) override;
-        /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
-        void GI_TreatyOfAllianceChanged() override;
-
-        void GI_Winner(const unsigned player_id) override;
-        void GI_TeamWinner(const unsigned player_id) override;
 };
 
 #endif // !dskGAMEINTERFACE_H_INCLUDED

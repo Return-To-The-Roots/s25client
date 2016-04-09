@@ -19,7 +19,7 @@
 
 #include "ctrlMinimap.h"
 
-class GameWorldViewer;
+class GameWorldView;
 class IngameMinimap;
 class MouseCoords;
 class Window;
@@ -29,8 +29,8 @@ class ctrlIngameMinimap : public ctrlMinimap
 {
         /// Zeiger auf Minimap (die im Spiel dauerhaft!! gespeichert werden muss)
         IngameMinimap& minimap;
-        /// Referenz auf GameWorldViewer, für das Gescrolle
-        GameWorldViewer& gwv;
+        /// Referenz auf GameWorldView, für das Gescrolle
+        GameWorldView& gwv;
 
     public:
 
@@ -43,7 +43,7 @@ class ctrlIngameMinimap : public ctrlMinimap
                            const unsigned short padding_x,
                            const unsigned short padding_y,
                            IngameMinimap& minimap,
-                           GameWorldViewer& gwv);
+                           GameWorldView& gwv);
 
         /// Zeichnet die MapPreview
         bool Draw_() override;

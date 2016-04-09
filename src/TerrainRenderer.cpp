@@ -25,7 +25,7 @@
 #include "Settings.h"
 #include "GameClient.h"
 #include "world/MapGeometry.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldView.h"
 #include "gameData/TerrainData.h"
 #include "ExtensionList.h"
 #include "Loader.h"
@@ -686,7 +686,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
             Point<int> posOffset;
             MapPoint tP = ConvertCoords(Point<int>(x, y), &posOffset);
 
-            TerrainType t = gwv.GetGameWorldViewer().GetNode(tP).t1;
+            TerrainType t = gwv.GetViewer().GetNode(tP).t1;
             if(posOffset != lastOffset)
                 lastTerrain = 255;
 
@@ -699,7 +699,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
                 lastTerrain = t;
             }
 
-            t = gwv.GetGameWorldViewer().GetNode(tP).t2;
+            t = gwv.GetViewer().GetNode(tP).t2;
 
             if(t == lastTerrain)
                 ++sorted_textures[t].back().count;
@@ -924,7 +924,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
 {
     PointI startPos = PointI(GetNodePos(t)) + offset;
 
-    GameWorldViewer& gwViewer = gwv.GetGameWorldViewer();
+    GameWorldViewer& gwViewer = gwv.GetViewer();
     Visibility visibility = gwViewer.GetVisibility(t);
 
 	int totalWidth  = gwViewer.GetWidth()  * TR_W;
