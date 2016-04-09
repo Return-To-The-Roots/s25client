@@ -81,7 +81,7 @@ public:
     GameWorldView(GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
     ~GameWorldView();
 
-    GameWorldViewer& GetGameWorldViewer() const { return gwv; }
+    GameWorldViewer& GetViewer() const { return gwv; }
 
     void SetPos(const Point<int>& newPos) { pos = newPos; }
     Point<int> GetPos() const { return pos; }

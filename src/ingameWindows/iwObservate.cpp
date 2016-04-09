@@ -35,9 +35,9 @@
 // 260x190, 300x250, 340x310
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
-    IngameWindow(gwv.GetGameWorldViewer().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
+    IngameWindow(gwv.GetViewer().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
     parentView(gwv),
-    view(new GameWorldView(gwv.GetGameWorldViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
+    view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
     selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
 {
     view->MoveToMapPt(selectedPt);

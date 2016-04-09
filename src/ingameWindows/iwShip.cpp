@@ -114,7 +114,7 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetGameWorldViewer().GetNextFreeHarborPoint(ship->GetPos(),
+            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetViewer().GetNextFreeHarborPoint(ship->GetPos(),
                                                 ship->GetCurrentHarbor(), i, ship->GetPlayer()) > 0);
 
     }
@@ -260,9 +260,9 @@ void iwShip::DrawCargo()
             if (i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->Draw(x, y);
             else if(i == JOB_BOATCARRIER)
-                LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, x, y, gwv.GetGameWorldViewer().GetPlayer(ship->GetPlayer()).color);
+                LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, x, y, gwv.GetViewer().GetPlayer(ship->GetPlayer()).color);
             else
-                LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, x, y, gwv.GetGameWorldViewer().GetPlayer(ship->GetPlayer()).color);
+                LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, x, y, gwv.GetViewer().GetPlayer(ship->GetPlayer()).color);
 
             x += xStep;
             lineCounter++;

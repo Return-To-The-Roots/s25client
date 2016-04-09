@@ -90,7 +90,7 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
     gwb(GAMECLIENT.QueryGameWorldViewer()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
-    selected(0, 0), minimap(gwv.GetGameWorldViewer()), zoomLvl(0), isScrolling(false)
+    selected(0, 0), minimap(gwv.GetViewer()), zoomLvl(0), isScrolling(false)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -387,7 +387,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const MapPoint cSel = gwv.GetSelectedPt();
 
         // Vielleicht steht hier auch ein Schiff?
-        if(noShip* ship = gwv.GetGameWorldViewer().GetShip(cSel, GAMECLIENT.GetPlayerID()))
+        if(noShip* ship = gwv.GetViewer().GetShip(cSel, GAMECLIENT.GetPlayerID()))
         {
             WINDOWMANAGER.Show(new iwShip(gwv, ship));
             return true;
@@ -469,7 +469,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 action_tabs.cutroad = true;
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
-        else if(gwv.GetGameWorldViewer().GetVisibility(cSel) == VIS_VISIBLE)
+        else if(gwv.GetViewer().GetVisibility(cSel) == VIS_VISIBLE)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {
@@ -680,7 +680,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             // GameClient Bescheid sagen
             GAMECLIENT.ToggleReplayFOW();
             // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
-            gwv.GetGameWorldViewer().RecalcAllColors();
+            gwv.GetViewer().RecalcAllColors();
             minimap.UpdateAll();
             return true;
         case 'h': // Zum HQ springen
@@ -922,7 +922,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     if(action_tabs.attack)
     {
         if(GAMECLIENT.GetLocalPlayer().IsPlayerAttackable(gwb.GetSpecObj<noBuilding>(cSel)->GetPlayer()))
-            params = gwv.GetGameWorldViewer().GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cSel);
+            params = gwv.GetViewer().GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cSel);
     }
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mouse_x, mouse_y, params, enable_military_buildings);
@@ -1164,7 +1164,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
                 gwb.CalcAndSetBQ(MapPoint(x, y), localPlayerID);
         }
         minimap.UpdateAll();
-        gwv.GetGameWorldViewer().RecalcAllColors();
+        gwv.GetViewer().RecalcAllColors();
     }
 }
 
@@ -1184,7 +1184,7 @@ void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
     if(player_id == GAMECLIENT.GetPlayerID())
     {
         /// Sichtbarkeiten neu berechnen
-        gwv.GetGameWorldViewer().RecalcAllColors();
+        gwv.GetViewer().RecalcAllColors();
         // Minimap updaten
         minimap.UpdateAll();
     }
@@ -1214,7 +1214,7 @@ void dskGameInterface::GI_TreatyOfAllianceChanged()
     if(GAMECLIENT.GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
-        gwv.GetGameWorldViewer().RecalcAllColors();
+        gwv.GetViewer().RecalcAllColors();
         // Minimap updaten
         minimap.UpdateAll();
     }

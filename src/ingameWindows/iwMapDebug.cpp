@@ -77,7 +77,7 @@ public:
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv):
     IngameWindow(CGI_MAP_DEBUG, 0xFFFF, 0xFFFF, 300, 200, _("Map Debug"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), printer(new DebugPrinter(gwv.GetGameWorldViewer()))
+    gwv(gwv), printer(new DebugPrinter(gwv.GetViewer()))
 {
     gwv.SetDebugNodePrinter(printer);
 
