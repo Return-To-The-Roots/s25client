@@ -117,17 +117,16 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
     gwb.SetGameInterface(this);
 
     // Wir sind nun ingame
-    GLOBALVARS.ingame = true;
+    GAMECLIENT.RealStart();
 
     cbb.loadEdges( LOADER.GetInfoN("resource") );
-    cbb.buildBorder(VIDEODRIVER.GetScreenWidth(),
-                    VIDEODRIVER.GetScreenHeight(), &borders);
+    cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), &borders);
 
     // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
     if (!GAMECLIENT.GetPostMessages().empty())
         CI_NewPostMessage(GAMECLIENT.GetPostMessages().size());
 
-    // JUmp to players HQ if it exists
+    // Jump to players HQ if it exists
     if(GAMECLIENT.GetLocalPlayer().hqPos.isValid())
         gwv.MoveToMapPt(GAMECLIENT.GetLocalPlayer().hqPos);
 }
@@ -140,9 +139,7 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
  *  @author OLiver
  */
 dskGameInterface::~dskGameInterface()
-{
-    GLOBALVARS.ingame = false;
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

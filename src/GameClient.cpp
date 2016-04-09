@@ -395,11 +395,14 @@ void GameClient::StartGame(const unsigned int random_init)
  */
 void GameClient::RealStart()
 {
+    RTTR_Assert(state == CS_LOADING);
+    state = CS_GAME; // zu gamestate wechseln
+
     framesinfo.isPaused = replay_mode;
 
-    /// Wenn Replay, evtl erstes Command vom Start-Frame auslesen, was sonst ignoriert werden würde
-    if(replay_mode)
-        ExecuteGameFrame_Replay();
+    // Send empty GC for first NWF
+    if(!replay_mode)
+        SendNothingNC(0);
 
     GAMEMANAGER.ResetAverageFPS();
 }
@@ -494,6 +497,7 @@ void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 
     if(ci)
         ci->CI_NextConnectState(CS_FINISHED);
+    state = CS_CONFIG;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -656,7 +660,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
     if(msg.player >= GetPlayerCount())
         return;
 
-    if(state == CS_GAME && GLOBALVARS.ingame)
+    if(state == CS_GAME)
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
         players[msg.player].ps = PS_KI;
@@ -779,24 +783,21 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 {
     // NWF-Länge bekommen wir vom Server
     framesinfo.nwf_length = msg.nwf_length;
+    state = CS_LOADING;
 
     /// Beim Host muss das Spiel nicht nochmal gestartet werden, das hat der Server schon erledigt
-    if (!IsHost())
-    {
-        try
-        {
-            StartGame(msg.random_init);
-        }
-        catch (SerializedGameData::Error& error)
-        {
-            LOG.lprintf("Error when loading game: %s\n", error.what());
-            GAMEMANAGER.ShowMenu();
-            GAMECLIENT.ExitGame();
-        }
-    }
+    if(IsHost())
+        return;
 
-    // Nothing-Command für ersten Network-Frame senden
-    SendNothingNC(0);
+    try
+    {
+        StartGame(msg.random_init);
+    } catch(SerializedGameData::Error& error)
+    {
+        LOG.lprintf("Error when loading game: %s\n", error.what());
+        GAMEMANAGER.ShowMenu();
+        GAMECLIENT.ExitGame();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -847,7 +848,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 {
     // Liste mit Namen und Checksummen erzeugen
     std::stringstream checksum_list;
-    checksum_list << 23;
     for(unsigned int i = 0; i < msg.checksums.size(); ++i)
     {
         checksum_list << players.getElement(i)->name << ": " << msg.checksums[i];
@@ -861,7 +861,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     LOG.lprintf("\n");
 
     // Messenger im Game
-    if(ci && GLOBALVARS.ingame)
+    if(ci && state == CS_GAME)
         ci->CI_Async(checksum_list.str());
 
     std::string timeStr = TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s");
@@ -1134,8 +1134,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
             framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
         }
         RTTR_Assert(framesinfo.gf_length == msg.gf_length);
-        state = CS_GAME; // zu gamestate wechseln
-        RealStart();
     }else
     {
         RTTR_Assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
@@ -1658,10 +1656,8 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-    state = CS_GAME; // zu gamestate wechseln
-    RealStart();
-
     gwv = gw;
+    state = CS_LOADING;
 
     return 0;
 }

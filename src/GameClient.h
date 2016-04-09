@@ -56,6 +56,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
             CS_STOPPED = 0,
             CS_CONNECT,
             CS_CONFIG,
+            CS_LOADING,
             CS_GAME
         };
 
@@ -110,7 +111,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         unsigned int GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset);
         unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
         int Interpolate(int x1, int x2, EventManager::EventPointer ev);
-        /// Gibt Geschwindigkeits-Faktor zurück
 
         void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );

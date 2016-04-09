@@ -30,7 +30,6 @@ class GlobalVars : public Singleton<GlobalVars>
 
     public:
         bool notdone;
-        bool ingame;
         bool ext_vbo;
         bool ext_swapcontrol;
         bool isTest; // Whether we are in test mode

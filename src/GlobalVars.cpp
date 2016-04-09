@@ -30,7 +30,7 @@
  *  @author FloSoft
  */
 GlobalVars::GlobalVars()
-    : notdone(true), ingame(false),
+    : notdone(true),
       ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false)
 {
 }

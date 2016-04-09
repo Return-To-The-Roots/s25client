@@ -338,9 +338,6 @@ bool GameManager::ShowMenu()
 
     GAMECLIENT.SetInterface(NULL);
 
-    // Wir sind nicht mehr im Spiel
-    GLOBALVARS.ingame = false;
-
     if(LOBBYCLIENT.LoggedIn())
         // Lobby zeigen
         WINDOWMANAGER.Switch(new dskLobby);
