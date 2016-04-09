@@ -23,7 +23,6 @@
 
 class nobStorehouse;
 class GameWorldView;
-class dskGameInterface;
 
 class iwStorehouse : public iwBaseWarehouse
 {

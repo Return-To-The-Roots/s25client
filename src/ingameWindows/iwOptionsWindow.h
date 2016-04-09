@@ -20,8 +20,6 @@
 
 #include "IngameWindow.h"
 
-class dskGameInterface;
-
 class iwOptionsWindow : public IngameWindow
 {
     public:

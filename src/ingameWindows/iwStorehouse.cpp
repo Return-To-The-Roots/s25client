@@ -23,8 +23,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class GameWorldViewer;
-class dskGameInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

@@ -562,8 +562,12 @@ void nobBaseWarehouse::HandleLeaveEvent()
         for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
         {
             // Don't count warehouse workers
-            if(!(*it)->MemberOfWarehouse())
-                should.Add((*it)->GetJobType());
+            if(!(*it)->MemberOfWarehouse()){
+                if((*it)->GetJobType() == JOB_BOATCARRIER)
+                    should.Add(JOB_HELPER);
+                else
+                    should.Add((*it)->GetJobType());
+            }
         }
         for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
             RTTR_Assert(should.people[i] == inventory.visual.people[i]);

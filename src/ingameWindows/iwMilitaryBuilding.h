@@ -23,7 +23,6 @@
 
 class nobMilitary;
 class GameWorldView;
-class dskGameInterface;
 
 class iwMilitaryBuilding : public IngameWindow
 {

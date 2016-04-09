@@ -18,7 +18,6 @@
 #define iwBUILDINGS_H_
 
 #include "IngameWindow.h"
-class dskGameInterface;
 class GameWorldView;
 
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet

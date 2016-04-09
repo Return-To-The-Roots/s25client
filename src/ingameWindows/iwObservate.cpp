@@ -24,10 +24,10 @@
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "GameClient.h"
-#include "desktops/dskGameInterface.h"
+#include "world/GameWorldView.h"
 #include "Settings.h"
 #include "controls/ctrlButton.h"
+#include "gameTypes/RoadBuildState.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -130,10 +130,7 @@ bool iwObservate::Draw_()
     if (!GetMinimized())
     {
         RoadBuildState road;
-
         road.mode = RM_DISABLED;
-        road.point = MapPoint(0, 0);
-        road.start = MapPoint(0, 0);
 
         view->Draw(road, true, parentView.GetSelectedPt());
     }
@@ -145,10 +142,12 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 {
     if (scroll)
     {
+        int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
+
         if(SETTINGS.interface.revert_mouse)
-            view->MoveTo( ( sx - mc.x) * 2,  ( sy - mc.y) * 2);
-        else
-            view->MoveTo(-( sx - mc.x) * 2, -( sy - mc.y) * 2);
+            acceleration = -acceleration;
+
+        view->MoveTo((mc.x - sx) * acceleration, (mc.y - sy) * acceleration);
         VIDEODRIVER.SetMousePos(sx, sy);
     }
 

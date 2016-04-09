@@ -24,7 +24,6 @@
 
 class nobBaseWarehouse;
 class GameWorldView;
-class dskGameInterface;
 
 /// Basisklasse für die HQ- und Lagerhäuserfenster
 class iwBaseWarehouse : public iwWares, public IDataChangedListener

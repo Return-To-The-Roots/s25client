@@ -20,11 +20,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwAction.h"
 
-#include "desktops/dskGameInterface.h"
+#include "GameInterface.h"
 #include "iwDemolishBuilding.h"
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
-
+#include "world/GameWorldView.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
@@ -40,7 +40,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
 
 // Tab - Flags
 enum TabID
@@ -60,7 +59,7 @@ enum TabID
  *
  *  @author OLiver
  */
-iwAction::iwAction(dskGameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
+iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mouse_x, mouse_y, 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)
 {
@@ -410,7 +409,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 iwAction::~iwAction()
 {
     VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
-    gi.ActionWindowClosed();
+    gi.GI_WindowClosed(this);
 }
 
 void iwAction::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
@@ -618,12 +617,12 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
     {
         case 1: // Straße bauen
         {
-            gi.ActivateRoadMode(RM_NORMAL);
+            gi.GI_SetRoadBuildMode(RM_NORMAL);
             Close();
         } break;
         case 2: // Wasserstraße bauen
         {
-            gi.ActivateRoadMode(RM_BOAT);
+            gi.GI_SetRoadBuildMode(RM_BOAT);
             Close();
         } break;
         case 3: // Flagge abreißen

@@ -21,7 +21,6 @@
 
 class nobHarborBuilding;
 class GameWorldView;
-class dskGameInterface;
 
 class iwHarborBuilding : public iwHQ
 {

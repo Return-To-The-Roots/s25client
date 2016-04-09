@@ -68,6 +68,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Sound.h"
+#include "addons/AddonMaxWaterwayLength.h"
 #include "Settings.h"
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
@@ -348,7 +349,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     {
                         // Ist der Zielpunkt der gleiche geblieben?
                         if (cSel == cSel2)
-                            CommandBuildRoad();
+                            GI_BuildRoad();
                     }
                     else if (cSel == cSel2)
                         ShowRoadWindow(mc.x, mc.y);
@@ -360,7 +361,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(BuildRoadPart(cSel, 1))
                 {
                     if (cSel == cSel2)
-                        CommandBuildRoad();
+                        GI_BuildRoad();
                 }
                 else if (cSel == cSel2)
                     ShowRoadWindow(mc.x, mc.y);
@@ -541,7 +542,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(SETTINGS.interface.revert_mouse)
         acceleration = -acceleration;
     
-    gwv.MoveTo((startScrollPt.x - mc.x) * acceleration, (startScrollPt.y - mc.y) * acceleration);
+    gwv.MoveTo((mc.x - startScrollPt.x) * acceleration, (mc.y - startScrollPt.y) * acceleration);
     VIDEODRIVER.SetMousePos(startScrollPt.x, startScrollPt.y);
 
     if(!SETTINGS.global.smartCursor)
@@ -777,7 +778,7 @@ void dskGameInterface::Run()
  *
  *  @author OLiver
  */
-void dskGameInterface::ActivateRoadMode(const RoadBuildMode rm)
+void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
 {
     // Im Replay und in der Pause keine Straßen bauen
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.IsPaused())
@@ -817,13 +818,12 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     // Test on water way length
     if(road.mode == RM_BOAT)
     {
-        unsigned char waterway_lengthes[] = {3, 5, 9, 13, 21, 0}; // these are written into GameWorldViewer.cpp, too
         unsigned char index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
-        RTTR_Assert(index <= sizeof(waterway_lengthes) - 1);
-        const unsigned char max_length = waterway_lengthes[index];
+        RTTR_Assert(index < waterwayLengths.size());
+        const unsigned max_length = waterwayLengths[index];
 
-        unsigned short length = road.route.size() + new_route.size();
+        unsigned length = road.route.size() + new_route.size();
 
         // max_length == 0 heißt beliebig lang, ansonsten
         // Weg zurechtstutzen.
@@ -935,10 +935,21 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
  *
  *  @author OLiver
  */
-void dskGameInterface::CommandBuildRoad()
+void dskGameInterface::GI_BuildRoad()
 {
     GAMECLIENT.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
     road.mode = RM_DISABLED;
+}
+
+void dskGameInterface::GI_WindowClosed(Window* wnd)
+{
+    if(actionwindow == wnd)
+        actionwindow = NULL;
+    else if(roadwindow == wnd)
+        roadwindow = NULL;
+    else
+        return;
+    isScrolling = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -953,7 +964,7 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     if(road.mode != RM_DISABLED && road.start == pt)
     {
         // Wegbau abbrechen
-        ActivateRoadMode(RM_DISABLED);
+        GI_SetRoadBuildMode(RM_DISABLED);
     }
 
     // Evtl Actionfenster schließen, da sich das ja auch auf diese Flagge bezieht
@@ -962,30 +973,6 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
         if(actionwindow->GetSelectedPt() == pt)
             WINDOWMANAGER.Close(actionwindow);
     }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void dskGameInterface::ActionWindowClosed()
-{
-    actionwindow = NULL;
-    isScrolling = false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
-void dskGameInterface::RoadWindowClosed()
-{
-    roadwindow = NULL;
-    isScrolling = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

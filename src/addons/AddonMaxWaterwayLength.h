@@ -21,6 +21,9 @@
 
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
+#include <boost/array.hpp>
+
+const boost::array<unsigned, 6> waterwayLengths = {{ 3, 5, 9, 13, 21, 0 }};
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

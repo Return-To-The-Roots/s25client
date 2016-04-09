@@ -29,13 +29,13 @@
 #include "SoundManager.h"
 #include "Loader.h"
 #include "gameData/MapConsts.h"
-#include "desktops/dskGameInterface.h"
 #include "FOWObjects.h"
-
 #include "GameServer.h"
 #include "ai/AIPlayerJH.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
+#include "addons/AddonMaxWaterwayLength.h"
+#include "gameTypes/RoadBuildState.h"
 #include "helpers/converters.h"
 #include <boost/format.hpp>
 #include <stdexcept>
@@ -191,7 +191,6 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
         for(unsigned i = 0; i < 6; ++i)
             road_points[i] = gwv.GetNeighbour(rb.point, i);
 
-        const boost::array<unsigned, 6> waterwayLengths = {{ 3, 5, 9, 13, 21, 0 }}; // these are written into dskGameInterface.cpp, too
         const unsigned index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
         maxWaterWayLen = waterwayLengths[index];

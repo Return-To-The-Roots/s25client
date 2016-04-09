@@ -21,7 +21,6 @@
 
 #include "IngameWindow.h"
 
-class dskGameInterface;
 class noShip;
 class GameWorldView;
 

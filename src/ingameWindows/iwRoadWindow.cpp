@@ -23,7 +23,7 @@
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "controls/ctrlButton.h"
-#include "desktops/dskGameInterface.h"
+#include "GameInterface.h"
 #include "gameData/const_gui_ids.h"
 
 // Include last!
@@ -35,7 +35,7 @@
  *
  *  @author OLiver
  */
-iwRoadWindow::iwRoadWindow(dskGameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
+iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
     : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), mousePosAtOpen_(mouse_x, mouse_y)
 {
@@ -60,7 +60,7 @@ iwRoadWindow::iwRoadWindow(dskGameInterface& gi, bool flagpossible, int mouse_x,
 
 iwRoadWindow::~iwRoadWindow()
 {
-    gi.RoadWindowClosed();
+    gi.GI_WindowClosed(this);
 }
 
 void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -69,11 +69,11 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // Flagge & Weg bauen
         {
-            gi.CommandBuildRoad();
+            gi.GI_BuildRoad();
         } break;
         case 1: // Bau abbrechen
         {
-            gi.ActivateRoadMode(RM_DISABLED);
+            gi.GI_SetRoadBuildMode(RM_DISABLED);
         } break;
     }
 

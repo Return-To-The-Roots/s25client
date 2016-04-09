@@ -22,7 +22,6 @@
 #include "IngameWindow.h"
 
 class GameWorldView;
-class dskGameInterface;
 
 class iwMainMenu : public IngameWindow
 {
