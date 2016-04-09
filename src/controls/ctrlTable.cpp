@@ -618,7 +618,8 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
     {
         default: return false;
         case KT_UP:
-            SetSelection(selection_ - 1);
+            if(selection_ > 0)
+                SetSelection(selection_ - 1);
             return true;
         case KT_DOWN:
             SetSelection(selection_ + 1);
