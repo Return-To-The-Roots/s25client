@@ -116,9 +116,6 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
     GAMECLIENT.SetInterface(this);
     gwb.SetGameInterface(this);
 
-    // Wir sind nun ingame
-    GAMECLIENT.RealStart();
-
     cbb.loadEdges( LOADER.GetInfoN("resource") );
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), &borders);
 
@@ -140,6 +137,16 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
  */
 dskGameInterface::~dskGameInterface()
 {}
+
+void dskGameInterface::SetActive(bool activate)
+{
+    Desktop::SetActive(activate);
+    if(activate && GAMECLIENT.GetState() == GameClient::CS_LOADING)
+    {
+        // Wir sind nun ingame
+        GAMECLIENT.RealStart();
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

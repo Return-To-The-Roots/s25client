@@ -382,9 +382,6 @@ void GameClient::StartGame(const unsigned int random_init)
 
     // Daten nach dem Schreiben des Replays ggf wieder löschen
     mapinfo.mapData.Clear();
-
-    if(gw->HasLua())
-        gw->GetLua().EventStart(!mapinfo.savegame);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -405,6 +402,9 @@ void GameClient::RealStart()
         SendNothingNC(0);
 
     GAMEMANAGER.ResetAverageFPS();
+
+    if(gw->HasLua())
+        gw->GetLua().EventStart(!mapinfo.savegame);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -78,6 +78,8 @@ class dskGameInterface :
         /// Destruktor von @p dskGameInterface.
         ~dskGameInterface() override;
 
+        virtual void SetActive(bool activate = true) override;
+
         void LC_Status_ConnectionLost() override;
         void LC_Status_Error(const std::string& error) override;
         /// Called whenever Settings are changed ingame
