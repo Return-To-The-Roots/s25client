@@ -69,139 +69,89 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Credits"
     AddText(2, 400, 33, _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
-    CreditsEntry entry = CreditsEntry();
-    entry.title = "Florian Doersch (FloSoft):";
-    entry.picId = 1;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Project management")));
-    entry.lines.push_back(CreditsEntry::Line(_("Server management")));
-    entry.lines.push_back(CreditsEntry::Line(_("Programming")));
-    entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
-    entry.lines.push_back(CreditsEntry::Line(_("Website Programming")));
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
+    CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", LOADER.GetImage("credits", "flosoft.bmp"));
+    entry.lines.push_back(_("Project management"));
+    entry.lines.push_back(_("Server management"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Website Administration"));
+    entry.lines.push_back(_("Website Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry("Oliver Siebert (Oliverr):", LOADER.GetImage("credits", "oliverr.bmp"));
+    entry.lines.push_back(_("Project management"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
 
-    entry.title = "Oliver Siebert (Oliverr):";
-    entry.picId = 4;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Project management")));
-    entry.lines.push_back(CreditsEntry::Line(_("Programming")));
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
+    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", LOADER.GetImage("credits", "z-stef.bmp"));
+    entry.lines.push_back(_("Website Administration"));
+    entry.lines.push_back(_("Website Programming"));
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry("Patrick Haak (Demophobie):", LOADER.GetImage("credits", "demophobie.bmp"));
+    entry.lines.push_back(_("Website Administration"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
 
-    entry.title = "Stefan Schüchl (Z-Stef):";
-    entry.picId = 6;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
-    entry.lines.push_back(CreditsEntry::Line(_("Website Programming")));
+    entry = CreditsEntry("Jonas Trampe (NastX):", LOADER.GetImage("credits", "nastx.bmp"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entry.lines.push_back(_("Mapping"));
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry("Jan-Henrik Kluth (jh):", LOADER.GetImage("credits", "jh.bmp"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Artificial Intelligence (AI)"));
+    entries.push_back(entry);
 
-    entry.title = "Patrick Haak (Demophobie):";
-    entry.picId = 0;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Website Administration")));
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
+    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", LOADER.GetImage("credits", "spikeone.bmp"));
+    entry.lines.push_back(_("Additional graphics"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entry.lines.push_back(_("Mapping"));
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry("Marcus Ströbel (Maqs):");
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
 
-    entry.title = "Jonas Trampe (NastX):";
-    entry.picId = 3;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
-    entry.lines.push_back(CreditsEntry::Line(_("Mapping")));
+    entry = CreditsEntry("Alex Grund (Flamefire):");
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry(_("Additional Programming:"));
+    entry.lines.push_back("Siegfried Oleg Pammer (siegi44)");
+    entry.lines.push_back("Lienhart Woitok (liwo)");
+    entry.lines.push_back("Christoph Erhardt (Airhardt)");
+    entry.lines.push_back("Divan");
+    entry.lines.push_back("Cat666");
+    entry.lines.push_back("Devil");
+    entry.lines.push_back("Ikhar Beq (PoC)");
+    entries.push_back(entry);
 
-    entry.title = "Jan-Henrik Kluth (jh):";
-    entry.picId = 2;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Programming")));
-    entry.lines.push_back(CreditsEntry::Line(_("Artificial Intelligence (AI)")));
+    entry = CreditsEntry(_("Additional Graphics:"));
+    entry.lines.push_back("Marcus Bullin (Parasit)");
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry(_("Other Support:"));
+    entry.lines.push_back("muhahahaha");
+    entry.lines.push_back("Sotham");
+    entry.lines.push_back("Fenan");
+    entry.lines.push_back("Phil Groenewold (Phil333)");
+    entry.lines.push_back("Marc Vester (xaser)");
+    entries.push_back(entry);
 
-    entry.title = "Christopher Kuehnel (Spikeone):";
-    entry.picId = 5;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Additional graphics")));
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
-    entry.lines.push_back(CreditsEntry::Line(_("Mapping")));
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = "Marcus Ströbel (Maqs):";
-    entry.picId = -1;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Programming")));
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = "Alex Grund (Flamefire):";
-    entry.picId = -1;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line(_("Programming")));
-    entry.lines.push_back(CreditsEntry::Line(_("Quality Assurance")));
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = _("Additional Programming:");
-    entry.picId = -1;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line("Siegfried Oleg Pammer (siegi44)"));
-    entry.lines.push_back(CreditsEntry::Line("Lienhart Woitok (liwo)"));
-    entry.lines.push_back(CreditsEntry::Line("Christoph Erhardt (Airhardt)"));
-    entry.lines.push_back(CreditsEntry::Line("Divan"));
-    entry.lines.push_back(CreditsEntry::Line("Cat666"));
-    entry.lines.push_back(CreditsEntry::Line("Devil"));
-    entry.lines.push_back(CreditsEntry::Line("Ikhar Beq (PoC)"));
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = _("Additional Graphics:");
-    entry.picId = -1;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line("Marcus Bullin (Parasit)"));
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = _("Other Support:");
-    entry.picId = -1;
-    entry.lastLine.clear();
-    entry.lines.push_back(CreditsEntry::Line("muhahahaha"));
-    entry.lines.push_back(CreditsEntry::Line("Sotham"));
-    entry.lines.push_back(CreditsEntry::Line("Fenan"));
-    entry.lines.push_back(CreditsEntry::Line("Phil Groenewold (Phil333)"));
-    entry.lines.push_back(CreditsEntry::Line("Marc Vester (xaser)"));
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = _("Donators");
-    entry.picId = -1;
-    entry.lines.push_back(CreditsEntry::Line(_("various anonymous donators")));
-    entry.lines.push_back(CreditsEntry::Line("Markus Becker"));
-    entry.lines.push_back(CreditsEntry::Line("Karsten Backhaus (K-Duke)"));
-    entry.lines.push_back(CreditsEntry::Line("Patrick Haak (Demophobie)"));
-    entry.lines.push_back(CreditsEntry::Line("Gilles Bordelais"));
-    entry.lines.push_back(CreditsEntry::Line("Dominic Jonas"));
-    entry.lines.push_back(CreditsEntry::Line("Rene Hopf"));
-    entry.lines.push_back(CreditsEntry::Line("Christopher Kuehnel (Spikeone)"));
-    entry.lines.push_back(CreditsEntry::Line("Philipp Strathausen"));
+    entry = CreditsEntry(_("Donators"), _("Thank you for your donations!"));
+    entry.lines.push_back(_("various anonymous donators"));
+    entry.lines.push_back("Markus Becker");
+    entry.lines.push_back("Karsten Backhaus (K-Duke)");
+    entry.lines.push_back("Patrick Haak (Demophobie)");
+    entry.lines.push_back("Gilles Bordelais");
+    entry.lines.push_back("Dominic Jonas");
+    entry.lines.push_back("Rene Hopf");
+    entry.lines.push_back("Christopher Kuehnel (Spikeone)");
+    entry.lines.push_back("Philipp Strathausen");
 
     entry.lines.push_back(CreditsEntry::Line("Max Skuratov", 1));
     entry.lines.push_back(CreditsEntry::Line("Marius Loewe", 1));
@@ -211,18 +161,11 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(CreditsEntry::Line("Hans Gabathuler", 1));
     entry.lines.push_back(CreditsEntry::Line("Jan Montag", 1));
     entry.lines.push_back(CreditsEntry::Line("Patrick Schefczyk", 1));
-    entry.lastLine = _("Thank you for your donations!");
+    entries.push_back(entry);
 
-    this->entries.push_back(entry);
-    entry.lines.clear();
-
-    entry.title = _("We hope you enjoy playing Return To The Roots!");
-    entry.picId = -1;
-    entry.lines.push_back(CreditsEntry::Line(_("Thank you!")));
-    entry.lastLine = _("THE END");
-
-    this->entries.push_back(entry);
-    entry.lines.clear();
+    entry = CreditsEntry(_("We hope you enjoy playing Return To The Roots!"), _("THE END"));
+    entry.lines.push_back(_("Thank you!"));
+    entries.push_back(entry);
 
     bool nations[NAT_COUNT] = { true, true, true, true, false };
 
@@ -324,7 +267,7 @@ void dskCredits::Msg_PaintAfter()
     }
 
     // draw bobs
-    for (std::list<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
+    for (std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
     {
         if (!bob->hasWare)
             LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
@@ -375,7 +318,7 @@ void dskCredits::Msg_PaintAfter()
 
     boost::array<unsigned int, 2> columnToY = {{150, 150}};
 
-    for(std::list<CreditsEntry::Line>::iterator line = this->itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
+    for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
         LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
         columnToY[line->column] += LargeFont->getHeight() + 5;
@@ -383,11 +326,8 @@ void dskCredits::Msg_PaintAfter()
 
     LargeFont->Draw(40, columnToY[0] + 20, itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
 
-    // draw picture
-    glArchivItem_Bitmap* item = LOADER.GetImageN("credits", itCurEntry->picId);
-
-    if (item)
-        item->Draw(VIDEODRIVER.GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
+    if (itCurEntry->pic)
+        itCurEntry->pic->Draw(VIDEODRIVER.GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

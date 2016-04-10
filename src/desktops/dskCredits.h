@@ -21,8 +21,9 @@
 
 #include "Desktop.h"
 
-#include <list>
+#include <vector>
 struct KeyEvent;
+class glArchivItem_Bitmap;
 
 /// Klasse des Credits Desktops.
 class dskCredits : public Desktop
@@ -41,20 +42,24 @@ class dskCredits : public Desktop
 
         struct CreditsEntry
         {
-            std::string title;
-            std::string lastLine;
-            int picId;
             struct Line
             {
-                Line(std::string l, unsigned int c = 0) : line(l), column(c) { }
+                Line(const char* const text): line(text), column(0) { }
+                Line(const std::string& text): line(text), column(0) { }
+                Line(const std::string& text, unsigned int c): line(text), column(0) { }
                 std::string line;
                 unsigned int column;
             };
-            std::list<Line> lines;
+            std::string title;
+            std::string lastLine;
+            glArchivItem_Bitmap* pic;
+            std::vector<Line> lines;
+            CreditsEntry(const std::string& title, const std::string& lastLine = ""): title(title), lastLine(lastLine), pic(NULL){}
+            CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = ""): title(title), lastLine(lastLine), pic(pic){}
         };
 
-        std::list<CreditsEntry> entries;
-        std::list<dskCredits::CreditsEntry>::iterator itCurEntry;
+        std::vector<CreditsEntry> entries;
+        std::vector<dskCredits::CreditsEntry>::iterator itCurEntry;
 
         struct Bob
         {
@@ -69,7 +74,7 @@ class dskCredits : public Desktop
             bool isFat;
         };
 
-        std::list<Bob> bobs;
+        std::vector<Bob> bobs;
 
         unsigned int startTime;
         unsigned int bobTime;
