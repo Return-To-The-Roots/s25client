@@ -1081,7 +1081,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         }
 
         glInterleavedArrays(GL_T2F_C3F_V3F, 0, tmp.get());
-        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(i))->GetTexture());
+        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(type))->GetTexture());
         glDrawArrays(GL_QUADS, 0, i);
     }
 }
