@@ -849,7 +849,7 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     {
         if(sorted_borders[i].empty())
             continue;
-        VIDEODRIVER.BindTexture(GetImage(borders, i)->GetTexture());
+        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.borders.get(i))->GetTexture());
 
         for(std::vector<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
         {
@@ -1081,7 +1081,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         }
 
         glInterleavedArrays(GL_T2F_C3F_V3F, 0, tmp.get());
-        VIDEODRIVER.BindTexture(GetImage(roads, type)->GetTexture());
+        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(i))->GetTexture());
         glDrawArrays(GL_QUADS, 0, i);
     }
 }

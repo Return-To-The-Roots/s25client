@@ -949,6 +949,11 @@ glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned int nr)
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.get(nr));
 }
 
+glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
+{
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.find(name));
+}
+
 glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned int nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv.get(nr));

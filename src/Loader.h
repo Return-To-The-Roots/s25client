@@ -108,6 +108,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 
     public:
         glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned int nr);
+        glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
         glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned int nr);
         glArchivItem_Font* GetFontN(const std::string& file, unsigned int nr);
         libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned int nr = 0);
