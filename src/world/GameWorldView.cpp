@@ -570,12 +570,13 @@ void GameWorldView::CalcFxLx()
 
     if(zoomFactor != 1.f)
     {
-        // Map area drawn
-        Point<float> size(lastPt - firstPt);
-        // Greater zoom reduces visible area
-        Point<float> reducedSize = size / zoomFactor;
-        // Difference we need to remove
-        Point<float> diff = (size - reducedSize) / 2.f;
+        // Calc pixels we can remove from sides, as they are not drawn due to zoom
+        Point<float> diff(width - width / zoomFactor, height - height / zoomFactor);
+        // Stay centered by removing half the pixels from opposite sites
+        diff = diff / 2.f;
+        // Convert to map points
+        diff.x /= TR_W;
+        diff.y /= TR_H;
         // Don't remove to much
         diff.x = std::floor(diff.x);
         diff.y = std::floor(diff.y);
