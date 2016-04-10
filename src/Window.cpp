@@ -37,7 +37,7 @@
  *  @author OLiver
  */
 Window::Window()
-    : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_("")
+    : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
 {
 }
 
@@ -186,6 +186,7 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
         return false;
 
     bool processed = false;
+    isInMouseRelay = true;
 
     // Alle Controls durchgehen
     // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
@@ -199,27 +200,13 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
         if(it->second->visible_ && it->second->active_)
             // Falls von einem Steuerelement verarbeitet --> abbrechen
             if((it->second->*msg)(mc))
-            {
                 processed = true;
-                break;
-            }
     }
 
-    /*// Nur vorläufig
-    if(processed && msg == &Window::Msg_LeftDown)
-    {
-        for(std::map<unsigned int,Window*>::iterator it = idmap.begin(); it != idmap.end() && active; ++it)
-        {
-            if(!locked_areas.empty())
-                if(TestWindowInRegion(it->second, mc))
-                    continue;
-
-            if(it->second->visible && it->second->active)
-                // Falls von einem Steuerelement verarbeitet --> abbrechen
-                it->second->Msg_LeftDown_After(mc);
-
-        }
-    }*/
+    for(std::vector<Window*>::iterator it = tofreeAreas_.begin(); it != tofreeAreas_.end(); ++it)
+        lockedAreas_.erase(*it);
+    tofreeAreas_.clear();
+    isInMouseRelay = false;
 
     return processed;
 }
@@ -264,6 +251,9 @@ void Window::ActivateControls(bool activate)
 void Window::LockRegion(Window* window, const Rect& rect)
 {
     lockedAreas_[window] = rect;
+    std::vector<Window*>::iterator it = std::find(tofreeAreas_.begin(), tofreeAreas_.end(), window);
+    if(it != tofreeAreas_.end())
+        tofreeAreas_.erase(it);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -276,7 +266,11 @@ void Window::LockRegion(Window* window, const Rect& rect)
  */
 void Window::FreeRegion(Window* window)
 {
-    lockedAreas_.erase(window);
+    // We need to keep all locked areas otherwise a closed dropdown will enable "click-through" to below control
+    if(isInMouseRelay)
+        tofreeAreas_.push_back(window);
+    else
+        lockedAreas_.erase(window);
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?

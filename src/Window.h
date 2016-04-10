@@ -25,6 +25,7 @@
 #include "gameTypes/TextureColor.h"
 #include "Rect.h"
 #include <map>
+#include <vector>
 
 class ctrlBuildingIcon;
 class ctrlTextButton;
@@ -331,6 +332,8 @@ class Window
         std::string tooltip_;      ///< Tooltip des Fensters (nur bei Controls benutzt)
 
         std::map<Window*, Rect> lockedAreas_;       ///< gesperrte Regionen des Fensters.
+        std::vector<Window*> tofreeAreas_;
+        bool isInMouseRelay;
         std::map<unsigned int, Window*> childIdToWnd_; ///< Die Steuerelemente des Fensters.
 };
 
