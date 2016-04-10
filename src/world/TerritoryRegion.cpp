@@ -114,15 +114,17 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
     }
 }
 
-struct GetMapPointWithRadius
-{
-    typedef std::pair<MapPoint, unsigned> result_type;
-
-    result_type operator()(const MapPoint pt, unsigned r)
+namespace{
+    struct GetMapPointWithRadius
     {
-        return std::make_pair(pt, r);
-    }
-};
+        typedef std::pair<MapPoint, unsigned> result_type;
+
+        result_type operator()(const MapPoint pt, unsigned r)
+        {
+            return std::make_pair(pt, r);
+        }
+    };
+}
 
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {

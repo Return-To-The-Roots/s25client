@@ -735,15 +735,17 @@ void nofCarrier::LooseWare()
     }
 }
 
-struct IsCoastalAndForFigs
-{
-    const GameWorldGame& gwg;
-    IsCoastalAndForFigs(const GameWorldGame& gwg): gwg(gwg){}
-    
-    bool operator()(const MapPoint& pt) const{
-        return gwg.IsCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
-    }
-};
+namespace{
+    struct IsCoastalAndForFigs
+    {
+        const GameWorldGame& gwg;
+        IsCoastalAndForFigs(const GameWorldGame& gwg): gwg(gwg){}
+
+        bool operator()(const MapPoint& pt) const{
+            return gwg.IsCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
+        }
+    };
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

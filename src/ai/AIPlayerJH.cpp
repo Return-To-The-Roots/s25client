@@ -556,17 +556,19 @@ void AIPlayerJH::InitResourceMaps()
     }
 }
 
-struct MapPoint2Idx
-{
-    typedef unsigned result_type;
-    const AIInterface& aii_;
-
-    MapPoint2Idx(const AIInterface& aii): aii_(aii){}
-    result_type operator()(const MapPoint pt, unsigned  /*r*/)
+namespace{
+    struct MapPoint2Idx
     {
-        return aii_.GetIdx(pt);
-    }
-};
+        typedef unsigned result_type;
+        const AIInterface& aii_;
+
+        MapPoint2Idx(const AIInterface& aii): aii_(aii){}
+        result_type operator()(const MapPoint pt, unsigned  /*r*/)
+        {
+            return aii_.GetIdx(pt);
+        }
+    };
+}
 
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 {

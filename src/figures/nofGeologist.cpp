@@ -278,15 +278,17 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
             && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
 }
 
-struct GetMapPointWithRadius
-{
-    typedef std::pair<MapPoint, unsigned> result_type;
-
-    result_type operator()(const MapPoint pt, unsigned r)
+namespace{
+    struct GetMapPointWithRadius
     {
-        return std::make_pair(pt, r);
-    }
-};
+        typedef std::pair<MapPoint, unsigned> result_type;
+
+        result_type operator()(const MapPoint pt, unsigned r)
+        {
+            return std::make_pair(pt, r);
+        }
+    };
+}
 
 void nofGeologist::LookForNewNodes()
 {

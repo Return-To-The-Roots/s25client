@@ -141,18 +141,20 @@ void nofScout_Free::Scout()
 
 const unsigned SCOUT_RANGE = 16;
 
-struct IsScoutable
-{
-    const unsigned char player;
-    const GameWorldGame& gwg;
-    IsScoutable(const unsigned char player, const GameWorldGame& gwg): player(player), gwg(gwg){}
-
-    bool operator()(const MapPoint& pt) const
+namespace{
+    struct IsScoutable
     {
-        // Liegt Punkt im Nebel und für Figuren begehbar?
-        return gwg.GetNode(pt).fow[player].visibility != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
-    }
-};
+        const unsigned char player;
+        const GameWorldGame& gwg;
+        IsScoutable(const unsigned char player, const GameWorldGame& gwg): player(player), gwg(gwg){}
+
+        bool operator()(const MapPoint& pt) const
+        {
+            // Liegt Punkt im Nebel und für Figuren begehbar?
+            return gwg.GetNode(pt).fow[player].visibility != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
+        }
+    };
+}
 
 void nofScout_Free::GoToNewNode()
 {

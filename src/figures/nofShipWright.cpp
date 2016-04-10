@@ -49,16 +49,18 @@ struct ShipPoint
     ShipPoint(MapPoint pos, unsigned char firstDir): pos(pos), first_dir(firstDir){}
 };
 
-struct IsNotReserved
-{
-    const World& world;
-    IsNotReserved(const World& world): world(world){}
-
-    bool operator()(const MapPoint& pt) const
+namespace{
+    struct IsNotReserved
     {
-        return !world.GetNode(pt).reserved;
-    }
-};
+        const World& world;
+        IsNotReserved(const World& world): world(world){}
+
+        bool operator()(const MapPoint& pt) const
+        {
+            return !world.GetNode(pt).reserved;
+        }
+    };
+}
 
 void nofShipWright::HandleDerivedEvent(const unsigned int  /*id*/)
 {

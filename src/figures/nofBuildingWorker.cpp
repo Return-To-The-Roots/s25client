@@ -349,17 +349,19 @@ void nofBuildingWorker::LostWork()
     workplace = NULL;
 }
 
-struct NodeHasResource
-{
-    const GameWorldGame& gwg;
-    const unsigned char res;
-    NodeHasResource(const GameWorldGame& gwg, const unsigned char res):gwg(gwg), res(res){}
-
-    bool operator()(const MapPoint pt)
+namespace{
+    struct NodeHasResource
     {
-        return gwg.IsResourcesOnNode(pt, res);
-    }
-};
+        const GameWorldGame& gwg;
+        const unsigned char res;
+        NodeHasResource(const GameWorldGame& gwg, const unsigned char res):gwg(gwg), res(res){}
+
+        bool operator()(const MapPoint pt)
+        {
+            return gwg.IsResourcesOnNode(pt, res);
+        }
+    };
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**

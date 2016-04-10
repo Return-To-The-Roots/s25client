@@ -183,32 +183,34 @@ bool AIConstruction::CanStillConstructHere(const MapPoint pt)
 	return true;
 }
 
-struct Point2Flag{
-    typedef const noFlag* result_type;
-    const AIInterface& aii_;
+namespace{
+    struct Point2FlagAI{
+        typedef const noFlag* result_type;
+        const AIInterface& aii_;
 
-    Point2Flag(const AIInterface& aii): aii_(aii){}
+        Point2FlagAI(const AIInterface& aii): aii_(aii){}
 
-    result_type operator()(const MapPoint pt, unsigned  /*r*/) const
-    {
-        return aii_.GetSpecObj<noFlag>(pt);
-    }
-};
+        result_type operator()(const MapPoint pt, unsigned  /*r*/) const
+        {
+            return aii_.GetSpecObj<noFlag>(pt);
+        }
+    };
 
-struct IsValidFlag{
-    const unsigned playerId_;
-    
-    IsValidFlag(const unsigned playerId): playerId_(playerId){}
+    struct IsValidFlag{
+        const unsigned playerId_;
 
-    bool operator()(const noFlag* const flag)
-    {
-        return flag && flag->GetPlayer() == playerId_;
-    }
-};
+        IsValidFlag(const unsigned playerId): playerId_(playerId){}
+
+        bool operator()(const noFlag* const flag) const
+        {
+            return flag && flag->GetPlayer() == playerId_;
+        }
+    };
+}
 
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
-    std::vector<const noFlag*> flags = aii.GetPointsInRadius<30>(pt, radius, Point2Flag(aii), IsValidFlag(playerID));
+    std::vector<const noFlag*> flags = aii.GetPointsInRadius<30>(pt, radius, Point2FlagAI(aii), IsValidFlag(playerID));
 
     // TODO Performance Killer!
     /*

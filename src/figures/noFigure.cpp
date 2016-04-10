@@ -569,28 +569,30 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     }
 }
 
-struct Point2Flag{
-    typedef noFlag* result_type;
-    GameWorldBase& gwb;
+namespace{
+    struct Point2Flag{
+        typedef noFlag* result_type;
+        GameWorldBase& gwb;
 
-    Point2Flag(GameWorldBase& gwb): gwb(gwb){}
+        Point2Flag(GameWorldBase& gwb): gwb(gwb){}
 
-    result_type operator()(const MapPoint pt, unsigned  /*r*/) const
-    {
-        return gwb.GetSpecObj<noFlag>(pt);
-    }
-};
+        result_type operator()(const MapPoint pt, unsigned  /*r*/) const
+        {
+            return gwb.GetSpecObj<noFlag>(pt);
+        }
+    };
 
-struct IsValidFlag{
-    const unsigned playerId_;
+    struct IsValidFlag{
+        const unsigned playerId_;
 
-    IsValidFlag(const unsigned playerId): playerId_(playerId){}
+        IsValidFlag(const unsigned playerId): playerId_(playerId){}
 
-    bool operator()(const noFlag* const flag)
-    {
-        return flag && flag->GetPlayer() == playerId_;
-    }
-};
+        bool operator()(const noFlag* const flag) const
+        {
+            return flag && flag->GetPlayer() == playerId_;
+        }
+    };
+}
 
 void noFigure::Wander()
 {

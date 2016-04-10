@@ -96,17 +96,19 @@ void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int v
     }
 }
 
-struct MapPoint2IdxWithRadius
-{
-    typedef std::pair<unsigned, unsigned> result_type;
-    const AIInterface& aii_;
-
-    MapPoint2IdxWithRadius(const AIInterface& aii): aii_(aii){}
-    result_type operator()(const MapPoint pt, unsigned r)
+namespace{
+    struct MapPoint2IdxWithRadius
     {
-        return std::make_pair(aii_.GetIdx(pt), r);
-    }
-};
+        typedef std::pair<unsigned, unsigned> result_type;
+        const AIInterface& aii_;
+
+        MapPoint2IdxWithRadius(const AIInterface& aii): aii_(aii){}
+        result_type operator()(const MapPoint pt, unsigned r)
+        {
+            return std::make_pair(aii_.GetIdx(pt), r);
+        }
+    };
+}
 
 void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
 {
