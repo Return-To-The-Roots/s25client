@@ -1213,7 +1213,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
     for(std::vector<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
     {
         // read file number, to set the index correctly
-        std::string filename = bfs::path(*itFile).filename().string();
+        const std::string filename = bfs::path(*itFile).filename().string();
         std::stringstream nrs;
         int nr = -1;
         nrs << filename;
@@ -1272,7 +1272,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 return false;
             }
 
-            out->setName(*itFile);
+            out->setName(filename);
             out->setNx(nx);
             out->setNy(ny);
 
@@ -1305,12 +1305,14 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
         }else if( wf.back() == "fon" ) // Font
         {
             glArchivItem_Font* font = new glArchivItem_Font();
-            font->setName(*itFile);
+            font->setName(filename);
             font->setDx(dx);
             font->setDy(dy);
 
             if(!LoadFile(*itFile, palette, *font))
                 return false;
+            else
+                delete font;
 
             item = font;
         }
