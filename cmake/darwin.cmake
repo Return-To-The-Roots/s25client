@@ -24,7 +24,7 @@ ENDIF ( "${CMAKE_OSX_ARCHITECTURES}" MATCHES "ppc" )
 
 # i386 only?
 IF ( NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "x86_64" AND NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "ppc" )
-	ADD_FLAGS(APPLE_CFLAGS -mtune=prescott -mmmx -mfpmath=sse -malign-double)
+	ADD_FLAGS(APPLE_CFLAGS -mtune=prescott -mmmx -mfpmath=sse)
 ENDIF ( NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "x86_64" AND NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "ppc" )
 
 # ppc only?

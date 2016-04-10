@@ -90,7 +90,7 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
     gwb(GAMECLIENT.QueryGameWorldViewer()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
-    selected(0, 0), minimap(gwv.GetViewer()), zoomLvl(0), isScrolling(false)
+    selected(0, 0), minimap(gwv.GetViewer()), isScrolling(false), zoomLvl(0)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);

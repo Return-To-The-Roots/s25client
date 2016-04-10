@@ -60,8 +60,6 @@ class dskGameInterface :
         iwAction* actionwindow;
         // Aktuell geöffnetes Straßenbaufenster
         iwRoadWindow* roadwindow;
-        // Is der lokale Spieler der Host?
-        bool ishost;
         // Messenger für die Nachrichten
         Messenger messenger;
         // Aktuell selektierter Punkt auf der Karte

@@ -435,7 +435,8 @@ int main(int argc, char** argv)
         if(result || GLOBALVARS.errorOccured)
         {
             std::cerr << std::endl << std::endl << "ERROR: Test failed!" << std::endl;
-            result = result || 1;
+            if(!result)
+                result = 1;
         } else
             std::cout << std::endl << std::endl << "Test passed!" << std::endl;
     }    
