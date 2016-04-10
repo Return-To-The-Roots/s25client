@@ -40,6 +40,8 @@ class dskCredits : public Desktop
 
         bool Close();
 
+        static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
+
         struct CreditsEntry
         {
             struct Line

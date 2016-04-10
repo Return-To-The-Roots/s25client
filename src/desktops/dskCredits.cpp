@@ -69,7 +69,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Credits"
     AddText(2, 400, 33, _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
-    CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", LOADER.GetImage("credits", "flosoft.bmp"));
+    CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
     entry.lines.push_back(_("Project management"));
     entry.lines.push_back(_("Server management"));
     entry.lines.push_back(_("Programming"));
@@ -78,44 +78,44 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Oliver Siebert (Oliverr):", LOADER.GetImage("credits", "oliverr.bmp"));
+    entry = CreditsEntry("Oliver Siebert (Oliverr):", GetCreditsImgOrDefault("oliverr"));
     entry.lines.push_back(_("Project management"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", LOADER.GetImage("credits", "z-stef.bmp"));
+    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", GetCreditsImgOrDefault("z-stef"));
     entry.lines.push_back(_("Website Administration"));
     entry.lines.push_back(_("Website Programming"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Patrick Haak (Demophobie):", LOADER.GetImage("credits", "demophobie.bmp"));
+    entry = CreditsEntry("Patrick Haak (Demophobie):", GetCreditsImgOrDefault("demophobie"));
     entry.lines.push_back(_("Website Administration"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Jonas Trampe (NastX):", LOADER.GetImage("credits", "nastx.bmp"));
+    entry = CreditsEntry("Jonas Trampe (NastX):", GetCreditsImgOrDefault("nastx"));
     entry.lines.push_back(_("Quality Assurance"));
     entry.lines.push_back(_("Mapping"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Jan-Henrik Kluth (jh):", LOADER.GetImage("credits", "jh.bmp"));
+    entry = CreditsEntry("Jan-Henrik Kluth (jh):", GetCreditsImgOrDefault("jh"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Artificial Intelligence (AI)"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", LOADER.GetImage("credits", "spikeone.bmp"));
+    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", GetCreditsImgOrDefault("spikeone"));
     entry.lines.push_back(_("Additional graphics"));
     entry.lines.push_back(_("Quality Assurance"));
     entry.lines.push_back(_("Mapping"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Marcus Ströbel (Maqs):");
+    entry = CreditsEntry("Marcus Ströbel (Maqs):", GetCreditsImgOrDefault("maqs"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Alex Grund (Flamefire):");
+    entry = CreditsEntry("Alex Grund (Flamefire):", GetCreditsImgOrDefault("flamefire"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
@@ -340,6 +340,14 @@ bool dskCredits::Close()
 {
     WINDOWMANAGER.Switch(new dskMainMenu());
     return true;
+}
+
+glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
+{
+    glArchivItem_Bitmap* result = LOADER.GetImage("credits", name + ".bmp");
+    if(!result)
+        result = LOADER.GetImage("credits", "default.bmp");
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
