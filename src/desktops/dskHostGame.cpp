@@ -748,13 +748,13 @@ void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool  /*c
 void dskHostGame::UpdateGGS()
 {
     // Geschwindigkeit
-    ggs_.game_speed = static_cast<GlobalGameSettings::GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
+    ggs_.game_speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
     // Spielziel
-    ggs_.game_objective = static_cast<GlobalGameSettings::GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
+    ggs_.game_objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
     // Waren zu Beginn
-    ggs_.start_wares = static_cast<GlobalGameSettings::StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
+    ggs_.start_wares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
     // Aufklärung
-    ggs_.exploration = static_cast<GlobalGameSettings::Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
+    ggs_.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
     // Teams gesperrt
     ggs_.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
     // Team sicht

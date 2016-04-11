@@ -19,6 +19,7 @@
 #define GlobalGameSettings_H_INCLUDED
 
 #include "addons/Addons.h"
+#include "gameTypes/GameSettingTypes.h"
 #include <vector>
 #include <algorithm>
 
@@ -38,11 +39,11 @@ class GlobalGameSettings
         void Deserialize(Serializer& ser);
 
     public:
-        enum GameSpeed { GS_VERYSLOW = 0, GS_SLOW , GS_NORMAL, GS_FAST, GS_VERYFAST } game_speed;
-        enum GameObjective { GO_NONE = 0, GO_CONQUER3_4, GO_TOTALDOMINATION } game_objective;
-        enum StartWares {SWR_VLOW = 0, SWR_LOW, SWR_NORMAL, SWR_ALOT} start_wares;
+        GameSpeed game_speed;
+        GameObjective game_objective;
+        StartWares start_wares;
         bool lock_teams;
-        enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED } exploration;
+        Exploration exploration;
         bool team_view;
         bool random_location;
 

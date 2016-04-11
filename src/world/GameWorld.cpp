@@ -21,6 +21,7 @@
 #include "GameWorld.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
 #include "lua/LuaInterfaceGame.h"
@@ -28,6 +29,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "buildings/noBuildingSite.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"
 
 #include "libsiedler2/src/prototypen.h"
@@ -56,9 +58,31 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
             lua.reset();
     }
 
-    MapLoader loader(*this);
+    std::vector<Nation> players;
+    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
+    {
+        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        if(player.isUsed())
+            players.push_back(player.nation);
+        else
+            players.push_back(NAT_INVALID);
+    }
 
-    loader.Load(map);
+    MapLoader loader(*this, players);
+    if(!loader.Load(map, GAMECLIENT.GetGGS().random_location, GAMECLIENT.GetGGS().exploration))
+        return false;
+
+    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
+    {
+        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        if(player.isUsed())
+        {
+            player.hqPos = loader.GetHQPos(i);
+            nobBaseWarehouse* wh = GetSpecObj<nobBaseWarehouse>(player.hqPos);
+            RTTR_Assert(wh);
+            player.AddWarehouse(wh);
+        }
+    }
 
     CreateTradeGraphs();
 

@@ -642,7 +642,7 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
             if(GetNode(curPt).owner != region.GetOwner(x, y))
             {
                 // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-                if(GAMECLIENT.GetGGS().game_objective == GlobalGameSettings::GO_CONQUER3_4)
+                if(GAMECLIENT.GetGGS().game_objective == GO_CONQUER3_4)
                     return true;
                 TerrainType t1 = GetNode(curPt).t1, t2 = GetNode(curPt).t2;
                 if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
@@ -1365,13 +1365,13 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
         // Je nach vorherigen Zustand und Einstellung entscheiden
         switch(GAMECLIENT.GetGGS().exploration)
         {
-            case GlobalGameSettings::EXP_DISABLED:
-            case GlobalGameSettings::EXP_CLASSIC:
+            case EXP_DISABLED:
+            case EXP_CLASSIC:
                 // einmal sichtbare Bereiche bleiben erhalten
                 // nichts zu tun
                 break;
-            case GlobalGameSettings::EXP_FOGOFWAR:
-            case GlobalGameSettings::EXP_FOGOFWARE_EXPLORED:
+            case EXP_FOGOFWAR:
+            case EXP_FOGOFWARE_EXPLORED:
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
                 if(visibility_before == VIS_VISIBLE)
                 {

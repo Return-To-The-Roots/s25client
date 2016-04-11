@@ -1237,7 +1237,7 @@ void GameClient::StatisticStep()
     }
 
     // Check objective if there is one and there are at least two players
-    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+    if (ggs.game_objective == GO_NONE)
         return;
 
     // check winning condition
@@ -1279,25 +1279,25 @@ void GameClient::StatisticStep()
 
     switch (ggs.game_objective)
     {
-        case GlobalGameSettings::GO_CONQUER3_4: // at least 3/4 of the land
+        case GO_CONQUER3_4: // at least 3/4 of the land
             if ((max * 4 >= sum * 3) && (best != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             break;
 
-        case GlobalGameSettings::GO_TOTALDOMINATION:    // whole populated land
+        case GO_TOTALDOMINATION:    // whole populated land
             if ((max == sum) && (best != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             if ((maxteam == sum) && (bestteam != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             break;
         default:
@@ -1305,7 +1305,7 @@ void GameClient::StatisticStep()
     }
 
     // We have a winner! Objective was changed to GO_NONE to avoid further checks.
-    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+    if (ggs.game_objective == GO_NONE)
     {
         if(maxteam <= best)
             gw->GetGameInterface()->GI_Winner(best);
