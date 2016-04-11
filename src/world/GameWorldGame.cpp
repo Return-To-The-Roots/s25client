@@ -64,26 +64,9 @@ MilitarySquares& GameWorldGame::GetMilitarySquares()
     return militarySquares;
 }
 
-void GameWorldGame::RecalcBQAroundPoint(const MapPoint pt)
-{
-    // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-    CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
-    for(unsigned char i = 0; i < 6; ++i)
-        CalcAndSetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
-}
-
-void GameWorldGame::RecalcBQAroundPointBig(const MapPoint pt)
-{
-    RecalcBQAroundPoint(pt);
-
-    // 2. Außenschale
-    for(unsigned i = 0; i < 12; ++i)
-        CalcAndSetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
-}
-
 void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir)
 {
-    if(CalcBQ(pt, player, true, false) != BQ_FLAG)
+    if(GetBQ(pt, player, false) == BQ_NOTHING)
         return;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
@@ -162,7 +145,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
         return;
 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    const BuildingQuality bq = CalcBQ(pt, player, false, false);
+    const BuildingQuality bq = GetBQ(pt, player, false);
 
     switch(BUILDING_SIZE[type])
     {
@@ -284,16 +267,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     else
     {
         // Es ist keine Flagge dort, dann muss getestet werden, ob da wenigstens eine gebaut werden kann
-        //Test ob wir evtl genau auf der Grenze sind (zählt zum eigenen Land kann aber nix gebaut werden egal was bq is!)
-        if(GetNode(curPt).boundary_stones[0])
-        {
-            RemoveVisualRoad(start, route);
-            // tell ai: road construction failed
-            GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
-            return;
-        }
-        // kann Flagge hier nicht gebaut werden?
-        if(CalcBQ(curPt, playerid, true, false) != BQ_FLAG)
+        if(GetBQ(curPt, playerid, false) == BQ_NOTHING)
         {
             // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
             RemoveVisualRoad(start, route);
@@ -520,10 +494,10 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                     DestroyPlayerRests(neighbourPt, GetNode(curPt).owner, &building, false);
 
                     // BQ neu berechnen
-                    CalcAndSetBQ(neighbourPt, GAMECLIENT.GetPlayerID());
+                    RecalcBQ(neighbourPt);
                     // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
                     if(GetNeighbourNode(neighbourPt, 1).bq != BQ_NOTHING)
-                        CalcAndSetBQ(GetNeighbour(neighbourPt, 1), GAMECLIENT.GetPlayerID());
+                        RecalcBQ(GetNeighbour(neighbourPt, 1));
                 }
 
                 if(gi)
@@ -797,9 +771,11 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
     unsigned char good_terrains = 0;
     for(unsigned char i = 0; i < 6; ++i)
     {
-        BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
-        if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG) ++good_terrains;
-        else if(bq == BQ_DANGER) return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
+        TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        if(bq == TerrainBQ::DANGER)
+            return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
+        else if(bq != TerrainBQ::NOTHING)
+            ++good_terrains;
     }
 
     // Darf nicht im Wasser liegen, 

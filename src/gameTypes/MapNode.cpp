@@ -43,6 +43,7 @@ void MapNode::Serialize(SerializedGameData& sgd) const
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
         sgd.PushUnsignedChar(boundary_stones[b]);
     sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(bqVisual));
     for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
     {
         const MapNode::FoWData& curFoW = fow[z];
@@ -86,6 +87,7 @@ void MapNode::Deserialize(SerializedGameData& sgd)
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
         boundary_stones[b] = sgd.PopUnsignedChar();
     bq = BuildingQuality(sgd.PopUnsignedChar());
+    bqVisual = BuildingQuality(sgd.PopUnsignedChar());
     for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
     {
         MapNode::FoWData& curFoW = fow[z];

@@ -211,7 +211,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 // Mauszeiger am boten
                 unsigned mid = 22;
                 if(rb.mode == RM_DISABLED){
-                    switch(gwv.GetNode(curPt).bq)
+                    switch(gwv.GetBQ(curPt, GAMECLIENT.GetPlayerID()))
                     {
                     case BQ_FLAG: mid = 40; break;
                     case BQ_MINE: mid = 41; break;
@@ -248,10 +248,8 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
                     continue;
 
-                if(((gwv.RoadAvailable(rb.mode == RM_BOAT, curPt)
-                    && gwv.GetNode(curPt).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
-                    || (gwv.GetNode(curPt).bq == BQ_FLAG))
-                    && gwv.IsPlayerTerritory(curPt))
+                if((gwv.RoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.GetNode(curPt).owner == GAMECLIENT.GetPlayerID() + 1 && gwv.IsPlayerTerritory(curPt))
+                    || (gwv.GetBQ(curPt, GAMECLIENT.GetPlayerID()) == BQ_FLAG))
                 {
                     unsigned id;
                     switch(int(gwv.GetNode(curPt).altitude) - altitude)
@@ -387,8 +385,8 @@ void GameWorldView::DrawFigures(const MapPoint& pt, const Point<int>&curPos, std
 
 void GameWorldView::DrawConstructionAid(const MapPoint& pt, const Point<int>& curPos)
 {
-    BuildingQuality bq = gwv.GetNode(pt).bq;
-    if(bq != BQ_NOTHING && bq != BQ_DANGER) //-V807
+    BuildingQuality bq = gwv.GetBQ(pt, GAMECLIENT.GetPlayerID());
+    if(bq != BQ_NOTHING) //-V807
     {
         glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
         //Draw building quality icon

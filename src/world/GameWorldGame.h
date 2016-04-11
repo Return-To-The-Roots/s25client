@@ -72,11 +72,6 @@ public:
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     inline GameInterface* GetGameInterface() const { return gi; }
 
-    /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
-    void RecalcBQAroundPoint(const MapPoint pt);
-    /// Berechnet Bauqualitäten wie bei letzterer Funktion, bloß noch den 2. Kreis um x;y herum
-    void RecalcBQAroundPointBig(const MapPoint pt);
-
     /// Prüft, ob dieser Punkt von Menschen betreten werden kann
     bool IsNodeForFigures(const MapPoint pt) const;
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)

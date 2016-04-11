@@ -114,6 +114,11 @@ public:
     /// Ver�ndert die H�he eines Punktes und die damit verbundenen Schatten
     void AltitudeChanged(const MapPoint pt) override;
 
+    /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
+    void RecalcBQAroundPoint(const MapPoint pt);
+    /// Berechnet Bauqualitäten wie bei letzterer Funktion, bloß noch den 2. Kreis um x;y herum
+    void RecalcBQAroundPointBig(const MapPoint pt);
+
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verb�ndeten des jeweiligen Spielers
     Visibility CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const;
 

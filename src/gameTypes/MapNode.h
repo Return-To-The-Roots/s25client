@@ -50,7 +50,7 @@ struct MapNode
     typedef boost::array<unsigned char, 4> BoundaryStones;
     BoundaryStones boundary_stones;
     /// Bauqualität
-    BuildingQuality bq;
+    BuildingQuality bq, bqVisual;
     /// Visuelle Sachen für alle Spieler, die in Zusammenhang mit dem FoW stehen
     struct FoWData
     {

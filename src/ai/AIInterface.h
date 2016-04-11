@@ -175,8 +175,8 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
 
         /// Returns building quality on a given spot
-        BuildingQuality GetBuildingQuality(const MapPoint pt) const { return gwb.CalcBQ(pt, playerID_); }
-		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const { return gwb.CalcBQ(pt, playerID_,false,true,true); }
+        BuildingQuality GetBuildingQuality(const MapPoint pt) const { return gwb.GetBQ(pt, playerID_); }
+		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const { return gwb.GetNode(pt).bqVisual; }
 
         // Tries to find a free path for a road and return length and the route
         bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route = NULL,

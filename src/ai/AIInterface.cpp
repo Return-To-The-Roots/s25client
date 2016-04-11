@@ -190,15 +190,9 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
     return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
 }
 
-bool AIInterface::CalcBQSumDifference(const MapPoint pt, const MapPoint t)
+bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
 {
-    unsigned s1 = 0, s2 = 0;
-    if(gwb.CalcBQ(pt, playerID_) != BQ_DANGER)
-        s1 += gwb.CalcBQ(pt, playerID_);
-    if(gwb.CalcBQ(t, playerID_) != BQ_DANGER)
-        s2 += gwb.CalcBQ(t, playerID_);
-    //LOG.lprintf("AIInterface::bqdiff - s1 %i,%i,%i s2 %i,%i,%i\n", pt,s1,tx,ty,s2);
-    return s2 < s1;
+    return gwb.GetBQ(pt2, playerID_) < gwb.GetBQ(pt1, playerID_);
 }
 
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const

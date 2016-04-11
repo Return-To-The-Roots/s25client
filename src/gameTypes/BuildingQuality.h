@@ -25,8 +25,7 @@ enum BuildingQuality
     BQ_HOUSE,
     BQ_CASTLE,
     BQ_MINE,
-    BQ_HARBOR,
-    BQ_DANGER = 255
+    BQ_HARBOR
 };
 
 #endif // BuildingQuality_h__

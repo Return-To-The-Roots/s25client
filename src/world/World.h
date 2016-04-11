@@ -170,13 +170,12 @@ public:
     bool IsPlayerTerritory(const MapPoint pt) const;
     /// Ist eine Flagge irgendwo um x,y ?
     bool FlagNear(const MapPoint pt) const;
-    /// Bauqualitäten berechnen, bei flagonly gibt er nur 1 zurück, wenn eine Flagge möglich ist
-    BuildingQuality CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true, const bool ignore_player = false) const;
-    /// Setzt die errechnete BQ gleich mit
-    void CalcAndSetBQ(const MapPoint pt, const unsigned char player, const bool flagonly = false, const bool visual = true);
+    /// Recalculates the BQ for the given point
+    void RecalcBQ(const MapPoint pt);
+    /// Returns the BQ for the given player
+    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual = true) const;
 
     /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
-    /// nicht bei laufenden Figuren oder
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
 
     // Gibt ein spezifisches Objekt zurück
@@ -235,6 +234,11 @@ protected:
 
     /// Berechnet die Schattierung eines Punktes neu
     void RecalcShadow(const MapPoint pt);
+
+private:
+    /// Calculates BQ for a point. Visual affects used road state, flagOnly checks only if flag is possible
+    BuildingQuality CalcBQ(const MapPoint pt, const bool visual, const bool flagOnly = false) const;
+
 };
 
 //////////////////////////////////////////////////////////////////////////

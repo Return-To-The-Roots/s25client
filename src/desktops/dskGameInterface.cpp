@@ -304,7 +304,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(!BuildRoadPart(cSel, false))
                     ShowRoadWindow(mc.x, mc.y);
             }
-            else if(gwb.CalcBQ(cSel, GAMECLIENT.GetPlayerID(), true))
+            else if(gwb.GetBQ(cSel, GAMECLIENT.GetPlayerID()) != BQ_NOTHING)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
                 unsigned tbr = TestBuiltRoad(cSel);
@@ -395,13 +395,14 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const MapNode& selNode = gwb.GetNode(cSel);
         if(selNode.owner == GAMECLIENT.GetPlayerID() + 1)
         {
+            const BuildingQuality bq = gwb.GetBQ(cSel, GAMECLIENT.GetPlayerID());
             // Kann hier was gebaut werden?
-            if(selNode.bq >= BQ_HUT)
+            if(bq >= BQ_HUT)
             {
                 action_tabs.build = true;
 
                 // Welches Gebäude kann gebaut werden?
-                switch(selNode.bq)
+                switch(bq)
                 {
                     case BQ_HUT: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
                     case BQ_HOUSE: action_tabs.build_tabs = iwAction::Tabs::BT_HOUSE; break;
@@ -411,14 +412,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     default: break;
                 }
 
-                if(!gwb.FlagNear(cSel))
-                    action_tabs.setflag = true;
+                action_tabs.setflag = true;
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
                 enable_military_buildings = !gwb.IsMilitaryBuildingNearNode(cSel, GAMECLIENT.GetPlayerID());
             }
-            else if(selNode.bq == BQ_FLAG)
+            else if(bq == BQ_FLAG)
                 action_tabs.setflag = true;
 
             if(selObj.GetType() == NOP_FLAG)
@@ -792,10 +792,8 @@ unsigned dskGameInterface::TestBuiltRoad(const MapPoint pt)
 
 void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
 {
-    if(gwb.CalcBQ(road.point, GAMECLIENT.GetPlayerID(), 1))
-        WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(*this, 1, mouse_x, mouse_y), true);
-    else
-        WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(*this, 0, mouse_x, mouse_y), true);
+    roadwindow = new iwRoadWindow(*this, gwb.GetBQ(road.point, GAMECLIENT.GetPlayerID()) != BQ_NOTHING, mouse_x, mouse_y);
+    WINDOWMANAGER.Show(roadwindow, true);
 }
 
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings)
@@ -991,13 +989,6 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
     {
         // Set visual settings back to the actual ones
         GAMECLIENT.ResetVisualSettings();
-
-        // BQ überall neu berechnen
-        for(unsigned y = 0; y < gwb.GetHeight(); ++y)
-        {
-            for(unsigned x = 0; x < gwb.GetWidth(); ++x)
-                gwb.CalcAndSetBQ(MapPoint(x, y), localPlayerID);
-        }
         minimap.UpdateAll();
         gwv.GetViewer().RecalcAllColors();
     }

@@ -371,15 +371,11 @@ bool World::FlagNear(const MapPoint pt) const
     return false;
 }
 
-BuildingQuality World::CalcBQ(const MapPoint pt, const unsigned char player, const bool flagonly, const bool visual, const bool ignore_player) const
+BuildingQuality World::CalcBQ(const MapPoint pt, const bool visual, const bool flagonly /*= false*/) const
 {
 
     ///////////////////////
     // 1. nach Terrain
-
-    // Unser Land?
-    if(!ignore_player && (GetNode(pt).owner - 1 != player || !IsPlayerTerritory(pt)))
-        return BQ_NOTHING;
 
     unsigned building_hits = 0;
     unsigned mine_hits = 0;
@@ -388,14 +384,14 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const unsigned char player, con
     // bebaubar?
     for(unsigned char i = 0; i < 6; ++i)
     {
-        BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
-        if(bq == BQ_CASTLE)
+        TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        if(bq == TerrainBQ::CASTLE)
             ++building_hits;
-        else if(bq == BQ_MINE)
+        else if(bq == TerrainBQ::MINE)
             ++mine_hits;
-        else if(bq == BQ_FLAG)
+        else if(bq == TerrainBQ::FLAG)
             ++flag_hits;
-        else if(bq == BQ_DANGER)
+        else if(bq == TerrainBQ::DANGER)
             return BQ_NOTHING;
     }
 
@@ -612,7 +608,7 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const unsigned char player, con
         if(GetNO(GetNeighbour(pt, 4))->GetBM() == noBase::BM_FLAG)
             return val;
 
-        if(CalcBQ(GetNeighbour(pt, 4), player, true, visual, ignore_player))
+        if(CalcBQ(GetNeighbour(pt, 4), visual, true))
         {
             return val;
         } else
@@ -628,9 +624,21 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const unsigned char player, con
     return val;
 }
 
-void World::CalcAndSetBQ(const MapPoint pt, const unsigned char player, const bool flagonly/* = false*/, const bool visual/* = true*/)
+void World::RecalcBQ(const MapPoint pt)
 {
-    GetNodeInt(pt).bq = CalcBQ(pt, player, flagonly, visual);
+    GetNodeInt(pt).bq = CalcBQ(pt, false);
+    GetNodeInt(pt).bqVisual = CalcBQ(pt, true);
+}
+
+BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, const bool visual /*= true*/) const
+{
+    if(GetNode(pt).owner != player + 1 || !IsPlayerTerritory(pt))
+        return BQ_NOTHING;
+    BuildingQuality bq = visual ?  GetNode(pt).bqVisual : GetNode(pt).bq;
+    // If we could build a building, but the buildings flag point is at the border, we can only build a flag
+    if(bq != BQ_NOTHING && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
+        bq = BQ_FLAG;
+    return bq;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
