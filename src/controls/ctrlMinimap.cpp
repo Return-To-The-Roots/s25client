@@ -25,12 +25,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned int id,
                           const unsigned short x,
@@ -57,12 +51,6 @@ void ctrlMinimap::Resize_(unsigned short width, unsigned short height)
     SetDisplaySize(width, height, mapWidth_, mapHeight_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned short height, const unsigned short map_width, const unsigned short map_height)
 {
     this->width_ = width;
@@ -94,24 +82,12 @@ void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned shor
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlMinimap::DrawMap(Minimap& map)
 {
     // Map ansich zeichnen
     map.Draw(GetX() + GetLeft(), GetY() + GetTop(), width_show, height_show);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlMinimap::RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min)
 {
     width_  = max<unsigned short>( width_show + padding_x * 2,  width_min);

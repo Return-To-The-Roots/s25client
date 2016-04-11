@@ -85,12 +85,6 @@ const char* AudioDriver::GetName() const
     return NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 unsigned AudioDriver::GeneratePlayID()
 {
     // Ende erreicht?

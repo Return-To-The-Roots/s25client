@@ -92,67 +92,31 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlOptionGroup::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     SetSelection(ctrl_id, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlOptionGroup::Msg_LeftDown(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlOptionGroup::Msg_LeftUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlOptionGroup::Msg_WheelUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlOptionGroup::Msg_WheelDown(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_WheelDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlOptionGroup::Msg_MouseMove(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);

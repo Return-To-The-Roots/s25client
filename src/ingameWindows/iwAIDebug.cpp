@@ -104,12 +104,6 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv)
     //list->SetSelection(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
@@ -130,12 +124,6 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwAIDebug::Msg_PaintBefore()
 {
     std::stringstream ss;

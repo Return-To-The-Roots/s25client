@@ -30,12 +30,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
                                       const unsigned int id,
                                       const unsigned short x,
@@ -106,23 +100,11 @@ bool ctrlIngameMinimap::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlIngameMinimap::Msg_LeftDown(const MouseCoords& mc)
 {
     return Msg_MouseMove(mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
 {
     if(mc.ldown)
@@ -154,34 +136,16 @@ void ctrlIngameMinimap::SetDisplaySize(const unsigned short width, const unsigne
     ctrlMinimap::SetDisplaySize(width, height, minimap.GetMapWidth(), minimap.GetMapHeight());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlIngameMinimap::ToggleTerritory()
 {
     minimap.ToggleTerritory();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlIngameMinimap::ToggleHouses()
 {
     minimap.ToggleHouses();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlIngameMinimap::ToggleRoads()
 {
     minimap.ToggleRoads();

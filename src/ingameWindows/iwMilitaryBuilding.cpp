@@ -214,12 +214,6 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwMilitaryBuilding::DemolitionNotAllowed()
 {
     // Meldung auswählen, je nach Einstellung

@@ -43,12 +43,6 @@ ctrlImage::ctrlImage(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 ctrlImage::~ctrlImage()
 {
     WINDOWMANAGER.SetToolTip(this, "");
@@ -69,12 +63,6 @@ bool ctrlImage::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
     // gültiges Bildz?

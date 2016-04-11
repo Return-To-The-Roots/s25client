@@ -178,22 +178,10 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
         GetMusic(sng_lst, 8)->Play(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 dskCredits::~dskCredits()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author siegi44
- */
 void dskCredits::Msg_PaintAfter()
 {
     unsigned int time = VIDEODRIVER.GetTickCount() - startTime;
@@ -330,12 +318,6 @@ void dskCredits::Msg_PaintAfter()
         itCurEntry->pic->Draw(VIDEODRIVER.GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author siegi44
- */
 bool dskCredits::Close()
 {
     WINDOWMANAGER.Switch(new dskMainMenu());
@@ -350,12 +332,6 @@ glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
     return result;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author siegi44
- */
 bool dskCredits::Msg_KeyDown(const KeyEvent&  /*ke*/)
 {
     return Close();

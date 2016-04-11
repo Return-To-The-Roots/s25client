@@ -35,12 +35,6 @@
 class noFigure;
 class noRoadNode;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 nobUsual::nobUsual(BuildingType type,
                    MapPoint pos,
                    unsigned char player,
@@ -83,12 +77,6 @@ nobUsual::nobUsual(BuildingType type,
     owner.AddUsualBuilding(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
     : noBuilding(sgd, obj_id),
       worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
@@ -117,21 +105,9 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
     disable_production_virtual = disable_production;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 nobUsual::~nobUsual()
 {}
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::Destroy_nobUsual()
 {
     // Arbeiter Bescheid sagen
@@ -166,12 +142,6 @@ void nobUsual::Destroy_nobUsual()
     Destroy_noBuilding();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
 {
     Serialize_noBuilding(sgd);
@@ -193,12 +163,6 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
         sgd.PushUnsignedShort(last_productivities[i]);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::Draw(int x, int y)
 {
     // Gebäude an sich zeichnen
@@ -301,12 +265,6 @@ void nobUsual::Draw(int x, int y)
         Draw(x + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][1]);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::HandleEvent(const unsigned int id)
 {
     if(id)
@@ -356,12 +314,6 @@ void nobUsual::HandleEvent(const unsigned int id)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::AddWare(Ware*& ware)
 
 {
@@ -395,12 +347,6 @@ void nobUsual::AddWare(Ware*& ware)
         worker->GotWareOrProductionAllowed();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool nobUsual::FreePlaceAtFlag()
 {
     // Arbeiter Bescheid sagen, falls es noch keinen gibt, brauch keine Ware rausgetragen werden
@@ -410,12 +356,6 @@ bool nobUsual::FreePlaceAtFlag()
         return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::WareLost(Ware* ware)
 {
     // Ware konnte nicht kommen --> raus damit
@@ -430,12 +370,6 @@ void nobUsual::WareLost(Ware* ware)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::GotWorker(Job  /*job*/, noFigure* worker)
 {
     this->worker = static_cast<nofBuildingWorker*>(worker);
@@ -445,12 +379,6 @@ void nobUsual::GotWorker(Job  /*job*/, noFigure* worker)
         HandleEvent(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::WorkerLost()
 {
     // Check if worker is or was here (e.g. hunter could currently be outside)
@@ -472,12 +400,6 @@ void nobUsual::WorkerLost()
     gwg->GetPlayer(player).AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool nobUsual::WaresAvailable()
 {
     switch(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count)
@@ -490,12 +412,6 @@ bool nobUsual::WaresAvailable()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::ConsumeWares()
 {
     unsigned char ware_type = 0xFF;
@@ -569,12 +485,6 @@ void nobUsual::ConsumeWares()
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 unsigned nobUsual::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType type)
 {
     // Warentyp ermitteln
@@ -616,12 +526,6 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType
     return points;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::TakeWare(Ware* ware)
 {
     // Ware in die Bestellliste aufnehmen
@@ -636,24 +540,12 @@ void nobUsual::TakeWare(Ware* ware)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::WorkerArrived()
 {
     // Produktivität in 400 gf ausrechnen
     productivity_ev = em->AddEvent(this, 400, 1);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::SetProductionEnabled(const bool enabled)
 {
     if(disable_production == !enabled)
@@ -679,23 +571,11 @@ void nobUsual::SetProductionEnabled(const bool enabled)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool nobUsual::HasWorker() const
 {
     return worker && worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK;;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nobUsual::SetProductivityToZero()
 {
     productivity = 0;

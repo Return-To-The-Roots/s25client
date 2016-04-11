@@ -31,29 +31,14 @@ const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'
 /// Version des Savegame-Formates
 const unsigned short Savegame::SAVE_VERSION = 33;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 Savegame::Savegame() : SavedFile(), start_gf(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 Savegame::~Savegame()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Savegame::Save(const std::string& filename)
 {
     BinaryFile file;
@@ -68,11 +53,6 @@ bool Savegame::Save(const std::string& filename)
     return ret;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Savegame::Save(BinaryFile& file)
 {
     // Versionszeug schreiben
@@ -114,11 +94,6 @@ bool Savegame::Save(BinaryFile& file)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Savegame::Load(const std::string& filePath, const bool load_players, const bool load_sgd)
 {
     BinaryFile file;
@@ -133,11 +108,6 @@ bool Savegame::Load(const std::string& filePath, const bool load_players, const 
     return ret;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_sgd)
 {
     // Signatur und Version einlesen

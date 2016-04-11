@@ -32,31 +32,16 @@ const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
 /// Version des Replay-Formates
 const unsigned short Replay::REPLAY_VERSION = 28;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 Replay::~Replay()
 {
     StopRecording();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void Replay::StopRecording()
 {
     file.Close();
@@ -65,11 +50,6 @@ void Replay::StopRecording()
     SetPlayerCount(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
 {
     // Deny overwrite, also avoids double-opening by different processes
@@ -149,11 +129,6 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
 {
     this->fileName_ = filename;
@@ -236,11 +211,6 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const unsigned char dest, const std::string& str)
 {
     if(!file.IsValid())
@@ -274,11 +244,6 @@ void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const
     file.Flush();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void Replay::AddGameCommand(const unsigned gf, const unsigned short length, const unsigned char* const data)
 {
     if(!file.IsValid())
@@ -331,11 +296,6 @@ void Replay::AddPathfindingResult(const unsigned char data, const unsigned* cons
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool Replay::ReadGF(unsigned* gf)
 {
     //// kein Marker bedeutet das Ende der Welt
@@ -353,22 +313,12 @@ bool Replay::ReadGF(unsigned* gf)
     return !eof;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 Replay::ReplayCommand Replay::ReadRCType()
 {
     // Type auslesen
     return ReplayCommand(file.ReadUnsignedChar());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str)
 {
     *player = file.ReadUnsignedChar();
@@ -376,11 +326,6 @@ void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::
     str = file.ReadLongString();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 std::vector<unsigned char> Replay::ReadGameCommand()
 {
     std::vector<unsigned char> result(file.ReadUnsignedShort());
@@ -415,11 +360,6 @@ bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoi
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void Replay::UpdateLastGF(const unsigned last_gf)
 {
     if(!file.IsValid())

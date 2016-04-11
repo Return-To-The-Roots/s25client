@@ -24,12 +24,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 Message* GameMessage::create_game(unsigned short id)
 {
     Message* msg = NULL;

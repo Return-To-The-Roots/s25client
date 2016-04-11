@@ -31,12 +31,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vector<AddonId>& addonIds)
     : IngameWindow(CGI_ADDONS, 0xFFFF, 0xFFFF, 700, 500, _("Addon Settings"), LOADER.GetImageN("resource", 41), true), ggs(ggs), policy(policy), addonIds(addonIds)
 {
@@ -69,22 +63,10 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vect
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 iwAddons::~iwAddons()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -190,12 +172,6 @@ void iwAddons::UpdateView(const unsigned short selection)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
@@ -222,12 +198,6 @@ void iwAddons::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned 
     UpdateView(optiongroup->GetSelection());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool iwAddons::Msg_WheelUp(const MouseCoords&  /*mc*/)
 {
     // Forward to ScrollBar
@@ -239,12 +209,6 @@ bool iwAddons::Msg_WheelUp(const MouseCoords&  /*mc*/)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool iwAddons::Msg_WheelDown(const MouseCoords&  /*mc*/)
 {
     // Forward to ScrollBar

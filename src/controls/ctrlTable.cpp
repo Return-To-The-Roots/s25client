@@ -321,24 +321,12 @@ bool ctrlTable::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     SortRows(ctrl_id - 1);
     SetSelection(selection_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
@@ -353,12 +341,6 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
         return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_))
@@ -378,12 +360,6 @@ int ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
     return (mc.y - header_height - GetY()) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetPos();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 {
     // Forward to ScrollBar
@@ -416,12 +392,6 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
         return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
@@ -439,24 +409,12 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
         return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
 {
     // ButtonMessages weiterleiten
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTable::Msg_ScrollShow(const unsigned int  /*ctrl_id*/, const bool visible)
 {
     if(visible)

@@ -60,12 +60,6 @@ ctrlList::~ctrlList()
     DeleteAllItems();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
@@ -89,12 +83,6 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     return scrollbar->Msg_MouseMove(mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
@@ -117,12 +105,6 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     return scrollbar->Msg_LeftDown(mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool ctrlList::Msg_RightDown(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
@@ -144,12 +126,6 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     return scrollbar->Msg_RightDown(mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
@@ -168,12 +144,6 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
     return scrollbar->Msg_LeftUp(mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
 {
     // Forward to ScrollBar
@@ -190,12 +160,6 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
 {
     // Forward to ScrollBar

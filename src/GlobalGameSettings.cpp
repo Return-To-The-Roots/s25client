@@ -76,11 +76,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author FloSoft
- */
 GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true), random_location(false)
 {
     // register addons
@@ -105,11 +100,6 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author FloSoft
- */
 GlobalGameSettings::~GlobalGameSettings()
 {
     // clear memory and dont register addons again

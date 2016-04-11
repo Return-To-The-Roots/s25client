@@ -80,12 +80,6 @@ void ctrlTimer::Stop()
     timer = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void ctrlTimer::Msg_PaintBefore()
 {
     // timer ist deaktiviert, nix tun

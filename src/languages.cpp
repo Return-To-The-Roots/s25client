@@ -33,12 +33,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void Languages::loadLanguages()
 {
     const libsiedler2::ArchivInfo& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
@@ -62,12 +56,6 @@ void Languages::loadLanguages()
     loaded = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 const Languages::Language& Languages::getLanguage(unsigned int i)
 {
     if(!loaded)
@@ -79,12 +67,6 @@ const Languages::Language& Languages::getLanguage(unsigned int i)
     return languages.at(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 unsigned int Languages::getCount()
 {
     if(!loaded)
@@ -114,12 +96,6 @@ void Languages::setLanguage(const std::string& lang_code)
     textdomain(domain);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 const std::string Languages::setLanguage(unsigned int i)
 {
     const Language l = getLanguage(i);

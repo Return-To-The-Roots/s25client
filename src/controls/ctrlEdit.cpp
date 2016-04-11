@@ -211,12 +211,6 @@ void ctrlEdit::Notify()
     parent_->Msg_EditChange(GetID());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlEdit::Msg_PaintAfter()
 {
     focus_ = newFocus_;

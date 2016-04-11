@@ -122,12 +122,6 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
     switch(group_id)

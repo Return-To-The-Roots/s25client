@@ -34,12 +34,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 Playlist::Playlist() : repeats(1), random(false)
 {
 }

@@ -91,12 +91,6 @@ iwLobbyConnect::iwLobbyConnect()
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 iwLobbyConnect::~iwLobbyConnect()
 {
     // Form abrufen und ggf in settings speichern
@@ -142,24 +136,12 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwLobbyConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(0, COLOR_RED, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwLobbyConnect::Msg_EditEnter(const unsigned int ctrl_id)
 {
     ctrlEdit* user = GetCtrl<ctrlEdit>(1);
@@ -187,12 +169,6 @@ void iwLobbyConnect::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -241,12 +217,6 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)

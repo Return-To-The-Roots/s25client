@@ -84,12 +84,6 @@ iwSettings::iwSettings()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author NastX
- */
 iwSettings::~iwSettings()
 {
     ctrlComboBox* SizeCombo = GetCtrl<ctrlComboBox>(0);
@@ -127,12 +121,6 @@ iwSettings::~iwSettings()
 #endif
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author NastX
- */
 void iwSettings::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
@@ -151,12 +139,6 @@ void iwSettings::Msg_OptionGroupChange(const unsigned int ctrl_id, const int sel
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author NastX
- */
 void iwSettings::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
 {
     switch(ctrl_id)

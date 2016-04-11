@@ -47,67 +47,31 @@ ctrlTab::ctrlTab(Window* parent,
     memset(tabs, 0, MAX_TAB_COUNT * sizeof(unsigned int));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     SetSelection(ctrl_id, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTab::Msg_LeftDown(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTab::Msg_LeftUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlTab::Msg_WheelUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlTab::Msg_WheelDown(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_WheelDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
@@ -229,155 +193,71 @@ bool ctrlTab::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_EditEnter(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     parent_->Msg_Group_EditEnter(this->id_, ctrl_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_EditChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     parent_->Msg_Group_EditChange(this->id_, ctrl_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_TabChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short tab_id)
 {
     parent_->Msg_Group_TabChange(this->id_, ctrl_id, tab_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_ListSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_ComboSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_CheckboxChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const bool checked)
 {
     parent_->Msg_Group_CheckboxChange(this->id_, ctrl_id, checked);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short position)
 {
     parent_->Msg_Group_ProgressChange(this->id_, ctrl_id, position);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_ScrollShow(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const bool visible)
 {
     parent_->Msg_Group_ScrollShow(this->id_, ctrl_id, visible);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_Timer(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
     parent_->Msg_Group_Timer(this->id_, ctrl_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_TableSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_TableRightButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlTab::Msg_Group_TableLeftButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
     parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
