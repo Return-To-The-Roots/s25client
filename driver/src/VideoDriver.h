@@ -61,12 +61,12 @@ class VideoDriver: public IVideoDriver
         bool IsInitialized() override { return initialized; }
 
     protected:
-        VideoDriverLoaderInterface* CallBack;  ///< Das DriverCallback für Rückmeldungen.
-        bool initialized;            ///< Initialisierungsstatus.
-        MouseCoords mouse_xy;        ///< Status der Maus.
-        boost::array<bool, 512> keyboard; ///< Status der Tastatur;
-        unsigned short screenWidth;  ///< aktuelle Bildschirm-/Fensterbreite
-        unsigned short screenHeight; ///< aktuelle Bildschirm-/Fensterhöhe
-        bool isFullscreen_;             ///< Vollbild an/aus?
+        VideoDriverLoaderInterface* CallBack;  /// Das DriverCallback für Rückmeldungen.
+        bool initialized;            /// Initialisierungsstatus.
+        MouseCoords mouse_xy;        /// Status der Maus.
+        boost::array<bool, 512> keyboard; /// Status der Tastatur;
+        unsigned short screenWidth;  /// aktuelle Bildschirm-/Fensterbreite
+        unsigned short screenHeight; /// aktuelle Bildschirm-/Fensterhöhe
+        bool isFullscreen_;             /// Vollbild an/aus?
 };
 #endif // !VIDEODRIVER_H_INCLUDED

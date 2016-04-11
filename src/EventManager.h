@@ -98,8 +98,8 @@ class EventManager
         typedef std::list<EventPointer> EventList;
         typedef std::map<unsigned, EventList> EventMap;
         typedef std::list<GameObject*> GameObjList;
-        EventMap events;     ///< Liste der Events für die einzelnen Objekte
-        GameObjList kill_list; ///< Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
+        EventMap events;     /// Liste der Events für die einzelnen Objekte
+        GameObjList kill_list; /// Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
         EventPointer curActiveEvent;
 
         EventPointer AddEvent(EventPointer event);

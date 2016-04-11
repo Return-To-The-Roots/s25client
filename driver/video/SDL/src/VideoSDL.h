@@ -83,7 +83,7 @@ class VideoSDL : public VideoDriver
         void* GetMapPointer() const override;
 
     private:
-        SDL_Surface* screen; ///< Das Fenster-SDL-Surface.
+        SDL_Surface* screen; /// Das Fenster-SDL-Surface.
 };
 
 #endif // !SDL_H_INCLUDED

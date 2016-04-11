@@ -26,9 +26,9 @@ struct Inventory;
 class iwWares : public IngameWindow
 {
     protected:
-        const Inventory& inventory;     ///< Warenbestand
-        unsigned char page;       ///< aktuelle Seite des Inventurfensters.
-        unsigned char page_count; ///< maximale Seite des Inventurfensters.
+        const Inventory& inventory;     /// Warenbestand
+        unsigned char page;       /// aktuelle Seite des Inventurfensters.
+        unsigned char page_count; /// maximale Seite des Inventurfensters.
 
     public:
         /// Konstruktor von @p iwInventory.

@@ -34,7 +34,7 @@ class SoundSDL_Effect : public Sound
 
 
     private:
-        Mix_Chunk* sound; ///< Das PCM-Handle.
+        Mix_Chunk* sound; /// Das PCM-Handle.
 };
 
 #endif // !SOUNDSDL_EFFECT_H_INCLUDED

@@ -32,7 +32,7 @@ class SoundSDL_Music : public Sound
 
     private:
 
-        Mix_Music* music;  ///< Das Music-Handle.
+        Mix_Music* music;  /// Das Music-Handle.
 
 };
 

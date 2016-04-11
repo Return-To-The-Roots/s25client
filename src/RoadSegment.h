@@ -34,9 +34,9 @@ class RoadSegment : public GameObject
     public:
         enum RoadType
         {
-            RT_NORMAL,  ///< Normale Straße bzw. Bergstraße
-            RT_DONKEY,  ///< Eselstraße
-            RT_BOAT     ///< Wasserstraße
+            RT_NORMAL,  /// Normale Straße bzw. Bergstraße
+            RT_DONKEY,  /// Eselstraße
+            RT_BOAT     /// Wasserstraße
         };
 
     public:

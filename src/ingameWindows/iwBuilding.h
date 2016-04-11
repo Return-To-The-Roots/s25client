@@ -27,7 +27,7 @@ class GameWorldView;
 class iwBuilding : public IngameWindow
 {
         GameWorldView& gwv;
-        nobUsual* const building;              ///< Das zugehörige Gebäudeobjekt
+        nobUsual* const building;              /// Das zugehörige Gebäudeobjekt
 
     public:
         /// Konstruktor von @p iwBuilding.

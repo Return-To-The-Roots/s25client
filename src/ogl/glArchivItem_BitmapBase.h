@@ -44,8 +44,8 @@ private:
     /// Erzeugt die Textur.
     void GenerateTexture();
 
-    unsigned int texture; ///< Das GL-Textur-Handle
-    unsigned int filter;  ///< Der aktuell gewählte Texturfilter
+    unsigned int texture; /// Das GL-Textur-Handle
+    unsigned int filter;  /// Der aktuell gewählte Texturfilter
 
 protected:
     /// Returns the internal texure format

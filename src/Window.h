@@ -320,21 +320,21 @@ class Window
             BUTTON_UNKNOWN = 0xFF
         };
 
-        unsigned short x_;         ///< X-Position des Fensters.
-        unsigned short y_;         ///< Y-Position des Fensters.
-        unsigned short width_;     ///< Breite des Fensters.
-        unsigned short height_;    ///< Höhe des Fensters.
-        unsigned int id_;          ///< ID des Fensters.
-        Window* parent_;           ///< Handle auf das Parentfenster.
-        bool active_;              ///< Fenster aktiv?
-        bool visible_;             ///< Fenster sichtbar?
-        bool scale_;               ///< Sollen Controls an Fenstergröße angepasst werden?
-        std::string tooltip_;      ///< Tooltip des Fensters (nur bei Controls benutzt)
+        unsigned short x_;         /// X-Position des Fensters.
+        unsigned short y_;         /// Y-Position des Fensters.
+        unsigned short width_;     /// Breite des Fensters.
+        unsigned short height_;    /// Höhe des Fensters.
+        unsigned int id_;          /// ID des Fensters.
+        Window* parent_;           /// Handle auf das Parentfenster.
+        bool active_;              /// Fenster aktiv?
+        bool visible_;             /// Fenster sichtbar?
+        bool scale_;               /// Sollen Controls an Fenstergröße angepasst werden?
+        std::string tooltip_;      /// Tooltip des Fensters (nur bei Controls benutzt)
 
-        std::map<Window*, Rect> lockedAreas_;       ///< gesperrte Regionen des Fensters.
+        std::map<Window*, Rect> lockedAreas_;       /// gesperrte Regionen des Fensters.
         std::vector<Window*> tofreeAreas_;
         bool isInMouseRelay;
-        std::map<unsigned int, Window*> childIdToWnd_; ///< Die Steuerelemente des Fensters.
+        std::map<unsigned int, Window*> childIdToWnd_; /// Die Steuerelemente des Fensters.
 };
 
 #endif // !WINDOW_H_INCLUDED

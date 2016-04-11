@@ -87,8 +87,8 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
         /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
         VirtualInventory inventory;
-        InventorySettings inventorySettingsVisual; ///< die Inventar-Einstellungen, visuell
-        InventorySettings inventorySettings; ///< die Inventar-Einstellungen, real
+        InventorySettings inventorySettingsVisual; /// die Inventar-Einstellungen, visuell
+        InventorySettings inventorySettings; /// die Inventar-Einstellungen, real
 
     private:
 

@@ -31,7 +31,7 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
         GameWorldView& gwv;		
 
     protected:
-        nobBaseWarehouse* wh; ///< Pointer zum entsprechenden Lagerhaus
+        nobBaseWarehouse* wh; /// Pointer zum entsprechenden Lagerhaus
 
     public:
         /// Konstruktor von @p iwBaseWarehouse.

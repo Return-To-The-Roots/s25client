@@ -36,8 +36,8 @@ struct KeyEvent;
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
-        typedef std::list<IngameWindow*> IgwList;                   ///< Fensterlistentyp
-        typedef std::list<IngameWindow*>::iterator IgwListIterator; ///< Fensterlistentypiterator
+        typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
+        typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
 
     public:
         /// Konstruktor von @p WindowManager.
@@ -98,11 +98,11 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void Switch();
 
     private:
-        boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     ///< aktueller Desktop
-        boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > nextdesktop;    ///< der nächste Desktop
-        bool disable_mouse;      ///< Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
+        boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     /// aktueller Desktop
+        boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > nextdesktop;    /// der nächste Desktop
+        bool disable_mouse;      /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
-        IgwList windows; ///< Fensterliste
+        IgwList windows; /// Fensterliste
         const MouseCoords* mouseCoords;
         std::string curTooltip;
         unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite

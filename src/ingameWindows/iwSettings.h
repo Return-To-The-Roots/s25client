@@ -29,7 +29,7 @@ class iwSettings : public IngameWindow
         ~iwSettings() override;
 
     private:
-        std::vector<VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
         void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
         void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
 };

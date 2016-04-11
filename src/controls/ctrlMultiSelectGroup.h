@@ -65,8 +65,8 @@ class ctrlMultiSelectGroup : public ctrlGroup
         bool Draw_() override;
 
     private:
-        std::set<unsigned short> selectedItems_; ///< aktuell ausgewählte Buttons
-        int select_type;         ///< Typ der Selektierung
+        std::set<unsigned short> selectedItems_; /// aktuell ausgewählte Buttons
+        int select_type;         /// Typ der Selektierung
 };
 
 #endif // !CTRLMULTISELECTGROUP_H_INCLUDED

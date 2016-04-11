@@ -58,8 +58,8 @@ class ctrlOptionGroup : public ctrlGroup
         bool Draw_() override;
 
     private:
-        unsigned short selection_; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
-        int select_type;         ///< Typ der Selektierung
+        unsigned short selection_; /// aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
+        int select_type;         /// Typ der Selektierung
 };
 
 #endif // !CTRLOPTIONGROUP_H_INCLUDED

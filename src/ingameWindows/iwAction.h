@@ -34,9 +34,9 @@ class iwAction : public IngameWindow
         enum
         {
             AWFT_NORMAL = 0,
-            AWFT_HQ,         ///< von der HQ-Flagge kann nur eine Straße gebaut werden
-            AWFT_STOREHOUSE, ///< von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen werden
-            AWFT_WATERFLAG   ///< Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
+            AWFT_HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
+            AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen werden
+            AWFT_WATERFLAG   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
         };
 
         /// Struktur mit den Tabs, die angestellt werden sollen

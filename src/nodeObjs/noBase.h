@@ -71,7 +71,7 @@ class noBase : public GameObject
         void Serialize_noBase(SerializedGameData& sgd) const;
 
     protected:
-        NodalObjectType nop; ///< Typ des NodeObjekt ( @see NodalObjectTypes.h )
+        NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
 };
 
 #endif // !NOBASE_H_INCLUDED

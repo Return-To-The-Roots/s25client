@@ -53,9 +53,9 @@ class AudioDriver: public IAudioDriver
 
         AudioDriverLoaderInterface* adli;
 
-        ///< Das DriverCallback für Rückmeldungen.
+        /// Das DriverCallback für Rückmeldungen.
 
-        bool initialized; ///< Initialisierungsstatus.
+        bool initialized; /// Initialisierungsstatus.
 
         std::vector<Sound*> sounds;
 

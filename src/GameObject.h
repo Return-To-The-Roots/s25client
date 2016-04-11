@@ -80,10 +80,10 @@ class GameObject
         static EventManager* em;
 
     private:
-        unsigned int objId; ///< eindeutige Objekt-ID
+        unsigned int objId; /// eindeutige Objekt-ID
 
-        static unsigned objIdCounter_; ///< Objekt-ID-Counter
-        static unsigned objCounter_;    ///< Objekt-Counter
+        static unsigned objIdCounter_; /// Objekt-ID-Counter
+        static unsigned objCounter_;    /// Objekt-Counter
 };
 
 #endif /// GAMEOBJECT_H_INCLUDED
