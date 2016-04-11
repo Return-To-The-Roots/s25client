@@ -28,12 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlCheck.
- *
- *  @author OLiver
- */
 ctrlCheck::ctrlCheck(Window* parent,
                      unsigned int id,
                      unsigned short x,

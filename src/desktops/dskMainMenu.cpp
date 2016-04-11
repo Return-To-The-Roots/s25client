@@ -48,13 +48,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskMainMenu.
- *
- *  @author OLiver
- *  @author FloSoft
- */
 dskMainMenu::dskMainMenu() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version

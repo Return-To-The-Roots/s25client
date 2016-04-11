@@ -25,10 +25,8 @@
 class glArchivItem_Sound_Midi : public libsiedler2::baseArchivItem_Sound_Midi, public glArchivItem_Music
 {
     public:
-        /// Konstruktor von @p glArchivItem_Sound_Midi.
         glArchivItem_Sound_Midi() : baseArchivItem_Sound(), baseArchivItem_Sound_Midi(), glArchivItem_Music() {}
 
-        /// Kopierkonstruktor von @p glArchivItem_Sound_Midi.
         glArchivItem_Sound_Midi(const glArchivItem_Sound_Midi& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Midi(item), glArchivItem_Music(item) {}
 
         /// Spielt die Musik ab.

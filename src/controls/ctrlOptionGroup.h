@@ -36,7 +36,6 @@ class ctrlOptionGroup : public ctrlGroup
         };
 
     public:
-        /// Konstruktor von @p ctrlOptionGroup.
         ctrlOptionGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
 
         /// Selektiert einen neuen Button

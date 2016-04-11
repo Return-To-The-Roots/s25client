@@ -30,7 +30,6 @@ class GameMessage : public Message
         unsigned char player;
 
         GameMessage(const unsigned short id) : Message(id) {} //-V730
-        /// Konstruktor von @p GameMessage.
         GameMessage(const unsigned short id, const unsigned char player): Message(id), player(player){}
 
         void Serialize(Serializer& ser) const override;

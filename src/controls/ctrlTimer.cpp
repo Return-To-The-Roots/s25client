@@ -41,12 +41,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlTimer.
- *
- *  @author FloSoft
- */
 ctrlTimer::ctrlTimer(Window* parent,
                      unsigned int id,
                      unsigned int timeout)

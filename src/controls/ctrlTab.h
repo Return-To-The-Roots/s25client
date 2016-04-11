@@ -30,7 +30,6 @@ class glArchivItem_Bitmap;
 class ctrlTab : public Window
 {
     public:
-        /// Konstruktor von @p ctrlTab.
         ctrlTab(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width);
 
         /// fügt eine Tab hinzu.

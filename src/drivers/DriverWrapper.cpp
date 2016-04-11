@@ -37,22 +37,10 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 DriverWrapper::DriverWrapper() :  dll(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 DriverWrapper::~DriverWrapper()
 {
     Unload();

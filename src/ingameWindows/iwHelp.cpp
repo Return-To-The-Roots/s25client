@@ -32,13 +32,6 @@ const unsigned short HELP_WINDOW_WIDTH = 240;
 /// Maximale Anzahl von Zeilen, bis Scrollbar eingesetzt wird
 const unsigned MAX_LINES = 15;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwHelp.
-
- *  @author OLiver
- */
-
 iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string& content)
     : IngameWindow(gui_id, 0xFFFE, 0xFFFE, HELP_WINDOW_WIDTH, 480, title, LOADER.GetImageN("resource", 41))
 {

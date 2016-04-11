@@ -31,7 +31,6 @@ class iwWares : public IngameWindow
         unsigned char page_count; /// maximale Seite des Inventurfensters.
 
     public:
-        /// Konstruktor von @p iwInventory.
         iwWares(unsigned int id, unsigned short x, unsigned short y, const unsigned short width, const unsigned short height, const std::string& title, unsigned char page_count,
                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory);
         /// bestimmte Inventurseite zeigen.

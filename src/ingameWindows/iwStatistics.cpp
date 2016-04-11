@@ -32,12 +32,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwStatistics.
- *
- *  @author jh
- */
 iwStatistics::iwStatistics()
     : IngameWindow(CGI_STATISTICS, 0xFFFE, 0xFFFE, 252, 336, _("Statistics"), LOADER.GetImageN("resource", 41))
 {

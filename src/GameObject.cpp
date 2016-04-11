@@ -39,14 +39,6 @@ unsigned int GameObject::objCounter_ = 0;
 GameWorldGame* GameObject::gwg = NULL;
 EventManager* GameObject::em = NULL;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p GameObject.
- *
- *  @param[in] nop ObjektTyp
- *
- *  @author OLiver
- */
 GameObject::GameObject() : objId(objIdCounter_++)
 {
     // ein Objekt mehr
@@ -84,12 +76,6 @@ void GameObject::Serialize(SerializedGameData&  /*sgd*/) const
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p GameObject.
- *
- *  @author OLiver
- */
 GameObject::~GameObject()
 {
     RTTR_Assert(!em || !em->ObjectHasEvents(this));

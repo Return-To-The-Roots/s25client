@@ -51,8 +51,6 @@ const unsigned short Settings::SCREEN_REFRESH_RATES[] =
     0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// Konstruktor
 Settings::Settings() //-V730
 {
 }

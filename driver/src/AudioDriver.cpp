@@ -45,23 +45,11 @@ IAudioDriver::~IAudioDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p AudioDriver.
- *
- *  @author FloSoft
- */
 AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli)
     : play_id_counter(1),  adli(adli), initialized(false)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p AudioDriver.
- *
- *  @author FloSoft
- */
 AudioDriver::~AudioDriver()
 {
     for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)

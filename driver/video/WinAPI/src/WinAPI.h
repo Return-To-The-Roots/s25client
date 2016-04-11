@@ -27,10 +27,8 @@
 class VideoWinAPI : public VideoDriver
 {
     public:
-        /// Konstruktor von @p VideoWinAPI.
         VideoWinAPI(VideoDriverLoaderInterface* CallBack);
 
-        /// Destruktor von @p VideoWinAPI.
         ~VideoWinAPI(void);
 
         /// Funktion zum Auslesen des Treibernamens.

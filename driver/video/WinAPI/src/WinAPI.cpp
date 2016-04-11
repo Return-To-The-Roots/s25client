@@ -122,12 +122,6 @@ VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack):
     pVideoWinAPI = this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p VideoWinAPI.
- *
- *  @author FloSoft
- */
 VideoWinAPI::~VideoWinAPI(void)
 {
     pVideoWinAPI = NULL;

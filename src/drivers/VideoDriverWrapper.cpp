@@ -38,23 +38,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 VideoDriverWrapper::~VideoDriverWrapper()
 {
     CleanUp();

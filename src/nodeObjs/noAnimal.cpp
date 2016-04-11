@@ -36,7 +36,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-/// Konstruktor
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
     , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(NULL), sound_moment(0)
 {}

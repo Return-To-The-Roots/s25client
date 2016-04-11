@@ -26,9 +26,7 @@ namespace libsiedler2 { class ArchivItem_Palette; }
 class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 {
     public:
-        /// Konstruktor von @p glArchivItem_Bitmap_Direct.
         glArchivItem_Bitmap_Direct();
-        /// Kopierkonstruktor von @p glArchivItem_Bitmap_Direct.
         glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item);
 
         /// setzt einen Pixel auf einen bestimmten Wert.

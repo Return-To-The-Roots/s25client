@@ -111,12 +111,9 @@ class nofActiveSoldier : public nofSoldier
 
     public:
 
-        /// Constructors
         nofActiveSoldier(const MapPoint pt, const unsigned char player,
                          nobBaseMilitary* const home, const unsigned char rank, const SoldierState init_state);
-        /// (Copy-)Constructor
         nofActiveSoldier(const nofSoldier& other, const SoldierState init_state);
-        /// Deserializer
         nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Tidy up

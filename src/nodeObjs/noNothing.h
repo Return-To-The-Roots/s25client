@@ -25,7 +25,6 @@ class SerializedGameData;
 class noNothing : public noBase
 {
     public:
-        /// Konstruktor von @p noNothing.
         noNothing();
 
     protected:  void Destroy_noNothing() { Destroy_noBase(); }

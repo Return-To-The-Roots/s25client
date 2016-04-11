@@ -31,12 +31,6 @@
 
 unsigned char iwChat::chat_dest = 0;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwChat.
- *
- *  @author OLiver
- */
 iwChat::iwChat()
     : IngameWindow(CGI_CHAT, 0xFFFF, 0xFFFF, 300, 150, _("Chat Window"), LOADER.GetImageN("resource", 41))
 {

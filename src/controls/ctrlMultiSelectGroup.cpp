@@ -24,12 +24,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlMultiSelectGroup.
- *
- *  @author jh
- */
 ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
         unsigned int id,
         int select_type,

@@ -23,12 +23,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p noBase.
- *
- *  @author OLiver
- */
 noNothing::noNothing() : noBase(NOP_NOTHING)
 {
 }

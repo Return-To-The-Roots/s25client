@@ -49,13 +49,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskSinglePlayer.
- *
- *  @author OLiver
- *  @author FloSoft
- */
 dskSinglePlayer::dskSinglePlayer() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version

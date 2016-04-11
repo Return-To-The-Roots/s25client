@@ -31,7 +31,6 @@ class iwShip : public IngameWindow
         unsigned char player; /// Besitzer des Schiffes, den wir für die Umwandlung ID->richtiges Schiff brauchen
 
     public:
-        /// Konstruktor von @p iwBuilding.
         iwShip(GameWorldView& gwv, noShip* const ship);
 
     private:

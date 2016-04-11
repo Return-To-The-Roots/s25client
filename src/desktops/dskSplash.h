@@ -26,9 +26,7 @@ class MouseCoords;
 class dskSplash : public Desktop
 {
     public:
-        /// Konstruktor von @p dskSplash.
         dskSplash();
-        /// Destruktor von @p dskSplash.
         ~dskSplash() override;
 
     private:

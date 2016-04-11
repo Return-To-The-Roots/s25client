@@ -69,24 +69,12 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p AudioSDL.
- *
- *  @author FloSoft
- */
 AudioSDL::AudioSDL(AudioDriverLoaderInterface* adli) : AudioDriver(adli), master_effects_volume(0xFF), master_music_volume(0xFF)
 {
     for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
         channels[i] = 0xFFFFFFFF;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p AudioSDL.
- *
- *  @author FloSoft
- */
 AudioSDL::~AudioSDL()
 {
     CleanUp();

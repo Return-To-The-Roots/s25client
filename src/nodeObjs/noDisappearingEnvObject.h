@@ -24,7 +24,6 @@ class SerializedGameData;
 class noDisappearingEnvObject : public noCoordBase
 {
     public:
-        /// Konstruktor von @p noDisappearingEnvObject.
         noDisappearingEnvObject(const MapPoint pt, const unsigned living_time,
                                 const unsigned add_var_living_time);
         noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id);

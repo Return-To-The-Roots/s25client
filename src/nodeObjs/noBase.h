@@ -28,9 +28,7 @@ class SerializedGameData;
 class noBase : public GameObject
 {
     public:
-        /// Konstruktor von @p noBase.
         noBase(const NodalObjectType nop) : nop(nop) {}
-        /// Deserialisierungskonstruktor
         noBase(SerializedGameData& sgd, const unsigned obj_id);
 
         /// An x,y zeichnen.

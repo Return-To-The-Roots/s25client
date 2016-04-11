@@ -26,7 +26,6 @@
 class iwSaveLoad : public IngameWindow
 {
     public:
-        /// Konstruktor von @p iwSave.
         iwSaveLoad(const unsigned short add_height, const std::string& window_title);
 
     protected:

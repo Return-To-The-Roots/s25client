@@ -30,12 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlEdit.
- *
- *  @author OLiver
- */
 ctrlEdit::ctrlEdit(Window* parent,
                    unsigned int id,
                    unsigned short x,

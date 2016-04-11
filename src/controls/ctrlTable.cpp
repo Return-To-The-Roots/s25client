@@ -31,12 +31,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlTable
- *
- *  @author OLiver
- */
 ctrlTable::ctrlTable(Window* parent,
                      unsigned int id,
                      unsigned short x,
@@ -81,12 +75,6 @@ ctrlTable::ctrlTable(Window* parent,
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p ctrlTable
- *
- *  @author OLiver
- */
 ctrlTable::~ctrlTable()
 {
     DeleteAllItems();

@@ -30,12 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlComboBox.
- *
- *  @author OLiver
- */
 ctrlComboBox::ctrlComboBox(Window* parent,
                            unsigned int id,
                            unsigned short x,

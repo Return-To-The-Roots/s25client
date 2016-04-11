@@ -66,7 +66,6 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 19;
 
-        /// Konstruktor von @p Loader.
         Loader();
         /// Desktruktor von @p Loader.
         ~Loader() override;

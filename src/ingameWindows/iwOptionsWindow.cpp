@@ -42,12 +42,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwOptionsWindow.
- *
- *  @author OLiver
- */
 iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("Game menu"), LOADER.GetImageN("resource", 41))
 {
     // Der Soldat oben

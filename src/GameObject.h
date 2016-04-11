@@ -31,13 +31,9 @@ class EventManager;
 class GameObject
 {
     public:
-        /// Konstruktor von @p GameObject.
         GameObject();
-        /// Deserialisierungskonstruktor
         GameObject(SerializedGameData& sgd, const unsigned obj_id);
-        /// Copy-Konstruktor
         GameObject(const GameObject& go);
-        /// Destruktor von @p GameObject.
         virtual ~GameObject();
 
         GameObject& operator=(const GameObject& obj);

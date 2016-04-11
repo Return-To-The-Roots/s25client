@@ -35,7 +35,6 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
 
-        /// Konstruktor von @p DriverWrapper
         AudioDriverWrapper();
 
         ~AudioDriverWrapper() override;

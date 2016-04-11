@@ -52,12 +52,6 @@ const unsigned PAGE_TIME = 12900;
 /// Duration for fading between pages
 const unsigned FADING_TIME = 2000;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskCredits.
- *
- *  @author siegi44
- */
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück

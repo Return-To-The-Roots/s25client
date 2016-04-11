@@ -50,7 +50,6 @@ class Random : public Singleton<Random>
 
     public:
 
-        /// Konstruktor von @p Random.
         Random();
         /// Initialisiert den Zufallszahlengenerator.
         void Init(const unsigned int init);

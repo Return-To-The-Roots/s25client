@@ -33,12 +33,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwDirectIPCreate.
- *
- *  @author OLiver
- */
 iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCREATE, 0xFFFF, 0xFFFF, 300, 285, _("Create Game"), LOADER.GetImageN("resource", 41), true),
       server_type(server_type)

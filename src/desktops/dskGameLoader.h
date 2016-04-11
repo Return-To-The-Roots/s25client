@@ -32,9 +32,7 @@ class dskGameLoader :
     public LobbyInterface
 {
     public:
-        /// Konstruktor von @p dskGameLoader.
         dskGameLoader(GameWorldViewer* gwv);
-        /// Destruktor von @p dskGameLoader.
         ~dskGameLoader() override;
 
         void LC_Status_Error(const std::string& error) override;

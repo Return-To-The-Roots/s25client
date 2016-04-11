@@ -27,12 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlScrollBar.
- *
- *  @author OLiver
- */
 ctrlScrollBar::ctrlScrollBar(Window* parent,
                              unsigned int id,
                              unsigned short x,

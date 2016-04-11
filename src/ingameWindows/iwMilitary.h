@@ -29,7 +29,6 @@ class iwMilitary : public IngameWindow
 
     public:
 
-        /// Konstruktor von @p iwMilitary.
         iwMilitary();
         ~iwMilitary() override;
 

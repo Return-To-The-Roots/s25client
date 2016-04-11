@@ -25,12 +25,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlPercent.
- *
- *  @author OLiver
- */
 ctrlPercent::ctrlPercent(Window* parent,
                          unsigned int id,
                          unsigned short x,

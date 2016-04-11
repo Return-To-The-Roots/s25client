@@ -27,22 +27,10 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p glArchivItem_Bitmap.
- *
- *  @author FloSoft
- */
 glArchivItem_Bitmap::glArchivItem_Bitmap()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Kopiekonstruktor von @p glArchivItem_Bitmap.
- *
- *  @author FloSoft
- */
 glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
     : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_BitmapBase(item)
 {

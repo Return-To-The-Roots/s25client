@@ -81,7 +81,6 @@ const unsigned short percent_height = 18;
 
 
 
-/// Konstruktor von @p iwBuildingProductivities.
 iwBuildingProductivities::iwBuildingProductivities()
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, 0xFFFE, 0xFFFE,
                    left_x + 2 * percent_width + 2 * image_percent_x + percent_image_x + right_x,

@@ -37,7 +37,6 @@ class ctrlMultiSelectGroup : public ctrlGroup
         };
 
     public:
-        /// Konstruktor von @p ctrlMultiSelectGroup.
         ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
 
         /// Selektiert einen neuen Button

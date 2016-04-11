@@ -25,10 +25,8 @@
 class glArchivItem_Sound_XMidi : public libsiedler2::baseArchivItem_Sound_XMidi, public glArchivItem_Music
 {
     public:
-        /// Konstruktor von @p glArchivItem_Sound_XMidi.
         glArchivItem_Sound_XMidi() : baseArchivItem_Sound(), baseArchivItem_Sound_XMidi(), glArchivItem_Music() {}
 
-        /// Kopierkonstruktor von @p glArchivItem_Sound_XMidi.
         glArchivItem_Sound_XMidi(const glArchivItem_Sound_XMidi& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_XMidi(item), glArchivItem_Music(item) {}
 
         /// Spielt die Musik ab.

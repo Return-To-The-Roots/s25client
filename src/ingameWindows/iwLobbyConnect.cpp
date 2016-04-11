@@ -36,12 +36,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwLobbyConnect.
- *
- *  @author FloSoft
- */
 iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, 0xFFFF, 0xFFFF, 500, 260, _("Connecting to Lobby"), LOADER.GetImageN("resource", 41))
 {

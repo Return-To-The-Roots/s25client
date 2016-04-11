@@ -34,10 +34,8 @@ class AudioSDL : public AudioDriver
         unsigned char master_music_volume;
 
     public:
-        /// Konstruktor von @p AudioSDL.
         AudioSDL(AudioDriverLoaderInterface* adli);
 
-        /// Destruktor von @p AudioSDL.
         ~AudioSDL() override;
 
         /// Funktion zum Auslesen des Treibernamens.

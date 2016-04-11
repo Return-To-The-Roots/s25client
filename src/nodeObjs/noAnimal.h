@@ -50,7 +50,6 @@ class noAnimal : public noMovable
 
     private:
 
-
         /// entscheidet, was nach einem gelaufenen Abschnitt weiter zu tun ist
         void Walked();
         /// Sucht eine Richtung, in die das Tier gehen kann
@@ -62,8 +61,6 @@ class noAnimal : public noMovable
 
     public:
 
-
-        /// Konstruktor
         noAnimal(const Species species, const MapPoint pt);
         noAnimal(SerializedGameData& sgd, const unsigned obj_id);
 

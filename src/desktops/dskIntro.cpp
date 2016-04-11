@@ -36,12 +36,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskIntro.
- *
- *  @author FloSoft
- */
 dskIntro::dskIntro() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // "Zurück"

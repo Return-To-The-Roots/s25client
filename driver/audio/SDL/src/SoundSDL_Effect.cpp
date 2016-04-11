@@ -24,22 +24,10 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p SoundSDL_Effect.
- *
- *  @author FloSoft
- */
 SoundSDL_Effect::SoundSDL_Effect() : sound(NULL)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p SoundSDL_Effect.
- *
- *  @author FloSoft
- */
 SoundSDL_Effect::~SoundSDL_Effect()
 {
     if(sound)

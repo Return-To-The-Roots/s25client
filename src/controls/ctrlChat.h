@@ -28,9 +28,7 @@ class glArchivItem_Font;
 class ctrlChat : public Window
 {
     public:
-        /// Konstruktor von @p ctrlChat.
         ctrlChat(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
-        /// Destruktor von @p ctrlChat.
         ~ctrlChat() override;
 
         /// Größe ändern

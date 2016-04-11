@@ -51,12 +51,6 @@ const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] =
     500, 1000, 5000, 10000, 50000, 100000, 1
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwSaveLoad.
- *
- *  @author OLiver
- */
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, 0xFFFF, 0xFFFF, 600, 400 + add_height, window_title, LOADER.GetImageN("resource", 41))
 {

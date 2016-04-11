@@ -23,22 +23,10 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p SoundSDL_Music.
- *
- *  @author FloSoft
- */
 SoundSDL_Music::SoundSDL_Music() : music(NULL)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p Sound.
- *
- *  @author FloSoft
- */
 SoundSDL_Music::~SoundSDL_Music()
 {
     Mix_FreeMusic(music);

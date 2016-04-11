@@ -28,12 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwHQ.
- *
- *  @author OLiver
- */
 iwHQ::iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
     : iwBaseWarehouse(gwv, title, pages_count, wh)
 {

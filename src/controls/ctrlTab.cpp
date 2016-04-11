@@ -30,12 +30,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlTab.
- *
- *  @author OLiver
- */
 ctrlTab::ctrlTab(Window* parent,
                  unsigned int id,
                  unsigned short x,

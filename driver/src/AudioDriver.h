@@ -26,10 +26,8 @@ class Sound;
 class AudioDriver: public IAudioDriver
 {
     public:
-        /// Konstruktor von @p AudioDriver.
         AudioDriver(AudioDriverLoaderInterface* adli);
 
-        /// Destruktor von @p AudioDriver.
         ~AudioDriver() override;
 
         /// Funktion zum Auslesen des Treibernamens.

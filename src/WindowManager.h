@@ -40,9 +40,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
 
     public:
-        /// Konstruktor von @p WindowManager.
         WindowManager();
-        /// Destruktor von @p WindowManager.
         ~WindowManager() override;
         void CleanUp();
 

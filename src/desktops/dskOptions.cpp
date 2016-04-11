@@ -60,13 +60,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskOptions.
- *
- *  @author OLiver
- *  @author FloSoft
- */
 dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück

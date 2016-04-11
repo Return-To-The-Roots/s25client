@@ -34,12 +34,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwAIDebug.
- *
- *  @author jh
- */
 iwAIDebug::iwAIDebug(GameWorldView& gwv)
     : IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)

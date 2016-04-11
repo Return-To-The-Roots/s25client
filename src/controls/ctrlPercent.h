@@ -25,7 +25,6 @@ class glArchivItem_Font;
 class ctrlPercent : public Window
 {
     public:
-        /// Konstruktor von @p ctrlPercent.
         ctrlPercent(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, const unsigned short* percentage);
 
         void SetPercentage(const unsigned short* percentage) { this->percentage_ = percentage; }

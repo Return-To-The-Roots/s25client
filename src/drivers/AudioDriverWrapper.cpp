@@ -27,7 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-/// Konstruktor von @p DriverWrapper
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 {
 }

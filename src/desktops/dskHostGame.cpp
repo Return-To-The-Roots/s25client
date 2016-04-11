@@ -55,13 +55,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class GameWorldViewer;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskHostGame.
- *
- *  @author Devil
- *  @author FloSoft
- */
 dskHostGame::dskHostGame(const ServerType serverType) :
     Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType), wasActivated(false)
 {

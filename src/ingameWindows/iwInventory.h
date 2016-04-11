@@ -25,7 +25,6 @@
 class iwInventory : public iwWares
 {
     public:
-        /// Konstruktor von @p iwInventory.
         iwInventory();
 };
 

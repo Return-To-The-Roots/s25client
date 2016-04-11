@@ -26,12 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlText.
- *
- *  @author OLiver
- */
 ctrlImage::ctrlImage(Window* parent,
                      unsigned int id,
                      unsigned short x,

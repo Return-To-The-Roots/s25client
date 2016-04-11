@@ -25,7 +25,6 @@
 class dskIntro : public Desktop
 {
     public:
-        /// Konstruktor von @p dskIntro.
         dskIntro();
 
     private:

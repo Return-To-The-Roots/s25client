@@ -25,7 +25,6 @@
 class dskAboutRTTR : public Desktop
 {
     public:
-        /// Konstruktor von @p dskAboutRTTR.
         dskAboutRTTR();
 
     private:

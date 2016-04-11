@@ -42,12 +42,6 @@ const unsigned GROUP_SIZES[7] =
 /// Dertermines width of the progress bars: distance to the window borders
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwDistribution.
- *
- *  @author OLiver
- */
 iwDistribution::iwDistribution()
     : IngameWindow(CGI_DISTRIBUTION, 0xFFFF, 0xFFFF, 290, 312, _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
       settings_changed(false)

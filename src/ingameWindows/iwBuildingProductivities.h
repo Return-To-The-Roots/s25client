@@ -27,7 +27,6 @@ class iwBuildingProductivities : public IngameWindow
 
     public:
 
-        /// Konstruktor von @p iwMilitary.
         iwBuildingProductivities();
 
     private:

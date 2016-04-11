@@ -32,9 +32,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
 
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
 
-        /// Konstruktor von @p DriverWrapper
         VideoDriverWrapper();
-        /// Destruktor von @p DriverWrapper
         ~VideoDriverWrapper() override;
 
         /// Läd den Treiber

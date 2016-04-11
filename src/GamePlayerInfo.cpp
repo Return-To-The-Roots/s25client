@@ -26,8 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-// Konstruktor
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     playerid(playerid),
     defeated(false),
@@ -43,7 +41,6 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
 {
 }
 
-/// Deserialisierungskonstruktor
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     playerid(playerid),
     defeated(false),
@@ -62,8 +59,6 @@ GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Destruktor
 GamePlayerInfo::~GamePlayerInfo()
 {
 }

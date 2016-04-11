@@ -128,13 +128,6 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
         gwv.MoveToMapPt(GAMECLIENT.GetLocalPlayer().hqPos);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p dskGameInterface.
- *  Beendet das Spiel und räumt alles auf.
- *
- *  @author OLiver
- */
 dskGameInterface::~dskGameInterface()
 {}
 

@@ -50,12 +50,6 @@ const unsigned int iwMerchandiseStatistics::BarColors[14] =
     0xFF202420  // schwarz
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwMerchandiseStatistics.
- *
- *  @author jh
- */
 iwMerchandiseStatistics::iwMerchandiseStatistics()
     : IngameWindow(CGI_MERCHANDISE_STATISTICS, 0xFFFE, 0xFFFE, 252, 310, _("Merchandise"), LOADER.GetImageN("resource", 41)), currentTime(STAT_1H)
 {

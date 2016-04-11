@@ -33,12 +33,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class glArchivItem_Bitmap;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwWares.
- *
- *  @author FloSoft
- */
 //167, 416
 iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
                  const unsigned short width, const unsigned short height,

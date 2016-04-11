@@ -41,34 +41,16 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p glArchivItem_BitmapBase.
- *
- *  @author FloSoft
- */
 glArchivItem_BitmapBase::glArchivItem_BitmapBase()
     : texture(0), filter(GL_NEAREST)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Kopiekonstruktor von @p glArchivItem_BitmapBase.
- *
- *  @author FloSoft
- */
 glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item)
     : ArchivItem_BitmapBase(item), texture(0), filter(item.filter)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p glArchivItem_BitmapBase.
- *
- *  @author FloSoft
- */
 glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
 {
     DeleteTexture();

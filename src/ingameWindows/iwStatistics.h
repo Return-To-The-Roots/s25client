@@ -29,7 +29,6 @@ class iwStatistics : public IngameWindow
 
     public:
 
-        /// Konstruktor von @p iwStatistics.
         iwStatistics();
         ~iwStatistics() override;
 

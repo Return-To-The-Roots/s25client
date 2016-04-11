@@ -31,10 +31,8 @@ class VideoDriverLoaderInterface;
 class VideoDriver: public IVideoDriver
 {
     public:
-        /// Konstruktor von @p Videotreiber.
         VideoDriver(VideoDriverLoaderInterface* CallBack);
 
-        /// Destruktor von @p Videotreiber.
         ~VideoDriver() override{}
 
         /// Funktion zum Auslesen der Mauskoordinaten.

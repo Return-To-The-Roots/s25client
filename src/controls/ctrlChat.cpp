@@ -71,12 +71,6 @@ ctrlChat::ctrlChat(Window* parent,
     bracket2_size = font->getWidth("> ");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p ctrlChat.
- *
- *  @author OLiver
- */
 ctrlChat::~ctrlChat()
 {
 }

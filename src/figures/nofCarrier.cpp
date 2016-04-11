@@ -112,12 +112,6 @@ AnimationsType fillAnimations()
 }
 static const AnimationsType ANIMATIONS = fillAnimations();
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p nofCarrier.
- *
- *  @author OLiver
- */
 
 const boost::array<Job, 3> JOB_TYPES = {{ JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER }};
 

@@ -27,12 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlList.
- *
- *  @author OLiver
- */
 ctrlList::ctrlList(Window* parent,
                    unsigned int id,
                    unsigned short x,
@@ -49,12 +43,6 @@ ctrlList::ctrlList(Window* parent,
     AddScrollBar(0, width - 20, 0, 20, height, 20, tc, pagesize);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p ctrlList.
- *
- *  @author OLiver
- */
 ctrlList::~ctrlList()
 {
     DeleteAllItems();

@@ -82,7 +82,6 @@ const Point<int> SHIPS_FLAG_POS[12] =
     Point<int>(5, -63)
 };
 
-/// Konstruktor
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos),
       player(player), state(STATE_IDLE), seaId_(0), goal_harbor_id(0), goal_dir(0),

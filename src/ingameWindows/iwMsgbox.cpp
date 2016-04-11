@@ -29,12 +29,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwMsgbox.
- *
- *  @author OLiver
- */
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned msgboxid)
     : IngameWindow(CGI_MSGBOX, 0xFFFF, 0xFFFF, 420, 140, title, LOADER.GetImageN("resource", 41), true, true), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {

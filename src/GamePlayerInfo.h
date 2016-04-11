@@ -29,7 +29,6 @@ class GamePlayerInfo
 {
     public:
         GamePlayerInfo(const unsigned playerid);
-        /// Deserialisierungskonstruktor
         GamePlayerInfo(const unsigned playerid, Serializer& ser);
 
         virtual ~GamePlayerInfo();

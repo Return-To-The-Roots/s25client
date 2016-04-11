@@ -34,9 +34,7 @@
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
     public:
-        /// Konstruktor von @p glArchivItem_Font.
         glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
-        /// Kopierkonstruktor von @p glArchivItem_Font.
         glArchivItem_Font(const glArchivItem_Font& item);
 
         glArchivItem_Font& operator=(const glArchivItem_Font& obj);

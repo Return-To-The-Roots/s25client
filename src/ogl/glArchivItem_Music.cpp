@@ -23,23 +23,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p glArchivItem_Sound.
- *
- *  @author FloSoft
- */
 glArchivItem_Music::glArchivItem_Music()
     : libsiedler2::baseArchivItem_Sound(), sound(NULL)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Kopiekonstruktor von @p glArchivItem_Sound.
- *
- *  @author FloSoft
- */
 glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music& item)
     : libsiedler2::baseArchivItem_Sound(item), sound(item.sound)
 {
@@ -54,12 +42,6 @@ glArchivItem_Music& glArchivItem_Music::operator=(const glArchivItem_Music& item
     return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p glArchivItem_Sound.
- *
- *  @author FloSoft
- */
 glArchivItem_Music::~glArchivItem_Music()
 {
 }

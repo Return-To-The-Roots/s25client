@@ -26,12 +26,6 @@
 class MouseCoords;
 struct KeyEvent;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlGroup.
- *
- *  @author FloSoft
- */
 ctrlGroup::ctrlGroup(Window* parent,
                      unsigned int id,
                      bool scale)

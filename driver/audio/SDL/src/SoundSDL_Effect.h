@@ -26,10 +26,8 @@ class SoundSDL_Effect : public Sound
         friend class AudioSDL;
 
     public:
-        /// Konstruktor von @p SoundSDL_Effect.
         SoundSDL_Effect();
 
-        /// Destruktor von @p SoundSDL_Effect.
         ~SoundSDL_Effect() override;
 
 

@@ -28,12 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlMultiline.
- *
- *  @author OLiver
- */
 ctrlMultiline::ctrlMultiline(Window* parent,
                              unsigned int id,
                              unsigned short x,
