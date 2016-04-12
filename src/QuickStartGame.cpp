@@ -47,8 +47,7 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     if((filePath.find(".sav") != std::string::npos && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
         || ((filePath.find(".swd") != std::string::npos || filePath.find(".wld") != std::string::npos) && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
     {
-        WINDOWMANAGER.Draw();
-        WINDOWMANAGER.Show(new iwPleaseWait);
+        WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
         return true;
     }else
     {

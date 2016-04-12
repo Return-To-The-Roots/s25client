@@ -53,12 +53,13 @@ Window::Window(unsigned short x,
                unsigned short width,
                unsigned short height,
                const std::string& tooltip)
-    : x_(x), y_(y), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip)
+    : x_(x), y_(y), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip), isInMouseRelay(false)
 {
 }
 
 Window::~Window()
 {
+    RTTR_Assert(!isInMouseRelay);
     // Steuerelemente aufräumen
     for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
         delete it->second;
@@ -177,7 +178,6 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
     isInMouseRelay = true;
 
     // Alle Controls durchgehen
-    // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(std::map<unsigned int, Window*>::reverse_iterator it = childIdToWnd_.rbegin(); it != childIdToWnd_.rend() && active_; ++it)
     {
@@ -186,9 +186,10 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
                 continue;
 
         if(it->second->visible_ && it->second->active_)
-            // Falls von einem Steuerelement verarbeitet --> abbrechen
+        {
             if((it->second->*msg)(mc))
                 processed = true;
+        }
     }
 
     for(std::vector<Window*>::iterator it = tofreeAreas_.begin(); it != tofreeAreas_.end(); ++it)

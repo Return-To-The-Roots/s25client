@@ -125,19 +125,12 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
                 if(GAMESERVER.TryToStart(csi, path.string(), MAPTYPE_SAVEGAME))
-                {
-                    WINDOWMANAGER.Draw();
-                    WINDOWMANAGER.Show(new iwPleaseWait);
-                }
+                    WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
                 else
-                {
-                    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
-                }
+                    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
             }
             else
-            {
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
-            }
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
 
         } break;
         case 4: // "Replay abspielen"
@@ -188,6 +181,5 @@ void dskSinglePlayer::PrepareLoadGame()
     csi.use_upnp = false;
 
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
-    WINDOWMANAGER.Draw();
-    WINDOWMANAGER.Show(new iwLoad(csi));
+    WINDOWMANAGER.ShowAfterSwitch(new iwLoad(csi));
 }

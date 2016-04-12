@@ -24,6 +24,7 @@
 #include "helpers/Deleter.h"
 #include "libutil/src/Singleton.h"
 #include <list>
+#include <vector>
 #include <string>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
@@ -57,6 +58,8 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 
         /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
         void Show(IngameWindow* window, bool mouse = false);
+        /// Registers a window to be shown after a desktop switch
+        void ShowAfterSwitch(IngameWindow* window);
         /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
         void Close(IngameWindow* window);
         /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
@@ -101,6 +104,9 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         bool disable_mouse;      /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
         IgwList windows; /// Fensterliste
+        /// Windows that will be shown after desktop switch
+        /// Otherwise the window will not be shown, if it was added after a switch request
+        std::vector<IngameWindow*> nextWnds;
         const MouseCoords* mouseCoords;
         std::string curTooltip;
         unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
@@ -110,10 +116,6 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         unsigned last_left_click_time; /// Zeit des letzten Links-Klicks
         Point<int> last_left_click_point; /// Position beim letzten Links-Klick
 
-        // um Schleifen abzufangen, die entstehen, weil wir mindestens 800x600 haben wollen.
-//  unsigned short lastScreenWidthSignal;
-//  unsigned short lastScreenHeightSignal;
-//  unsigned short lastScreenSignalCount;
 };
 
 #define WINDOWMANAGER WindowManager::inst()
