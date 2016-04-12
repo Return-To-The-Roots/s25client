@@ -41,7 +41,8 @@ matrix:
               - brew install gettext
               - brew install miniupnpc
               - brew link --force gettext
-          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+          #                                                             Travis libs are x64 only
+          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="--no-arch=i386" GCOV="gcov"
     exclude:
         - compiler: clang
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
@@ -49,6 +50,8 @@ matrix:
           env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03            
 
 install:
+    # Enable coverage analysis only in debug and also skip clang
+    - if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"; fi
     # C++11 requires gcc-4.8 or newer
     - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
     - |
@@ -59,10 +62,12 @@ install:
         else
             export GCOV="gcov"
         fi
-    # Travis libs are x64 only
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ADDITIONAL_CMAKE_FLAGS="--no-arch=i386"; fi
 
 script:
+    # Information
+    - echo "OS= ${TRAVIS_OS_NAME}"
+    - $CXX --version
+    - $GCOV --version
     # Fail if any command failed
     - set -e
     - cd build
