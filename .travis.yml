@@ -49,7 +49,7 @@ matrix:
       env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03      
 
 script:
-  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} --generator="Unix Makefiles" --no-arch=i386 && make
+  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-coverage ${CXX_FLAGS}" --generator="Unix Makefiles" --no-arch=i386 && make
 
 install:
   - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
