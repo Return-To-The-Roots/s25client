@@ -21,3 +21,7 @@ target_link_libraries(Test
 					  )
 
 add_test(NAME MainTest COMMAND Test)
+
+if(MSVC)
+	create_target_launcher(Test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../..")
+endif()
