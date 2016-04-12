@@ -55,6 +55,6 @@ install:
   - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
 
 before_install:
-  - pip install codecov
+  - pip install --user codecov
 after_success:
   - codecov
