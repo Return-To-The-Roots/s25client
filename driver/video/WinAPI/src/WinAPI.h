@@ -27,10 +27,8 @@
 class VideoWinAPI : public VideoDriver
 {
     public:
-        /// Konstruktor von @p VideoWinAPI.
         VideoWinAPI(VideoDriverLoaderInterface* CallBack);
 
-        /// Destruktor von @p VideoWinAPI.
         ~VideoWinAPI(void);
 
         /// Funktion zum Auslesen des Treibernamens.
@@ -93,13 +91,13 @@ class VideoWinAPI : public VideoDriver
         static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
     private:
-        bool mouse_l;    ///< Status der Linken Maustaste.
-        bool mouse_r;    ///< Status der Rechten Maustaste.
-        int mouse_z;     ///< Scrolling position for mousewheel.
-        DEVMODE dm_prev; ///< Bildschirmmodus.
-        HWND  screen;    ///< Fensterhandle.
-        HDC   screen_dc; ///< Zeichenkontext des Fensters.
-        HGLRC screen_rc; ///< OpenGL-Kontext des Fensters.
+        bool mouse_l;    /// Status der Linken Maustaste.
+        bool mouse_r;    /// Status der Rechten Maustaste.
+        int mouse_z;     /// Scrolling position for mousewheel.
+        DEVMODE dm_prev; /// Bildschirmmodus.
+        HWND  screen;    /// Fensterhandle.
+        HDC   screen_dc; /// Zeichenkontext des Fensters.
+        HGLRC screen_rc; /// OpenGL-Kontext des Fensters.
         bool isWindowResizable;
 };
 

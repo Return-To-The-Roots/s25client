@@ -24,12 +24,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p Random.
- *
- *  @author FloSoft
- */
 Random::Random()
 {
     /*log = fopen("async_log.txt","w");*/

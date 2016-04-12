@@ -25,7 +25,6 @@
 class dskSinglePlayer : public Desktop
 {
     public:
-        /// Konstruktor von @p dskSinglePlayer.
         dskSinglePlayer();
     private:
 

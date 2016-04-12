@@ -31,28 +31,13 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 SavedFile::SavedFile() : save_time(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 SavedFile::~SavedFile()
 {}
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void SavedFile::WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version)
 {
     // Signatur schreiben
@@ -65,11 +50,6 @@ void SavedFile::WriteVersion(BinaryFile& file, unsigned int signature_length, co
     file.WriteUnsignedShort(version);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version)
 {
     char read_signature[32];
@@ -99,11 +79,6 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void SavedFile::WritePlayerData(BinaryFile& file)
 {
     // Spielerdaten
@@ -121,11 +96,6 @@ void SavedFile::WritePlayerData(BinaryFile& file)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void SavedFile::ReadPlayerData(BinaryFile& file)
 {
     for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)

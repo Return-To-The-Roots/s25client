@@ -52,12 +52,6 @@ void iwLobbyServerInfo::UpdateServerInfo()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwLobbyServerInfo.
- *
- *  @author Devil
- */
 iwLobbyServerInfo::iwLobbyServerInfo()
     : IngameWindow(CGI_LOBBYSERVERINFO, 0xFFFF, 0xFFFF, 260, 260, _("Server Information"), LOADER.GetImageN("resource", 41))
 {

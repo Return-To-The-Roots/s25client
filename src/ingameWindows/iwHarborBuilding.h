@@ -25,7 +25,6 @@ class GameWorldView;
 class iwHarborBuilding : public iwHQ
 {
     public:
-        /// Konstruktor von @p nobHarborBuilding.
         iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb);
 
     protected:

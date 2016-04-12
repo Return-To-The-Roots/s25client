@@ -37,13 +37,6 @@ class MouseCoords;
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskSplash.
- *
- *  @author OLiver
- *  @author FloSoft
- */
 dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))
 {
     background->setFilter(GL_LINEAR);

@@ -128,13 +128,6 @@ dskGameInterface::dskGameInterface(): Desktop(NULL),
         gwv.MoveToMapPt(GAMECLIENT.GetLocalPlayer().hqPos);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p dskGameInterface.
- *  Beendet das Spiel und räumt alles auf.
- *
- *  @author OLiver
- */
 dskGameInterface::~dskGameInterface()
 {}
 
@@ -148,12 +141,6 @@ void dskGameInterface::SetActive(bool activate)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::SettingsChanged()
 {
 }
@@ -184,12 +171,6 @@ void dskGameInterface::Resize_(unsigned short width, unsigned short height)
     gwv.Resize(width, height);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -211,12 +192,6 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::Msg_PaintBefore()
 {
     // Spiel ausführen
@@ -241,12 +216,6 @@ void dskGameInterface::Msg_PaintBefore()
     imgButtonBar.Draw(VIDEODRIVER.GetScreenWidth() / 2 - imgButtonBar.getWidth() / 2, VIDEODRIVER.GetScreenHeight() - imgButtonBar.getHeight(), 0, 0, 0, 0, 0, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::Msg_PaintAfter()
 {
     /* NWF-Anzeige (vorläufig)*/
@@ -296,12 +265,6 @@ void dskGameInterface::Msg_PaintAfter()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
     if(Coll(mc.x, mc.y, VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
@@ -518,24 +481,12 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool dskGameInterface::Msg_LeftUp(const MouseCoords&  /*mc*/)
 {
     isScrolling = false;
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
@@ -554,12 +505,6 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
     startScrollPt = Point<int>(mc.x, mc.y);
@@ -567,12 +512,6 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool dskGameInterface::Msg_RightUp(const MouseCoords&  /*mc*/) //-V524
 {
     isScrolling = false;
@@ -755,12 +694,6 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::Run()
 {
     // Reset draw counter of the trees before drawing
@@ -776,12 +709,6 @@ void dskGameInterface::Run()
     messenger.Draw();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
 {
     // Im Replay und in der Pause keine Straßen bauen
@@ -806,12 +733,6 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
 {
     std::vector<unsigned char> new_route;
@@ -856,12 +777,6 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 unsigned dskGameInterface::TestBuiltRoad(const MapPoint pt)
 {
     MapPoint pt2 = road.start;
@@ -875,12 +790,6 @@ unsigned dskGameInterface::TestBuiltRoad(const MapPoint pt)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
 {
     if(gwb.CalcBQ(road.point, GAMECLIENT.GetPlayerID(), 1))
@@ -889,12 +798,6 @@ void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
         WINDOWMANAGER.Show(roadwindow = new iwRoadWindow(*this, 0, mouse_x, mouse_y), true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings)
 {
     unsigned int params = 0;
@@ -933,12 +836,6 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     WINDOWMANAGER.Show(actionwindow, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::GI_BuildRoad()
 {
     GAMECLIENT.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
@@ -956,12 +853,6 @@ void dskGameInterface::GI_WindowClosed(Window* wnd)
     isScrolling = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
 {
     // Im Wegbaumodus und haben wir von hier eine Flagge gebaut?
@@ -979,12 +870,6 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
 {
     // Info-Meldung ausgeben
@@ -996,12 +881,6 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_GREEN);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
 {
     // TODO: print what has changed
@@ -1010,12 +889,6 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
     messenger.AddMessage("", 0, CD_SYSTEM, text);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
     char from[256];
@@ -1023,12 +896,6 @@ void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination c
     messenger.AddMessage(from, GAMECLIENT.GetPlayer(player_id).color, cd, msg);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_Async(const std::string& checksums_list)
 {
     messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
@@ -1036,34 +903,16 @@ void dskGameInterface::CI_Async(const std::string& checksums_list)
     messenger.AddMessage("", 0, CD_SYSTEM, _("A auto-savegame is created..."), COLOR_RED);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_ReplayAsync(const std::string& msg)
 {
     messenger.AddMessage("", 0, CD_SYSTEM, msg, COLOR_RED);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_ReplayEndReached(const std::string& msg)
 {
     messenger.AddMessage("", 0, CD_SYSTEM, msg, COLOR_BLUE);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_GamePaused()
 {
     char from[256];
@@ -1087,12 +936,6 @@ void dskGameInterface::CI_GamePaused()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_GameResumed()
 {
     char from[256];
@@ -1100,12 +943,6 @@ void dskGameInterface::CI_GameResumed()
     messenger.AddMessage(from, COLOR_GREY, CD_SYSTEM, _("Game was resumed."));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_Error(const ClientError ce)
 {
     switch(ce)
@@ -1142,12 +979,6 @@ void dskGameInterface::LC_Status_Error(const std::string& error)
     messenger.AddMessage("", 0, CD_SYSTEM, error, COLOR_RED);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
     // Meldung anzeigen
@@ -1194,12 +1025,6 @@ void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 {
     // Minimap Bescheid sagen

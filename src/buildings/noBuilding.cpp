@@ -31,12 +31,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class noFigure;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 noBuilding::noBuilding(const BuildingType type,
                        const MapPoint pos,
                        const unsigned char player,
@@ -46,12 +40,6 @@ noBuilding::noBuilding(const BuildingType type,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void noBuilding::Destroy_noBuilding()
 {
     // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
@@ -61,12 +49,6 @@ void noBuilding::Destroy_noBuilding()
     Destroy_noBaseBuilding();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
 {
     Serialize_noBaseBuilding(sgd);
@@ -74,12 +56,6 @@ void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
     sgd.PushSignedChar(opendoor);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
     opendoor(sgd.PopSignedChar())
 {
@@ -89,12 +65,6 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseB
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void noBuilding::DrawBaseBuilding(int x, int y)
 {
     LOADER.building_cache[nation][type_][0].draw(x, y);
@@ -110,22 +80,10 @@ void noBuilding::DrawDoor(int x, int y)
         doorImg->Draw(x, y, 0, 0, 0, 0, 0, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void noBuilding::GotWorker(Job  /*job*/, noFigure*  /*worker*/)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 FOWObject* noBuilding::CreateFOWObject() const
 {
     return new fowBuilding(type_, nation);

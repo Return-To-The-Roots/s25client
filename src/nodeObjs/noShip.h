@@ -142,7 +142,6 @@ class noShip : public noMovable
 
     public:
 
-        /// Konstruktor
         noShip(const MapPoint pt, const unsigned char player);
         noShip(SerializedGameData& sgd, const unsigned obj_id);
 

@@ -27,12 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlScrollBar.
- *
- *  @author OLiver
- */
 ctrlScrollBar::ctrlScrollBar(Window* parent,
                              unsigned int id,
                              unsigned short x,
@@ -56,12 +50,6 @@ ctrlScrollBar::ctrlScrollBar(Window* parent,
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlScrollBar::Msg_LeftUp(const MouseCoords& mc)
 {
     move = false;
@@ -70,12 +58,6 @@ bool ctrlScrollBar::Msg_LeftUp(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
 {
     if (Coll(mc.x, mc.y, GetX(), GetY() + button_height + scrollbar_pos, width_, scrollbar_height))
@@ -129,12 +111,6 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
 {
     if(move)
@@ -154,12 +130,6 @@ bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -221,12 +191,6 @@ void ctrlScrollBar::SetPageSize(unsigned short pagesize)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
 {
     ctrlButton* button;

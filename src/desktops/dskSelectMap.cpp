@@ -142,11 +142,6 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     GAMECLIENT.SetInterface(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 dskSelectMap::~dskSelectMap()
 {
 }
@@ -234,11 +229,6 @@ void dskSelectMap::GoBack()
         WINDOWMANAGER.Switch(new dskDirectIP);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -290,11 +280,6 @@ void dskSelectMap::StartServer()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
@@ -312,11 +297,6 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
@@ -331,11 +311,6 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *  @author OLiver
- */
 void dskSelectMap::CI_Error(const ClientError ce)
 {
     switch(ce)

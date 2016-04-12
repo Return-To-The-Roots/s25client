@@ -67,12 +67,6 @@ dskGameLoader::~dskGameLoader()
     GAMEMANAGER.SetCursor();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult  /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
@@ -86,12 +80,6 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxR
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
     static bool load_nations[NAT_COUNT];

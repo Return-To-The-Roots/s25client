@@ -23,23 +23,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p glArchivItem_Sound.
- *
- *  @author FloSoft
- */
 glArchivItem_Sound::glArchivItem_Sound()
     : baseArchivItem_Sound(), sound(NULL)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Kopiekonstruktor von @p glArchivItem_Sound.
- *
- *  @author FloSoft
- */
 glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item)
     : baseArchivItem_Sound(item), sound(item.sound)
 {
@@ -54,11 +42,5 @@ glArchivItem_Sound& glArchivItem_Sound::operator=(const glArchivItem_Sound& item
     return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p glArchivItem_Sound.
- *
- *  @author FloSoft
- */
 glArchivItem_Sound::~glArchivItem_Sound()
 {}

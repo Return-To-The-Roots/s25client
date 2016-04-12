@@ -27,9 +27,7 @@
 class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase
 {
     public:
-        /// Konstruktor von @p glArchivItem_Bitmap.
         glArchivItem_Bitmap();
-        /// Kopiekonstruktor von @p glArchivItem_Bitmap.
         glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
         /// Erzeugt und zeichnet die Textur.

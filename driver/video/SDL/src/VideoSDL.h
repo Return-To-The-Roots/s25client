@@ -28,10 +28,8 @@ struct SDL_Surface;
 class VideoSDL : public VideoDriver
 {
     public:
-        /// Konstruktor von @p VideoSDL.
         VideoSDL(VideoDriverLoaderInterface* CallBack);
 
-        /// Destruktor von @p VideoSDL.
         ~VideoSDL() override;
 
         /// Funktion zum Auslesen des Treibernamens.
@@ -83,7 +81,7 @@ class VideoSDL : public VideoDriver
         void* GetMapPointer() const override;
 
     private:
-        SDL_Surface* screen; ///< Das Fenster-SDL-Surface.
+        SDL_Surface* screen; /// Das Fenster-SDL-Surface.
 };
 
 #endif // !SDL_H_INCLUDED

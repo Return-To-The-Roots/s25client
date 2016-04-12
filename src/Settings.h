@@ -80,7 +80,7 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
             unsigned char musik_volume;
             bool effekte;
             unsigned char effekte_volume;
-            std::string playlist; ///< musicplayer playlist name
+            std::string playlist; /// musicplayer playlist name
         } sound;
 
         struct
@@ -93,15 +93,15 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 
         struct
         {
-            std::string last_ip; ///< last entered ip or hostname
-            bool ipv6;           ///< listen/connect on ipv6 as default or not
+            std::string last_ip; /// last entered ip or hostname
+            bool ipv6;           /// listen/connect on ipv6 as default or not
         } server;
 
         struct
         {
-            std::string proxy; ///< Serveradresse / Hostname
-            unsigned int port; ///< Port
-            unsigned char typ; ///< Socks 4 oder 5
+            std::string proxy; /// Serveradresse / Hostname
+            unsigned int port; /// Port
+            unsigned char typ; /// Socks 4 oder 5
         } proxy;
 
         struct

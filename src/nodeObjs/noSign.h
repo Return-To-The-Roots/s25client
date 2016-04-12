@@ -24,7 +24,6 @@ class SerializedGameData;
 class noSign : public noDisappearingEnvObject
 {
     public:
-        /// Konstruktor von @p noSign.
         noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
         noSign(SerializedGameData& sgd, const unsigned obj_id);
 

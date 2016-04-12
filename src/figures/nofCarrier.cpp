@@ -112,12 +112,6 @@ AnimationsType fillAnimations()
 }
 static const AnimationsType ANIMATIONS = fillAnimations();
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p nofCarrier.
- *
- *  @author OLiver
- */
 
 const boost::array<Job, 3> JOB_TYPES = {{ JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER }};
 
@@ -132,12 +126,6 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
     : noFigure(sgd, obj_id),
       ct( CarrierType(sgd.PopUnsignedChar()) ),
@@ -160,12 +148,6 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
@@ -188,12 +170,6 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 nofCarrier::~nofCarrier()
 {
     // Ware vernichten (physisch)
@@ -202,12 +178,6 @@ nofCarrier::~nofCarrier()
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::Destroy_nofCarrier()
 {
     RTTR_Assert(!workplace);
@@ -220,12 +190,6 @@ void nofCarrier::Destroy_nofCarrier()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::Draw(int x, int y)
 {
     // Unterscheiden, um was für eine Art von Träger es sich handelt
@@ -414,12 +378,6 @@ void nofCarrier::SetNewAnimationMoment()
     next_animation = GAMECLIENT.GetGFNumber() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::Walked()
 {
     // Bootssounds ggf. löschen
@@ -609,12 +567,6 @@ void nofCarrier::Walked()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::LookForWares()
 {
     // Gibts an dieser Flagge etwas, das ich tragen muss?
@@ -641,12 +593,6 @@ void nofCarrier::LookForWares()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::GoalReached()
 {
     // Erstes Produktivitätsevent anmelden
@@ -690,12 +636,6 @@ void nofCarrier::GoalReached()
     LOG.lprintf("nofCarrier::GoalReached: ERROR: Road of carrier (id: %u) not found!\n", GetObjId());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::AbrogateWorkplace()
 {
     if(workplace)
@@ -747,12 +687,6 @@ namespace{
     };
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::LostWork()
 {
     workplace = NULL;
@@ -801,12 +735,6 @@ void nofCarrier::LostWork()
     state = CARRS_FIGUREWORK;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
 {
     // Bin ich schon auf meinem Arbeitsplatz (=Straße) oder bin ich erst noch auf dem Weg dorthin?
@@ -871,12 +799,6 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         otherRoad->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(otherRoad));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::HandleDerivedEvent(const unsigned int id)
 {
     switch(id)
@@ -912,12 +834,6 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool nofCarrier::AddWareJob(const noRoadNode* rn)
 {
     // Wenn wir rumstehen, sollten wir mal loslaufen! ^^und ggf umdrehen, genauso wie beim Laufen in die Mitte
@@ -963,12 +879,6 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::RemoveWareJob()
 {
     if(state == CARRS_FETCHWARE)
@@ -993,12 +903,6 @@ void nofCarrier::RemoveWareJob()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void nofCarrier::FetchWare(const bool swap_wares)
 {
     // Ware aufnehmnen
@@ -1018,12 +922,6 @@ void nofCarrier::FetchWare(const bool swap_wares)
         state = CARRS_GOTOMIDDLEOFROAD;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool nofCarrier::SpaceAtFlag(const bool flag)
 {
     // Interessiert uns nur, wenn wir auf einen freien Platz warten
@@ -1039,12 +937,6 @@ bool nofCarrier::SpaceAtFlag(const bool flag)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool nofCarrier::WantInBuilding(bool* calculated)
 {
     RoadSegment* rs = static_cast<noFlag*>((rs_dir ? cur_rs->GetF1() : cur_rs->GetF2()))->routes[1];

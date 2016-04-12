@@ -50,7 +50,6 @@ class Random : public Singleton<Random>
 
     public:
 
-        /// Konstruktor von @p Random.
         Random();
         /// Initialisiert den Zufallszahlengenerator.
         void Init(const unsigned int init);
@@ -84,7 +83,7 @@ class Random : public Singleton<Random>
 
         static int GetValueFromState(const int rngState, const int maxVal);
     private:
-        int rngState_; ///< Die aktuelle Zufallszahl.
+        int rngState_; /// Die aktuelle Zufallszahl.
         static inline int GetNextState(const int rngState, const int maxVal);
 };
 

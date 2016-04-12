@@ -28,9 +28,7 @@ class SerializedGameData;
 class noBase : public GameObject
 {
     public:
-        /// Konstruktor von @p noBase.
         noBase(const NodalObjectType nop) : nop(nop) {}
-        /// Deserialisierungskonstruktor
         noBase(SerializedGameData& sgd, const unsigned obj_id);
 
         /// An x,y zeichnen.
@@ -71,7 +69,7 @@ class noBase : public GameObject
         void Serialize_noBase(SerializedGameData& sgd) const;
 
     protected:
-        NodalObjectType nop; ///< Typ des NodeObjekt ( @see NodalObjectTypes.h )
+        NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
 };
 
 #endif // !NOBASE_H_INCLUDED

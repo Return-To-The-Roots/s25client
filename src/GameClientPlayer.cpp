@@ -61,12 +61,6 @@ const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT =
     2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
 }};
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p GameClientPlayer.
- *
- *  @author OLiver
- */
 GameClientPlayer::GameClientPlayer(const unsigned playerid):
 		GamePlayerInfo(playerid), gwg(NULL), is_lagging(false),
 		hqPos(MapPoint::Invalid()), emergency(false)

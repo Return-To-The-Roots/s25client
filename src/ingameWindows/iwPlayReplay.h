@@ -25,7 +25,6 @@
 class iwPlayReplay : public IngameWindow
 {
     public:
-        /// Konstruktor von @p iwPlayReplay.
         iwPlayReplay();
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;

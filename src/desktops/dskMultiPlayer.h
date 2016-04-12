@@ -25,7 +25,6 @@
 class dskMultiPlayer : public Desktop
 {
     public:
-        /// Konstruktor von @p dskMultiPlayer.
         dskMultiPlayer();
 
     private:

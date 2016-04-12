@@ -31,12 +31,6 @@
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void GameClient::Command_SetFlag2(const MapPoint pt, unsigned char player)
 {
     gw->SetFlag(pt, player);
@@ -60,24 +54,12 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
     send_queue.push(new GameMessage_Server_Chat(playerId_, cd, text));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void GameClient::Command_ToggleNation()
 {
     send_queue.push(new GameMessage_Player_Set_Nation
                     (0xff, Nation((this->GetLocalPlayer().nation + 1) % NAT_COUNT)));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void GameClient::Command_ToggleTeam(Team newteam)
 {
     send_queue.push(new GameMessage_Player_Set_Team(0xff, newteam));
@@ -94,12 +76,6 @@ void GameClient::Command_ToggleReady()
     send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer().ready));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void GameClient::Command_SetColor()
 {
     send_queue.push(new GameMessage_Player_Set_Color(0xFF, GetLocalPlayer().color));

@@ -41,12 +41,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlTimer.
- *
- *  @author FloSoft
- */
 ctrlTimer::ctrlTimer(Window* parent,
                      unsigned int id,
                      unsigned int timeout)
@@ -80,12 +74,6 @@ void ctrlTimer::Stop()
     timer = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void ctrlTimer::Msg_PaintBefore()
 {
     // timer ist deaktiviert, nix tun

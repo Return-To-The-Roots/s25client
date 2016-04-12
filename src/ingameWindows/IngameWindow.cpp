@@ -36,12 +36,6 @@
 const unsigned MAX_POS_SAVE_ENTRIES = CGI_MERCHANDISE_STATISTICS + 1;
 std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES, Point<unsigned short>::Invalid());
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p IngameWindow.
- *
- *  @author OLiver
- */
 IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
                            const std::string& title, glArchivItem_Bitmap* background, bool modal, bool close_on_right_click, Window* parent)
     : Window(x, y, id, parent, width, height),
@@ -72,12 +66,6 @@ IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p IngameWindow.
- *
- *  @author OLiver
- */
 IngameWindow::~IngameWindow()
 {
     // Possibly save our old position

@@ -37,33 +37,15 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 DriverWrapper::DriverWrapper() :  dll(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 DriverWrapper::~DriverWrapper()
 {
     Unload();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void DriverWrapper::Unload()
 {
     if(dll)
@@ -73,12 +55,6 @@ void DriverWrapper::Unload()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 {
     // ggf. aufräumen vorher
@@ -138,23 +114,11 @@ void* GetDLLFunction2(HINSTANCE dll, const std::string& name)
 #endif // _WIN32
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void* DriverWrapper::GetDLLFunction(const std::string& name)
 {
     return GetDLLFunction2(dll, name);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const DriverType dt)
 {
     std::vector<DriverItem> driver_list;

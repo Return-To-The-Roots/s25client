@@ -55,10 +55,10 @@ class Playlist
         void SetStartSong(const unsigned id);
 
     protected:
-        unsigned int repeats;               ///< Anzahl der Wiederholungen
-        bool random;                        ///< Zufallswiedergabe?
-        std::vector<std::string> songs;     ///< Dateinamen der abzuspielenden Titel
-        std::vector<unsigned int> order;    ///< Reihenfolge der Titel
+        unsigned int repeats;               /// Anzahl der Wiederholungen
+        bool random;                        /// Zufallswiedergabe?
+        std::vector<std::string> songs;     /// Dateinamen der abzuspielenden Titel
+        std::vector<unsigned int> order;    /// Reihenfolge der Titel
 };
 
 /// Globaler Musikplayer bzw. eine abspielbare Playlist
@@ -86,9 +86,9 @@ class MusicPlayer : public Singleton<MusicPlayer, SingletonPolicies::WithLongevi
         void PlayNext();
 
     private:
-        bool playing;                   ///< Läuft die Musik gerade?
-        Playlist list;                  ///< Unsere aktuell aktive Playlist
-        libsiedler2::ArchivInfo sng;    ///< externes benutzerdefiniertes Musikstück (z.B. andere mp3)
+        bool playing;                   /// Läuft die Musik gerade?
+        Playlist list;                  /// Unsere aktuell aktive Playlist
+        libsiedler2::ArchivInfo sng;    /// externes benutzerdefiniertes Musikstück (z.B. andere mp3)
 };
 
 #define MUSICPLAYER MusicPlayer::inst()

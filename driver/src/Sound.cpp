@@ -47,22 +47,10 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p Sound.
- *
- *  @author FloSoft
- */
 Sound::Sound() :  nr(-1), type(SD_UNKNOWN)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p Sound.
- *
- *  @author FloSoft
- */
 Sound::~Sound()
 {
 }

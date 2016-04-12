@@ -34,23 +34,11 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p nofDonkeybreeder.
- *
- *  @author FloSoft
- */
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_DONKEYBREEDER, pos, player, workplace)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p nofDonkeybreeder.
- *
- *  @author FloSoft
- */
 nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
     : nofWorkman(sgd, obj_id)
 {

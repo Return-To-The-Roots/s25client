@@ -36,13 +36,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwDirectIPConnect.
- *
- *  @author OLiver
- *  @author FloSoft
- */
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCONNECT, 0xFFFF, 0xFFFF, 300, 285, _("Join Game"), LOADER.GetImageN("resource", 41), true),
       server_type(server_type)
@@ -86,24 +79,12 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     GAMECLIENT.SetInterface(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwDirectIPConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(EMPTY_STRING, COLOR_RED, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -133,12 +114,6 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -180,12 +155,6 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
@@ -252,12 +221,6 @@ void iwDirectIPConnect::SetPort(unsigned short port)
     pp->SetText(p);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwDirectIPConnect::CI_Error(const ClientError ce)
 {
     switch(ce)
@@ -273,12 +236,6 @@ void iwDirectIPConnect::CI_Error(const ClientError ce)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)

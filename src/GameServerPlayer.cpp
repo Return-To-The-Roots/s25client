@@ -28,8 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/// Konstruktor
 GameServerPlayer::GameServerPlayer(const unsigned playerid)
     : GamePlayerInfo(playerid),
       connecttime(0),
@@ -52,8 +50,6 @@ GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer& ser)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// Destruktor
 GameServerPlayer::~GameServerPlayer()
 {
     so.Close();

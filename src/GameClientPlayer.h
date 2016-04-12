@@ -190,7 +190,6 @@ class GameClientPlayer : public GamePlayerInfo
         void MakePact(const PactType pt, const unsigned char other_player, const unsigned duration);
 
     public:
-        /// Konstruktor von @p GameClientPlayer.
         GameClientPlayer(const unsigned playerid);
 
         /// Serialisieren

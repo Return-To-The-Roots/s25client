@@ -26,10 +26,8 @@
 class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, public glArchivItem_Bitmap
 {
     public:
-        /// Konstruktor von @p glArchivItem_Bitmap_Raw.
         glArchivItem_Bitmap_Raw() {}
 
-        /// Kopierkonstruktor von @p glArchivItem_Bitmap_Raw.
         glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw& item) : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
 };
 

@@ -26,7 +26,7 @@ class iwTransport : public IngameWindow
 {
     private:
 
-        glArchivItem_Bitmap* TRANSPORT_SPRITES[14]; ///< Einzelne Bilder für die Waren.
+        glArchivItem_Bitmap* TRANSPORT_SPRITES[14]; /// Einzelne Bilder für die Waren.
 
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
         bool settings_changed;

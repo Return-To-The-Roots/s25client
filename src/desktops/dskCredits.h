@@ -29,7 +29,6 @@ class glArchivItem_Bitmap;
 class dskCredits : public Desktop
 {
     public:
-        /// Konstruktor von @p dskCredits.
         dskCredits();
         ~dskCredits() override;
 

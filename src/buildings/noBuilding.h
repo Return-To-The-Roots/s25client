@@ -27,7 +27,7 @@ class noBuilding : public noBaseBuilding
 {
     protected:
 
-        /// How many people opened the door. >0 Means door open, ==0 means door closed, <0 is an error
+        /// How many people opened the door. positive: open, 0: closed, negative: error
         signed char opendoor;
 
         noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);

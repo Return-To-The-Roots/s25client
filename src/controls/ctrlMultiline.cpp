@@ -28,12 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlMultiline.
- *
- *  @author OLiver
- */
 ctrlMultiline::ctrlMultiline(Window* parent,
                              unsigned int id,
                              unsigned short x,
@@ -92,33 +86,15 @@ bool ctrlMultiline::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlMultiline::Msg_LeftDown(const MouseCoords& mc)
 {
     return GetCtrl<Window>(0)->Msg_LeftDown(mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlMultiline::Msg_LeftUp(const MouseCoords& mc)
 {
     return GetCtrl<Window>(0)->Msg_LeftUp(mc);
 }
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
 {
     // Forward to ScrollBar
@@ -138,12 +114,6 @@ bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
 {
     // Forward to ScrollBar
@@ -162,12 +132,6 @@ bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
         return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
 {
     return GetCtrl<Window>(0)->Msg_MouseMove(mc);

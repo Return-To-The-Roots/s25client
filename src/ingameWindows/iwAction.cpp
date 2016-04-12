@@ -53,12 +53,6 @@ enum TabID
     TAB_SEAATTACK
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwAction.
- *
- *  @author OLiver
- */
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mouse_x, mouse_y, 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)

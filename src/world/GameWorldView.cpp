@@ -554,12 +554,6 @@ void GameWorldView::MoveToLastPosition()
     lastOffset = newLastOffset;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void GameWorldView::CalcFxLx()
 {
     // Calc first and last point in map units (with 1 extra for incomplete triangles)

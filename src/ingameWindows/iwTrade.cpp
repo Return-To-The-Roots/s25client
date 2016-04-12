@@ -34,14 +34,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwBuilding.
- *
- *  @todo überprüfen und die restlichen Steuerelemente zur Funktion bringen
- *
- *  @author OLiver
- */
 iwTrade::iwTrade(nobBaseWarehouse& wh)
     : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
       wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))

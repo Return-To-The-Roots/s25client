@@ -30,12 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlEdit.
- *
- *  @author OLiver
- */
 ctrlEdit::ctrlEdit(Window* parent,
                    unsigned int id,
                    unsigned short x,
@@ -211,12 +205,6 @@ void ctrlEdit::Notify()
     parent_->Msg_EditChange(GetID());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlEdit::Msg_PaintAfter()
 {
     focus_ = newFocus_;

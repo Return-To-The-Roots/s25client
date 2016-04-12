@@ -31,12 +31,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class GameWorldViewer;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwHarborBuilding.
- *
- *  @author OLiver
- */
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
     : iwHQ(gwv, hb, _("Harbor building"), 4)
 {
@@ -122,12 +116,6 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
     switch(group_id)

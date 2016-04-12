@@ -39,12 +39,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwMilitaryBuilding.
- *
- *  @author OLiver
- */
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
     gwv(gwv), building(building)
@@ -214,12 +208,6 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwMilitaryBuilding::DemolitionNotAllowed()
 {
     // Meldung auswählen, je nach Einstellung

@@ -36,12 +36,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskAboutRTTR.
- *
- *  @author FloSoft
- */
 dskAboutRTTR::dskAboutRTTR() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // "Zurück"

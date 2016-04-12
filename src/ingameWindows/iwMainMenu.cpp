@@ -46,12 +46,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwMainMenu.
- *
- *  @author OLiver
-*/
 iwMainMenu::iwMainMenu(GameWorldView& gwv)
     : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
       gwv(gwv)

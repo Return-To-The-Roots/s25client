@@ -27,23 +27,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p glArchivItem_Map.
- *
- *  @author FloSoft
- */
 glArchivItem_Map::glArchivItem_Map()
     : ArchivItem_Map(), header(NULL)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p glArchivItem_Map.
- *
- *  @author FloSoft
- */
 glArchivItem_Map::~glArchivItem_Map()
 {
 }

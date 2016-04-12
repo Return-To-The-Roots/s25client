@@ -36,7 +36,6 @@ class ctrlOptionGroup : public ctrlGroup
         };
 
     public:
-        /// Konstruktor von @p ctrlOptionGroup.
         ctrlOptionGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
 
         /// Selektiert einen neuen Button
@@ -58,8 +57,8 @@ class ctrlOptionGroup : public ctrlGroup
         bool Draw_() override;
 
     private:
-        unsigned short selection_; ///< aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
-        int select_type;         ///< Typ der Selektierung
+        unsigned short selection_; /// aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
+        int select_type;         /// Typ der Selektierung
 };
 
 #endif // !CTRLOPTIONGROUP_H_INCLUDED

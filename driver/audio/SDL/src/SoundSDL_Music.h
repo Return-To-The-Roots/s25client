@@ -24,15 +24,13 @@ class SoundSDL_Music : public Sound
 {
         friend class AudioSDL;
     public:
-        /// Konstruktor von @p SoundSDL_Music.
         SoundSDL_Music();
 
-        /// Destruktor von @p SoundSDL_Music.
         ~SoundSDL_Music() override;
 
     private:
 
-        Mix_Music* music;  ///< Das Music-Handle.
+        Mix_Music* music;  /// Das Music-Handle.
 
 };
 

@@ -25,9 +25,7 @@
 class iwPleaseWait : public IngameWindow
 {
     public:
-        /// Konstruktor von @p iwPleaseWait.
         iwPleaseWait();
-        /// Destruktor von @p iwPleaseWait.
         ~iwPleaseWait() override;
 };
 

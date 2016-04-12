@@ -30,13 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlProgress.
- *
- *  @author Devil
- *  @author FloSoft
- */
 ctrlProgress::ctrlProgress(Window* parent,
                            const unsigned int id,
                            const unsigned short x,
@@ -131,12 +124,6 @@ bool ctrlProgress::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
@@ -158,12 +145,6 @@ void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
 {
     // Test if clicked on progress bar
@@ -185,23 +166,11 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
         return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlProgress::Msg_LeftUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
@@ -213,12 +182,6 @@ bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlProgress::Msg_WheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
@@ -230,12 +193,6 @@ bool ctrlProgress::Msg_WheelDown(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
 {
     // an Buttons weiterleiten

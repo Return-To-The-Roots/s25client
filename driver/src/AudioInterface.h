@@ -25,7 +25,6 @@ class Sound;
 class IAudioDriver
 {
 public:
-    /// Destruktor von @p IAudioDriver.
     virtual ~IAudioDriver() = 0;
 
     /// Funktion zum Auslesen des Treibernamens.

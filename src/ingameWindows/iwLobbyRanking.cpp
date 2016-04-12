@@ -61,12 +61,6 @@ void iwLobbyRanking::UpdateRankings(bool first)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwLobbyRanking.
- *
- *  @author Devil
- */
 iwLobbyRanking::iwLobbyRanking()
     : IngameWindow(CGI_LOBBYRANKING, 0xFFFF, 0xFFFF, 440, 410, _("Internet Ranking"), LOADER.GetImageN("resource", 41), true)
 {

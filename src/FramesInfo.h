@@ -54,7 +54,7 @@ public:
 
     /// Requested length of GF (for multiple changes between a NWF)
     unsigned gfLengthReq;
-    /// Number of the GF that the server acknoledged -> Run only to this one -> gfNr <= gfNrServer
+    /// Number of the GF that the server acknowledged -> Run only to this one -> gfNr <= gfNrServer
     unsigned gfNrServer;
     /// GF at wich we should pause the game
     unsigned pause_gf;

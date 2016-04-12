@@ -51,58 +51,28 @@ const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] =
     500, 1000, 5000, 10000, 50000, 100000, 1
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwSaveLoad.
- *
- *  @author OLiver
- */
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, 0xFFFF, 0xFFFF, 600, 400 + add_height, window_title, LOADER.GetImageN("resource", 41))
 {
     AddTable(0, 20, 30, 560, 300, TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250, ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER,  "", 0, ctrlTable::SRT_STRING);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSaveLoad::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 {
     SaveLoad();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSaveLoad::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     SaveLoad();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSaveLoad::Msg_TableSelectItem(const unsigned int  /*ctrl_id*/, const int selection)
 {
     // Dateiname ins Edit schreiben, wenn wir entsprechende Einträge auswählen
     GetCtrl<ctrlEdit>(1)->SetText(GetCtrl<ctrlTable>(0)->GetItemText(selection, 0));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSaveLoad::RefreshTable()
 {
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
@@ -140,23 +110,11 @@ void iwSaveLoad::RefreshTable()
     GetCtrl<ctrlTable>(0)->SortRows(2);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
 {
     
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSave::SaveLoad()
 {
     // Speichern
@@ -174,12 +132,6 @@ void iwSave::SaveLoad()
     GetCtrl<ctrlEdit>(1)->SetText("");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 {
     AddEdit(1, 20, 390, 510, 22, TC_GREEN2, NormalFont);
@@ -223,12 +175,6 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     RefreshTable();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void iwSave::Msg_ComboSelectItem(const unsigned int  /*ctrl_id*/, const int selection)
 {
 
@@ -240,12 +186,6 @@ void iwSave::Msg_ComboSelectItem(const unsigned int  /*ctrl_id*/, const int sele
         SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1];
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  csi(csi)
 {
     AddEdit(1, 20, 350, 510, 22, TC_GREEN2, NormalFont);

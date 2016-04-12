@@ -26,12 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwSurrender.
- *
- *  @author jh
- */
 iwSurrender::iwSurrender()
     : IngameWindow(CGI_ENDGAME, 0xFFFF, 0xFFFF, 240, 100, _("Surrender game?"), LOADER.GetImageN("resource", 41))
 {

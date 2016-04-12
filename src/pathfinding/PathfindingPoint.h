@@ -25,7 +25,6 @@ public:
     const unsigned id_, distance_;
     unsigned estimate_;
 
-    /// Konstruktoren
     PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay): id_(id), distance_(distance), estimate_(curWay + distance_)
     {}
 

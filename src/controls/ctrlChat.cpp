@@ -71,12 +71,6 @@ ctrlChat::ctrlChat(Window* parent,
     bracket2_size = font->getWidth("> ");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p ctrlChat.
- *
- *  @author OLiver
- */
 ctrlChat::~ctrlChat()
 {
 }
@@ -203,12 +197,6 @@ bool ctrlChat::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 void ctrlChat::WrapLine(unsigned short i)
 {
     ChatLine line = raw_chat_lines[i];
@@ -250,12 +238,6 @@ void ctrlChat::WrapLine(unsigned short i)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, const unsigned int msg_color)
 {
     ChatLine line;
@@ -288,45 +270,21 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
         scrollbar->SetPos(chat_lines.size() - page_size);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlChat::Msg_MouseMove(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlChat::Msg_LeftDown(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlChat::Msg_LeftUp(const MouseCoords& mc)
 {
     return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 {
     // Forward to ScrollBar, if mouse over control
@@ -345,12 +303,6 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author Divan
- */
 bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 {
     // Forward to ScrollBar, if mouse over control

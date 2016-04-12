@@ -34,9 +34,7 @@
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
     public:
-        /// Konstruktor von @p glArchivItem_Font.
         glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
-        /// Kopierkonstruktor von @p glArchivItem_Font.
         glArchivItem_Font(const glArchivItem_Font& item);
 
         glArchivItem_Font& operator=(const glArchivItem_Font& obj);
@@ -122,7 +120,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         CharInfo placeHolder; /// Placeholder if glyph is missing
 
         /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)
-        /// The width will be <= maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars (if specified)
+        /// The width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars (if specified)
         template<class T_Iterator>
         unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth = 0xffffffff, unsigned* maxNumChars = NULL) const;
 };

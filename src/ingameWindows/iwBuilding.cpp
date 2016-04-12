@@ -40,14 +40,6 @@
 const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwBuilding.
- *
- *  @todo überprüfen und die restlichen Steuerelemente zur Funktion bringen
- *
- *  @author OLiver
- */
 iwBuilding::iwBuilding(GameWorldView& gwv, nobUsual* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), building(building)

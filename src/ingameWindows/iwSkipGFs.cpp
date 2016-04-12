@@ -28,12 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwPlayReplay.
- *
- *  @author OLiver
- */
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {

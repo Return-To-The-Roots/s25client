@@ -26,7 +26,6 @@ class iwBuildings : public IngameWindow
 	GameWorldView& gwv;
     public:
 
-        /// Konstruktor von @p iwMilitary.
         iwBuildings(GameWorldView& gwv);
 
     private:

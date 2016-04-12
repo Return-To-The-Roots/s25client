@@ -26,12 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlText.
- *
- *  @author OLiver
- */
 ctrlImage::ctrlImage(Window* parent,
                      unsigned int id,
                      unsigned short x,
@@ -43,12 +37,6 @@ ctrlImage::ctrlImage(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 ctrlImage::~ctrlImage()
 {
     WINDOWMANAGER.SetToolTip(this, "");
@@ -69,12 +57,6 @@ bool ctrlImage::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
     // gültiges Bildz?

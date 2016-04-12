@@ -30,12 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p Window.
- *
- *  @author OLiver
- */
 Window::Window()
     : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
 {
@@ -63,12 +57,6 @@ Window::Window(unsigned short x,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  virtueller Destruktor von @p Window.
- *
- *  @author OLiver
- */
 Window::~Window()
 {
     // Steuerelemente aufräumen

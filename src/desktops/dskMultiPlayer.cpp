@@ -41,13 +41,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskMultiPlayer.
- *
- *  @author OLiver
- *  @author FloSoft
- */
 dskMultiPlayer::dskMultiPlayer() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version

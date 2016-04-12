@@ -37,24 +37,12 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p WindowManager.
- *
- *  @author OLiver
- */
 WindowManager::WindowManager()
     : disable_mouse(false),
       mouseCoords(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p WindowManager.
- *
- *  @author OLiver
- */
 WindowManager::~WindowManager()
 {
     CleanUp();

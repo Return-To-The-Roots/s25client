@@ -29,12 +29,6 @@ ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArch
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlText.
- *
- *  @author OLiver
- */
 ctrlText::ctrlText(Window* parent,
                    unsigned int id,
                    unsigned short x,

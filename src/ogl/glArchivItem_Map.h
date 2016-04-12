@@ -46,9 +46,7 @@ enum MapLayer
 class glArchivItem_Map : public libsiedler2::ArchivItem_Map
 {
     public:
-        /// Konstruktor von @p glArchivItem_Map.
         glArchivItem_Map();
-        /// Destruktor von @p glArchivItem_Map.
         ~glArchivItem_Map() override;
 
         /// lädt die Mapdaten aus einer Datei.

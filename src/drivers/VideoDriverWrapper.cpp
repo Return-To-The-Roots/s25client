@@ -38,23 +38,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor der DriverWrapper Klasse.
- *
- *  @author FloSoft
- */
 VideoDriverWrapper::~VideoDriverWrapper()
 {
     CleanUp();
@@ -267,12 +255,6 @@ void VideoDriverWrapper::CleanUp()
     texture_pos = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 unsigned int VideoDriverWrapper::GenerateTexture()
 {
     if(texture_pos >= texture_list.size())
@@ -316,12 +298,6 @@ KeyEvent VideoDriverWrapper::GetModKeyState() const
     return ke;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool VideoDriverWrapper::SwapBuffers()
 {
     if(!videodriver)
@@ -333,12 +309,6 @@ bool VideoDriverWrapper::SwapBuffers()
     return videodriver->SwapBuffers();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool VideoDriverWrapper::Run()
 {
     if(!videodriver)
@@ -350,12 +320,6 @@ bool VideoDriverWrapper::Run()
     return videodriver->MessageLoop();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool VideoDriverWrapper::Initialize()
 {
     RenewViewport();
@@ -477,12 +441,6 @@ bool VideoDriverWrapper::LoadAllExtensions()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 unsigned int VideoDriverWrapper::GetTickCount()
 {
     if(!videodriver)
@@ -512,12 +470,6 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
     return videodriver->GetFunction(extension.c_str());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 int VideoDriverWrapper::GetMouseX()
 {
     if(!videodriver)
@@ -526,12 +478,6 @@ int VideoDriverWrapper::GetMouseX()
     return videodriver->GetMousePosX();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 int VideoDriverWrapper::GetMouseY()
 {
     if(!videodriver)
@@ -540,12 +486,6 @@ int VideoDriverWrapper::GetMouseY()
     return videodriver->GetMousePosY();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool VideoDriverWrapper::IsLeftDown()
 {
     if(!videodriver)
@@ -554,12 +494,6 @@ bool VideoDriverWrapper::IsLeftDown()
     return videodriver->GetMouseStateL();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 bool VideoDriverWrapper::IsRightDown()
 {
     if(!videodriver)

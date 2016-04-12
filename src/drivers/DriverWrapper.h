@@ -51,9 +51,7 @@ class DriverWrapper
         };
 
     public:
-        /// Konstruktor von @p DriverWrapper
         DriverWrapper();
-        /// Destruktor von @p DriverWrapper
         ~DriverWrapper();
 
         /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen

@@ -36,7 +36,6 @@ class dskSelectMap :
         std::string map_path;
 
     public:
-        /// Konstruktor von @p dskSelectMap.
         dskSelectMap(const CreateServerInfo& csi);
         ~dskSelectMap() override;
 

@@ -26,10 +26,8 @@ class Sound;
 class AudioDriver: public IAudioDriver
 {
     public:
-        /// Konstruktor von @p AudioDriver.
         AudioDriver(AudioDriverLoaderInterface* adli);
 
-        /// Destruktor von @p AudioDriver.
         ~AudioDriver() override;
 
         /// Funktion zum Auslesen des Treibernamens.
@@ -53,9 +51,9 @@ class AudioDriver: public IAudioDriver
 
         AudioDriverLoaderInterface* adli;
 
-        ///< Das DriverCallback für Rückmeldungen.
+        /// Das DriverCallback für Rückmeldungen.
 
-        bool initialized; ///< Initialisierungsstatus.
+        bool initialized; /// Initialisierungsstatus.
 
         std::vector<Sound*> sounds;
 

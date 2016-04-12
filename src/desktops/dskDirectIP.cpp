@@ -35,12 +35,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p dskDirectIP.
- *
- *  @author FloSoft
- */
 dskDirectIP::dskDirectIP() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version

@@ -26,12 +26,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlDeepening.
- *
- *  @author OLiver
- */
 ctrlDeepening::ctrlDeepening(Window* parent,
                              unsigned int id,
                              unsigned short x,
@@ -68,12 +62,6 @@ bool ctrlDeepening::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlColorDeepening.
- *
- *  @author Divan
- */
 ctrlColorDeepening::ctrlColorDeepening(Window* parent,
                                        unsigned int id,
                                        unsigned short x,

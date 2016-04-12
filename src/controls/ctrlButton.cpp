@@ -29,12 +29,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlButton.
- *
- *  @author OLiver
- */
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                        unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
     : Window(x, y, id, parent, width, height), tc(tc), state(BUTTON_UP), border(true),
@@ -44,23 +38,11 @@ ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsign
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author FloSoft
- */
 ctrlButton::~ctrlButton()
 {
     WINDOWMANAGER.SetToolTip(this, "");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
     if(enabled && IsMouseOver(mc.x, mc.y))
@@ -86,12 +68,6 @@ bool ctrlButton::IsMouseOver(const int mouseX, const int mouseY) const
     return Coll(mouseX, mouseY, GetX(), GetY(), width_, height_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
     if(enabled && IsMouseOver(mc.x, mc.y))

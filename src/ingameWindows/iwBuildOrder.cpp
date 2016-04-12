@@ -29,12 +29,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwBuildOrder.
- *
- *  @author OLiver
- */
 iwBuildOrder::iwBuildOrder()
     : IngameWindow(CGI_BUILDORDER, (unsigned short) - 1, (unsigned short) - 1, 320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),
       settings_changed(false)

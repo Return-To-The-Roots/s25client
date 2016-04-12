@@ -71,9 +71,7 @@ class dskGameInterface :
         Point<int> startScrollPt;
         unsigned zoomLvl;
     public:
-        /// Konstruktor von @p dskGameInterface.
         dskGameInterface();
-        /// Destruktor von @p dskGameInterface.
         ~dskGameInterface() override;
 
         virtual void SetActive(bool activate = true) override;

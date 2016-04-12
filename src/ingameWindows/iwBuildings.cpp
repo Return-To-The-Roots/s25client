@@ -89,7 +89,6 @@ const unsigned short icon_distance_y = 48;
 const unsigned short font_distance_y = 20;
 
 
-/// Konstruktor von @p iwMilitary.
 iwBuildings::iwBuildings(GameWorldView& gwv) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv)
 {
     // Symbole für die einzelnen Gebäude erstellen

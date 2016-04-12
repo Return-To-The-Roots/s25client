@@ -54,14 +54,6 @@ const unsigned short TREATIES_POS = 240;
 /// Abstand zwischen den beiden Bündnis-Buttons (Achtung: von Mittelpunkten aus!)
 const unsigned short TREATIE_BUTTON_SPACE = 20;
 
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwDiplomacy.
- *
- *
- *  @author OLiver
- */
 iwDiplomacy::iwDiplomacy()
     : IngameWindow(CGI_DIPLOMACY, (unsigned short) - 1, (unsigned short) - 1, 500, FIRST_LINE_Y + GAMECLIENT.GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20, _("Diplomacy"),
                    LOADER.GetImageN("resource", 41))

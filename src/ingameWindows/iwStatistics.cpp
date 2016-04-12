@@ -32,12 +32,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwStatistics.
- *
- *  @author jh
- */
 iwStatistics::iwStatistics()
     : IngameWindow(CGI_STATISTICS, 0xFFFE, 0xFFFE, 252, 336, _("Statistics"), LOADER.GetImageN("resource", 41))
 {
@@ -161,23 +155,11 @@ iwStatistics::iwStatistics()
         minValue->SetVisible(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 iwStatistics::~iwStatistics()
 {
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch (ctrl_id)
@@ -192,12 +174,6 @@ void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
@@ -259,12 +235,6 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, const int s
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwStatistics::Msg_PaintAfter()
 {
     // Die farbigen Boxen unter den Spielerportraits malen
@@ -290,12 +260,6 @@ void iwStatistics::Msg_PaintAfter()
     DrawStatistic(currentView);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwStatistics::DrawStatistic(StatisticType type)
 {
     // Ein paar benötigte Werte...
@@ -388,12 +352,6 @@ void iwStatistics::DrawStatistic(StatisticType type)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwStatistics::DrawAxis()
 {
     // Ein paar benötigte Werte...

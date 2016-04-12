@@ -47,12 +47,6 @@ const std::string TOOLTIPS[14] =
     gettext_noop("Boats")
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwTools.
- *
- *  @author OLiver
- */
 iwTransport::iwTransport()
     : IngameWindow(CGI_TRANSPORT, 0xFFFF, 0xFFFF, 166, 333, _("Transport"), LOADER.GetImageN("io", 5)),
       settings_changed(false)

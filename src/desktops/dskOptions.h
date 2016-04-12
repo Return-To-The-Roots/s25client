@@ -42,7 +42,7 @@ class dskOptions: public Desktop
 
     private:
         GlobalGameSettings ggs;
-        std::vector<VideoMode> video_modes; ///< Vector für die Auflösungen
+        std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
 
         void loadVideoModes();
         static bool cmpVideoModes(const VideoMode& left, const VideoMode& right);

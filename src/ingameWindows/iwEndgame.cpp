@@ -29,12 +29,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwEndgame.
- *
- *  @author OLiver
- */
 iwEndgame::iwEndgame()
     : IngameWindow(CGI_ENDGAME, 0xFFFF, 0xFFFF, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))
 {

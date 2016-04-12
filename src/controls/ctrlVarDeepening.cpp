@@ -26,12 +26,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p ctrlVarDeepening.
- *
- *  @author FloSoft
- */
 ctrlVarDeepening::ctrlVarDeepening(Window* parent,
                                    unsigned int id,
                                    unsigned short x,

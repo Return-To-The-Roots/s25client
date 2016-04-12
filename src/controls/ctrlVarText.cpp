@@ -64,12 +64,6 @@ ctrlVarText::ctrlVarText(Window* parent,
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor des variablen Textcontrols
- *
- *  @author FloSoft
- */
 ctrlVarText::~ctrlVarText()
 {}
 

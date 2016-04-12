@@ -28,7 +28,6 @@ class noCoordBase : public noBase
 
     public:
 
-        /// Konstruktor von @p noCoordBase.
         noCoordBase(const NodalObjectType nop, const MapPoint pt) : noBase(nop), pos(pt) {}
         noCoordBase(SerializedGameData& sgd, const unsigned obj_id);
 

@@ -1274,12 +1274,6 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     OrderShip();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 {
     // Ist überhaupt eine Expedition im Gang und ein entsprechender Warentyp

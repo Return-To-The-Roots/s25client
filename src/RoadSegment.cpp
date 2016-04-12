@@ -34,12 +34,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 RoadSegment::RoadSegment(const RoadType rt,
                          noRoadNode* const f1,
                          noRoadNode* const f2,
@@ -49,12 +43,6 @@ RoadSegment::RoadSegment(const RoadType rt,
     carriers_[0] = carriers_[1] = NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned int obj_id)
     : GameObject(sgd, obj_id),
       rt(static_cast<RoadType>(sgd.PopUnsignedChar())),
@@ -73,12 +61,6 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned int obj_id)
     f2->routes[(route[route.size() - 1] + 3) % 6] = this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void RoadSegment::Destroy_RoadSegment()
 {
     // This can be the road segment from the flag to the building (always in this order!)
@@ -125,12 +107,6 @@ void RoadSegment::Destroy_RoadSegment()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author OLiver
- */
 void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);

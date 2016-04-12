@@ -24,10 +24,10 @@
 
 struct RoadBuildState
 {
-    RoadBuildMode mode;   ///< Straﬂenmodus
+    RoadBuildMode mode;   /// Straﬂenmodus
 
     MapPoint point, start;
-    std::vector<unsigned char> route;  ///< Richtungen der gebauten Straﬂe
+    std::vector<unsigned char> route;  /// Richtungen der gebauten Straﬂe
 };
 
 #endif // RoadBuildState_h__

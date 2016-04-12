@@ -22,10 +22,8 @@
 class Sound
 {
     public:
-        /// Konstruktor von @p Sound.
         Sound();
 
-        /// Destruktor von @p Sound.
         virtual ~Sound();
 
         void SetNr(int nr) { this->nr = nr; }

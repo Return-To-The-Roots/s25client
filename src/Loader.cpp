@@ -55,23 +55,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p Loader.
- *
- *  @author FloSoft
- */
 Loader::Loader() : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
 {
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::ArchivInfo*>(NULL));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p Loader.
- *
- *  @author FloSoft
- */
 Loader::~Loader()
 {
     delete stp;

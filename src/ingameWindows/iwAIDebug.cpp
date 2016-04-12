@@ -34,12 +34,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Konstruktor von @p iwAIDebug.
- *
- *  @author jh
- */
 iwAIDebug::iwAIDebug(GameWorldView& gwv)
     : IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)
@@ -104,12 +98,6 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv)
     //list->SetSelection(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
     switch(ctrl_id)
@@ -130,12 +118,6 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *
- *
- *  @author jh
- */
 void iwAIDebug::Msg_PaintBefore()
 {
     std::stringstream ss;

@@ -85,8 +85,8 @@ class noFlag : public noRoadNode
         /// Nicht erreichbar für Massenflüchtlinge
         struct BurnedWarehouseUnit
         {
-            unsigned int id;        ///< ID der Gruppe
-            unsigned int last_gf;   ///< letzter TÜV, ob man auch nicht hinkommt, in GF
+            unsigned int id;        /// ID der Gruppe
+            unsigned int last_gf;   /// letzter TÜV, ob man auch nicht hinkommt, in GF
         };
         boost::array<BurnedWarehouseUnit, MAX_BWU> bwus;
 };

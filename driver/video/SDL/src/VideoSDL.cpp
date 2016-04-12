@@ -98,12 +98,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
 VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
 {}
 
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Destruktor von @p VideoSDL.
- *
- *  @author FloSoft
- */
 VideoSDL::~VideoSDL()
 {
     CleanUp();

@@ -28,9 +28,7 @@ class glArchivItem_Font;
 class ctrlChat : public Window
 {
     public:
-        /// Konstruktor von @p ctrlChat.
         ctrlChat(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
-        /// Destruktor von @p ctrlChat.
         ~ctrlChat() override;
 
         /// Größe ändern
@@ -73,14 +71,14 @@ class ctrlChat : public Window
         };
 
     private:
-        TextureColor tc;         ///< Hintergrundtextur.
-        glArchivItem_Font* font; ///< Schriftart.
+        TextureColor tc;         /// Hintergrundtextur.
+        glArchivItem_Font* font; /// Schriftart.
 
-        std::vector<ChatLine> raw_chat_lines;  ///< Chatzeilen, noch nicht umgebrochen
-        std::vector<ChatLine> chat_lines;  ///< Chatzeilen
+        std::vector<ChatLine> raw_chat_lines;  /// Chatzeilen, noch nicht umgebrochen
+        std::vector<ChatLine> chat_lines;  /// Chatzeilen
 
-        unsigned int page_size;  ///< Chatzeilen pro Seite
-        unsigned int time_color; ///< Farbe der Zeitangaben
+        unsigned int page_size;  /// Chatzeilen pro Seite
+        unsigned int time_color; /// Farbe der Zeitangaben
 
         unsigned short bracket1_size; /// Breite der Klammer "<" um den Spielernamen
         unsigned short bracket2_size; /// Breite der Klammer ">" um den Spielernamen
