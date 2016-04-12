@@ -48,11 +48,31 @@ matrix:
     - compiler: clang
       env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03      
 
-script:
-  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-coverage ${CXX_FLAGS}" --generator="Unix Makefiles" --no-arch=i386 && make
-
 install:
+  # C++11 requires gcc-4.8 or newer
   - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
+  - |
+	if [ "$CXX" = "g++" ]; then
+		# Adapt gcc and gcov version by simply replacing the prefix "g++"
+		export CC=${CXX/g++/gcc}
+		export GCOV=${CXX/g++/gcov};
+	else
+		export GCOV="gcov"
+	fi
+  # Travis libs are x64 only
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export ADDITIONAL_CMAKE_FLAGS="--no-arch=i386"; fi
+
+script:
+  # Fail if any command failed
+  - set -e
+  - cd build
+  - ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" --generator="Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
+  - make
+  # Execute tests
+  - export CTEST_OUTPUT_ON_FAILURE=1
+  - make test
+  - set +e
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -x "${GCOV}"
+
