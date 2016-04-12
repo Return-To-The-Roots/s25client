@@ -306,6 +306,8 @@ ELSE()
 	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
 ENDIF()
 
+enable_testing()
+
 ################################################################################
 
 ADD_SUBDIRECTORY(version)
