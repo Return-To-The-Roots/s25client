@@ -20,8 +20,8 @@ target_link_libraries(Test
 						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 					  )
 
-add_test(NAME MainTest COMMAND Test)
+add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if(MSVC)
-	create_target_launcher(Test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../..")
+	create_target_launcher(Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
