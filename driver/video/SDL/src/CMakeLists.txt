@@ -14,12 +14,12 @@ IF (SDL_FOUND)
 
 	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(videoSDL updateversion)
-    IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
-        CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
-        IF (FPIC_FLAGS)
-            ADD_DEFINITIONS(-fPIC)
-        ENDIF (FPIC_FLAGS)
-    ENDIF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
+    IF( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
+	    CHECK_CXX_COMPILER_FLAG(-fPIC FLAG_FPIC_SUPPORTED)
+	    IF(FLAG_FPIC_SUPPORTED)
+		    ADD_DEFINITIONS(-fPIC)
+	    ENDIF()
+    ENDIF()
 
 	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
 

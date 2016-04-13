@@ -239,7 +239,8 @@ if(NOT MSVC)
 		if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 			message(FATAL_ERROR "Coverage requires a debug build or you get false positives")
 		endif()
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -coverage")
+		# Note: "--coverage" instead of "-coverage" makes this work with ccache
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 --coverage")
 	endif()
 endif()
 
@@ -268,7 +269,7 @@ ENDIF()
 if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
     try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
     if(NOT ${CHECK_CLANG_INLINE})
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D__extern_always_inline=\"extern __always_inline __attribute__ ((__gnu_inline__))\"" )
+        add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
     endif()
 endif()
 
