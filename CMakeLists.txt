@@ -92,7 +92,7 @@ else(Boost_USE_STATIC_LIBS)
 endif(Boost_USE_STATIC_LIBS)
 
 # For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
-SET(Boost_ADDITIONAL_VERSIONS "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
+SET(Boost_ADDITIONAL_VERSIONS "1.60.0" "1.60" "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
 
 IF (MSVC)
 	SET(RTTR_CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
@@ -207,6 +207,7 @@ INCLUDE(CheckCXXCompilerFlag)
 MACRO(CheckAndAddFlag flag)
 	SET(VarName ${flag})
 	STRING(REPLACE "+" "X" VarName ${VarName})
+	STRING(REPLACE "-" "_" VarName ${VarName})
 	CHECK_CXX_COMPILER_FLAG(${flag} FLAG_${VarName}_SUPPORTED)
 	IF (FLAG_${VarName}_SUPPORTED)
 		ADD_DEFINITIONS(${flag})
@@ -233,13 +234,12 @@ ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
 # VS does not support coverage analysis
 if(NOT MSVC)
-	set(RTTR_ENABLE_COVERAGE OFF CACHE BOOL "Generate coverage build")
+	option(RTTR_ENABLE_COVERAGE "Generate coverage build" OFF)
 	if(RTTR_ENABLE_COVERAGE)
-		if(NOT ${CMAKE_BUILD_TYPE} EQUAL Debug)
-			message(FATAL "Coverage requires a debug build or you get false positives")
+		if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+			message(FATAL_ERROR "Coverage requires a debug build or you get false positives")
 		endif()
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-		CheckAndAddFlag("-coverage")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -coverage")
 	endif()
 endif()
 
@@ -249,7 +249,6 @@ IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(RTTR_DATADIR "." CACHE STRING "" FORCE)
 	SET(RTTR_LIBDIR "." CACHE STRING "" FORCE)
 	SET(RTTR_DRIVERDIR "./driver" CACHE STRING "" FORCE)
-	#ADD_DEFINITIONS(-D_WIN32_WINNT=0x0501)
 ENDIF()
 
 # add build directory to compiler search path
