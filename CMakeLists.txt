@@ -231,6 +231,18 @@ CheckAndAddFlag("-Wno-variadic-macros")
 CheckAndAddFlag("-Wno-c99-extensions")
 ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
+# VS does not support coverage analysis
+if(NOT MSVC)
+	set(RTTR_ENABLE_COVERAGE OFF CACHE BOOL "Generate coverage build")
+	if(RTTR_ENABLE_COVERAGE)
+		if(NOT ${CMAKE_BUILD_TYPE} EQUAL Debug)
+			message(FATAL "Coverage requires a debug build or you get false positives")
+		endif()
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+		CheckAndAddFlag("-coverage")
+	endif()
+endif()
+
 # avoid lhs-path bug in windows
 IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(RTTR_BINDIR "." CACHE STRING "" FORCE)
