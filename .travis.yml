@@ -50,14 +50,19 @@ matrix:
           env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03            
 
 install:
-    # Enable coverage analysis only in debug and also skip clang
-    - if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"; fi
+    # Enable coverage analysis only in debug and for g++
+    - |
+        if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
+            export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
+            # GCov 4.6 cannot handle the file structure
+            export CXX="g++-4.8" 
+        fi
     # C++11 requires gcc-4.8 or newer
     - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
     - |
-        if [ "$CXX" = "g++" ]; then
-            # Adapt gcc and gcov version by simply replacing the prefix "g++"
-            export CC=${CXX/g++/gcc}
+        if [[ "$CXX" == "g++"* ]]; then
+            # Adapt versions by simply replacing the prefix "g++"
+            export CC=${CXX/g++/gcc};
             export GCOV=${CXX/g++/gcov};
         else
             export GCOV="gcov"
@@ -65,7 +70,6 @@ install:
 
 script:
     # Information
-    - echo "OS= ${TRAVIS_OS_NAME}"
     - $CXX --version
     - $GCOV --version
     # Fail if any command failed
@@ -79,69 +83,10 @@ script:
     - set +e
 
 after_success:
-    - cd "${TRAVIS_BUILD_DIR}"
-    - bash -c "find build -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
+    - bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
     - |
-        # Copied from codecovs bash.sh but excludes the lst files
-        files=$(find build -type f \( -name '*coverage.*' \
-                     -or -name 'nosetests.xml' \
-                     -or -name 'jacoco*.xml' \
-                     -or -name 'clover.xml' \
-                     -or -name 'report.xml' \
-                     -or -name 'cobertura.xml' \
-                     -or -name 'luacov.report.out' \
-                     -or -name 'lcov.info' \
-                     -or -name '*.lcov' \
-                     -or -name 'gcov.info' \
-                     -or -name '*.gcov' \) \
-                    -not -name '*.sh' \
-                    -not -name '*.data' \
-                    -not -name '*.py' \
-                    -not -name '*.class' \
-                    -not -name '*.xcconfig' \
-                    -not -name 'Coverage.profdata' \
-                    -not -name 'phpunit-code-coverage.xml' \
-                    -not -name 'coverage.serialized' \
-                    -not -name '*.pyc' \
-                    -not -name '*.cfg' \
-                    -not -name '*.egg' \
-                    -not -name '*.whl' \
-                    -not -name '*.html' \
-                    -not -name '*.js' \
-                    -not -name '*.cpp' \
-                    -not -name 'coverage.jade' \
-                    -not -name 'coverage.db' \
-                    -not -name 'include.lst' \
-                    -not -name 'inputFiles.lst' \
-                    -not -name 'createdFiles.lst' \
-                    -not -name 'coverage.html' \
-                    -not -name 'scoverage.measurements.*' \
-                    -not -name 'test_*_coverage.txt' \
-                    -not -path '*/vendor/*' \
-                    -not -path '*/htmlcov/*' \
-                    -not -path '*/home/cainus/*' \
-                    -not -path '*/virtualenv/*' \
-                    -not -path '*/js/generated/coverage/*' \
-                    -not -path '*/.virtualenv/*' \
-                    -not -path '*/virtualenvs/*' \
-                    -not -path '*/.virtualenvs/*' \
-                    -not -path '*/.env/*' \
-                    -not -path '*/.envs/*' \
-                    -not -path '*/env/*' \
-                    -not -path '*/envs/*' \
-                    -not -path '*/.venv/*' \
-                    -not -path '*/.venvs/*' \
-                    -not -path '*/venv/*' \
-                    -not -path '*/venvs/*' \
-                    -not -path '*/.git/*' \
-                    -not -path '*/.hg/*' \
-                    -not -path '*/.tox/*' \
-                    -not -path '*/__pycache__/*' \
-                    -not -path '*/.egg-info*' \
-                    -not -path "*/$bower_components/*" \
-                    -not -path '*/node_modules/*' \
-                    -not -path '*/conftest_*.c.gcov')
+        files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
         if [ "$files" != "" ]; then
-            echo "Coverage files= $files"
             bash <(curl -s https://codecov.io/bash) -f "$files"
         fi
+
