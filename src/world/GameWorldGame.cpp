@@ -1088,18 +1088,6 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
     }
 }
 
-void GameWorldGame::AddCatapultStone(CatapultStone* cs)
-{
-    RTTR_Assert(!helpers::contains(catapult_stones, cs));
-    catapult_stones.push_back(cs);
-}
-
-void GameWorldGame::RemoveCatapultStone(CatapultStone* cs)
-{
-     RTTR_Assert(helpers::contains(catapult_stones, cs));
-     catapult_stones.remove(cs);
-}
-
 void GameWorldGame::Armageddon()
 {
     MapPoint pt(0, 0);

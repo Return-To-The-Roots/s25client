@@ -225,6 +225,10 @@ public:
     /// setzt den virtuellen Straßen-Wert um den Punkt X,Y.
     void SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
+    /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
+    void AddCatapultStone(CatapultStone* cs);
+    void RemoveCatapultStone(CatapultStone* cs);
+
 protected:
     /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
     virtual void AltitudeChanged(const MapPoint pt) = 0;

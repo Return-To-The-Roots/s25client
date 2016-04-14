@@ -844,6 +844,18 @@ void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned c
         SetVirtualRoad(GetNeighbour(pt, dir), dir, type);
 }
 
+void World::AddCatapultStone(CatapultStone* cs)
+{
+    RTTR_Assert(!helpers::contains(catapult_stones, cs));
+    catapult_stones.push_back(cs);
+}
+
+void World::RemoveCatapultStone(CatapultStone* cs)
+{
+    RTTR_Assert(helpers::contains(catapult_stones, cs));
+    catapult_stones.remove(cs);
+}
+
 /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
 MapPoint World::GetHarborPoint(const unsigned harbor_id) const
 {
