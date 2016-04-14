@@ -342,7 +342,7 @@ unsigned int nobMilitary::GetMilitaryRadius() const
     return MILITARY_RADIUS[size];
 }
 
-void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exceposion)
+void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 {
     // Umgebung nach Militärgebäuden absuchen
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
@@ -351,7 +351,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exceposion)
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // feindliches Militärgebäude?
-        if(*it != exceposion && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer()).IsPlayerAttackable(player))
+        if(*it != exception && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer()).IsPlayerAttackable(player))
         {
             unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
 
@@ -404,7 +404,6 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exceposion)
 
     // Truppen schicken
     RegulateTroops();
-
 }
 
 

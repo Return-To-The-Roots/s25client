@@ -396,10 +396,10 @@ class GameClientPlayer : public GamePlayerInfo
 		///all allied players get a letter with the location
 		void NotifyAlliesOfLocation(const MapPoint pt);
 
-        /// Macht Bündnisvorschlag an diesen Spieler
-        void SuggestPact(const unsigned char other_player, const PactType pt, const unsigned duration);
-        /// Akzeptiert ein bestimmtes Bündnis, welches an diesen Spieler gemacht wurde
-        void AcceptPact(const unsigned id, const PactType pt, const unsigned char other_player);
+        /// This player suggests a pact to target player
+        void SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration);
+        /// Accepts a pact, that this player suggested target player
+        void AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer);
         /// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
         /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
         void CancelPact(const PactType pt, const unsigned char other_player);
@@ -472,6 +472,9 @@ class GameClientPlayer : public GamePlayerInfo
         // Notfall-Programm aktiviert ja/nein (Es gehen nur noch Res an Holzfäller- und Sägewerk-Baustellen raus)
         bool emergency;
 
+        /// Called after a pact was changed(added/removed) in both players
+        void PactChanged(const PactType pt);
+
     public:
         bool hasEmergency() const { return emergency; }
 
@@ -480,7 +483,6 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// For debug only
         bool IsDependentFigure(noFigure* fig);
-
 };
 
 #endif

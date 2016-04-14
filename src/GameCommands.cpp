@@ -190,12 +190,12 @@ namespace gc{
 
     void SuggestPact::Execute(GameWorldGame&  /*gwg*/, GameClientPlayer& player, const unsigned char  /*playerid*/)
     {
-        player.SuggestPact(this->player, pt, duration);
+        player.SuggestPact(targetPlayer, pt, duration);
     }
 
     void AcceptPact::Execute(GameWorldGame& gwg, GameClientPlayer&  player, const unsigned char playerid)
     {
-        gwg.GetPlayer(this->player).AcceptPact(id, pt, playerid);
+        gwg.GetPlayer(fromPlayer).AcceptPact(id, pt, playerid);
     }
 
     void CancelPact::Execute(GameWorldGame&  /*gwg*/, GameClientPlayer& player, const unsigned char  /*playerid*/)

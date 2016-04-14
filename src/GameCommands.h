@@ -668,23 +668,23 @@ namespace gc{
     class SuggestPact : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Spieler, dem das Angebot unterbreitet werden soll
-            const unsigned char player;
+            /// Player to whom we suggest the pact
+            const unsigned char targetPlayer;
             /// Art des Vertrages
             const PactType pt;
             /// Dauer des Vertrages
             const unsigned duration;
 
         protected:
-            SuggestPact(const unsigned char player, const PactType pt, const unsigned duration) : GameCommand(SUGGESTPACT),
-                player(player), pt(pt), duration(duration) {}
+            SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration) : GameCommand(SUGGESTPACT),
+                targetPlayer(targetPlayer), pt(pt), duration(duration) {}
             SuggestPact(Serializer& ser) : GameCommand(SUGGESTPACT),
-                player(ser.PopUnsignedChar()), pt(PactType(ser.PopUnsignedChar())), duration(ser.PopUnsignedInt()) {}
+                targetPlayer(ser.PopUnsignedChar()), pt(PactType(ser.PopUnsignedChar())), duration(ser.PopUnsignedInt()) {}
         public:
 
             void Serialize(Serializer& ser) const override
             {
-                ser.PushUnsignedChar(player);
+                ser.PushUnsignedChar(targetPlayer);
                 ser.PushUnsignedChar(static_cast<unsigned char>(pt));
                 ser.PushUnsignedInt(duration);
             }
@@ -704,14 +704,14 @@ namespace gc{
             const unsigned id;
             /// Art des Vertrages
             const PactType pt;
-            /// Spieler, der das Angebot unterbreitet hat
-            const unsigned char player;
+            /// Player who offered the pact
+            const unsigned char fromPlayer;
 
         protected:
-            AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player) : GameCommand(ACCEPTPACT),
-                accepted(accepted), id(id), pt(pt), player(player) {}
+            AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char fromPlayer) : GameCommand(ACCEPTPACT),
+                accepted(accepted), id(id), pt(pt), fromPlayer(fromPlayer) {}
             AcceptPact(Serializer& ser) : GameCommand(ACCEPTPACT),
-                accepted(ser.PopBool()), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), player(ser.PopUnsignedChar()) {}
+                accepted(ser.PopBool()), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar()) {}
         public:
 
             void Serialize(Serializer& ser) const override
@@ -719,7 +719,7 @@ namespace gc{
                 ser.PushBool(accepted);
                 ser.PushUnsignedInt(id);
                 ser.PushUnsignedChar(static_cast<unsigned char>(pt));
-                ser.PushUnsignedChar(player);
+                ser.PushUnsignedChar(fromPlayer);
             }
 
             /// Führt das GameCommand aus
