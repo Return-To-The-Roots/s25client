@@ -66,7 +66,7 @@ protected:
 
 public:
 
-    GameWorldGame();
+    GameWorldGame(GameClientPlayerList& players);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung

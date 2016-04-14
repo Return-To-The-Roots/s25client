@@ -20,8 +20,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwAIDebug.h"
 
-#include "GameClient.h"
-#include "GameServer.h"
 #include "ai/AIPlayerJH.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
@@ -34,34 +32,19 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-iwAIDebug::iwAIDebug(GameWorldView& gwv)
-    : IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv)
+iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayerJH*>& ais_)
+    : IngameWindow(CGI_AI_DEBUG, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), ais_(ais_)
 {
-    // Nur Host hat Zugriff auf die Daten über die KI-Spieler
-    if (!GAMECLIENT.IsHost())
-    {
-        Close();
-        return;
-    }
-
-    // Erstmal die AIs einsammeln
-    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-    {
-        AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(i));
-        if (ai)
-            ais.push_back(ai);
-    }
-
     // Wenn keine KI-Spieler, schließen
-    if (ais.empty())
+    if (ais_.empty())
     {
         Close();
         return;
     }
 
 	ctrlComboBox* players = AddComboBox(1, 15, 30, 250, 20, TC_GREY, NormalFont, 100);
-    for (std::vector<AIPlayerJH*>::iterator it = ais.begin(); it != ais.end(); ++it)
+    for (std::vector<AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
     {
         players->AddString((*it)->GetPlayerName());
     }
@@ -108,12 +91,12 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
         case 1:
         {
             this->selection = selection;
-            gwv.SetAIDebug(overlay, ais[selection]->GetPlayerID(), false);
+            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerID(), false);
         } break;
         case 0:
         {
             overlay = selection;
-            gwv.SetAIDebug(overlay, ais[selection]->GetPlayerID(), true);
+            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerID(), true);
         } break;
     }
 }
@@ -122,14 +105,14 @@ void iwAIDebug::Msg_PaintBefore()
 {
     std::stringstream ss;
 
-    AIJH::Job* currentJob = ais[selection]->GetCurrentJob();
+    AIJH::Job* currentJob = ais_[selection]->GetCurrentJob();
     if (!currentJob)
     {
         text->SetText(_("No current job"));
         return;
     }
 
-    ss << "Jobs to do: " << ais[selection]->GetJobNum() << std::endl << std::endl;
+    ss << "Jobs to do: " << ais_[selection]->GetJobNum() << std::endl << std::endl;
 
     AIJH::BuildJob* bj = dynamic_cast<AIJH::BuildJob*>(currentJob);
     AIJH::EventJob* ej = dynamic_cast<AIJH::EventJob*>(currentJob);

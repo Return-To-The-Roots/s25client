@@ -1841,7 +1841,7 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
 ///all allied players get a letter with the location
 void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {	
-	for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+	for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
 		if(i != playerid && IsAlly(i) && GAMECLIENT.GetPlayerID() == i)
             GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
@@ -1876,7 +1876,7 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
         pacts[otherPlayerIdx][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        GameClientPlayer& otherPlayer = GAMECLIENT.GetPlayer(otherPlayerIdx);
+        GameClientPlayer& otherPlayer = gwg->GetPlayer(otherPlayerIdx);
         if(otherPlayer.pacts[playerid][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
@@ -1912,9 +1912,9 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
 void GameClientPlayer::MakeStartPacts()
 {
     // Zu den Spielern im selben Team Bündnisse (sowohl Bündnisvertrag als auch Nichtangriffspakt) aufbauen
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
-        GameClientPlayer& p = GAMECLIENT.GetPlayer(i);
+        GameClientPlayer& p = gwg->GetPlayer(i);
         if(GetFixedTeam(team) == GetFixedTeam(p.team) && GetFixedTeam(team) >= TM_TEAM1 && GetFixedTeam(team) <= TM_TEAM4)
         {
             for(unsigned z = 0; z < PACTS_COUNT; ++z)
@@ -2298,7 +2298,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
 /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GameClientPlayer::TestPacts()
 {
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
         if(i==playerid)
             continue;

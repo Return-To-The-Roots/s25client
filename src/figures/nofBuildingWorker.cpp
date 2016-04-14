@@ -199,7 +199,7 @@ void nofBuildingWorker::WorkingReady()
             flag->AddWare(real_ware);
             real_ware->WaitAtFlag(flag);
             // Warenstatistik erhöhen
-            GAMECLIENT.GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
+            gwg->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
             ware = GD_NOTHING;
         }

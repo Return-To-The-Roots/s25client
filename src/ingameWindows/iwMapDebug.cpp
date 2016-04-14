@@ -32,7 +32,7 @@
 class iwMapDebug::DebugPrinter: public IDebugNodePrinter
 {
 public:
-    DebugPrinter(GameWorldBase& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
+    DebugPrinter(World& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
 
     void print(const MapPoint& pt, const Point<int>& displayPt) override
     {
@@ -71,7 +71,7 @@ public:
 
     bool showCoords;
     unsigned showDataIdx;
-    GameWorldBase& gw;
+    World& gw;
     glArchivItem_Font* font;
 };
 

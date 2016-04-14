@@ -498,9 +498,9 @@ void nofGeologist::LostWork()
 struct IsSignOfType
 {
     const unsigned type;
-    const GameWorldBase& gwb;
+    const World& gwb;
 
-    IsSignOfType(unsigned type, const GameWorldBase& gwb): type(type), gwb(gwb){}
+    IsSignOfType(unsigned type, const World& gwb): type(type), gwb(gwb){}
 
     bool operator()(const MapPoint& pt)
     {

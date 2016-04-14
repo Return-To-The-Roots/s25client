@@ -160,7 +160,6 @@ void nofActiveSoldier::Draw(int x, int y)
         case STATE_DEFENDING_WAITING:
         {
             // Draw waiting states
-            //Loader::bob_jobs_cache[GAMECLIENT.GetPlayer(player).nation][job][dir][2].draw(x,y,COLOR_WHITE,GAMECLIENT.GetPlayer(player).color);
             DrawSoldierWalking(x, y, true); //cannot draw from Soldiers & Scouts from Loader::bob_jobs_cache v9102
         } break;
         case STATE_FIGUREWORK:
@@ -284,7 +283,7 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
             nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
             if (!soldier || soldier->GetPlayer() == excludedOwner)
                 continue;
-            if (soldier->IsReadyForFight() && !GAMECLIENT.GetPlayer(soldier->GetPlayer()).IsAlly(player))
+            if (soldier->IsReadyForFight() && !gwg->GetPlayer(soldier->GetPlayer()).IsAlly(player))
             {
                 enemy = soldier;
                 break;

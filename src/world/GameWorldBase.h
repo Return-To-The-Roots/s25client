@@ -52,10 +52,10 @@ protected:
     /// Baustellen von H�fen, die vom Schiff aus errichtet wurden
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
-    GameClientPlayerList* players;
+    GameClientPlayerList& players;
 
 public:
-    GameWorldBase();
+    GameWorldBase(GameClientPlayerList& players);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -137,10 +137,9 @@ public:
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
-    void SetPlayers(GameClientPlayerList* pls) { players = pls; }
     /// Liefert einen Player zur�ck
     GameClientPlayer& GetPlayer(const unsigned int id) const;
-    unsigned GetPlayerCt() const;
+    unsigned GetPlayerCount() const;
 
     struct PotentialSeaAttacker
     {

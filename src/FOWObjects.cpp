@@ -109,14 +109,14 @@ void fowBuildingSite::Draw(int x, int y) const
     if(planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 450)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(nation, 450)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 455)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(nation, 455)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
 
         // bis dahin gebautes Haus zeichnen
@@ -203,25 +203,26 @@ void fowBuildingSite::Draw(int x, int y) const
 // fowFlag
 
 
-fowFlag::fowFlag(const unsigned char player, const FlagType flag_type) : player(player), flag_type(flag_type)
+fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type):
+    color(CalcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
 {}
 
 fowFlag::fowFlag(SerializedGameData& sgd) :
-    player(sgd.PopUnsignedChar()),
+    color(sgd.PopUnsignedInt()),
+    nation(Nation(sgd.PopUnsignedChar())),
     flag_type(FlagType(sgd.PopUnsignedChar()))
 {}
 
 void fowFlag::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedChar(player);
+    sgd.PushUnsignedInt(color);
+    sgd.PushUnsignedChar(static_cast<unsigned char>(nation));
     sgd.PushUnsignedChar(static_cast<unsigned char>(flag_type));
 }
 
 void fowFlag::Draw(int x, int y) const
 {
-    GameClientPlayer& owner = GAMECLIENT.GetPlayer(player);
-    // Flagge
-    LOADER.flag_cache[owner.nation][flag_type][0].draw(x, y, FOW_DRAW_COLOR, CalcPlayerFOWDrawColor(owner.color));
+    LOADER.flag_cache[nation][flag_type][0].draw(x, y, FOW_DRAW_COLOR, color);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

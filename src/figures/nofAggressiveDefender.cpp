@@ -49,7 +49,6 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
 
 nofAggressiveDefender::~nofAggressiveDefender()
 {
-    //RTTR_Assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
@@ -57,9 +56,6 @@ void nofAggressiveDefender::Destroy_nofAggressiveDefender()
     RTTR_Assert(!attacker);
     RTTR_Assert(!attacked_goal);
     Destroy_nofActiveSoldier();
-
-    //// Debugging
-    //RTTR_Assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& sgd) const

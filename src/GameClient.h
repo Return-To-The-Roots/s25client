@@ -37,7 +37,6 @@
 class AIBase;
 class ClientInterface;
 class GameMessage_GameCommand;
-class GameWorldViewer;
 class PostMsg;
 class SavedFile;
 namespace AIEvent { class Base; }
@@ -64,6 +63,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         ~GameClient() override;
 
         void SetInterface(ClientInterface* ci) { this->ci = ci; }
+        /// Removes the given interface (if it is not yet overwritten by another one)
+        void RemoveInterface(ClientInterface* ci) { if(this->ci == ci) this->ci = NULL; }
         bool IsHost() const { return clientconfig.isHost; }
         bool IsSavegame() const { return mapinfo.type == MAPTYPE_SAVEGAME; }
         std::string GetGameName() const { return clientconfig.gameName; }
@@ -121,8 +122,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         void IncreaseSpeed();
 
-        /// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
-        unsigned StartReplay(const std::string& path, GameWorldViewer*& gwv);
+        /// Lädt ein Replay und startet dementsprechend das Spiel
+        bool StartReplay(const std::string& path);
         /// Replay-Geschwindigkeit erhöhen/verringern
         void IncreaseReplaySpeed();
         void DecreaseReplaySpeed();

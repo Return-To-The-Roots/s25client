@@ -168,7 +168,8 @@ void noFlag::Draw(int x, int y)
  */
 FOWObject* noFlag::CreateFOWObject() const
 {
-    return new fowFlag(player, flagtype);
+    const GameClientPlayer& owner = gwg->GetPlayer(player);
+    return new fowFlag(owner.color, owner.nation, flagtype);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

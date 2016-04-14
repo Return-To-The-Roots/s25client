@@ -39,6 +39,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
+GameWorld::GameWorld(GameClientPlayerList& players):
+    GameWorldBase(players), // Init virtual base class
+    GameWorldViewer(players), GameWorldGame(players)
+{}
+
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)
 {
@@ -59,9 +64,9 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     std::vector<Nation> players;
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < GetPlayerCount(); i++)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GameClientPlayer& player = GetPlayer(i);
         if(player.isUsed())
             players.push_back(player.nation);
         else
@@ -72,9 +77,9 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     if(!loader.Load(map, GAMECLIENT.GetGGS().random_location, GAMECLIENT.GetGGS().exploration))
         return false;
 
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < GetPlayerCount(); i++)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GameClientPlayer& player = GetPlayer(i);
         if(player.isUsed())
         {
             player.hqPos = loader.GetHQPos(i);
@@ -101,7 +106,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     // Obj-ID-Counter reinschreiben
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
-    MapSerializer::Serialize(*this, sgd);
+    MapSerializer::Serialize(*this, GetPlayerCount(), sgd);
 
     sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
 
@@ -131,7 +136,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
     // Obj-ID-Counter setzen
     GameObject::SetObjIDCounter(sgd.PopUnsignedInt());
 
-    MapSerializer::Deserialize(*this, sgd);
+    MapSerializer::Deserialize(*this, GetPlayerCount(), sgd);
 
     sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 

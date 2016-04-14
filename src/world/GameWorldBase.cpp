@@ -33,7 +33,10 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-GameWorldBase::GameWorldBase() : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), gi(NULL), players(NULL)
+GameWorldBase::GameWorldBase(GameClientPlayerList& players):
+    roadPathFinder(new RoadPathFinder(*this)),
+    freePathFinder(new FreePathFinder(*this)),
+    gi(NULL), players(players)
 {}
 
 GameWorldBase::~GameWorldBase()
@@ -47,12 +50,12 @@ void GameWorldBase::Init(const unsigned short width, const unsigned short height
 
 GameClientPlayer& GameWorldBase::GetPlayer(const unsigned int id) const
 {
-    return *players->getElement(id);
+    return players[id];
 }
 
-unsigned GameWorldBase::GetPlayerCt() const
+unsigned GameWorldBase::GetPlayerCount() const
 {
-    return players->getCount();
+    return players.size();
 }
 
 bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual) const
@@ -274,9 +277,9 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigne
     if(GAMECLIENT.GetGGS().team_view)
     {
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
-        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GetPlayerCount(); ++i)
         {
-            if(GAMECLIENT.GetPlayer(i).IsAlly(player))
+            if(GetPlayer(i).IsAlly(player))
             {
                 if(GetNode(pt).fow[i].visibility > best_visibility)
                     best_visibility = GetNode(pt).fow[i].visibility;
@@ -495,7 +498,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
         const nobHarborBuilding *hb = GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK)==1))			
+		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK)==1))			
 			continue;
 
 		// Ist Ziel der Hafenspot? -> add sea_ids
@@ -588,7 +591,7 @@ std::vector<unsigned> GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAtta
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 		const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (players->getElement(player_attacker)->IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK)==1))		
+		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK)==1))
 			continue;
 		// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
 		if(pt == harborPt)
@@ -691,7 +694,7 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     unsigned int attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    const std::list<nobHarborBuilding*>& harbors = players->getElement(player_attacker)->GetHarbors();
+    const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetHarbors();
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
@@ -750,7 +753,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
 
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    const std::list<nobHarborBuilding*>& harbors = players->getElement(player_attacker)->GetHarbors();
+    const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetHarbors();
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen

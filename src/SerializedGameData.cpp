@@ -20,11 +20,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SerializedGameData.h"
 
-#include "../libutil/src/Log.h"
-
 #include "GameObject.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameClientPlayer.h"
 
 #include "buildings/nobHQ.h"
@@ -90,9 +87,11 @@
 #include "nodeObjs/noShipBuildingSite.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/BurnedWarehouse.h"
+#include "world/GameWorld.h"
 
 #include "helpers/containerUtils.h"
 #include "helpers/converters.h"
+#include "libutil/src/Log.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -213,8 +212,8 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
     // EventManager serialisieren
     evMgr.Serialize(*this);
     // Spieler serialisieren
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-        GAMECLIENT.GetPlayer(i).Serialize(*this);
+    for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+        gw.GetPlayer(i).Serialize(*this);
 
     writtenObjIds.clear();
 }
@@ -230,8 +229,8 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw, EventManager& evMgr)
 
     gw.Deserialize(*this);
     evMgr.Deserialize(*this);
-    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-        GAMECLIENT.GetPlayer(i).Deserialize(*this);
+    for (unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+        gw.GetPlayer(i).Deserialize(*this);
 
     em = NULL;
     readObjects.clear();

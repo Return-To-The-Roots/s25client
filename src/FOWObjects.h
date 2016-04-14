@@ -114,14 +114,14 @@ class fowBuildingSite : public FOWObject
 class fowFlag : public FOWObject
 {
     private:
-        /// Besitzer
-        const unsigned char player;
+        const unsigned color;
+        const Nation nation;
         /// Flaggenart
         const FlagType flag_type;
 
     public:
 
-        fowFlag(const unsigned char player, const FlagType flag_type);
+        fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type);
         fowFlag(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const override;
         void Draw(int x, int y) const override;

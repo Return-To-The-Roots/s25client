@@ -131,7 +131,7 @@ void noShipBuildingSite::MakeBuildStep()
 
         // Spieler über Fertigstellung benachrichtigen
         if(GAMECLIENT.GetPlayerID() == this->player)
-            GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
+            GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
 
         // KI Event senden
         GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, pos), player);

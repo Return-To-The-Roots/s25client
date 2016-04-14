@@ -23,7 +23,6 @@
 #include "gameTypes/MapTypes.h"
 
 class GameWorldView;
-class GameWorldViewer;
 class MouseCoords;
 
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt

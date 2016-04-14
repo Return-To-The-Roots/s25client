@@ -47,7 +47,7 @@ public:
     const unsigned width, height;
 
 private:
-    const GameWorldBase& gwb;
+    const GameWorldBase& world;
     std::vector<TRNode> nodes;
 
     /// Check whether the point x, y is part of the polygon

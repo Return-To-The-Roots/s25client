@@ -21,12 +21,12 @@
 #include "SerializedGameData.h"
 #include "CatapultStone.h"
 
-void MapSerializer::Serialize(const World& world, SerializedGameData& sgd)
+void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
     // Alle Weltpunkte serialisieren
     for(std::vector<MapNode>::const_iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
-        it->Serialize(sgd);
+        it->Serialize(sgd, numPlayers);
     }
 
     // Katapultsteine serialisieren
@@ -58,13 +58,13 @@ void MapSerializer::Serialize(const World& world, SerializedGameData& sgd)
     }
 }
 
-void MapSerializer::Deserialize(World& world, SerializedGameData& sgd)
+void MapSerializer::Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
     for(std::vector<MapNode>::iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
-        it->Deserialize(sgd);
+        it->Deserialize(sgd, numPlayers);
         if(it->harbor_id)
         {
             HarborPos p(curPos);

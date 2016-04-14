@@ -39,7 +39,24 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class GameWorldViewer;
+
+class SwitchOnStart: public ClientInterface
+{
+public:
+    SwitchOnStart()
+    {
+        GAMECLIENT.SetInterface(this);
+    }
+    ~SwitchOnStart()
+    {
+        GAMECLIENT.RemoveInterface(this);
+    }
+
+    void CI_GameStarted(GameWorldBase& world) override
+    {
+        WINDOWMANAGER.Switch(new dskGameLoader(world));
+    }
+}; 
 
 std::vector<std::string> GetReplays()
 {
@@ -172,22 +189,9 @@ void iwPlayReplay::StartReplay()
     ctrlTable* table = GetCtrl<ctrlTable>(0);
     if(table->GetSelection() < table->GetRowCount())
     {
-        GameWorldViewer* gwv;
-        unsigned int error = GAMECLIENT.StartReplay( table->GetItemText(table->GetSelection(), 4), gwv);
-        boost::array<std::string, 6> replay_errors =
-        {{
-            _("Error while playing replay!"),
-            _("Error while opening file!"),
-            _("Invalid Replay!"),
-            _("Error: Replay is too old!"),
-            _("Program version is too old to play that replay!"),
-            _("Temporary map file was not found!")
-        }};
-
-        if(error)
-            WINDOWMANAGER.Show( new iwMsgbox(_("Error while playing replay!"), replay_errors[error-1], this, MSB_OK, MSB_EXCLAMATIONRED) );
-        else
-            WINDOWMANAGER.Switch(new dskGameLoader(gwv));
+        SwitchOnStart switchOnStart;
+        if(!GAMECLIENT.StartReplay(table->GetItemText(table->GetSelection(), 4)))
+            WINDOWMANAGER.Show( new iwMsgbox(_("Error while playing replay!"), _("Invalid Replay!"), this, MSB_OK, MSB_EXCLAMATIONRED) );
     }
 }
 

@@ -51,7 +51,7 @@
 class CatapultStone;
 class MilitarySquares;
 
-GameWorldGame::GameWorldGame()
+GameWorldGame::GameWorldGame(GameClientPlayerList& players): GameWorldBase(players)
 {
     TradePathCache::inst().Clear();
 }
@@ -405,7 +405,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
     // Set to true, where owner has changed (initially all false)
     std::vector<bool> ownerChanged(region.height * region.width, false);
 
-    std::vector<int> sizeChanges(GAMECLIENT.GetPlayerCount());
+    std::vector<int> sizeChanges(GetPlayerCount());
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
 	
@@ -451,7 +451,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
         }
     }
 
-    for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for (unsigned i = 0; i < GetPlayerCount(); ++i)
     {
         GetPlayer(i).ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
 
@@ -1461,7 +1461,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GAMECLIENT.GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }
@@ -1485,7 +1485,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GAMECLIENT.GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }

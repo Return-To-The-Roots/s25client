@@ -56,11 +56,11 @@ void nofArmorer::DrawWorking(int x, int y)
 
     unsigned int max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
-    unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = GAMECLIENT.GetPlayer(player).color;
-
     if(now_id < 200)
     {
+        unsigned char wpNation = workplace->GetNation();
+        unsigned int plColor = gwg->GetPlayer(player).color;
+
         LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
         ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, plColor);
 
@@ -79,14 +79,21 @@ unsigned short nofArmorer::GetCarryID() const
     else
     {
         // Je nach Nation einen bestimmtem Schild fertigen
-        switch(GAMECLIENT.GetPlayer(player).nation)
+        switch(gwg->GetPlayer(player).nation)
         {
-            case 0: return 60; //-V525
-            case 1: return 58;
-            case 2: return 57;
-            case 3: return 59;
-			case 4: return 58; //babylonians use japanese shield carry-animation
-            default: return 0;
+            case NAT_AFRICANS:
+                return 60;
+            case NAT_JAPANESE:
+                return 58;
+            case NAT_ROMANS:
+                return 57;
+            case NAT_VIKINGS:
+                return 59;
+			case NAT_BABYLONIANS:
+                return 58; //babylonians use japanese shield carry-animation
+            default:
+                RTTR_Assert(false);
+                return 0;
         }
     }
 }
@@ -136,5 +143,5 @@ GoodType nofArmorer::ProduceWare()
     if(sword_shield)
         return GD_SWORD;
     else
-	    return SHIELD_TYPES[GAMECLIENT.GetPlayer(player).nation];
+	    return SHIELD_TYPES[gwg->GetPlayer(player).nation];
 }

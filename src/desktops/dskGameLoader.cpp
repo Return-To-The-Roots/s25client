@@ -45,9 +45,8 @@
  *
  *  @author FloSoft
  */
-dskGameLoader::dskGameLoader(GameWorldViewer* gwv)
-    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)),
-      position(0), gwv(gwv)
+dskGameLoader::dskGameLoader(GameWorldBase& world) : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)),
+      position(0), world(world)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
@@ -107,8 +106,8 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
         case 2: // Nationen ermitteln
         {
             memset(load_nations, 0, sizeof(bool) * NAT_COUNT);
-            for(unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-                load_nations[GAMECLIENT.GetPlayer(i).nation] = true;
+            for(unsigned char i = 0; i < world.GetPlayerCount(); ++i)
+                load_nations[world.GetPlayer(i).nation] = true;
 
             text->SetText(_("Tribal chiefs assembled around the table..."));
             interval = 50;
@@ -116,7 +115,7 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
 
         case 3: // Objekte laden
         {
-            if(!LOADER.LoadFilesAtGame(gwv->GetLandscapeType(), load_nations))
+            if(!LOADER.LoadFilesAtGame(world.GetLandscapeType(), load_nations))
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;

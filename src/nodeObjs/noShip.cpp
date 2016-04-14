@@ -286,7 +286,7 @@ void noShip::HandleEvent(const unsigned int id)
 
             // Spieler benachrichtigen
             if(GAMECLIENT.GetPlayerID() == this->player)
-                GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
+                GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
 
             // KI Event senden
             GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
@@ -719,7 +719,7 @@ void noShip::HandleState_ExpeditionDriving()
 
                 // Spieler benachrichtigen
                 if(GAMECLIENT.GetPlayerID() == this->player)
-                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
+                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
 
                 // KI Event senden
                 GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);

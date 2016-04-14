@@ -572,9 +572,9 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 namespace{
     struct Point2Flag{
         typedef noFlag* result_type;
-        GameWorldBase& gwb;
+        World& gwb;
 
-        Point2Flag(GameWorldBase& gwb): gwb(gwb){}
+        Point2Flag(World& gwb): gwb(gwb){}
 
         result_type operator()(const MapPoint pt, unsigned  /*r*/) const
         {

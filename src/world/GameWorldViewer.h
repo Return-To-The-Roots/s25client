@@ -32,7 +32,7 @@ class GameWorldViewer: public virtual GameWorldBase
 {
 public:
 
-    GameWorldViewer();
+    GameWorldViewer(GameClientPlayerList& players);
 
     TerrainRenderer& GetTerrainRenderer() { return tr; }
 

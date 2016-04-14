@@ -39,7 +39,7 @@
 #include "DebugNew.h" // IWYU pragma: keep
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type])
+    : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
     MapPoint flagPt = gwg->GetNeighbour(pos, 4);
     // Evtl Flagge setzen, wenn noch keine da ist
@@ -234,8 +234,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
         // Ware muss auch noch vernichtet werden!
         // Inventur entsprechend verringern
-        //GAMECLIENT.GetPlayer(player).DecreaseInventoryWare(ware->type,1);
-        GAMECLIENT.GetPlayer(player).RemoveWare(ware);
+        gwg->GetPlayer(player).RemoveWare(ware);
         delete ware;
     }
     else

@@ -112,7 +112,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         unsigned GetDistance(MapPoint p1, MapPoint p2) const { return gwb.CalcDistance(p1, p2); }
 
         unsigned char GetPlayerID() const { return playerID_; }
-        unsigned GetPlayerCount() const { return gwb.GetPlayerCt(); }
+        unsigned GetPlayerCount() const { return gwb.GetPlayerCount(); }
 
 		bool IsDefeated() const {return player_.isDefeated();}
 

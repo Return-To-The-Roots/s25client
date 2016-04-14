@@ -29,7 +29,7 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class FOWObject;
 
-GameWorldViewer::GameWorldViewer()
+GameWorldViewer::GameWorldViewer(GameClientPlayerList& players): GameWorldBase(players)
 {
 }
 
@@ -180,9 +180,9 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) cons
     if(GAMECLIENT.GetGGS().team_view)
     {
         // Then check if team members have a better (="younger", see our economy) fow object
-        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GetPlayerCount(); ++i)
         {
-            if(!GAMECLIENT.GetPlayer(i).IsAlly(local_player))
+            if(!GetPlayer(i).IsAlly(local_player))
                 continue;
             // Has the player FOW at this point at all?
             const MapNode::FoWData& name = GetNode(pos).fow[i];
