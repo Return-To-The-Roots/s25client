@@ -824,10 +824,11 @@ void dskHostGame::TogglePlayerReady(unsigned char player, bool ready)
     {
         if(GAMECLIENT.IsHost())
             ready = true;
-        if(GAMECLIENT.GetLocalPlayer().ready == ready)
-            return;
-        GAMECLIENT.GetLocalPlayer().ready = ready;
-        GAMECLIENT.Command_ToggleReady();
+        if(GAMECLIENT.GetLocalPlayer().ready != ready)
+        {
+            GAMECLIENT.GetLocalPlayer().ready = ready;
+            GAMECLIENT.Command_ToggleReady();
+        }
         ChangeReady(GAMECLIENT.GetPlayerID(), GAMECLIENT.GetLocalPlayer().ready);
     }
 }
