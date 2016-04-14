@@ -394,7 +394,7 @@ class GameClientPlayer : public GamePlayerInfo
         void Surrender();
 
 		///all allied players get a letter with the location
-		void NotifyAlliesOfLocation(const MapPoint pt, unsigned char allyplayerid);
+		void NotifyAlliesOfLocation(const MapPoint pt);
 
         /// Macht Bündnisvorschlag an diesen Spieler
         void SuggestPact(const unsigned char other_player, const PactType pt, const unsigned duration);

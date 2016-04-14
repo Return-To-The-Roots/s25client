@@ -19,13 +19,13 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameCommands.h"
-#include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
+#include "world/GameWorldGame.h"
 #include <iostream>
 
 // Include last!
@@ -193,9 +193,9 @@ namespace gc{
         player.SuggestPact(this->player, pt, duration);
     }
 
-    void AcceptPact::Execute(GameWorldGame&  /*gwg*/, GameClientPlayer&  /*player*/, const unsigned char playerid)
+    void AcceptPact::Execute(GameWorldGame& gwg, GameClientPlayer&  player, const unsigned char playerid)
     {
-        GAMECLIENT.GetPlayer(this->player).AcceptPact(id, pt, playerid);
+        gwg.GetPlayer(this->player).AcceptPact(id, pt, playerid);
     }
 
     void CancelPact::Execute(GameWorldGame&  /*gwg*/, GameClientPlayer& player, const unsigned char  /*playerid*/)
@@ -205,7 +205,7 @@ namespace gc{
 
     void NotifyAlliesOfLocation::Execute(GameWorldGame&  /*gwg*/, GameClientPlayer& player, const unsigned char playerid)
     {
-	    player.NotifyAlliesOfLocation(pt_, playerid);
+	    player.NotifyAlliesOfLocation(pt_);
     }
 
     void ToggleShipYardMode::Execute(GameWorldGame& gwg, GameClientPlayer&  /*player*/, const unsigned char  /*playerid*/)

@@ -1842,15 +1842,12 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
 }
 
 ///all allied players get a letter with the location
-void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt, unsigned char allyplayerid)
+void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {	
 	for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& p = GAMECLIENT.GetPlayer(i);
-		if(i != allyplayerid && p.IsAlly(allyplayerid+1) && GAMECLIENT.GetPlayerID() == i)
-		{	            		
+		if(i != playerid && IsAlly(i) && GAMECLIENT.GetPlayerID() == i)
             GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
-		}
 	}
 }
 
