@@ -74,19 +74,39 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
  */
 bool ctrlCheck::Draw_()
 {
-    const unsigned short box_size = 20;
-    unsigned short distance = (height_ - box_size) / 2;
+    const unsigned short boxSize = 20;
+    short spacing = (height_ - boxSize) / 2;
+    if(spacing < 0)
+        spacing = 0;
+    unsigned short xPos = GetX();
+    const unsigned short yPos = GetY();
+    unsigned short curWidth = width_;
+    const bool drawText = font && !text.empty();
+    if(!drawText)
+    {
+        // If we draw only the check mark, draw surrounding box smaller and center checkbox
+        curWidth = boxSize + 2 * spacing;
+        xPos += (width_ - curWidth)  / 2;
+    }
+    short boxStartOffsetX = curWidth - spacing - boxSize;
+    if(boxStartOffsetX < 0)
+        boxStartOffsetX = 0;
 
-    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
+    Draw3D(xPos, yPos, curWidth, height_, tc, 2);
 
-    if(font)
-        font->Draw(GetX() + 4, GetY() + height_ / 2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB) );
+    if(drawText)
+    {
+        int availableWidth = boxStartOffsetX - 4;
+        if(availableWidth < 0)
+            availableWidth = 0;
+        font->Draw(xPos + 4, yPos + height_ / 2, text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0, availableWidth);
+    }
 
     if(!readonly)
-        Draw3D(GetX() + width_ - distance - box_size, GetY() + distance, box_size, box_size, tc, 2);
+        Draw3D(xPos + boxStartOffsetX, yPos + spacing, boxSize, boxSize, tc, 2);
 
     if(check)
-        LOADER.GetImageN("io", 32)->Draw(GetX() + width_ - distance - box_size / 2, GetY() + distance + box_size / 2, 0, 0, 0, 0, 0, 0);
+        LOADER.GetImageN("io", 32)->Draw(xPos + boxStartOffsetX + boxSize / 2, yPos + spacing + boxSize / 2, 0, 0, 0, 0, 0, 0);
 
     return true;
 }

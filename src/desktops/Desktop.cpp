@@ -98,24 +98,25 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
     {
         //Zunächst an die Kinder weiterleiten
         for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-            if(it->second)
-            {
-                Window* ctrl = it->second;
-                // unskalierte Position und Größe bekommen
-                unsigned realx = ctrl->GetX() * 800 / sr.oldWidth;
-                unsigned realy = ctrl->GetY() * 600 / sr.oldHeight;
-                unsigned realwidth  = ctrl->GetWidth()  * 800 / sr.oldWidth;
-                unsigned realheight = ctrl->GetHeight() * 600 / sr.oldHeight;
-                // Rundungsfehler?
-                if (realx * sr.oldWidth  / 800 < ctrl->GetX()) ++realx;
-                if (realy * sr.oldHeight / 600 < ctrl->GetY()) ++realy;
-                if (realwidth  * sr.oldWidth  / 800 < ctrl->GetWidth())  ++realwidth;
-                if (realheight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realheight;
-                // Und los
-                ctrl->Move(realx * sr.newWidth  / 800, realy * sr.newHeight / 600);
-                ctrl->Msg_ScreenResize(sr);
-                ctrl->Resize(realwidth * sr.newWidth / 800, realheight * sr.newHeight / 600);
-            }
+        {
+            if(!it->second)
+                continue;
+            Window* ctrl = it->second;
+            // unskalierte Position und Größe bekommen
+            unsigned realX = ctrl->GetX() * 800 / sr.oldWidth;
+            unsigned realY = ctrl->GetY() * 600 / sr.oldHeight;
+            unsigned realWidth = ctrl->GetWidth() * 800 / sr.oldWidth;
+            unsigned realHeight = ctrl->GetHeight() * 600 / sr.oldHeight;
+            // Rundungsfehler?
+            if(realX * sr.oldWidth / 800 < ctrl->GetX()) ++realX;
+            if(realY * sr.oldHeight / 600 < ctrl->GetY()) ++realY;
+            if(realWidth  * sr.oldWidth / 800 < ctrl->GetWidth())  ++realWidth;
+            if(realHeight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realHeight;
+            // Und los
+            ctrl->Move(realX * sr.newWidth / 800, realY * sr.newHeight / 600);
+            ctrl->Msg_ScreenResize(sr);
+            ctrl->Resize(realWidth * sr.newWidth / 800, realHeight * sr.newHeight / 600);
+        }
     }
 
     // Individuelle Reaktion ist auch erlaubt
