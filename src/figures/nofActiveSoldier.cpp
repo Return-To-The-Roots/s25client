@@ -326,7 +326,7 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
 void nofActiveSoldier::IncreaseRank()
 {   
 	//max rank reached? -> dont increase!
-	if(GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
+	if(GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
 		return;
 
     // Einen Rang höher

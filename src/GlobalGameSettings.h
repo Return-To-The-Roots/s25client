@@ -18,12 +18,12 @@
 #ifndef GlobalGameSettings_H_INCLUDED
 #define GlobalGameSettings_H_INCLUDED
 
-#include "addons/Addons.h"
+#include "addons/const_addons.h"
 #include "gameTypes/GameSettingTypes.h"
 #include <vector>
-#include <algorithm>
 
 class Serializer;
+class Addon;
 
 class GlobalGameSettings
 {
@@ -48,38 +48,12 @@ class GlobalGameSettings
         bool random_location;
 
         /// clears the addon memory.
+        unsigned int getCount() const { return addons.size(); }
+        const Addon* getAddon(unsigned int nr, unsigned int& status) const;
         void reset(bool recreate = true);
 
-        const Addon* getAddon(unsigned int nr, unsigned int& status) const
-        {
-            if(nr >= addons.size())
-                return NULL;
-
-            const item* i = &addons.at(nr);
-
-            if(!i->addon)
-                return NULL;
-
-            status = i->status;
-            return i->addon;
-        }
-
-        unsigned int getCount() const { return addons.size(); }
-
-        bool isEnabled(AddonId id) const
-        {
-            std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
-            return it != addons.end() && it->status != it->addon->getDefaultStatus();
-        }
-
-        unsigned int getSelection(AddonId id) const
-        {
-            std::vector<item>::const_iterator it = std::find(addons.begin(), addons.end(), id);
-            if(it == addons.end())
-                return 0;
-            return it->status;
-        }
-
+        bool isEnabled(AddonId id) const;
+        unsigned int getSelection(AddonId id) const;
         void setSelection(AddonId id, unsigned int selection);
 
         /// loads the saved addon configuration from the SETTINGS.
@@ -96,19 +70,21 @@ class GlobalGameSettings
     private:
         void registerAddon(Addon* addon);
 
-        struct item
+        struct AddonWithState
         {
-            item() : addon(NULL), status(0) {}
-            item(Addon* addon) : addon(addon), status(addon->getDefaultStatus()) {}
+            AddonWithState() : addon(NULL), status(0) {}
+            explicit AddonWithState(Addon* addon);
 
             Addon* addon;
-            unsigned int status;
+            unsigned status;
 
-            bool operator==(const AddonId& o) const { return (addon ? addon->getId() == o : false); }
-            bool operator<(const item& o) const { return (addon->getName().compare(o.addon->getName()) < 0); }
+            inline bool operator==(const AddonId& rhs) const;
+            inline bool operator<(const AddonWithState& rhs) const;
         };
 
-        std::vector<item> addons;
+        typedef std::vector<AddonWithState> AddonContainer;
+
+        AddonContainer addons;
 };
 
 #endif // !GlobalGameSettings_H_INCLUDED

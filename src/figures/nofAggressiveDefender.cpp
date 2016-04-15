@@ -129,7 +129,7 @@ void nofAggressiveDefender::CancelAtAttackedBld()
 void nofAggressiveDefender::WonFighting()
 {
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GAMECLIENT.GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
 		IncreaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?

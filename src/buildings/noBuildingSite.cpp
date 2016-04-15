@@ -198,14 +198,14 @@ void noBuildingSite::Draw(int x, int y)
     if(state == STATE_PLANING)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 450)->Draw(x, y);
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->Draw(x, y);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 455)->Draw(x, y);
-        LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 455)->Draw(x, y);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
 
         // Waren auf der Baustelle

@@ -66,7 +66,7 @@ protected:
 
 public:
 
-    GameWorldGame(GameClientPlayerList& players);
+    GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung

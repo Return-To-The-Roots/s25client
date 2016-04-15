@@ -306,7 +306,7 @@ void noFighting::StartAttack()
     unsigned char results[2];
     for(unsigned i = 0; i < 2; ++i)
     {
-        switch (GAMECLIENT.GetGGS().getSelection(AddonId::ADJUST_MILITARY_STRENGTH))
+        switch (gwg->GetGGS().getSelection(AddonId::ADJUST_MILITARY_STRENGTH))
         {
             case 0: // Maximale Stärke
             {

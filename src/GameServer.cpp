@@ -209,8 +209,6 @@ bool GameServer::Start()
             // Host bei normalen Spieler der erste Spieler
             players[0].is_host = true;
 
-            // Standardeinstellungen aus den SETTINGS für die Addons laden
-            //GAMECLIENT.GetGGS().LoadSettings();
             GAMECLIENT.LoadGGS();
             ggs_ = GAMECLIENT.GetGGS();
         } break;

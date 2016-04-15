@@ -29,6 +29,7 @@ class FreePathFinder;
 class GameInterface;
 class noBuildingSite;
 class GameClientPlayerList;
+class GlobalGameSettings;
 class GameClientPlayer;
 class nofPassiveSoldier;
 class nobHarborBuilding;
@@ -41,21 +42,19 @@ class GameWorldBase: public World
 {
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
-protected:
-    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
-
-    TerrainRenderer tr;
-
-    /// Interface zum GUI
-    GameInterface* gi;
-
-    /// Baustellen von H�fen, die vom Schiff aus errichtet wurden
-    std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
     GameClientPlayerList& players;
+    const GlobalGameSettings& gameSettings;
+protected:
+    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
+    TerrainRenderer tr;
+    /// Interface zum GUI
+    GameInterface* gi;
+    /// harbor building sites created by ships
+    std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(GameClientPlayerList& players);
+    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -108,7 +107,8 @@ public:
 
     /// Erzeugt eine GUI-ID f�r die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
-    /// Gibt Terrainkoordinaten zur�ck
+
+    /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Point<float> GetNodePos(const MapPoint pt){ return tr.GetNodePos(pt); }
 
     /// Ver�ndert die H�he eines Punktes und die damit verbundenen Schatten
@@ -137,9 +137,11 @@ public:
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
-    /// Liefert einen Player zur�ck
-    GameClientPlayer& GetPlayer(const unsigned int id) const;
+    /// Return the player with the given index
+    GameClientPlayer& GetPlayer(const unsigned id) const;
     unsigned GetPlayerCount() const;
+    /// Return the game settings
+    const GlobalGameSettings& GetGGS() const { return gameSettings; }
 
     struct PotentialSeaAttacker
     {

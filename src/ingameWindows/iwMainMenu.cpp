@@ -40,7 +40,7 @@
 #include "iwMerchandiseStatistics.h"
 
 #include "GameClient.h"
-#include "GameSERVER.h"
+#include "GameServer.h"
 #include "ai/AIPlayerJH.h"
 #include "GameClientPlayer.h"
 #include "gameData/const_gui_ids.h"

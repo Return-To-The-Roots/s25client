@@ -41,7 +41,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     gwg->RecalcTerritory(*this, false, true);
 
     // StartWaren setzen
-    switch(GAMECLIENT.GetGGS().start_wares)
+    switch(gwg->GetGGS().start_wares)
     {
             //sehr wenig
         case 0:

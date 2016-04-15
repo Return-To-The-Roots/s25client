@@ -19,6 +19,7 @@
 #include "LuaInterfaceSettings.h"
 #include "GameServer.h"
 #include "LuaServerPlayer.h"
+#include "addons/Addons.h"
 #include "addons/const_addons.h"
 #include "libutil/src/Log.h"
 

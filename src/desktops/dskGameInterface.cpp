@@ -444,7 +444,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
-                if(GAMECLIENT.GetGGS().isEnabled(AddonId::TRADE))
+                if(gwb.GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
                     if(GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())
@@ -743,7 +743,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     // Test on water way length
     if(road.mode == RM_BOAT)
     {
-        unsigned char index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
+        unsigned char index = gwb.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
         RTTR_Assert(index < waterwayLengths.size());
         const unsigned max_length = waterwayLengths[index];
@@ -1031,7 +1031,7 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 void dskGameInterface::GI_TreatyOfAllianceChanged()
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(GAMECLIENT.GetGGS().team_view)
+    if(gwb.GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
         gwv.GetViewer().RecalcAllColors();

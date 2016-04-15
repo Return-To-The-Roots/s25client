@@ -51,7 +51,7 @@
 class CatapultStone;
 class MilitarySquares;
 
-GameWorldGame::GameWorldGame(GameClientPlayerList& players): GameWorldBase(players)
+GameWorldGame::GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings): GameWorldBase(players, gameSettings)
 {
     TradePathCache::inst().Clear();
 }
@@ -411,7 +411,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 	
     const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
     const unsigned char newOwnerOfTriggerBld = region.GetOwner(building.GetPos().x, building.GetPos().y);
-    const bool noAlliedBorderPush = GAMECLIENT.GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
+    const bool noAlliedBorderPush = GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
 
     for(int y = region.y1; y < region.y2; ++y)
     {
@@ -642,7 +642,7 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
             if(GetNode(curPt).owner != region.GetOwner(x, y))
             {
                 // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-                if(GAMECLIENT.GetGGS().game_objective == GO_CONQUER3_4)
+                if(GetGGS().game_objective == GO_CONQUER3_4)
                     return true;
                 TerrainType t1 = GetNode(curPt).t1, t2 = GetNode(curPt).t2;
                 if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
@@ -956,7 +956,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers)
 {
     //sea attack abgeschaltet per addon?
-    if(GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
+    if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return;
     // Verzögerungsbug-Abfrage:
     // Existiert das angegriffenen Gebäude überhaupt noch?
@@ -1328,12 +1328,6 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
 
 void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception)
 {
-    ///// Bei völlig ausgeschalteten Nebel muss nur das erste Mal alles auf sichtbar gesetzt werden
-    //if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_DISABLED && !update_terrain)
-    //  GetNode(x, y).fow[player].visibility = VIS_VISIBLE;
-    //else if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_DISABLED && update_terrain)
-    //  return;
-
     /// Zustand davor merken
     Visibility visibility_before = GetNode(pt).fow[player].visibility;
 
@@ -1351,7 +1345,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     {
         // nicht mehr sichtbar
         // Je nach vorherigen Zustand und Einstellung entscheiden
-        switch(GAMECLIENT.GetGGS().exploration)
+        switch(GetGGS().exploration)
         {
             case EXP_DISABLED:
             case EXP_CLASSIC:
@@ -1377,8 +1371,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
         gi->GI_UpdateMinimap(pt);
 
     // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GAMECLIENT.GetPlayerID() ||
-            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
+    if(player == GAMECLIENT.GetPlayerID() || (GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
         VisibilityChanged(pt);
 }
 
@@ -1395,8 +1388,7 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
         gi->GI_UpdateMinimap(pt);
 
     // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GAMECLIENT.GetPlayerID() ||
-            (GAMECLIENT.GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
+    if(player == GAMECLIENT.GetPlayerID() || (GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
         VisibilityChanged(pt);
 }
 
@@ -1626,7 +1618,7 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
 void GameWorldGame::CreateTradeGraphs()
 {
     // Only if trade is enabled
-    if(!GAMECLIENT.GetGGS().isEnabled(AddonId::TRADE))
+    if(!GetGGS().isEnabled(AddonId::TRADE))
         return;
 
     TradePathCache::inst().Clear();

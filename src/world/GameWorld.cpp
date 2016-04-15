@@ -39,9 +39,9 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-GameWorld::GameWorld(GameClientPlayerList& players):
-    GameWorldBase(players), // Init virtual base class
-    GameWorldViewer(players), GameWorldGame(players)
+GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
+    GameWorldBase(players, gameSettings), // Init virtual base class
+    GameWorldViewer(players, gameSettings), GameWorldGame(players, gameSettings)
 {}
 
 /// Lädt eine Karte
@@ -74,7 +74,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     MapLoader loader(*this, players);
-    if(!loader.Load(map, GAMECLIENT.GetGGS().random_location, GAMECLIENT.GetGGS().exploration))
+    if(!loader.Load(map, GetGGS().random_location, GetGGS().exploration))
         return false;
 
     for(unsigned i = 0; i < GetPlayerCount(); i++)

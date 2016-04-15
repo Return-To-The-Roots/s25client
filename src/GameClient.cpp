@@ -312,7 +312,7 @@ void GameClient::StartGame(const unsigned int random_init)
     RANDOM.Init(random_init);
 
     // Spielwelt erzeugen
-    gw = new GameWorld(players);
+    gw = new GameWorld(players, ggs);
     em = new EventManager();
     GameObject::SetPointers(gw, em);
     for(unsigned i = 0; i < players.getCount(); ++i)

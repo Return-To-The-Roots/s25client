@@ -104,7 +104,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     gwg->ImportantObjectDestroyed(pos);
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
-    const GlobalGameSettings& settings = GAMECLIENT.GetGGS();
+    const GlobalGameSettings& settings = gwg->GetGGS();
     if( (GetGOT() != GOT_BUILDINGSITE) &&
             ( settings.isEnabled(AddonId::REFUND_MATERIALS) ||
               settings.isEnabled(AddonId::REFUND_ON_EMERGENCY) ) )

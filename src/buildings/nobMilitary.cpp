@@ -77,7 +77,7 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
 
     // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
     // Ansonsten neue Goldmünzen anfordern
-    if(GAMECLIENT.GetGGS().isEnabled(AddonId::NO_COINS_DEFAULT))
+    if(gwg->GetGGS().isEnabled(AddonId::NO_COINS_DEFAULT))
     {
         coinsDisabled = true;
         coinsDisabledVirtual = true;
@@ -296,7 +296,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
             // wird dieser ebenfalls befördert usw.!
             std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
-            unsigned char last_rank = GAMECLIENT.GetGGS().GetMaxMilitaryRank();
+            unsigned char last_rank = gwg->GetGGS().GetMaxMilitaryRank();
             for(SortedTroops::reverse_iterator it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
@@ -510,7 +510,7 @@ void nobMilitary::RegulateTroops()
 
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
+        if (IsUnderAttack() && gwg->GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -565,7 +565,7 @@ void nobMilitary::OrderNewSoldiers()
 	std::vector<nofPassiveSoldier*> noNeed;
 	for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end(); )
     {
-		if((*it)->GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
+		if((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
 		{
 			nofPassiveSoldier* soldier = *it;
 			it = helpers::erase(ordered_troops, it);
@@ -581,7 +581,7 @@ void nobMilitary::OrderNewSoldiers()
 		// Zu wenig Truppen
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if (IsUnderAttack() && GAMECLIENT.GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
+        if (IsUnderAttack() && gwg->GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).militarySettings_[2] * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -888,7 +888,7 @@ unsigned nobMilitary::HasMaxRankSoldier() const
 	unsigned count=0;
     for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
-		if ((*it)->GetRank() >= GAMECLIENT.GetGGS().GetMaxMilitaryRank())
+		if ((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
 			count++;
     }
 	return count;
@@ -1151,7 +1151,7 @@ unsigned nobMilitary::CalcCoinsPoints()
     for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
         // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
-        if((*it)->GetRank() < GAMECLIENT.GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() < gwg->GetGGS().GetMaxMilitaryRank())
             points += 20;
     }
 
@@ -1210,7 +1210,7 @@ void nobMilitary::PrepareUpgrading()
 
     for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
-        if((*it)->GetRank() < GAMECLIENT.GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() < gwg->GetGGS().GetMaxMilitaryRank())
         {
             // es wurde ein Soldat gefunden, der befördert werden kann
             soldiers_available = true;
@@ -1256,7 +1256,7 @@ void nobMilitary::HitOfCatapultStone()
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {
-    switch(GAMECLIENT.GetGGS().getSelection(AddonId::DEMOLITION_PROHIBITION))
+    switch(gwg->GetGGS().getSelection(AddonId::DEMOLITION_PROHIBITION))
     {
         default: // off
             break;

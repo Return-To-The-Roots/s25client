@@ -332,7 +332,7 @@ void noShip::HandleEvent(const unsigned int id)
             {
                 // Späher wieder entladen
                 Inventory goods;
-                goods.people[JOB_SCOUT] = GAMECLIENT.GetGGS().GetNumScoutsExedition();
+                goods.people[JOB_SCOUT] = gwg->GetGGS().GetNumScoutsExedition();
                 static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
                 // Wieder idlen und ggf. neuen Job suchen
                 StartIdling();
@@ -418,7 +418,7 @@ void noShip::StartDriving(const unsigned char dir)
 {
     const unsigned SHIP_SPEEDS[] = {35, 25, 20, 10, 5};
 
-    StartMoving(dir, SHIP_SPEEDS[GAMECLIENT.GetGGS().getSelection(AddonId::SHIP_SPEED)]);
+    StartMoving(dir, SHIP_SPEEDS[gwg->GetGGS().getSelection(AddonId::SHIP_SPEED)]);
 }
 
 void noShip::Driven()

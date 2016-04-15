@@ -121,7 +121,7 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
                 return;
             }
 
-            if(GAMECLIENT.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+            if(world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
             {
                 if(!LOADER.LoadFilesFromAddon(AddonId::CATAPULT_GRAPHICS))
                 {

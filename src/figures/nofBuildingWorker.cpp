@@ -373,7 +373,7 @@ namespace{
 bool nofBuildingWorker::GetResources(unsigned char type)
 {
     //this makes granite mines work everywhere
-    const GlobalGameSettings& settings = GAMECLIENT.GetGGS();
+    const GlobalGameSettings& settings = gwg->GetGGS();
     if (type == 0 && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES))
         return true;
     // in Map-Resource-Koordinaten konvertieren

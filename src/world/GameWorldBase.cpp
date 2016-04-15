@@ -33,10 +33,11 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-GameWorldBase::GameWorldBase(GameClientPlayerList& players):
+GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
     roadPathFinder(new RoadPathFinder(*this)),
     freePathFinder(new FreePathFinder(*this)),
-    gi(NULL), players(players)
+    players(players), gameSettings(gameSettings),
+    gi(NULL)
 {}
 
 GameWorldBase::~GameWorldBase()
@@ -48,8 +49,9 @@ void GameWorldBase::Init(const unsigned short width, const unsigned short height
     freePathFinder->Init(GetWidth(), GetHeight());
 }
 
-GameClientPlayer& GameWorldBase::GetPlayer(const unsigned int id) const
+GameClientPlayer& GameWorldBase::GetPlayer(const unsigned id) const
 {
+    RTTR_Assert(id < GetPlayerCount());
     return players[id];
 }
 
@@ -274,7 +276,7 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigne
         return best_visibility;
 
     /// Teamsicht aktiviert?
-    if(GAMECLIENT.GetGGS().team_view)
+    if(GetGGS().team_view)
     {
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
@@ -498,7 +500,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
         const nobHarborBuilding *hb = GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK)==1))			
+		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GetGGS().getSelection(AddonId::SEA_ATTACK)==1))			
 			continue;
 
 		// Ist Ziel der Hafenspot? -> add sea_ids
@@ -591,7 +593,7 @@ std::vector<unsigned> GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAtta
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 		const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK)==1))
+		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GetGGS().getSelection(AddonId::SEA_ATTACK)==1))
 			continue;
 		// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
 		if(pt == harborPt)
@@ -733,7 +735,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
 {
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers;
     //sea attack abgeschaltet per addon?
-    if(GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
+    if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return attackers;
     // Ist das Ziel auch ein richtiges Militärgebäude?
     if(GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(pt)->GetGOT() !=  GOT_NOB_HQ && GetNO(pt)->GetGOT() !=  GOT_NOB_MILITARY)

@@ -29,7 +29,7 @@ class GameWorld : public GameWorldViewer, public GameWorldGame
 {
     public:
 
-        explicit GameWorld(GameClientPlayerList& players);
+        GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
 
         /// Lädt eine Karte
         bool LoadMap(const std::string& mapFilePath, const std::string& luaFilePath);

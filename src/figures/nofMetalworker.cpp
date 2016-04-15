@@ -170,7 +170,7 @@ GoodType nofMetalworker::GetRandomTool()
     if(all_size == 0)
 	{
 	    // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
-		if (GAMECLIENT.GetGGS().isEnabled(AddonId::METALWORKSBEHAVIORONZERO) && GAMECLIENT.GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
+		if (gwg->GetGGS().isEnabled(AddonId::METALWORKSBEHAVIORONZERO) && gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
 			return GD_NOTHING;
 		else
 			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 12)];

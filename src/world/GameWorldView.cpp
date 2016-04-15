@@ -191,7 +191,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
         for(unsigned i = 0; i < 6; ++i)
             road_points[i] = gwv.GetNeighbour(rb.point, i);
 
-        const unsigned index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
+        const unsigned index = gwv.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
         maxWaterWayLen = waterwayLengths[index];
     }
@@ -392,7 +392,7 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const Point<int>& cu
         //Draw building quality icon
         bm->Draw(curPos.x, curPos.y);
         //Show ability to construct military buildings
-        if(GAMECLIENT.GetGGS().isEnabled(AddonId::MILITARY_AID))
+        if(gwv.GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
             if(!gwv.IsMilitaryBuildingNearNode(pt, GAMECLIENT.GetPlayerID()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
                 LOADER.GetImageN("map_new", 20000)->Draw(curPos.x + 1, curPos.y - bm->getHeight() - 5);
