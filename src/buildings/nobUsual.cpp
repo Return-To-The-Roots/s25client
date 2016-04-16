@@ -27,6 +27,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "Loader.h"
 #include <numeric>
 
@@ -84,8 +85,8 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
       disable_production(sgd.PopBool()),
       disable_production_virtual(sgd.PopBool()),
       last_ordered_ware(sgd.PopUnsignedChar()),
-      orderware_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
-      productivity_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+      orderware_ev(sgd.PopEvent()),
+      productivity_ev(sgd.PopEvent()),
       is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)

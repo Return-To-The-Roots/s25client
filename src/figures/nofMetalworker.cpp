@@ -27,6 +27,8 @@
 #include "Random.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "GameEvent.h"
 #include "ingameWindows/iwTools.h"
 #include "PostMsg.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

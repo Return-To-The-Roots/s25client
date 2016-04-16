@@ -19,49 +19,15 @@
 
 #pragma once
 
-#include "GameObject.h"
-
 #include <list>
 #include <map>
 
 class SerializedGameData;
+class GameEvent;
+class GameObject;
 
 class EventManager
 {
-    public:
-        class Event : public GameObject
-        {
-            public:
-                GameObject* const obj;
-                const unsigned gf;
-                const unsigned gf_length;
-                const unsigned gf_next;
-                const unsigned id;
-
-            public:
-
-                Event(GameObject* const  obj, const unsigned int gf, const unsigned int gf_length, const unsigned int id)
-                    : obj(obj), gf(gf), gf_length(gf_length), gf_next(gf + gf_length), id(id)
-                {
-                    RTTR_Assert(obj); // Events without an object are pointless
-                }
-
-                Event(SerializedGameData& sgd, const unsigned obj_id);
-
-                void Destroy() override{}
-
-                /// Serialisierungsfunktionen
-            protected: void Serialize_Event(SerializedGameData& sgd) const;
-            public: void Serialize(SerializedGameData& sgd) const override { Serialize_Event(sgd); }
-
-                GO_Type GetGOT() const override { return GOT_EVENT; }
-
-                // Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
-                bool operator<= (const Event& other) const { return gf_next <= other.gf_next; }
-                bool operator< (const Event& other) const { return gf_next < other.gf_next; }
-        };
-        typedef Event* EventPointer;
-
     public:
         EventManager(): curActiveEvent(NULL){}
         ~EventManager();
@@ -69,17 +35,17 @@ class EventManager
         /// führt alle Events des aktuellen GameFrames aus.
         void NextGF();
         /// fügt ein Event der Eventliste hinzu.
-        EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id = 0);
+        GameEvent* AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id = 0);
         /// Deserialisiert ein Event und fügt es hinzu
-        EventPointer AddEvent(SerializedGameData& sgd, const unsigned obj_id);
+        GameEvent* AddEvent(SerializedGameData& sgd, const unsigned obj_id);
         /// Fügt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
         /// Ein altes Event wird also quasi fortgeführt (um gf_elapsed in der Vergangenheit angelegt)
-        EventPointer AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
+        GameEvent* AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
 
         /// Löscht alle Listen für Spielende
         void Clear();
         /// Removes an event and sets the pointer to NULL
-        void RemoveEvent(EventPointer& ep);
+        void RemoveEvent(GameEvent*& ep);
         /// Objekt will gekillt werden
         void AddToKillList(GameObject* obj);
 
@@ -95,14 +61,14 @@ class EventManager
         bool ObjectHasEvents(GameObject* obj);
         bool ObjectIsInKillList(GameObject* obj);
     private:
-        typedef std::list<EventPointer> EventList;
+        typedef std::list<GameEvent*> EventList;
         typedef std::map<unsigned, EventList> EventMap;
         typedef std::list<GameObject*> GameObjList;
         EventMap events;     /// Liste der Events für die einzelnen Objekte
         GameObjList kill_list; /// Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
-        EventPointer curActiveEvent;
+        GameEvent* curActiveEvent;
 
-        EventPointer AddEvent(EventPointer event);
+        GameEvent* AddEvent(GameEvent* event);
 };
 
 #endif // !EVENTMANAGER_H_INCLUDED

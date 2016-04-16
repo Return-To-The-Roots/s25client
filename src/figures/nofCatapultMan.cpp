@@ -27,6 +27,7 @@
 #include "gameData/MapConsts.h"
 #include "gameData/JobConsts.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"

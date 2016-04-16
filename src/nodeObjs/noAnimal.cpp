@@ -23,11 +23,11 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
-#include "EventManager.h"
 #include "figures/nofHunter.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "gameData/TerrainData.h"
 
 #include "ogl/glSmartBitmap.h"

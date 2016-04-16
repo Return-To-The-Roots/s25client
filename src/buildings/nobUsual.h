@@ -19,7 +19,6 @@
 #define NOB_USUAL_H_
 
 #include "noBuilding.h"
-#include "EventManager.h"
 #include <boost/array.hpp>
 #include <vector>
 #include <list>
@@ -29,6 +28,7 @@ class nofBuildingWorker;
 class SerializedGameData;
 class noFigure;
 class noRoadNode;
+class GameEvent;
 
 // Gewöhnliches Gebäude mit einem Arbeiter und Waren
 class nobUsual : public noBuilding
@@ -46,9 +46,9 @@ class nobUsual : public noBuilding
         /// Bestellte Waren
         std::vector< std::list<Ware*> > ordered_wares;
         /// Bestell-Ware-Event
-        EventManager::EventPointer orderware_ev;
+        GameEvent* orderware_ev;
         /// Rechne-Produktivität-aus-Event
-        EventManager::EventPointer productivity_ev;
+        GameEvent* productivity_ev;
         /// Letzte Produktivitäten (Durschnitt = Gesamtproduktivität), vorne das neuste !
         static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
         boost::array<unsigned short, LAST_PRODUCTIVITIES_COUNT> last_productivities;

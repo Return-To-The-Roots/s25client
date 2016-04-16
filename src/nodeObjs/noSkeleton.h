@@ -20,8 +20,9 @@
 #pragma once
 
 #include "noCoordBase.h"
-#include "EventManager.h"
+
 class SerializedGameData;
+class GameEvent;
 
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
 class noSkeleton: public noCoordBase
@@ -50,8 +51,8 @@ class noSkeleton: public noCoordBase
     private:
         /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
         unsigned char type;
-        /// EventPointer, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
-        EventManager::EventPointer current_event;
+        /// GameEvent*, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
+        GameEvent* current_event;
 };
 
 #endif // !NOSKELETON_H_INCLUDED

@@ -26,8 +26,8 @@
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "Random.h"
-#include "EventManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

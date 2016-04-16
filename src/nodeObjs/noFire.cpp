@@ -20,13 +20,13 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noFire.h"
 
-#include "EventManager.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -65,7 +65,7 @@ void noFire::Serialize_noFire(SerializedGameData& sgd) const
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
     size(sgd.PopUnsignedChar()),
-    dead_event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    dead_event(sgd.PopEvent()),
     was_sounding(false),
     last_sound(0),
     next_interval(0)

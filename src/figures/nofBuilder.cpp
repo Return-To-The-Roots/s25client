@@ -26,7 +26,6 @@
 #include "GameClientPlayer.h"
 #include "buildings/noBuildingSite.h"
 #include "Random.h"
-
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"

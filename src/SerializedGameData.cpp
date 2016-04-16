@@ -21,13 +21,15 @@
 #include "SerializedGameData.h"
 
 #include "GameObject.h"
-#include "EventManager.h"
 #include "GameClientPlayer.h"
 
 #include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobShipYard.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/BurnedWarehouse.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
@@ -65,7 +67,6 @@
 #include "figures/nofTradeDonkey.h"
 #include "figures/nofTradeLeader.h"
 #include "nodeObjs/noExtension.h"
-#include "buildings/noBuildingSite.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noFire.h"
 #include "nodeObjs/noFlag.h"
@@ -78,15 +79,15 @@
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noDisappearingMapEnvObject.h"
+#include "nodeObjs/noShip.h"
+#include "nodeObjs/noShipBuildingSite.h"
+#include "nodeObjs/noCharburnerPile.h"
+#include "EventManager.h"
+#include "GameEvent.h"
 #include "RoadSegment.h"
 #include "Ware.h"
 #include "CatapultStone.h"
 #include "FOWObjects.h"
-#include "buildings/nobHarborBuilding.h"
-#include "nodeObjs/noShip.h"
-#include "nodeObjs/noShipBuildingSite.h"
-#include "nodeObjs/noCharburnerPile.h"
-#include "buildings/BurnedWarehouse.h"
 #include "world/GameWorld.h"
 
 #include "helpers/containerUtils.h"
@@ -236,6 +237,11 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw, EventManager& evMgr)
     readObjects.clear();
 }
 
+void SerializedGameData::PushObject(const GameEvent* event, const bool known)
+{
+    PushObject<GameEvent>(event, known);
+}
+
 void SerializedGameData::ReadFromFile(BinaryFile& file)
 {
     Serializer::ReadFromFile(file);
@@ -311,6 +317,11 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
 
     // Objekt serialisieren
     fowobj->Serialize(*this);
+}
+
+GameEvent* SerializedGameData::PopEvent()
+{
+    return PopObject<GameEvent>(GOT_EVENT);
 }
 
 FOWObject* SerializedGameData::PopFOWObject()

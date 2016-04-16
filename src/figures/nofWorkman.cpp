@@ -22,8 +22,8 @@
 
 #include "buildings/nobUsual.h"
 #include "gameData/JobConsts.h"
-#include "EventManager.h"
 #include "SoundManager.h"
+#include "EventManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

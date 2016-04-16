@@ -31,6 +31,7 @@ class noRoadNode;
 class nobMilitary;
 class nofAttacker;
 class nofDefender;
+class GameEvent;
 
 class nobHarborBuilding : public nobBaseWarehouse
 {
@@ -62,7 +63,7 @@ class nobHarborBuilding : public nobBaseWarehouse
 
 
         /// Bestell-Ware-Event
-        EventManager::EventPointer orderware_ev;
+        GameEvent* orderware_ev;
         /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
         unsigned short sea_ids[6];
         /// Liste von Waren, die weggeschifft werden sollen

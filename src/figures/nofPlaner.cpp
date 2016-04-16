@@ -26,9 +26,10 @@
 #include "buildings/noBuildingSite.h"
 #include "Random.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "gameData/JobConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

@@ -21,8 +21,8 @@
 #include "noShipBuildingSite.h"
 
 #include "Loader.h"
-#include "EventManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "noShip.h"
 #include "GameClient.h"
 #include "PostMsg.h"

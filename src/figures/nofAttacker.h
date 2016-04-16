@@ -27,6 +27,7 @@ class nobMilitary;
 class noShip;
 class SerializedGameData;
 class nobBaseMilitary;
+class GameEvent;
 
 /// Angreifender Soldat
 class nofAttacker : public nofActiveSoldier
@@ -42,7 +43,7 @@ class nofAttacker : public nofActiveSoldier
         unsigned short radius;
         /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
         /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
-        EventManager::EventPointer blocking_event;
+        GameEvent* blocking_event;
 
         /// Für Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
         MapPoint harborPos;

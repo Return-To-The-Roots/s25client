@@ -29,6 +29,7 @@
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "PostMsg.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
@@ -121,7 +122,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         radius = sgd.PopUnsignedShort();
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
-            blocking_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+            blocking_event = sgd.PopEvent();
         else
             blocking_event = NULL;
 

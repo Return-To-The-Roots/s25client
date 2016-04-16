@@ -20,7 +20,6 @@
 #pragma once
 
 #include "nobBaseMilitary.h"
-#include "EventManager.h"
 #include "DataChangedObservable.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
@@ -43,6 +42,8 @@ class nofAggressiveDefender;
 class nofAttacker;
 class nofDefender;
 class nofSoldier;
+class GameEvent;
+
 namespace gc{
     class SetInventorySetting;
     class SetAllInventorySettings;
@@ -70,13 +71,13 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Liste von Waren, die auf dem Weg zum Lagerhaus sind
         std::list<Ware*> dependent_wares;
         /// Produzier-Träger-Event
-        EventManager::EventPointer producinghelpers_event;
+        GameEvent* producinghelpers_event;
         /// Rekrutierungsevent für Soldaten
-        EventManager::EventPointer recruiting_event;
+        GameEvent* recruiting_event;
         /// Auslagerevent für Waren und Figuren
-        EventManager::EventPointer empty_event;
+        GameEvent* empty_event;
         /// Einlagerevent für Waren und Figuren
-        EventManager::EventPointer store_event;
+        GameEvent* store_event;
 
     protected:
 

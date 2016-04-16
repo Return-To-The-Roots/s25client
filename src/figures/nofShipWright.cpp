@@ -20,6 +20,7 @@
 #include "buildings/nobShipYard.h"
 #include "nodeObjs/noShipBuildingSite.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "SoundManager.h"
 #include "GameClient.h"
 #include "Random.h"

@@ -66,7 +66,7 @@ class nofCarrier : public noFigure
         /// Ware, die er gerade trägt (0 = nichts)
         Ware* carried_ware;
         /// Rechne-Produktivität-aus-Event
-        EventManager::EventPointer productivity_ev;
+        GameEvent* productivity_ev;
         // Letzte errechnete Produktivität
         unsigned productivity;
         /// Wieviel GF von einer bestimmten Anzahl in diesem Event-Zeitraum gearbeitet wurde

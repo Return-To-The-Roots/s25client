@@ -19,7 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
-
+#include "GameEvent.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
@@ -28,29 +28,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
-void EventManager::Event::Serialize_Event(SerializedGameData& sgd) const
-{
-    Serialize_GameObject(sgd);
-
-    sgd.PushObject(obj, false);
-    sgd.PushUnsignedInt(gf);
-    sgd.PushUnsignedInt(gf_length);
-    sgd.PushUnsignedInt(id);
-}
-
-EventManager::Event::Event(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
-    gf(sgd.PopUnsignedInt()),
-    gf_length(sgd.PopUnsignedInt()),
-    gf_next(gf + gf_length),
-    id(sgd.PopUnsignedInt())
-{
-    RTTR_Assert(obj);
-}
-
-
-//////////////////////////////////////////////////////////////////////////
 
 EventManager::~EventManager()
 {
@@ -75,11 +52,11 @@ void EventManager::Clear()
     kill_list.clear();
 }
 
-EventManager::EventPointer EventManager::AddEvent(EventPointer event)
+GameEvent* EventManager::AddEvent(GameEvent* event)
 {
     // Should be in the future!
     RTTR_Assert(event->gf_next > GAMECLIENT.GetGFNumber());
-    RTTR_Assert(!dynamic_cast<EventPointer>(event->obj)); // Why could this ever happen?
+    RTTR_Assert(!dynamic_cast<GameEvent*>(event->obj)); // Why could this ever happen?
     events[event->gf_next].push_back(event);
     return event;
 }
@@ -93,7 +70,7 @@ EventManager::EventPointer EventManager::AddEvent(EventPointer event)
  *
  *  @author OLiver
  */
-EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id)
+GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id)
 {
     RTTR_Assert(obj);
     RTTR_Assert(gf_length);
@@ -105,15 +82,15 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
         }*/
 
     // Event eintragen
-    return AddEvent(new Event(obj, GAMECLIENT.GetGFNumber(), gf_length, id));
+    return AddEvent(new GameEvent(obj, GAMECLIENT.GetGFNumber(), gf_length, id));
 }
 
-EventManager::EventPointer EventManager::AddEvent(SerializedGameData& sgd, const unsigned obj_id)
+GameEvent* EventManager::AddEvent(SerializedGameData& sgd, const unsigned obj_id)
 {
-    return AddEvent(new Event(sgd, obj_id));
+    return AddEvent(new GameEvent(sgd, obj_id));
 }
 
-EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed)
+GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed)
 {
     RTTR_Assert(gf_length > gf_elapsed);
 
@@ -124,7 +101,7 @@ EventManager::EventPointer EventManager::AddEvent(GameObject* obj, const unsigne
 
     // Anfang des Events in die Vergangenheit zurückverlegen
     RTTR_Assert(GAMECLIENT.GetGFNumber() >= gf_elapsed);
-    return AddEvent(new Event(obj, GAMECLIENT.GetGFNumber() - gf_elapsed, gf_length, id));
+    return AddEvent(new GameEvent(obj, GAMECLIENT.GetGFNumber() - gf_elapsed, gf_length, id));
 }
 
 /**
@@ -148,7 +125,7 @@ void EventManager::NextGF()
         // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
         for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
         {
-            Event* ev = (*e_it);
+            GameEvent* ev = (*e_it);
             RTTR_Assert(ev->obj);
             RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
 
@@ -178,7 +155,7 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     // Kill-Liste muss leer sein!
     RTTR_Assert(kill_list.empty());
 
-    std::list<const Event*> save_events;
+    std::list<const GameEvent*> save_events;
     // Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
@@ -199,7 +176,7 @@ void EventManager::Deserialize(SerializedGameData& sgd)
     unsigned size = sgd.PopUnsignedInt();
     // einzelne Objekte
     for(unsigned i = 0; i < size; ++i)
-        sgd.PopObject<Event>(GOT_EVENT);
+        sgd.PopEvent();
 }
 
 /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
@@ -225,7 +202,7 @@ void EventManager::RemoveAllEventsOfObject(GameObject* obj)
     for(EventMap::iterator it = events.begin(); it != events.end();)
     {
         EventList& curEvents = it->second;
-        for(std::list<Event*>::iterator e_it = curEvents.begin(); e_it != curEvents.end();)
+        for(std::list<GameEvent*>::iterator e_it = curEvents.begin(); e_it != curEvents.end();)
         {
             if((*e_it)->obj == obj)
             {
@@ -246,7 +223,7 @@ bool EventManager::ObjectHasEvents(GameObject* obj)
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
         EventList& curEvents = it->second;
-        for(std::list<Event*>::iterator e_it = curEvents.begin(); e_it != curEvents.end(); ++e_it)
+        for(std::list<GameEvent*>::iterator e_it = curEvents.begin(); e_it != curEvents.end(); ++e_it)
         {
             if((*e_it)->obj == obj)
                 return true;
@@ -260,7 +237,7 @@ bool EventManager::ObjectIsInKillList(GameObject* obj)
     return helpers::contains(kill_list, obj);
 }
 
-void EventManager::RemoveEvent(EventPointer& ep)
+void EventManager::RemoveEvent(GameEvent*& ep)
 {
     if (!ep)
         return;

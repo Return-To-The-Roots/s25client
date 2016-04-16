@@ -22,11 +22,11 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "EventManager.h"
 #include "noDisappearingMapEnvObject.h"
 #include "noAnimal.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "FOWObjects.h"
 #include "GameInterface.h"
 
@@ -89,8 +89,8 @@ noTree::noTree(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd
     type(sgd.PopUnsignedChar()),
     size(sgd.PopUnsignedChar()),
     state(State(sgd.PopUnsignedChar())),
-    event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
-    produce_animal_event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    event(sgd.PopEvent()),
+    produce_animal_event(sgd.PopEvent()),
     produce_animals(sgd.PopBool())
 {
 }

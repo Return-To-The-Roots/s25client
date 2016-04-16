@@ -25,7 +25,7 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "SoundManager.h"
-
+#include "EventManager.h"
 #include "Ware.h"
 #include "RoadSegment.h"
 #include "nodeObjs/noRoadNode.h"
@@ -133,7 +133,7 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
       fat( sgd.PopBool() ),
       workplace( sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT) ),
       carried_ware( sgd.PopObject<Ware>(GOT_WARE) ),
-      productivity_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+      productivity_ev(sgd.PopEvent()),
       productivity(sgd.PopUnsignedInt()),
       worked_gf(sgd.PopUnsignedInt()),
       since_working_gf(sgd.PopUnsignedInt()),

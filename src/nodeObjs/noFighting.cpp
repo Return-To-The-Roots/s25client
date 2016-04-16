@@ -19,11 +19,9 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "noFighting.h"
-#include "gameData/MilitaryConsts.h"
-
+#include "EventManager.h"
 #include "figures/nofActiveSoldier.h"
 #include "Random.h"
-#include "EventManager.h"
 #include "GameClient.h"
 #include "Loader.h"
 #include "noSkeleton.h"
@@ -31,6 +29,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
+#include "gameData/MilitaryConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -82,7 +81,7 @@ void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
     turn(sgd.PopUnsignedChar()),
     defending_animation(sgd.PopUnsignedChar()),
-    current_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    current_ev(sgd.PopEvent()),
     player_won(sgd.PopUnsignedChar())
 
 {

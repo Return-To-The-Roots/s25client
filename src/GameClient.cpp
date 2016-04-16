@@ -31,7 +31,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "Random.h"
 #include "GameServer.h"
-#include "EventManager.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
 #include "lua/LuaInterfaceGame.h"
@@ -43,6 +42,8 @@
 #include "fileFuncs.h"
 #include "ClientInterface.h"
 #include "GameInterface.h"
+#include "EventManager.h"
+#include "GameEvent.h"
 #include "gameTypes/RoadBuildState.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
@@ -417,7 +418,6 @@ void GameClient::ExitGame()
     deletePtr(human_ai);
     deletePtr(gw);
     deletePtr(em);
-    deletePtr(human_ai);
     players.clear();
 }
 
@@ -1678,13 +1678,13 @@ unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsi
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
-unsigned GameClient::Interpolate(unsigned max_val, EventManager::EventPointer ev)
+unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
 {
     RTTR_Assert( ev );
     return min<unsigned int>(((max_val * ((framesinfo.gf_nr - ev->gf) * framesinfo.gf_length + framesinfo.frameTime)) / (ev->gf_length * framesinfo.gf_length)), max_val - 1);
 }
 
-int GameClient::Interpolate(int x1, int x2, EventManager::EventPointer ev)
+int GameClient::Interpolate(int x1, int x2, GameEvent* ev)
 {
     RTTR_Assert( ev );
     return (x1 + ( (x2 - x1) * ((int(framesinfo.gf_nr) - int(ev->gf)) * int(framesinfo.gf_length) + int(framesinfo.frameTime))) / int(ev->gf_length * framesinfo.gf_length));

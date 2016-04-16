@@ -21,8 +21,9 @@
 #include "noMovable.h"
 
 #include "GameClient.h"
-#include "EventManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "GameEvent.h"
 #include "gameData/MapConsts.h"
 #include "Log.h"
 
@@ -49,7 +50,7 @@ void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
     curMoveDir(sgd.PopUnsignedChar()),
     ascent(sgd.PopUnsignedChar()),
-    current_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    current_ev(sgd.PopEvent()),
     pause_walked_gf(sgd.PopUnsignedInt()),
     pause_event_length(sgd.PopUnsignedInt())
     , moving(sgd.PopBool())
@@ -233,11 +234,7 @@ void noMovable::PauseWalking()
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
 bool noMovable::IsMoving() const
 {
-    if(current_ev)
-        if(current_ev->id == 0)
-            return true;
-
-    return false;
+    return current_ev && (current_ev->id == 0);
 }
 
 /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)

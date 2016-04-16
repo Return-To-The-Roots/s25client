@@ -33,6 +33,7 @@ class GameObject;
 class GameWorld;
 class EventManager;
 class BinaryFile;
+class GameEvent;
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
@@ -71,6 +72,8 @@ public:
         PushObject_(goTmp, known);
     }
 
+    void PushObject(const GameEvent* event, const bool known);
+
     /// Copies a container of GameObjects
     template <typename T>
     void PushObjectContainer(const T& gos, const bool known);
@@ -92,6 +95,8 @@ public:
     /// Objekt(referenzen) lesen
     template <typename T>
     T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
+    
+    GameEvent* PopEvent();
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();

@@ -26,6 +26,7 @@
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

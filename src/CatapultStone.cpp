@@ -20,8 +20,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "CatapultStone.h"
 
-#include "EventManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "buildings/nobMilitary.h"
@@ -56,7 +56,7 @@ CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id) : G
     dest_x(sgd.PopSignedInt()),
     dest_y(sgd.PopSignedInt()),
     explode(sgd.PopBool()),
-    event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+    event(sgd.PopEvent())
 {
 }
 

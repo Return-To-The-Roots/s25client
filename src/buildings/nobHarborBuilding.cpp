@@ -25,7 +25,6 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
-#include "EventManager.h"
 #include "PostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
@@ -37,6 +36,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "EventManager.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/GameConsts.h"
@@ -206,7 +206,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     : nobBaseWarehouse(sgd, obj_id),
       expedition(sgd),
       exploration_expedition(sgd),
-      orderware_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+      orderware_ev(sgd.PopEvent())
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);

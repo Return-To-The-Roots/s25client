@@ -30,7 +30,6 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "Loader.h"
-#include "EventManager.h"
 #include "Random.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "FindWhConditions.h"
@@ -39,6 +38,7 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "Point.h"
@@ -191,8 +191,8 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
     size = sgd.PopUnsignedChar();
     capturing = sgd.PopBool();
     capturing_soldiers = sgd.PopUnsignedInt();
-    goldorder_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
-    upgrade_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    goldorder_event = sgd.PopEvent();
+    upgrade_event = sgd.PopEvent();
 
 
     sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);

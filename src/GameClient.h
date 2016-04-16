@@ -24,7 +24,6 @@
 
 #include "GamePlayerList.h"
 #include "world/GameWorld.h"
-#include "EventManager.h"
 #include "GameReplay.h"
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
@@ -39,6 +38,7 @@ class ClientInterface;
 class GameMessage_GameCommand;
 class PostMsg;
 class SavedFile;
+class GameEvent;
 namespace AIEvent { class Base; }
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
@@ -110,8 +110,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         inline unsigned int GetNWFLength() const { return framesinfo.nwf_length; }
         inline unsigned int GetFrameTime() const { return framesinfo.frameTime; }
         unsigned int GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset);
-        unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
-        int Interpolate(int x1, int x2, EventManager::EventPointer ev);
+        unsigned int Interpolate(unsigned max_val, GameEvent* ev);
+        int Interpolate(int x1, int x2, GameEvent* ev);
 
         void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );

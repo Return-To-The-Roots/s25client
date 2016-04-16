@@ -22,9 +22,9 @@
 #include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "EventManager.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -61,7 +61,7 @@ void noSkeleton::Serialize_noSkeleton(SerializedGameData& sgd) const
 
 noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
     type(sgd.PopUnsignedChar()),
-    current_event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+    current_event(sgd.PopEvent())
 {
 
 }
