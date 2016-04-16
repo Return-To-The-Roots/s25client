@@ -31,6 +31,7 @@
 #include "iwBuilding.h"
 #include "iwStorehouse.h"
 #include "iwHarborBuilding.h"
+#include "iwHelp.h"
 #include "world/GameWorldView.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
@@ -132,6 +133,9 @@ void iwBuildings::Msg_PaintAfter()
 
 void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 {	
+    if (ctrl_id == 32) // Help button
+        return; // TODO should show help text
+
 	//no buildings of type complete? -> do nothing
 	BuildingCount bc;
 	GAMECLIENT.GetLocalPlayer().GetBuildingCount(bc);//-V807
