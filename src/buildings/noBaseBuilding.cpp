@@ -189,8 +189,8 @@ int noBaseBuilding::GetDoorPointX()
         // The door is on the line between the building and flag point. The position of the line is set by the y-offset
         // this is why we need the x-offset here according to the equation x = m*y + n
         // with n=0 (as door point is relative to building pos) and m = dx/dy
-        const Point<int> bldPos  = Point<int>(gwg->GetNodePos(pos));
-        const Point<int> flagPos = Point<int>(gwg->GetNodePos(gwg->GetNeighbour(pos, 4)));
+        const Point<int> bldPos  = gwg->GetNodePos(pos);
+        const Point<int> flagPos = gwg->GetNodePos(gwg->GetNeighbour(pos, 4));
         Point<int> diff = flagPos - bldPos;
 
         // We could have crossed the map border which results in unreasonable diffs

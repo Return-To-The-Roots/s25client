@@ -91,7 +91,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     CreateTradeGraphs();
 
-    tr.GenerateOpenGL(*this);
+    GetTerrainRenderer().GenerateOpenGL(*this);
 
     return true;
 }
@@ -170,7 +170,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
         }
     }
 
-    tr.GenerateOpenGL(*this);
+    GetTerrainRenderer().GenerateOpenGL(*this);
 }
 
 

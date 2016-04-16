@@ -208,8 +208,8 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
 
 Point<int> noFigure::CalcFigurRelative() const
 {
-    Point<int> curPt  = Point<int>(gwg->GetNodePos(pos));
-    Point<int> nextPt = Point<int>(gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir())));
+    Point<int> curPt  = gwg->GetNodePos(pos);
+    Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir()));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
     const int mapWidth = gwg->GetWidth() * TR_W;

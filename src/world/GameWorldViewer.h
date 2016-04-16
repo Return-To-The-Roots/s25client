@@ -19,17 +19,18 @@
 #define GameWorldViewer_h__
 
 #include "world/GameWorldBase.h"
+#include "TerrainRenderer.h"
 #include "gameTypes/MapTypes.h"
 
 class MouseCoords;
 class noShip;
 class FOWObject;
-class TerrainRenderer;
 struct RoadBuildState;
 
 /// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
 class GameWorldViewer: public virtual GameWorldBase
 {
+    TerrainRenderer tr;
 public:
 
     GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);

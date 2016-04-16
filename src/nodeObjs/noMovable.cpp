@@ -168,8 +168,8 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
 Point<int> noMovable::CalcWalkingRelative() const
 {
-    Point<int> curPt  = Point<int>(gwg->GetNodePos(pos));
-    Point<int> nextPt = Point<int>(gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir)));
+    Point<int> curPt  = gwg->GetNodePos(pos);
+    Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
     const int mapWidth = gwg->GetWidth() * TR_W;

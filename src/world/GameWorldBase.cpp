@@ -29,6 +29,7 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
 #include "gameData/TerrainData.h"
+#include "gameData/MapConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -244,6 +245,16 @@ noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned las
         }
         last_i = (i + 3) % 6;
     }
+}
+
+Point<int> GameWorldBase::GetNodePos(const MapPoint pt) const
+{
+    Point<int> result;
+    result.x = pt.x * TR_W;
+    if(pt.y & 1)
+        result.x += TR_W / 2;
+    result.y = pt.y * TR_H - HEIGHT_FACTOR * (GetNode(pt).altitude + 0x0A);
+    return result;
 }
 
 /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten

@@ -18,9 +18,8 @@
 #ifndef GameWorldBase_h__
 #define GameWorldBase_h__
 
-#include "TerrainRenderer.h"
-#include "buildings/nobBaseMilitary.h"
 #include "world/World.h"
+#include "buildings/nobBaseMilitary.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
@@ -47,7 +46,6 @@ class GameWorldBase: public World
     const GlobalGameSettings& gameSettings;
 protected:
     boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
-    TerrainRenderer tr;
     /// Interface zum GUI
     GameInterface* gi;
     /// harbor building sites created by ships
@@ -109,7 +107,7 @@ public:
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
-    Point<float> GetNodePos(const MapPoint pt){ return tr.GetNodePos(pt); }
+    Point<int> GetNodePos(const MapPoint pt) const;
 
     /// Ver�ndert die H�he eines Punktes und die damit verbundenen Schatten
     void AltitudeChanged(const MapPoint pt) override;

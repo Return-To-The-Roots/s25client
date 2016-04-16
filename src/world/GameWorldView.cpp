@@ -118,7 +118,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
         {
             Point<int> curOffset;
             const MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-            Point<int> curPos = Point<int>(gwv.GetNodePos(curPt)) - offset + curOffset;
+            Point<int> curPos = gwv.GetNodePos(curPt) - offset + curOffset;
 
             const Point<int> mouseDist = mousePos - curPos;
             if(std::abs(mouseDist.x) + std::abs(mouseDist.y) < shortestDistToMouse)
@@ -203,7 +203,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             // Coordinates transform
             Point<int> curOffset;
             MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-            Point<int> curPos = Point<int>(gwv.GetNodePos(curPt)) - offset + curOffset;
+            Point<int> curPos = gwv.GetNodePos(curPt) - offset + curOffset;
 
             /// Current point indicated by Mouse
             if(selPt == curPt)
@@ -295,7 +295,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(no->GetPlayer() != GAMECLIENT.GetPlayerID())
                 continue;
 
-            Point<int> curPos = Point<int>(gwv.GetNodePos(pt)) - offset + curOffset;
+            Point<int> curPos = gwv.GetNodePos(pt) - offset + curOffset;
             curPos.y -= 10;
 
             // Draw object name
@@ -479,7 +479,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const Point<int> pos, 
     {
         if(boundary_stones[i + 1])
         {
-            Point<int> tmp = pos - Point<int>((gwv.GetNodePos(pt) - gwv.GetTerrainRenderer().GetTerrainAround(pt, 3 + i)) / 2.0f);
+            Point<int> tmp = pos - Point<int>((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetTerrainAround(pt, 3 + i)) / 2.0f);
 
             LOADER.boundary_stone_cache[nation].draw(
                 tmp.x, tmp.y,
@@ -537,7 +537,7 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
         return;
 
     lastOffset = offset;
-    Point<int> nodePos = static_cast<Point<int> >(gwv.GetNodePos(pt));
+    Point<int> nodePos = gwv.GetNodePos(pt);
 
     MoveTo(nodePos.x - width / 2, nodePos.y - height / 2, true);
 }
