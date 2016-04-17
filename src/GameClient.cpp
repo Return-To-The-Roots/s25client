@@ -143,8 +143,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Hauptschleife des Clients
  */
 void GameClient::Run()
@@ -200,8 +199,7 @@ void GameClient::Run()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Stoppt das Spiel
  */
 void GameClient::Stop()
@@ -339,8 +337,7 @@ void GameClient::StartGame(const unsigned int random_init)
     mapinfo.mapData.Clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  */
 void GameClient::RealStart()
 {
@@ -359,8 +356,7 @@ void GameClient::RealStart()
         gw->GetLua().EventStart(!mapinfo.savegame);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  */
 void GameClient::ExitGame()
 {

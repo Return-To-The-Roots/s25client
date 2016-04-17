@@ -39,7 +39,7 @@ rechts: widht-12 12
 zu sehen sein.
 
 Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
-*/
+ */
 
 #include "defines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"

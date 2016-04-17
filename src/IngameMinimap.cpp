@@ -137,8 +137,8 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 }
 
 /**
-*  Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
-*/
+ *  Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
+ */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = TerrainData::GetColor(gwv.GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2); //-V807
@@ -160,8 +160,8 @@ unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 }
 
 /**
-*  Prüft ob an einer Stelle eine Straße gezeichnet werden muss
-*/
+ *  Prüft ob an einer Stelle eine Straße gezeichnet werden muss
+ */
 bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 {
     for(unsigned i = 0; i < 3; ++i)
@@ -174,9 +174,9 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 }
 
 /**
-*  Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein
-*  (player muss mit +1 gegeben sein!)
-*/
+ *  Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein
+ *  (player muss mit +1 gegeben sein!)
+ */
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
     // Spielerfarbe mit einberechnen
@@ -197,9 +197,9 @@ void IngameMinimap::UpdateNode(const MapPoint pt)
 }
 
 /**
-*  Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
-*  in dem Falle: Karte aktualisieren
-*/
+ *  Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
+ *  in dem Falle: Karte aktualisieren
+ */
 void IngameMinimap::BeforeDrawing()
 {
     // Ab welcher Knotenanzahl (Teil der Gesamtknotenanzahl) die Textur komplett neu erstellt werden soll
@@ -238,8 +238,8 @@ void IngameMinimap::BeforeDrawing()
 }
 
 /**
-*  Updatet die gesamte Minimap
-*/
+ *  Updatet die gesamte Minimap
+ */
 void IngameMinimap::UpdateAll()
 {
     map.DeleteTexture();
@@ -247,9 +247,9 @@ void IngameMinimap::UpdateAll()
 }
 
 /**
-*  Alle Punkte Updaten, bei denen das DrawnObject
-*  gleich dem übergebenen drawn_object ist
-*/
+ *  Alle Punkte Updaten, bei denen das DrawnObject
+ *  gleich dem übergebenen drawn_object ist
+ */
 void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 {
     // Gesamte Karte neu berechnen

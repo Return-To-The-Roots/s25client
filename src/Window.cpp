@@ -1040,8 +1040,7 @@ bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  skaliert einen Wert.
  */
 unsigned short Window::ScaleX(unsigned short val) const

@@ -70,15 +70,13 @@ enum
     NMS_SYSTEM_CHAT
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /* Hinweise:
 
 bc = broadcast
 ec = broadcast to enemy
 tc = broadcast to team
 
-*/
-///////////////////////////////////////////////////////////////////////////////
+ */
 /* Reihenfolge bei Client:
 
 NMS_NULL_MSG            --> ignore
@@ -106,8 +104,7 @@ NMS_NFC_ANSWER          -->
 
 NMS_DEAD_MSG            --> disconnect
 
-*/
-///////////////////////////////////////////////////////////////////////////////
+ */
 /* Reihenfolge bei Server:
 
 NMS_NULL_MSG            --> ignore
@@ -136,7 +133,7 @@ NMS_DEAD_MSG            --> kick
 
 kick                    --> bc(NMS_PLAYER_KICK), NMS_DEAD_MSG
 
-*/
+ */
 ///////////////////////////////////////////////////////////////////////////////
 
 

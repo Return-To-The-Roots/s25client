@@ -43,8 +43,7 @@ bool ctrlGroup::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Reagiert auf Spielfenstergrößenänderung
  */
 void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)

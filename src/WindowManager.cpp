@@ -511,8 +511,7 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
     RelayMouseMessage(&Window::Msg_RightUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Verarbeitung Mausrad hoch.
  *
  *  @param[in] mc Mauskoordinaten Struktur

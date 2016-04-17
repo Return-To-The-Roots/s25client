@@ -642,8 +642,8 @@ BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, cons
 }
 
 /**
-*  liefert das Terrain um den Punkt X, Y.
-*/
+ *  liefert das Terrain um den Punkt X, Y.
+ */
 TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 {
     switch(dir)
@@ -661,9 +661,9 @@ TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 
 
 /**
-*  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
-*  in Richtung DIR (Vorwärts).
-*/
+ *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
+ *  in Richtung DIR (Vorwärts).
+ */
 TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
     RTTR_Assert(dir < 6);
@@ -671,9 +671,9 @@ TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  con
 }
 
 /**
-*  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
-*  in Richtung DIR (Rückwärts).
-*/
+ *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
+ *  in Richtung DIR (Rückwärts).
+ */
 TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
     RTTR_Assert(dir < 6);
@@ -758,8 +758,8 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
 
 
 /**
-*  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
-*/
+ *  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
+ */
 unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
@@ -774,8 +774,8 @@ unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) con
 }
 
 /**
-*  liefert den Straßen-Wert um den Punkt X, Y.
-*/
+ *  liefert den Straßen-Wert um den Punkt X, Y.
+ */
 unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(dir < 6);
@@ -799,8 +799,8 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
 }
 
 /**
-*  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
-*/
+ *  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
+ */
 void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 3);
@@ -809,8 +809,8 @@ void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char t
 }
 
 /**
-*  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
-*/
+ *  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
+ */
 void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 6);

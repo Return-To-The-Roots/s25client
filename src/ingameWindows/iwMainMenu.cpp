@@ -89,7 +89,7 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv)
 
 /**
  *  Button-Click-Handler.
-*/
+ */
 void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)

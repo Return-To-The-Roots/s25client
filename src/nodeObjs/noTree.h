@@ -36,7 +36,7 @@ _______________|__|_________________|_| ...
 
 Es wird eine längere Zeit gewartet, dann wächst der Baum, dabei wird die nächste Stufe langsam eingeblendet.
 
-*/
+ */
 class noTree : public noCoordBase
 {
         /// Der Holzfäller ist Experte in Sachen Baum :)
