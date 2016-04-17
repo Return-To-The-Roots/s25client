@@ -23,8 +23,6 @@
 
 ///////////////////////////S/**
  *  Addon for a Charburner
- *
- *  @author OLiver
  */
 class AddonTrade : public AddonBool
 {

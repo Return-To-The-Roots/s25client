@@ -74,10 +74,6 @@ unsigned int Languages::getCount()
 }
 
 /**
- *
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void Languages::setLanguage(const std::string& lang_code)
 {

@@ -34,8 +34,6 @@
 /** @class dskMultiPlayer
  *
  *  Klasse des Multispieler Desktops.
- *
- *  @author OLiver
  */
 
 dskMultiPlayer::dskMultiPlayer() : Desktop(LOADER.GetImageN("menu", 0))

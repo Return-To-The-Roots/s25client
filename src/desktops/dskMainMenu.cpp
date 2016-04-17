@@ -41,8 +41,6 @@
 /** @class dskMainMenu
  *
  *  Klasse des Hauptmenü Desktops.
- *
- *  @author OLiver
  */
 
 dskMainMenu::dskMainMenu() : Desktop(LOADER.GetImageN("menu", 0))
@@ -107,10 +105,6 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 }
 
 /**
- *
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {

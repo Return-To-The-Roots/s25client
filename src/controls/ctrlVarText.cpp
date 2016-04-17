@@ -37,8 +37,6 @@ class Window;
  *  @param[in] font      Schrift des Textes
  *  @param[in] count     Anzahl der nachfolgenden Pointer
  *  @param[in] liste     Pointerliste der variablen Inhalte
- *
- *  @author FloSoft
  */
 ctrlVarText::ctrlVarText(Window* parent,
                          unsigned int id,
@@ -68,8 +66,6 @@ ctrlVarText::~ctrlVarText()
  *  Zeichenmethode
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool ctrlVarText::Draw_()
 {

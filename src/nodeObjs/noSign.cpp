@@ -32,8 +32,6 @@
  *  @param[in] y        Y-Position
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
- *
- *  @author OLiver
  */
 noSign::noSign(const MapPoint pos,
                const unsigned char type,
@@ -58,8 +56,6 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingE
 
 /**
  *  An x,y zeichnen.
- *
- *  @author OLiver
  */
 void noSign::Draw(int x, int y)
 {
@@ -84,8 +80,6 @@ void noSign::HandleEvent(const unsigned int id)
 
 /**
  *  Räumt das Objekt auf.
- *
- *  @author FloSoft
  */
 void noSign::Destroy_noSign()
 {

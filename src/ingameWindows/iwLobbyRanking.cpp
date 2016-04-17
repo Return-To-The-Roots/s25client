@@ -28,8 +28,6 @@
 
 /**
  *  aktualisiert die Ranking-Tabelle.
- *
- *  @author Devil
  */
 void iwLobbyRanking::UpdateRankings(bool first)
 {

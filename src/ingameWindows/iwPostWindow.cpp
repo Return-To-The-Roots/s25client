@@ -188,8 +188,6 @@ void iwPostWindow::Msg_PaintBefore()
 
 /**
  *  React on keypress
- *
- *  @author Divan
  */
 bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 {

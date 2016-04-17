@@ -40,8 +40,6 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] height Höhe des Controls
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
- *
- *  @author OLiver
  */
 ctrlChat::ctrlChat(Window* parent,
                    unsigned int id,
@@ -74,8 +72,6 @@ ctrlChat::~ctrlChat()
 
 /**
  *  Größe ändern
- *
- *  @author Divan
  */
 void ctrlChat::Resize_(unsigned short width, unsigned short height)
 {
@@ -133,8 +129,6 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
 }
 /**
  *  Zeichnet das Chat-Control.
- *
- *  @author OLiver
  */
 bool ctrlChat::Draw_()
 {

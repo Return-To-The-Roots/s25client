@@ -29,8 +29,6 @@
  *
  *  @param[in] volume Lautstärke des Sounds.
  *  @param[in] loop   Endlosschleife ja/nein
- *
- *  @author FloSoft
  */
 unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {

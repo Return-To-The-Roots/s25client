@@ -57,8 +57,6 @@ GameManager::GameManager() : frames(0), frame_count(0), framerate(0), frame_time
 
 /**
  *  Spiel starten
- *
- *  @author FloSoft
  */
 bool GameManager::Start()
 {
@@ -128,8 +126,6 @@ bool GameManager::Start()
 
 /**
  *  Spiel beenden.
- *
- *  @author FloSoft
  */
 void GameManager::Stop()
 {
@@ -145,8 +141,6 @@ void GameManager::Stop()
 
 /**
  *  Hauptschleife.
- *
- *  @author FloSoft
  */
 bool GameManager::Run()
 {
@@ -287,8 +281,6 @@ bool GameManager::Run()
 
 /**
  *  Startet und lädt das Menü.
- *
- *  @author FloSoft
  */
 bool GameManager::StartMenu()
 {
@@ -314,8 +306,6 @@ bool GameManager::StartMenu()
 
 /**
  *  zeigt das Hauptmenü.
- *
- *  @author FloSoft
  */
 bool GameManager::ShowMenu()
 {
@@ -337,8 +327,6 @@ bool GameManager::ShowMenu()
 
 /**
  *  Set the cursor type
- *
- *  @author Divan
  */
 void GameManager::SetCursor(CursorType cursor, bool once)
 {
@@ -349,8 +337,6 @@ void GameManager::SetCursor(CursorType cursor, bool once)
 
 /**
  *  Draw the cursor
- *
- *  @author Divan
  */
 void GameManager::DrawCursor()
 {

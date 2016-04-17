@@ -41,8 +41,6 @@ ctrlText::ctrlText(Window* parent,
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlText::Draw_()
 {

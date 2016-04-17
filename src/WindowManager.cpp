@@ -59,9 +59,6 @@ void WindowManager::CleanUp()
 /**
  *  Zeichenfunktion WindowManager-Klasse.
  *  Zeichnet Desktop und alle Fenster.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void WindowManager::Draw()
 {
@@ -117,8 +114,6 @@ void WindowManager::Draw()
  *
  *  @return liefert @p true bei aktivem Desktop,
  *                  @p false wenn der Desktop nicht den Fokus besitzt.
- *
- *  @author OLiver
  */
 bool WindowManager::IsDesktopActive()
 {
@@ -134,8 +129,6 @@ bool WindowManager::IsDesktopActive()
  *  @param[in] msg   Nachricht welche geschickt werden soll
  *  @param[in] id    ID des Steuerelements
  *  @param[in] param Parameter der Nachricht
- *
- *  @author OLiver
  */
 
 /// Sendet eine Tastaturnachricht an die Fenster.
@@ -203,8 +196,6 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
- *
- *  @author OLiver
  */
 void WindowManager::Show(IngameWindow* window, bool mouse)
 {
@@ -268,8 +259,6 @@ void WindowManager::ShowAfterSwitch(IngameWindow* window)
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
- *
- *  @author OLiver
  */
 void WindowManager::Switch(Desktop* desktop, bool mouse)
 {
@@ -296,8 +285,6 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
  *  Verarbeitung des Drückens der Linken Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_LeftDown(MouseCoords mc)
 {
@@ -401,8 +388,6 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
  *  Verarbeitung des Loslassens der Linken Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_LeftUp(MouseCoords mc)
 {
@@ -454,8 +439,6 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
  *  Verarbeitung des Drückens der Rechten Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_RightDown(const MouseCoords& mc)
 {
@@ -533,8 +516,6 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
  *  Verarbeitung Mausrad hoch.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author Divan
  */
 void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 {
@@ -609,8 +590,6 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
  *  Verarbeitung Mausrad runter
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author Divan
  */
 void WindowManager::Msg_WheelDown(const MouseCoords& mc)
 {
@@ -653,8 +632,6 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  *  Verarbeitung des Verschiebens der Maus.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
@@ -714,8 +691,6 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
  *
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
- *
- *  @author Divan
  */
 void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 {
@@ -775,8 +750,6 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
  *
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
- *
- *  @author Divan
  */
 void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height)
 {
@@ -831,8 +804,6 @@ struct IsWindowId
  *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
  *
  *  @param[in] it Iterator auf das Fenster in der Fensterliste
- *
- *  @author OLiver
  */
 void WindowManager::Close(IngameWindow* window)
 {
@@ -876,8 +847,6 @@ void WindowManager::Close(IngameWindow* window)
  *  Closes _ALL_ windows with the given ID
  *
  *  @param[in] id ID des/der Fenster(s) welche(s) geschlossen werden soll
- *
- *  @author OLiver
  */
 void WindowManager::Close(unsigned int id)
 {
@@ -892,8 +861,6 @@ void WindowManager::Close(unsigned int id)
 
 /**
  *  wechselt den Desktop in den neuen Desktop
- *
- *  @author OLiver
  */
 void WindowManager::Switch()
 {

@@ -105,8 +105,6 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
 
 /**
  *  setzt den echten Straßen-Wert an der Stelle X, Y (berichtigt).
- *
- *  @author OLiver
  */
 void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
@@ -122,8 +120,6 @@ void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char 
 
 /**
  *  setzt den Straßen-Wert um den Punkt X, Y.
- *
- *  @author OLiver
  */
 void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
@@ -1516,8 +1512,6 @@ bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) 
 /**
  *  Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
  *  Für Spiele ohne Gold.
- *
- *  @author Divan
  */
 void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char to)
 {

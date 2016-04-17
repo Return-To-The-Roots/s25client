@@ -30,8 +30,6 @@ class MouseCoords;
 /** @class dskSplash
  *
  *  Klasse des Splashscreen Desktops.
- *
- *  @author OLiver
  */
 
 dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))

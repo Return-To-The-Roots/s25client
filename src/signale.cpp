@@ -30,8 +30,6 @@
 
 /**
  *  Signal-Handler
- *
- *  @author FloSoft
  */
 #ifdef _WIN32
 BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)

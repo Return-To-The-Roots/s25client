@@ -39,8 +39,6 @@ SoundSDL_Effect::~SoundSDL_Effect()
  *  @param[in] loop   @p true für ununterbrochenes Abspielen
  *
  *  @return @p Play-ID bei Erfolg, @p 0xFFFFFFFF bei Fehler
- *
- *  @author FloSoft
  */
 //int SoundSDL_Effect::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
@@ -61,8 +59,6 @@ SoundSDL_Effect::~SoundSDL_Effect()
  *  Abspielen Stoppen.
  *
  *  @param[in] channel Channel der gestoppt werden soll (-1 für alle)
- *
- *  @author FloSoft
  */
 //void SoundSDL_Effect::Stop(int channel)
 //{

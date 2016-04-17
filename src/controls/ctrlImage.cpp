@@ -42,8 +42,6 @@ ctrlImage::~ctrlImage()
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlImage::Draw_()
 {

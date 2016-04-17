@@ -26,15 +26,11 @@
 /** @var ctrlTimer::timer
  *
  *  Der Timer zum Abgleichen der Zeit.
- *
- *  @author FloSoft
  */
 
 /** @var ctrlTimer::timeout
  *
  *  Die Zeit nach der der Timer zünden soll.
- *
- *  @author FloSoft
  */
 
 ctrlTimer::ctrlTimer(Window* parent,
@@ -47,8 +43,6 @@ ctrlTimer::ctrlTimer(Window* parent,
 
 /**
  *  startet den Timer.
- *
- *  @author FloSoft
  */
 void ctrlTimer::Start(unsigned int timeout)
 {
@@ -60,8 +54,6 @@ void ctrlTimer::Start(unsigned int timeout)
 
 /**
  *  stoppt den Timer
- *
- *  @author FloSoft
  */
 void ctrlTimer::Stop()
 {

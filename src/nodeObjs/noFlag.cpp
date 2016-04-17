@@ -161,8 +161,6 @@ void noFlag::Draw(int x, int y)
 /**
  *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung"
  *  für den Fog of War.
- *
- *  @author OLiver
  */
 FOWObject* noFlag::CreateFOWObject() const
 {
@@ -172,8 +170,6 @@ FOWObject* noFlag::CreateFOWObject() const
 
 /**
  *  Legt eine Ware an der Flagge ab.
- *
- *  @author OLiver
  */
 void noFlag::AddWare(Ware*& ware)
 {
@@ -193,8 +189,6 @@ void noFlag::AddWare(Ware*& ware)
 
 /**
  *  Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
- *
- *  @author OLiver
  */
 unsigned noFlag::GetWareCount() const
 {
@@ -212,8 +206,6 @@ unsigned noFlag::GetWareCount() const
  *
  * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
  * und somit nicht die Träger benachrichtigt werden müssen.
- *
- *  @author OLiver
  */
 Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier)
 {
@@ -308,8 +300,6 @@ unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
 /**
  *  Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte
  *  Richtung noch transportiert werden müssen.
- *
- *  @author OLiver
  */
 unsigned noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
@@ -327,8 +317,6 @@ unsigned noFlag::GetPunishmentPoints(const unsigned char dir) const
 
 /**
  *  Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
- *
- *  @author OLiver
  */
 void noFlag::DestroyAttachedBuilding()
 {
@@ -343,8 +331,6 @@ void noFlag::DestroyAttachedBuilding()
 
 /**
  *  Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
- *
- *  @author OLiver
  */
 void noFlag::Upgrade()
 {
@@ -354,8 +340,6 @@ void noFlag::Upgrade()
 
 /**
  *  Feind übernimmt die Flagge.
- *
- *  @author OLiver
  */
 void noFlag::Capture(const unsigned char new_owner)
 {
@@ -382,8 +366,6 @@ void noFlag::Capture(const unsigned char new_owner)
 
 /**
  *  Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
- *
- *  @author OLiver
  */
 bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 {
@@ -410,8 +392,6 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 
 /**
  *  Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
- *
- *  @author OLiver
  */
 void noFlag::ImpossibleForBWU(const unsigned bwu_id)
 {

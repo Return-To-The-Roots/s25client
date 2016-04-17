@@ -26,15 +26,11 @@
 /** @class glArchivItem_BitmapBase
  *
  *  Basisklasse für GL-Bitmapitems.
- *
- *  @author FloSoft
  */
 
 /** @var glArchivItem_BitmapBase::texture
  *
  *  OpenGL-Textur des Bildes.
- *
- *  @author FloSoft
  */
 
 glArchivItem_BitmapBase::glArchivItem_BitmapBase()
@@ -64,8 +60,6 @@ glArchivItem_BitmapBase& glArchivItem_BitmapBase::operator=(const glArchivItem_B
 
 /**
  *  Liefert das GL-Textur-Handle.
- *
- *  @author FloSoft
  */
 unsigned int glArchivItem_BitmapBase::GetTexture()
 {
@@ -76,8 +70,6 @@ unsigned int glArchivItem_BitmapBase::GetTexture()
 
 /**
  *  Löscht die GL-Textur (z.B fürs Neuerstellen)
- *
- *  @author FloSoft
  */
 void glArchivItem_BitmapBase::DeleteTexture()
 {
@@ -88,8 +80,6 @@ void glArchivItem_BitmapBase::DeleteTexture()
 
 /**
  *  Setzt den Texturfilter auf einen bestimmten Wert.
- *
- *  @author FloSoft
  */
 void glArchivItem_BitmapBase::setFilter(unsigned int filter)
 {
@@ -105,8 +95,6 @@ void glArchivItem_BitmapBase::setFilter(unsigned int filter)
 
 /**
  *  Erzeugt die Textur.
- *
- *  @author FloSoft
  */
 void glArchivItem_BitmapBase::GenerateTexture()
 {

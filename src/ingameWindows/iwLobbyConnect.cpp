@@ -98,8 +98,6 @@ iwLobbyConnect::~iwLobbyConnect()
 
 /**
  *  speichert die eingegebenen Benutzerdaten in die Settings
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string& email)
 {
@@ -226,8 +224,6 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool button)
 {
@@ -246,8 +242,6 @@ void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool b
 
 /**
  *  Wir wurden eingeloggt
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_LoggedIn(const std::string& email)
 {
@@ -264,8 +258,6 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
 
 /**
  *  Wir wurden registriert.
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_Registered()
 {
@@ -277,8 +269,6 @@ void iwLobbyConnect::LC_Registered()
 
 /**
  *  Status: Warten auf Antwort.
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_Status_Waiting()
 {
@@ -287,8 +277,6 @@ void iwLobbyConnect::LC_Status_Waiting()
 
 /**
  *  Status: Benutzerdefinierter Fehler (inkl Conn-Reset u.ä)
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_Status_Error(const std::string& error)
 {

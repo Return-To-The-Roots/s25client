@@ -34,8 +34,6 @@ ctrlGroup::ctrlGroup(Window* parent,
 
 /**
  *  Zeichenmethode
- *
- *  @author FloSoft
  */
 bool ctrlGroup::Draw_()
 {
@@ -48,8 +46,6 @@ bool ctrlGroup::Draw_()
 ///////////////////////////////////////////////////////////////////////////////
 /*
  *  Reagiert auf Spielfenstergrößenänderung
- *
- *  @author Divan
  */
 void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {

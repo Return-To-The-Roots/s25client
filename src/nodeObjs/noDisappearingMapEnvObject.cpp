@@ -31,8 +31,6 @@
  *  @param[in] y        Y-Position
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
- *
- *  @author OLiver
  */
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const unsigned short map_id)
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
@@ -53,8 +51,6 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 
 /**
  *  An x,y zeichnen.
- *
- *  @author OLiver
  */
 void noDisappearingMapEnvObject::Draw(int x, int y)
 {
@@ -71,8 +67,6 @@ void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
 
 /**
  *  Räumt das Objekt auf.
- *
- *  @author FloSoft
  */
 void noDisappearingMapEnvObject::Destroy_noDisappearingMapEnvObject()
 {

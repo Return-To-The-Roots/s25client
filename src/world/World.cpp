@@ -643,9 +643,6 @@ BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, cons
 
 /**
 *  liefert das Terrain um den Punkt X, Y.
-*
-*  @author OLiver
-*  @author FloSoft
 */
 TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 {
@@ -666,8 +663,6 @@ TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 /**
 *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
 *  in Richtung DIR (Vorwärts).
-*
-*  @author OLiver
 */
 TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
@@ -678,8 +673,6 @@ TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  con
 /**
 *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
 *  in Richtung DIR (Rückwärts).
-*
-*  @author OLiver
 */
 TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
@@ -766,9 +759,6 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
 
 /**
 *  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
-*
-*
-*  @author OLiver
 */
 unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
@@ -785,8 +775,6 @@ unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) con
 
 /**
 *  liefert den Straßen-Wert um den Punkt X, Y.
-*
-*  @author OLiver
 */
 unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
@@ -812,8 +800,6 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
 
 /**
 *  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
-*
-*  @author OLiver
 */
 void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
@@ -824,8 +810,6 @@ void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char t
 
 /**
 *  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
-*
-*  @author OLiver
 */
 void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {

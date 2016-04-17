@@ -73,8 +73,6 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 
 /**
  *  Statustext resetten
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
@@ -84,8 +82,6 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 
 /**
  *  Bei Enter nächstes Steuerelement auswählen
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::Msg_EditEnter(const unsigned int ctrl_id)
 {
@@ -128,8 +124,6 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned int ctrl_id, const i
 
 /**
  *  Button Clicki-Di-Bunti-Li
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
 {
@@ -180,8 +174,6 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool button)
 {
@@ -195,8 +187,6 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool
 
 /**
  *  Status: Benutzerdefinierter Fehler
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::LC_Status_Error(const std::string& error)
 {

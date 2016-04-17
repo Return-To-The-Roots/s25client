@@ -29,8 +29,6 @@
 /** @class dskAboutRTTR
  *
  *  Klasse des Über-Siedler-RTTR Desktops.
- *
- *  @author FloSoft
  */
 
 dskAboutRTTR::dskAboutRTTR() : Desktop(LOADER.GetImageN("menu", 0))

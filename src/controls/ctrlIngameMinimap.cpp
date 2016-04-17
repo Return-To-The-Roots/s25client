@@ -45,8 +45,6 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
 
 /**
  *  Zeichnet die MapPreview
- *
- *  @author OLiver
  */
 bool ctrlIngameMinimap::Draw_()
 {
@@ -124,8 +122,6 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
 
 /**
  *  Setzt Breite und Höhe des Controls
- *
- *  @author OLiver
  */
 void ctrlIngameMinimap::SetDisplaySize(const unsigned short width, const unsigned short height)
 {

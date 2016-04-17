@@ -166,8 +166,6 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlList::Draw_()
 {
@@ -198,8 +196,6 @@ bool ctrlList::Draw_()
 
 /**
  *  fügt eine Zeile hinzu.
- *
- *  @author FloSoft
  */
 void ctrlList::AddString(const std::string& text)
 {
@@ -211,8 +207,6 @@ void ctrlList::AddString(const std::string& text)
 
 /**
  *  Verändert einen String
- *
- *  @author OLiver
  */
 void ctrlList::SetString(const std::string& text, const unsigned id)
 {
@@ -221,8 +215,6 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
 
 /**
  *  löscht alle Items.
- *
- *  @author FloSoft
  */
 void ctrlList::DeleteAllItems()
 {
@@ -236,8 +228,6 @@ void ctrlList::DeleteAllItems()
  *  @param[in] line Die Zeile
  *
  *  @return Text der Zeile
- *
- *  @author OLiver
  */
 const std::string& ctrlList::GetItemText(unsigned short line) const
 {
@@ -252,8 +242,6 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
  *
  *  @param[in] width  Neue Breite
  *  @param[in] height Neue Höhe
- *
- *  @author OLiver
  */
 void ctrlList::Resize_(unsigned short width, unsigned short height)
 {
@@ -276,8 +264,6 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 
 /**
  *  vertauscht zwei Zeilen
- *
- *  @author OLiver
  */
 void ctrlList::Swap(unsigned short first, unsigned short second)
 {
@@ -293,8 +279,6 @@ void ctrlList::Swap(unsigned short first, unsigned short second)
 
 /**
  *  entfernt eine Zeile
- *
- *  @author OLiver
  */
 void ctrlList::Remove(const unsigned short index)
 {

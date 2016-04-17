@@ -45,8 +45,6 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
 
 /**
  *  Zeichnet ihn beim Arbeiten.
- *
- *  @author FloSoft
  */
 void nofDonkeybreeder::DrawWorking(int x, int y)
 {
@@ -82,8 +80,6 @@ void nofDonkeybreeder::DrawWorking(int x, int y)
 
 /**
  *  Der Arbeiter erzeugt eine Ware.
- *
- *  @author FloSoft
  */
 GoodType nofDonkeybreeder::ProduceWare()
 {

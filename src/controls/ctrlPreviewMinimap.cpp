@@ -42,8 +42,6 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
 
 /**
  *  Zeichnet die MapPreview
- *
- *  @author OLiver
  */
 bool ctrlPreviewMinimap::Draw_()
 {

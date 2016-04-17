@@ -62,12 +62,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author
- */
 void GameClient::ClientConfig::Clear()
 {
     server.clear();
@@ -77,23 +71,11 @@ void GameClient::ClientConfig::Clear()
     isHost = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author
- */
 void GameClient::RandCheckInfo::Clear()
 {
     rand = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author
- */
 void GameClient::ReplayInfo::Clear()
 {
     replay = Replay();
@@ -104,12 +86,6 @@ void GameClient::ReplayInfo::Clear()
     all_visible = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author FloSoft
- */
 GameClient::GameClient()
     : skiptogf(0), gw(NULL), em(NULL), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
       ci(NULL), human_ai(NULL), replay_mode(false), game_log(NULL)
@@ -120,12 +96,6 @@ GameClient::GameClient()
     postMessages.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
- *
- *
- *  @author FloSoft
- */
 GameClient::~GameClient()
 {
     Stop();
@@ -141,9 +111,6 @@ GameClient::~GameClient()
  *  @param host      gibt an ob wir selbst der Host sind
  *
  *  @return true, wenn Client erfolgreich verbunden und gestartet
- *
- *  @author OLiver
- *  @author FloSoft
  */
 bool GameClient::Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host, bool use_ipv6)
 {
@@ -179,8 +146,6 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
 ///////////////////////////////////////////////////////////////////////////////
 /*
  *  Hauptschleife des Clients
- *
- *  @author FloSoft
  */
 void GameClient::Run()
 {
@@ -238,8 +203,6 @@ void GameClient::Run()
 ///////////////////////////////////////////////////////////////////////////////
 /*
  *  Stoppt das Spiel
- *
- *  @author FloSoft
  */
 void GameClient::Stop()
 {
@@ -288,8 +251,6 @@ void GameClient::Stop()
  *  Startet ein Spiel oder Replay.
  *
  *  @param[in] random_init Initialwert des Zufallsgenerators.
- *
- *  @author OLiver
  */
 void GameClient::StartGame(const unsigned int random_init)
 {
@@ -380,9 +341,6 @@ void GameClient::StartGame(const unsigned int random_init)
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
- *
- *
- *  @author OLiver
  */
 void GameClient::RealStart()
 {
@@ -403,9 +361,6 @@ void GameClient::RealStart()
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
- *
- *
- *  @author OLiver
  */
 void GameClient::ExitGame()
 {
@@ -419,8 +374,6 @@ void GameClient::ExitGame()
 
 /**
  *  Ping-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
 {
@@ -429,8 +382,6 @@ void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
 
 /**
  *  Player-ID-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
@@ -452,8 +403,6 @@ void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 
 /**
  *  Player-List-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 {
@@ -525,8 +474,6 @@ void GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
 
 /**
  *  Player-Toggle-State-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
 {
@@ -622,8 +569,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
  *  Ready-state eines Spielers hat sich geändert.
  *
  *  @param[in] message Nachricht, welche ausgeführt wird
- *
- *  @author FloSoft
  */
 inline void GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
@@ -688,8 +633,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 
 /**
  *  Server-Typ-Nachricht.
- *
- *  @author FloSoft
  */
 inline void GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
 {
@@ -724,8 +667,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
 
 /**
  *  Server-Passwort-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 {
@@ -746,8 +687,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 
 /**
  *  Server-Name-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
 {
@@ -759,9 +698,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
 
 /**
  *  Server-Start-Nachricht
- *
- *  @author FloSoft
- *  @author OLiver
  */
 inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 {
@@ -786,8 +722,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 
 /**
  *  Server-Chat-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
@@ -823,8 +757,6 @@ void GameClient::OnGameMessage(const GameMessage_System_Chat& msg)
 
 /**
  *  Server-Async-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 {
@@ -856,8 +788,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 
 /**
  *  Server-Countdown-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Countdown& msg)
 {
@@ -867,8 +797,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Countdown& msg)
 
 /**
  *  Server-Cancel-Countdown-Nachricht.
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown&  /*msg*/)
 {
@@ -881,8 +809,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown&  /*msg*
  *  die normale Größe und Teilanzahl der Karte übertragen wird.
  *
  *  @param message Nachricht, welche ausgeführt wird
- *
- *  @author FloSoft
  */
 inline void GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 {
@@ -1127,8 +1053,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
  *  NFC Pause-Nachricht von Server
  *
  *  @param[in] message Nachricht, welche ausgeführt wird
- *
- *  @author FloSoft
  */
 void GameClient::OnGameMessage(const GameMessage_Pause& msg)
 {
@@ -1154,8 +1078,6 @@ void GameClient::OnGameMessage(const GameMessage_Pause& msg)
  *  NFC GetAsyncLog von Server
  *
  *  @param[in] message Nachricht, welche ausgeführt wird
- *
- *  @author Maqs
  */
 void GameClient::OnGameMessage(const GameMessage_GetAsyncLog&  /*msg*/)
 {
@@ -1463,9 +1385,6 @@ void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
 
 /**
  *  Sendet ein NC-Paket ohne Befehle.
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void GameClient::SendNothingNC(int checksum)
 {
@@ -1690,9 +1609,6 @@ void GameClient::ServerLost()
  *  überspringt eine bestimmte Anzahl von Gameframes.
  *
  *  @param[in] dest_gf Zielgameframe
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void GameClient::SkipGF(unsigned int gf, GameWorldView& gwv)
 {

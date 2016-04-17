@@ -81,8 +81,6 @@ ctrlTable::~ctrlTable()
 
 /**
  *  Größe verändern
- *
- *  @author Divan
  */
 void ctrlTable::Resize_(unsigned short width, unsigned short height)
 {
@@ -113,8 +111,6 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
 
 /**
  *  löscht alle Items.
- *
- *  @author OLiver
  */
 void ctrlTable::DeleteAllItems()
 {
@@ -131,9 +127,6 @@ void ctrlTable::DeleteAllItems()
  *  setzt die Auswahl.
  *
  *  @param[in] selection Der Auswahlindex
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void ctrlTable::SetSelection(int selection)
 {
@@ -161,8 +154,6 @@ void ctrlTable::SetSelection(int selection)
  *
  *  @param[in] alwaysnull Immer 0, wird nur für Liste gebraucht
  *  @param[in] ...        Die Werte für die Spalten.
- *
- *  @author OLiver
  */
 void ctrlTable::AddRow(unsigned alwaysnull, ...)
 {
@@ -192,8 +183,6 @@ void ctrlTable::AddRow(unsigned alwaysnull, ...)
  *  @param[in] column Die Spalte
  *
  *  @return Text in Feld <@p column,@p row>
- *
- *  @author OLiver
  */
 const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short column) const
 {
@@ -212,8 +201,6 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *                         @p NULL  - Wechsel,
  *                         @p true  - A-Z,
  *                         @p false - Z-A
- *
- *  @author OLiver
  */
 void ctrlTable::SortRows(int column, bool* direction)
 {
@@ -262,8 +249,6 @@ void ctrlTable::SortRows(int column, bool* direction)
  *  Zeichenmethode
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool ctrlTable::Draw_()
 {

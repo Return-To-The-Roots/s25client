@@ -39,8 +39,6 @@ static AudioSDL* nthis = NULL;
  *  Instanzierungsfunktion von @p AudioSDL.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
- *
- *  @author FloSoft
  */
 DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void*  /*device_dependent*/)
 {
@@ -61,8 +59,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
 /** @class AudioSDL
  *
  *  Klasse für den SDL-Audiotreiber.
- *
- *  @author FloSoft
  */
 
 AudioSDL::AudioSDL(AudioDriverLoaderInterface* adli) : AudioDriver(adli), master_effects_volume(0xFF), master_music_volume(0xFF)
@@ -80,8 +76,6 @@ AudioSDL::~AudioSDL()
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
  */
 const char* AudioSDL::GetName() const
 {
@@ -92,8 +86,6 @@ const char* AudioSDL::GetName() const
  *  Treiberinitialisierungsfunktion.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool AudioSDL::Initialize()
 {
@@ -124,8 +116,6 @@ bool AudioSDL::Initialize()
 
 /**
  *  Treiberaufräumfunktion.
- *
- *  @author FloSoft
  */
 void AudioSDL::CleanUp()
 {
@@ -151,8 +141,6 @@ void AudioSDL::CleanUp()
  *  @param[in] size Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size)
 {
@@ -204,8 +192,6 @@ Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsi
  *  @param[in] size Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size)
 {
@@ -269,8 +255,6 @@ Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsig
 
 /**
  *  Spielt einen Sound ab.
- *
- *  @author OLiver
  */
 unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
@@ -297,8 +281,6 @@ unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, cons
 
 /**
  *  Spielt die Musik ab.
- *
- *  @author FloSoft
  */
 void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
 {
@@ -311,8 +293,6 @@ void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
 
 /**
  *  Stoppt die Musik.
- *
- *  @author FloSoft
  */
 void AudioSDL::StopMusic()
 {

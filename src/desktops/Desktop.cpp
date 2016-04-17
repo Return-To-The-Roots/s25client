@@ -30,8 +30,6 @@
  *  Konstruktor für einen Spieldesktop
  *
  *  @param[in] background Hintergrund des Desktops
- *
- *  @author OLiver
  */
 Desktop::Desktop(glArchivItem_Bitmap* background)
     : Window(), background(background)
@@ -45,8 +43,6 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
  *  und der ggf. enthaltenen Steuerelemente.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool Desktop::Draw_()
 {
@@ -72,8 +68,6 @@ bool Desktop::Draw_()
 ///////////////////////////////////////////////////////////////////////////////
 /*
  *  Wechselt den aktuellen Desktop im WindowManager auf diesen Desktop.
- *
- *  @author OLiver
  */
 void Desktop::Show()
 {
@@ -83,8 +77,6 @@ void Desktop::Show()
 ///////////////////////////////////////////////////////////////////////////////
 /*
  *  Reagiert auf Spielfenstergrößenänderung
- *
- *  @author Divan
  */
 void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {

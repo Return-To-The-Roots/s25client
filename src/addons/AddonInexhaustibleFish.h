@@ -7,10 +7,8 @@
 #include "mygettext/src/mygettext.h"
 
 /**
-*  addon decativates reduction of fish population by fishing.
-*
-*  @author PoC
-*/
+ *  addon decativates reduction of fish population by fishing.
+ */
 class AddonInexhaustibleFish : public AddonBool
 {
     public:

@@ -34,8 +34,6 @@
  *  rank 1 Privatefirstclass
  *
  *  rank 0 Private
- *
- *  @author poc
  */
 class AddonMaxRank : public AddonList
 {

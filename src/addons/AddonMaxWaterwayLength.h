@@ -27,8 +27,6 @@ const boost::array<unsigned, 6> SUPPRESS_UNUSED waterwayLengths = {{ 3, 5, 9, 13
 
 /**
  *  Addon for changing the maximum length of waterways.
- *
- *  @author Divan
  */
 class AddonMaxWaterwayLength : public AddonList
 {

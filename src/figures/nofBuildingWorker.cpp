@@ -363,8 +363,6 @@ namespace{
 /**
  *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
  *  an einer (umliegenden) Stelle.
- *
- *  @author OLiver
  */
 bool nofBuildingWorker::GetResources(unsigned char type)
 {

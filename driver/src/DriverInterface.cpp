@@ -31,8 +31,6 @@
  *  API-Versions-Lieferfunktion
  *
  *  @return liefert die API-Version des Treibers
- *
- *  @author FloSoft
  */
 DRIVERDLLAPI unsigned int GetDriverAPIVersion(void)
 {

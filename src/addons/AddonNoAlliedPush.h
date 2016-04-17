@@ -7,8 +7,6 @@
 
 /**
  *  Addon stops allied players from pushing your borders back with new military buildings
- *
- *  @author PoC
  */
 class AddonNoAlliedPush : public AddonBool
 {

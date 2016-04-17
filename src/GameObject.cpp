@@ -27,8 +27,6 @@
 
 /**
  *  Objekt-ID-Counter.
- *
- *  @author OLiver
  */
 unsigned int GameObject::objIdCounter_ = 1;
 unsigned int GameObject::objCounter_ = 0;

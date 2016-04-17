@@ -436,8 +436,6 @@ void GameServer::Stop()
 
 /**
  *  startet den Spielstart-Countdown
- *
- *  @author FloSoft
  */
 bool GameServer::StartCountdown()
 {
@@ -482,8 +480,6 @@ bool GameServer::StartCountdown()
 
 /**
  *  stoppt den Spielstart-Countdown
- *
- *  @author FloSoft
  */
 void GameServer::CancelCountdown()
 {
@@ -495,9 +491,6 @@ void GameServer::CancelCountdown()
 
 /**
  *  startet das Spiel.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 bool GameServer::StartGame()
 {
@@ -757,9 +750,6 @@ void GameServer::RemoveLuaScript()
 
 /**
  *  Nachricht an Alle
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void GameServer::SendToAll(const GameMessage& msg)
 {
@@ -1031,8 +1021,6 @@ unsigned char GameServer::GetLaggingPlayer() const
 
 /**
  *  Sendet ein NC-Paket ohne Befehle.
- *
- *  @author OLiver
  */
 void GameServer::SendNothingNC(const unsigned int& id)
 {
@@ -1171,8 +1159,6 @@ inline void GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 
 /**
  *  Server-Passwort-Nachricht
- *
- *  @author FloSoft
  */
 void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
@@ -1191,9 +1177,6 @@ void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 
 /**
  *  Server-Chat-Nachricht.
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void GameServer::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
@@ -1302,8 +1285,6 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 
 /**
  *  Spielerstatus wechseln
- *
- *  @author FloSoft
  */
 inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {

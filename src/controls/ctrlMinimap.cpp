@@ -40,8 +40,6 @@ ctrlMinimap::ctrlMinimap( Window* parent,
 
 /**
  *  Größe ändern
- *
- *  @author Divan
  */
 void ctrlMinimap::Resize_(unsigned short width, unsigned short height)
 {

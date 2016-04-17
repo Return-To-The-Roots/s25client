@@ -49,8 +49,6 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author FloSoft
  */
 bool ctrlVarDeepening::Draw_()
 {

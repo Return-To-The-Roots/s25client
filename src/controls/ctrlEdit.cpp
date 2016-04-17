@@ -51,8 +51,6 @@ ctrlEdit::ctrlEdit(Window* parent,
  *  setzt den Text.
  *
  *  @param[in] text Der Text.
- *
- *  @author OLiver
  */
 void ctrlEdit::SetText(const std::string& text)
 {
@@ -87,8 +85,6 @@ std::string ctrlEdit::GetText() const
  *  zeichnet das Fenster.
  *
  *  @todo muss alles überarbeitet werden
- *
- *  @author OLiver
  */
 bool ctrlEdit::Draw_()
 {
@@ -150,8 +146,6 @@ bool ctrlEdit::Draw_()
  *  fügt ein Zeichen zum Text hinzu
  *
  *  @param[in] text Das Zeichen
- *
- *  @author FloSoft
  */
 void ctrlEdit::AddChar(unsigned int c)
 {
@@ -168,8 +162,6 @@ void ctrlEdit::AddChar(unsigned int c)
 
 /**
  *  entfernt ein Zeichen
- *
- *  @author FloSoft
  */
 void ctrlEdit::RemoveChar()
 {
@@ -187,8 +179,6 @@ void ctrlEdit::RemoveChar()
 
 /**
  *  benachrichtigt das Parent ("OnChange")
- *
- *  @author FloSoft
  */
 void ctrlEdit::Notify()
 {
@@ -205,8 +195,6 @@ void ctrlEdit::Msg_PaintAfter()
 
 /**
  *  Maustaste-gedrückt Callback
- *
- *  @author OLiver
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
@@ -227,8 +215,6 @@ bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 
 /**
  *  Taste-gedrückt Callback
- *
- *  @author FloSoft
  */
 bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 {

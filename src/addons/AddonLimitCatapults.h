@@ -24,8 +24,6 @@
 
 /**
  *  Addon for limiting the count of catapults
- *
- *  @author FloSoft
  */
 class AddonLimitCatapults : public AddonList
 {

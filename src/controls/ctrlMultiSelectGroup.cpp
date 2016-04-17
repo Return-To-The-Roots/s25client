@@ -33,8 +33,6 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
 
 /**
  *  Zeichenmethode.
- *
- *  @author jh
  */
 bool ctrlMultiSelectGroup::Draw_()
 {
@@ -45,8 +43,6 @@ bool ctrlMultiSelectGroup::Draw_()
 
 /**
  *  Selektiert einen neuen Button aus der Gruppe.
- *
- *  @author jh
  */
 void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 {
@@ -68,8 +64,6 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 
 /**
  *  Entfernt die Selektion eines Buttons aus der Gruppe.
- *
- *  @author jh
  */
 void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify)
 {
@@ -92,8 +86,6 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
- *
- *  @author jh
  */
 void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify)
 {

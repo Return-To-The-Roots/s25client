@@ -120,8 +120,6 @@ bool AudioDriverWrapper::LoadDriver()
  *  @param[in] size      Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size)
 {

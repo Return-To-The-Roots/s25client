@@ -32,10 +32,6 @@
  *  @todo Das Fenster ist zu klein, um 80 Zeichen pro Zeile darstellen zu
  *        koennen. Ein horizontaler Scrollbalken fuer 640x480 waere nicht
  *        schlecht.
- *
- *  @author Devil
- *  @author FloSoft
- *  @author OLiver
  */
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content)
     : IngameWindow(CGI_MISSION_STATEMENT, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("io", 5))

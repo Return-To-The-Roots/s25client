@@ -39,8 +39,6 @@
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
- *
- *  @author FloSoft
  */
 dskGameLoader::dskGameLoader(GameWorldViewer& worldViewer) : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)),
       position(0), worldViewer(worldViewer)
@@ -167,8 +165,6 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
 
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
- *
- *  @author FloSoft
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {

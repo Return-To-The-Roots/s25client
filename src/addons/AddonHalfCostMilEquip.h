@@ -23,8 +23,6 @@
 
 /**
  *  Addon allows a smith to create 1 shield + 1 sword for 1 iron + 1 coal instead of 2 iron + 2 coal
- *
- *  @author PoC
  */
 class AddonHalfCostMilEquip : public AddonBool
 {

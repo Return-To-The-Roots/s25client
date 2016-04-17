@@ -39,8 +39,6 @@ struct KeyEvent;
 /** @class dskCredits
  *
  *  Klasse des Credits Desktops.
- *
- *  @author FloSoft
  */
 
 

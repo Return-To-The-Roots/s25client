@@ -66,9 +66,6 @@ ctrlProgress::ctrlProgress(Window* parent,
 
 /**
  *  setzt die Position an den angegebenen Wert.
- *
- *  @author Devil
- *  @author FloSoft
  */
 void ctrlProgress::SetPosition(unsigned short position)
 {
@@ -79,8 +76,6 @@ void ctrlProgress::SetPosition(unsigned short position)
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author Devil
  */
 bool ctrlProgress::Draw_()
 {

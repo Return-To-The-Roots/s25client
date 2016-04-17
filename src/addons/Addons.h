@@ -28,8 +28,6 @@ class Window;
 
 /**
  *  Addon baseclass
- *
- *  @author FloSoft
  */
 class Addon
 {
@@ -65,8 +63,6 @@ class Addon
 /**
  *  Addon baseclass for option-list addons
  *  first option added will be the default one
- *
- *  @author FloSoft
  */
 class AddonList : public Addon
 {
@@ -97,8 +93,6 @@ class AddonList : public Addon
 
 /**
  *  Addon baseclass for boolean addons
- *
- *  @author FloSoft
  */
 class AddonBool : public Addon
 {

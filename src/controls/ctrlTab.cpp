@@ -71,8 +71,6 @@ bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
 
 /**
  *  fügt eine Tab hinzu.
- *
- *  @author OLiver
  */
 ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id)
 {
@@ -93,8 +91,6 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
 
 /**
  *  löscht alle Tabs.
- *
- *  @author OLiver
  */
 void ctrlTab::DeleteAllTabs()
 {
@@ -108,8 +104,6 @@ void ctrlTab::DeleteAllTabs()
 }
 /**
  *  aktiviert eine bestimmte Tabseite.
- *
- *  @author OLiver
  */
 void ctrlTab::SetSelection(unsigned short nr, bool  /*notify*/)
 {
@@ -141,8 +135,6 @@ void ctrlTab::SetSelection(unsigned short nr, bool  /*notify*/)
 /**
  *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
  *  werden können
- *
- *  @author OLiver
  */
 ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
 {
@@ -162,8 +154,6 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
  *  Zeichenmethode
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlTab::Draw_()
 {

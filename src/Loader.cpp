@@ -70,9 +70,6 @@ Loader::~Loader()
  *  Lädt alle allgemeinen Dateien.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
- *  @author OLiver
  */
 bool Loader::LoadFilesAtStart()
 {
@@ -101,7 +98,6 @@ bool Loader::LoadFilesAtStart()
  *  @brief
  *
  *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
- *  @author FloSoft
  */
 bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal)
 {
@@ -161,8 +157,6 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
  *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
  */
 bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal)
 {
@@ -187,8 +181,6 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
  *  Lädt die "override" lst-files aus den systemweiten und persönlichen verzeichnissen
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
  */
 bool Loader::LoadLsts(unsigned int dir)
 {
@@ -208,8 +200,6 @@ bool Loader::LoadLsts(unsigned int dir)
  *  Lädt alle Sounds.
  *
  *  @return liefert true bei Erfolg, false bei Fehler
- *
- *  @author FloSoft
  */
 bool Loader::LoadSounds()
 {
@@ -283,8 +273,6 @@ bool Loader::LoadSounds()
 /**
  *  sortiert einen string nach Startzahl, Namen oder Länge (in dieser Reihenfolge).
  *  Wird für das Sortieren der Dateien benutzt.
- *
- *  @author FloSoft
  */
 bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
 {
@@ -317,8 +305,6 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
 /**
  *  zerlegt einen String in Einzelteile
  *  Wird für das richtige Laden der Dateien benutzt.
- *
- *  @author FloSoft
  */
 std::vector<std::string> Loader::ExplodeString(std::string const& line, const char delim, const unsigned int max)
 {
@@ -344,8 +330,6 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
  *  Lädt die Settings.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
  */
 bool Loader::LoadSettings()
 {
@@ -356,8 +340,6 @@ bool Loader::LoadSettings()
  *  Speichert die Settings.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
  */
 bool Loader::SaveSettings()
 {
@@ -384,8 +366,6 @@ bool Loader::SaveSettings()
  *  @param[in] nations Array der zu ladenden Nationen.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author OLiver
  */
 bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 {
@@ -837,8 +817,6 @@ void Loader::fillCaches()
  *  @param[in] id die Addon ID
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
  */
 bool Loader::LoadFilesFromAddon(const AddonId id)
 {
@@ -865,8 +843,6 @@ void Loader::ClearTerrainTextures()
  *  zerschneidet die Terraintexturen.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author OLiver
  */
 bool Loader::CreateTerrainTextures()
 {
@@ -1028,8 +1004,6 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
 
 /**
  *  Extrahiert eine Textur aus den Daten.
- *
- *  @author OLiver
  */
 glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
@@ -1057,8 +1031,6 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
- *
- *  @author OLiver
  */
 libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift)
 {
@@ -1126,8 +1098,6 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
  *  @param[in] archiv  Das Zielarchivinfo.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
- *
- *  @author FloSoft
  */
 bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv)
 {
@@ -1155,8 +1125,6 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
  *  @param filePath Path to file or directory
  *  @param palette Palette to use for possible graphic files
  *  @param to Archtive to write to
- *
- *  @author FloSoft
  */
 bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
 {
@@ -1317,8 +1285,6 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
  *  @param pfad Path to file or directory
  *  @param palette Palette to use for possible graphic files
  *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
- *
- *  @author FloSoft
  */
 bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal)
 {

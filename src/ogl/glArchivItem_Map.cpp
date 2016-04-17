@@ -42,8 +42,6 @@ glArchivItem_Map::~glArchivItem_Map()
  *  @param[in] only_header Soll nur der Header gelesen werden?
  *
  *  @return liefert Null bei Erfolg, ungleich Null bei Fehler
- *
- *  @author FloSoft
  */
 int glArchivItem_Map::load(std::istream& file, bool only_header)
 {
@@ -60,8 +58,6 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
  *  liefert einen Map-Layer zurück.
  *
  *  @param[in] type Typ des Layers.
- *
- *  @author FloSoft
  */
 const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
@@ -75,8 +71,6 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
  *  liefert einen Map-Layer zurück.
  *
  *  @param[in] type Typ des Layers.
- *
- *  @author FloSoft
  */
 std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
@@ -96,8 +90,6 @@ bool glArchivItem_Map::HasLayer(MapLayer type) const
  *
  *  @param[in] type Typ des Layers.
  *  @param[in] pos  Position in den Daten.
- *
- *  @author FloSoft
  */
 unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) const
 {
@@ -110,8 +102,6 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) co
  *  @param[in] type  Typ des Layers.
  *  @param[in] pos   Position in den Daten.
  *  @param[in] value zu setzender Wert an der Position.
- *
- *  @author FloSoft
  */
 void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value)
 {
@@ -124,8 +114,6 @@ void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned ch
  *  @param[in] type Typ des Layers.
  *  @param[in] x    X-Position in den Daten.
  *  @param[in] y    Y-Position in den Daten.
- *
- *  @author FloSoft
  */
 unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned short x, unsigned short y) const
 {
@@ -139,8 +127,6 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned short x, un
  *  @param[in] x     X-Position in den Daten.
  *  @param[in] y     Y-Position in den Daten.
  *  @param[in] value zu setzender Wert an der Position.
- *
- *  @author FloSoft
  */
 void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned short x, unsigned short y, unsigned char value)
 {

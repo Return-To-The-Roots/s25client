@@ -36,8 +36,6 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
 
 /**
  *  Zeichnet die Textur.
- *
- *  @author FloSoft
  */
 void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color)
 {

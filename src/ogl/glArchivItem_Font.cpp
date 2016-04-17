@@ -125,8 +125,6 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
 
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
- *
- *  @author Marcus
  */
 inline void glArchivItem_Font::DrawChar(const unsigned c,
                                         std::vector<GL_T2F_V3F_Struct>& vertices,
@@ -176,8 +174,6 @@ inline void glArchivItem_Font::DrawChar(const unsigned c,
 
 /**
  *  @brief
- *
- *  @author FloSoft
  */
 void glArchivItem_Font::Draw(short x,
                              short y,
@@ -212,8 +208,6 @@ void glArchivItem_Font::Draw(short x,
  *  @param[in] length Länge des Textes
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
- *
- *  @author OLiver
  */
 void glArchivItem_Font::Draw(short x,
                              short y,
@@ -385,8 +379,6 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
  *                        Out: maximale Breite in Buchstaben der in "max"-Pixel reinpasst.
  *
  *  @return Breite des Textes in Pixeln
- *
- *  @author OLiver
  */
 unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned max_width, unsigned* max) const
 {
@@ -406,8 +398,6 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
 
 /**
  *  @brief
- *
- *  @author OLiver
  */
 std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& text)
 {
@@ -438,9 +428,6 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *  @param[in]     text            Text, der auf Zeilen verteilt werden soll
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
- *
- *
- *  @author OLiver
  */
 glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width)
 {
@@ -538,8 +525,6 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
 
 /**
  *  @brief
- *
- *  @author FloSoft
  */
 void glArchivItem_Font::initFont()
 {

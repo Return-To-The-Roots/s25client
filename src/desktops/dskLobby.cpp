@@ -312,8 +312,6 @@ bool dskLobby::ConnectToSelectedGame()
 
 /**
  *  Status: Verbindung verloren.
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Status_ConnectionLost()
 {
@@ -322,8 +320,6 @@ void dskLobby::LC_Status_ConnectionLost()
 
 /**
  *  Status: fehlerhafte Anfrage / kaputte Daten.
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Status_IncompleteMessage()
 {
@@ -332,8 +328,6 @@ void dskLobby::LC_Status_IncompleteMessage()
 
 /**
  *  Status: Benutzerdefinierter Fehler
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Status_Error(const std::string& error)
 {
@@ -343,8 +337,6 @@ void dskLobby::LC_Status_Error(const std::string& error)
 
 /**
  *  Status: Wir wurden erfolgreich mit einem Gameserver verbunden
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Connected()
 {
@@ -353,8 +345,6 @@ void dskLobby::LC_Connected()
 
 /**
  *  Chatnachricht erhalten
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {

@@ -38,9 +38,6 @@ Playlist::Playlist() : repeats(1), random(false)
 
 /**
  *  startet das Abspielen der Playlist.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void Playlist::Prepare()
 {
@@ -64,8 +61,6 @@ void Playlist::Prepare()
 
 /**
  *  Playlist in Datei speichern
- *
- *  @author OLiver
  */
 bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 {
@@ -98,8 +93,6 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 
 /**
  *  Playlist laden
- *
- *  @author OLiver
  */
 bool Playlist::Load(const std::string& filename)
 {
@@ -161,8 +154,6 @@ bool Playlist::Load(const std::string& filename)
 
 /**
  *  Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
- *
- *  @author OLiver
  */
 void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
 {
@@ -173,8 +164,6 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
 
 /**
  *  Liest die Werte aus dem iwMusicPlayer-Fenster
- *
- *  @author OLiver
  */
 void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
 {
@@ -200,9 +189,6 @@ void Playlist::SetStartSong(const unsigned id)
 }
 
 /**
- *
- *
- *  @author OLiver
  */
 MusicPlayer::MusicPlayer() : playing(false)
 {
@@ -210,8 +196,6 @@ MusicPlayer::MusicPlayer() : playing(false)
 
 /**
  *  Startet Abspielvorgang
- *
- *  @author OLiver
  */
 void MusicPlayer::Play()
 {
@@ -222,8 +206,6 @@ void MusicPlayer::Play()
 
 /**
  *  Stoppt Abspielvorgang
- *
- *  @author OLiver
  */
 void MusicPlayer::Stop()
 {
@@ -233,8 +215,6 @@ void MusicPlayer::Stop()
 
 /**
  * Spielt nächstes Stück ab
- *
- *  @author OLiver
  */
 void MusicPlayer::PlayNext()
 {

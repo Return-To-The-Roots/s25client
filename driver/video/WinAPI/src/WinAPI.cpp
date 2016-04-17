@@ -32,8 +32,6 @@
 
 /**
  *  Zeiger auf die aktuelle Instanz.
- *
- *  @author FloSoft
  */
 static VideoWinAPI* pVideoWinAPI = NULL;
 
@@ -43,8 +41,6 @@ static VideoWinAPI* pVideoWinAPI = NULL;
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
- *
- *  @author FloSoft
  */
 DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
@@ -64,44 +60,32 @@ DRIVERDLLAPI const char* GetDriverName(void)
 /** @class VideoWinAPI
  *
  *  Klasse für den WinAPI Videotreiber.
- *
- *  @author FloSoft
  */
 
 /** @var VideoWinAPI::dm_prev
  *
  *  Bildschirmmodus.
- *
- *  @author FloSoft
  */
 
 /** @var VideoWinAPI::screen
  *
  *  Fensterhandle.
- *
- *  @author FloSoft
  */
 
 /** @var VideoWinAPI::screen_dc
  *
  *  Zeichenkontext des Fensters.
- *
- *  @author FloSoft
  */
 
 /** @var VideoWinAPI::screen_rc
  *
  *  OpenGL-Kontext des Fensters.
- *
- *  @author FloSoft
  */
 
 /**
  *  Konstruktor von @p VideoWinAPI.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
- *
- *  @author FloSoft
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack):
     VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0),
@@ -121,8 +105,6 @@ VideoWinAPI::~VideoWinAPI(void)
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
  */
 const char* VideoWinAPI::GetName(void) const
 {
@@ -133,8 +115,6 @@ const char* VideoWinAPI::GetName(void) const
  *  Treiberinitialisierungsfunktion.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoWinAPI::Initialize(void)
 {
@@ -153,8 +133,6 @@ bool VideoWinAPI::Initialize(void)
 
 /**
  *  Treiberaufräumfunktion.
- *
- *  @author FloSoft
  */
 void VideoWinAPI::CleanUp(void)
 {
@@ -192,8 +170,6 @@ std::wstring AnsiToUtf8(LPCSTR tSource, int nLength = -1)
  *
  *  @bug Hardwarecursor ist bei Fenstermodus sichtbar,
  *       Cursor deaktivieren ist fehlerhaft
- *
- *  @author FloSoft
  */
 bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
@@ -350,8 +326,6 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
  *  @return @p true bei Erfolg, @p false bei Fehler
  *
  *  @todo Vollbildmodus ggf. wechseln
- *
- *  @author FloSoft
  */
 bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
@@ -424,8 +398,6 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
 
 /**
  *  Schliesst das Fenster.
- *
- *  @author FloSoft
  */
 void VideoWinAPI::DestroyScreen(void)
 {
@@ -465,8 +437,6 @@ void VideoWinAPI::DestroyScreen(void)
  *  Wechselt die OpenGL-Puffer.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoWinAPI::SwapBuffers(void)
 {
@@ -483,8 +453,6 @@ bool VideoWinAPI::SwapBuffers(void)
  *  Die Nachrichtenschleife.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoWinAPI::MessageLoop(void)
 {
@@ -504,8 +472,6 @@ bool VideoWinAPI::MessageLoop(void)
  *  Funktion zum Auslesen des TickCounts.
  *
  *  @return liefert den TickCount
- *
- *  @author FloSoft
  */
 unsigned long VideoWinAPI::GetTickCount(void) const
 {
@@ -518,8 +484,6 @@ unsigned long VideoWinAPI::GetTickCount(void) const
  *  @param[in] function Name der Funktion welche geholt werden soll.
  *
  *  @return Adresse der Funktion bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 void* VideoWinAPI::GetFunction(const char* function) const
 {
@@ -564,8 +528,6 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
  *
  *  @param[in] x X-Koordinate
  *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
  */
 void VideoWinAPI::SetMousePos(int x, int y)
 {
@@ -581,8 +543,6 @@ void VideoWinAPI::SetMousePos(int x, int y)
  *  Funktion zum Setzen der X-Koordinate der Maus.
  *
  *  @param[in] x X-Koordinate
- *
- *  @author FloSoft
  */
 void VideoWinAPI::SetMousePosX(int x)
 {
@@ -593,8 +553,6 @@ void VideoWinAPI::SetMousePosX(int x)
  *  Funktion zum Setzen der Y-Koordinate der Maus.
  *
  *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
  */
 void VideoWinAPI::SetMousePosY(int y)
 {
@@ -605,8 +563,6 @@ void VideoWinAPI::SetMousePosY(int y)
  *  Funktion zum Senden einer gedrückten Taste.
  *
  *  @param[in] c Tastencode
- *
- *  @author FloSoft
  */
 void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
 {
@@ -634,8 +590,6 @@ void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
  *  Funktion zum Senden einer gedrückten Taste.
  *
  *  @param[in] c Tastencode
- *
- *  @author FloSoft
  */
 void VideoWinAPI::OnWMKeyDown(unsigned int c, LPARAM lParam)
 {
@@ -680,8 +634,6 @@ void VideoWinAPI::OnWMKeyDown(unsigned int c, LPARAM lParam)
 
 /**
  *  Funktion zum Pasten von Text aus dem Clipboard.
- *
- *  @author FloSoft
  */
 void VideoWinAPI::OnWMPaste()
 {
@@ -711,8 +663,6 @@ void VideoWinAPI::OnWMPaste()
  *  @param[in] msg    Fensternachricht
  *  @param[in] wParam Erster Nachrichtenparameter
  *  @param[in] wParam Zweiter Nachrichtenparameter
- *
- *  @author FloSoft
  */
 LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -834,8 +784,6 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
 
 /**
  *  Get state of the modifier keys
- *
- *  @author Divan
  */
 KeyEvent VideoWinAPI::GetModKeyState(void) const
 {

@@ -1247,8 +1247,6 @@ void nobMilitary::HitOfCatapultStone()
 
 /**
  *  Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
- *
- *  @author OLiver
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {

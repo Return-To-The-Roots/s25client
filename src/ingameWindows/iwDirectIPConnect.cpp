@@ -167,8 +167,6 @@ void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const 
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
- *
- *  @author FloSoft
  */
 void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, bool button)
 {
@@ -182,8 +180,6 @@ void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, boo
 
 /**
  *  Setzt den Hostnamen im Editfeld.
- *
- *  @author FloSoft
  */
 void iwDirectIPConnect::SetHost(const std::string& hostIp)
 {
@@ -204,8 +200,6 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
 
 /**
  *  Setzt den Port im Editfeld.
- *
- *  @author FloSoft
  */
 void iwDirectIPConnect::SetPort(unsigned short port)
 {

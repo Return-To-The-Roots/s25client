@@ -31,8 +31,6 @@
  *
  *  @param[in] text        Der Text
  *  @param[in] destination Ziel der Nachricht
- *
- *  @author FloSoft
  */
 void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 {
@@ -56,8 +54,6 @@ void GameClient::Command_ToggleTeam(Team newteam)
 
 /**
  *  sendet den "Bereit"-Status.
- *
- *  @author FloSoft
  */
 void GameClient::Command_ToggleReady()
 {
@@ -74,9 +70,6 @@ void GameClient::Command_SetColor()
  *
  *  @param[in] old_id Alte Spieler-ID
  *  @param[in] new_id Neue Spieler-ID
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned char player2)
 {

@@ -30,8 +30,6 @@
  *  enemy harbors block attacks
  *
  *  no sea attacks
- *
- *  @author poc
  */
 class AddonSeaAttack : public AddonList
 {

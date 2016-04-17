@@ -65,8 +65,6 @@ GameEvent* EventManager::AddEvent(GameEvent* event)
  *  @param[in] obj       Das Objekt
  *  @param[in] gf_length Die GameFrame-Länge
  *  @param[in] id        ID des Events
- *
- *  @author OLiver
  */
 GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id)
 {
@@ -104,8 +102,6 @@ GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length,
 
 /**
  *  führt alle Events des aktuellen GameFrames aus.
- *
- *  @author OLiver
  */
 void EventManager::NextGF()
 {

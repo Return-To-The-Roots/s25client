@@ -53,8 +53,6 @@
 /** @class dskOptions
  *
  *  Klasse des Optionen Desktops.
- *
- *  @author OLiver
  */
 
 dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))

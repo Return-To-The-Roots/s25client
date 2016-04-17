@@ -93,8 +93,6 @@ TerrainRenderer::PointF TerrainRenderer::GetBAround(const MapPoint pt, const uns
 
 /**
  *  erzeugt die Terrain-Vertices.
- *
- *  @author OLiver
  */
 void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 {
@@ -173,9 +171,6 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewe
 
 /**
  *  erzeugt die OpenGL-Vertices.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 {
@@ -635,9 +630,6 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
 
 /**
  *  zeichnet den Kartenausschnitt.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 {
@@ -871,8 +863,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
  *  @param[in,out] y  Die Y-Koordinate
  *  @param[out]    xo Das X-Offset
  *  @param[out]    yo Das Y-Offset
- *
- *  @author OLiver
  */
 MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) const
 {

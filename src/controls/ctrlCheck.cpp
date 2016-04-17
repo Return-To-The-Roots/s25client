@@ -47,8 +47,6 @@ ctrlCheck::ctrlCheck(Window* parent,
  *  @param[in] msg   Die Nachricht.
  *  @param[in] id    Die ID des Quellsteuerelements.
  *  @param[in] param Ein nachrichtenspezifischer Parameter.
- *
- *  @author OLiver
  */
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
@@ -65,8 +63,6 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlCheck::Draw_()
 {

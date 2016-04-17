@@ -236,8 +236,6 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
- *
- *  @author Divan
  */
 void dskHostGame::Resize_(unsigned short  /*width*/, unsigned short  /*height*/)
 {
@@ -398,8 +396,6 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
 /**
  *  Methode vor dem Zeichnen
- *
- *  @author OLiver
  */
 void dskHostGame::Msg_PaintBefore()
 {
@@ -953,8 +949,6 @@ void dskHostGame::CI_Error(const ClientError ce)
 
 /**
  *  (Lobby-)RankingInfo: Rankinginfo eines bestimmten Benutzers empfangen
- *
- *  @author FloSoft
  */
 void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
 {
@@ -967,8 +961,6 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
 
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
- *
- *  @author FloSoft
  */
 void dskHostGame::LC_Status_Error(const std::string& error)
 {

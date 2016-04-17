@@ -42,8 +42,6 @@
 /** @class dskSinglePlayer
  *
  *  Klasse des Einzelspieler Desktops.
- *
- *  @author OLiver
  */
 
 dskSinglePlayer::dskSinglePlayer() : Desktop(LOADER.GetImageN("menu", 0))

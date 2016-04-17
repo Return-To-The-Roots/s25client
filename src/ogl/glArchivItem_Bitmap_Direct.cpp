@@ -40,8 +40,6 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap
  *  @param[in] y       Y Koordinate des Pixels
  *  @param[in] color   Farbe des Pixels
  *  @param[in] palette Grundpalette
- *
- *  @author FloSoft
  */
 void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette)
 {
@@ -81,8 +79,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
  *  @param[in] g Grüner Wert
  *  @param[in] b Blauer Wert
  *  @param[in] a Alpha Wert (bei paletted nur 0xFF/0x00 unterstützt)
- *
- *  @author FloSoft
  */
 void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {

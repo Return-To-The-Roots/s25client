@@ -24,8 +24,6 @@
 
 /**
  *  Addon for changing the maximum length of waterways.
- *
- *  @author Divan
  */
 class AddonDemolitionProhibition : public AddonList
 {

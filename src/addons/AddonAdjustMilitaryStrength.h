@@ -36,8 +36,6 @@
  *  Minimum strength
  *  - Dice rolling
  *  - All ranks get same dice
- *
- *  @author CS2001
  */
 class AddonAdjustMilitaryStrength : public AddonList
 {

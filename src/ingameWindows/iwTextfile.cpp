@@ -38,10 +38,6 @@
  *  @todo Das Fenster ist zu klein, um 80 Zeichen pro Zeile darstellen zu
  *        koennen. Ein horizontaler Scrollbalken fuer 640x480 waere nicht
  *        schlecht.
- *
- *  @author Devil
- *  @author FloSoft
- *  @author OLiver
  */
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("resource", 41))

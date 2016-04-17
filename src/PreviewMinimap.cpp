@@ -51,10 +51,6 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     CreateMapTexture();
 }
 
-/**
-*
-*  @author OLiver
-*/
 unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;

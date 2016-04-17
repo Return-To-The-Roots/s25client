@@ -42,8 +42,6 @@ ctrlPercent::ctrlPercent(Window* parent,
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlPercent::Draw_()
 {

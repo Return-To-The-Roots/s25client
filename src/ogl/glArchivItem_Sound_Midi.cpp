@@ -29,8 +29,6 @@
  *
  *  @param[in] volume Lautstärke der Musik.
  *  @param[in] loop   Endlosschleife ja/nein
- *
- *  @author FloSoft
  */
 void glArchivItem_Sound_Midi::Play(const unsigned repeats)
 {

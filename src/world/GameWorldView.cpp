@@ -498,8 +498,6 @@ void GameWorldView::ToggleShowNamesAndProductivity()
 
 /**
  *  verschiebt das Bild zu einer bestimmten Stelle.
- *
- *  @author FloSoft
  */
 void GameWorldView::MoveTo(int x, int y, bool absolute)
 {

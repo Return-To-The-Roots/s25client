@@ -122,8 +122,6 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
 
 /**
  *  zerteilt die Straße in 2 Teile.
- *
- *  @author OLiver
  */
 void RoadSegment::SplitRoad(noFlag* splitflag)
 {
@@ -207,8 +205,6 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 /**
  *  Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
  *  Nur bei Straßen mit 2 Flagge aufrufen, nicht bei Hauseingängen etc. !!
- *
- *  @author OLiver
  */
 bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware_immediately) const
 {
@@ -257,8 +253,6 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
  *  Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
  *
  *  rn ist die Flagge, von der sie kommt
- *
- *  @author OLiver
  */
 void RoadSegment::AddWareJob(const noRoadNode* rn)
 {
@@ -293,8 +287,6 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
 
 /**
  *  Eine Ware will nicht mehr befördert werden.
- *
- *  @author OLiver
  */
 void RoadSegment::WareJobRemoved(const noFigure* const exception)
 {
@@ -308,8 +300,6 @@ void RoadSegment::WareJobRemoved(const noFigure* const exception)
 
 /**
  *  Baut die Straße zu einer Eselstraße aus.
- *
- *  @author OLiver
  */
 void RoadSegment::UpgradeDonkeyRoad()
 {
@@ -340,8 +330,6 @@ void RoadSegment::UpgradeDonkeyRoad()
 
 /**
  *  Soll versuchen einen Esel zu bekommen.
- *
- *  @author OLiver
  */
 void RoadSegment::TryGetDonkey()
 {
@@ -352,8 +340,6 @@ void RoadSegment::TryGetDonkey()
 
 /**
  *  Ein Träger muss kündigen, aus welchen Gründen auch immer.
- *
- *  @author OLiver
  */
 void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 {
@@ -373,8 +359,6 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 }
 /**
  * Return flag at the other end of the road
- *
- * @author PoC
  */
 noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 {
@@ -389,8 +373,6 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 }
 /**
  * Return last road direction to flag at the other end of the road
- *
- * @author PoC
  */
 unsigned char RoadSegment::GetOtherFlagDir(const noFlag* flag)
 {

@@ -43,8 +43,6 @@ ctrlMultiline::ctrlMultiline(Window* parent,
 
 /**
  *  fügt eine Zeile hinzu.
- *
- *  @author OLiver
  */
 void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool scroll)
 {
@@ -62,8 +60,6 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlMultiline::Draw_()
 {

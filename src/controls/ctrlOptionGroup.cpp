@@ -33,8 +33,6 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent,
 
 /**
  *  Zeichenmethode.
- *
- *  @author OLiver
  */
 bool ctrlOptionGroup::Draw_()
 {
@@ -45,8 +43,6 @@ bool ctrlOptionGroup::Draw_()
 
 /**
  *  wählt einen Button aus der Gruppe aus.
- *
- *  @author OLiver
  */
 void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 {

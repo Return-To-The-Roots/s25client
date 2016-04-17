@@ -23,8 +23,6 @@
 
 /**
  *  Addon for a Charburner
- *
- *  @author OLiver
  */
 class AddonCharburner : public AddonBool
 {

@@ -8,8 +8,6 @@
 
 /**
  *  Addon for disable coins by default
- *
- *  @author MrHase
  */
 class AddonNoCoinsDefault : public AddonBool
 {

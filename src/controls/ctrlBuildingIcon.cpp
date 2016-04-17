@@ -41,8 +41,6 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlBuildingIcon::Draw_()
 {

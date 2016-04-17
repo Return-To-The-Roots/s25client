@@ -32,8 +32,6 @@ Random::Random()
  *  Initialisiert den Zufallszahlengenerator.
  *
  *  @param[in] init Zahl mit der der Zufallsgenerator initialisiert wird.
- *
- *  @author OLiver
  */
 void Random::Init(const unsigned int init)
 {
@@ -57,8 +55,6 @@ int Random::GetNextState(const int rngState, const int maxVal)
  *  @param[in] max @p max-1 ist die maximale Zufallszahl welche geliefert werden soll.
  *
  *  @return liefert eine Zufallszahl.
- *
- *  @author OLiver
  */
 int Random::Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max)
 {

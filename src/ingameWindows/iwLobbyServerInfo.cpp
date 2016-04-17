@@ -29,8 +29,6 @@
 
 /**
  *  aktualisiert das Serverinfo.
- *
- *  @author Devil
  */
 void iwLobbyServerInfo::UpdateServerInfo()
 {
@@ -84,8 +82,6 @@ void iwLobbyServerInfo::Msg_Timer(const unsigned int ctrl_id)
 
 /**
  *  setzt Serverinfo und ServerNummer.
- *
- *  @author Devil
  */
 void iwLobbyServerInfo::Set(const LobbyServerInfo* serverinfo, unsigned int server)
 {

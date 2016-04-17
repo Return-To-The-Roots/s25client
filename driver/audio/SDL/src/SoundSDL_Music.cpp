@@ -36,8 +36,6 @@ SoundSDL_Music::~SoundSDL_Music()
  *  @param[in] loop  @p true für ununterbrochenes Abspielen
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 //int SoundSDL_Music::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
@@ -65,8 +63,6 @@ SoundSDL_Music::~SoundSDL_Music()
  *  Abspielen Stoppen.
  *
  *  @param[in] channel Ignored
- *
- *  @author FloSoft
  */
 //void SoundSDL_Music::Stop(int channel)
 //{

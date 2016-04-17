@@ -188,8 +188,6 @@ void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selec
 
 /**
  *  get scrollbar notification
- *
- *  @author FloSoft
  */
 void iwAddons::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {

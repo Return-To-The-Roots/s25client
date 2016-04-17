@@ -24,8 +24,6 @@
 
 /**
  *  set ship movement speed
- *
- *  @author Marcus
  */
 class AddonShipSpeed : public AddonList
 {

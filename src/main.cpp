@@ -97,8 +97,6 @@ void WaitForEnter()
  *
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
  *  @param[in] exception_pointer Genaue Beschreibung der Exception (siehe GetExceptionInformation)
- *
- *  @author OLiver
  */
 void ExceptionHandler (unsigned int exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
@@ -227,8 +225,6 @@ void UninstallSignalHandlers()
 
 /**
  *  Exit-Handler, wird bei @p exit ausgeführt.
- *
- *  @author FloSoft
  */
 void ExitHandler()
 {
@@ -395,9 +391,6 @@ int RunProgram(po::variables_map& options)
  *  @param[in] argv Array der übergebenen Argumente
  *
  *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
- *
- *  @author FloSoft
- *  @author OLiver
  */
 int main(int argc, char** argv)
 {

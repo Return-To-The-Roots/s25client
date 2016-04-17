@@ -23,8 +23,6 @@
 
 /**
  *  changes the duration a fire will burn when a building is destoryed
- *
- *  @author PoC
  */
 class AddonBurnDuration : public AddonList
 {

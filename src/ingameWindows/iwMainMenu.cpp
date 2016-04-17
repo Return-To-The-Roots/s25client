@@ -89,8 +89,6 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv)
 
 /**
  *  Button-Click-Handler.
- *
- *  @author OLiver
 */
 void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {

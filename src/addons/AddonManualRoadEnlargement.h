@@ -24,8 +24,6 @@
 
 /**
  *  Addon for allowing to have unlimited resources.
- *
- *  @author FloSoft
  */
 class AddonManualRoadEnlargement : public AddonBool
 {

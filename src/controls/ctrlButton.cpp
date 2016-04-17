@@ -106,8 +106,6 @@ void ctrlButton::TestMouseOver()
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlButton::Draw_()
 {

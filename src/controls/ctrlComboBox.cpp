@@ -54,9 +54,6 @@ ctrlComboBox::ctrlComboBox(Window* parent,
 
 /**
  *  Größe verändern
- *
- *  @author Divan
- *  @author OLiver
  */
 void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
 {
@@ -212,8 +209,6 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int sele
 
 /**
  *  fügt einen String zur Liste hinzu.
- *
- *  @author OLiver
  */
 void ctrlComboBox::AddString(const std::string& text)
 {
@@ -223,8 +218,6 @@ void ctrlComboBox::AddString(const std::string& text)
 
 /**
  *  löscht alle Items der Liste.
- *
- *  @author OLiver
  */
 void ctrlComboBox::DeleteAllItems()
 {
@@ -234,8 +227,6 @@ void ctrlComboBox::DeleteAllItems()
 
 /**
  *  wählt ein Item aus
- *
- *  @author OLiver
  */
 void ctrlComboBox::SetSelection(unsigned short selection)
 {
@@ -246,8 +237,6 @@ void ctrlComboBox::SetSelection(unsigned short selection)
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlComboBox::Draw_()
 {
@@ -271,8 +260,6 @@ bool ctrlComboBox::Draw_()
 
 /**
  *  blendet die Liste ein oder aus.
- *
- *  @author OLiver
  */
 void ctrlComboBox::ShowList(bool show)
 {

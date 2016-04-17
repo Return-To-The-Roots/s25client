@@ -217,8 +217,6 @@ void iwWares::Msg_PaintBefore()
  *  bestimmte Inventurseite zeigen.
  *
  *  @param[in] page Die neue Seite
- *
- *  @author FloSoft
  */
 void iwWares::SetPage(unsigned char page)
 {

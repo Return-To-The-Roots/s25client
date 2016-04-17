@@ -29,8 +29,6 @@
 /** @class dskIntro
  *
  *  Klasse des Intro Desktops.
- *
- *  @author FloSoft
  */
 
 dskIntro::dskIntro() : Desktop(LOADER.GetImageN("menu", 0))

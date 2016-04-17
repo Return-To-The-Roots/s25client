@@ -33,10 +33,6 @@ IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
     CreateMapTexture();
 }
 
-/**
-*
-*  @author OLiver
-*/
 unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
@@ -142,8 +138,6 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 
 /**
 *  Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
-*
-*  @author OLiver
 */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
@@ -167,8 +161,6 @@ unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 
 /**
 *  Prüft ob an einer Stelle eine Straße gezeichnet werden muss
-*
-*  @author OLiver
 */
 bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 {
@@ -184,8 +176,6 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 /**
 *  Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein
 *  (player muss mit +1 gegeben sein!)
-*
-*  @author OLiver
 */
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
@@ -197,10 +187,6 @@ unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsig
         (GetBlue(color) + GetBlue(player_color)) / 2);
 }
 
-/**
-*
-*  @author OLiver
-*/
 void IngameMinimap::UpdateNode(const MapPoint pt)
 {
     if(!nodes_updated[GetMMIdx(pt)])
@@ -213,8 +199,6 @@ void IngameMinimap::UpdateNode(const MapPoint pt)
 /**
 *  Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
 *  in dem Falle: Karte aktualisieren
-*
-*  @author OLiver
 */
 void IngameMinimap::BeforeDrawing()
 {
@@ -255,8 +239,6 @@ void IngameMinimap::BeforeDrawing()
 
 /**
 *  Updatet die gesamte Minimap
-*
-*  @author OLiver
 */
 void IngameMinimap::UpdateAll()
 {
@@ -267,8 +249,6 @@ void IngameMinimap::UpdateAll()
 /**
 *  Alle Punkte Updaten, bei denen das DrawnObject
 *  gleich dem übergebenen drawn_object ist
-*
-*  @author OLiver
 */
 void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 {
@@ -294,31 +274,18 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
     }
 }
 
-/**
-*  Die einzelnen Dinge umschalten
-*
-*  @author OLiver
-*/
 void IngameMinimap::ToggleTerritory()
 {
     territory = !territory;
     UpdateAll(DO_PLAYER);
 }
 
-/**
-*
-*  @author OLiver
-*/
 void IngameMinimap::ToggleHouses()
 {
     houses = !houses;
     UpdateAll(DO_BUILDING);
 }
 
-/**
-*
-*  @author OLiver
-*/
 void IngameMinimap::ToggleRoads()
 {
     roads = !roads;

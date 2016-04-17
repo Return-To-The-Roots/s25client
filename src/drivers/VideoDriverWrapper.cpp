@@ -55,8 +55,6 @@ VideoDriverWrapper::~VideoDriverWrapper()
  *  @param[in] second @p true wenn 2te Chance aktiv, @p false wenn 2te Chance ausgeführt werden soll.
  *
  *  @return liefert @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::LoadDriver()
 {
@@ -90,8 +88,6 @@ bool VideoDriverWrapper::LoadDriver()
  *  @param[in] height Höhe des Fensters
  *
  *  @return Bei Erfolg @p true ansonsten @p false
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen)
 {
@@ -152,8 +148,6 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
  *  @param[in] fullscreen Vollbild oder nicht
  *
  *  @return Bei Erfolg @p true ansonsten @p false
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const unsigned short screenHeight, const bool fullscreen)
 {
@@ -174,8 +168,6 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
 
 /**
  *  Zerstört den DriverWrapper-Bildschirm.
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::DestroyScreen()
 {
@@ -203,8 +195,6 @@ bool VideoDriverWrapper::DestroyScreen()
  *  @param[in] extension Die zu suchende Extension
  *
  *  @return Bei Erfolg @p true ansonsten @p false
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::hasExtension(const std::string& extension)
 {
@@ -236,8 +226,6 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
 
 /**
  *  Löscht alle herausgegebenen Texturen aus dem Speicher.
- *
- *  @author FloSoft
  */
 void VideoDriverWrapper::CleanUp()
 {
@@ -360,8 +348,6 @@ bool VideoDriverWrapper::Initialize()
 
 /**
  *  Viewport (neu) setzen
- *
- *  @author FloSoft
  */
 void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
 {
@@ -389,8 +375,6 @@ void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
 
 /**
  *  lädt die driverwrapper-extensions.
- *
- *  @author flosoft
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
@@ -445,8 +429,6 @@ unsigned int VideoDriverWrapper::GetTickCount()
  *  @param[in] extension Die Extension-Funktion
  *
  *  @return @p NULL bei Fehler, Adresse der gewünschten Funktion bei Erfolg.
- *
- *  @author FloSoft
  */
 void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
@@ -493,8 +475,6 @@ bool VideoDriverWrapper::IsRightDown()
 
 /**
  *  setzt die Mausposition
- *
- *  @author FloSoft
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
@@ -507,8 +487,6 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
 
 /**
  *  Listet verfügbare Videomodi auf.
- *
- *  @author OLiver
  */
 void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
@@ -524,8 +502,6 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) con
 
 /**
  *  Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows.
- *
- *  @author OLiver
  */
 void* VideoDriverWrapper::GetMapPointer() const
 {

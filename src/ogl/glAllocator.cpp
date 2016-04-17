@@ -41,8 +41,6 @@
  *
  *  @param[in] type    Der Typ des Items
  *  @param[in] subtype Der Subtyp des Items
- *
- *  @author FloSoft
  */
 libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsiedler2::SOUNDTYPES subtype) const
 {
@@ -87,8 +85,6 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsied
  *  Der GL-Item-Allocator.
  *
  *  @param[in] item    Das zu kopierende Item
- *
- *  @author FloSoft
  */
 libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item) const
 {

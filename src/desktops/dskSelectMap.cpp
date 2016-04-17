@@ -52,29 +52,21 @@
 /** @class dskSelectMap
  *
  *  Klasse des Map-Auswahl Desktops.
- *
- *  @author OLiver
  */
 
 /** @var dskSelectMap::type
  *
  *  Typ des Servers.
- *
- *  @author OLiver
  */
 
 /** @var dskSelectMap::name
  *
  *  Name des Servers.
- *
- *  @author OLiver
  */
 
 /** @var dskSelectMap::pass
  *
  *  Passwort des Servers.
- *
- *  @author OLiver
  */
 
 /**
@@ -83,9 +75,6 @@
  *  @param[in] type Typ des Servers
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
- *
- *  @author OLiver
- *  @author FloSoft
  */
 dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     : Desktop(LOADER.GetImageN("setup015", 0)),
@@ -140,9 +129,6 @@ dskSelectMap::~dskSelectMap()
 }
 
 /**
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const int selection)
 {
@@ -167,8 +153,6 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
 
 /**
  *  Occurs when user changes the selection in the table of maps.
- *
- *  @author FloSoft
  */
 void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int selection)
 {
@@ -329,8 +313,6 @@ void dskSelectMap::CI_Error(const ClientError ce)
 
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
- *
- *  @author FloSoft
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
@@ -339,8 +321,6 @@ void dskSelectMap::LC_Status_Error(const std::string& error)
 
 /**
  *  (Lobby-)Server wurde erstellt.
- *
- *  @author FloSoft
  */
 void dskSelectMap::LC_Created()
 {

@@ -25,8 +25,6 @@
 /**
  *  Addon for changing the behavior of the military setting
  *  defender
- *
- *  @author jh
  */
 class AddonDefenderBehavior : public AddonList
 {

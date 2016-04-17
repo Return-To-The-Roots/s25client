@@ -25,8 +25,6 @@
 
 /**
  *  Addon for disable the AI debugging window
- *
- *  @author jh
  */
 class AddonAIDebugWindow : public AddonBool
 {

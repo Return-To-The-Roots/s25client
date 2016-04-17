@@ -55,8 +55,6 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
  *  setzt den Expeditionsknopf korrekt
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
- *
- *  @author FloSoft
  */
 void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 {
@@ -85,8 +83,6 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
  *  setzt den Expeditionsknopf korrekt
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
- *
- *  @author OLiver
  */
 void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 {

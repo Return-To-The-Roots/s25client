@@ -110,8 +110,6 @@ GlobalGameSettings::~GlobalGameSettings()
  *
  *  if @p recreate is @p true then the addons are re-registered
  *  and set to defaults
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::reset(bool recreate)
 {
@@ -211,8 +209,6 @@ void GlobalGameSettings::registerAddon(Addon* addon)
 
 /**
  *  loads the saved addon configuration from the SETTINGS.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::LoadSettings()
 {
@@ -224,8 +220,6 @@ void GlobalGameSettings::LoadSettings()
 
 /**
  *  saves the current addon configuration to the SETTINGS.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::SaveSettings() const
 {
@@ -236,8 +230,6 @@ void GlobalGameSettings::SaveSettings() const
 
 /**
  *  saves the current addon configuration to a serializer object.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::Serialize(Serializer& ser) const
 {
@@ -263,8 +255,6 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
 
 /**
  *  reads the current addon configuration from a serializer object.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::Deserialize(Serializer& ser)
 {

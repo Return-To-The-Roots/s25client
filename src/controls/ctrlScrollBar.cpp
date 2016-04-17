@@ -155,8 +155,6 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
 
 /**
  *  setzt die Scroll-Position.
- *
- *  @author OLiver
  */
 void ctrlScrollBar::SetPos(unsigned short scroll_pos)
 {
@@ -166,8 +164,6 @@ void ctrlScrollBar::SetPos(unsigned short scroll_pos)
 
 /**
  *  setzt die Scroll-Höhe.
- *
- *  @author OLiver
  */
 void ctrlScrollBar::SetRange(unsigned short scroll_range)
 {
@@ -177,8 +173,6 @@ void ctrlScrollBar::SetRange(unsigned short scroll_range)
 
 /**
  *  setzt die Seiten-Höhe.
- *
- *  @author OLiver
  */
 void ctrlScrollBar::SetPageSize(unsigned short pagesize)
 {
@@ -211,8 +205,6 @@ void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlScrollBar::Draw_()
 {
@@ -230,8 +222,6 @@ bool ctrlScrollBar::Draw_()
 
 /**
  *  berechnet die Werte für die Scrollbar.
- *
- *  @author FloSoft
  */
 void ctrlScrollBar::CalculateScrollBar(unsigned short height)
 {

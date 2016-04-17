@@ -112,8 +112,6 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
 
 /**
  *  schreibt die GlobalGameSettings in die Datei.
- *
- *  @author OLiver
  */
 void SavedFile::WriteGGS(BinaryFile& file)
 {
@@ -126,8 +124,6 @@ void SavedFile::WriteGGS(BinaryFile& file)
 
 /**
  *  liest die GlobalGameSettings aus der Datei.
- *
- *  @author OLiver
  */
 void SavedFile::ReadGGS(BinaryFile& file)
 {

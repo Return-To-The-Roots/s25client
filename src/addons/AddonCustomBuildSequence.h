@@ -24,8 +24,6 @@
 
 /**
  *  Addon for allowing a custom build sequence
- *
- *  @author Divan
  */
 class AddonCustomBuildSequence : public AddonBool
 {

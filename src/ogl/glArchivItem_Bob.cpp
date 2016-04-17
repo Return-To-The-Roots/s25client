@@ -26,8 +26,6 @@
 
 /**
  *  Zeichnet einen Animationsstep.
- *
- *  @author FloSoft
  */
 void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color)
 {

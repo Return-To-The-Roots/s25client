@@ -45,8 +45,6 @@ ctrlDeepening::ctrlDeepening(Window* parent,
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlDeepening::Draw_()
 {
@@ -80,8 +78,6 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
 
 /**
  *  zeichnet das Fenster.
- *
- *  @author Divan
  */
 void ctrlColorDeepening::DrawContent() const
 {

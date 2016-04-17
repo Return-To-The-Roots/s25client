@@ -82,8 +82,6 @@ void Minimap::BeforeDrawing()
 
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit
- *
- *  @author OLiver
  */
 unsigned Minimap::VaryBrightness(const unsigned color, const int range) const
 {

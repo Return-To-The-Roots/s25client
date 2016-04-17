@@ -32,8 +32,6 @@
  *
  *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
  *  mehrfach betätigen kann.
- *
- *  @author OLiver
  */
 iwPleaseWait::iwPleaseWait() : IngameWindow(CGI_PLEASEWAIT, 0xFFFF, 0xFFFF, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true)
 {

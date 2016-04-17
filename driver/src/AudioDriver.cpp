@@ -30,15 +30,11 @@ IAudioDriver::~IAudioDriver(){}
 /** @class AudioDriver
  *
  *  Basisklasse für einen Audiotreiber.
- *
- *  @author FloSoft
  */
 
 /** @var AudioDriver::initialized
  *
  *  Initialisierungsstatus.
- *
- *  @author FloSoft
  */
 
 AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli)
@@ -60,8 +56,6 @@ AudioDriver::~AudioDriver()
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
  */
 const char* AudioDriver::GetName() const
 {

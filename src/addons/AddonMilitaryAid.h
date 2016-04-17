@@ -26,8 +26,6 @@
  *  Addon for indicating military building construction possibility.
  *
  *  Gfx by SpikeOne.
- *
- *  @author KaiN
  */
 class AddonMilitaryAid : public AddonBool
 {

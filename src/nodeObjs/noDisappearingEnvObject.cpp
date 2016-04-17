@@ -35,8 +35,6 @@
  *  @param[in] y        Y-Position
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
- *
- *  @author OLiver
  */
 noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
         const unsigned living_time, const unsigned add_var_living_time)
@@ -87,8 +85,6 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 
 /**
  *  Benachrichtigen, wenn neuer GF erreicht wurde.
- *
- *  @author FloSoft
  */
 void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned int id)
 {
@@ -110,8 +106,6 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 
 /**
  *  Räumt das Objekt auf.
- *
- *  @author FloSoft
  */
 void noDisappearingEnvObject::Destroy_noDisappearingEnvObject()
 {

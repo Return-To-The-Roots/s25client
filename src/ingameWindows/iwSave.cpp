@@ -194,8 +194,6 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  c
 
 /**
  *  Spiel laden.
- *
- *  @author OLiver
  */
 void iwLoad::SaveLoad()
 {

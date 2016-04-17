@@ -27,8 +27,6 @@ noNothing::noNothing() : noBase(NOP_NOTHING)
 
 /**
  *  An x,y zeichnen.
- *
- *  @author OLiver
  */
 void noNothing::Draw(int  /*x*/, int  /*y*/)
 {
