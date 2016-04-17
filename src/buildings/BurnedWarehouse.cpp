@@ -25,6 +25,7 @@
 #include "Random.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "world/GameWorldGame.h"
 #include "figures/nofPassiveWorker.h"
 
 // Include last!

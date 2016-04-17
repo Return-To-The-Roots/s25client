@@ -31,6 +31,7 @@
 #include "GameEvent.h"
 #include "ingameWindows/iwTools.h"
 #include "PostMsg.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameTypes/MessageTypes.h"
 #include "Log.h"

@@ -32,6 +32,7 @@
 #include "FOWObjects.h"
 #include "GameServer.h"
 #include "ai/AIPlayerJH.h"
+#include "world/GameWorldViewer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
 #include "addons/AddonMaxWaterwayLength.h"

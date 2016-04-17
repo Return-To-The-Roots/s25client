@@ -22,6 +22,7 @@
 
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "noShip.h"
 #include "GameClient.h"

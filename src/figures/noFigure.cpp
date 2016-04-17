@@ -30,6 +30,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

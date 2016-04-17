@@ -26,6 +26,7 @@
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
 #include "nofPassiveSoldier.h"
+#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 
 // Include last!

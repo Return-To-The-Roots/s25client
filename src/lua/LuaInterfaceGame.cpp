@@ -20,6 +20,7 @@
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"

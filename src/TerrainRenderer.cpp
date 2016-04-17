@@ -25,6 +25,7 @@
 #include "Settings.h"
 #include "GameClient.h"
 #include "world/MapGeometry.h"
+#include "world/GameWorldViewer.h"
 #include "world/GameWorldView.h"
 #include "gameData/TerrainData.h"
 #include "ExtensionList.h"
@@ -129,11 +130,7 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 /// erzeugt Vertex
 void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    int x = pt.x * TR_W;
-    if(pt.y & 1)
-        x += TR_W / 2;
-    GetVertex(pt).pos.x = float(x);
-    GetVertex(pt).pos.y = float(pt.y * TR_H - HEIGHT_FACTOR * gwv.GetNode(pt).altitude + HEIGHT_FACTOR * 0x0A );
+    GetVertex(pt).pos = Point<float>(gwv.GetNodePos(pt));
 }
 
 

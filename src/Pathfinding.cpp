@@ -19,6 +19,7 @@
 // Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/FreePathFinderImpl.h"

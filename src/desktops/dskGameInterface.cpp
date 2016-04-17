@@ -61,6 +61,8 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldViewer.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
 #include "gameData/TerrainData.h"
@@ -85,9 +87,9 @@ class noShip;
  *
  *  @author OLiver
  */
-dskGameInterface::dskGameInterface(): Desktop(NULL),
-    gwv(GAMECLIENT.QueryGameWorldViewer(), Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
-    gwb(GAMECLIENT.QueryGameWorldViewer()),
+dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL),
+    gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
+    gwb(worldViewer),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
     selected(0, 0), minimap(gwv.GetViewer()), isScrolling(false), zoomLvl(0)

@@ -33,6 +33,7 @@
 #include "PostMsg.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"

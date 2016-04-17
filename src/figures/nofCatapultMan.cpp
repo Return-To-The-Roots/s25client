@@ -24,6 +24,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "CatapultStone.h"
+#include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
 #include "gameData/JobConsts.h"
 #include "SerializedGameData.h"

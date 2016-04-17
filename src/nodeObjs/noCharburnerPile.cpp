@@ -24,6 +24,7 @@
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "noEnvObject.h"
 #include "noFire.h"
 #include "ogl/glArchivItem_Bitmap.h"

@@ -27,6 +27,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

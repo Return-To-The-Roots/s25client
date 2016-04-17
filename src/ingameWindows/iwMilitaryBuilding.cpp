@@ -30,6 +30,7 @@
 #include "iwHelp.h"
 #include "buildings/nobMilitary.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "figures/nofPassiveSoldier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"

@@ -33,6 +33,7 @@
 #include "SerializedGameData.h"
 #include "Loader.h"
 #include "GameInterface.h"
+#include "world/GameWorldGame.h"
 #include "Log.h"
 
 // Include last!

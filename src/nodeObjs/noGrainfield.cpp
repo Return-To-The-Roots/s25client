@@ -24,6 +24,7 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "ogl/glSmartBitmap.h"
 #include "libutil/src/colors.h"

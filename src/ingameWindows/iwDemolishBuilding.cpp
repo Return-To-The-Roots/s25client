@@ -20,6 +20,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwDemolishBuilding.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
+#include "buildings/noBaseBuilding.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 #include "GameClient.h"

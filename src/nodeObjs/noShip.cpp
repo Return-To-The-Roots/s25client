@@ -32,6 +32,7 @@
 #include "PostMsg.h"
 #include "figures/nofAttacker.h"
 #include "ai/AIEvents.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/GameConsts.h"

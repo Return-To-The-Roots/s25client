@@ -24,10 +24,10 @@
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobBaseWarehouse.h"
-
 #include "SerializedGameData.h"
 #include "Random.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 
 #include "Log.h"
 

@@ -35,6 +35,7 @@
 #include "FindWhConditions.h"
 #include "PostMsg.h"
 #include "ai/AIEvents.h"
+#include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"

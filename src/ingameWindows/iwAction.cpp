@@ -25,6 +25,7 @@
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"

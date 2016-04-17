@@ -24,6 +24,7 @@
 #include "Random.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "SoundManager.h"

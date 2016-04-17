@@ -24,7 +24,7 @@
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
 
-class GameWorldBase;
+class GameWorldViewer;
 
 class dskGameLoader :
     public Desktop,
@@ -32,7 +32,7 @@ class dskGameLoader :
     public LobbyInterface
 {
     public:
-        dskGameLoader(GameWorldBase& world);
+        dskGameLoader(GameWorldViewer& worldViewer);
         ~dskGameLoader() override;
 
         void LC_Status_Error(const std::string& error) override;
@@ -42,7 +42,7 @@ class dskGameLoader :
         void Msg_Timer(const unsigned int ctrl_id) override;
 
         unsigned int position;
-        GameWorldBase& world;
+        GameWorldViewer& worldViewer;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

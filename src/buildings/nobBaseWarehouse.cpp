@@ -38,8 +38,10 @@
 #include "figures/nofTradeLeader.h"
 #include "figures/nofTradeDonkey.h"
 #include "nodeObjs/noFlag.h"
+#include "world/GameWorldGame.h"
 #include "factories/JobFactory.h"
 #include "gameData/ShieldConsts.h"
+#include "helpers/containerUtils.h"
 #include "Log.h"
 
 #include <algorithm>

@@ -28,7 +28,9 @@
 #include "nodeObjs/noEnvObject.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "world/GameWorldGame.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "Random.h"
 #include "gameData/MapConsts.h"
 

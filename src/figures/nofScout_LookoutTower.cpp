@@ -20,9 +20,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
 #include "PostMsg.h"
-#include "gameData/MilitaryConsts.h"
+#include "world/GameWorldGame.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
+#include "gameData/MilitaryConsts.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

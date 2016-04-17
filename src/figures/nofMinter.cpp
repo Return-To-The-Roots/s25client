@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "buildings/nobUsual.h"
+#include "world/GameWorldGame.h"
 #include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 

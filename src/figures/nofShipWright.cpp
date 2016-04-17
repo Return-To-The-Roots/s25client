@@ -23,6 +23,7 @@
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "Random.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

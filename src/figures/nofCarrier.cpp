@@ -30,6 +30,7 @@
 #include "RoadSegment.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
+#include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 #include "Loader.h"
 #include "ogl/glSmartBitmap.h"

@@ -23,7 +23,6 @@
 #include "GameMessageInterface.h"
 
 #include "GamePlayerList.h"
-#include "world/GameWorld.h"
 #include "GameReplay.h"
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
@@ -39,6 +38,8 @@ class GameMessage_GameCommand;
 class PostMsg;
 class SavedFile;
 class GameEvent;
+class GameWorldView;
+class GameWorld;
 namespace AIEvent { class Base; }
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
@@ -86,8 +87,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void Run();
         void Stop();
 
-        // Gibt GameWorldViewer zurück (VORLÄUFIG, soll später verschwinden!!)
-        GameWorldViewer& QueryGameWorldViewer() const { return *static_cast<GameWorldViewer*>(gw); }
         /// Gibt Map-Titel zurück
         const std::string& GetMapTitle() const { return mapinfo.title; }
         /// Gibt Pfad zu der Map zurück
@@ -113,7 +112,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         unsigned int Interpolate(unsigned max_val, GameEvent* ev);
         int Interpolate(int x1, int x2, GameEvent* ev);
 
-        void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );
         void Command_ToggleNation();
         void Command_ToggleTeam(Team newteam);

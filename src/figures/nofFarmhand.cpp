@@ -28,6 +28,7 @@
 #include "SerializedGameData.h"
 #include "PostMsg.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

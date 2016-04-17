@@ -52,9 +52,9 @@ public:
         GAMECLIENT.RemoveInterface(this);
     }
 
-    void CI_GameStarted(GameWorldBase& world) override
+    void CI_GameStarted(GameWorldViewer& worldViwer) override
     {
-        WINDOWMANAGER.Switch(new dskGameLoader(world));
+        WINDOWMANAGER.Switch(new dskGameLoader(worldViwer));
     }
 }; 
 

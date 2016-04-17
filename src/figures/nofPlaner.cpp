@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "world/GameWorldGame.h"
 #include "buildings/noBuildingSite.h"
 #include "Random.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

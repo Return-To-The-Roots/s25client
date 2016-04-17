@@ -26,6 +26,7 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

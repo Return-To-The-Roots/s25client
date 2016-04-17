@@ -26,6 +26,7 @@
 #include "nodeObjs/noTree.h"
 #include "SoundManager.h"
 #include "GameInterface.h"
+#include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 

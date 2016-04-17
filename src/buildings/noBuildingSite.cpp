@@ -28,6 +28,7 @@
 #include "FOWObjects.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"

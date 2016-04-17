@@ -28,6 +28,7 @@
 #include "gameData/GameConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "PostMsg.h"
 #include "ai/AIEvents.h"

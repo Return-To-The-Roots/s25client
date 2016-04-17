@@ -29,7 +29,7 @@
 #include "EventManager.h"
 #include "FOWObjects.h"
 #include "GameInterface.h"
-
+#include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 
 // Include last!

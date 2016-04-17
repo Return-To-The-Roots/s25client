@@ -858,10 +858,10 @@ void dskHostGame::CI_PlayerLeft(const unsigned player_id)
         lua->EventPlayerLeft(player_id);
 }
 
-void dskHostGame::CI_GameStarted(GameWorldBase& world)
+void dskHostGame::CI_GameStarted(GameWorldViewer& worldViwer)
 {
     // Desktop wechseln
-    WINDOWMANAGER.Switch(new dskGameLoader(world));
+    WINDOWMANAGER.Switch(new dskGameLoader(worldViwer));
 }
 
 void dskHostGame::CI_PSChanged(const unsigned player_id, const PlayerState ps)

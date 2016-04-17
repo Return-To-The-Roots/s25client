@@ -25,6 +25,7 @@
 #include "Random.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 
 // Include last!

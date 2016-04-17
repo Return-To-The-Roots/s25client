@@ -28,6 +28,7 @@
 #include "ogl/glArchivItem_Sound.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 
 #include "ogl/glSmartBitmap.h"

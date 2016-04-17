@@ -31,6 +31,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameData/TerrainData.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

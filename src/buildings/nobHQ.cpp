@@ -28,6 +28,7 @@
 #include "GameClientPlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include <numeric>
 
 // Include last!

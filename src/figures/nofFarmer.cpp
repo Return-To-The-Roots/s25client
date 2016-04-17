@@ -28,6 +28,7 @@
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 
 // Include last!

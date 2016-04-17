@@ -45,6 +45,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/MessageTypes.h"
 #include "world/TradeRoute.h"
+#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"

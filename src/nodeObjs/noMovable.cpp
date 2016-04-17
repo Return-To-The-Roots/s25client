@@ -23,6 +23,7 @@
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "GameEvent.h"
 #include "gameData/MapConsts.h"
 #include "Log.h"

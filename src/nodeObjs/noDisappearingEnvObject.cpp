@@ -24,6 +24,7 @@
 #include "SerializedGameData.h"
 #include "Random.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
 
 // Include last!

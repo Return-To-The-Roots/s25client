@@ -23,6 +23,7 @@
 #include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "SoundManager.h"
 #include "GameInterface.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
