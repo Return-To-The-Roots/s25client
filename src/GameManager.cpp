@@ -55,7 +55,6 @@ GameManager::GameManager() : frames(0), frame_count(0), framerate(0), frame_time
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spiel starten
  *
@@ -127,7 +126,6 @@ bool GameManager::Start()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spiel beenden.
  *
@@ -145,7 +143,6 @@ void GameManager::Stop()
     VIDEODRIVER.DestroyScreen();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptschleife.
  *
@@ -288,7 +285,6 @@ bool GameManager::Run()
     return GLOBALVARS.notdone;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Startet und lädt das Menü.
  *
@@ -316,7 +312,6 @@ bool GameManager::StartMenu()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeigt das Hauptmenü.
  *
@@ -340,7 +335,6 @@ bool GameManager::ShowMenu()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Set the cursor type
  *
@@ -353,7 +347,6 @@ void GameManager::SetCursor(CursorType cursor, bool once)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Draw the cursor
  *

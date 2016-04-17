@@ -120,7 +120,6 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
         sgd.PushUnsignedChar(route[i]);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerteilt die Straße in 2 Teile.
  *
@@ -205,7 +204,6 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
  *  Nur bei Straßen mit 2 Flagge aufrufen, nicht bei Hauseingängen etc. !!
@@ -255,7 +253,6 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 
     return (jobs_count > 0);
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
  *
@@ -294,7 +291,6 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Eine Ware will nicht mehr befördert werden.
  *
@@ -310,7 +306,6 @@ void RoadSegment::WareJobRemoved(const noFigure* const exception)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Baut die Straße zu einer Eselstraße aus.
  *
@@ -343,7 +338,6 @@ void RoadSegment::UpgradeDonkeyRoad()
     TryGetDonkey();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Soll versuchen einen Esel zu bekommen.
  *
@@ -356,7 +350,6 @@ void RoadSegment::TryGetDonkey()
         carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Ein Träger muss kündigen, aus welchen Gründen auch immer.
  *
@@ -378,7 +371,6 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
         this->carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
     }
 }
-////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Return flag at the other end of the road
  *
@@ -395,7 +387,6 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
     //shouldnt get here or at least catch the assertion fail
     return NULL;
 }
-////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Return last road direction to flag at the other end of the road
  *

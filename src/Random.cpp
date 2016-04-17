@@ -28,7 +28,6 @@ Random::Random()
     Init(123456789);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Initialisiert den Zufallszahlengenerator.
  *
@@ -52,7 +51,6 @@ int Random::GetNextState(const int rngState, const int maxVal)
     return (rngState * 997 + 1 + maxVal) & 32767;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erzeugt eine Zufallszahl.
  *

@@ -22,7 +22,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for changing military strength of higher ranks.
  *

@@ -22,7 +22,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  set ship movement speed
  *

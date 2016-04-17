@@ -47,7 +47,6 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
     this->height_ = height;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *

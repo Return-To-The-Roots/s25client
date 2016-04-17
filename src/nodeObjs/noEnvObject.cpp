@@ -22,7 +22,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noEnvObject.
  *

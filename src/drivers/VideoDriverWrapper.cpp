@@ -49,7 +49,6 @@ VideoDriverWrapper::~VideoDriverWrapper()
         FreeVideoInstance(videodriver);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wählt und lädt einen Displaytreiber.
  *
@@ -84,7 +83,6 @@ bool VideoDriverWrapper::LoadDriver()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt das Fenster.
  *
@@ -146,7 +144,6 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verändert Auflösung, Fenster/Fullscreen
  *
@@ -175,7 +172,6 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
     return result;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zerstört den DriverWrapper-Bildschirm.
  *
@@ -201,7 +197,6 @@ bool VideoDriverWrapper::DestroyScreen()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  prüft, ob eine bestimmte Extension existiert.
  *
@@ -239,7 +234,6 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Löscht alle herausgegebenen Texturen aus dem Speicher.
  *
@@ -364,7 +358,6 @@ bool VideoDriverWrapper::Initialize()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Viewport (neu) setzen
  *
@@ -394,7 +387,6 @@ void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
     glLoadIdentity();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  lädt die driverwrapper-extensions.
  *
@@ -447,7 +439,6 @@ unsigned int VideoDriverWrapper::GetTickCount()
     return (unsigned int)videodriver->GetTickCount();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  lädt eine bestimmte DriverWrapper Extension-Funktion.
  *
@@ -500,7 +491,6 @@ bool VideoDriverWrapper::IsRightDown()
     return videodriver->GetMouseStateR();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Mausposition
  *
@@ -515,7 +505,6 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Listet verfügbare Videomodi auf.
  *
@@ -533,7 +522,6 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) con
     videodriver->ListVideoModes(video_modes);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows.
  *

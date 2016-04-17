@@ -79,7 +79,6 @@
 
 // IWYU pragma: end_exports
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
  *  Union. GCC meckert da sonst wegen "type punned pointer" bzw

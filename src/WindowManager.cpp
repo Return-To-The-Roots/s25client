@@ -56,7 +56,6 @@ void WindowManager::CleanUp()
     nextdesktop.reset();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenfunktion WindowManager-Klasse.
  *  Zeichnet Desktop und alle Fenster.
@@ -113,7 +112,6 @@ void WindowManager::Draw()
     curDesktop->Msg_PaintAfter();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
  *
@@ -130,7 +128,6 @@ bool WindowManager::IsDesktopActive()
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
  *
@@ -200,7 +197,6 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
 
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
  *
@@ -266,7 +262,6 @@ void WindowManager::ShowAfterSwitch(IngameWindow* window)
     nextWnds.push_back(window);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  merkt einen Desktop zum Wechsel vor.
  *
@@ -297,7 +292,6 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
     return NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Drückens der Linken Maustaste.
  *
@@ -403,7 +397,6 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Loslassens der Linken Maustaste.
  *
@@ -457,7 +450,6 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     disable_mouse = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Drückens der Rechten Maustaste.
  *
@@ -613,7 +605,6 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung Mausrad runter
  *
@@ -658,7 +649,6 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Verschiebens der Maus.
  *
@@ -716,7 +706,6 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
  *  Liefert evtl. eine Größe die wir nicht wollen und daher korrigieren
@@ -780,7 +769,6 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
     LOG.write("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
  *  Liefert immer eine sinnvolle Größe, mind. 800x600.
@@ -839,7 +827,6 @@ struct IsWindowId
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
  *
@@ -885,7 +872,6 @@ void WindowManager::Close(IngameWindow* window)
     windows.erase(it);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Closes _ALL_ windows with the given ID
  *
@@ -904,7 +890,6 @@ void WindowManager::Close(unsigned int id)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wechselt den Desktop in den neuen Desktop
  *

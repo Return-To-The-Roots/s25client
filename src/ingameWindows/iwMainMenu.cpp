@@ -87,7 +87,6 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv)
     AddImageButton(30,  12, 231, 165, 32, TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Button-Click-Handler.
  *

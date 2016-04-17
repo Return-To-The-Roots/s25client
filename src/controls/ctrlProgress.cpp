@@ -64,7 +64,6 @@ ctrlProgress::ctrlProgress(Window* parent,
     AddImageButton(1, width - height, 0, height, height, tc, LOADER.GetImageN(str2, button_plus),  (button_plus_tooltip.length( ) ? button_plus_tooltip  : _("More")) );
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Position an den angegebenen Wert.
  *
@@ -76,7 +75,6 @@ void ctrlProgress::SetPosition(unsigned short position)
     this->position = (position > maximum ? maximum : position);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *

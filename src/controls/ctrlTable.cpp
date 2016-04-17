@@ -79,7 +79,6 @@ ctrlTable::~ctrlTable()
     columns.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe verändern
  *
@@ -112,7 +111,6 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
         Msg_ScrollShow(0, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Items.
  *
@@ -129,7 +127,6 @@ void ctrlTable::DeleteAllItems()
     sort_direction = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Auswahl.
  *
@@ -159,7 +156,6 @@ void ctrlTable::SetSelection(int selection)
         parent_->Msg_TableSelectItem(id_, selection_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Zeile hinzu.
  *
@@ -189,7 +185,6 @@ void ctrlTable::AddRow(unsigned alwaysnull, ...)
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows.size()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert den Wert eines Feldes.
  *
@@ -209,7 +204,6 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
     return rows.at(row).columns.at(column);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sortiert die Zeilen.
  *
@@ -264,7 +258,6 @@ void ctrlTable::SortRows(int column, bool* direction)
     }while(!done);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
  *

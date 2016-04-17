@@ -33,7 +33,6 @@ Window::Window()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p Window mit Parametern.
  *
@@ -63,7 +62,6 @@ Window::~Window()
         delete it->second;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *
@@ -77,7 +75,6 @@ bool Window::Draw()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die X-Koordinate.
  *
@@ -106,7 +103,6 @@ unsigned short Window::GetX(bool absolute) const
     return abs_x;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Y-Koordinate.
  *
@@ -136,7 +132,6 @@ unsigned short Window::GetY(bool absolute) const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sendet eine Fensternachricht an die Steuerelemente.
  *
@@ -198,7 +193,6 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
     return processed;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktiviert das Fenster.
  *
@@ -212,7 +206,6 @@ void Window::SetActive(bool activate)
     ActivateControls(activate);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktiviert die Steuerelemente des Fensters.
  *
@@ -226,7 +219,6 @@ void Window::ActivateControls(bool activate)
         it->second->SetActive(activate);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sperrt eine Region eines Fensters.
  *
@@ -243,7 +235,6 @@ void Window::LockRegion(Window* window, const Rect& rect)
         tofreeAreas_.erase(it);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt eine gesperrte Region wieder frei.
  *
@@ -266,7 +257,6 @@ bool Window::IsMessageRelayAllowed() const
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein BuildingIcon hinzu.
  *
@@ -289,7 +279,6 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
     return AddCtrl(id, new ctrlBuildingIcon(this, id, x, y, type, nation, size, tooltip));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt einen ButtonCtrl hinzu.
  *
@@ -352,7 +341,6 @@ ctrlImageButton* Window::AddImageButton(unsigned int id, unsigned short x, unsig
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein ChatCtrl hinzu.
  *
@@ -377,7 +365,6 @@ ctrlChat* Window::AddChatCtrl(unsigned int id,
     return AddCtrl(id, new ctrlChat(this, id, x, y, width, height, tc, font));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Checkbox hinzu.
  *
@@ -404,7 +391,6 @@ ctrlCheck* Window::AddCheckBox(unsigned int id,
     return AddCtrl(id, new ctrlCheck(this, id, x, y, width, height, tc, text, font, readonly));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Combobox hinzu.
  *
@@ -431,7 +417,6 @@ ctrlComboBox* Window::AddComboBox(unsigned int id,
     return AddCtrl(id, new ctrlComboBox(this, id, x, y, width, height, tc, font, max_list_height, readonly));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein vertieftes TextCtrl hinzu.
  *
@@ -458,7 +443,6 @@ ctrlDeepening* Window::AddDeepening(unsigned int id,
     return AddCtrl(id, new ctrlDeepening(this, id, x, y, width, height, tc, text, font, color));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  adds a colored Deepening
  *
@@ -483,7 +467,6 @@ ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
     return AddCtrl(id, new ctrlColorDeepening(this, id, x, y, width, height, tc, fillColor));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein EditCtrl hinzu.
  *
@@ -512,7 +495,6 @@ ctrlEdit* Window::AddEdit(unsigned int id,
     return AddCtrl(id, new ctrlEdit(this, id, x, y, width, height, tc, font, maxlength, password, disabled, notify));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Gruppe hinzu.
  *
@@ -523,7 +505,6 @@ ctrlGroup* Window::AddGroup(unsigned int id, bool scale)
     return AddCtrl(id, new ctrlGroup(this, id, scale));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein ImageCtrl hinzu.
  *
@@ -543,7 +524,6 @@ ctrlImage* Window::AddImage(unsigned int id,
     return AddCtrl(id, new ctrlImage(this, id, x, y, image, tooltip));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein ListCtrl hinzu.
  *
@@ -568,7 +548,6 @@ ctrlList* Window::AddList(unsigned int id,
     return AddCtrl(id, new ctrlList(this, id, x, y, width, height, tc, font));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein mehrzeiliges TextCtrl hinzu.
  *
@@ -594,7 +573,6 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
     return AddCtrl(id, new ctrlMultiline(this, id, x, y, width, height, tc, font, format));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein OptionenGruppe hinzu.
  *
@@ -612,7 +590,6 @@ ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
     return AddCtrl(id, new ctrlOptionGroup(this, id, select_type, scale));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein MultiSelectGruppe hinzu.
  *
@@ -630,7 +607,6 @@ ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned int id,
     return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type, scale));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine prozentuale ProgressBar hinzu.
  *
@@ -657,7 +633,6 @@ ctrlPercent* Window::AddPercent(unsigned int id,
     return AddCtrl(id, new ctrlPercent(this, id, x, y, width, height, tc, text_color, font, percentage));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine ProgressBar hinzu.
  *
@@ -690,7 +665,6 @@ ctrlProgress* Window::AddProgress(unsigned int id,
     return AddCtrl(id, new ctrlProgress(this, id, x, y, width, height, tc, button_minus, button_plus, maximum, x_padding, y_padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Scrollbar hinzu.
  *
@@ -717,7 +691,6 @@ ctrlScrollBar* Window::AddScrollBar(unsigned int id,
     return AddCtrl(id, new ctrlScrollBar(this, id, x, y, width, height, button_height, tc, page_size));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein TabCtrl hinzu.
  *
@@ -738,7 +711,6 @@ ctrlTab* Window::AddTabCtrl(unsigned int id,
     return AddCtrl(id, new ctrlTab(this, id, x, y, width));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Tabelle hinzu.
  *  ... sollte eine Menge von const char*, int und SortType sein
@@ -774,7 +746,6 @@ ctrlTable* Window::AddTable(unsigned int id,
     return AddCtrl(id, ctrl);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt einen Timer hinzu.
  *
@@ -785,7 +756,6 @@ ctrlTimer* Window::AddTimer(unsigned int id, unsigned int timeout)
     return AddCtrl(id, new ctrlTimer(this, id, timeout));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein TextCtrl hinzu.
  *
@@ -821,7 +791,6 @@ ctrlText* Window::AddText(unsigned int id,
     return AddCtrl(id, new ctrlText(this, id, x, y, text, color, format, font));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein vertieftes variables TextCtrl hinzu.
  *
@@ -858,7 +827,6 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
     return AddCtrl(id, ctrl);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein variables TextCtrl hinzu.
  *
@@ -924,7 +892,6 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
     return AddCtrl(id, new ctrlPreviewMinimap(this, id, x, y, width, height, map));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet einen 3D-Rahmen.
  *
@@ -1054,7 +1021,6 @@ void Window::Draw3D(const unsigned short x,
     glEnable(GL_TEXTURE_2D);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet ein Rechteck.
  *
@@ -1078,7 +1044,6 @@ void Window::DrawRectangle(unsigned short x, unsigned short y, unsigned short wi
     glEnable(GL_TEXTURE_2D);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet eine Linie.
  *
@@ -1100,7 +1065,6 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
     glEnable(GL_TEXTURE_2D);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet die Steuerelemente.
  *
@@ -1126,7 +1090,6 @@ void Window::DrawControls()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  prüft ob Mauskoordinaten in einer gesperrten Region liegt.
  *

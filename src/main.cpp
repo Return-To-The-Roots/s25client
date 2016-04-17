@@ -90,7 +90,6 @@ void WaitForEnter()
 
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls
  *  dies in der build_paths.h mit deaktiviertem NOHWETRANS und
@@ -226,7 +225,6 @@ void UninstallSignalHandlers()
 #endif // _WIN32
 }
 
-//////////////////////////////////////////////////////////////////////////
 /**
  *  Exit-Handler, wird bei @p exit ausgeführt.
  *
@@ -390,7 +388,6 @@ int RunProgram(po::variables_map& options)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
  *

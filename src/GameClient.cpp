@@ -132,7 +132,6 @@ GameClient::~GameClient()
     ExitGame();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verbindet den Client mit einem Server
  *
@@ -285,7 +284,6 @@ void GameClient::Stop()
     skiptogf=0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Startet ein Spiel oder Replay.
  *
@@ -419,7 +417,6 @@ void GameClient::ExitGame()
     players.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Ping-Nachricht.
  *
@@ -430,7 +427,6 @@ void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
     send_queue.push(new GameMessage_Pong(0xFF));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Player-ID-Nachricht.
  *
@@ -454,7 +450,6 @@ void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, GetWindowVersion()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Player-List-Nachricht.
  *
@@ -528,7 +523,6 @@ void GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
         ci->CI_PingChanged(msg.player, msg.ping);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Player-Toggle-State-Nachricht.
  *
@@ -624,7 +618,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
         ci->CI_ColorChanged(msg.player, msg.color);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Ready-state eines Spielers hat sich geändert.
  *
@@ -693,7 +686,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Typ-Nachricht.
  *
@@ -730,7 +722,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
         ci->CI_NextConnectState(CS_QUERYPW);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Passwort-Nachricht.
  *
@@ -753,7 +744,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
         ci->CI_NextConnectState(CS_QUERYMAPNAME);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Name-Nachricht.
  *
@@ -767,7 +757,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
         ci->CI_NextConnectState(CS_QUERYPLAYERLIST);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Start-Nachricht
  *
@@ -795,7 +784,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Chat-Nachricht.
  *
@@ -833,7 +821,6 @@ void GameClient::OnGameMessage(const GameMessage_System_Chat& msg)
     SystemChat(msg.text, msg.player);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Async-Nachricht.
  *
@@ -867,7 +854,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     LOG.lprintf("Async log saved at \"%s\", game saved at \"%s\"\n", filePathLog.c_str(), filePathSave.c_str());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Countdown-Nachricht.
  *
@@ -879,7 +865,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_Countdown& msg)
         ci->CI_Countdown(msg.countdown);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Cancel-Countdown-Nachricht.
  *
@@ -891,7 +876,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown&  /*msg*
         ci->CI_CancelCountdown();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  verarbeitet die MapInfo-Nachricht, in der die gepackte Größe,
  *  die normale Größe und Teilanzahl der Karte übertragen wird.
@@ -1139,7 +1123,6 @@ void GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
     //LOG.write("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n", framesinfo.gf_nr, framesinfo.gfNrServer);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  NFC Pause-Nachricht von Server
  *
@@ -1167,7 +1150,6 @@ void GameClient::OnGameMessage(const GameMessage_Pause& msg)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  NFC GetAsyncLog von Server
  *
@@ -1479,7 +1461,6 @@ void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sendet ein NC-Paket ohne Befehle.
  *
@@ -1705,7 +1686,6 @@ void GameClient::ServerLost()
     socket.Close();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  überspringt eine bestimmte Anzahl von Gameframes.
  *

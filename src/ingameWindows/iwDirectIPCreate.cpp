@@ -71,7 +71,6 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     port->SetText(LOADER.GetTextN("client", 3));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Statustext resetten
  *
@@ -83,7 +82,6 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
     SetText("", COLOR_RED, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Bei Enter nächstes Steuerelement auswählen
  *
@@ -128,7 +126,6 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned int ctrl_id, const i
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Button Clicki-Di-Bunti-Li
  *
@@ -180,7 +177,6 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
@@ -197,7 +193,6 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool
     GetCtrl<ctrlButton>(7)->Enable(button);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Benutzerdefinierter Fehler
  *

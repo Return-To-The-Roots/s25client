@@ -23,7 +23,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for disable the AI debugging window
  *

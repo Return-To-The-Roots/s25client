@@ -153,7 +153,6 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Scroll-Position.
  *
@@ -165,7 +164,6 @@ void ctrlScrollBar::SetPos(unsigned short scroll_pos)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Scroll-Höhe.
  *
@@ -177,7 +175,6 @@ void ctrlScrollBar::SetRange(unsigned short scroll_range)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Seiten-Höhe.
  *
@@ -210,7 +207,6 @@ void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
     CalculateScrollBar(height);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
@@ -232,7 +228,6 @@ bool ctrlScrollBar::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  berechnet die Werte für die Scrollbar.
  *

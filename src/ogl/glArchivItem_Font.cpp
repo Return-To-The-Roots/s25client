@@ -123,7 +123,6 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
     return placeHolder;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  *
@@ -175,7 +174,6 @@ inline void glArchivItem_Font::DrawChar(const unsigned c,
     cx += ci.width;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief
  *
@@ -197,7 +195,6 @@ void glArchivItem_Font::Draw(short x,
     Draw(x, y, text, format, color, length, max, end);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet einen Text.
  *
@@ -379,7 +376,6 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
     return maxLineLen;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Länge einer Zeichenkette.
  *
@@ -408,7 +404,6 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     return getWidthInternal(text.begin(), text.begin() + length, max_width, max);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief
  *
@@ -437,7 +432,6 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
     return destStrings;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Infos, über die Unterbrechungspunkte in einem Text
  *
@@ -542,7 +536,6 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     return wi;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief
  *

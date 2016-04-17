@@ -40,7 +40,6 @@ ctrlImage::~ctrlImage()
     WINDOWMANAGER.SetToolTip(this, "");
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *

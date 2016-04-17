@@ -96,7 +96,6 @@ iwLobbyConnect::~iwLobbyConnect()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  speichert die eingegebenen Benutzerdaten in die Settings
  *
@@ -224,7 +223,6 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
@@ -246,7 +244,6 @@ void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool b
     b2->Enable(button);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wir wurden eingeloggt
  *
@@ -265,7 +262,6 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
     WINDOWMANAGER.Switch(new dskLobby);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wir wurden registriert.
  *
@@ -279,7 +275,6 @@ void iwLobbyConnect::LC_Registered()
     GetCtrl<ctrlButton>(8)->Enable(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Warten auf Antwort.
  *
@@ -290,7 +285,6 @@ void iwLobbyConnect::LC_Status_Waiting()
     SetText(_("Waiting for Reply..."), COLOR_YELLOW, false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Benutzerdefinierter Fehler (inkl Conn-Reset u.ä)
  *

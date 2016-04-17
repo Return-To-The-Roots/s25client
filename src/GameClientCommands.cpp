@@ -26,7 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
  *
@@ -55,7 +54,6 @@ void GameClient::Command_ToggleTeam(Team newteam)
     send_queue.push(new GameMessage_Player_Set_Team(0xff, newteam));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sendet den "Bereit"-Status.
  *
@@ -71,7 +69,6 @@ void GameClient::Command_SetColor()
     send_queue.push(new GameMessage_Player_Set_Color(0xFF, GetLocalPlayer().color));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wechselt einen Spieler.
  *

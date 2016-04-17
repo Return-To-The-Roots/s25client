@@ -26,7 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskAboutRTTR
  *
  *  Klasse des Über-Siedler-RTTR Desktops.

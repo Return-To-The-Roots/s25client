@@ -38,7 +38,6 @@ ctrlMinimap::ctrlMinimap( Window* parent,
     SetDisplaySize(width, height, map_width, map_height);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern
  *

@@ -641,7 +641,6 @@ BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, cons
     return bq;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  liefert das Terrain um den Punkt X, Y.
 *
@@ -664,7 +663,6 @@ TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
 *  in Richtung DIR (Vorwärts).
@@ -677,7 +675,6 @@ TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  con
     return (dir == 0) ? GetTerrainAround(pt, 5) : GetTerrainAround(pt, dir - 1);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
 *  in Richtung DIR (Rückwärts).
@@ -767,7 +764,6 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
 *
@@ -787,7 +783,6 @@ unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) con
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  liefert den Straßen-Wert um den Punkt X, Y.
 *
@@ -815,7 +810,6 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
     return GetNode(pt).fow[viewing_player].roads[dir];
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
 *
@@ -828,7 +822,6 @@ void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char t
     GetNodeInt(pt).roads[dir] = type;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
 *

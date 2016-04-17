@@ -43,7 +43,6 @@ ctrlDeepening::ctrlDeepening(Window* parent,
     this->height_ = height;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *
@@ -79,7 +78,6 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
     this->fillColor = fill_color;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *

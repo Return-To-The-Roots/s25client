@@ -23,7 +23,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class glArchivItem_BitmapBase
  *
  *  Basisklasse für GL-Bitmapitems.
@@ -31,7 +30,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var glArchivItem_BitmapBase::texture
  *
  *  OpenGL-Textur des Bildes.
@@ -64,7 +62,6 @@ glArchivItem_BitmapBase& glArchivItem_BitmapBase::operator=(const glArchivItem_B
     return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Liefert das GL-Textur-Handle.
  *
@@ -77,7 +74,6 @@ unsigned int glArchivItem_BitmapBase::GetTexture()
     return texture;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Löscht die GL-Textur (z.B fürs Neuerstellen)
  *
@@ -90,7 +86,6 @@ void glArchivItem_BitmapBase::DeleteTexture()
     texture = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Texturfilter auf einen bestimmten Wert.
  *
@@ -108,7 +103,6 @@ void glArchivItem_BitmapBase::setFilter(unsigned int filter)
         DeleteTexture();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erzeugt die Textur.
  *

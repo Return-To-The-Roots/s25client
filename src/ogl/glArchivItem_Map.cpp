@@ -35,7 +35,6 @@ glArchivItem_Map::~glArchivItem_Map()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  lädt die Mapdaten aus einer Datei.
  *
@@ -57,7 +56,6 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert einen Map-Layer zurück.
  *
@@ -73,7 +71,6 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
     return item->getData();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert einen Map-Layer zurück.
  *
@@ -94,7 +91,6 @@ bool glArchivItem_Map::HasLayer(MapLayer type) const
     return get(type + 1) != NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Mapdaten an einer bestimmten Stelle zurück.
  *
@@ -108,7 +104,6 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) co
     return GetLayer(type)[pos];
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Mapdaten an einer bestimmten Stelle.
  *
@@ -123,7 +118,6 @@ void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned ch
     GetLayer(type)[pos] = value;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Mapdaten an der Stelle X,Y zurück.
  *
@@ -138,7 +132,6 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned short x, un
     return GetMapDataAt(type, y * header->getWidth() + x);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Mapdaten an der Stelle X,Y.
  *

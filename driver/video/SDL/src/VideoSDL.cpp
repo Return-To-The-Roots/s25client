@@ -36,7 +36,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Instanzierungsfunktion von @p VideoSDL.
  *
@@ -56,7 +55,6 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
     delete driver;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Namensfunktion von @p VideoSDL.
  *
@@ -69,7 +67,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
     return "(SDL) OpenGL via SDL-Library";
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class VideoSDL
  *
  *  Klasse für den SDL Videotreiber.
@@ -77,7 +74,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoSDL::screen
  *
  *  Das Fenster-SDL-Surface.
@@ -85,7 +81,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p VideoSDL.
  *
@@ -101,7 +96,6 @@ VideoSDL::~VideoSDL()
     CleanUp();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
@@ -114,7 +108,6 @@ const char* VideoSDL::GetName() const
     return GetDriverName();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberinitialisierungsfunktion.
  *
@@ -142,7 +135,6 @@ bool VideoSDL::Initialize()
     return initialized;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberaufräumfunktion.
  *
@@ -160,7 +152,6 @@ void VideoSDL::CleanUp()
     initialized = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
@@ -220,7 +211,6 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
  *
@@ -259,7 +249,6 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Schliesst das Fenster.
  *
@@ -272,7 +261,6 @@ void VideoSDL::DestroyScreen()
     Initialize();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wechselt die OpenGL-Puffer.
  *
@@ -288,7 +276,6 @@ bool VideoSDL::SwapBuffers()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Die Nachrichtenschleife.
  *
@@ -423,7 +410,6 @@ bool VideoSDL::MessageLoop()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des TickCounts.
  *
@@ -436,7 +422,6 @@ unsigned long VideoSDL::GetTickCount() const
     return SDL_GetTicks();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *   Listet verfügbare Videomodi auf
  *
@@ -456,7 +441,6 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Holen einer Subfunktion.
  *
@@ -471,7 +455,6 @@ void* VideoSDL::GetFunction(const char* function) const
     return SDL_GL_GetProcAddress(function);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der Mauskoordinaten.
  *
@@ -487,7 +470,6 @@ void VideoSDL::SetMousePos(int x, int y)
     SDL_WarpMouse(x, y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der X-Koordinate der Maus.
  *
@@ -500,7 +482,6 @@ void VideoSDL::SetMousePosX(int x)
     SetMousePos(x, mouse_xy.y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der Y-Koordinate der Maus.
  *
@@ -513,7 +494,6 @@ void VideoSDL::SetMousePosY(int y)
     SetMousePos(mouse_xy.x, y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Get state of the modifier keys
  *

@@ -27,7 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sleep at least some number of microseconds
  */
@@ -57,7 +56,6 @@ int usleep (useconds_t microseconds)
     return err;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  nanosleep replacement for windows.
  */

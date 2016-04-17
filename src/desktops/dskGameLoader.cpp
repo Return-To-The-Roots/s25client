@@ -36,7 +36,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
@@ -166,7 +165,6 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
     timer->Start(interval);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  *

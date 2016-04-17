@@ -50,7 +50,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskOptions
  *
  *  Klasse des Optionen Desktops.

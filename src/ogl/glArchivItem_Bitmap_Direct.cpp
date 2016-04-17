@@ -33,7 +33,6 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt einen Pixel auf einen bestimmten Wert.
  *
@@ -73,7 +72,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt einen Pixel auf einen bestimmten Wert.
  *

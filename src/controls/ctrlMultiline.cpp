@@ -41,7 +41,6 @@ ctrlMultiline::ctrlMultiline(Window* parent,
     AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, lines_in_control);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Zeile hinzu.
  *
@@ -61,7 +60,6 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *

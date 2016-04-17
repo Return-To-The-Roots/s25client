@@ -22,7 +22,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for changing gold deposits to other resources or
  *  to remove them completely

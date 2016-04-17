@@ -164,7 +164,6 @@ void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
@@ -181,7 +180,6 @@ void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, boo
     GetCtrl<ctrlButton>(7)->Enable(button);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Hostnamen im Editfeld.
  *
@@ -204,7 +202,6 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
         Msg_ButtonClick(7);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Port im Editfeld.
  *

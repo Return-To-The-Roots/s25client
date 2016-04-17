@@ -39,7 +39,6 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
       type(type), nation(nation), size(size)
 {}
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *

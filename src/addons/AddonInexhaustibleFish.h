@@ -6,7 +6,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  addon decativates reduction of fish population by fishing.
 *

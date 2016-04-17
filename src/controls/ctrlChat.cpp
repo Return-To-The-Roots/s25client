@@ -29,7 +29,6 @@
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p ctrlChat.
  *
@@ -73,7 +72,6 @@ ctrlChat::~ctrlChat()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern
  *
@@ -133,7 +131,6 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
         scroll->SetPos(chat_lines.size() - page_size);
 
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet das Chat-Control.
  *

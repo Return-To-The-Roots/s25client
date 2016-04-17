@@ -26,7 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p iwTextfile.
  *

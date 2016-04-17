@@ -26,7 +26,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor für einen Spieldesktop
  *
@@ -41,7 +40,6 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
     Resize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode zum Zeichnen des Desktops
  *  und der ggf. enthaltenen Steuerelemente.

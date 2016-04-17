@@ -51,7 +51,6 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     CreateMapTexture();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *
 *  @author OLiver

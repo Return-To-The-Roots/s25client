@@ -27,7 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktualisiert das Serverinfo.
  *
@@ -83,7 +82,6 @@ void iwLobbyServerInfo::Msg_Timer(const unsigned int ctrl_id)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt Serverinfo und ServerNummer.
  *

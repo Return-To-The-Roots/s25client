@@ -40,7 +40,6 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
     SetMap(s2map);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet die MapPreview
  *

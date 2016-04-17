@@ -31,7 +31,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskMultiPlayer
  *
  *  Klasse des Multispieler Desktops.

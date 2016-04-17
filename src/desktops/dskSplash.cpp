@@ -27,7 +27,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskSplash
  *
  *  Klasse des Splashscreen Desktops.

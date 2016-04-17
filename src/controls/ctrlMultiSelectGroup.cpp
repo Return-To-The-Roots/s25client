@@ -31,7 +31,6 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
@@ -44,7 +43,6 @@ bool ctrlMultiSelectGroup::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Selektiert einen neuen Button aus der Gruppe.
  *
@@ -68,7 +66,6 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
         parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Entfernt die Selektion eines Buttons aus der Gruppe.
  *
@@ -93,7 +90,6 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
  *

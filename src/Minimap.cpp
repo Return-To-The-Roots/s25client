@@ -80,7 +80,6 @@ void Minimap::BeforeDrawing()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit
  *

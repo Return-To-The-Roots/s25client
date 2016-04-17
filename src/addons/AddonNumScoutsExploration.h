@@ -23,7 +23,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Set the number of scouts required for an exploration expedition
  */

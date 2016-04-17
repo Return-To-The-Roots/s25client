@@ -105,7 +105,6 @@ GlobalGameSettings::~GlobalGameSettings()
     reset(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  clears the addon memory.
  *
@@ -210,7 +209,6 @@ void GlobalGameSettings::registerAddon(Addon* addon)
     std::sort(addons.begin(), addons.end());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  loads the saved addon configuration from the SETTINGS.
  *
@@ -224,7 +222,6 @@ void GlobalGameSettings::LoadSettings()
         setSelection((AddonId::type_)it->first, it->second);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  saves the current addon configuration to the SETTINGS.
  *
@@ -237,7 +234,6 @@ void GlobalGameSettings::SaveSettings() const
         SETTINGS.addons.configuration.insert(std::make_pair(it->addon->getId(), it->status));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  saves the current addon configuration to a serializer object.
  *
@@ -265,7 +261,6 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  reads the current addon configuration from a serializer object.
  *

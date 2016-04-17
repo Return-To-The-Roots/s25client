@@ -43,7 +43,6 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet die MapPreview
  *
@@ -123,7 +122,6 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt Breite und Höhe des Controls
  *

@@ -23,7 +23,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var ctrlTimer::timer
  *
  *  Der Timer zum Abgleichen der Zeit.
@@ -31,7 +30,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var ctrlTimer::timeout
  *
  *  Die Zeit nach der der Timer zünden soll.
@@ -47,7 +45,6 @@ ctrlTimer::ctrlTimer(Window* parent,
     Start(timeout);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet den Timer.
  *
@@ -61,7 +58,6 @@ void ctrlTimer::Start(unsigned int timeout)
     timer = VIDEODRIVER.GetTickCount();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  stoppt den Timer
  *

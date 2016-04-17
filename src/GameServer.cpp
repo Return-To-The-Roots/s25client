@@ -434,7 +434,6 @@ void GameServer::Stop()
     status = SS_STOPPED;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet den Spielstart-Countdown
  *
@@ -481,7 +480,6 @@ bool GameServer::StartCountdown()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  stoppt den Spielstart-Countdown
  *
@@ -495,7 +493,6 @@ void GameServer::CancelCountdown()
     LOG.write("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet das Spiel.
  *
@@ -758,7 +755,6 @@ void GameServer::RemoveLuaScript()
     SendToAll(GameMessage_RemoveLua());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Nachricht an Alle
  *
@@ -1033,7 +1029,6 @@ unsigned char GameServer::GetLaggingPlayer() const
     return 0xFF;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sendet ein NC-Paket ohne Befehle.
  *
@@ -1174,7 +1169,6 @@ inline void GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
         KickPlayer(msg.player, NP_CONNECTIONLOST, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Passwort-Nachricht
  *
@@ -1195,7 +1189,6 @@ void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
         KickPlayer(msg.player, NP_WRONGPASSWORD, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Chat-Nachricht.
  *
@@ -1307,7 +1300,6 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
     CheckAndSetColor(msg.player, msg.color);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielerstatus wechseln
  *

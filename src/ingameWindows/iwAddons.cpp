@@ -186,7 +186,6 @@ void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selec
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  get scrollbar notification
  *

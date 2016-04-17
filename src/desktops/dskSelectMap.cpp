@@ -49,7 +49,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskSelectMap
  *
  *  Klasse des Map-Auswahl Desktops.
@@ -57,7 +56,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var dskSelectMap::type
  *
  *  Typ des Servers.
@@ -65,7 +63,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var dskSelectMap::name
  *
  *  Name des Servers.
@@ -73,7 +70,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var dskSelectMap::pass
  *
  *  Passwort des Servers.
@@ -81,7 +77,6 @@
  *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskSelectMap.
  *
@@ -144,7 +139,6 @@ dskSelectMap::~dskSelectMap()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *
  *  @author OLiver
@@ -171,7 +165,6 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
     table->SetSelection(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Occurs when user changes the selection in the table of maps.
  *
@@ -334,7 +327,6 @@ void dskSelectMap::CI_Error(const ClientError ce)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  *
@@ -345,7 +337,6 @@ void dskSelectMap::LC_Status_Error(const std::string& error)
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Server wurde erstellt.
  *

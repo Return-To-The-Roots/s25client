@@ -69,7 +69,6 @@ bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Tab hinzu.
  *
@@ -92,7 +91,6 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
     return NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Tabs.
  *
@@ -108,7 +106,6 @@ void ctrlTab::DeleteAllTabs()
     tab_selection = 0;
     tab_count = 0;
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktiviert eine bestimmte Tabseite.
  *
@@ -141,7 +138,6 @@ void ctrlTab::SetSelection(unsigned short nr, bool  /*notify*/)
     GetCtrl<ctrlGroup>(tabs[nr] + MAX_TAB_COUNT + 1)->SetVisible(true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
  *  werden können
@@ -162,7 +158,6 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
     return GetCtrl<ctrlGroup>(MAX_TAB_COUNT + 1 + tab_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
  *

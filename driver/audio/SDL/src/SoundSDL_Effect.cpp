@@ -32,7 +32,6 @@ SoundSDL_Effect::~SoundSDL_Effect()
         Mix_FreeChunk(sound);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Abspielen Starten.
  *
@@ -58,7 +57,6 @@ SoundSDL_Effect::~SoundSDL_Effect()
 //  return channel;
 //}
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Abspielen Stoppen.
  *

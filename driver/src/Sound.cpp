@@ -21,7 +21,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class Sound
  *
  *  Basisklasse für einen Sound.
@@ -29,7 +28,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var Sound::nr
  *
  *  Interne Nummer des Sounds.
@@ -37,7 +35,6 @@
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var Sound::CallBack
  *
  *  Callback für Spielbenachrichtigung.

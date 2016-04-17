@@ -34,7 +34,6 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet die Textur.
  *

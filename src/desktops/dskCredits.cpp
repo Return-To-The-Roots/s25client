@@ -36,7 +36,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 struct KeyEvent;
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskCredits
  *
  *  Klasse des Credits Desktops.

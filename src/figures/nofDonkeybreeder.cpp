@@ -43,7 +43,6 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet ihn beim Arbeiten.
  *
@@ -81,7 +80,6 @@ void nofDonkeybreeder::DrawWorking(int x, int y)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Der Arbeiter erzeugt eine Ware.
  *

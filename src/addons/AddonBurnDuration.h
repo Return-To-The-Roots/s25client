@@ -21,7 +21,6 @@
 
 #include "Addons.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  changes the duration a fire will burn when a building is destoryed
  *

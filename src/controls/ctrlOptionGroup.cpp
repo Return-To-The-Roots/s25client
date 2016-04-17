@@ -31,7 +31,6 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
@@ -44,7 +43,6 @@ bool ctrlOptionGroup::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wählt einen Button aus der Gruppe aus.
  *

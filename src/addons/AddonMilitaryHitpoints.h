@@ -21,7 +21,6 @@
 
 #include "Addons.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Addon adds shows the hitpoints of a soldier above his picture in military buildings. 
 *

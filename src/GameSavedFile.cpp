@@ -110,7 +110,6 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  schreibt die GlobalGameSettings in die Datei.
  *
@@ -125,7 +124,6 @@ void SavedFile::WriteGGS(BinaryFile& file)
     file.WriteRawData(ser.GetData(), ser.GetLength());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liest die GlobalGameSettings aus der Datei.
  *

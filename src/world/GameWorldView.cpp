@@ -496,7 +496,6 @@ void GameWorldView::ToggleShowNamesAndProductivity()
         show_productivity = show_names = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  verschiebt das Bild zu einer bestimmten Stelle.
  *

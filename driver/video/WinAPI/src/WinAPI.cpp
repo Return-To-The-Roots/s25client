@@ -30,7 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeiger auf die aktuelle Instanz.
  *
@@ -38,7 +37,6 @@
  */
 static VideoWinAPI* pVideoWinAPI = NULL;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Instanzierungsfunktion von @p VideoWinAPI.
  *
@@ -63,7 +61,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
     return "(WinAPI) OpenGL via the glorious WinAPI";
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class VideoWinAPI
  *
  *  Klasse für den WinAPI Videotreiber.
@@ -71,7 +68,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoWinAPI::dm_prev
  *
  *  Bildschirmmodus.
@@ -79,7 +75,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoWinAPI::screen
  *
  *  Fensterhandle.
@@ -87,7 +82,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoWinAPI::screen_dc
  *
  *  Zeichenkontext des Fensters.
@@ -95,7 +89,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoWinAPI::screen_rc
  *
  *  OpenGL-Kontext des Fensters.
@@ -103,7 +96,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p VideoWinAPI.
  *
@@ -125,7 +117,6 @@ VideoWinAPI::~VideoWinAPI(void)
     pVideoWinAPI = NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
@@ -138,7 +129,6 @@ const char* VideoWinAPI::GetName(void) const
     return GetDriverName();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberinitialisierungsfunktion.
  *
@@ -161,7 +151,6 @@ bool VideoWinAPI::Initialize(void)
     return initialized;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberaufräumfunktion.
  *
@@ -192,7 +181,6 @@ std::wstring AnsiToUtf8(LPCSTR tSource, int nLength = -1)
     return &wTarget[0];
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
@@ -352,7 +340,6 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
  *
@@ -435,7 +422,6 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Schliesst das Fenster.
  *
@@ -475,7 +461,6 @@ void VideoWinAPI::DestroyScreen(void)
     isFullscreen_ = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wechselt die OpenGL-Puffer.
  *
@@ -494,7 +479,6 @@ bool VideoWinAPI::SwapBuffers(void)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Die Nachrichtenschleife.
  *
@@ -516,7 +500,6 @@ bool VideoWinAPI::MessageLoop(void)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des TickCounts.
  *
@@ -529,7 +512,6 @@ unsigned long VideoWinAPI::GetTickCount(void) const
     return ::GetTickCount();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Holen einer Subfunktion.
  *
@@ -577,7 +559,6 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der Mauskoordinaten.
  *
@@ -596,7 +577,6 @@ void VideoWinAPI::SetMousePos(int x, int y)
     SetCursorPos(p.x, p.y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der X-Koordinate der Maus.
  *
@@ -609,7 +589,6 @@ void VideoWinAPI::SetMousePosX(int x)
     SetMousePos(x, mouse_xy.y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der Y-Koordinate der Maus.
  *
@@ -622,7 +601,6 @@ void VideoWinAPI::SetMousePosY(int y)
     SetMousePos(mouse_xy.x, y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Senden einer gedrückten Taste.
  *
@@ -652,7 +630,6 @@ void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
     CallBack->Msg_KeyDown(ke);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Senden einer gedrückten Taste.
  *
@@ -701,7 +678,6 @@ void VideoWinAPI::OnWMKeyDown(unsigned int c, LPARAM lParam)
         CallBack->Msg_KeyDown(ke);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Pasten von Text aus dem Clipboard.
  *
@@ -728,7 +704,6 @@ void VideoWinAPI::OnWMPaste()
     CloseClipboard();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Callbackfunktion der WinAPI.
  *
@@ -857,7 +832,6 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
     return DefWindowProcW(window, msg, wParam, lParam);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Get state of the modifier keys
  *

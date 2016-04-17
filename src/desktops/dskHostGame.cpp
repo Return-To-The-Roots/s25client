@@ -234,7 +234,6 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     GAMECLIENT.SetInterface(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  *
@@ -397,7 +396,6 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     group->SetActive(this->active_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Methode vor dem Zeichnen
  *
@@ -953,7 +951,6 @@ void dskHostGame::CI_Error(const ClientError ce)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)RankingInfo: Rankinginfo eines bestimmten Benutzers empfangen
  *
@@ -968,7 +965,6 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  *

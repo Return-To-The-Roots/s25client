@@ -24,7 +24,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noBase.
  *
@@ -52,7 +51,6 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  An x,y zeichnen.
  *
@@ -71,7 +69,6 @@ void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
     HandleEvent_noDisappearingEnvObject(id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Räumt das Objekt auf.
  *

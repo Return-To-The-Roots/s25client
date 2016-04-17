@@ -91,7 +91,6 @@ TerrainRenderer::PointF TerrainRenderer::GetBAround(const MapPoint pt, const uns
     return GetB(t, triangle) + PointF(offset);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  erzeugt die Terrain-Vertices.
  *
@@ -172,7 +171,6 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewe
     vertex.borderColor[1] = ( GetColor(gwv.GetNeighbour(pt, 3)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, 4)) ) / 3.0f;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  erzeugt die OpenGL-Vertices.
  *
@@ -635,7 +633,6 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet den Kartenausschnitt.
  *
@@ -867,7 +864,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konvertiert die Koordinaten.
  *

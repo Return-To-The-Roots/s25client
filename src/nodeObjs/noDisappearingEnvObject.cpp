@@ -28,7 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noBase.
  *
@@ -86,7 +85,6 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Benachrichtigen, wenn neuer GF erreicht wurde.
  *
@@ -110,7 +108,6 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Räumt das Objekt auf.
  *

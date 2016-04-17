@@ -25,7 +25,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noBase.
  *
@@ -57,7 +56,6 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingE
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  An x,y zeichnen.
  *
@@ -84,7 +82,6 @@ void noSign::HandleEvent(const unsigned int id)
     HandleEvent_noDisappearingEnvObject(id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Räumt das Objekt auf.
  *

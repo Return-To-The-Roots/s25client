@@ -47,7 +47,6 @@ ctrlEdit::ctrlEdit(Window* parent,
     SetText("");
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Text.
  *
@@ -84,7 +83,6 @@ std::string ctrlEdit::GetText() const
     return cvUnicodeToUTF8(text_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *
@@ -148,7 +146,6 @@ bool ctrlEdit::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein Zeichen zum Text hinzu
  *
@@ -169,7 +166,6 @@ void ctrlEdit::AddChar(unsigned int c)
     CursorRight();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  entfernt ein Zeichen
  *
@@ -189,7 +185,6 @@ void ctrlEdit::RemoveChar()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  benachrichtigt das Parent ("OnChange")
  *
@@ -208,7 +203,6 @@ void ctrlEdit::Msg_PaintAfter()
     focus_ = newFocus_;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Maustaste-gedrückt Callback
  *
@@ -231,7 +225,6 @@ bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Taste-gedrückt Callback
  *

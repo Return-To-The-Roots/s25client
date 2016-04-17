@@ -1245,7 +1245,6 @@ void nobMilitary::HitOfCatapultStone()
         GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
  *

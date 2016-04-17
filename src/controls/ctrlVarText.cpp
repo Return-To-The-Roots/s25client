@@ -24,7 +24,6 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor des Textcontrols, welches variablen Inhalt haben kann.
  *
@@ -65,7 +64,6 @@ ctrlVarText::ctrlVarText(Window* parent,
 ctrlVarText::~ctrlVarText()
 {}
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
  *

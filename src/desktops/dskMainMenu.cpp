@@ -38,7 +38,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskMainMenu
  *
  *  Klasse des Hauptmenü Desktops.
@@ -107,7 +106,6 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *
  *

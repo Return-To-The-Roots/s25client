@@ -192,7 +192,6 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  c
     RefreshTable();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spiel laden.
  *

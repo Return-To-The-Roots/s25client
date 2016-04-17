@@ -25,7 +25,6 @@
 // Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
 IVideoDriver::~IVideoDriver(){}
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var typedef void (*VideoDriverLoaderInterface *)(unsigned int msg, void *param)
  *
  *  Definition des DriverCallback-Zeigertyps.
@@ -33,7 +32,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class VideoDriver
  *
  *  Basisklasse für einen Videotreiber.
@@ -41,7 +39,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoGLFW::CallBack
  *
  *  Das DriverCallback für Rückmeldungen.
@@ -49,7 +46,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoGLFW::initialized
  *
  *  Initialisierungsstatus.
@@ -57,7 +53,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoGLFW::mouse_xy
  *
  *  Status der Maus.
@@ -65,7 +60,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoGLFW::keyboard
  *
  *  Status der Tastatur;
@@ -73,7 +67,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoGLFW::fullscreen
  *
  *  Vollbild an/aus?
@@ -81,7 +74,6 @@ IVideoDriver::~IVideoDriver(){}
  *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p VideoDriver.
  *
@@ -94,7 +86,6 @@ VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBa
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen der Mauskoordinaten.
  *
@@ -109,7 +100,6 @@ void VideoDriver::GetMousePos(int& x, int& y) const
     y = mouse_xy.y;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen der X-Koordinate der Maus.
  *
@@ -122,7 +112,6 @@ int VideoDriver::GetMousePosX() const
     return mouse_xy.x;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen der Y-Koordinate der Maus.
  *
@@ -135,7 +124,6 @@ int VideoDriver::GetMousePosY() const
     return mouse_xy.y;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
  *
@@ -148,7 +136,6 @@ bool VideoDriver::GetMouseStateL() const
     return mouse_xy.ldown;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
  *

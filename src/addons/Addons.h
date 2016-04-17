@@ -26,7 +26,6 @@
 
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon baseclass
  *
@@ -63,7 +62,6 @@ class Addon
         unsigned int defaultStatus_;
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon baseclass for option-list addons
  *  first option added will be the default one
@@ -97,7 +95,6 @@ class AddonList : public Addon
         std::vector<std::string> options;
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon baseclass for boolean addons
  *

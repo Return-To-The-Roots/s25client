@@ -33,7 +33,6 @@ IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
     CreateMapTexture();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *
 *  @author OLiver
@@ -141,7 +140,6 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     return color;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
 *
@@ -167,7 +165,6 @@ unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
     return MakeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Prüft ob an einer Stelle eine Straße gezeichnet werden muss
 *
@@ -184,7 +181,6 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein
 *  (player muss mit +1 gegeben sein!)
@@ -201,7 +197,6 @@ unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsig
         (GetBlue(color) + GetBlue(player_color)) / 2);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *
 *  @author OLiver
@@ -215,7 +210,6 @@ void IngameMinimap::UpdateNode(const MapPoint pt)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
 *  in dem Falle: Karte aktualisieren
@@ -259,7 +253,6 @@ void IngameMinimap::BeforeDrawing()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Updatet die gesamte Minimap
 *
@@ -271,7 +264,6 @@ void IngameMinimap::UpdateAll()
     CreateMapTexture();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Alle Punkte Updaten, bei denen das DrawnObject
 *  gleich dem übergebenen drawn_object ist
@@ -302,7 +294,6 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *  Die einzelnen Dinge umschalten
 *
@@ -314,7 +305,6 @@ void IngameMinimap::ToggleTerritory()
     UpdateAll(DO_PLAYER);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *
 *  @author OLiver
@@ -325,7 +315,6 @@ void IngameMinimap::ToggleHouses()
     UpdateAll(DO_BUILDING);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
 *
 *  @author OLiver

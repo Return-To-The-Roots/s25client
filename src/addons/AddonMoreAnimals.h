@@ -22,7 +22,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon allows users to adjust the percentage of trees that have the recurring spawn animal event
  *

@@ -66,7 +66,6 @@ Loader::~Loader()
     ClearTerrainTextures();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt alle allgemeinen Dateien.
  *
@@ -98,7 +97,6 @@ bool Loader::LoadFilesAtStart()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief
  *
@@ -157,7 +155,6 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
  *
@@ -186,7 +183,6 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die "override" lst-files aus den systemweiten und persönlichen verzeichnissen
  *
@@ -208,7 +204,6 @@ bool Loader::LoadLsts(unsigned int dir)
     return LoadFilesFromArray(files_count, files, false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt alle Sounds.
  *
@@ -285,7 +280,6 @@ bool Loader::LoadSounds()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sortiert einen string nach Startzahl, Namen oder Länge (in dieser Reihenfolge).
  *  Wird für das Sortieren der Dateien benutzt.
@@ -320,7 +314,6 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerlegt einen String in Einzelteile
  *  Wird für das richtige Laden der Dateien benutzt.
@@ -347,7 +340,6 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Settings.
  *
@@ -360,7 +352,6 @@ bool Loader::LoadSettings()
     return LoadFileOrDir(GetFilePath(FILE_PATHS[0]), 0, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Speichert die Settings.
  *
@@ -386,7 +377,6 @@ bool Loader::SaveSettings()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt die Spieldateien.
  *
@@ -841,7 +831,6 @@ void Loader::fillCaches()
         deletePtr(stp);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt Dateien von Addons.
  *
@@ -872,7 +861,6 @@ void Loader::ClearTerrainTextures()
     roads_points.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerschneidet die Terraintexturen.
  *
@@ -1038,7 +1026,6 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Extrahiert eine Textur aus den Daten.
  *
@@ -1068,7 +1055,6 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
     return bitmap;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  *
@@ -1132,7 +1118,6 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
     return destination;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief Lädt eine Datei in ein ArchivInfo.
  *
@@ -1164,7 +1149,6 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief Loads a file or directory into an archiv
  *
@@ -1327,7 +1311,6 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief
  *

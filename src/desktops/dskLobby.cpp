@@ -310,7 +310,6 @@ bool dskLobby::ConnectToSelectedGame()
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Verbindung verloren.
  *
@@ -321,7 +320,6 @@ void dskLobby::LC_Status_ConnectionLost()
     LC_Status_IncompleteMessage();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: fehlerhafte Anfrage / kaputte Daten.
  *
@@ -332,7 +330,6 @@ void dskLobby::LC_Status_IncompleteMessage()
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lost connection to lobby!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Benutzerdefinierter Fehler
  *
@@ -344,7 +341,6 @@ void dskLobby::LC_Status_Error(const std::string& error)
         servercreate->LC_Status_Error(error);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Wir wurden erfolgreich mit einem Gameserver verbunden
  *
@@ -355,7 +351,6 @@ void dskLobby::LC_Connected()
     WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Chatnachricht erhalten
  *

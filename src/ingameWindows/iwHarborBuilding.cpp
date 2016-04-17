@@ -51,7 +51,6 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
     harbor_page->SetVisible(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Expeditionsknopf korrekt
  *
@@ -82,7 +81,6 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Expeditionsknopf korrekt
  *

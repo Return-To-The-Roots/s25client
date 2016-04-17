@@ -30,7 +30,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noStaticObject.
  *
@@ -73,7 +72,6 @@ noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) :
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Objekt.
  *
@@ -119,7 +117,6 @@ void noStaticObject::Draw(int x, int y)
         shadow->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerstört das Objekt.
  *

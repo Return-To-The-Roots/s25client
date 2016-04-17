@@ -360,7 +360,6 @@ namespace{
     };
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
  *  an einer (umliegenden) Stelle.

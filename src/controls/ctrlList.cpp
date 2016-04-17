@@ -162,7 +162,6 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
@@ -197,7 +196,6 @@ bool ctrlList::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Zeile hinzu.
  *
@@ -211,7 +209,6 @@ void ctrlList::AddString(const std::string& text)
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(lines.size()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verändert einen String
  *
@@ -222,7 +219,6 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
     lines[id] = text;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Items.
  *
@@ -234,7 +230,6 @@ void ctrlList::DeleteAllItems()
     selection_ = -1;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert den Wert einer Zeile.
  *
@@ -252,7 +247,6 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
     return EMPTY_STRING;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern.
  *
@@ -280,7 +274,6 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  vertauscht zwei Zeilen
  *
@@ -298,7 +291,6 @@ void ctrlList::Swap(unsigned short first, unsigned short second)
     std::swap(lines[first], lines[second]);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  entfernt eine Zeile
  *

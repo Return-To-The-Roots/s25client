@@ -36,7 +36,6 @@ Playlist::Playlist() : repeats(1), random(false)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet das Abspielen der Playlist.
  *
@@ -63,7 +62,6 @@ void Playlist::Prepare()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Playlist in Datei speichern
  *
@@ -98,7 +96,6 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Playlist laden
  *
@@ -162,7 +159,6 @@ bool Playlist::Load(const std::string& filename)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
  *
@@ -175,7 +171,6 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
     window->SetRandomPlayback(random);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Liest die Werte aus dem iwMusicPlayer-Fenster
  *
@@ -204,7 +199,6 @@ void Playlist::SetStartSong(const unsigned id)
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  *
  *
@@ -214,7 +208,6 @@ MusicPlayer::MusicPlayer() : playing(false)
 {
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  *  Startet Abspielvorgang
  *
@@ -227,7 +220,6 @@ void MusicPlayer::Play()
     PlayNext();
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  *  Stoppt Abspielvorgang
  *
@@ -239,7 +231,6 @@ void MusicPlayer::Stop()
     playing = false;
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  * Spielt nächstes Stück ab
  *

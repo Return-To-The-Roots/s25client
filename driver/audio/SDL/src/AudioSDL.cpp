@@ -35,7 +35,6 @@
 
 static AudioSDL* nthis = NULL;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Instanzierungsfunktion von @p AudioSDL.
  *
@@ -59,7 +58,6 @@ DRIVERDLLAPI const char* GetDriverName(void)
     return "(SDL) Audio via SDL_mixer-Library";
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class AudioSDL
  *
  *  Klasse für den SDL-Audiotreiber.
@@ -78,7 +76,6 @@ AudioSDL::~AudioSDL()
     CleanUp();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
@@ -91,7 +88,6 @@ const char* AudioSDL::GetName() const
     return GetDriverName();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberinitialisierungsfunktion.
  *
@@ -126,7 +122,6 @@ bool AudioSDL::Initialize()
     return initialized;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberaufräumfunktion.
  *
@@ -148,7 +143,6 @@ void AudioSDL::CleanUp()
     initialized = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Läd einen Effekt.
  *
@@ -202,7 +196,6 @@ Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsi
     return sd;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Läd ein Musikstück.
  *
@@ -274,7 +267,6 @@ Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsig
     return sd;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielt einen Sound ab.
  *
@@ -303,7 +295,6 @@ unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, cons
     return play_id;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielt die Musik ab.
  *
@@ -318,7 +309,6 @@ void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
     Mix_VolumeMusic(master_music_volume / 2);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Stoppt die Musik.
  *
