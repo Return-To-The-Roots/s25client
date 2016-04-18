@@ -45,7 +45,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
     {
         LOG.lprintf("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, report this!");
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        current_ev = em->AddEvent(this, 1000, 2);
+        current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
 }
 
@@ -199,13 +199,13 @@ bool nofMetalworker::ReadyForWork()
     if(current_ev)
     {
         RTTR_Assert(current_ev->id == 2 && state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
     }
     if(nextProducedTool != GD_NOTHING)
         return true;
 
     // Try again in some time (3000GF ~= 2min at 40ms/GF)
-    current_ev = em->AddEvent(this, 3000, 2);
+    current_ev = GetEvMgr().AddEvent(this, 3000, 2);
     return false;
 }
 

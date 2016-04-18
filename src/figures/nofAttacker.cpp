@@ -733,7 +733,7 @@ void nofAttacker::AttackedGoalDestroyed()
     if(was_waiting_for_defender)
     {
         // Block-Event ggf abmelden
-        em->RemoveEvent(blocking_event);
+        GetEvMgr().RemoveEvent(blocking_event);
         gwg->RoadNodeAvailable(pos);
     }
 }
@@ -955,7 +955,7 @@ void nofAttacker::SwitchStateAttackingWaitingForDefender()
 {
     state = STATE_ATTACKING_WAITINGFORDEFENDER;
     // Blockevent anmelden
-    blocking_event = em->AddEvent(this, BLOCK_OFFSET, 5);
+    blocking_event = GetEvMgr().AddEvent(this, BLOCK_OFFSET, 5);
 }
 
 void nofAttacker::HandleDerivedEvent(const unsigned int  /*id*/)

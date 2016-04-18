@@ -200,7 +200,7 @@ void nofGeologist::Walked()
         if(pos == node_goal)
         {
             // anfangen zu graben
-            current_ev = em->AddEvent(this, 100, 1);
+            current_ev = GetEvMgr().AddEvent(this, 100, 1);
             state = STATE_GEOLOGIST_DIG;
         }
         else
@@ -239,7 +239,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned int  /*id*/)
             {
                 // Es wurde was gefunden, erstmal Jubeln
                 state = STATE_GEOLOGIST_CHEER;
-                current_ev = em->AddEvent(this, 15, 1);
+                current_ev = GetEvMgr().AddEvent(this, 15, 1);
             }
             else
             {

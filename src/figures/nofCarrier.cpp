@@ -180,7 +180,7 @@ void nofCarrier::Destroy_nofCarrier()
     // Ware vernichten (abmelden)
     RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
     LooseWare();
-    em->RemoveEvent(productivity_ev);
+    GetEvMgr().RemoveEvent(productivity_ev);
 
     Destroy_noFigure();
 }
@@ -592,7 +592,7 @@ void nofCarrier::LookForWares()
 void nofCarrier::GoalReached()
 {
     // Erstes Produktivitätsevent anmelden
-    productivity_ev = em->AddEvent(this, PRODUCTIVITY_GF, 1);
+    productivity_ev = GetEvMgr().AddEvent(this, PRODUCTIVITY_GF, 1);
     // Wir arbeiten schonmal
     StartWorking();
 
@@ -636,7 +636,7 @@ void nofCarrier::AbrogateWorkplace()
 {
     if(workplace)
     {
-        em->RemoveEvent(productivity_ev);
+        GetEvMgr().RemoveEvent(productivity_ev);
         productivity_ev = 0;
 
         // anderen Träger herausfinden
@@ -686,7 +686,7 @@ namespace{
 void nofCarrier::LostWork()
 {
     workplace = NULL;
-    em->RemoveEvent(productivity_ev);
+    GetEvMgr().RemoveEvent(productivity_ev);
 
     if(state == CARRS_FIGUREWORK)
         GoHome();
@@ -820,7 +820,7 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
             worked_gf = 0;
 
             // Nächstes Event anmelden
-            productivity_ev = em->AddEvent(this, PRODUCTIVITY_GF, 1);
+            productivity_ev = GetEvMgr().AddEvent(this, PRODUCTIVITY_GF, 1);
 
             // Reif für einen Esel?
             if(productivity >= DONKEY_PRODUCTIVITY && ct == CT_NORMAL)

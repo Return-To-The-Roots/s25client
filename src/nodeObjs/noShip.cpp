@@ -402,7 +402,7 @@ void noShip::HandleEvent(const unsigned int id)
             figures.pop_front();
             gwg->AddFigure(attacker, pos);
 
-            current_ev = em->AddEvent(this, 30, 1);
+            current_ev = GetEvMgr().AddEvent(this, 30, 1);
             attacker->StartAttackOnOtherIsland(pos, GetObjId());
             break;
         }
@@ -480,7 +480,7 @@ void noShip::StartExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPEDITION_LOADING;
-    current_ev = em->AddEvent(this, LOADING_TIME, 1);
+    current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
@@ -492,7 +492,7 @@ void noShip::StartExplorationExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPLORATIONEXPEDITION_LOADING;
-    current_ev = em->AddEvent(this, LOADING_TIME, 1);
+    current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
     covered_distance = 0;
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
@@ -706,7 +706,7 @@ void noShip::HandleState_ExpeditionDriving()
             {
                 // Sachen wieder in den Hafen verladen
                 state = STATE_EXPEDITION_UNLOADING;
-                current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
+                current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
             }
             else
             {
@@ -754,7 +754,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
             {
                 // Dann sind wir fertig -> wieder entladen
                 state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
-                current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
+                current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
             }
             else
             {
@@ -763,7 +763,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
                 // Erstmal kurz ausruhen an diesem Punkt und das Rohr ausfahren, um ein bisschen
                 // auf der Insel zu gucken
                 state = STATE_EXPLORATIONEXPEDITION_WAITING;
-                current_ev = em->AddEvent(this, EXPLORATION_EXPEDITION_WAITING_TIME, 1);
+                current_ev = GetEvMgr().AddEvent(this, EXPLORATION_EXPEDITION_WAITING_TIME, 1);
             }
 
         } break;
@@ -785,7 +785,7 @@ void noShip::HandleState_TransportDriving()
         {
             // Waren abladen, dafür wieder kurze Zeit hier ankern
             state = STATE_TRANSPORT_UNLOADING;
-            current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
+            current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
         } break;
         case NO_ROUTE_FOUND:
         case HARBOR_DOESNT_EXIST:
@@ -822,7 +822,7 @@ void noShip::HandleState_SeaAttackDriving()
     case GOAL_REACHED:
         // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander raus zum Ziel
         state = STATE_SEAATTACK_WAITING;
-        current_ev = em->AddEvent(this, 15, 1);
+        current_ev = GetEvMgr().AddEvent(this, 15, 1);
         remaining_sea_attackers = figures.size();
         break;
     case NO_ROUTE_FOUND:
@@ -842,7 +842,7 @@ void noShip::HandleState_SeaAttackReturn()
     case GOAL_REACHED:
         // Entladen
         state = STATE_SEAATTACK_UNLOADING;
-        this->current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
+        this->current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
         break;
     case HARBOR_DOESNT_EXIST:
     case NO_ROUTE_FOUND:
@@ -915,7 +915,7 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
     this->wares = wares;
 
     state = STATE_TRANSPORT_LOADING;
-    current_ev = em->AddEvent(this, LOADING_TIME, 1);
+    current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
 }
 
 /// Belädt das Schiff mit Schiffs-Angreifern
@@ -934,7 +934,7 @@ void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::l
         static_cast<nofAttacker*>(*it)->SeaAttackStarted();
     }
     state = STATE_SEAATTACK_LOADING;
-    current_ev = em->AddEvent(this, LOADING_TIME, 1);
+    current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
 }
 
 /// Startet Schiffs-Angreiff
@@ -987,7 +987,7 @@ void noShip::AbortSeaAttack()
         {
             // Abort loading
             RTTR_Assert(current_ev);
-            em->RemoveEvent(current_ev);
+            GetEvMgr().RemoveEvent(current_ev);
         }
 
         // Das Schiff muss einen Notlandeplatz ansteuern
@@ -1126,14 +1126,14 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         }
         else
         {
-            em->RemoveEvent(current_ev);
+            GetEvMgr().RemoveEvent(current_ev);
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
         }
     }
     else if(oldState == STATE_TRANSPORT_UNLOADING || oldState == STATE_SEAATTACK_UNLOADING)
     {
         // Remove current unload event
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
 
         if(oldState == STATE_SEAATTACK_UNLOADING)
             AbortSeaAttack();
@@ -1166,7 +1166,7 @@ void noShip::SeaAttackerWishesNoReturn()
     if(remaining_sea_attackers == 0)
     {
         // Andere Events ggf. erstmal abmelden
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
         if(!figures.empty())
         {
             // Go back home. Note: home_harbor can be 0 if it was destroyed, allow this and let the state handlers handle that case later
@@ -1206,7 +1206,7 @@ void noShip::ContinueExplorationExpedition()
         {
             // Dann sind wir fertig -> wieder entladen
             state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
-            current_ev = em->AddEvent(this, UNLOADING_TIME, 1);
+            current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
             return;
         }
 

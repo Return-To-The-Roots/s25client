@@ -89,9 +89,9 @@ void GamePlayerInfo::serialize(Serializer& ser) const
 void GamePlayerInfo::SwapInfo(GamePlayerInfo& two)
 {
     using std::swap;
+    swap(defeated, two.defeated);
     swap(ps, two.ps);
     swap(aiInfo, two.aiInfo);
-    swap(defeated, two.defeated);
     swap(name, two.name);
     swap(is_host, two.is_host);
     swap(ping, two.ping);

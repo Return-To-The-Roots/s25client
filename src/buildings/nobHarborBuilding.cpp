@@ -98,7 +98,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 
 void nobHarborBuilding::Destroy()
 {
-    em->RemoveEvent(orderware_ev);
+    GetEvMgr().RemoveEvent(orderware_ev);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GameClientPlayer& owner = gwg->GetPlayer(player);
@@ -529,7 +529,7 @@ void nobHarborBuilding::OrderExpeditionWares()
 
     // Wenn immer noch nicht alles da ist, später noch einmal bestellen
     if(!orderware_ev)
-        orderware_ev = em->AddEvent(this, 210, 10);
+        orderware_ev = GetEvMgr().AddEvent(this, 210, 10);
 }
 
 /// Eine bestellte Ware konnte doch nicht kommen
@@ -724,7 +724,7 @@ void nobHarborBuilding::AddFigure(noFigure* figure, const bool increase_visual_c
     if(figure->GetJobType() == JOB_BUILDER && expedition.active && !expedition.builder)
     {
         nobBaseWarehouse::RemoveDependentFigure(figure);
-        em->AddToKillList(figure);
+        GetEvMgr().AddToKillList(figure);
 
         expedition.builder = true;
         // Ggf. ist jetzt alles benötigte da
@@ -734,7 +734,7 @@ void nobHarborBuilding::AddFigure(noFigure* figure, const bool increase_visual_c
     else if(figure->GetJobType() == JOB_SCOUT && exploration_expedition.active && !IsExplorationExpeditionReady())
     {
         nobBaseWarehouse::RemoveDependentFigure(figure);
-        em->AddToKillList(figure);
+        GetEvMgr().AddToKillList(figure);
 
         ++exploration_expedition.scouts;
         inventory.visual.Add(JOB_SCOUT);

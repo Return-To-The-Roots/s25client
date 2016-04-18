@@ -219,7 +219,7 @@ void nofBuildingWorker::TryToWork()
         if(ReadyForWork())
         {
             state = STATE_WAITING1;
-            current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+            current_ev = GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
             StopNotWorking();
         }else
         {
@@ -301,7 +301,7 @@ void nofBuildingWorker::LostWork()
         case STATE_CATAPULT_BACKOFF:
         {
             // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
-            em->RemoveEvent(current_ev);
+            GetEvMgr().RemoveEvent(current_ev);
 
             // Bescheid sagen, dass Arbeit abgebrochen wurde
             WorkAborted();
@@ -465,7 +465,7 @@ void nofBuildingWorker::ProductionStopped()
     // Wenn ich gerade warte und schon ein Arbeitsevent angemeldet habe, muss das wieder abgemeldet werden
     if(state == STATE_WAITING1)
     {
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
         current_ev = 0;
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         StartNotWorking();

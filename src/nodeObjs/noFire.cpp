@@ -32,7 +32,7 @@ noFire::noFire(const MapPoint pos, const unsigned char size)
 {
     // Bestimmte Zeit lang brennen
 	const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
-    dead_event = em->AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
+    dead_event = GetEvMgr().AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
 noFire::~noFire()
 {
@@ -102,5 +102,5 @@ void noFire::HandleEvent(const unsigned int  /*id*/)
 {
     // Todesevent --> uns vernichten
     dead_event = NULL;
-    em->AddToKillList(this);
+    GetEvMgr().AddToKillList(this);
 }

@@ -35,6 +35,7 @@ class nobHarborBuilding;
 class noFlag;
 class noBase;
 class LuaInterfaceGame;
+class EventManager;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase: public World
@@ -44,6 +45,7 @@ class GameWorldBase: public World
 
     GameClientPlayerList& players;
     const GlobalGameSettings& gameSettings;
+    EventManager& em;
 protected:
     boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
     /// Interface zum GUI
@@ -52,7 +54,7 @@ protected:
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
+    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -140,6 +142,8 @@ public:
     unsigned GetPlayerCount() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
+    EventManager& GetEvMgr(){ return em; }
+    const EventManager& GetEvMgr() const { return em; }
 
     struct PotentialSeaAttacker
     {

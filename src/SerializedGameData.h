@@ -50,12 +50,12 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(GameWorld& gw, EventManager& em);
+    void MakeSnapshot(GameWorld& gw);
     /// Liest den Buffer aus einer Datei
     void ReadFromFile(BinaryFile& file) override;
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(GameWorld& gw, EventManager& em);
+    void ReadSnapshot(GameWorld& gw);
 
     //////////////////////////////////////////////////////////////////////////
     // Write methods
@@ -133,6 +133,7 @@ private:
     /// Expected number of objects during reading
     unsigned expectedObjectsReadCount;
 
+    /// EventManager, used during deserialization to add events, NULL otherwise
     EventManager* em;
     /// Is set to true when currently in read mode
     bool isReading;

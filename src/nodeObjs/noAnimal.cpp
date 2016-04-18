@@ -162,7 +162,7 @@ void noAnimal::HandleEvent(const unsigned int id)
         case 2:
         {
             // nun verschwinden
-            current_ev = em->AddEvent(this, 30, 3);
+            current_ev = GetEvMgr().AddEvent(this, 30, 3);
             state = STATE_DISAPPEARING;
 
             // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
@@ -178,7 +178,7 @@ void noAnimal::HandleEvent(const unsigned int id)
         {
             // von der Karte tilgen
             gwg->RemoveFigure(this, pos);
-            em->AddToKillList(this);
+            GetEvMgr().AddToKillList(this);
         } break;
 
     }
@@ -234,7 +234,7 @@ void noAnimal::Walked()
                 // dann stellt es sich hier hin und wartet erstmal eine Weile
                 state = STATE_PAUSED;
                 pause_way = 5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15);
-                current_ev = em->AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 50), 1);
+                current_ev = GetEvMgr().AddEvent(this, 50 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 50), 1);
             }
             else
             {
@@ -338,7 +338,7 @@ MapPoint noAnimal::HunterIsNear()
         // dann bleibt es einfach stehen und gibt seine jetzigen Koordinaten zurück
         state = STATE_WAITINGFORHUNTER;
         // Warteevent abmelden
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
         return pos;
     }
     else
@@ -378,13 +378,13 @@ void noAnimal::Die()
     if(ANIMALCONSTS[species].dead_id)
     {
         // Verwesungsevent
-        current_ev = em->AddEvent(this, 300, 2);
+        current_ev = GetEvMgr().AddEvent(this, 300, 2);
         state = STATE_DEAD;
     }
     else
     {
         // Falls keine Verwesungsgrafik --> sofort verschwinden
-        current_ev = em->AddEvent(this, 30, 3);
+        current_ev = GetEvMgr().AddEvent(this, 30, 3);
         state = STATE_DISAPPEARING;
     }
 }
@@ -392,7 +392,7 @@ void noAnimal::Die()
 void noAnimal::Eviscerated()
 {
     // Event abmelden
-    em->RemoveEvent(current_ev);
+    GetEvMgr().RemoveEvent(current_ev);
     // Reset hunter
     hunter = NULL;
 }

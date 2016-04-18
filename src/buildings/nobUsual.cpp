@@ -124,8 +124,8 @@ void nobUsual::Destroy_nobUsual()
     }
 
     // Events löschen
-    em->RemoveEvent(orderware_ev);
-    em->RemoveEvent(productivity_ev);
+    GetEvMgr().RemoveEvent(orderware_ev);
+    GetEvMgr().RemoveEvent(productivity_ev);
     orderware_ev = NULL;
     productivity_ev = NULL;
 
@@ -278,7 +278,7 @@ void nobUsual::HandleEvent(const unsigned int id)
         productivity /= (last_productivities.size() + 1);
 
         // Event für nächste Abrechnung
-        productivity_ev = em->AddEvent(this, 400, 1);
+        productivity_ev = GetEvMgr().AddEvent(this, 400, 1);
     }
     else
     {
@@ -306,7 +306,7 @@ void nobUsual::HandleEvent(const unsigned int id)
         }
 
         // Nach ner bestimmten Zeit dann nächste Ware holen
-        orderware_ev = em->AddEvent(this, 210);
+        orderware_ev = GetEvMgr().AddEvent(this, 210);
     }
 
 }
@@ -387,10 +387,10 @@ void nobUsual::WorkerLost()
         OpenDoor();
     }
     // Produktivitätsevent ggf. abmelden
-    em->RemoveEvent(productivity_ev);
+    GetEvMgr().RemoveEvent(productivity_ev);
 
     // Waren-Bestell-Event abmelden
-    em->RemoveEvent(orderware_ev);
+    GetEvMgr().RemoveEvent(orderware_ev);
 
     // neuen Arbeiter bestellen
     worker = NULL;
@@ -540,7 +540,7 @@ void nobUsual::TakeWare(Ware* ware)
 void nobUsual::WorkerArrived()
 {
     // Produktivität in 400 gf ausrechnen
-    productivity_ev = em->AddEvent(this, 400, 1);
+    productivity_ev = GetEvMgr().AddEvent(this, 400, 1);
 }
 
 void nobUsual::SetProductionEnabled(const bool enabled)

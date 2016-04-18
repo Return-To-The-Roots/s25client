@@ -109,7 +109,7 @@ void nofBuilder::LostWork()
     else
     {
         // Event abmelden
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
 
         StartWandering();
         Wander();
@@ -144,7 +144,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
             if(building_steps_available)
             {
                 // dann mal schön bauen
-                current_ev = em->AddEvent(this, 40, 1);
+                current_ev = GetEvMgr().AddEvent(this, 40, 1);
                 state = STATE_BUILD;
             }
             else if(building_site->IsBuildingComplete())
@@ -265,7 +265,7 @@ void nofBuilder::StartFreewalk()
     FaceDir(possible_directions[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possible_directions.size())]);
 
     // Und dort auch hinlaufen
-    current_ev = em->AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);
+    current_ev = GetEvMgr().AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);
 
     // Zukünftigen Platz berechnen
     next_rel_x = rel_x;

@@ -46,7 +46,7 @@
 class CatapultStone;
 class MilitarySquares;
 
-GameWorldGame::GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings): GameWorldBase(players, gameSettings)
+GameWorldGame::GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em): GameWorldBase(players, gameSettings, em)
 {
     TradePathCache::inst().Clear();
 }

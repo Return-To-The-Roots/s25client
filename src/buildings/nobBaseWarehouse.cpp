@@ -64,7 +64,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(0),
       empty_event(0), store_event(0)
 {
-    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     for(unsigned i = 0; i < 5; ++i)
         reserve_soldiers_available[i] =
@@ -100,10 +100,10 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     dependent_wares.clear();
 
     // ggf. Events abmelden
-    em->RemoveEvent(recruiting_event);
-    em->RemoveEvent(producinghelpers_event);
-    em->RemoveEvent(empty_event);
-    em->RemoveEvent(store_event);
+    GetEvMgr().RemoveEvent(recruiting_event);
+    GetEvMgr().RemoveEvent(producinghelpers_event);
+    GetEvMgr().RemoveEvent(empty_event);
+    GetEvMgr().RemoveEvent(store_event);
 
     // Waiting Wares löschen
     for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
@@ -372,7 +372,7 @@ void nobBaseWarehouse::HandleCollectEvent()
     // Storing still wanted?
     // Then continue ordering new stuff
     if(storing_wanted)
-        store_event = em->AddEvent(this, STORE_INTERVAL, 4);
+        store_event = GetEvMgr().AddEvent(this, STORE_INTERVAL, 4);
 }
 
 void nobBaseWarehouse::HandleSendoutEvent()
@@ -380,7 +380,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     // Fight or something in front of the house? Try again later!
     if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4), 4))
     {
-        empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+        empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
         return;
     }
 
@@ -464,7 +464,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     // Weitere Waren/Figuren zum Auslagern?
     if(AreWaresToEmpty())
         // --> Nächstes Event
-        empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+        empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
 }
 
 void nobBaseWarehouse::HandleRecrutingEvent()
@@ -542,7 +542,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
         gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
     }
 
-    producinghelpers_event = em->AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
 
     // Evtl. genau der Gehilfe, der zum Rekrutieren notwendig ist
     TryRecruiting();
@@ -668,7 +668,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         go_out = false;
 
     if(go_out)
-        leaving_event = em->AddEvent(this, LEAVE_INTERVAL + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), LEAVE_INTERVAL_RAND));
+        leaving_event = GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), LEAVE_INTERVAL_RAND));
 }
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
@@ -735,7 +735,7 @@ bool nobBaseWarehouse::FreePlaceAtFlag()
         // Weitere Waren/Figuren zum Auslagern und kein Event angemeldet?
         if(AreWaresToEmpty() && !empty_event)
             // --> Nächstes Event
-            empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+            empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
 
         return false;
     }
@@ -863,7 +863,7 @@ void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_co
     // Check if we were actually waiting for this figure or if it was just added (e.g. builder that constructed it) to not confuse implementations of Remove...
     if(IsDependentFigure(figure))
         RemoveDependentFigure(figure);
-    em->AddToKillList(figure);
+    GetEvMgr().AddToKillList(figure);
 
     CheckJobsForNewFigure(figure->GetJobType());
 }
@@ -1009,7 +1009,7 @@ void nobBaseWarehouse::AddActiveSoldier(nofActiveSoldier* soldier)
 
     // und Soldat vernichten
     soldier->ResetHome();
-    em->AddToKillList(soldier);
+    GetEvMgr().AddToKillList(soldier);
 }
 
 nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
@@ -1113,7 +1113,7 @@ void nobBaseWarehouse::TryRecruiting()
     if(!recruiting_event)
     {
         if(AreRecruitingConditionsComply())
-            recruiting_event = em->AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
+            recruiting_event = GetEvMgr().AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
     }
 }
 
@@ -1124,7 +1124,7 @@ void nobBaseWarehouse::TryStopRecruiting()
     {
         if(!AreRecruitingConditionsComply())
         {
-            em->RemoveEvent(recruiting_event);
+            GetEvMgr().RemoveEvent(recruiting_event);
             recruiting_event = 0;
         }
     }
@@ -1257,12 +1257,12 @@ void nobBaseWarehouse::SetInventorySetting(const bool isJob, const unsigned char
     {
         // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
         if(!empty_event && (isJob ? inventory[Job(type)] : inventory[GoodType(type)]))
-            empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+            empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
     }else if(!oldState.IsSet(EInventorySetting::COLLECT) && state.IsSet(EInventorySetting::COLLECT))
     {
         // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
         if(!store_event)
-            store_event = em->AddEvent(this, STORE_INTERVAL, 4);
+            store_event = GetEvMgr().AddEvent(this, STORE_INTERVAL, 4);
     }
     NotifyListeners(1);
 }
@@ -1294,10 +1294,10 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
     // no else!
     // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
     if(AreWaresToEmpty() && !empty_event)
-        empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+        empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
     // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
     if(isCollectSet && !store_event)
-        store_event = em->AddEvent(this, STORE_INTERVAL, 4);
+        store_event = GetEvMgr().AddEvent(this, STORE_INTERVAL, 4);
 }
 
 
@@ -1410,7 +1410,7 @@ void nobBaseWarehouse::CheckOuthousing(const bool isJob, unsigned job_ware_id)
 
     const InventorySetting setting = isJob ? GetInventorySetting(Job(job_ware_id)) : GetInventorySetting(GoodType(job_ware_id));
     if(setting.IsSet(EInventorySetting::SEND))
-        empty_event = em->AddEvent(this, empty_INTERVAL, 3);
+        empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
 }
 
 /// For debug only

@@ -114,7 +114,7 @@ void noShipBuildingSite::MakeBuildStep()
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2])
     {
         // Replace me by ship
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
         gwg->SetNO(pos, NULL);
         noShip* ship = new noShip(pos, player);
         gwg->AddFigure(ship, pos);

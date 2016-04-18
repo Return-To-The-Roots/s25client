@@ -929,7 +929,7 @@ void noFigure::Die()
 {
     // Weg mit mir
     gwg->RemoveFigure(this, pos);
-    em->AddToKillList(this);
+    GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
         gwg->SetNO(pos, new noSkeleton(pos));
@@ -957,7 +957,7 @@ void noFigure::DieFailedTrade()
 {
     // Weg mit mir
     gwg->RemoveFigure(this, pos);
-    em->AddToKillList(this);
+    GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
         gwg->SetNO(pos, new noSkeleton(pos));

@@ -54,7 +54,7 @@ noCharburnerPile::~noCharburnerPile()
 
 void noCharburnerPile::Destroy_noCharburnerPile()
 {
-    em->RemoveEvent(event);
+    GetEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
     gwg->RecalcBQAroundPointBig(pos);
@@ -137,7 +137,7 @@ void noCharburnerPile::HandleEvent(const unsigned int  /*id*/)
 	{
 		state = STATE_REMOVECOVER;
 		//start a selfdestruct timer
-		event = em->AddEvent(this, SELFDESTRUCT_DELAY,0);
+		event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY,0);
 	}
 	else
 	{
@@ -145,7 +145,7 @@ void noCharburnerPile::HandleEvent(const unsigned int  /*id*/)
 		event = NULL;
 		gwg->SetNO(pos, new noFire(pos, 0), true);
 		gwg->RecalcBQAroundPoint(pos);
-		em->AddToKillList(this);
+		GetEvMgr().AddToKillList(this);
 	}
 }
 
@@ -155,8 +155,8 @@ void noCharburnerPile::NextStep()
 {
 	//reset selfdestruct timer
 	if(event)
-		em->RemoveEvent(event);
-	event = em->AddEvent(this,SELFDESTRUCT_DELAY,0);
+		GetEvMgr().RemoveEvent(event);
+	event = GetEvMgr().AddEvent(this,SELFDESTRUCT_DELAY,0);
 
 	//execute step
     switch(state)
@@ -175,8 +175,8 @@ void noCharburnerPile::NextStep()
                 {
                     step = 0;
                     state = STATE_SMOLDERING;
-					em->RemoveEvent(event);
-                    event = em->AddEvent(this, SMOLDERING_LENGTH, 0);
+					GetEvMgr().RemoveEvent(event);
+                    event = GetEvMgr().AddEvent(this, SMOLDERING_LENGTH, 0);
                 }
             }
 
@@ -211,7 +211,7 @@ void noCharburnerPile::NextStep()
                 {
                     // Add an empty pile as environmental object
                     gwg->SetNO(pos, new noEnvObject(pos, 40, 6), true);
-                    em->AddToKillList(this);
+                    GetEvMgr().AddToKillList(this);
 
                     // BQ drumrum neu berechnen
                     gwg->RecalcBQAroundPoint(pos);

@@ -265,9 +265,9 @@ void GameClient::StartGame(const unsigned int random_init)
     RANDOM.Init(random_init);
 
     // Spielwelt erzeugen
-    gw = new GameWorld(players, ggs);
     em = new EventManager();
-    GameObject::SetPointers(gw, em);
+    gw = new GameWorld(players, ggs, *em);
+    GameObject::SetPointers(gw);
     for(unsigned i = 0; i < players.getCount(); ++i)
         players[i].SetGameWorldPointer(gw);
 
@@ -276,7 +276,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
     if(mapinfo.savegame)
     {
-        mapinfo.savegame->sgd.ReadSnapshot(*gw, *em);
+        mapinfo.savegame->sgd.ReadSnapshot(*gw);
 
         // TODO: schöner machen:
         // Die Fläche, die nur von einem Allierten des Spielers gesehen werden, müssen noch dem TerrainRenderer mitgeteilt werden
@@ -357,7 +357,7 @@ void GameClient::RealStart()
  */
 void GameClient::ExitGame()
 {
-    GameObject::SetPointers(NULL, NULL);
+    GameObject::SetPointers(NULL);
     // Spielwelt zerstören
     deletePtr(human_ai);
     deletePtr(gw);
@@ -1693,7 +1693,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     save.sgd.debugMode = SETTINGS.global.debugMode;
 
     // Spiel serialisieren
-    save.sgd.MakeSnapshot(*gw, *em);
+    save.sgd.MakeSnapshot(*gw);
 
     // Und alles speichern
     if(!save.Save(filename))

@@ -30,12 +30,6 @@ class TestWorld: public World
     void AltitudeChanged(const MapPoint pt) override {}
 };
 
-class InitEventMgr: public GameObject
-{
-public:
-    static EventManager*& GetEvMgr(){ return em; }
-};
-
 BOOST_AUTO_TEST_CASE(LoadWorld)
 {
     glArchivItem_Map map;

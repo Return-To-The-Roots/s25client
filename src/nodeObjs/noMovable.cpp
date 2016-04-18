@@ -89,7 +89,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
         // Avoid setting an event for current gf by increasing the length
         if(pause_walked_gf == pause_event_length)
             pause_event_length++;
-        current_ev = em->AddEvent(this, pause_event_length, 0, pause_walked_gf);
+        current_ev = GetEvMgr().AddEvent(this, pause_event_length, 0, pause_walked_gf);
         pause_walked_gf = 0;
         moving = true;
         return;
@@ -108,7 +108,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
         case -4: case -5: ascent = 0; break; // steil runter
     }
 
-    current_ev = em->AddEvent(this, gf_length);
+    current_ev = GetEvMgr().AddEvent(this, gf_length);
     this->curMoveDir = newDir;
     moving = true;
 
@@ -206,7 +206,7 @@ void noMovable::PauseWalking()
     // Länge merken
     pause_event_length = current_ev->gf_length;
     // Event abmelden
-    em->RemoveEvent(current_ev);
+    GetEvMgr().RemoveEvent(current_ev);
     current_ev = 0;
     moving = false;
 

@@ -116,8 +116,8 @@ void nobMilitary::Destroy_nobMilitary()
     far_away_capturers.clear();
 
     // Events ggf. entfernen
-    em->RemoveEvent(goldorder_event);
-    em->RemoveEvent(upgrade_event);
+    GetEvMgr().RemoveEvent(goldorder_event);
+    GetEvMgr().RemoveEvent(upgrade_event);
 
     // übriggebliebene Goldmünzen in der Inventur abmelden
     gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, coins);
@@ -264,7 +264,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
 
             // Wenn noch weitere drin sind, die müssen auch noch raus
             if(!leave_house.empty())
-                leaving_event = em->AddEvent(this, 30 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
+                leaving_event = GetEvMgr().AddEvent(this, 30 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
             else
                 go_out = false;
 
@@ -662,7 +662,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
 
     // alten Soldaten später vernichten
     soldier->ResetHome();
-    em->AddToKillList(soldier);
+    GetEvMgr().AddToKillList(soldier);
 
     RTTR_Assert(soldier->GetPlayer() == player);
 
@@ -1184,7 +1184,7 @@ void nobMilitary::SearchCoins()
             RTTR_Assert(helpers::contains(ordered_coins, ware));
 
             // Nach einer Weile nochmal nach evtl neuen Goldmünzen gucken
-            goldorder_event = em->AddEvent(this, 200 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 400), 1);
+            goldorder_event = GetEvMgr().AddEvent(this, 200 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 400), 1);
         }
     }
 }
@@ -1216,7 +1216,7 @@ void nobMilitary::PrepareUpgrading()
         return;
 
     // Alles da --> Beförderungsevent anmelden
-    upgrade_event = em->AddEvent(this, UPGRADE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), UPGRADE_TIME_RANDOM), 2);
+    upgrade_event = GetEvMgr().AddEvent(this, UPGRADE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), UPGRADE_TIME_RANDOM), 2);
 }
 
 void nobMilitary::HitOfCatapultStone()

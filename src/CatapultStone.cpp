@@ -40,7 +40,7 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
     dest_building(dest_building), dest_map(dest_map), start_x(start_x),
     start_y(start_y), dest_x(dest_x), dest_y(dest_y), explode(false)
 {
-    event = em->AddEvent(this, fly_duration);
+    event = GetEvMgr().AddEvent(this, fly_duration);
 }
 
 
@@ -122,12 +122,12 @@ void CatapultStone::HandleEvent(const unsigned int  /*id*/)
     {
         // Explodiert --> mich zerstören
         gwg->RemoveCatapultStone(this);
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
     }
     else
     {
         // Stein ist aufgeschlagen --> Explodierevent anmelden
-        event = em->AddEvent(this, 10);
+        event = GetEvMgr().AddEvent(this, 10);
         explode = true;
 
         // Trifft der Stein?
