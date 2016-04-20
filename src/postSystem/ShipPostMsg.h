@@ -15,20 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MessageTypes_h__
-#define MessageTypes_h__
+#ifndef ShipPostMsg_h__
+#define ShipPostMsg_h__
 
-enum PostMessageCategory
+#include "postSystem/PostMsg.h"
+
+class noShip;
+
+/// Post message concerning a ship. Displays ships location and picture
+class ShipPostMsg: public PostMsg
 {
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
+public:
+    /// Creates the message.
+    /// Note: Ship object might get invalidated after this call so do not store!
+    ShipPostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const noShip& ship);
+    glArchivItem_Bitmap* GetImage_() const override;
 };
 
-/// Maximale Nachrichtenanzahl im Briefkasten
-const unsigned MAX_POST_MESSAGES = 20;
-
-#endif // MessageTypes_h__
+#endif // ShipPostMsg_h__

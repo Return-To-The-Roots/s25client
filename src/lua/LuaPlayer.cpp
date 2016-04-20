@@ -23,7 +23,7 @@
 #include "ai/AIEvents.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "helpers/converters.h"
 #include "libutil/src/Log.h"
 #include <stdexcept>
@@ -66,12 +66,13 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     player.EnableBuilding(bld);
     if(notify && player.getPlayerID() == GAMECLIENT.GetLocalPlayer().getPlayerID())
     {
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
+        GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(
+            GAMECLIENT.GetGFNumber(),
             _(BUILDING_NAMES[bld]),
             PMC_GENERAL,
-            player.hqPos,
             bld,
-            player.nation));
+            player.nation,
+            player.hqPos));
     }
 }
 

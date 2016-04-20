@@ -26,7 +26,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"
 #include "GlobalVars.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsg.h"
 #include "libutil/src/Serializer.h"
 #include "libutil/src/Log.h"
 #include <fstream>
@@ -263,7 +263,7 @@ void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg
     if(GAMECLIENT.GetPlayerID() != playerIdx)
         return;
 
-    GAMECLIENT.SendPostMessage(new PostMsg(msg, PMC_OTHER));
+    GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_OTHER));
 }
 
 void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
@@ -271,7 +271,7 @@ void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::st
     if(GAMECLIENT.GetPlayerID() != playerIdx)
         return;
 
-    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
+    GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)

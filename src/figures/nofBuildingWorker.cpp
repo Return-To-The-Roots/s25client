@@ -26,7 +26,7 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "SoundManager.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
@@ -407,7 +407,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
             else
                 error = _("This mine is exhausted");
 
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(error, PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
+            GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), error, PMC_GENERAL, *workplace));
         }
 
         outOfRessourcesMsgSent = true;

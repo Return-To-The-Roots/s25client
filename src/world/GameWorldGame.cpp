@@ -22,7 +22,7 @@
 #include "GameClientPlayer.h"
 #include "TradePathCache.h"
 #include "GameInterface.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "buildings/noBuildingSite.h"
@@ -447,7 +447,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if (newBuilt && sizeChanges[i] < 0 && GAMECLIENT.GetPlayerID() == i)
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Lost land by this building"), PMC_MILITARY, building.GetPos(), building.GetBuildingType(), building.GetNation()));
+            GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Lost land by this building"), PMC_MILITARY, building));
     }
 
     for(int y = region.y1; y < region.y2; ++y)

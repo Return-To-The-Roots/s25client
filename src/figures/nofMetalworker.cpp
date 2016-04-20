@@ -28,7 +28,7 @@
 #include "EventManager.h"
 #include "GameEvent.h"
 #include "ingameWindows/iwTools.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameTypes/MessageTypes.h"
@@ -146,7 +146,7 @@ GoodType nofMetalworker::GetOrderedTool()
 
         if ( (player == GAMECLIENT.GetPlayerID()) && (ToolsOrderedTotal() == 0) )
         {
-            GAMECLIENT.SendPostMessage( new PostMsg( _("Completed the ordered amount of tools."), PMC_GENERAL ) );
+            GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("Completed the ordered amount of tools."), PMC_GENERAL));
         }
 
         iwTools::UpdateOrders();

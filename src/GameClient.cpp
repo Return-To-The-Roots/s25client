@@ -33,7 +33,7 @@
 #include "GlobalGameSettings.h"
 #include "lua/LuaInterfaceGame.h"
 #include "gameData/GameConsts.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsg.h"
 #include "SerializedGameData.h"
 #include "LobbyClient.h"
 #include "files.h"

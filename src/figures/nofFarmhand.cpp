@@ -24,7 +24,7 @@
 #include "SoundManager.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "GameClient.h"
 #include "world/GameWorldGame.h"
 
@@ -180,27 +180,21 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
             else
             {
 
-                if(GAMECLIENT.GetPlayerID() == this->player)
+                if(GAMECLIENT.GetPlayerID() == this->player && !outOfRessourcesMsgSent)
                 {
-                    if (!outOfRessourcesMsgSent)
+                    switch(job_)
                     {
-                        switch(job_)
+                        case JOB_STONEMASON:
+                        case JOB_FISHER:
                         {
-                            case JOB_STONEMASON:
-                                GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("No more stones in range"), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
-                                outOfRessourcesMsgSent = true;
-                                // Produktivitätsanzeige auf 0 setzen
-                                workplace->SetProductivityToZero();
-                                break;
-                            case JOB_FISHER:
-                                GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("No more fishes in range"), PMC_GENERAL, pos, workplace->GetBuildingType(), workplace->GetNation()));
-                                outOfRessourcesMsgSent = true;
-                                // Produktivitätsanzeige auf 0 setzen
-                                workplace->SetProductivityToZero();
-                                break;
-                            default:
-                                break;
+                            const std::string msg = (job_ == JOB_STONEMASON) ? _("No more stones in range") : _("No more fishes in range");
+                            GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), msg, PMC_GENERAL, *workplace));
+                            outOfRessourcesMsgSent = true;
+                            workplace->SetProductivityToZero();
+                            break;
                         }
+                        default:
+                            break;
                     }
                 }
 

@@ -37,14 +37,6 @@ class iwPostWindow : public IngameWindow
 
     private:
         GameWorldView& gwv;
-        ctrlImage* postImage;
-        ctrlText* postMsgInfos;
-
-        ctrlImageButton* gotoButton;
-        ctrlImageButton* deleteButton;
-
-        ctrlImageButton* acceptButton;
-        ctrlImageButton* declineButton;
 
         unsigned currentMessage;
 

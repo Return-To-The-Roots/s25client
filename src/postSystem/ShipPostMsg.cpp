@@ -15,20 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MessageTypes_h__
-#define MessageTypes_h__
+#include "defines.h" // IWYU pragma: keep
+#include "ShipPostMsg.h"
+#include "nodeObjs/noShip.h"
+#include "Loader.h"
 
-enum PostMessageCategory
+ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const noShip& ship):
+    PostMsg(sendFrame, text, cat, ship.GetPos())
+{}
+
+glArchivItem_Bitmap* ShipPostMsg::GetImage_() const
 {
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
-};
-
-/// Maximale Nachrichtenanzahl im Briefkasten
-const unsigned MAX_POST_MESSAGES = 20;
-
-#endif // MessageTypes_h__
+    return LOADER.GetImageN("boot_z", 12);
+}

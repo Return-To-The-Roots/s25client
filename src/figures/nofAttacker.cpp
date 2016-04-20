@@ -27,7 +27,7 @@
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noFlag.h"
@@ -271,10 +271,8 @@ void nofAttacker::Walked()
                     // Inform the owner of the building
                     if(GAMECLIENT.GetPlayerID() == attacked_goal->GetPlayer())
                     {
-                        if(attacked_goal->GetGOT() == GOT_NOB_HQ)
-                            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Our headquarters was destroyed!"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
-                        else
-                            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("This harbor building was destroyed"), PMC_MILITARY, pos, attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
+                        const std::string msg = (attacked_goal->GetGOT() == GOT_NOB_HQ) ? _("Our headquarters was destroyed!") : _("This harbor building was destroyed");
+                        GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), msg, PMC_MILITARY, *attacked_goal));
                     }
 
                     // abreißen
@@ -603,8 +601,7 @@ void nofAttacker::ReachedDestination()
 
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
         if(attacked_goal->GetPlayer() == GAMECLIENT.GetPlayerID())
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("We are under attack!"), PMC_MILITARY, pos,
-                                             attacked_goal->GetBuildingType(), attacked_goal->GetNation()));
+            GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("We are under attack!"), PMC_MILITARY, *attacked_goal));
 
         // Dann Verteidiger rufen
         if(attacked_goal->CallDefender(this))

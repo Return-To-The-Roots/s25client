@@ -15,20 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MessageTypes_h__
-#define MessageTypes_h__
+#include "defines.h" // IWYU pragma: keep
+#include "PostMsgWithBuilding.h"
+#include "buildings/noBaseBuilding.h"
+#include "Loader.h"
+#include <stdexcept>
 
-enum PostMessageCategory
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const noBaseBuilding& bld):
+    PostMsg(sendFrame, text, cat, bld.GetPos()), bldType(bld.GetBuildingType()), nation(bld.GetNation())
+{}
+
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostMessageCategory cat, BuildingType bld, Nation nation, const MapPoint& pos /*= MapPoint::Invalid()*/):
+    PostMsg(sendFrame, text, cat, pos), bldType(bld), nation(nation)
+{}
+
+glArchivItem_Bitmap* PostMsgWithBuilding::GetImage_() const
 {
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
-};
-
-/// Maximale Nachrichtenanzahl im Briefkasten
-const unsigned MAX_POST_MESSAGES = 20;
-
-#endif // MessageTypes_h__
+    return noBaseBuilding::GetBuildingImage(bldType, nation);
+}

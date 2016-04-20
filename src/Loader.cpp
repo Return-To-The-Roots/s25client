@@ -383,31 +383,22 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
             files += 27 + i + (gfxset == LT_WINTERWORLD) * NATIVE_NAT_COUNT;
     }
 
+    lastgfx = 0xFF;
+
     // Load files, but only once. If they are modified by overrides they will still be loaded again
     if (!LoadFilesFromArray(files.size(), &files.front(), true))
-    {
-        lastgfx = 0xFF;
         return false;
-    }
 
     if ((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
-    {
-        lastgfx = 0xFF;
         return false;
-    }
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
-    {
-        lastgfx = 0xFF;
         return false;
-    }
 
     lastgfx = gfxset;
 
     for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
-    {
         nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
-    }
 
     map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
     tex_gfx = GetInfoN(TEX_GFXSET[lastgfx]);

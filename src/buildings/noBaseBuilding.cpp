@@ -262,10 +262,20 @@ noBase::BlockingManner noBaseBuilding::GetBM() const
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
 {
-    if (type_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 6 : 1));
+    return GetBuildingImage(type_, nation, gwg->GetLandscapeType());
+}
+
+glArchivItem_Bitmap * noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation)
+{
+    return GetBuildingImage(type, nation, LandscapeType(LOADER.GetLastGFX()));
+}
+
+glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt)
+{
+    if(type == BLD_CHARBURNER)
+        return LOADER.GetImageN("charburner", nation * 8 + ((lt == LT_WINTERWORLD) ? 6 : 1));
     else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_);
+        return LOADER.GetNationImage(nation, 250 + 5 * type);
 }
 
 /// Gibt ein Bild zurück für das Gebäudegerüst

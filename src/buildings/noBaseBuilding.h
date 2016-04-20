@@ -20,6 +20,7 @@
 
 #include "nodeObjs/noRoadNode.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/LandscapeType.h"
 #include "gameData/BuildingConsts.h"
 
 class glArchivItem_Bitmap;
@@ -97,6 +98,8 @@ class noBaseBuilding : public noRoadNode
 
         /// Gibt ein Bild zurück für das normale Gebäude
         glArchivItem_Bitmap* GetBuildingImage() const;
+        static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation);
+        static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt);
         /// Gibt ein Bild zurück für das Gebäudegerüst
         glArchivItem_Bitmap* GetBuildingSkeletonImage() const;
         /// Gibt ein Bild zurück für das normale Gebäude

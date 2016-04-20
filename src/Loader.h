@@ -126,6 +126,8 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         /// Returns the texture for the given terrain. For animated textures the given frame is returned
         glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
+        unsigned char GetLastGFX() const { return lastgfx; }
+
     private:
         template<typename T>
         static T convertChecked(libsiedler2::ArchivItem* item){ T res = dynamic_cast<T>(item); RTTR_Assert(!item || res); return res; }
@@ -149,18 +151,31 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 
         glTexturePacker* stp;
 
-        helpers::MultiArray<glSmartBitmap, 8, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
+        /// Animals: Species, Direction, AnimationFrame(Last = Dead)
+        helpers::MultiArray<glSmartBitmap, SPEC_COUNT, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
+        /// Buildings: Nation, Type, Building/Skeleton
         helpers::MultiArray<glSmartBitmap, NAT_COUNT, BUILDING_TYPES_COUNT, 2> building_cache;
+        /// Flags: Nation, Type, AnimationFrame
         helpers::MultiArray<glSmartBitmap, NAT_COUNT, 3, 8> flag_cache;
-        helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
+        /// Military Flags: AnimationFrame
+        //helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
+        /// Trees: Type, AnimationFrame
         helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
+        /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
         helpers::MultiArray<glSmartBitmap, NAT_COUNT, JOB_TYPES_COUNT + 1, 6, 8> bob_jobs_cache;
+        /// Stone: Type, Size
         helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
+        /// Grainfield: Type, Size
         helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
+        /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
         helpers::MultiArray<glSmartBitmap, WARE_TYPES_COUNT, 6, 8, 2> carrier_cache;
+        /// Boundary stones: Nation
         helpers::MultiArray<glSmartBitmap, NAT_COUNT> boundary_stone_cache;
+        /// BoatCarrier: Direction, AnimationFrame
         helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
+        /// Donkey: Direction, AnimationFrame
         helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
+        /// Gateway: AnimationFrame
         helpers::MultiArray<glSmartBitmap, 5> gateway_cache;
 };
 
