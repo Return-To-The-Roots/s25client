@@ -444,18 +444,18 @@ void nofGeologist::SetSign(const unsigned char resources)
             {
                 switch(type)
                 {
-                    case 0: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, pos));
+                    case RES_IRON_ORE: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, pos));
                         break;
-                    case 1: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, pos));
+                    case RES_GOLD: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, pos));
                         break;
-                    case 2: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, pos));
+                    case RES_COAL: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, pos));
                         break;
-                    case 3: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, pos));
+                    case RES_GRANITE: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, pos));
                         break;
-                    case 4: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, pos));
+                    case RES_WATER: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, pos));
                         break;
                     default:
-                        ;
+                        RTTR_Assert(false);
                 }
             }
             GAMECLIENT.SendAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, pos, type), player);
