@@ -19,9 +19,6 @@
 #include "noExtension.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void noExtension::Serialize_noExtension(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);

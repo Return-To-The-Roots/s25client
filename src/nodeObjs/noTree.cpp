@@ -30,9 +30,6 @@
 #include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;
 

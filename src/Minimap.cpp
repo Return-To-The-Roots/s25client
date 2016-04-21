@@ -22,9 +22,6 @@
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/oglIncludes.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Minimap::Minimap(const unsigned short map_width, const unsigned short map_height)
     : map_width(map_width), map_height(map_height)
 {}

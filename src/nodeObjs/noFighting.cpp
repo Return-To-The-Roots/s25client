@@ -30,9 +30,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "gameData/MilitaryConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NOP_FIGHTING)
 {
     RTTR_Assert(soldier1->GetPlayer() != soldier2->GetPlayer());

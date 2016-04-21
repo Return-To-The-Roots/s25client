@@ -34,9 +34,6 @@
 #include "gameTypes/MessageTypes.h"
 #include "Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
 {

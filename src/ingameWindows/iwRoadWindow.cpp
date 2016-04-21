@@ -24,9 +24,6 @@
 #include "GameInterface.h"
 #include "gameData/const_gui_ids.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
     : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), mousePosAtOpen_(mouse_x, mouse_y)

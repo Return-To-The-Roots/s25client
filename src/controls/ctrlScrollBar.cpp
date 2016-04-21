@@ -22,9 +22,6 @@
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlScrollBar::ctrlScrollBar(Window* parent,
                              unsigned int id,
                              unsigned short x,

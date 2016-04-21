@@ -23,9 +23,6 @@
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwHQ::iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
     : iwBaseWarehouse(gwv, title, pages_count, wh)
 {

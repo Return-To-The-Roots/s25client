@@ -24,10 +24,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "GameClient.h"
 
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
     : IngameWindow(building->CreateGUIID(), 0xFFFE, 0xFFFE, 200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
 {

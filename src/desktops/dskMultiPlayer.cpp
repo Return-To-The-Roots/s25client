@@ -28,9 +28,6 @@
 #include "ingameWindows/iwLobbyConnect.h"
 #include "ogl/glArchivItem_Font.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @class dskMultiPlayer
  *
  *  Klasse des Multispieler Desktops.

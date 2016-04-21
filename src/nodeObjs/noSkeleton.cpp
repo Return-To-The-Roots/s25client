@@ -24,9 +24,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noSkeleton::noSkeleton(const MapPoint pos)
     : noCoordBase(NOP_ENVIRONMENT, pos),
       type(0)

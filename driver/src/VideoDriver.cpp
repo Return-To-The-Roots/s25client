@@ -19,9 +19,6 @@
 #include "VideoDriver.h"
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 // Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
 IVideoDriver::~IVideoDriver(){}
 

@@ -22,9 +22,6 @@
 #include "GameClient.h"
 #include "controls/ctrlOptionGroup.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class glArchivItem_Bitmap;
 
 const std::string TOOLTIPS[14] =

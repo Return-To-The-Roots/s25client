@@ -20,9 +20,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include <cstdio>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlPercent::ctrlPercent(Window* parent,
                          unsigned int id,
                          unsigned short x,

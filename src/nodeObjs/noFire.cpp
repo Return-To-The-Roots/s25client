@@ -27,9 +27,6 @@
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noFire::noFire(const MapPoint pos, const unsigned char size)
     : noCoordBase(NOP_FIRE, pos), size(size), was_sounding(false), last_sound(0), next_interval(0)
 {

@@ -21,9 +21,6 @@
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal): gwg(gwg), player(player)
 {
     AssignNewGoal(start, goal);

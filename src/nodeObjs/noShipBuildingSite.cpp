@@ -28,9 +28,6 @@
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
     : noCoordBase(NOP_ENVIRONMENT, pos),
       player(player), progress(0)

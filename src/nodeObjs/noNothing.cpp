@@ -18,9 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noNothing.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noNothing::noNothing() : noBase(NOP_NOTHING)
 {
 }

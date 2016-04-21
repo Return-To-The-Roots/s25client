@@ -17,9 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "noEnvObject.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
 /**

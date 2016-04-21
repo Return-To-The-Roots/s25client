@@ -46,9 +46,6 @@
 #include "libsiedler2/src/prototypen.h"
 #include "libutil/src/ucString.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @class dskSelectMap
  *
  *  Klasse des Map-Auswahl Desktops.

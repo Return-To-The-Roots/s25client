@@ -24,9 +24,6 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),

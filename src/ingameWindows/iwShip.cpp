@@ -31,9 +31,6 @@
 #include "gameData/const_gui_ids.h"
 #include "gameData/ShieldConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwShip::iwShip(GameWorldView& gwv, noShip* const ship)
     : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), ship_id(ship ? gwv.GetViewer().GetPlayer(ship->GetPlayer()).GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())

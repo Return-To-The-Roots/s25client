@@ -23,9 +23,6 @@
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)

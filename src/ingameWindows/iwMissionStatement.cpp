@@ -23,9 +23,6 @@
 #include "gameData/const_gui_ids.h"
 #include <sstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Konstruktor von @p iwTextfile.
  *

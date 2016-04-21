@@ -27,9 +27,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 /// Länge des Wachs-Wartens
 const unsigned GROWING_WAITING_LENGTH = 1100;

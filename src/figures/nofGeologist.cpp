@@ -32,9 +32,6 @@
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "lua/LuaInterfaceGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)

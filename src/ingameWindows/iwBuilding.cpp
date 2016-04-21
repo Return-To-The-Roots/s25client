@@ -31,9 +31,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/BuildingConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;

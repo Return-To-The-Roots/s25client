@@ -19,9 +19,6 @@
 #include "AudioDriver.h"
 #include "Sound.h"
 #include <cstddef>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class AudioDriverLoaderInterface;
 
 // Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces

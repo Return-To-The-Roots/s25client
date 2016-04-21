@@ -23,9 +23,6 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)

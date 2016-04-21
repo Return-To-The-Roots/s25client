@@ -57,9 +57,6 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GameServer::ServerConfig::ServerConfig()
 {
     Clear();

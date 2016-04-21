@@ -25,9 +25,6 @@
 
 #include <sstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlProgress::ctrlProgress(Window* parent,
                            const unsigned int id,
                            const unsigned short x,

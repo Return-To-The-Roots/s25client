@@ -26,9 +26,6 @@
 #include "gameData/const_gui_ids.h"
 #include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vector<AddonId>& addonIds)

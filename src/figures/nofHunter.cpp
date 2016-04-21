@@ -32,9 +32,6 @@
 #include "ai/AIEvents.h"
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// Maximale Distanz, die ein Jäger läuft, um ein Tier zu jagen
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 

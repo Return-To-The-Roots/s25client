@@ -31,9 +31,6 @@
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)

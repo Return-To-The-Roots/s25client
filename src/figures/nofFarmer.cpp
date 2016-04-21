@@ -29,9 +29,6 @@
 #include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)
 {

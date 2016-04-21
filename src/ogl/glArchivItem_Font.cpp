@@ -32,9 +32,6 @@
 #include <cmath>
 #include <vector>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
 
 

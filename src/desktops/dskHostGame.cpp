@@ -49,9 +49,6 @@
 
 #include "../libsiedler2/src/prototypen.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 dskHostGame::dskHostGame(const ServerType serverType) :
     Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType), wasActivated(false)
 {

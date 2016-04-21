@@ -39,9 +39,6 @@
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "SerializedGameData.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :

@@ -28,9 +28,6 @@
 #include "GameClient.h"
 #include "world/GameWorldGame.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)
 {

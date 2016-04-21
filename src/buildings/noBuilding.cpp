@@ -24,9 +24,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/src/Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noFigure;
 
 noBuilding::noBuilding(const BuildingType type,

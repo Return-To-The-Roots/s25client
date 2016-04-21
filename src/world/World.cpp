@@ -30,9 +30,6 @@
 #include "helpers/containerUtils.h"
 #include <set>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
 {
     noTree::ResetInstanceCounter();

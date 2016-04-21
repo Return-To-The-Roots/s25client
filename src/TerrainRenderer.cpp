@@ -35,9 +35,6 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /* Terrain rendering works like that:
  * Every point is associated with 2 triangles:
  *    x____

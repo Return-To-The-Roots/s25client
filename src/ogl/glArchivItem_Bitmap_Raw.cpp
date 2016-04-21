@@ -17,6 +17,3 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Raw.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep

@@ -21,9 +21,6 @@
 #include "libutil/src/colors.h"
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     playerid(playerid),
     defeated(false),

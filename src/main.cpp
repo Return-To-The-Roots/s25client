@@ -69,9 +69,6 @@
 #include <limits>
 #include <cstdlib>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace po = boost::program_options;
 
 void WaitForEnter()

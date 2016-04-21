@@ -25,9 +25,6 @@
 #include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Konstruktor von @p noBase.
  *

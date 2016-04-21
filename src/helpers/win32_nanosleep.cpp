@@ -24,9 +24,6 @@
 #include <ctime>
 #include <cstdio>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Sleep at least some number of microseconds
  */

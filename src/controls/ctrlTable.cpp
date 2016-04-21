@@ -26,9 +26,6 @@
 #include <sstream>
 #include <cstdarg>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlTable::ctrlTable(Window* parent,
                      unsigned int id,
                      unsigned short x,

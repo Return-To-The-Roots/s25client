@@ -45,9 +45,6 @@
 #include <list>
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS }};
 
 AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)

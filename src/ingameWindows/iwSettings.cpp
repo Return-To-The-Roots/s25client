@@ -28,9 +28,6 @@
 #include "libutil/src/colors.h"
 #include <cstdio>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41))
 {

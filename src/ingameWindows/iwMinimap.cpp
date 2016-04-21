@@ -22,9 +22,6 @@
 #include "controls/ctrlButton.h"
 #include "gameData/const_gui_ids.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// (maximale) Größe des Minimapfensters normal
 const unsigned short MINIMAP_WINDOW_WIDTH = 200;
 const unsigned short MINIMAP_WINDOW_HEIGHT = 200;

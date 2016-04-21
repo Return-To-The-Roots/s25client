@@ -35,9 +35,6 @@
 #include "gameData/GameConsts.h"
 #include "Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const unsigned int ship_count = 55;
 
 /// Zeit zum Beladen des Schiffes

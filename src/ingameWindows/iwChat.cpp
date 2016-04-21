@@ -24,9 +24,6 @@
 #include "controls/ctrlOptionGroup.h"
 #include "gameData/const_gui_ids.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 unsigned char iwChat::chat_dest = 0;
 
 iwChat::iwChat()

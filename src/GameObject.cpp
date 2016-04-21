@@ -22,9 +22,6 @@
 
 #include <iostream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Objekt-ID-Counter.
  */

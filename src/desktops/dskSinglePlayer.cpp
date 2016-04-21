@@ -36,9 +36,6 @@
 #include "files.h"
 #include <boost/filesystem.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @class dskSinglePlayer
  *
  *  Klasse des Einzelspieler Desktops.

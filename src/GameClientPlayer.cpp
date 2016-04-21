@@ -51,9 +51,6 @@
 #include <stdint.h>
 #include <limits>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 // Standardbelegung der Transportreihenfolge festlegen
 const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT =
 {{

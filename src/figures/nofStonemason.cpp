@@ -25,9 +25,6 @@
 #include "SoundManager.h"
 #include "GameInterface.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 class nobUsual;
 

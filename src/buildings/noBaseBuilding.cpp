@@ -32,9 +32,6 @@
 #include "world/GameWorldGame.h"
 #include "Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
     : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {

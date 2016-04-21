@@ -19,9 +19,6 @@
 #include "AIEventManager.h"
 #include "AIEvents.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 AIEventManager::AIEventManager()
 {
 }

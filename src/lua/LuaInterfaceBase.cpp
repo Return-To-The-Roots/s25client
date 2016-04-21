@@ -24,9 +24,6 @@
 #include "libutil/src/Log.h"
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
 {
     luaopen_base(lua.state());

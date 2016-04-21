@@ -27,9 +27,6 @@
 #include "Log.h"
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player,
                                    nobBaseMilitary* const home, const unsigned char rank, const SoldierState init_state)
     : nofSoldier(pos, player, home, rank), state(init_state), enemy(NULL)

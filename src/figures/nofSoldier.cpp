@@ -24,9 +24,6 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/MilitaryConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
                        nobBaseMilitary* const goal , nobBaseMilitary* const home, const unsigned char rank)
     : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])

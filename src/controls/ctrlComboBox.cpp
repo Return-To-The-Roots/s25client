@@ -25,9 +25,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlComboBox::ctrlComboBox(Window* parent,
                            unsigned int id,
                            unsigned short x,

@@ -59,9 +59,6 @@
 #include <iostream>
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void GameClient::ClientConfig::Clear()
 {
     server.clear();

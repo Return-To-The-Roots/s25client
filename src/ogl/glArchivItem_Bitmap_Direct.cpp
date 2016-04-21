@@ -21,9 +21,6 @@
 #include "ArchivItem_Palette.h"
 #include "ogl/oglIncludes.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct()
 {
 }

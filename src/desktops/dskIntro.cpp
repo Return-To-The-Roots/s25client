@@ -23,9 +23,6 @@
 
 #include "dskMainMenu.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @class dskIntro
  *
  *  Klasse des Intro Desktops.

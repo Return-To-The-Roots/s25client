@@ -25,9 +25,6 @@
 #include "controls/ctrlButton.h"
 #include "ogl/glArchivItem_Font.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
     : iwHQ(gwv, hb, _("Harbor building"), 4)
 {

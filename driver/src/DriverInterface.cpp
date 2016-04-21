@@ -18,9 +18,6 @@
 #include "main.h" // IWYU pragma: keep
 #include "DriverInterfaceVersion.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 #ifdef _WIN32
 #   define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else

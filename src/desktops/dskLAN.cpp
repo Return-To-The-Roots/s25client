@@ -31,9 +31,6 @@
 #include <Serializer.h>
 #include <boost/lexical_cast.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace {
     const unsigned btBackId = 3;
     const unsigned btConnectId = 4;

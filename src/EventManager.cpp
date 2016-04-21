@@ -24,9 +24,6 @@
 #include "helpers/mapTraits.h"
 #include "Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 EventManager::~EventManager()
 {
     Clear();

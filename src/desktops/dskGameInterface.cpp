@@ -73,9 +73,6 @@
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
 #include <sstream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noShip;
 
 /**

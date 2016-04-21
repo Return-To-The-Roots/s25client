@@ -30,9 +30,6 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 dskDirectIP::dskDirectIP() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version

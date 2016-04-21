@@ -23,9 +23,6 @@
 #include "GameManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "dskMainMenu.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 /** @class dskSplash
  *

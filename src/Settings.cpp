@@ -33,9 +33,6 @@
 #   include <cstring>
 #endif
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const unsigned int Settings::SETTINGS_VERSION = 12;
 const unsigned int Settings::SETTINGS_SECTIONS = 11;
 const std::string Settings::SETTINGS_SECTION_NAMES[] =

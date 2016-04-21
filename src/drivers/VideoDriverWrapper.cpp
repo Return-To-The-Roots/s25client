@@ -33,9 +33,6 @@
 #   include <valgrind/memcheck.h>
 #endif
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);

@@ -29,9 +29,6 @@
 #include <algorithm>
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Playlist::Playlist() : repeats(1), random(false)
 {
 }

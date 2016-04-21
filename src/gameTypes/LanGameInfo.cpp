@@ -18,9 +18,6 @@
 #include "LanGameInfo.h"
 #include "Serializer.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 bool LanGameInfo::Serialize(Serializer& serializer)
 {
     if (name.size() > 64)

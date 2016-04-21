@@ -24,9 +24,6 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 PostMsg::PostMsg(const std::string& text, PostMessageCategory cat)
     : text(text), type(PMT_NORMAL), cat(cat), sendFrame(GAMECLIENT.GetGFNumber()) { }
 

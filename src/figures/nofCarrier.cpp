@@ -39,9 +39,6 @@
 #include <boost/assign/std/vector.hpp>
 #include <boost/array.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
 

@@ -23,9 +23,6 @@
 #include "gameData/TerrainData.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 {
     if(s2map)

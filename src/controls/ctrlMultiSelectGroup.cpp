@@ -17,9 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlMultiSelectGroup.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,

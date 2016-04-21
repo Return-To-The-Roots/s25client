@@ -27,9 +27,6 @@
 #include <boost/array.hpp>
 #include <iostream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 class SwitchOnStart: public ClientInterface
 {
 public:

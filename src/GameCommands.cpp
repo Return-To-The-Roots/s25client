@@ -26,9 +26,6 @@
 #include "world/GameWorldGame.h"
 #include <iostream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace gc{
 
     void SetFlag::Execute(GameWorldGame& gwg, GameClientPlayer&  /*player*/, const unsigned char playerid)

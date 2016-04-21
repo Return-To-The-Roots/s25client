@@ -34,9 +34,6 @@
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
     GameWorldBase(players, gameSettings), // Init virtual base class
     GameWorldViewer(players, gameSettings), GameWorldGame(players, gameSettings)

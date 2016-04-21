@@ -22,9 +22,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Konstruktor von @p noBase.
  *

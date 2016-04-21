@@ -26,9 +26,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class glArchivItem_Bitmap;
 
 //167, 416

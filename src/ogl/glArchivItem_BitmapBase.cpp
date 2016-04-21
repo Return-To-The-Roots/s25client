@@ -20,9 +20,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @class glArchivItem_BitmapBase
  *
  *  Basisklasse für GL-Bitmapitems.

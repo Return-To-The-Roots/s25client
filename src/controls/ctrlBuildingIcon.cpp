@@ -24,9 +24,6 @@
 #include "files.h"
 #include <string>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
                                    const unsigned int id,
                                    const unsigned short x,

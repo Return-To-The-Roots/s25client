@@ -18,9 +18,6 @@
 #include "main.h" // IWYU pragma: keep
 #include "SoundSDL_Music.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 SoundSDL_Music::SoundSDL_Music() : music(NULL)
 {
 }

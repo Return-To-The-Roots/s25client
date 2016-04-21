@@ -20,9 +20,6 @@
 #include "gameData/MinimapConsts.h"
 #include "Minimap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned int id,
                           const unsigned short x,

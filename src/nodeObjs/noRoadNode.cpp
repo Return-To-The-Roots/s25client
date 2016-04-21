@@ -23,9 +23,6 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
     : noCoordBase(nop, pos),

@@ -18,9 +18,6 @@
 #include "main.h" // IWYU pragma: keep
 #include "Sound.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @class Sound
  *
  *  Basisklasse für einen Sound.

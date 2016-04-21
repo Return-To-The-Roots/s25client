@@ -32,10 +32,6 @@
 #include "glArchivItem_Font.h"
 #include "glArchivItem_Map.h"
 
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Der GL-Item-Allocator.
  *

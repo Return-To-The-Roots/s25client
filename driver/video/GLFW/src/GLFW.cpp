@@ -22,9 +22,6 @@
 #include <VideoInterface.h>
 #include <build_version.h>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Instanzierungsfunktion von @p VideoGLFW.

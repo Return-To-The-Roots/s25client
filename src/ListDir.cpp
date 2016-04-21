@@ -20,9 +20,6 @@
 #include <boost/filesystem.hpp>
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // lists the files of a directory

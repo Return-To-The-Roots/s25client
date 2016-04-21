@@ -20,9 +20,6 @@
 #include "Rect.h"
 #include <cstdlib>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Coll(const int x, const int y, const Rect& rect)

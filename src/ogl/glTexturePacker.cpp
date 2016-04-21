@@ -22,9 +22,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glTexturePacker::~glTexturePacker()
 {
     for(std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)

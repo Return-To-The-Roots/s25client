@@ -22,9 +22,6 @@
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "glAllocator.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glArchivItem_Map::glArchivItem_Map()
     : ArchivItem_Map(), header(NULL)
 {

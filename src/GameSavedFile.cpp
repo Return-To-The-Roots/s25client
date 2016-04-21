@@ -26,9 +26,6 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 SavedFile::SavedFile() : save_time(0)
 {
 }

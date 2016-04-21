@@ -21,9 +21,6 @@
 #include "WindowManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlImage::ctrlImage(Window* parent,
                      unsigned int id,
                      unsigned short x,

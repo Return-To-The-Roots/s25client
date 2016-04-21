@@ -29,9 +29,6 @@
 #include "EventManager.h"
 #include "Loader.h"
 #include <numeric>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noFigure;
 class noRoadNode;
 

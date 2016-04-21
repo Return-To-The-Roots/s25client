@@ -25,9 +25,6 @@
 #include "helpers/converters.h"
 #include <sstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlEdit::ctrlEdit(Window* parent,
                    unsigned int id,
                    unsigned short x,

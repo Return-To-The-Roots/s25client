@@ -22,9 +22,6 @@
 #include "ogl/oglIncludes.h"
 #include <vector>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glArchivItem_Bitmap::glArchivItem_Bitmap()
 {
 }

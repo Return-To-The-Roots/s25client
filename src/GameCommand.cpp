@@ -22,9 +22,6 @@
 
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace gc{
 
     GameCommand* GameCommand::Deserialize(const Type gst, Serializer& ser)

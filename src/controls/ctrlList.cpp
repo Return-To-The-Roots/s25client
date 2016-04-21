@@ -22,9 +22,6 @@
 #include "WindowManager.h"
 #include "ogl/glArchivItem_Font.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlList::ctrlList(Window* parent,
                    unsigned int id,
                    unsigned short x,

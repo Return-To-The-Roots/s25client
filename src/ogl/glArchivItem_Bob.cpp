@@ -21,9 +21,6 @@
 #include "glArchivItem_Bitmap_Player.h"
 #include "colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Zeichnet einen Animationsstep.
  */

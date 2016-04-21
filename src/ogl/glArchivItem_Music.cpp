@@ -18,9 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Music.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glArchivItem_Music::glArchivItem_Music()
     : libsiedler2::baseArchivItem_Sound(), sound(NULL)
 {

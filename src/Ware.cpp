@@ -36,9 +36,6 @@
 #include "EventManager.h"
 #include "Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),
     type(type == GD_SHIELDROMANS ? SHIELD_TYPES[gwg->GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen

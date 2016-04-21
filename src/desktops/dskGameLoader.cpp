@@ -33,9 +33,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "files.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.

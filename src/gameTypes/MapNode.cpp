@@ -20,9 +20,6 @@
 #include "SerializedGameData.h"
 #include "nodeObjs/noBase.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) const
 {
     for(unsigned z = 0; z < roads.size(); ++z)

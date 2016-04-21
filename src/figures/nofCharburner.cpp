@@ -28,9 +28,6 @@
 #include "gameData/TerrainData.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
 {

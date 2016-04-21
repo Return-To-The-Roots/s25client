@@ -25,9 +25,6 @@
 #include <limits>
 #include <climits>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void glSmartBitmap::reset()
 {
     if (texture && !sharedTexture)

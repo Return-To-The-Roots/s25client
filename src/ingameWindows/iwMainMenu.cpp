@@ -43,9 +43,6 @@
 #include "GameClientPlayer.h"
 #include "gameData/const_gui_ids.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwMainMenu::iwMainMenu(GameWorldView& gwv)
     : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
       gwv(gwv)

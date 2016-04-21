@@ -19,9 +19,6 @@
 #include "ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
 ctrlPreviewMinimap::Player::Player() : x(0), y(0), color(0)

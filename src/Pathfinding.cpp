@@ -23,9 +23,6 @@
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
 #include "gameData/GameConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 class noRoadNode;
 

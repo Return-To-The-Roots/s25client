@@ -38,9 +38,6 @@
 
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, const std::string& title,
                                  unsigned char page_count,
                                  nobBaseWarehouse* wh) : iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()), gwv(gwv),  wh(wh)

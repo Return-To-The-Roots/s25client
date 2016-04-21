@@ -30,9 +30,6 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
 #include <limits>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 // from Pathfinding.cpp TODO: in nice

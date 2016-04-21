@@ -23,9 +23,6 @@
 
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GameServerPlayer::GameServerPlayer(const unsigned playerid)
     : GamePlayerInfo(playerid),
       connecttime(0),

@@ -26,9 +26,6 @@
 #include "world/GameWorldGame.h"
 #include "figures/nofPassiveWorker.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// Anzahl der Rausgeh-Etappen
 const unsigned GO_OUT_PHASES = 10;
 /// Länge zwischen zwei solchen Phasen

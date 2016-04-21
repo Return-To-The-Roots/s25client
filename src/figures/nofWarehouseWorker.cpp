@@ -27,9 +27,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
     : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))),
       carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)

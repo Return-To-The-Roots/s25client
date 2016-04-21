@@ -23,9 +23,6 @@
 #include "ClientInterface.h"
 #include "GameMessages.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
  *

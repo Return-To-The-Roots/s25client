@@ -19,9 +19,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayer.h"
 #include "GameClientPlayer.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class GameClientPlayerList;
 class GameWorldBase;
 class GlobalGameSettings;

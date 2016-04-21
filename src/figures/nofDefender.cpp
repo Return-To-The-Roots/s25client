@@ -27,9 +27,6 @@
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player,
                          nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)

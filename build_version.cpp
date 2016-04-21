@@ -19,9 +19,6 @@
 #include <build_version_defines.h>
 #include <cstring>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const char* GetWindowTitle()
 {
     static char title[256];

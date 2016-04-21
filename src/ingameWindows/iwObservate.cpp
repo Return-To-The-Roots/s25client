@@ -26,9 +26,6 @@
 #include "controls/ctrlButton.h"
 #include "gameTypes/RoadBuildState.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 // 260x190, 300x250, 340x310
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):

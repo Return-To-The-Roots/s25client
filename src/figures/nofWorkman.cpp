@@ -22,9 +22,6 @@
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "EventManager.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 class nobBaseWarehouse;
 

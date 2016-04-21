@@ -30,9 +30,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "gameData/TerrainData.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noFigure;
 
 noFlag::noFlag(const MapPoint pos,

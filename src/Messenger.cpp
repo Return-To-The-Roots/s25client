@@ -24,9 +24,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "mygettext/src/mygettext.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// Chat-Destination-String, der entsprechend angezeigt wird
 const std::string CD_STRINGS[4] =
 {

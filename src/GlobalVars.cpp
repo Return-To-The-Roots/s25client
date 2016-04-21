@@ -18,9 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GlobalVars.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GlobalVars::GlobalVars()
     : notdone(true),
       ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false)

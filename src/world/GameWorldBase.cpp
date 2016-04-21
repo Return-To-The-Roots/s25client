@@ -29,9 +29,6 @@
 #include "gameData/TerrainData.h"
 #include "gameData/MapConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
     roadPathFinder(new RoadPathFinder(*this)),
     freePathFinder(new FreePathFinder(*this)),

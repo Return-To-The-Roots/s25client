@@ -25,9 +25,6 @@
 #include "Log.h"
 #include <cstdlib>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Signal-Handler
  */

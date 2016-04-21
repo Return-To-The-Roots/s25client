@@ -27,8 +27,6 @@
 #include "gameData/const_gui_ids.h"
 #include "helpers/converters.h"
 
-#include "DebugNew.h" // IWYU-pragma: keep
-
 class iwMapDebug::DebugPrinter: public IDebugNodePrinter
 {
 public:

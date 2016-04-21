@@ -27,9 +27,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwStatistics::iwStatistics()
     : IngameWindow(CGI_STATISTICS, 0xFFFE, 0xFFFE, 252, 336, _("Statistics"), LOADER.GetImageN("resource", 41))
 {

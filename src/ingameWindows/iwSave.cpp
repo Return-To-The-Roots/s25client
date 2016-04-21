@@ -38,9 +38,6 @@
 #include "helpers/converters.h"
 #include <boost/filesystem.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;
 

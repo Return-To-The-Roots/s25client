@@ -24,9 +24,6 @@
 #include "gameData/MilitaryConsts.h"
 #include "world/GameWorldBase.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb)
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), world(gwb)
 {

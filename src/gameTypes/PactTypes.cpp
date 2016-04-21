@@ -19,9 +19,6 @@
 #include "gameTypes/PactTypes.h"
 #include <mygettext.h>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const std::string PACT_NAMES[PACTS_COUNT] =
 {
     gettext_noop("Treaty of alliance"),

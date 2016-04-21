@@ -45,9 +45,6 @@
 #include "Log.h"
 
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class nofAttacker;
 
 /// Intervall für Ausleerung (in gf)

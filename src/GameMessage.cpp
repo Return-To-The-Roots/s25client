@@ -19,9 +19,6 @@
 #include "GameMessage.h"
 #include "GameMessages.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Message* GameMessage::create_game(unsigned short id)
 {
     Message* msg = NULL;

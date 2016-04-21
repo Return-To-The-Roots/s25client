@@ -31,9 +31,6 @@
 #include "macros.h"
 #include "GameClient.h"
 #include <iostream>
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwPostWindow::iwPostWindow(GameWorldView& gwv)
     : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {

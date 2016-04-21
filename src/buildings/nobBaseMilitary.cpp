@@ -28,9 +28,6 @@
 #include "gameData/GameConsts.h"
 #include <limits>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
                                  const unsigned char player, const Nation nation)

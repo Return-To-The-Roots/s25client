@@ -19,9 +19,6 @@
 #include "nofPassiveWorker.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 class noRoadNode;
 

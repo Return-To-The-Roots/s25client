@@ -23,9 +23,6 @@
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
     Minimap(gwv.GetWidth(), gwv.GetHeight()), gwv(gwv), nodes_updated(gwv.GetWidth()*gwv.GetHeight(), false),
     dos(gwv.GetWidth()*gwv.GetHeight(), DO_INVALID), territory(true), houses(true), roads(true)

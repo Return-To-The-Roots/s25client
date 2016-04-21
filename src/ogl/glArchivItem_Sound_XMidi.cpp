@@ -21,9 +21,6 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Spielt die Musik ab.
  *

@@ -22,9 +22,6 @@
 #include "GameClient.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class FOWObject;
 
 GameWorldViewer::GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings): GameWorldBase(players, gameSettings)

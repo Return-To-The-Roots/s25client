@@ -18,9 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glArchivItem_Sound::glArchivItem_Sound()
     : baseArchivItem_Sound(), sound(NULL)
 {

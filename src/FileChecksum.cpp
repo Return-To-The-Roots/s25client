@@ -19,9 +19,6 @@
 #include "FileChecksum.h"
 #include <cstdio>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 unsigned int CalcChecksumOfFile(const char* const path)
 {
     FILE* dat = fopen(path, "rb");

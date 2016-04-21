@@ -20,9 +20,6 @@
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {
     Serialize_noBase(sgd);

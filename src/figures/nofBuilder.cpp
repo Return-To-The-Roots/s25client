@@ -31,9 +31,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "factories/BuildingFactory.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 class noBuilding;
 

@@ -24,9 +24,6 @@
 #include "ClientInterface.h"
 #include "libutil/src/Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void GameClient::ExecuteGameFrame_Replay()
 {
     randcheckinfo.rand = RANDOM.GetCurrentRandomValue();

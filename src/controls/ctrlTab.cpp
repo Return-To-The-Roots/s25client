@@ -23,9 +23,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "Loader.h"
 #include <cstring>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 ctrlTab::ctrlTab(Window* parent,

@@ -24,9 +24,6 @@
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  aktualisiert das Serverinfo.
  */

@@ -20,9 +20,6 @@
 #include "Random.h"
 #include "libutil/src/Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen

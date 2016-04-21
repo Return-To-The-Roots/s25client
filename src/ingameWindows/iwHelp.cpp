@@ -21,9 +21,6 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// Breite des Fensters
 const unsigned short HELP_WINDOW_WIDTH = 240;
 

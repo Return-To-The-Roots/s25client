@@ -20,9 +20,6 @@
 
 #include "drivers/VideoDriverWrapper.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /** @var ctrlTimer::timer
  *
  *  Der Timer zum Abgleichen der Zeit.

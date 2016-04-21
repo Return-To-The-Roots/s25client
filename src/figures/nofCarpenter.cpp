@@ -23,9 +23,6 @@
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
 nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUsual* workplace)

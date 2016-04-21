@@ -27,9 +27,6 @@
 #include "world/GameWorldGame.h"
 #include <numeric>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
     : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation), isTent_(isTent)
 {

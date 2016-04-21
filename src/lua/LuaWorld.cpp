@@ -22,9 +22,6 @@
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/MapTypes.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void LuaWorld::Register(kaguya::State& state)
 {
     state["World"].setClass(kaguya::ClassMetatable<LuaWorld>()

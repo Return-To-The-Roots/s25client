@@ -24,9 +24,6 @@
 #include "EventManager.h"
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),

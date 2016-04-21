@@ -35,9 +35,6 @@
 #include "controls/ctrlButton.h"
 #include <set>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
     gwv(gwv), building(building)

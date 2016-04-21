@@ -42,9 +42,6 @@
 #include <boost/lexical_cast.hpp>
 #include <set>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL), servercreate(NULL)
 {
     // Version

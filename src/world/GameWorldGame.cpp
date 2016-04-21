@@ -43,9 +43,6 @@
 #include "helpers/containerUtils.h"
 
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class CatapultStone;
 class MilitarySquares;
 

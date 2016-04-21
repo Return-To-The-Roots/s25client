@@ -19,9 +19,6 @@
 #include "SoundSDL_Effect.h"
 #include <SDL_mixer.h>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 SoundSDL_Effect::SoundSDL_Effect() : sound(NULL)
 {
 }

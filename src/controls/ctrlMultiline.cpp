@@ -23,9 +23,6 @@
 #include "CollisionDetection.h"
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 ctrlMultiline::ctrlMultiline(Window* parent,
                              unsigned int id,
                              unsigned short x,

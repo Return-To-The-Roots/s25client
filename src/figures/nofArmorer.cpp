@@ -28,9 +28,6 @@
 #include "gameData/JobConsts.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)
 {

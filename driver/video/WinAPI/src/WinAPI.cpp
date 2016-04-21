@@ -27,9 +27,6 @@
 #include <cstring>
 #include <sstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Zeiger auf die aktuelle Instanz.
  */

@@ -17,6 +17,3 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameMessages.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep

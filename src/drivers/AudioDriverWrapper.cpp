@@ -22,9 +22,6 @@
 #include "Settings.h"
 #include "MusicPlayer.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 {
 }

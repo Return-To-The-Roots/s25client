@@ -46,9 +46,6 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "../libsiedler2/src/ArchivInfo.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette* const palette) : palette(palette)
 {
     edgesLoaded = false;

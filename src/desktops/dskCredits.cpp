@@ -32,9 +32,6 @@
 #include "ogl/glArchivItem_Bob.h"
 #include <boost/array.hpp>
 #include <cstdlib>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 struct KeyEvent;
 /** @class dskCredits
  *

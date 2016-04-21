@@ -18,9 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ExtensionList.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 // WGL_EXT_swap_control
 PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
 

@@ -27,9 +27,6 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayerJH*>& ais_)
     : IngameWindow(CGI_AI_DEBUG, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), ais_(ais_)

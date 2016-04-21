@@ -23,9 +23,6 @@
 #include "gameData/const_gui_ids.h"
 #include <boost/lexical_cast.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  aktualisiert die Ranking-Tabelle.
  */

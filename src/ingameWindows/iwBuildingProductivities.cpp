@@ -23,9 +23,6 @@
 #include "files.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// Anzahl der angezeigten Gebäude
 const unsigned BUILDINGS_COUNT = 24;
 

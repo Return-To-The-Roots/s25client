@@ -19,9 +19,6 @@
 #include "DataChangedObservable.h"
 #include "IDataChangedListener.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 DataChangedObservable::~DataChangedObservable()
 {
     NotifyListeners(0);

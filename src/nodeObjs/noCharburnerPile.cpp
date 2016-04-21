@@ -27,9 +27,6 @@
 #include "noFire.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 
 /// Length of the smoldering
 const unsigned SMOLDERING_LENGTH = 3000;

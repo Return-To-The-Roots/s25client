@@ -29,9 +29,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "gameData/JobConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)

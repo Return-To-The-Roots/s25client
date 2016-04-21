@@ -24,9 +24,6 @@
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
 nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)

@@ -19,9 +19,6 @@
 #include "AIInfo.h"
 #include "Serializer.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace AI{
     Info::Info(Serializer& ser):
                     type(static_cast<Type>(ser.PopUnsignedChar())),

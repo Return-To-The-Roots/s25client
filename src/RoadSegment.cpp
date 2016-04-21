@@ -29,9 +29,6 @@
 
 #include "Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 RoadSegment::RoadSegment(const RoadType rt,
                          noRoadNode* const f1,
                          noRoadNode* const f2,

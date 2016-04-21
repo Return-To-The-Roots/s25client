@@ -19,9 +19,6 @@
 #include "MapInfo.h"
 #include "GameSavegame.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 MapInfo::MapInfo()
 {
     Clear();

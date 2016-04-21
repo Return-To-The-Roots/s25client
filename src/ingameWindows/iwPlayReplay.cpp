@@ -35,9 +35,6 @@
 #include "helpers/converters.h"
 #include <boost/filesystem.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 class SwitchOnStart: public ClientInterface
 {
 public:

@@ -33,9 +33,6 @@
 #include <SDL_syswm.h>
 #endif // _WIN32
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /**
  *  Instanzierungsfunktion von @p VideoSDL.
  *

@@ -24,9 +24,6 @@
 #include "GameClientPlayer.h"
 #include "gameData/GameConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos)
     : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), homePos(homePos), goalPos(goalPos)
 {}

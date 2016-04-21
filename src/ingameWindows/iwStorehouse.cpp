@@ -19,9 +19,6 @@
 #include "iwStorehouse.h"
 #include "buildings/nobStorehouse.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwStorehouse::iwStorehouse(GameWorldView& gwv, nobStorehouse* sh)
     : iwBaseWarehouse(gwv, _("Storehouse"), 2, sh)
 {

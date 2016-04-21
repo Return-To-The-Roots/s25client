@@ -40,9 +40,6 @@
 #include <boost/array.hpp>
 #include <list>
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class GameClientPlayerList;
 namespace AIEvent { class Base; }
 

@@ -33,9 +33,6 @@
 #include "gameData/MapConsts.h"
 
 #include <cmath>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noBase;
 
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,

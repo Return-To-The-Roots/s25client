@@ -35,9 +35,6 @@
 #include "gameData/const_gui_ids.h"
 #include "files.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const unsigned BUILDINGS_COUNT = 32;
 
 /// Reihenfolge der Gebäude

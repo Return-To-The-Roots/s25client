@@ -26,9 +26,6 @@
 #include <cmath>
 #include <cstring>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* checksum)
 {
     std::ofstream file(filePath.c_str(), std::ios::binary);

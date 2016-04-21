@@ -26,9 +26,6 @@
 #include "mygettext.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void Addon::hideGui(Window* window, unsigned int id) const
 {
     ctrlText* text = window->GetCtrl<ctrlText>(id);

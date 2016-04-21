@@ -31,9 +31,6 @@
 #include <boost/array.hpp>
 #include <deque>
 #include <list>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 
 AIJH::Job::Job(AIPlayerJH& aijh)
