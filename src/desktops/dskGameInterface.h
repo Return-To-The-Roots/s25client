@@ -92,9 +92,10 @@ class dskGameInterface :
         void CI_GamePaused() override;
         void CI_GameResumed() override;
         void CI_Error(const ClientError ce) override;
-        void CI_NewPostMessage(const unsigned postmessages_count) override;
-        void CI_PostMessageDeleted(const unsigned postmessages_count) override;
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
+
+        void NewPostMessage(unsigned msgCt);
+        void PostMessageDeleted(unsigned msgCt);
 
         /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
         void GI_FlagDestroyed(const MapPoint pt) override;

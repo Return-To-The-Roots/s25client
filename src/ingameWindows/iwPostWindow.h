@@ -25,34 +25,28 @@ class PostMsg;
 class ctrlImage;
 class ctrlImageButton;
 class ctrlText;
+class PostBox;
 struct KeyEvent;
 
 class iwPostWindow : public IngameWindow
 {
     public:
-        iwPostWindow(GameWorldView& gwv);
+        iwPostWindow(GameWorldView& gwv, PostBox& postBox);
         void Msg_PaintBefore() override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
 
     private:
         GameWorldView& gwv;
-
-        unsigned currentMessage;
-
-        /// Liefert Pointer auf die pos-te Nachricht zurück
-        PostMsg* GetPostMsg(unsigned pos) const;
+        PostBox& postBox;
+        const PostMsg* curMsg; // To detect changes
+        unsigned curMsgIdx;
+        unsigned lastMsgCt;
 
         /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
         void DisplayPostMessage();
-
-        /// Nachricht löschen
-        void DeletePostMessage(PostMsg* pm);
-
         /// Setzt den Text mehrzeilig in das Postfenster
         void SetMessageText(const std::string& message);
-
-        unsigned lastSize;
 };
 
 #endif

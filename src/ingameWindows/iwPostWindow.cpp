@@ -47,8 +47,8 @@ namespace{
     };
 }
 
-iwPostWindow::iwPostWindow(GameWorldView& gwv)
-    : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)
+iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
+    : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv), postBox(postBox)
 {
     AddImageButton( 0, 18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190));   // Viewer: 191 - Papier
     AddImageButton( 1, 56, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 30));    // Viewer:  31 - Soldat
@@ -83,39 +83,41 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv)
     AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
     AddImageButton(ID_DENY, 137, 185, 30, 26, TC_RED1, LOADER.GetImageN("io", 40))->SetVisible(false);
 
-    currentMessage = 0;
+    lastMsgCt = postBox.GetNumMsgs();
+    curMsgIdx = postBox.GetNumMsgs();
     DisplayPostMessage();
-
-    lastSize = GAMECLIENT.GetPostMessages().size();
 }
 
 void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-            // Schnell zurück
-        case 8: currentMessage = 0;
+        case 8:
+            // To oldest
+            curMsgIdx = 0;
             DisplayPostMessage();
             break;
-            // Zurück
-        case 9: currentMessage = (currentMessage > 0) ? currentMessage - 1 : 0;
+        case 9:
+            // Back
+            curMsgIdx = (curMsgIdx > 0) ? curMsgIdx - 1 : 0;
             DisplayPostMessage();
             break;
-            // Vor
-        case 10: currentMessage = (currentMessage < GAMECLIENT.GetPostMessages().size()-1) ? currentMessage + 1 : GAMECLIENT.GetPostMessages().size()-1;
+        case 10:
+            // Forward
+            ++curMsgIdx;
             DisplayPostMessage();
             break;
-            // Schnell vor
-        case 11: currentMessage = GAMECLIENT.GetPostMessages().size() - 1;
+        case 11:
+            // To newest
+            curMsgIdx = postBox.GetNumMsgs();
             DisplayPostMessage();
             break;
-
-            // Goto
         case 14:
         {
-            PostMsg* pm = GetPostMsg(currentMessage);
-            if (pm && pm->GetPos().isValid())
-                gwv.MoveToMapPt(pm->GetPos());
+            // Goto
+            PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
+            if (curMsg && curMsg->GetPos().isValid())
+                gwv.MoveToMapPt(curMsg->GetPos());
         }
         break;
 
@@ -123,30 +125,30 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         case 15: // Delete
         case 17: // Cross (Deny)
         {
-            PostMsg* pm = GetPostMsg(currentMessage);
-            DiplomacyPostQuestion* dpm = dynamic_cast<DiplomacyPostQuestion*>(pm);
-            if(dpm)
+            PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
+            DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(curMsg);
+            if(dcurMsg)
             {
                 // If it is a question about a new contract, tell the other player we denied it
-                if(dpm->IsAccept())
-                  GAMECLIENT.CancelPact(dpm->GetPactType(), dpm->GetPlayerId());
+                if(dcurMsg->IsAccept())
+                  GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
             }
-            DeletePostMessage(pm);
+            postBox.DeleteMsg(curMsg);
         }
         break;
 
         // Haken-Button ("Ja")
         case 16:
         {
-            DiplomacyPostQuestion* dpm = dynamic_cast<DiplomacyPostQuestion*>(GetPostMsg(currentMessage));
-            if (dpm)
+            DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(postBox.GetMsg(curMsgIdx));
+            if (dcurMsg)
             {
                 // New contract?
-                if(dpm->IsAccept())
-                    GAMECLIENT.AcceptPact(true, dpm->GetPactId(), dpm->GetPactType(), dpm->GetPlayerId());
+                if(dcurMsg->IsAccept())
+                    GAMECLIENT.AcceptPact(true, dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 else
-                    GAMECLIENT.CancelPact(dpm->GetPactType(), dpm->GetPlayerId());
-                DeletePostMessage(dpm);
+                    GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                postBox.DeleteMsg(dcurMsg);
             }
         } break;
 
@@ -156,27 +158,25 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwPostWindow::Msg_PaintBefore()
 {
-    // Immer wenn sich die Anzahl der Nachrichten geändert hat neu prüfen was so angezeigt werden muss
-    unsigned currentSize = GAMECLIENT.GetPostMessages().size();
-    if (currentSize != lastSize)
+    if(curMsg && curMsg != postBox.GetMsg(curMsgIdx))
     {
-        // Neue Nachrichten dazugekommen, während das Fenster offen ist:
-        // Ansicht der vorherigen Nachricht beibehalten, außer es gab vorher gar keine Nachricht
-
-        if (lastSize < currentSize && lastSize != 0
-                // Wenn die erste Nachricht ausgewählt wurde, nehmen bleiben wir bei der ersten (=aktuellsten)
-                && currentMessage > 0)
+        // Message was either deleted or others were added and message was shifted
+        // So first search it, if not found we will display the next (newer) message
+        for(unsigned i = curMsgIdx; curMsgIdx > 0; curMsgIdx--)
         {
-            currentMessage += currentSize - lastSize;
-
-            // Falls das zufällig grad die 20 Nachrichtengrenze überschritten hat: Auf letzte Nachricht springen
-            if (currentMessage >= MAX_POST_MESSAGES)
-                currentMessage = MAX_POST_MESSAGES - 1;
+            if(postBox.GetMsg(i - 1))
+            {
+                curMsgIdx = i - 1;
+                break;
+            }
         }
-        lastSize = GAMECLIENT.GetPostMessages().size();
-
-        // Anzeigeeinstellungen setzen
+        
         DisplayPostMessage();
+    } else if(lastMsgCt != postBox.GetNumMsgs())
+    {
+        // At least update message count in status bar
+        DisplayPostMessage();
+        lastMsgCt = postBox.GetNumMsgs();
     }
 }
 
@@ -190,49 +190,24 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
         default:
             break;
         case KT_DELETE: // Delete current message
-        {
             Msg_ButtonClick(15);
-        } return true;
+            return true;
     }
 
     switch(ke.c)
     {
         case '+': // Next message
-        {
             Msg_ButtonClick(10);
-        } return true;
+            return true;
         case '-': // Previous message
-        {
             Msg_ButtonClick(9);
-        } return true;
+            return true;
         case 'g': // Go to site of event
-        {
-            if (!GAMECLIENT.GetPostMessages().empty())
-            {
-                Msg_ButtonClick(14);
-            }
-        } return true;
+            Msg_ButtonClick(14);
+            return true;
     }
 
     return false;
-}
-
-// Holt Nachricht Nummer pos
-PostMsg* iwPostWindow::GetPostMsg(unsigned pos) const
-{
-    PostMsg* pm = 0;
-    unsigned counter = 0;
-    for(std::list<PostMsg*>::const_iterator it = GAMECLIENT.GetPostMessages().begin(); it != GAMECLIENT.GetPostMessages().end(); ++it)
-    {
-        if (counter == pos)
-        {
-            pm = *it;
-            break;
-        }
-        counter++;
-    }
-    RTTR_Assert(pm);
-    return pm;
 }
 
 // Zeigt Nachricht an, passt Steuerelemente an
@@ -256,7 +231,7 @@ void iwPostWindow::DisplayPostMessage()
     GetCtrl<Window>(ID_DENY)->SetVisible(false);
     GetCtrl<Window>(ID_INFO)->SetVisible(false);
 
-    unsigned size = GAMECLIENT.GetPostMessages().size();
+    unsigned size = postBox.GetNumMsgs();
 
     // Keine Nachrichten, alles ausblenden, bis auf zentrierten Text
     if (size == 0)
@@ -267,21 +242,21 @@ void iwPostWindow::DisplayPostMessage()
     }
 
     // Falls currentMessage außerhalb der aktuellen Nachrichtenmenge liegt: korrigieren
-    if (currentMessage >= size)
-        currentMessage = size - 1;
+    if (curMsgIdx >= size)
+        curMsgIdx = size - 1;
 
-    PostMsg* pm = GetPostMsg(currentMessage);
+    curMsg = postBox.GetMsg(curMsgIdx);
 
     // We have a message, display its status...
     std::stringstream ss;
-    ss << _("Message") << " " << currentMessage + 1 << " " << _("of") << " " << size << " - GF: " << pm->GetSendFrame();
+    ss << _("Message") << " " << curMsgIdx + 1 << " " << _("of") << " " << size << " - GF: " << curMsg->GetSendFrame();
     GetCtrl<ctrlText>(ID_INFO)->SetText(ss.str());
     GetCtrl<ctrlText>(ID_INFO)->SetVisible(true);
     // ...and delete button
     GetCtrl<Window>(ID_DELETE)->SetVisible(true);
 
-    SetMessageText(pm->GetText());
-    glArchivItem_Bitmap* const img = pm->GetImage_();
+    SetMessageText(curMsg->GetText());
+    glArchivItem_Bitmap* const img = curMsg->GetImage_();
     if(img)
     {
         // We have an image, show it centered
@@ -291,7 +266,7 @@ void iwPostWindow::DisplayPostMessage()
 
         GetCtrl<Window>(ID_IMG)->SetVisible(true);
     }
-    if(dynamic_cast<DiplomacyPostQuestion*>(pm))
+    if(dynamic_cast<const DiplomacyPostQuestion*>(curMsg))
     {
         GetCtrl<Window>(ID_ACCEPT)->SetVisible(true);
         GetCtrl<Window>(ID_DENY)->SetVisible(true);
@@ -302,7 +277,7 @@ void iwPostWindow::DisplayPostMessage()
     else
         GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
     // If message contains valid position, allow going to it
-    if(pm->GetPos().isValid())
+    if(curMsg->GetPos().isValid())
         GetCtrl<Window>(ID_GOTO)->SetVisible(true);
 }
 
@@ -320,10 +295,3 @@ void iwPostWindow::SetMessageText(const std::string& message)
             text->SetLine(i, "", COLOR_WINDOWBROWN);
     }
 }
-
-void iwPostWindow::DeletePostMessage(PostMsg* pm)
-{
-    GAMECLIENT.DeletePostMessage(pm);
-    currentMessage = (currentMessage > 0) ? currentMessage - 1 : 0;
-}
-

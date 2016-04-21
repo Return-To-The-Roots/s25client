@@ -81,9 +81,6 @@ class ClientInterface
         virtual void CI_Countdown(int countdown){}
         virtual void CI_CancelCountdown(){}
 
-        virtual void CI_NewPostMessage(const unsigned postmessages_count){}
-        virtual void CI_PostMessageDeleted(const unsigned postmessages_count){}
-
         virtual void CI_Async(const std::string& checksums_list){}
         virtual void CI_ReplayAsync(const std::string& msg){}
         virtual void CI_ReplayEndReached(const std::string& msg){}

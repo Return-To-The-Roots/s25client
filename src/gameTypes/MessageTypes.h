@@ -28,7 +28,4 @@ enum PostMessageCategory
     PMC_OTHER
 };
 
-/// Maximale Nachrichtenanzahl im Briefkasten
-const unsigned MAX_POST_MESSAGES = 20;
-
 #endif // MessageTypes_h__

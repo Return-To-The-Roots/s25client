@@ -73,13 +73,9 @@
 #include "Settings.h"
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
+#include <boost/bind.hpp>
 #include <sstream>
-class noShip;
 
-/**
- *  Konstruktor von @p dskGameInterface.
- *  Startet das Spiel und lädt alles Notwendige.
- */
 dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
     gwb(worldViewer),
@@ -114,9 +110,12 @@ dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL)
     cbb.loadEdges( LOADER.GetInfoN("resource") );
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), &borders);
 
+    PostBox& postBox = GAMECLIENT.GetPostBox();
+    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1));
+    postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
     // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
-    if (!GAMECLIENT.GetPostMessages().empty())
-        CI_NewPostMessage(GAMECLIENT.GetPostMessages().size());
+    if (postBox.GetNumMsgs() > 0)
+        NewPostMessage(postBox.GetNumMsgs());
 
     // Jump to players HQ if it exists
     if(GAMECLIENT.GetLocalPlayer().hqPos.isValid())
@@ -181,8 +180,8 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
                 gwv.ToggleShowBQ();
             break;
         case 3: // Post
-            WINDOWMANAGER.Show(new iwPostWindow(gwv));
-            UpdatePostIcon(GAMECLIENT.GetPostMessages().size(), false);
+            WINDOWMANAGER.Show(new iwPostWindow(gwv, GAMECLIENT.GetPostBox()));
+            UpdatePostIcon(GAMECLIENT.GetPostBox().GetNumMsgs(), false);
             break;
     }
 }
@@ -639,8 +638,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwMainMenu(gwv));
             return true;
         case 'n': // Show Post window
-            WINDOWMANAGER.Show(new iwPostWindow(gwv));
-            UpdatePostIcon(GAMECLIENT.GetPostMessages().size(), false);
+            WINDOWMANAGER.Show(new iwPostWindow(gwv, GAMECLIENT.GetPostBox()));
+            UpdatePostIcon(GAMECLIENT.GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
             if(GAMECLIENT.IsHost())
@@ -1062,9 +1061,9 @@ void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool sh
 /**
  *  Neue Post-Nachricht eingetroffen
  */
-void dskGameInterface::CI_NewPostMessage(const unsigned postmessages_count)
+void dskGameInterface::NewPostMessage(const unsigned msgCt)
 {
-    UpdatePostIcon(postmessages_count, true);
+    UpdatePostIcon(msgCt, true);
 
     // Tauben-Sound abspielen
     LOADER.GetSoundN("sound", 114)->Play(255, false);
@@ -1073,9 +1072,9 @@ void dskGameInterface::CI_NewPostMessage(const unsigned postmessages_count)
 /**
  *  Es wurde eine Postnachricht vom Spieler gelöscht
  */
-void dskGameInterface::CI_PostMessageDeleted(const unsigned postmessages_count)
+void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
 {
-    UpdatePostIcon(postmessages_count, false);
+    UpdatePostIcon(msgCt, false);
 }
 
 /**

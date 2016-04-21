@@ -63,3 +63,5 @@ build/LICENSE.*
 /RTTR/s-c_resample
 /RTTR/sound-convert
 build_version_defines.h
+/build/s25client.VC.VC.opendb
+/build/s25client.VC.db
