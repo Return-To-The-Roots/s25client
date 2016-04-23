@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
         box.AddMsg(new PostMsg(i, "Test", PMC_GENERAL));
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), true);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(5u), true);
-    BOOST_REQUIRE_EQUAL(box.DeleteMsg(box.GetMaxMsgs() - 2 - 1), true);
+    BOOST_REQUIRE_EQUAL(box.DeleteMsg(box.GetMaxMsgs() - 3), true);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), box.GetMaxMsgs() - 3);
     unsigned expected = 1;
     for(unsigned i = 0; i < box.GetNumMsgs(); i++, expected++)
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
             expected++; // This one was also deleted
         BOOST_REQUIRE_EQUAL(box.GetMsg(i)->GetSendFrame(), expected);
     }
-    BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 3 - 1), (PostMsg*) NULL);
+    BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 3), (PostMsg*) NULL);
 }
 
 struct CallbackChecker
