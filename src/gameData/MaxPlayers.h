@@ -15,27 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PlayerConsts_h__
-#define PlayerConsts_h__
+#ifndef MaxPlayers_h__
+#define MaxPlayers_h__
 
 /// Maximale Anzahl an Spielern
-const unsigned MAX_PLAYERS = 8;
+BOOST_CONSTEXPR_OR_CONST unsigned MAX_PLAYERS = 8;
 
-/// Team
-enum Team
-{
-    TM_NOTEAM = 0,
-    TM_RANDOMTEAM,
-    TM_TEAM1,
-    TM_TEAM2,
-    TM_TEAM3,
-    TM_TEAM4,
-    TM_RANDOMTEAM2,
-    TM_RANDOMTEAM3,
-    TM_RANDOMTEAM4
-};
-
-/// Anzahl der Team-Optionen
-const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
-
-#endif // PlayerConsts_h__
+#endif // MaxPlayers_h__

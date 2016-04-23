@@ -18,8 +18,8 @@
 #ifndef LuaPlayerBase_h__
 #define LuaPlayerBase_h__
 
+#include "gameTypes/TeamTypes.h"
 #include "gameData/NationConsts.h"
-#include "gameData/PlayerConsts.h"
 #include <kaguya/kaguya.hpp>
 
 class GamePlayerInfo;

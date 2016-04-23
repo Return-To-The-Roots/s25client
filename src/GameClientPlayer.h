@@ -27,6 +27,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameData/MaxPlayers.h"
 #include "helpers/containerUtils.h"
 #include <boost/array.hpp>
 #include <list>

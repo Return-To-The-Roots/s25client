@@ -36,7 +36,6 @@
 #include "gameData/ShieldConsts.h"
 #include "postSystem/PostManager.h"
 #include "GameInterface.h"
-#include "gameData/PlayerConsts.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"

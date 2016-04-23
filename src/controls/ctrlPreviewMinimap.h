@@ -19,7 +19,7 @@
 
 #include "ctrlMinimap.h"
 #include "PreviewMinimap.h"
-#include "gameData/PlayerConsts.h"
+#include "gameData/MaxPlayers.h"
 #include "ogl/glArchivItem_Map.h"
 class Window;
 

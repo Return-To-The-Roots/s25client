@@ -31,7 +31,6 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/GameConsts.h"
-#include "gameData/PlayerConsts.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Log.h"

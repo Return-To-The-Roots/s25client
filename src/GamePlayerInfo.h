@@ -21,7 +21,7 @@
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
-#include "gameData/PlayerConsts.h"
+#include "gameTypes/TeamTypes.h"
 
 class Serializer;
 

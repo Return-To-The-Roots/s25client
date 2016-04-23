@@ -15,27 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PostManager_h__
-#define PostManager_h__
+#ifndef TeamTypes_h__
+#define TeamTypes_h__
 
-#include "gameData/MaxPlayers.h"
-#include <boost/array.hpp>
-
-class PostMsg;
-class PostBox;
-
-class PostManager
+enum Team
 {
-public:
-    PostManager();
-    ~PostManager();
-    void AddPostBox(unsigned player);
-    PostBox* GetPostBox(unsigned player) const { return postBoxes[player]; }
-    void RemovePostBox(unsigned player);
-    void SendMsg(unsigned player, PostMsg* msg);
-
-private:
-    boost::array<PostBox*, MAX_PLAYERS> postBoxes;
+    TM_NOTEAM = 0,
+    TM_RANDOMTEAM,
+    TM_TEAM1,
+    TM_TEAM2,
+    TM_TEAM3,
+    TM_TEAM4,
+    TM_RANDOMTEAM2,
+    TM_RANDOMTEAM3,
+    TM_RANDOMTEAM4
 };
 
-#endif // PostManager_h__
+/// Anzahl der Team-Optionen
+const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
+
+#endif // TeamTypes_h__

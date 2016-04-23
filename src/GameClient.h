@@ -29,7 +29,6 @@
 #include "postSystem/PostBox.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/MapInfo.h"
-#include "gameData/PlayerConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "FramesInfo.h"
 
