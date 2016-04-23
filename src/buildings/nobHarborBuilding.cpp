@@ -89,8 +89,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
         sea_ids[i] = gwg->IsCoastalPoint(gwg->GetNeighbour(pos, i));
 
     // Post versenden
-    if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("New harbor building finished"), PMC_GENERAL, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("New harbor building finished"), PMC_GENERAL, *this));
 }
 
 

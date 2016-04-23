@@ -33,7 +33,7 @@
 #include "GlobalGameSettings.h"
 #include "lua/LuaInterfaceGame.h"
 #include "gameData/GameConsts.h"
-#include "postSystem/PostMsg.h"
+#include "postSystem/PostManager.h"
 #include "SerializedGameData.h"
 #include "LobbyClient.h"
 #include "files.h"
@@ -226,7 +226,6 @@ void GameClient::Stop()
     framesinfo.Clear();
     clientconfig.Clear();
     mapinfo.Clear();
-    postBox = PostBox();
 
     replayinfo.replay.StopRecording();
 
@@ -267,6 +266,7 @@ void GameClient::StartGame(const unsigned int random_init)
     GameObject::SetPointers(gw);
     for(unsigned i = 0; i < players.getCount(); ++i)
         players[i].SetGameWorldPointer(gw);
+    gw->GetPostMgr().AddPostBox(playerId_);
 
     if(ci)
         ci->CI_GameStarted(*gw);

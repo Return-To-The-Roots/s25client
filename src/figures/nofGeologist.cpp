@@ -440,31 +440,28 @@ void nofGeologist::SetSign(const unsigned char resources)
     {
         if (!resAlreadyFound[type] && !IsSignInArea(type))
         {
-            if(GAMECLIENT.GetPlayerID() == this->player)
+            const char* msg;
+            switch(type)
             {
-                std::string msg;
-                switch(type)
-                {
-                    case RES_IRON_ORE:
-                        msg = _("Found iron ore");
-                        break;
-                    case RES_GOLD:
-                        msg = _("Found gold");
-                        break;
-                    case RES_COAL:
-                        msg = _("Found coal");
-                        break;
-                    case RES_GRANITE:
-                        msg = _("Found granite");
-                        break;
-                    case RES_WATER:
-                        msg = _("Found water");
-                        break;
-                    default:
-                        RTTR_Assert(false);
-                }
-                GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_GEOLOGIST, pos));
+            case RES_IRON_ORE:
+                msg = _("Found iron ore");
+                break;
+            case RES_GOLD:
+                msg = _("Found gold");
+                break;
+            case RES_COAL:
+                msg = _("Found coal");
+                break;
+            case RES_GRANITE:
+                msg = _("Found granite");
+                break;
+            case RES_WATER:
+                msg = _("Found water");
+                break;
+            default:
+                RTTR_Assert(false);
             }
+            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_GEOLOGIST, pos));
             GAMECLIENT.SendAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, pos, type), player);
         }
         resAlreadyFound[type] = true;

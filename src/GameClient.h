@@ -233,17 +233,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void WritePlayerInfo(SavedFile& file);
 // Post-Sachen
     public:
-
-        PostBox& GetPostBox() { return postBox; }
-        const PostBox& GetPostBox() const { return postBox; }
-        void SendPostMessage(PostMsg* msg) { postBox.AddMsg(msg); }
-
         bool SendAIEvent(AIEvent::Base* ev, unsigned receiver);
 
-    private:
-        PostBox postBox;
-
-    public:
         /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu
         /// verstecken
         struct VisualSettings

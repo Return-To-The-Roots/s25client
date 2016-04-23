@@ -34,7 +34,7 @@
 #include "FindWhConditions.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
-
+#include "postSystem/PostManager.h"
 #include "GameInterface.h"
 #include "gameData/PlayerConsts.h"
 #include "gameTypes/BuildingTypes.h"
@@ -803,6 +803,11 @@ void GameClientPlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
             return;
         }
     }
+}
+
+void GameClientPlayer::SendPostMessage(PostMsg* msg)
+{
+    gwg->GetPostMgr().SendMsg(playerid, msg);
 }
 
 bool GameClientPlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
@@ -1783,9 +1788,7 @@ void GameClientPlayer::SuggestPact(const unsigned char targetPlayer, const PactT
     pacts[targetPlayer][pt].duration = duration;
     pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
 
-    // Post-Message generieren, wenn dieser Pakt den lokalen Spieler betrifft
-    if(targetPlayer == GAMECLIENT.GetPlayerID())
-        GAMECLIENT.SendPostMessage(new DiplomacyPostQuestion(GAMECLIENT.GetGFNumber(), pt, pacts[targetPlayer][pt].start, *this, duration));
+    gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(GAMECLIENT.GetGFNumber(), pt, pacts[targetPlayer][pt].start, *this, duration));
 }
 
 void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer)
@@ -1807,9 +1810,7 @@ void GameClientPlayer::MakePact(const PactType pt, const unsigned char other_pla
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
-    // Send this player a message
-    if(GAMECLIENT.GetPlayerID() == playerid)
-        GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, gwg->GetPlayer(other_player), true));
+    SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, gwg->GetPlayer(other_player), true));
 }
 
 /// Zeigt an, ob ein Pakt besteht
@@ -1838,8 +1839,8 @@ void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {	
 	for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
-		if(i != playerid && IsAlly(i) && GAMECLIENT.GetPlayerID() == i)
-            GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
+		if(i != playerid && IsAlly(i))
+            gwg->GetPlayer(i).SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
 	}
 }
 
@@ -1884,18 +1885,14 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
             otherPlayer.pacts[playerid][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            if(GAMECLIENT.GetPlayerID() == playerid || GAMECLIENT.GetPlayerID() == otherPlayerIdx)
-            {
-                // Anderen Spieler von sich aus ermitteln
-                unsigned char client_other_player = (GAMECLIENT.GetPlayerID() == playerid) ? otherPlayerIdx : playerid;
-                GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, gwg->GetPlayer(client_other_player), false));
-            }
+            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, *this, false));
+            SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, gwg->GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
         }
         // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
-        else if(otherPlayerIdx == GAMECLIENT.GetPlayerID())
-            GAMECLIENT.SendPostMessage(new DiplomacyPostQuestion(GAMECLIENT.GetGFNumber(), pt, pacts[otherPlayerIdx][pt].start, gwg->GetPlayer(playerid)));
+        else
+            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new DiplomacyPostQuestion(GAMECLIENT.GetGFNumber(), pt, pacts[otherPlayerIdx][pt].start,*this));
     }
     else
     {
@@ -2263,18 +2260,18 @@ void GameClientPlayer::TestForEmergencyProgramm()
         stones += (*w)->GetInventory().goods[GD_STONES];
     }
 
-    // Holzfäller und Sägewerke zählen, -10 ftw
-    unsigned woodcutter = buildings[BLD_WOODCUTTER - 10].size();
-    unsigned sawmills = buildings[BLD_SAWMILL - 10].size();
+    // Emergency happens, if we have less than 10 boards or stones...
+    bool isNewEmergency = boards <= 10 || stones <= 10;
+    // ...and no woddcutter or sawmill
+    isNewEmergency &= GetBuildings(BLD_WOODCUTTER).empty() || GetBuildings(BLD_SAWMILL).empty();
 
     // Wenn nötig, Notfallprogramm auslösen
-    if ((boards <= 10 || stones <= 10) && (woodcutter == 0 || sawmills == 0) && (!isDefeated()))
+    if (isNewEmergency)
     {
         if (!emergency)
         {
             emergency = true;
-            if(GAMECLIENT.GetPlayerID() == this->playerid)
-                GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("The emergency program has been activated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("The emergency program has been activated."), PMC_GENERAL));
         }
     }
     else
@@ -2283,8 +2280,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
         if (emergency)
         {
             emergency = false;
-            if(GAMECLIENT.GetPlayerID() == this->playerid)
-                GAMECLIENT.SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("The emergency program has been deactivated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("The emergency program has been deactivated."), PMC_GENERAL));
             FindMaterialForBuildingSites();
         }
     }

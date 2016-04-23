@@ -399,21 +399,12 @@ bool nofBuildingWorker::GetResources(unsigned char type)
     // Post verschicken, keine Rohstoffe mehr da
     if (!outOfRessourcesMsgSent)
     {
-        if(GAMECLIENT.GetPlayerID() == this->player)
-        {
-            std::string error;
-            if(workplace->GetBuildingType() == BLD_WELL)
-                error = _("This well has dried out");
-            else
-                error = _("This mine is exhausted");
-
-            GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), error, PMC_GENERAL, *workplace));
-        }
-
         outOfRessourcesMsgSent = true;
         // Produktivitätsanzeige auf 0 setzen
         workplace->SetProductivityToZero();
 
+        const char* const error = (workplace->GetBuildingType() == BLD_WELL) ? _("This well has dried out") : _("This mine is exhausted");
+        SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), error, PMC_GENERAL, *workplace));
         // KI-Event erzeugen
         GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
     }

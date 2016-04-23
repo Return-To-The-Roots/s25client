@@ -66,7 +66,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     player.EnableBuilding(bld);
     if(notify && player.getPlayerID() == GAMECLIENT.GetLocalPlayer().getPlayerID())
     {
-        GAMECLIENT.SendPostMessage(new PostMsgWithBuilding(
+        player.SendPostMessage(new PostMsgWithBuilding(
             GAMECLIENT.GetGFNumber(),
             _(BUILDING_NAMES[bld]),
             PMC_GENERAL,

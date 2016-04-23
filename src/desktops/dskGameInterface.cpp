@@ -110,7 +110,7 @@ dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL)
     cbb.loadEdges( LOADER.GetInfoN("resource") );
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), &borders);
 
-    PostBox& postBox = GAMECLIENT.GetPostBox();
+    PostBox& postBox = GetPostBox();
     postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1));
     postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
     // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
@@ -120,6 +120,13 @@ dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL)
     // Jump to players HQ if it exists
     if(GAMECLIENT.GetLocalPlayer().hqPos.isValid())
         gwv.MoveToMapPt(GAMECLIENT.GetLocalPlayer().hqPos);
+}
+
+PostBox& dskGameInterface::GetPostBox()
+{
+    PostBox* postBox = gwb.GetPostMgr().GetPostBox(GAMECLIENT.GetPlayerID());
+    RTTR_Assert(postBox != NULL);
+    return *postBox;
 }
 
 dskGameInterface::~dskGameInterface()
@@ -180,8 +187,8 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
                 gwv.ToggleShowBQ();
             break;
         case 3: // Post
-            WINDOWMANAGER.Show(new iwPostWindow(gwv, GAMECLIENT.GetPostBox()));
-            UpdatePostIcon(GAMECLIENT.GetPostBox().GetNumMsgs(), false);
+            WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));
+            UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             break;
     }
 }
@@ -638,8 +645,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwMainMenu(gwv));
             return true;
         case 'n': // Show Post window
-            WINDOWMANAGER.Show(new iwPostWindow(gwv, GAMECLIENT.GetPostBox()));
-            UpdatePostIcon(GAMECLIENT.GetPostBox().GetNumMsgs(), false);
+            WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));
+            UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
             if(GAMECLIENT.IsHost())

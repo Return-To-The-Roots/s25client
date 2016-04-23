@@ -36,6 +36,7 @@ class iwRoadWindow;
 class GlobalGameSettings;
 class MouseCoords;
 class GameWorldBase;
+class PostBox;
 struct KeyEvent;
 
 class dskGameInterface :
@@ -147,6 +148,8 @@ class dskGameInterface :
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
+
+        PostBox& GetPostBox();
 };
 
 #endif // !dskGAMEINTERFACE_H_INCLUDED
