@@ -29,7 +29,6 @@ namespace AIEvent
         BuildingDestroyed,
         BuildingConquered,
         BuildingLost,
-        BuildingOccupied,
         BorderChanged,
         TerritoryLost,
         NoMoreResourcesReachable,

@@ -36,7 +36,6 @@
 #include "GameManager.h"
 #include "GameSavegame.h"
 #include "ai/AIBase.h"
-#include "ai/AIEvents.h"
 #include "Settings.h"
 #include "Debug.h"
 #include "fileFuncs.h"
@@ -1620,17 +1619,4 @@ void GameServer::SetAIName(const unsigned player_id)
         }
     }
 
-}
-
-bool GameServer::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
-{
-    if(ai_players[receiver])
-    {
-        ai_players[receiver]->SendAIEvent(ev);
-        return true;
-    }else
-    {
-        delete ev;
-        return false;
-    }
 }

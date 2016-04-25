@@ -128,7 +128,7 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool  /*boat_road*/, const MapPoint s
     return true;
 }
 
-void GameWorldBase::CalcRoad(const MapPoint pt, const unsigned char  /*player*/)
+void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
 {
     RecalcBQ(pt);
 
@@ -192,7 +192,7 @@ void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<uns
         if (!GetPointRoad(pt, route[z], false))
         {
             SetPointVirtualRoad(pt, route[z], 0);
-            CalcRoad(pt, GAMECLIENT.GetPlayerID());
+            RecalcBQForRoad(pt);
         }
 
         pt = GetNeighbour(pt, route[z]);

@@ -24,12 +24,12 @@
 #include "GameClient.h"
 #include "world/GameWorldGame.h"
 #include "Loader.h"
+#include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "gameData/JobConsts.h"
-#include "ai/AIEvents.h"
 #include <stdexcept>
 
 /// Maximale Distanz, die ein Jäger läuft, um ein Tier zu jagen
@@ -210,9 +210,7 @@ void nofHunter::TryStartHunting()
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-        //tell the ai that there is nothing left to hunt!
-        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
-
+        gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
         StartNotWorking();
     }
 

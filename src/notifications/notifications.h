@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,18 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef notifications_h__
+#define notifications_h__
 
-#include "defines.h" // IWYU pragma: keep
-#include "AIPlayer.h"
+#include "TypeId.h"
 
-AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                   const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                   const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level)
-{
-}
+/** The notification system dispatches notifications based on their type.
+ * To enable a type to be dispatched and listened on, you need to call the
+ * macro 'ENABLE_NOTIFICATION' with the type name in the public part of that type */
+#define ENABLE_NOTIFICATION(Type) \
+    static uint32_t getNoteId(){ return TypeId::value<Type>(); }
 
-
-/// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned  /*gf*/, bool  /*gfisnwf*/)
-{
-}
+#endif // notifications_h__

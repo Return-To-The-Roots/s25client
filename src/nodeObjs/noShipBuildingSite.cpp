@@ -24,8 +24,8 @@
 #include "EventManager.h"
 #include "noShip.h"
 #include "GameClient.h"
+#include "notifications/ShipNote.h"
 #include "postSystem/ShipPostMsg.h"
-#include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
@@ -127,9 +127,7 @@ void noShipBuildingSite::MakeBuildStep()
 
         // Spieler über Fertigstellung benachrichtigen
         SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A new ship is ready"), PMC_GENERAL, *ship));
-
-        // KI Event senden
-        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, pos), player);
+        gwg->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
 
 }

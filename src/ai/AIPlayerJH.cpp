@@ -30,7 +30,11 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noAnimal.h"
-
+#include "notifications/BuildingNote.h"
+#include "notifications/ExpeditionNote.h"
+#include "notifications/ResourceNote.h"
+#include "notifications/RoadNote.h"
+#include "notifications/ShipNote.h"
 #include "AIConstruction.h"
 #include "gameData/TerrainData.h"
 #include "FindWhConditions.h"
@@ -38,13 +42,80 @@
 #include "GameServer.h"
 
 #include <boost/array.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/if.hpp>
+#include <boost/lambda/bind.hpp>
 #include <list>
 #include <algorithm>
-class GameClientPlayerList;
-namespace AIEvent { class Base; }
+#include <stdexcept>
 
 // from Pathfinding.cpp
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
+
+namespace{
+    void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
+    {
+        AIEvent::Base* ev;
+        switch(note.type)
+        {
+        case BuildingNote::Constructed:
+            ev = new AIEvent::Building(AIEvent::BuildingFinished, note.pos, note.bld);
+            break;
+        case BuildingNote::Destroyed:
+            ev = new AIEvent::Building(AIEvent::BuildingDestroyed, note.pos, note.bld);
+            break;
+        case BuildingNote::Captured:
+            ev = new AIEvent::Building(AIEvent::BuildingConquered, note.pos, note.bld);
+            break;
+        case BuildingNote::Lost:
+            ev = new AIEvent::Building(AIEvent::BuildingLost, note.pos, note.bld);
+            break;
+        case BuildingNote::NoRessources:
+            ev = new AIEvent::Building(AIEvent::NoMoreResourcesReachable, note.pos, note.bld);
+            break;
+        case BuildingNote::LuaOrder:
+            ev = new AIEvent::Building(AIEvent::LuaConstructionOrder, note.pos, note.bld);
+            break;
+        default:
+            RTTR_Assert(false);
+            return;
+        }
+        eventMgr.AddAIEvent(ev);
+    }
+    void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
+    {
+        switch(note.type)
+        {
+        case ExpeditionNote::Waiting:
+            eventMgr.AddAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, note.pos));
+            break;
+        case ExpeditionNote::ColonyFounded:
+            eventMgr.AddAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, note.pos));
+            break;
+        }
+    }
+    void HandleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
+    {
+        eventMgr.AddAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, note.pos, note.res));
+    }
+    void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
+    {
+        switch(note.type)
+        {
+        case RoadNote::Constructed:
+            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, note.pos, note.firstDir));
+            break;
+        case RoadNote::ConstructionFailed:
+            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, note.pos, note.firstDir));
+            break;
+        }
+    }
+    void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
+    {
+        if(note.type == ShipNote::Constructed)
+            eventMgr.AddAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, note.pos));
+    }
+}
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
                        const GameClientPlayerList& players, const GlobalGameSettings& ggs,
@@ -71,10 +142,32 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, c
             build_interval = 200;
             break;
         default:
-            attack_interval = 1;
-            build_interval = 1;
-            break;
+            throw std::invalid_argument("Invalid AI level!");
     }
+    // TODO: Use C++11 lambdas to simplify this
+    // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
+    namespace bl = boost::lambda;
+    using bl::_1;
+    subBuilding = gwb.GetNotifications().subscribe<BuildingNote>(
+        bl::if_(bl::bind(&BuildingNote::player, _1) == playerid)[
+            bl::bind(&HandleBuildingNote, boost::ref(eventManager), _1)
+        ]);
+    subExpedition = gwb.GetNotifications().subscribe<ExpeditionNote>(
+        bl::if_(bl::bind(&ExpeditionNote::player, _1) == playerid)[
+            bl::bind(&HandleExpeditionNote, boost::ref(eventManager), _1)
+        ]);
+    subResource = gwb.GetNotifications().subscribe<ResourceNote>(
+        bl::if_(bl::bind(&ResourceNote::player, _1) == playerid)[
+            bl::bind(&HandleResourceNote, boost::ref(eventManager), _1)
+        ]);
+    subRoad = gwb.GetNotifications().subscribe<RoadNote>(
+        bl::if_(bl::bind(&RoadNote::player, _1) == playerid)[
+            bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)
+        ]);
+    subShip = gwb.GetNotifications().subscribe<ShipNote>(
+        bl::if_(bl::bind(&ShipNote::player, _1) == playerid)[
+            bl::bind(&HandleShipNote, boost::ref(eventManager), _1)
+        ]);
 }
 
 AIPlayerJH::~AIPlayerJH()

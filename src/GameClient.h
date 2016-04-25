@@ -39,7 +39,6 @@ class SavedFile;
 class GameEvent;
 class GameWorldView;
 class GameWorld;
-namespace AIEvent { class Base; }
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
 {
@@ -230,12 +229,9 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Schreibt den Header der Replaydatei
         void WriteReplayHeader(const unsigned random_init);
         void WritePlayerInfo(SavedFile& file);
-// Post-Sachen
-    public:
-        bool SendAIEvent(AIEvent::Base* ev, unsigned receiver);
 
-        /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu
-        /// verstecken
+    public:
+        /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu verstecken
         struct VisualSettings
         {
             /// Verteilung

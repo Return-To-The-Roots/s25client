@@ -95,7 +95,7 @@ void noRoadNode::DestroyRoad(const unsigned char dir)
         for(unsigned z = 0; z < routes[dir]->GetLength(); ++z)
         {
             gwg->SetPointRoad(t, routes[dir]->GetRoute(z), 0);
-            gwg->CalcRoad(t, player);
+            gwg->RecalcBQForRoad(t);
             t = gwg->GetNeighbour(t, routes[dir]->GetRoute(z));
         }
 

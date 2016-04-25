@@ -15,34 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef iwAIDEBUG_H_INCLUDED
-#define iwAIDEBUG_H_INCLUDED
+#ifndef Subscriber_h__
+#define Subscriber_h__
 
-#include "IngameWindow.h"
-#include <vector>
+#include <boost/shared_ptr.hpp>
 
-class AIBase;
-class AIPlayerJH;
-class ctrlText;
-class GameWorldView;
+/// This defines a subscription to a notification.
+/// When there are no references left, the subscription is canceled
+/// Note: Treat this as a kind of opaque handle
+typedef boost::shared_ptr<void> Subscribtion;
 
-class iwAIDebug : public IngameWindow
-{
-    public:
-        iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais);
-
-    private:
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
-        //void Msg_ButtonClick(const unsigned int ctrl_id);
-        //void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-        void Msg_PaintBefore() override;
-
-    private:
-        GameWorldView& gwv;
-        std::vector<AIPlayerJH*> ais_;
-        unsigned selection;
-        unsigned overlay;
-        ctrlText* text;
-};
-
-#endif
+#endif // Subscriber_h__

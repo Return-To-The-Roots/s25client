@@ -20,10 +20,10 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
-#include "ai/AIEvents.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
 #include "postSystem/PostMsgWithBuilding.h"
+#include "notifications/BuildingNote.h"
 #include "helpers/converters.h"
 #include "libutil/src/Log.h"
 #include <stdexcept>
@@ -64,7 +64,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
     player.EnableBuilding(bld);
-    if(notify && player.getPlayerID() == GAMECLIENT.GetLocalPlayer().getPlayerID())
+    if(notify)
     {
         player.SendPostMessage(new PostMsgWithBuilding(
             GAMECLIENT.GetGFNumber(),
@@ -190,12 +190,8 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
     check(x < player.GetGameWorld()->GetWidth(), "x coordinate to large");
     check(y < player.GetGameWorld()->GetHeight(), "y coordinate to large");
-    if(!GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, MapPoint(x, y), bld), player.getPlayerID()))
-    {
-        LOG.lprintf("Sending AIConstructionOrder to player %u failed\n", player.getPlayerID());
-        return false;
-    } else
-        return true;
+    player.GetGameWorld()->GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.getPlayerID(), MapPoint(x, y), bld));
+    return true;
 }
 
 void LuaPlayer::ModifyHQ(bool isTent)

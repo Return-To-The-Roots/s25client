@@ -765,7 +765,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     {
         gwb.SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
         road.point = gwb.GetNeighbour(road.point, new_route[i]);
-        gwb.CalcRoad(road.point, GAMECLIENT.GetPlayerID());
+        gwb.RecalcBQForRoad(road.point);
     }
     // Zielpunkt updaten (für Wasserweg)
     cSel = road.point;
@@ -1036,7 +1036,7 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
         MapPoint t = road.point;
         road.point = gwb.GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
         gwb.SetPointVirtualRoad(road.point, road.route[i - 1], 0);
-        gwb.CalcRoad(t, GAMECLIENT.GetPlayerID());
+        gwb.RecalcBQForRoad(t);
     }
 
     road.route.resize(start_id - 1);

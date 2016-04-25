@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,18 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef ShipNote_h__
+#define ShipNote_h__
 
-#include "defines.h" // IWYU pragma: keep
-#include "AIPlayer.h"
+#include "gameTypes/MapTypes.h"
+#include "notifications/notifications.h"
 
-AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                   const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                   const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level)
+struct ShipNote
 {
-}
+    ENABLE_NOTIFICATION(ShipNote);
 
+    enum Type
+    {
+        Constructed,
+        Destroyed
+    };
 
-/// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned  /*gf*/, bool  /*gfisnwf*/)
-{
-}
+    ShipNote(Type type, unsigned player, const MapPoint& pos):
+        type(type), player(player), pos(pos){}
+
+    const Type type;
+    const unsigned player;
+    const MapPoint pos;
+};
+
+#endif // ShipNote_h__

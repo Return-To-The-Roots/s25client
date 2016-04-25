@@ -39,7 +39,6 @@
 
 #include "GameClient.h"
 #include "GameServer.h"
-#include "ai/AIPlayerJH.h"
 #include "GameClientPlayer.h"
 #include "gameData/const_gui_ids.h"
 
@@ -143,10 +142,10 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             if(GAMECLIENT.IsHost())
             {             
-                std::vector<AIPlayerJH*> ais;
+                std::vector<AIBase*> ais;
                 for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
                 {
-                    AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(i));
+                    AIBase* ai = GAMESERVER.GetAIPlayer(i);
                     if(ai)
                         ais.push_back(ai);
                 }

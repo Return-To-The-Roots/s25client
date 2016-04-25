@@ -23,7 +23,6 @@
 #include "TradePathCache.h"
 #include "GameInterface.h"
 #include "postSystem/PostMsgWithBuilding.h"
-#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -38,14 +37,14 @@
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
 #include "EventManager.h"
+#include "notifications/ExpeditionNote.h"
+#include "notifications/RoadNote.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
 #include "helpers/containerUtils.h"
 
 #include <stdexcept>
-class CatapultStone;
-class MilitarySquares;
 
 GameWorldGame::GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em): GameWorldBase(players, gameSettings, em)
 {
@@ -196,26 +195,23 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
 
 void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
 {
-    if(!GetSpecObj<noFlag>(start))
+    // No routes with less than 2 parts. Actually invalid!
+    if(route.size() < 2)
     {
-        RemoveVisualRoad(start, route);
-        // tell ai: road construction failed
-        GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
+        RTTR_Assert(false);
         return;
     }
-    // Falscher Spieler?
-    else if(GetSpecObj<noFlag>(start)->GetPlayer() != playerid)
+
+    if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerid)
     {
         // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
         RemoveVisualRoad(start, route);
-        // tell ai: road construction failed
-        GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
+        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
         return;
     }
 
     // Gucken, ob der Weg überhaupt noch gebaut werden kann
     MapPoint curPt(start);
-    RTTR_Assert(route.size() > 1);
     for(unsigned i = 0; i + 1 < route.size(); ++i)
     {
         curPt = GetNeighbour(curPt, route[i]);
@@ -224,22 +220,16 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         if(!RoadAvailable(boat_road, curPt, false) || !IsPlayerTerritory(curPt))
         {
             // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist und ansonsten den visuellen wieder zurückbauen
-            if (RoadAlreadyBuilt(boat_road, start, route))
-            {
-                //LOG.lprintf("duplicate road player %i at %i %i\n", playerid, start_x, start_y);
-                return;
-            }
-            else
+            if (!RoadAlreadyBuilt(boat_road, start, route))
             {
                 RemoveVisualRoad(start, route);
-                // tell ai: road construction failed
-                GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
-                return;
+                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
             }
+            return;
         }
     }
 
-    curPt = GetNeighbour(curPt, route[route.size() - 1]);
+    curPt = GetNeighbour(curPt, route.back());
 
     // Prüfen, ob am Ende auch eine Flagge steht oder eine gebaut werden kann
     if(GetNO(curPt)->GetGOT() == GOT_FLAG)
@@ -249,30 +239,19 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         {
             // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
             RemoveVisualRoad(start, route);
-            // tell ai: road construction failed
-            GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
             return;
         }
     }
     else
     {
-        // Es ist keine Flagge dort, dann muss getestet werden, ob da wenigstens eine gebaut werden kann
-        if(GetBQ(curPt, playerid, false) == BQ_NOTHING)
+        // Check if we can build a flag there, also check for trees at that point.
+        // TODO: Probably safe to remove the tree check as BQ checks for trees already
+        if(GetBQ(curPt, playerid, false) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
         {
             // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
             RemoveVisualRoad(start, route);
-            // tell ai: road construction failed
-            GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
-            return;
-        }
-
-        // Abfragen, ob evtl ein Baum gepflanzt wurde, damit der nicht überschrieben wird
-        if(GetNO(curPt)->GetType() == NOP_TREE)
-        {
-            // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-            RemoveVisualRoad(start, route);
-            // tell ai: road construction failed
-            GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, start, route[0]), playerid);
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
             return;
         }
         //keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
@@ -287,16 +266,13 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     for(unsigned i = 0; i < route.size(); ++i)
     {
         SetPointRoad(end, route[i], boat_road ? (RoadSegment::RT_BOAT + 1) : (RoadSegment::RT_NORMAL + 1));
-        CalcRoad(end, GAMECLIENT.GetPlayerID());
+        RecalcBQForRoad(end);
         end = GetNeighbour(end, route[i]);
 
         // Evtl Zierobjekte abreißen
         if(IsObjectionableForRoad(end))
             DestroyNO(end);
     }
-
-    /*if(GetNO(start_x, start_y)->GetType() != NOP_FLAG)
-        SetFlag(start_x, start_y, playerid, (route[route.size()-1]+3)%6);*/
 
     RoadSegment* rs = new RoadSegment(boat_road ? RoadSegment::RT_BOAT : RoadSegment::RT_NORMAL, 
                                       GetSpecObj<noFlag>(start), GetSpecObj<noFlag>(end), route);
@@ -306,8 +282,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
     // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
     GetPlayer(playerid).NewRoad(rs);
-    // notify ai about the new road
-    GAMECLIENT.SendAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, start, route[0]), playerid);
+    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerid, start, route.front()));
 }
 
 bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
@@ -1550,11 +1525,10 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     gi->GI_UpdateMinimap(pos);
 
     RecalcTerritory(*bs, false, true);
-
     // BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)
     RecalcBQAroundPointBig(pos);
-    //notify the ai
-    GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, pos), player);
+
+    GetNotifications().publish(ExpeditionNote(ExpeditionNote::ColonyFounded, player, pos));
 
     return true;
 }
