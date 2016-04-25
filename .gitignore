@@ -10,7 +10,7 @@
 /build/*.lib
 /build/*.def
 /build/*.exp
-build/LICENSE.*
+/build/LICENSE.*
 /build/Testing
 /build/CTestTestfile.cmake
 /build/s25client.VC.opendb
@@ -40,10 +40,6 @@ build/LICENSE.*
 /build/WORLDS
 /build/S2/DATA
 /build/S2/GFX
-/contrib/full-contrib-msvc
-/contrib/boost*
-/DATA
-/GFX
 /build/Debug
 /build/Release
 /build/Win32
@@ -58,10 +54,15 @@ build/LICENSE.*
 /build/*.exe
 /build/*.pdb
 /build/*.ilk
+/build/s25client.VC.VC.opendb
+/build/s25client.VC.db
+/contrib/full-contrib-msvc
+/contrib/boost*
+/DATA
+/GFX
 /s25update
 /RTTR/s25update
 /RTTR/s-c_resample
 /RTTR/sound-convert
+/Testing
 build_version_defines.h
-/build/s25client.VC.VC.opendb
-/build/s25client.VC.db

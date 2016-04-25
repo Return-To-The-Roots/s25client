@@ -22,6 +22,8 @@
 #include <boost/bind.hpp>
 #include <vector>
 
+BOOST_AUTO_TEST_SUITE(PostBoxTestSuite)
+
 BOOST_AUTO_TEST_CASE(AddMsg)
 {
     PostBox box;
@@ -116,3 +118,5 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(cb.delCalls, box.GetMaxMsgs());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

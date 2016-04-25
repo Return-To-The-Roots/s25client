@@ -25,6 +25,8 @@
 #include <boost/test/unit_test.hpp>
 #include <fstream>
 
+BOOST_AUTO_TEST_SUITE(MapTestSuite)
+
 class TestWorld: public World
 {
     void AltitudeChanged(const MapPoint pt) override {}
@@ -48,3 +50,5 @@ BOOST_AUTO_TEST_CASE(LoadWorld)
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());*/
 }
+
+BOOST_AUTO_TEST_SUITE_END()
