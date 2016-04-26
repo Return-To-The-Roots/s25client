@@ -24,6 +24,7 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "PostMsg.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

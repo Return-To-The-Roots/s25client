@@ -72,6 +72,7 @@
 #include "gameData/MilitaryConsts.h"
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -117,7 +118,7 @@ GlobalGameSettings::~GlobalGameSettings()
  */
 void GlobalGameSettings::reset(bool recreate)
 {
-    for( std::vector<item>::iterator it = addons.begin(); it != addons.end(); ++it)
+    for(AddonContainer::iterator it = addons.begin(); it != addons.end(); ++it)
         delete it->addon;
 
     addons.clear();
@@ -171,6 +172,34 @@ void GlobalGameSettings::reset(bool recreate)
     }
 }
 
+const Addon* GlobalGameSettings::getAddon(unsigned int nr, unsigned int& status) const
+{
+    if(nr >= addons.size())
+        return NULL;
+
+    const AddonWithState* i = &addons.at(nr);
+
+    if(!i->addon)
+        return NULL;
+
+    status = i->status;
+    return i->addon;
+}
+
+bool GlobalGameSettings::isEnabled(AddonId id) const
+{
+   AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    return it != addons.end() && it->status != it->addon->getDefaultStatus();
+}
+
+unsigned int GlobalGameSettings::getSelection(AddonId id) const
+{
+   AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    if(it == addons.end())
+        return 0;
+    return it->status;
+}
+
 void GlobalGameSettings::registerAddon(Addon* addon)
 {
     if(!addon)
@@ -179,7 +208,7 @@ void GlobalGameSettings::registerAddon(Addon* addon)
     if(helpers::contains(addons, addon->getId()))
         throw std::runtime_error("Addon already registered");
 
-    addons.push_back(item(addon));
+    addons.push_back(AddonWithState(addon));
     std::sort(addons.begin(), addons.end());
 }
 
@@ -206,7 +235,7 @@ void GlobalGameSettings::LoadSettings()
 void GlobalGameSettings::SaveSettings() const
 {
     SETTINGS.addons.configuration.clear();
-    for( std::vector<item>::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    for(AddonContainer::const_iterator it = addons.begin(); it != addons.end(); ++it)
         SETTINGS.addons.configuration.insert(std::make_pair(it->addon->getId(), it->status));
 }
 
@@ -229,7 +258,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
     ser.PushBool(random_location);
 
     ser.PushUnsignedInt(addons.size());
-    for( std::vector<item>::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    for(AddonContainer::const_iterator it = addons.begin(); it != addons.end(); ++it)
     {
         ser.PushUnsignedInt(it->addon->getId());
         ser.PushUnsignedInt(it->status);
@@ -273,7 +302,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
 void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
 {
-    std::vector<item>::iterator it = std::find(addons.begin(), addons.end(), id);
+   AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
         std::cout << "Addon 0x" << std::hex << id << std::dec << " not found!" << std::endl;
     else
@@ -290,4 +319,17 @@ unsigned GlobalGameSettings::GetNumScoutsExedition() const
 {
     unsigned selection = getSelection(AddonId::NUM_SCOUTS_EXPLORATION);
     return selection + 1;
+}
+
+GlobalGameSettings::AddonWithState::AddonWithState(Addon* addon): addon(addon), status(addon->getDefaultStatus())
+{}
+
+bool GlobalGameSettings::AddonWithState::operator<(const AddonWithState& rhs) const
+{
+    return addon->getName().compare(rhs.addon->getName()) < 0;
+}
+
+bool GlobalGameSettings::AddonWithState::operator==(const AddonId& rhs) const
+{
+    return addon->getId() == rhs;
 }

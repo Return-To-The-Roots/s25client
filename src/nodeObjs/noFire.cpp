@@ -20,13 +20,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noFire.h"
 
-#include "EventManager.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -36,7 +37,7 @@ noFire::noFire(const MapPoint pos, const unsigned char size)
 {
     // Bestimmte Zeit lang brennen
 	const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
-    dead_event = em->AddEvent(this, FIREDURATION[GAMECLIENT.GetGGS().getSelection(AddonId::BURN_DURATION)]);
+    dead_event = em->AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
 noFire::~noFire()
 {
@@ -65,7 +66,7 @@ void noFire::Serialize_noFire(SerializedGameData& sgd) const
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
     size(sgd.PopUnsignedChar()),
-    dead_event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    dead_event(sgd.PopEvent()),
     was_sounding(false),
     last_sound(0),
     next_interval(0)
@@ -76,9 +77,9 @@ void noFire::Draw(int x, int y)
 {
     //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
 	const unsigned FIREANIMATIONDURATION[] = {1000, 750, 500, 250, 100, 1500, 2000};
-    unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
+    unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
 
-    if(id < FIREANIMATIONDURATION[GAMECLIENT.GetGGS().getSelection(AddonId::BURN_DURATION)]*2/3)
+    if(id < FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]*2/3)
     {
         // Loderndes Feuer
         LOADER.GetMapImageN(2500 + size * 8 + id % 8)->Draw(x, y, 0, 0, 0, 0, 0, 0);

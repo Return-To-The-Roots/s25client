@@ -19,6 +19,7 @@
 #include "LuaInterfaceSettings.h"
 #include "GameServer.h"
 #include "LuaServerPlayer.h"
+#include "addons/Addons.h"
 #include "addons/const_addons.h"
 #include "libutil/src/Log.h"
 
@@ -61,7 +62,7 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
     }
 
 #pragma region ConstDefs
-#define ADD_LUA_CONST(name) state[#name] = GlobalGameSettings::name
+#define ADD_LUA_CONST(name) state[#name] = name
 
     ADD_LUA_CONST(GS_VERYSLOW);
     ADD_LUA_CONST(GS_SLOW);
@@ -136,26 +137,26 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
     GlobalGameSettings ggs = GAMESERVER.GetGGS();
     if(settings.getField("speed"))
     {
-        GlobalGameSettings::GameSpeed speed = settings.getField("speed");
-        check(unsigned(speed) <= GlobalGameSettings::GS_VERYFAST, "Speed is invalid");
+        GameSpeed speed = settings.getField("speed");
+        check(unsigned(speed) <= GS_VERYFAST, "Speed is invalid");
         ggs.game_speed = speed;
     }
     if(settings.getField("objective"))
     {
-        GlobalGameSettings::GameObjective objective = settings.getField("objective");
-        check(unsigned(objective) <= GlobalGameSettings::GO_TOTALDOMINATION, "Objective is invalid");
+        GameObjective objective = settings.getField("objective");
+        check(unsigned(objective) <= GO_TOTALDOMINATION, "Objective is invalid");
         ggs.game_objective = objective;
     }
     if(settings.getField("startWares"))
     {
-        GlobalGameSettings::StartWares wares = settings.getField("startWares");
-        check(unsigned(wares) <= GlobalGameSettings::SWR_ALOT, "Start wares is invalid");
+        StartWares wares = settings.getField("startWares");
+        check(unsigned(wares) <= SWR_ALOT, "Start wares is invalid");
         ggs.start_wares = wares;
     }
     if(settings.getField("fow"))
     {
-        GlobalGameSettings::Exploration fow = settings.getField("fow");
-        check(unsigned(fow) <= GlobalGameSettings::EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
+        Exploration fow = settings.getField("fow");
+        check(unsigned(fow) <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
         ggs.exploration = fow;
     }
     if(settings.getField("lockedTeams"))

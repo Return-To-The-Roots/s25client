@@ -25,6 +25,7 @@
 #include "Random.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "world/GameWorldGame.h"
 #include "figures/nofPassiveWorker.h"
 
 // Include last!
@@ -99,7 +100,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
         em->AddToKillList(this);
         // restliche Leute von der Inventur abziehen
         for(unsigned int i = 0; i < people.size(); ++i)
-            GAMECLIENT.GetPlayer(player).DecreaseInventoryJob(Job(i), people[i]);
+            gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), people[i]);
 
         return;
     }

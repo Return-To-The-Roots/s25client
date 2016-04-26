@@ -18,9 +18,8 @@
 #ifndef GameWorldBase_h__
 #define GameWorldBase_h__
 
-#include "TerrainRenderer.h"
-#include "buildings/nobBaseMilitary.h"
 #include "world/World.h"
+#include "buildings/nobBaseMilitary.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
@@ -29,6 +28,7 @@ class FreePathFinder;
 class GameInterface;
 class noBuildingSite;
 class GameClientPlayerList;
+class GlobalGameSettings;
 class GameClientPlayer;
 class nofPassiveSoldier;
 class nobHarborBuilding;
@@ -41,21 +41,18 @@ class GameWorldBase: public World
 {
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
+
+    GameClientPlayerList& players;
+    const GlobalGameSettings& gameSettings;
 protected:
     boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
-
-    TerrainRenderer tr;
-
     /// Interface zum GUI
     GameInterface* gi;
-
-    /// Baustellen von H�fen, die vom Schiff aus errichtet wurden
+    /// harbor building sites created by ships
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
-    GameClientPlayerList* players;
-
 public:
-    GameWorldBase();
+    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -108,8 +105,9 @@ public:
 
     /// Erzeugt eine GUI-ID f�r die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
-    /// Gibt Terrainkoordinaten zur�ck
-    Point<float> GetNodePos(const MapPoint pt){ return tr.GetNodePos(pt); }
+
+    /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
+    Point<int> GetNodePos(const MapPoint pt) const;
 
     /// Ver�ndert die H�he eines Punktes und die damit verbundenen Schatten
     void AltitudeChanged(const MapPoint pt) override;
@@ -137,10 +135,11 @@ public:
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
-    void SetPlayers(GameClientPlayerList* pls) { players = pls; }
-    /// Liefert einen Player zur�ck
-    GameClientPlayer& GetPlayer(const unsigned int id) const;
-    unsigned GetPlayerCt() const;
+    /// Return the player with the given index
+    GameClientPlayer& GetPlayer(const unsigned id) const;
+    unsigned GetPlayerCount() const;
+    /// Return the game settings
+    const GlobalGameSettings& GetGGS() const { return gameSettings; }
 
     struct PotentialSeaAttacker
     {

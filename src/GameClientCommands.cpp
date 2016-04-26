@@ -28,14 +28,6 @@
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-
-
-
-void GameClient::Command_SetFlag2(const MapPoint pt, unsigned char player)
-{
-    gw->SetFlag(pt, player);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.

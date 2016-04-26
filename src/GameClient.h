@@ -23,8 +23,6 @@
 #include "GameMessageInterface.h"
 
 #include "GamePlayerList.h"
-#include "world/GameWorld.h"
-#include "EventManager.h"
 #include "GameReplay.h"
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
@@ -37,9 +35,11 @@
 class AIBase;
 class ClientInterface;
 class GameMessage_GameCommand;
-class GameWorldViewer;
 class PostMsg;
 class SavedFile;
+class GameEvent;
+class GameWorldView;
+class GameWorld;
 namespace AIEvent { class Base; }
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
@@ -64,6 +64,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         ~GameClient() override;
 
         void SetInterface(ClientInterface* ci) { this->ci = ci; }
+        /// Removes the given interface (if it is not yet overwritten by another one)
+        void RemoveInterface(ClientInterface* ci) { if(this->ci == ci) this->ci = NULL; }
         bool IsHost() const { return clientconfig.isHost; }
         bool IsSavegame() const { return mapinfo.type == MAPTYPE_SAVEGAME; }
         std::string GetGameName() const { return clientconfig.gameName; }
@@ -85,8 +87,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void Run();
         void Stop();
 
-        // Gibt GameWorldViewer zurück (VORLÄUFIG, soll später verschwinden!!)
-        GameWorldViewer& QueryGameWorldViewer() const { return *static_cast<GameWorldViewer*>(gw); }
         /// Gibt Map-Titel zurück
         const std::string& GetMapTitle() const { return mapinfo.title; }
         /// Gibt Pfad zu der Map zurück
@@ -109,10 +109,9 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         inline unsigned int GetNWFLength() const { return framesinfo.nwf_length; }
         inline unsigned int GetFrameTime() const { return framesinfo.frameTime; }
         unsigned int GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset);
-        unsigned int Interpolate(unsigned max_val, EventManager::EventPointer ev);
-        int Interpolate(int x1, int x2, EventManager::EventPointer ev);
+        unsigned int Interpolate(unsigned max_val, GameEvent* ev);
+        int Interpolate(int x1, int x2, GameEvent* ev);
 
-        void Command_SetFlag2(const MapPoint pt, unsigned char player);
         void Command_Chat(const std::string& text, const ChatDestination cd );
         void Command_ToggleNation();
         void Command_ToggleTeam(Team newteam);
@@ -121,8 +120,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         void IncreaseSpeed();
 
-        /// Lädt ein Replay und startet dementsprechend das Spiel (0 = alles OK, alles andere entsprechende Fehler-ID!)
-        unsigned StartReplay(const std::string& path, GameWorldViewer*& gwv);
+        /// Lädt ein Replay und startet dementsprechend das Spiel
+        bool StartReplay(const std::string& path);
         /// Replay-Geschwindigkeit erhöhen/verringern
         void IncreaseReplaySpeed();
         void DecreaseReplaySpeed();

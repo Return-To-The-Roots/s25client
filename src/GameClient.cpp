@@ -31,7 +31,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "Random.h"
 #include "GameServer.h"
-#include "EventManager.h"
 #include "GameObject.h"
 #include "GlobalGameSettings.h"
 #include "lua/LuaInterfaceGame.h"
@@ -43,6 +42,8 @@
 #include "fileFuncs.h"
 #include "ClientInterface.h"
 #include "GameInterface.h"
+#include "EventManager.h"
+#include "GameEvent.h"
 #include "gameTypes/RoadBuildState.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
@@ -62,8 +63,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-
-class GameWorldViewer;
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
@@ -314,15 +313,14 @@ void GameClient::StartGame(const unsigned int random_init)
     RANDOM.Init(random_init);
 
     // Spielwelt erzeugen
-    gw = new GameWorld();
-    gw->SetPlayers(&players);
+    gw = new GameWorld(players, ggs);
     em = new EventManager();
     GameObject::SetPointers(gw, em);
     for(unsigned i = 0; i < players.getCount(); ++i)
         players[i].SetGameWorldPointer(gw);
 
     if(ci)
-        ci->CI_GameStarted(gw);
+        ci->CI_GameStarted(*gw);
 
     if(mapinfo.savegame)
     {
@@ -355,7 +353,7 @@ void GameClient::StartGame(const unsigned int random_init)
 
         /// Evtl. Goldvorkommen ändern
         unsigned char target = 0xFF; // löschen
-        switch(GAMECLIENT.GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
+        switch(GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             case 0: target = 3; break; //in Gold   konvertieren bzw. nichts tun
             case 1: target = 0xFF; break; // löschen
@@ -420,7 +418,6 @@ void GameClient::ExitGame()
     deletePtr(human_ai);
     deletePtr(gw);
     deletePtr(em);
-    deletePtr(human_ai);
     players.clear();
 }
 
@@ -796,7 +793,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     {
         LOG.lprintf("Error when loading game: %s\n", error.what());
         GAMEMANAGER.ShowMenu();
-        GAMECLIENT.ExitGame();
+        ExitGame();
     }
 }
 
@@ -868,7 +865,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     std::string filePathSave = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
     std::string filePathLog = GetFilePath(FILE_PATHS[47]) + timeStr + "Player.log";
     RANDOM.SaveLog(filePathLog);
-    GAMECLIENT.SaveToFile(filePathSave);
+    SaveToFile(filePathSave);
     LOG.lprintf("Async log saved at \"%s\", game saved at \"%s\"\n", filePathLog.c_str(), filePathSave.c_str());
 }
 
@@ -1237,7 +1234,7 @@ void GameClient::StatisticStep()
     }
 
     // Check objective if there is one and there are at least two players
-    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+    if (ggs.game_objective == GO_NONE)
         return;
 
     // check winning condition
@@ -1279,25 +1276,25 @@ void GameClient::StatisticStep()
 
     switch (ggs.game_objective)
     {
-        case GlobalGameSettings::GO_CONQUER3_4: // at least 3/4 of the land
+        case GO_CONQUER3_4: // at least 3/4 of the land
             if ((max * 4 >= sum * 3) && (best != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             break;
 
-        case GlobalGameSettings::GO_TOTALDOMINATION:    // whole populated land
+        case GO_TOTALDOMINATION:    // whole populated land
             if ((max == sum) && (best != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             if ((maxteam == sum) && (bestteam != 0xFFFF))
             {
-                ggs.game_objective = GlobalGameSettings::GO_NONE;
+                ggs.game_objective = GO_NONE;
             }
             break;
         default:
@@ -1305,7 +1302,7 @@ void GameClient::StatisticStep()
     }
 
     // We have a winner! Objective was changed to GO_NONE to avoid further checks.
-    if (ggs.game_objective == GlobalGameSettings::GO_NONE)
+    if (ggs.game_objective == GO_NONE)
     {
         if(maxteam <= best)
             gw->GetGameInterface()->GI_Winner(best);
@@ -1549,14 +1546,19 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
         LOG.lprintf("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
 }
 
-unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
+bool GameClient::StartReplay(const std::string& path)
 {
     replayinfo.Clear();
     mapinfo.Clear();
     replayinfo.filename = path;
 
     if(!replayinfo.replay.LoadHeader(path, &mapinfo))
-        return 2;
+    {
+        LOG.lprintf(_("Invalid Replay!"));
+        if(ci)
+            ci->CI_Error(CE_WRONGMAP);
+        return false;
+    }
 
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
@@ -1616,20 +1618,22 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
             mapinfo.filepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.mapFileName;
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
+                LOG.lprintf(_("Error decompressing map file"));
                 if(ci)
                     ci->CI_Error(CE_WRONGMAP);
                 Stop();
-                return 2;
+                return false;
             }
             if(mapinfo.luaData.length)
             {
                 mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
+                    LOG.lprintf(_("Error decompressing lua file"));
                     if(ci)
                         ci->CI_Error(CE_WRONGMAP);
                     Stop();
-                    return 2;
+                    return false;
                 }
             }
         } break;
@@ -1647,19 +1651,18 @@ unsigned GameClient::StartReplay(const std::string& path, GameWorldViewer*& gwv)
     }
     catch (SerializedGameData::Error& error)
     {
-        LOG.lprintf("Error when loading game: %s\n", error.what());
+        LOG.lprintf(_("Error when loading game from replay: %s\n"), error.what());
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
         Stop();
-        return 1;
+        return false;
     }
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-    gwv = gw;
     state = CS_LOADING;
 
-    return 0;
+    return true;
 }
 
 unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset)
@@ -1675,13 +1678,13 @@ unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsi
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
-unsigned GameClient::Interpolate(unsigned max_val, EventManager::EventPointer ev)
+unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
 {
     RTTR_Assert( ev );
     return min<unsigned int>(((max_val * ((framesinfo.gf_nr - ev->gf) * framesinfo.gf_length + framesinfo.frameTime)) / (ev->gf_length * framesinfo.gf_length)), max_val - 1);
 }
 
-int GameClient::Interpolate(int x1, int x2, EventManager::EventPointer ev)
+int GameClient::Interpolate(int x1, int x2, GameEvent* ev)
 {
     RTTR_Assert( ev );
     return (x1 + ( (x2 - x1) * ((int(framesinfo.gf_nr) - int(ev->gf)) * int(framesinfo.gf_length) + int(framesinfo.frameTime))) / int(ev->gf_length * framesinfo.gf_length));
@@ -2068,7 +2071,7 @@ void GameClient::LoadGGS()
 
 void GameClient::ToggleHumanAIPlayer()
 {
-    RTTR_Assert(!GAMECLIENT.IsReplayModeOn());
+    RTTR_Assert(!IsReplayModeOn());
     if (human_ai)
     {
         delete human_ai;
@@ -2083,7 +2086,7 @@ void GameClient::RequestSwapToPlayer(const unsigned char newId)
 {
     if(state != CS_GAME)
         return;
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(newId);
+    GameClientPlayer& player = GetPlayer(newId);
     if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
         send_queue.push(new GameMessage_Player_Swap(playerId_, newId));
 }

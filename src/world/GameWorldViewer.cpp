@@ -29,7 +29,7 @@
 #include "DebugNew.h" // IWYU pragma: keep
 class FOWObject;
 
-GameWorldViewer::GameWorldViewer()
+GameWorldViewer::GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings): GameWorldBase(players, gameSettings)
 {
 }
 
@@ -63,7 +63,6 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
 void GameWorldViewer::AltitudeChanged(const MapPoint pt)
 {
     GameWorldBase::AltitudeChanged(pt);
-    tr.AltitudeChanged(pt, *this);
 }
 
 void GameWorldViewer::VisibilityChanged(const MapPoint pt)
@@ -156,7 +155,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt, const unsigned char player) 
 unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
         const MapPoint pt) const
 {
-    if(GAMECLIENT.GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
+    if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
     return unsigned(GetAvailableSoldiersForSeaAttack(player_attacker, pt).size());
 }
@@ -177,12 +176,12 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) cons
     unsigned youngest_time = GetNode(pos).fow[local_player].last_update_time;
 
     // Shared team view enabled?
-    if(GAMECLIENT.GetGGS().team_view)
+    if(GetGGS().team_view)
     {
         // Then check if team members have a better (="younger", see our economy) fow object
-        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GetPlayerCount(); ++i)
         {
-            if(!GAMECLIENT.GetPlayer(i).IsAlly(local_player))
+            if(!GetPlayer(i).IsAlly(local_player))
                 continue;
             // Has the player FOW at this point at all?
             const MapNode::FoWData& name = GetNode(pos).fow[i];

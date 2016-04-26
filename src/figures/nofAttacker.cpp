@@ -26,9 +26,11 @@
 #include "nofPassiveSoldier.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "PostMsg.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
@@ -44,7 +46,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
+      should_haunted(gwg->GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
       harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -57,7 +59,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal),
-      should_haunted(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
+      should_haunted(gwg->GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
       harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -71,7 +73,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 nofAttacker::~nofAttacker()
 {
     //unsigned char oplayer = (player == 0) ? 1 : 0;
-    //RTTR_Assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));
+    //RTTR_Assert(!gwg->GetPlayer(oplayer).GetFirstWH()->Test(this));
 }
 
 void nofAttacker::Destroy_nofAttacker()
@@ -82,7 +84,7 @@ void nofAttacker::Destroy_nofAttacker()
     Destroy_nofActiveSoldier();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
-    RTTR_Assert(!GAMECLIENT.GetPlayer(oplayer).GetFirstWH()->Test(this));*/
+    RTTR_Assert(!gwg->GetPlayer(oplayer).GetFirstWH()->Test(this));*/
 }
 
 void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
@@ -121,7 +123,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         radius = sgd.PopUnsignedShort();
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
-            blocking_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+            blocking_event = sgd.PopEvent();
         else
             blocking_event = NULL;
 
@@ -416,7 +418,7 @@ void nofAttacker::HomeDestroyedAtBegin()
 void nofAttacker::WonFighting()
 {
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GAMECLIENT.GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building && state != STATE_ATTACKING_FIGHTINGVSDEFENDER)
@@ -707,8 +709,8 @@ void nofAttacker::TryToOrderAggressiveDefender()
             continue;
         // und es muss natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
         // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
-        if(GAMECLIENT.GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer())  &&
-           GAMECLIENT.GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
+        if(gwg->GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer())  &&
+           gwg->GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
         {
             // ggf. Verteidiger rufen
             huntingDefender = (*it)->SendDefender(this);

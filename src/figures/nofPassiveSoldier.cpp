@@ -23,6 +23,7 @@
 #include "buildings/nobMilitary.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
 
@@ -65,7 +66,7 @@ void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) con
 }
 
 nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id) : nofSoldier(sgd, obj_id),
-    healing_event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+    healing_event(sgd.PopEvent())
 {
 }
 

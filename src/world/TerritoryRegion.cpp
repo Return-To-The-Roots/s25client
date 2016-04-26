@@ -30,7 +30,7 @@
 #include "DebugNew.h" // IWYU pragma: keep
 
 TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb)
-    : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), gwb(gwb)
+    : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), world(gwb)
 {
     RTTR_Assert(x1 <= x2);
     RTTR_Assert(y1 <= y2);
@@ -83,24 +83,24 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
     if(x < x1)
-        x += gwb.GetWidth();
+        x += world.GetWidth();
     else if(x >= x2)
-        x -= gwb.GetWidth();
+        x -= world.GetWidth();
     // Check the (possibly) adjusted point
     if(x < x1 || x >= x2)
         return;
 
     // Apply wrap-around if on either side
     if(y < y1)
-        y += gwb.GetHeight();
+        y += world.GetHeight();
     else if(y >= y2)
-        y -= gwb.GetHeight();
+        y -= world.GetHeight();
     // Check the (possibly) adjusted point
     if(y < y1 || y >= y2)
         return;
 
     // check whether this node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(gwb, gwb.GetPlayer(player).GetRestrictedArea(), pt))
+    if (check_barriers && !IsPointValid(world, world.GetPlayer(player).GetRestrictedArea(), pt))
         return;
 
     /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
@@ -146,7 +146,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     MapPoint pt = building.GetPos();
     AdjustNode(pt, building.GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
 
-    std::vector<GetMapPointWithRadius::result_type> pts = gwb.GetPointsInRadius(pt, radius, GetMapPointWithRadius());
+    std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(pt, radius, GetMapPointWithRadius());
     for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
         AdjustNode(it->first, building.GetPlayer(), it->second, check_barriers);
 }

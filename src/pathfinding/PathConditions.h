@@ -18,6 +18,8 @@
 #ifndef PathConditions_h__
 #define PathConditions_h__
 
+#include "world/GameWorldBase.h"
+#include "nodeObjs/noBase.h"
 #include "gameData/TerrainData.h"
 
 struct PathConditionRoad

@@ -17,13 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "gameTypes/MapNode.h"
-#include "GameClient.h"
 #include "SerializedGameData.h"
+#include "nodeObjs/noBase.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
-void MapNode::Serialize(SerializedGameData& sgd) const
+void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) const
 {
     for(unsigned z = 0; z < roads.size(); ++z)
     {
@@ -44,7 +44,8 @@ void MapNode::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedChar(boundary_stones[b]);
     sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
     sgd.PushUnsignedChar(static_cast<unsigned char>(bqVisual));
-    for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
+    RTTR_Assert(numPlayers < fow.size());
+    for(unsigned z = 0; z < numPlayers; ++z)
     {
         const MapNode::FoWData& curFoW = fow[z];
         sgd.PushUnsignedChar(static_cast<unsigned char>(curFoW.visibility));
@@ -66,7 +67,7 @@ void MapNode::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(harbor_id);
 }
 
-void MapNode::Deserialize(SerializedGameData& sgd)
+void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
 {
     for(unsigned z = 0; z < roads.size(); ++z)
     {
@@ -88,7 +89,8 @@ void MapNode::Deserialize(SerializedGameData& sgd)
         boundary_stones[b] = sgd.PopUnsignedChar();
     bq = BuildingQuality(sgd.PopUnsignedChar());
     bqVisual = BuildingQuality(sgd.PopUnsignedChar());
-    for(unsigned z = 0; z < GAMECLIENT.GetPlayerCount(); ++z)
+    RTTR_Assert(numPlayers < fow.size());
+    for(unsigned z = 0; z < numPlayers; ++z)
     {
         MapNode::FoWData& curFoW = fow[z];
         curFoW.visibility = Visibility(sgd.PopUnsignedChar());

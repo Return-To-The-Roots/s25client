@@ -24,19 +24,21 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noSkeleton.h"
-#include "EventManager.h"
 #include "nofCarrier.h"
 #include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
@@ -208,8 +210,8 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
 
 Point<int> noFigure::CalcFigurRelative() const
 {
-    Point<int> curPt  = Point<int>(gwg->GetNodePos(pos));
-    Point<int> nextPt = Point<int>(gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir())));
+    Point<int> curPt  = gwg->GetNodePos(pos);
+    Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir()));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
     const int mapWidth = gwg->GetWidth() * TR_W;
@@ -572,9 +574,9 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 namespace{
     struct Point2Flag{
         typedef noFlag* result_type;
-        GameWorldBase& gwb;
+        World& gwb;
 
-        Point2Flag(GameWorldBase& gwb): gwb(gwb){}
+        Point2Flag(World& gwb): gwb(gwb){}
 
         result_type operator()(const MapPoint pt, unsigned  /*r*/) const
         {

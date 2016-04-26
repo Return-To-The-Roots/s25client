@@ -19,8 +19,8 @@
 #define NOB_BASEMILITARY_H_
 
 #include "buildings/noBuilding.h"
-#include "EventManager.h"
 #include <boost/container/flat_set.hpp>
+#include <list>
 
 class nofSoldier;
 class nofActiveSoldier;
@@ -29,6 +29,7 @@ class nofAggressiveDefender;
 class nofDefender;
 class SerializedGameData;
 class noFigure;
+class GameEvent;
 
 /// allgemeine Basisklasse für alle Militärgebäude (HQ,normale Militärgebäude, Häfen,einschließlich Lagerhäuser,
 /// weil die auch viele Merkmale davon haben, aber sind eigentlich keine Militärgebäude)
@@ -39,7 +40,7 @@ class nobBaseMilitary : public noBuilding
         /// Liste von Figuren, die das Gebäude verlassen wollen (damit nicht alle auf einmal rauskommen)
         std::list<noFigure*> leave_house;
         /// Event, damit nicht alle auf einmal rauskommen
-        EventManager::EventPointer leaving_event;
+        GameEvent* leaving_event;
         /// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser
         bool go_out;
         /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie evtl

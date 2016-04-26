@@ -23,6 +23,8 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "noEnvObject.h"
 #include "noFire.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -79,7 +81,7 @@ noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_i
     state(State(sgd.PopUnsignedChar())),
     step(sgd.PopUnsignedShort()),
     sub_step(sgd.PopUnsignedShort()),
-    event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+    event(sgd.PopEvent())
 {
 }
 

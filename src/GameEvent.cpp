@@ -15,17 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapSerializer_h__
-#define MapSerializer_h__
+#include "defines.h" // IWYU pragma: keep
+#include "GameEvent.h"
+#include "SerializedGameData.h"
 
-class World;
-class SerializedGameData;
+// Include last!
+#include "DebugNew.h" // IWYU pragma: keep
 
-class MapSerializer
+GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id):
+    GameObject(sgd, obj_id),
+    obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
+    gf(sgd.PopUnsignedInt()),
+    gf_length(sgd.PopUnsignedInt()),
+    gf_next(gf + gf_length),
+    id(sgd.PopUnsignedInt())
 {
-public:
-    static void Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd);
-    static void Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd);
-};
+    RTTR_Assert(obj);
+}
 
-#endif // MapSerializer_h__
+void GameEvent::Serialize_Event(SerializedGameData& sgd) const
+{
+    Serialize_GameObject(sgd);
+
+    sgd.PushObject(obj, false);
+    sgd.PushUnsignedInt(gf);
+    sgd.PushUnsignedInt(gf_length);
+    sgd.PushUnsignedInt(id);
+}

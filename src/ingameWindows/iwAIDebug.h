@@ -19,6 +19,7 @@
 #define iwAIDEBUG_H_INCLUDED
 
 #include "IngameWindow.h"
+#include <vector>
 
 class AIPlayerJH;
 class ctrlText;
@@ -27,7 +28,7 @@ class GameWorldView;
 class iwAIDebug : public IngameWindow
 {
     public:
-        iwAIDebug(GameWorldView& gwv);
+        iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayerJH*>& ais);
 
     private:
         void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
@@ -36,7 +37,7 @@ class iwAIDebug : public IngameWindow
         void Msg_PaintBefore() override;
 
     private:
-        std::vector<AIPlayerJH*> ais;
+        std::vector<AIPlayerJH*> ais_;
         unsigned selection;
         unsigned overlay;
         ctrlText* text;

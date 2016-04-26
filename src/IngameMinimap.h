@@ -21,6 +21,8 @@
 #include "Minimap.h"
 #include <vector>
 
+class GameWorldViewer;
+
 class IngameMinimap: public Minimap
 {
     /// Referenz auf den GameWorldViewer

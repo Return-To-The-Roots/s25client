@@ -19,8 +19,9 @@
 #define NO_CHARBURNERPILE_H_
 
 #include "noCoordBase.h"
-#include "EventManager.h"
+
 class SerializedGameData;
+class GameEvent;
 
 /// The wood/coal piles made by the charburner
 class noCharburnerPile : public noCoordBase
@@ -46,7 +47,7 @@ class noCharburnerPile : public noCoordBase
         unsigned short sub_step;
 
         /// Event for glowing
-        EventManager::EventPointer event;
+        GameEvent* event;
 
     public:
 

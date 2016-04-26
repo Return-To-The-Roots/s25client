@@ -25,6 +25,7 @@
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "SoundManager.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"

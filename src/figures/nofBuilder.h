@@ -47,7 +47,7 @@ class nofBuilder : public noFigure
         noBuildingSite* building_site;
 
 
-        //EventManager::EventPointer current_ev;
+        //GameEvent* current_ev;
 
         /// X,Y relativ zur Baustelle in Pixeln
         /// next ist der angesteuerte Punkt

@@ -26,6 +26,7 @@
 #include "Random.h"
 #include "nodeObjs/noFighting.h"
 #include "nofPassiveSoldier.h"
+#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 
 // Include last!
@@ -162,7 +163,7 @@ void nofDefender::WonFighting()
 {
 	
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GAMECLIENT.GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
 		IncreaseRank();
     // Angreifer tot
     attacker = NULL;

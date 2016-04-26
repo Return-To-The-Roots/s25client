@@ -35,6 +35,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/PlayerConsts.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "Log.h"
 
 // Include last!
@@ -42,7 +43,7 @@
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),
-    type(type == GD_SHIELDROMANS ? SHIELD_TYPES[GAMECLIENT.GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
+    type(type == GD_SHIELDROMANS ? SHIELD_TYPES[gwg->GetPlayer(location->GetPlayer()).nation] : type ),// Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
     goal(goal), next_harbor(MapPoint::Invalid())
 {
     RTTR_Assert(location);
@@ -60,7 +61,7 @@ void Ware::Destroy()
     RTTR_Assert(!goal);
     RTTR_Assert(!location);
 #if RTTR_ENABLE_ASSERTS
-    for(unsigned p=0; p<GAMECLIENT.GetPlayerCount(); p++)
+    for(unsigned p=0; p<gwg->GetPlayerCount(); p++)
     {
         RTTR_Assert(!gwg->GetPlayer(p).IsWareRegistred(this));
         RTTR_Assert(!gwg->GetPlayer(p).IsWareDependent(this));
@@ -162,7 +163,7 @@ void Ware::GoalDestroyed()
         // This also adds the ware to the harbors inventory
         static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
         // Kill the ware
-        GAMECLIENT.GetPlayer(location->GetPlayer()).RemoveWare(this);
+        gwg->GetPlayer(location->GetPlayer()).RemoveWare(this);
         goal = NULL;
         location = NULL;
         em->AddToKillList(this);

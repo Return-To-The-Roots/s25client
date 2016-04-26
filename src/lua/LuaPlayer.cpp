@@ -19,7 +19,7 @@
 #include "LuaPlayer.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldGame.h"
 #include "ai/AIEvents.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
@@ -190,8 +190,8 @@ unsigned LuaPlayer::GetPeopleCount(Job job)
 bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
-    check(x < GAMECLIENT.QueryGameWorldViewer().GetWidth(), "x coordinate to large");
-    check(y < GAMECLIENT.QueryGameWorldViewer().GetHeight(), "y coordinate to large");
+    check(x < player.GetGameWorld()->GetWidth(), "x coordinate to large");
+    check(y < player.GetGameWorld()->GetHeight(), "y coordinate to large");
     if(!GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::LuaConstructionOrder, MapPoint(x, y), bld), player.getPlayerID()))
     {
         LOG.lprintf("Sending AIConstructionOrder to player %u failed\n", player.getPlayerID());
@@ -205,7 +205,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     const MapPoint hqPos = player.hqPos;
     if(hqPos.isValid())
     {
-        nobHQ* hq = GAMECLIENT.QueryGameWorldViewer().GetSpecObj<nobHQ>(hqPos);
+        nobHQ* hq = player.GetGameWorld()->GetSpecObj<nobHQ>(hqPos);
         if(hq)
             hq->SetIsTent(isTent);
     }

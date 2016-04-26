@@ -18,8 +18,9 @@
 #define NO_DISAPPEARING_ENVOBJECT
 
 #include "noCoordBase.h"
-#include "EventManager.h"
+
 class SerializedGameData;
+class GameEvent;
 
 class noDisappearingEnvObject : public noCoordBase
 {
@@ -50,7 +51,7 @@ class noDisappearingEnvObject : public noCoordBase
         /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)
         bool disappearing;
         /// Event, das bestimmt wie lange es noch lebt
-        EventManager::EventPointer dead_event;
+        GameEvent* dead_event;
 };
 
 

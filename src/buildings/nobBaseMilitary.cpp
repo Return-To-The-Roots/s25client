@@ -22,13 +22,13 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nobBaseMilitary.h"
 #include "world/GameWorldGame.h"
-#include "EventManager.h"
 #include "Random.h"
 #include "nobMilitary.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofDefender.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 
@@ -127,7 +127,7 @@ void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
 nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id) : noBuilding(sgd, obj_id)
 {
     sgd.PopObjectContainer(leave_house, GOT_UNKNOWN);
-    leaving_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    leaving_event = sgd.PopEvent();
     go_out = sgd.PopBool();
     sgd.PopUnsignedInt(); // former age, compatibility with 0.7, remove it in furher versions
     sgd.PopObjectContainer(troops_on_mission, GOT_UNKNOWN);

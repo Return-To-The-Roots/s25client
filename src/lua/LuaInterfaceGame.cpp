@@ -20,6 +20,7 @@
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"
@@ -224,9 +225,9 @@ void LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
 
 void LuaInterfaceGame::ClearResources()
 {
-    for(unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); p++)
+    for(unsigned p = 0; p < gw.GetPlayerCount(); p++)
     {
-        const std::list<nobBaseWarehouse*> warehouses = GAMECLIENT.GetPlayer(p).GetStorehouses();
+        const std::list<nobBaseWarehouse*> warehouses = gw.GetPlayer(p).GetStorehouses();
         for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
             (*wh)->Clear();
     }
@@ -239,7 +240,7 @@ unsigned LuaInterfaceGame::GetGF()
 
 unsigned LuaInterfaceGame::GetPlayerCount()
 {
-    return GAMECLIENT.GetPlayerCount();
+    return gw.GetPlayerCount();
 }
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
@@ -277,9 +278,9 @@ void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::st
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
 {
-    if(playerIdx >= GAMECLIENT.GetPlayerCount())
+    if(playerIdx >= gw.GetPlayerCount())
         throw std::runtime_error("Invalid player idx");
-    return LuaPlayer(GAMECLIENT.GetPlayer(playerIdx));
+    return LuaPlayer(gw.GetPlayer(playerIdx));
 }
 
 LuaWorld LuaInterfaceGame::GetWorld()

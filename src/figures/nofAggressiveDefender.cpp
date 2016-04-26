@@ -26,6 +26,7 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -49,7 +50,6 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
 
 nofAggressiveDefender::~nofAggressiveDefender()
 {
-    //RTTR_Assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
@@ -57,9 +57,6 @@ void nofAggressiveDefender::Destroy_nofAggressiveDefender()
     RTTR_Assert(!attacker);
     RTTR_Assert(!attacked_goal);
     Destroy_nofActiveSoldier();
-
-    //// Debugging
-    //RTTR_Assert(!GAMECLIENT.GetPlayer(player).GetFirstWH()->TestOnMission(this));
 }
 
 void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& sgd) const
@@ -133,7 +130,7 @@ void nofAggressiveDefender::CancelAtAttackedBld()
 void nofAggressiveDefender::WonFighting()
 {
 	//addon BattlefieldPromotion active? -> increase rank!
-	if(GAMECLIENT.GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
 		IncreaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?

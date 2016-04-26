@@ -20,10 +20,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noDisappearingEnvObject.h"
 
-#include "EventManager.h"
 #include "GameClient.h"
 #include "SerializedGameData.h"
 #include "Random.h"
+#include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
 
 // Include last!
@@ -58,7 +59,7 @@ void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameDa
 
 noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
     disappearing(sgd.PopBool()),
-    dead_event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+    dead_event(sgd.PopEvent())
 {
 }
 

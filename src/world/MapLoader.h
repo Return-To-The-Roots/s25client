@@ -19,6 +19,8 @@
 #define MapLoader_h__
 
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/GameSettingTypes.h"
+#include "gameData/NationConsts.h"
 #include <vector>
 
 class World;
@@ -27,22 +29,30 @@ class glArchivItem_Map;
 class MapLoader
 {
     World& world;
+    const std::vector<Nation> playerNations;
+    std::vector<MapPoint> hqPositions;
+
     /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
     /// Wasserpunkte mit der gleichen sea_id belegt und die Anzahl zurückgibt
     unsigned MeasureSea(const MapPoint pt, const unsigned short sea_id);
 
     void InitSeasAndHarbors();
 
-    /// Inititalizes the nodes according to the map data
-    void InitNodes(const glArchivItem_Map& map);
-    /// Places all objects on the nodes according to the map data. Returns the positions of the HQs
-    std::vector<MapPoint> PlaceObjects(const glArchivItem_Map& map);
-    void PlaceHQs(std::vector<MapPoint> &headquarter_positions);
+    /// Inititalize the nodes according to the map data
+    void InitNodes(const glArchivItem_Map& map, Exploration exploration);
+    /// Place all objects on the nodes according to the map data.
+    void PlaceObjects(const glArchivItem_Map& map);
+    bool PlaceHQs(bool randomStartPos);
     void PlaceAnimals(const glArchivItem_Map& map);
     void CalcHarborPosNeighbors();
 public:
-    explicit MapLoader(World& world);
-    void Load(const glArchivItem_Map& map);
+    /// Construct a loader for the given world.
+    /// Size of @playerNations must be the player count and unused player spots must be set to NAT_INVALID
+    MapLoader(World& world, const std::vector<Nation>& playerNations);
+    /// Load the map from the given archive, resetting previous state. Return false on error
+    bool Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration);
+    /// Return the position of the players HQ (only valid after successful load)
+    MapPoint GetHQPos(unsigned player) const { return hqPositions[player]; }
 };
 
 #endif // MapLoader_h__

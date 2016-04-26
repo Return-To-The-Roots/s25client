@@ -20,11 +20,13 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwAddons.h"
 
+#include "addons/Addons.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlScrollBar.h"
 #include "gameData/const_gui_ids.h"
+#include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
 
 // Include last!

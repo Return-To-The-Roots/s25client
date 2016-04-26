@@ -19,7 +19,6 @@
 #include "world/MapLoader.h"
 #include "world/World.h"
 #include "ogl/glArchivItem_Map.h"
-#include "GameClient.h"
 #include "Random.h"
 #include "gameData/TerrainData.h"
 #include "nodeObjs/noEnvObject.h"
@@ -31,20 +30,22 @@
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "Log.h"
 #include <queue>
+#include <algorithm>
 
 class noBase;
 class nobBaseWarehouse;
 
-MapLoader::MapLoader(World& world): world(world)
+MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations): world(world), playerNations(playerNations)
 {}
 
-void MapLoader::Load(const glArchivItem_Map& map)
+bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration)
 {
     world.Init(map.getHeader().getWidth(), map.getHeader().getHeight(), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
-    InitNodes(map);
-    std::vector<MapPoint> headquarter_positions = PlaceObjects(map);
-    PlaceHQs(headquarter_positions);
+    InitNodes(map, exploration);
+    PlaceObjects(map);
+    if(!PlaceHQs(randomStartPos))
+        return false;
     PlaceAnimals(map);
     InitSeasAndHarbors();
 
@@ -59,26 +60,27 @@ void MapLoader::Load(const glArchivItem_Map& map)
         }
     }
 
-    /// Bei FoW und aufgedeckt m�ssen auch die ersten FoW-Objekte erstellt werden
-    if(GAMECLIENT.GetGGS().exploration == GlobalGameSettings::EXP_FOGOFWARE_EXPLORED)
+    // If we have explored FoW, create the FoW objects
+    if(exploration == EXP_FOGOFWARE_EXPLORED)
     {
         for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
         {
             for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
             {
-                // Alle Spieler durchgehen
-                for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+                // For every player
+                for(unsigned i = 0; i < playerNations.size(); ++i)
                 {
-                    // An der Stelle FOW f�r diesen Spieler?
+                    // If we have FoW here, save it
                     if(world.GetNode(pt).fow[i].visibility == VIS_FOW)
                         world.SaveFOWNode(pt, i, 0);
                 }
             }
         }
     }
+    return true;
 }
 
-void MapLoader::InitNodes(const glArchivItem_Map& map)
+void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 {
     // Init node data (everything except the objects and figures)
     MapPoint pt(0, 0);
@@ -129,16 +131,16 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
             node.sea_id = 0;
 
             Visibility fowVisibility;
-            switch(GAMECLIENT.GetGGS().exploration)
+            switch(exploration)
             {
-            case GlobalGameSettings::EXP_DISABLED:
+            case EXP_DISABLED:
                 fowVisibility = VIS_VISIBLE;
                 break;
-            case GlobalGameSettings::EXP_CLASSIC:
-            case GlobalGameSettings::EXP_FOGOFWAR:
+            case EXP_CLASSIC:
+            case EXP_FOGOFWAR:
                 fowVisibility = VIS_INVISIBLE;
                 break;
-            case GlobalGameSettings::EXP_FOGOFWARE_EXPLORED:
+            case EXP_FOGOFWARE_EXPLORED:
                 fowVisibility = VIS_FOW;
                 break;
             default:
@@ -146,7 +148,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
             }
 
             // FOW-Zeug initialisieren
-            for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+            for(unsigned i = 0; i < node.fow.size(); ++i)
             {
                 MapNode::FoWData& fow = node.fow[i];
                 fow.last_update_time = 0;
@@ -163,9 +165,11 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
     }
 }
 
-std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
+void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 {
-    std::vector< MapPoint > headquarter_positions;
+    hqPositions.resize(playerNations.size());
+    std::fill(hqPositions.begin(), hqPositions.end(), MapPoint::Invalid());
+
     MapPoint pt;
     for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
     {
@@ -179,9 +183,8 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Player Startpos (provisorisch)
             case 0x80:
             {
-                headquarter_positions.push_back(pt);
-                if(lc < GAMECLIENT.GetPlayerCount())
-                    GAMECLIENT.GetPlayer(lc).hqPos = pt;
+                if(lc < hqPositions.size())
+                    hqPositions[lc] = pt;
             } break;
 
             // Baum 1-4
@@ -329,7 +332,6 @@ std::vector<MapPoint> MapLoader::PlaceObjects(const glArchivItem_Map& map)
             world.GetNodeInt(pt).obj = obj;
         }
     }
-    return headquarter_positions;
 }
 
 void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
@@ -381,33 +383,31 @@ struct RandomFunctor
     }
 };
 
-void MapLoader::PlaceHQs(std::vector<MapPoint>& headquarter_positions)
+bool MapLoader::PlaceHQs(bool randomStartPos)
 {
     //random locations? -> randomize them :)
-    if(GAMECLIENT.GetGGS().random_location && headquarter_positions.size() >= GAMECLIENT.GetPlayerCount())
+    if(randomStartPos)
     {
         RandomFunctor random;
-        std::random_shuffle(headquarter_positions.begin(), headquarter_positions.end(), random);
-
-        for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
-            GAMECLIENT.GetPlayer(i).hqPos = headquarter_positions.at(i);
+        std::random_shuffle(hqPositions.begin(), hqPositions.end(), random);
     }
 
-    // HQ setzen
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < hqPositions.size(); ++i)
     {
-        // Existiert �berhaupt ein HQ?
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
-        if(player.hqPos.isValid())
+        // Skip unused slots
+        if(playerNations[i] == NAT_INVALID)
+            continue;
+
+        // Does the HQ have a position?
+        if(!hqPositions[i].isValid())
         {
-            if(player.isUsed())
-            {
-                nobHQ* hq = new nobHQ(player.hqPos, i, player.nation);
-                world.SetNO(player.hqPos, hq);
-                player.AddWarehouse(reinterpret_cast<nobBaseWarehouse*>(hq));
-            }
+            LOG.lprintf(_("Player %u does not have a valid start position!"), i);
+            return false;
         }
+        nobHQ* hq = new nobHQ(hqPositions[i], i, playerNations[i]);
+        world.SetNO(hqPositions[i], hq);
     }
+    return true;
 }
 
 void MapLoader::InitSeasAndHarbors()

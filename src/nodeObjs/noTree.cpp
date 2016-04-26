@@ -22,14 +22,14 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "EventManager.h"
 #include "noDisappearingMapEnvObject.h"
 #include "noAnimal.h"
 #include "Random.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "FOWObjects.h"
 #include "GameInterface.h"
-
+#include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 
 // Include last!
@@ -55,7 +55,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
     // Jeder 20. Baum produziert Tiere, aber keine Palmen und Ananas!
 	const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
-    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[GAMECLIENT.GetGGS().getSelection(AddonId::MORE_ANIMALS)] == 0);
+    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)] == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
@@ -89,8 +89,8 @@ noTree::noTree(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd
     type(sgd.PopUnsignedChar()),
     size(sgd.PopUnsignedChar()),
     state(State(sgd.PopUnsignedChar())),
-    event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
-    produce_animal_event(sgd.PopObject<EventManager::Event>(GOT_EVENT)),
+    event(sgd.PopEvent()),
+    produce_animal_event(sgd.PopEvent()),
     produce_animals(sgd.PopBool())
 {
 }

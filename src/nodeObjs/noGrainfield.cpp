@@ -24,7 +24,8 @@
 #include "GameClient.h"
 #include "Random.h"
 #include "SerializedGameData.h"
-
+#include "world/GameWorldGame.h"
+#include "EventManager.h"
 #include "ogl/glSmartBitmap.h"
 #include "libutil/src/colors.h"
 
@@ -72,7 +73,7 @@ noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id) : noC
     type(sgd.PopUnsignedChar()),
     state(State(sgd.PopUnsignedChar())),
     size(sgd.PopUnsignedChar()),
-    event(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+    event(sgd.PopEvent())
 {
 }
 

@@ -32,6 +32,7 @@ class nofDefender;
 class Ware;
 class SerializedGameData;
 class noFigure;
+class GameEvent;
 
 /// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary
@@ -58,9 +59,9 @@ class nobMilitary : public nobBaseMilitary
         /// but who are still quite far away (didn't stand around the building)
         std::list<nofAttacker*> far_away_capturers;
         /// Gold-Bestell-Event
-        EventManager::EventPointer goldorder_event;
+        GameEvent* goldorder_event;
         /// Beförderung-Event
-        EventManager::EventPointer upgrade_event;
+        GameEvent* upgrade_event;
         /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
         bool is_regulating_troops;
         /// This building was captured by its current owner. This flag is set once and never to be changed again

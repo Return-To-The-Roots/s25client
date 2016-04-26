@@ -29,7 +29,6 @@
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class GameWorldViewer;
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
     : iwHQ(gwv, hb, _("Harbor building"), 4)

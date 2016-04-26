@@ -18,11 +18,11 @@
 #define CATAPULT_STONE_H_
 
 #include "GameObject.h"
-#include "EventManager.h"
 #include "gameTypes/MapTypes.h"
 
 class GameWorldView;
 class SerializedGameData;
+class GameEvent;
 
 /// Klasse für einen fliegenden Katapultstein
 class CatapultStone : public GameObject
@@ -40,7 +40,7 @@ class CatapultStone : public GameObject
         /// Explodiert der Stein schon? (false = fliegt)
         bool explode;
         /// Flieg-/Explodier-Event
-        EventManager::Event* event;
+        GameEvent* event;
 
     public:
 

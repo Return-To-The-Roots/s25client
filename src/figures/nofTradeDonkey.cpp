@@ -23,6 +23,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "SerializedGameData.h"
 #include "gameData/GameConsts.h"
+#include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
 #include "Loader.h"
 #include "libutil/src/colors.h"

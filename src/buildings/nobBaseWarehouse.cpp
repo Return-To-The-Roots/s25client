@@ -19,7 +19,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nobBaseWarehouse.h"
-#include "EventManager.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -30,6 +29,7 @@
 #include "gameData/JobConsts.h"
 #include "BurnedWarehouse.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "figures/nofWarehouseWorker.h"
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofAggressiveDefender.h"
@@ -38,8 +38,10 @@
 #include "figures/nofTradeLeader.h"
 #include "figures/nofTradeDonkey.h"
 #include "nodeObjs/noFlag.h"
+#include "world/GameWorldGame.h"
 #include "factories/JobFactory.h"
 #include "gameData/ShieldConsts.h"
+#include "helpers/containerUtils.h"
 #include "Log.h"
 
 #include <algorithm>
@@ -166,10 +168,10 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     sgd.PopObjectContainer(dependent_figures, GOT_UNKNOWN);
     sgd.PopObjectContainer(dependent_wares, GOT_WARE);
 
-    producinghelpers_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
-    recruiting_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
-    empty_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
-    store_event = sgd.PopObject<EventManager::Event>(GOT_EVENT);
+    producinghelpers_event = sgd.PopEvent();
+    recruiting_event = sgd.PopEvent();
+    empty_event = sgd.PopEvent();
+    store_event = sgd.PopEvent();
 
     for(unsigned i = 0; i < 5; ++i)
     {

@@ -31,6 +31,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameData/TerrainData.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
@@ -168,7 +169,8 @@ void noFlag::Draw(int x, int y)
  */
 FOWObject* noFlag::CreateFOWObject() const
 {
-    return new fowFlag(player, flagtype);
+    const GameClientPlayer& owner = gwg->GetPlayer(player);
+    return new fowFlag(owner.color, owner.nation, flagtype);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

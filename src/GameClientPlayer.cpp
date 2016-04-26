@@ -45,6 +45,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/MessageTypes.h"
 #include "world/TradeRoute.h"
+#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
@@ -1841,7 +1842,7 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
 ///all allied players get a letter with the location
 void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {	
-	for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+	for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
 		if(i != playerid && IsAlly(i) && GAMECLIENT.GetPlayerID() == i)
             GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
@@ -1876,7 +1877,7 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
         pacts[otherPlayerIdx][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        GameClientPlayer& otherPlayer = GAMECLIENT.GetPlayer(otherPlayerIdx);
+        GameClientPlayer& otherPlayer = gwg->GetPlayer(otherPlayerIdx);
         if(otherPlayer.pacts[playerid][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
@@ -1912,9 +1913,9 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
 void GameClientPlayer::MakeStartPacts()
 {
     // Zu den Spielern im selben Team Bündnisse (sowohl Bündnisvertrag als auch Nichtangriffspakt) aufbauen
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
-        GameClientPlayer& p = GAMECLIENT.GetPlayer(i);
+        GameClientPlayer& p = gwg->GetPlayer(i);
         if(GetFixedTeam(team) == GetFixedTeam(p.team) && GetFixedTeam(team) >= TM_TEAM1 && GetFixedTeam(team) <= TM_TEAM4)
         {
             for(unsigned z = 0; z < PACTS_COUNT; ++z)
@@ -2298,7 +2299,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
 /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GameClientPlayer::TestPacts()
 {
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
         if(i==playerid)
             continue;
@@ -2326,7 +2327,7 @@ void GameClientPlayer::TestPacts()
 bool GameClientPlayer::CanBuildCatapult() const
 {
     // Wenn AddonId::LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-    if(!GAMECLIENT.GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
+    if(!gwg->GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
     BuildingCount bc;
@@ -2335,17 +2336,17 @@ bool GameClientPlayer::CanBuildCatapult() const
     unsigned int max = 0;
 
     // proportional?
-    if(GAMECLIENT.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
+    if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
         max = int(bc.building_counts[BLD_BARRACKS] * 0.125 +
                   bc.building_counts[BLD_GUARDHOUSE] * 0.25 +
                   bc.building_counts[BLD_WATCHTOWER] * 0.5 +
                   bc.building_counts[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     }
-    else if(GAMECLIENT.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
+    else if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
         const boost::array<unsigned, 6> limits = {{ 0, 3, 5, 10, 20, 30}};
-        max = limits[GAMECLIENT.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
+        max = limits[gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
     return bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] < max;

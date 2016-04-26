@@ -29,7 +29,7 @@ class nofPassiveSoldier : public nofSoldier
     private:
 
         /// "Heilungs-Event"
-        EventManager::EventPointer healing_event;
+        GameEvent* healing_event;
 
     private:
 

@@ -23,12 +23,13 @@
 #include "nodeObjs/noFlag.h"
 #include "Loader.h"
 #include "Random.h"
-#include "EventManager.h"
 #include "GameClient.h"
 #include "nodeObjs/noSign.h"
 #include "gameData/GameConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
+#include "EventManager.h"
 #include "PostMsg.h"
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -498,9 +499,9 @@ void nofGeologist::LostWork()
 struct IsSignOfType
 {
     const unsigned type;
-    const GameWorldBase& gwb;
+    const World& gwb;
 
-    IsSignOfType(unsigned type, const GameWorldBase& gwb): type(type), gwb(gwb){}
+    IsSignOfType(unsigned type, const World& gwb): type(type), gwb(gwb){}
 
     bool operator()(const MapPoint& pt)
     {

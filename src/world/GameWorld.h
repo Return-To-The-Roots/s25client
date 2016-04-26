@@ -29,6 +29,8 @@ class GameWorld : public GameWorldViewer, public GameWorldGame
 {
     public:
 
+        GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
+
         /// Lädt eine Karte
         bool LoadMap(const std::string& mapFilePath, const std::string& luaFilePath);
 
@@ -42,8 +44,6 @@ class GameWorld : public GameWorldViewer, public GameWorldGame
         /// Sagt, dass ein Militärgebäude eingenommen wurde und ggf. ein entsprechender "Fanfarensound" abgespielt werden sollte
         void MilitaryBuildingCaptured(const MapPoint pt, const unsigned char player) override;
 
-    private:
- 
 };
 
 #endif // GameWorld_h__

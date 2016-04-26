@@ -81,8 +81,8 @@ struct MapNode
     std::list<noBase*> figures;
 
     MapNode(): obj(NULL){}
-    void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd, const unsigned numPlayers) const;
+    void Deserialize(SerializedGameData& sgd, const unsigned numPlayers);
 };
 
 #endif // MapNode_h__

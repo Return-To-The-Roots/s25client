@@ -61,6 +61,8 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldViewer.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
 #include "gameData/TerrainData.h"
@@ -85,9 +87,9 @@ class noShip;
  *
  *  @author OLiver
  */
-dskGameInterface::dskGameInterface(): Desktop(NULL),
-    gwv(GAMECLIENT.QueryGameWorldViewer(), Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
-    gwb(GAMECLIENT.QueryGameWorldViewer()),
+dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL),
+    gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
+    gwb(worldViewer),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
     selected(0, 0), minimap(gwv.GetViewer()), isScrolling(false), zoomLvl(0)
@@ -257,9 +259,9 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Laggende Spieler anzeigen in Form von Schnecken
-    for(unsigned int i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned int i = 0; i < gwb.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GameClientPlayer& player = gwb.GetPlayer(i);
         if(player.is_lagging)
             LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
     }
@@ -444,7 +446,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
-                if(GAMECLIENT.GetGGS().isEnabled(AddonId::TRADE))
+                if(gwb.GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
                     if(GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())
@@ -596,14 +598,14 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             {
                 GAMECLIENT.ChangePlayerIngame(GAMECLIENT.GetPlayerID(), playerIdx);
                 // zum HQ hinscrollen
-                GameClientPlayer& player = GAMECLIENT.GetPlayer(playerIdx);
+                GameClientPlayer& player = gwb.GetPlayer(playerIdx);
                 if(player.hqPos.isValid())
                     gwv.MoveToMapPt(player.hqPos);
 
             }
-            else if(playerIdx < GAMECLIENT.GetPlayerCount())
+            else if(playerIdx < gwb.GetPlayerCount())
             {
-                GameClientPlayer& player = GAMECLIENT.GetPlayer(playerIdx);
+                GameClientPlayer& player = gwb.GetPlayer(playerIdx);
                 if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
                     GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
@@ -743,7 +745,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     // Test on water way length
     if(road.mode == RM_BOAT)
     {
-        unsigned char index = GAMECLIENT.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
+        unsigned char index = gwb.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
         RTTR_Assert(index < waterwayLengths.size());
         const unsigned max_length = waterwayLengths[index];
@@ -872,7 +874,7 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
 {
     // Info-Meldung ausgeben
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' left the game!"), GAMECLIENT.GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' left the game!"), gwb.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
@@ -890,8 +892,8 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
 void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
     char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), GAMECLIENT.GetPlayer(player_id).name.c_str());
-    messenger.AddMessage(from, GAMECLIENT.GetPlayer(player_id).color, cd, msg);
+    snprintf(from, sizeof(from), _("<%s> "), gwb.GetPlayer(player_id).name.c_str());
+    messenger.AddMessage(from, gwb.GetPlayer(player_id).color, cd, msg);
 }
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
@@ -980,7 +982,7 @@ void dskGameInterface::LC_Status_Error(const std::string& error)
 void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
     // Meldung anzeigen
-    std::string text = "Player '" + GAMECLIENT.GetPlayer(player1).name + "' switched to player '" + GAMECLIENT.GetPlayer(player2).name + "'";
+    std::string text = "Player '" + gwb.GetPlayer(player1).name + "' switched to player '" + gwb.GetPlayer(player2).name + "'";
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
@@ -1003,7 +1005,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), GAMECLIENT.GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), gwb.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
@@ -1031,7 +1033,7 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 void dskGameInterface::GI_TreatyOfAllianceChanged()
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(GAMECLIENT.GetGGS().team_view)
+    if(gwb.GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
         gwv.GetViewer().RecalcAllColors();
@@ -1119,7 +1121,7 @@ void dskGameInterface::CI_PostMessageDeleted(const unsigned postmessages_count)
 void dskGameInterface::GI_Winner(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), GAMECLIENT.GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), gwb.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1132,7 +1134,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
 {
     unsigned winnercount = 0;
     char winners[5];
-    for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount() && winnercount < 5; i++)
+    for(unsigned i = 0; i < gwb.GetPlayerCount() && winnercount < 5; i++)
     {
         winners[winnercount] = i;
         winnercount += player_id & (1 << i) ? 1 : 0;
@@ -1141,13 +1143,13 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
     switch (winnercount)
     {
         case 2:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0]).name.c_str(), GAMECLIENT.GetPlayer(winners[1]).name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), gwb.GetPlayer(winners[0]).name.c_str(), gwb.GetPlayer(winners[1]).name.c_str());
             break;
         case 3:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0]).name.c_str(), GAMECLIENT.GetPlayer(winners[1]).name.c_str(), GAMECLIENT.GetPlayer(winners[2]).name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), gwb.GetPlayer(winners[0]).name.c_str(), gwb.GetPlayer(winners[1]).name.c_str(), gwb.GetPlayer(winners[2]).name.c_str());
             break;
         case 4:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), GAMECLIENT.GetPlayer(winners[0]).name.c_str(), GAMECLIENT.GetPlayer(winners[1]).name.c_str(), GAMECLIENT.GetPlayer(winners[2]).name.c_str(), GAMECLIENT.GetPlayer(winners[3]).name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), gwb.GetPlayer(winners[0]).name.c_str(), gwb.GetPlayer(winners[1]).name.c_str(), gwb.GetPlayer(winners[2]).name.c_str(), gwb.GetPlayer(winners[3]).name.c_str());
             break;
         default:
             snprintf(text, sizeof(text), "%s", _("Team victory!"));

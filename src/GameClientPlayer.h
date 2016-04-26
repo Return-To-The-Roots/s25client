@@ -199,6 +199,7 @@ class GameClientPlayer : public GamePlayerInfo
 
         /// Setzt GameWorld
         void SetGameWorldPointer(GameWorldGame* const gwg) { this->gwg = gwg; }
+        GameWorldGame* GetGameWorld(){ return gwg; }
 
         /// Looks for the closes warehouse for the point 'start' (including it) that matches the conditions by the functor
         /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be considered

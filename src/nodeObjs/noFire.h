@@ -19,8 +19,9 @@
 #define NOP_FIRE_H_
 
 #include "noCoordBase.h"
-#include "EventManager.h"
+
 class SerializedGameData;
+class GameEvent;
 
 // Klasse für ein brennendes Gebäude
 class noFire : public noCoordBase
@@ -28,7 +29,7 @@ class noFire : public noCoordBase
         /// Größe des Feuers: klein (0) oder groß (1)
         unsigned char size;
         /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
-        EventManager::EventPointer dead_event;
+        GameEvent* dead_event;
         /// Wurden Feuersounds abgespielt
         bool was_sounding;
         /// Letzter Feuersound-Zeitpunkt

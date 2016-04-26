@@ -25,6 +25,7 @@
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
@@ -188,7 +189,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         }
 
         // Mint and Goldmine
-        if(GAMECLIENT.GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
+        if(gwv.GetViewer().GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             building_available[1][7] = false;
             building_available[3][0] = false;
@@ -199,7 +200,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             building_available[1][12] = false;
 
         // Charburner
-        if(!GAMECLIENT.GetGGS().isEnabled(AddonId::CHARBURNER))
+        if(!gwv.GetViewer().GetGGS().isEnabled(AddonId::CHARBURNER))
             building_available[2][3] = false;
 
         for(unsigned char i = 0; i < TABS_COUNT[tabs.build_tabs]; ++i)
@@ -343,7 +344,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 {
     RTTR_Assert(group);
 
-    if(GAMECLIENT.GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
+    if(gwv.GetViewer().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
         unsigned char flag_dir = 0;
         noFlag* flag = gwv.GetViewer().GetRoadFlag(selectedPt, flag_dir);
@@ -636,7 +637,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
                     if(!static_cast<nobMilitary*>(building)->IsDemolitionAllowed())
                     {
                         // Nein, dann Messagebox anzeigen
-                        iwMilitaryBuilding::DemolitionNotAllowed();
+                        iwMilitaryBuilding::DemolitionNotAllowed(gwv.GetViewer().GetGGS());
                         break;
                     }
 

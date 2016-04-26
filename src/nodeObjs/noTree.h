@@ -19,10 +19,10 @@
 #define NO_TREE_H_
 
 #include "noCoordBase.h"
-#include "EventManager.h"
 
 class FOWObject;
 class SerializedGameData;
+class GameEvent;
 
 /// Stellt einen Baum dar
 /*
@@ -59,9 +59,9 @@ class noTree : public noCoordBase
         } state;
 
         /// Wachsevent
-        EventManager::EventPointer event;
+        GameEvent* event;
         /// Tier-Produier-Event
-        EventManager::EventPointer produce_animal_event;
+        GameEvent* produce_animal_event;
 
 
         /// Produziert dieser Baum Tiere?

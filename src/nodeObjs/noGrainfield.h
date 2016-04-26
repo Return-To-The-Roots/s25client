@@ -19,8 +19,9 @@
 #define NO_GRAINFIELD_H_
 
 #include "noCoordBase.h"
-#include "EventManager.h"
+
 class SerializedGameData;
+class GameEvent;
 
 class noGrainfield : public noCoordBase
 {
@@ -42,7 +43,7 @@ class noGrainfield : public noCoordBase
         unsigned char size;
 
         /// Wachs-Event
-        EventManager::EventPointer event;
+        GameEvent* event;
 
     public:
 

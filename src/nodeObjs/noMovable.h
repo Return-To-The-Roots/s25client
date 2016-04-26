@@ -19,9 +19,10 @@
 #define NO_MOVABLE_H_
 
 #include "noCoordBase.h"
-#include "EventManager.h"
 #include "gameTypes/MapTypes.h"
+
 class SerializedGameData;
+class GameEvent;
 
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
 const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
@@ -32,7 +33,7 @@ class noMovable : public noCoordBase
     protected:
 
         unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
-        EventManager::EventPointer current_ev;
+        GameEvent* current_ev;
         /// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
         unsigned pause_walked_gf;
         /// Wenn er angehalten hat, wie lange das Laufevent war

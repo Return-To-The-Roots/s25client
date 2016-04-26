@@ -24,9 +24,11 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "CatapultStone.h"
+#include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
 #include "gameData/JobConsts.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
@@ -150,7 +152,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if((*it)->GetGOT() == GOT_NOB_MILITARY && GAMECLIENT.GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
+                if((*it)->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(gwg->GetNode((*it)->GetPos()).fow[player].visibility == VIS_VISIBLE
@@ -283,9 +285,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             int worldHeight = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Point<int> start = Point<int>(gwg->GetNodePos(pos)) + Point<int>(STONE_STARTS[shooting_dir * 2], STONE_STARTS[shooting_dir * 2 + 1]);
+            Point<int> start = gwg->GetNodePos(pos) + Point<int>(STONE_STARTS[shooting_dir * 2], STONE_STARTS[shooting_dir * 2 + 1]);
             // (Visuellen) Aufschlagpunkt bestimmen
-            Point<int> dest = Point<int>(gwg->GetNodePos(destMap));
+            Point<int> dest = gwg->GetNodePos(destMap);
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen

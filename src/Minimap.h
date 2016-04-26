@@ -17,8 +17,6 @@
 #ifndef MINIMAP_H_
 #define MINIMAP_H_
 
-class GameWorldViewer;
-
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "gameTypes/MapTypes.h"
 #include <vector>

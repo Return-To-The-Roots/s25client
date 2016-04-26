@@ -23,14 +23,16 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "Random.h"
-#include "EventManager.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "GameEvent.h"
 #include "buildings/nobHarborBuilding.h"
 #include "figures/noFigure.h"
 #include "Ware.h"
 #include "PostMsg.h"
 #include "figures/nofAttacker.h"
 #include "ai/AIEvents.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/GameConsts.h"
@@ -286,7 +288,7 @@ void noShip::HandleEvent(const unsigned int id)
 
             // Spieler benachrichtigen
             if(GAMECLIENT.GetPlayerID() == this->player)
-                GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
+                GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
 
             // KI Event senden
             GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
@@ -332,7 +334,7 @@ void noShip::HandleEvent(const unsigned int id)
             {
                 // Späher wieder entladen
                 Inventory goods;
-                goods.people[JOB_SCOUT] = GAMECLIENT.GetGGS().GetNumScoutsExedition();
+                goods.people[JOB_SCOUT] = gwg->GetGGS().GetNumScoutsExedition();
                 static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods);
                 // Wieder idlen und ggf. neuen Job suchen
                 StartIdling();
@@ -418,7 +420,7 @@ void noShip::StartDriving(const unsigned char dir)
 {
     const unsigned SHIP_SPEEDS[] = {35, 25, 20, 10, 5};
 
-    StartMoving(dir, SHIP_SPEEDS[GAMECLIENT.GetGGS().getSelection(AddonId::SHIP_SPEED)]);
+    StartMoving(dir, SHIP_SPEEDS[gwg->GetGGS().getSelection(AddonId::SHIP_SPEED)]);
 }
 
 void noShip::Driven()
@@ -719,7 +721,7 @@ void noShip::HandleState_ExpeditionDriving()
 
                 // Spieler benachrichtigen
                 if(GAMECLIENT.GetPlayerID() == this->player)
-                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, GAMECLIENT.GetPlayer(player).nation, pos));
+                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
 
                 // KI Event senden
                 GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);

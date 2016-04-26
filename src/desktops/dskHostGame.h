@@ -26,7 +26,6 @@
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
-class GameWorldViewer;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
 
@@ -76,7 +75,7 @@ class dskHostGame :
         void CI_NewPlayer(const unsigned player_id) override;
         void CI_PlayerLeft(const unsigned player_id) override;
 
-        void CI_GameStarted(GameWorldViewer* gwv) override;
+        void CI_GameStarted(GameWorldViewer& worldViwer) override;
 
         void CI_PSChanged(const unsigned player_id, const PlayerState ps) override;
         void CI_NationChanged(const unsigned player_id, const Nation nation) override;

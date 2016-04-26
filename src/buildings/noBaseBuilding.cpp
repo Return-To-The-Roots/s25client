@@ -33,13 +33,14 @@
 #include "SerializedGameData.h"
 #include "Loader.h"
 #include "GameInterface.h"
+#include "world/GameWorldGame.h"
 #include "Log.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noRoadNode(nop, pos, player), type_(type), nation(GAMECLIENT.GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[GAMECLIENT.GetPlayer(player).nation][type])
+    : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
     MapPoint flagPt = gwg->GetNeighbour(pos, 4);
     // Evtl Flagge setzen, wenn noch keine da ist
@@ -104,7 +105,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     gwg->ImportantObjectDestroyed(pos);
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
-    const GlobalGameSettings& settings = GAMECLIENT.GetGGS();
+    const GlobalGameSettings& settings = gwg->GetGGS();
     if( (GetGOT() != GOT_BUILDINGSITE) &&
             ( settings.isEnabled(AddonId::REFUND_MATERIALS) ||
               settings.isEnabled(AddonId::REFUND_ON_EMERGENCY) ) )
@@ -189,8 +190,8 @@ int noBaseBuilding::GetDoorPointX()
         // The door is on the line between the building and flag point. The position of the line is set by the y-offset
         // this is why we need the x-offset here according to the equation x = m*y + n
         // with n=0 (as door point is relative to building pos) and m = dx/dy
-        const Point<int> bldPos  = Point<int>(gwg->GetNodePos(pos));
-        const Point<int> flagPos = Point<int>(gwg->GetNodePos(gwg->GetNeighbour(pos, 4)));
+        const Point<int> bldPos  = gwg->GetNodePos(pos);
+        const Point<int> flagPos = gwg->GetNodePos(gwg->GetNeighbour(pos, 4));
         Point<int> diff = flagPos - bldPos;
 
         // We could have crossed the map border which results in unreasonable diffs
@@ -234,8 +235,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
         // Ware muss auch noch vernichtet werden!
         // Inventur entsprechend verringern
-        //GAMECLIENT.GetPlayer(player).DecreaseInventoryWare(ware->type,1);
-        GAMECLIENT.GetPlayer(player).RemoveWare(ware);
+        gwg->GetPlayer(player).RemoveWare(ware);
         delete ware;
     }
     else

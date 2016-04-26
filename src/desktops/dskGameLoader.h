@@ -32,7 +32,7 @@ class dskGameLoader :
     public LobbyInterface
 {
     public:
-        dskGameLoader(GameWorldViewer* gwv);
+        dskGameLoader(GameWorldViewer& worldViewer);
         ~dskGameLoader() override;
 
         void LC_Status_Error(const std::string& error) override;
@@ -42,8 +42,7 @@ class dskGameLoader :
         void Msg_Timer(const unsigned int ctrl_id) override;
 
         unsigned int position;
-        /// Falls ein Savegame geladen wird --> Pointer darauf
-        GameWorldViewer* gwv;
+        GameWorldViewer& worldViewer;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

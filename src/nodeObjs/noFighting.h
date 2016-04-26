@@ -19,10 +19,10 @@
 #define NO_FIGHTING_H_
 
 #include "noBase.h"
-#include "EventManager.h"
 
 class nofActiveSoldier;
 class SerializedGameData;
+class GameEvent;
 
 /// Kampf an einem Punkt zwischen 2 Soldaten, der erstgenannt ist immer der, der links steht
 class noFighting : public noBase
@@ -34,7 +34,7 @@ class noFighting : public noBase
         /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
         unsigned char defending_animation;
         /// Event
-        EventManager::EventPointer current_ev;
+        GameEvent* current_ev;
         /// Spieler des Soldaten, der gewonnen hat
         unsigned char player_won;
 

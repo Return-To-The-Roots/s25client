@@ -25,7 +25,6 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
-#include "EventManager.h"
 #include "PostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
@@ -37,6 +36,8 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/GameConsts.h"
@@ -129,7 +130,7 @@ void nobHarborBuilding::Destroy()
     if (exploration_expedition.active)
     {
 		inventory.real.Add(JOB_SCOUT, exploration_expedition.scouts);
-        for (unsigned i = exploration_expedition.scouts; i < GAMECLIENT.GetGGS().GetNumScoutsExedition(); i++)
+        for (unsigned i = exploration_expedition.scouts; i < gwg->GetGGS().GetNumScoutsExedition(); i++)
             owner.OneJobNotWanted(JOB_SCOUT, this);
     }
 	//cancel all jobs wanted for this building
@@ -206,7 +207,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     : nobBaseWarehouse(sgd, obj_id),
       expedition(sgd),
       exploration_expedition(sgd),
-      orderware_ev(sgd.PopObject<EventManager::Event>(GOT_EVENT))
+      orderware_ev(sgd.PopEvent())
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
@@ -429,9 +430,9 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // Look for missing scouts
-    if(inventory[JOB_SCOUT] < GAMECLIENT.GetGGS().GetNumScoutsExedition())
+    if(inventory[JOB_SCOUT] < gwg->GetGGS().GetNumScoutsExedition())
     {
-        unsigned missing = GAMECLIENT.GetGGS().GetNumScoutsExedition() - inventory[JOB_SCOUT];
+        unsigned missing = gwg->GetGGS().GetNumScoutsExedition() - inventory[JOB_SCOUT];
         //got scouts in ANY storehouse?
         GameClientPlayer& owner = gwg->GetPlayer(player);
         for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
@@ -448,12 +449,12 @@ void nobHarborBuilding::StartExplorationExpedition()
         while(missing > 0 && TryRecruitJob(JOB_SCOUT))
             missing--;
         // Order scouts, we still requires
-        for(unsigned i = inventory[JOB_SCOUT]; i < GAMECLIENT.GetGGS().GetNumScoutsExedition(); ++i)
+        for(unsigned i = inventory[JOB_SCOUT]; i < gwg->GetGGS().GetNumScoutsExedition(); ++i)
             owner.AddJobWanted(JOB_SCOUT, this);
     }
     if(inventory[JOB_SCOUT])
     {
-        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], GAMECLIENT.GetGGS().GetNumScoutsExedition());
+        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], gwg->GetGGS().GetNumScoutsExedition());
         inventory.real.Remove(JOB_SCOUT, exploration_expedition.scouts);
     }
 
@@ -465,7 +466,7 @@ void nobHarborBuilding::StopExplorationExpedition()
     // Dann diese stoppen
     exploration_expedition.active = false;
     // cancel order for scouts
-    for(unsigned i = exploration_expedition.scouts; i < GAMECLIENT.GetGGS().GetNumScoutsExedition(); i++)
+    for(unsigned i = exploration_expedition.scouts; i < gwg->GetGGS().GetNumScoutsExedition(); i++)
     {
         gwg->GetPlayer(player).OneJobNotWanted(JOB_SCOUT, this);
     }
@@ -774,7 +775,7 @@ bool nobHarborBuilding::IsExplorationExpeditionReady() const
     if(!exploration_expedition.active)
         return false;
     // Alles da?
-    if(exploration_expedition.scouts < GAMECLIENT.GetGGS().GetNumScoutsExedition())
+    if(exploration_expedition.scouts < gwg->GetGGS().GetNumScoutsExedition())
         return false;
 
     return true;
@@ -843,7 +844,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
         }
 
         // Wenn nicht genug Erkunder mehr kommen, müssen wir einen neuen bestellen
-        if(exploration_expedition.scouts + scouts_coming < GAMECLIENT.GetGGS().GetNumScoutsExedition())
+        if(exploration_expedition.scouts + scouts_coming < gwg->GetGGS().GetNumScoutsExedition())
             gwg->GetPlayer(player).AddJobWanted(JOB_SCOUT, this);
     }
 

@@ -25,6 +25,7 @@
 #include "buildings/nobUsual.h"
 #include "nofCarrier.h"
 #include "Loader.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

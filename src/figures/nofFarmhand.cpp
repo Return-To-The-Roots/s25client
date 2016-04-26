@@ -21,13 +21,14 @@
 #include "nofFarmhand.h"
 #include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
-#include "EventManager.h"
 #include "Random.h"
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
+#include "EventManager.h"
 #include "SerializedGameData.h"
 #include "PostMsg.h"
 #include "GameClient.h"
+#include "world/GameWorldGame.h"
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep

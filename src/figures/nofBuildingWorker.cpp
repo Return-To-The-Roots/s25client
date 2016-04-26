@@ -29,10 +29,11 @@
 #include "Ware.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "EventManager.h"
 #include "SoundManager.h"
 #include "PostMsg.h"
 #include "SerializedGameData.h"
+#include "EventManager.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"
@@ -199,7 +200,7 @@ void nofBuildingWorker::WorkingReady()
             flag->AddWare(real_ware);
             real_ware->WaitAtFlag(flag);
             // Warenstatistik erhöhen
-            GAMECLIENT.GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
+            gwg->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
             ware = GD_NOTHING;
         }
@@ -373,7 +374,7 @@ namespace{
 bool nofBuildingWorker::GetResources(unsigned char type)
 {
     //this makes granite mines work everywhere
-    const GlobalGameSettings& settings = GAMECLIENT.GetGGS();
+    const GlobalGameSettings& settings = gwg->GetGGS();
     if (type == 0 && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES))
         return true;
     // in Map-Resource-Koordinaten konvertieren

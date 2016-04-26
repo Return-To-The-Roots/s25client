@@ -23,12 +23,30 @@
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "ClientInterface.h"
 #include <boost/array.hpp>
 #include <iostream>
 
 // Include last!
 #include "DebugNew.h" // IWYU pragma: keep
-class GameWorldViewer;
+
+class SwitchOnStart: public ClientInterface
+{
+public:
+    SwitchOnStart()
+    {
+        GAMECLIENT.SetInterface(this);
+    }
+    ~SwitchOnStart()
+    {
+        GAMECLIENT.RemoveInterface(this);
+    }
+
+    void CI_GameStarted(GameWorldViewer& worldViwer) override
+    {
+        WINDOWMANAGER.Switch(new dskGameLoader(worldViwer));
+    }
+};
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 {
@@ -51,24 +69,7 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
         return true;
     }else
     {
-        GameWorldViewer* gwv;
-        unsigned int error = GAMECLIENT.StartReplay(filePath, gwv);
-
-        static const boost::array<std::string, 6> replay_errors =
-        {{
-            _("Error while playing replay!"),
-            _("Error while opening file!"),
-            _("Invalid Replay!"),
-            _("Error: Replay is too old!"),
-            _("Program version is too old to play that replay!"),
-            _("Temporary map file was not found!")
-        }};
-
-        if (error)
-            std::cerr << "ERROR: " << replay_errors[error-1] << std::endl;
-        else
-            WINDOWMANAGER.Switch(new dskGameLoader(gwv));
-
-        return error == 0;
+        SwitchOnStart switchOnStart;
+        return GAMECLIENT.StartReplay(filePath);
     }
 }

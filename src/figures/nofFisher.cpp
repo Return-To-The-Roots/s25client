@@ -25,6 +25,7 @@
 #include "Random.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 
 // Include last!
@@ -134,7 +135,7 @@ void nofFisher::WorkFinished()
     // Wenn ich einen Fisch gefangen habe, den Fisch "abbauen" und in die Hand nehmen
     if(successful)
     {
-        if(!GAMECLIENT.GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
+        if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
             gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
     }

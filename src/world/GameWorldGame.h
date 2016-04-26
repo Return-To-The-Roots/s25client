@@ -66,7 +66,7 @@ protected:
 
 public:
 
-    GameWorldGame();
+    GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
@@ -135,9 +135,6 @@ public:
     /// Greift ein Militäregebäude mit Schiffen an
     void AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);
 
-    /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
-    void AddCatapultStone(CatapultStone* cs);
-    void RemoveCatapultStone(CatapultStone* cs);
     MilitarySquares& GetMilitarySquares();
 
     /// Lässt alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstört

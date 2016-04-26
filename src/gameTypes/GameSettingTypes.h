@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapSerializer_h__
-#define MapSerializer_h__
+#ifndef GameSettingTypes_h__
+#define GameSettingTypes_h__
 
-class World;
-class SerializedGameData;
+enum GameSpeed { GS_VERYSLOW = 0, GS_SLOW, GS_NORMAL, GS_FAST, GS_VERYFAST };
+enum GameObjective { GO_NONE = 0, GO_CONQUER3_4, GO_TOTALDOMINATION };
+enum StartWares { SWR_VLOW = 0, SWR_LOW, SWR_NORMAL, SWR_ALOT };
+enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED };
 
-class MapSerializer
-{
-public:
-    static void Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd);
-    static void Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd);
-};
-
-#endif // MapSerializer_h__
+#endif // GameSettingTypes_h__
