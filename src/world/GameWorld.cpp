@@ -137,7 +137,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
     {
         for(unsigned x = 0; x < GetWidth(); ++x)
         {
-            CalcAndSetBQ(MapPoint(x, y), GAMECLIENT.GetPlayerID());
+            RecalcBQ(MapPoint(x, y));
         }
     }
 

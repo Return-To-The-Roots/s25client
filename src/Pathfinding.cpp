@@ -65,8 +65,8 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
     // Feld bebaubar?
     if(!gwb.RoadAvailable(prp->boat_road, pt))
         return false;
-	if(!prp->boat_road && (gwb.CalcBQ(pt, gwb.GetNode(pt).owner-1, true, false) != BQ_FLAG))
-		return false;	
+    if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1, false) == BQ_NOTHING)
+        return false;
 
     return true;
 }

@@ -22,6 +22,17 @@
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/BuildingQuality.h"
 #include "Rect.h"
+#include <boost/detail/scoped_enum_emulation.hpp>
+
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ)
+{
+    NOTHING,
+    DANGER,
+    FLAG,
+    CASTLE,
+    MINE
+}
+BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
 
 class TerrainData
 {
@@ -68,7 +79,7 @@ public:
     /// Returns whether the given terrain is a mineable mountain
     static bool IsMineable(TerrainType t);
     /// Returns what kind of buildings can be build on that terrain
-    static BuildingQuality GetBuildingQuality(TerrainType t);
+    static TerrainBQ GetBuildingQuality(TerrainType t);
 };
 
 #endif // TerrainData_h__

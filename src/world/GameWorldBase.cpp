@@ -93,11 +93,11 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const
 
         for(unsigned char i = 0; i < 6; ++i)
         {
-            BuildingQuality bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
-            if(bq == BQ_CASTLE || bq == BQ_MINE || bq == BQ_FLAG)
-                flagPossible = true;
-            else if(bq == BQ_DANGER)
+            TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+            if(bq == TerrainBQ::DANGER)
                 return false;
+            else if(bq != TerrainBQ::NOTHING)
+                flagPossible = true;
         }
 
         return flagPossible;
@@ -129,10 +129,10 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool  /*boat_road*/, const MapPoint s
 
 void GameWorldBase::CalcRoad(const MapPoint pt, const unsigned char  /*player*/)
 {
-    CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
+    RecalcBQ(pt);
 
     for(unsigned i = 3; i < 6; ++i)
-        CalcAndSetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
+        RecalcBQ(GetNeighbour(pt, i));
 }
 
 bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
@@ -244,13 +244,23 @@ noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned las
 /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
 void GameWorldBase::AltitudeChanged(const MapPoint pt)
 {
-    // Baumöglichkeiten neu berechnen
-    // Direkt drumherum
-    for(unsigned i = 0; i < 6; ++i)
-        CalcAndSetBQ(GetNeighbour(pt, i), GAMECLIENT.GetPlayerID());
-    // noch eine Schale weiter außen
+    RecalcBQAroundPointBig(pt);
+}
+
+void GameWorldBase::RecalcBQAroundPoint(const MapPoint pt)
+{
+    RecalcBQ(pt);
+    for(unsigned char i = 0; i < 6; ++i)
+        RecalcBQ(GetNeighbour(pt, i));
+}
+
+void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
+{
+    // Point and radius 1
+    RecalcBQAroundPoint(pt);
+    // And radius 2
     for(unsigned i = 0; i < 12; ++i)
-        CalcAndSetBQ(GetNeighbour2(pt, i), GAMECLIENT.GetPlayerID());
+        RecalcBQ(GetNeighbour2(pt, i));
 }
 
 Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const
@@ -397,7 +407,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harbor_id, const unsigned c
             return false;
     }
 
-    return (CalcBQ(hbPos, 0, false, false, true) == BQ_HARBOR);
+    return GetNode(hbPos).bq == BQ_HARBOR;
 }
 
 /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann

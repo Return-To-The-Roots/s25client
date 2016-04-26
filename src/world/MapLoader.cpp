@@ -55,7 +55,7 @@ void MapLoader::Load(const glArchivItem_Map& map)
         for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
         {
             world.RecalcShadow(pt);
-            world.CalcAndSetBQ(pt, GAMECLIENT.GetPlayerID());
+            world.RecalcBQ(pt);
         }
     }
 
@@ -125,6 +125,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map)
             node.owner = 0;
             std::fill(node.boundary_stones.begin(), node.boundary_stones.end(), 0);
             node.bq = BQ_NOTHING;
+            node.bqVisual = BQ_NOTHING;
             node.sea_id = 0;
 
             Visibility fowVisibility;

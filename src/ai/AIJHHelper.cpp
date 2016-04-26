@@ -284,8 +284,7 @@ void AIJH::BuildJob::BuildMainRoad()
     {
         // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
         BuildingQuality bq = aiInterface.GetBuildingQuality(target);
-        if (!(bq >= BUILDING_SIZE[type] && bq < BQ_MINE) // normales Gebäude
-                && !(bq == BUILDING_SIZE[type]))    // auch Bergwerke
+        if((BUILDING_SIZE[type] == BQ_MINE && bq != BQ_MINE) || (bq < BUILDING_SIZE[type]))
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
