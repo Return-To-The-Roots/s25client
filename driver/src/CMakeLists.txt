@@ -1,10 +1,11 @@
 FIND_PACKAGE(Boost 1.55.0 REQUIRED)
 IF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
-	CHECK_CXX_COMPILER_FLAG("-fPIC" FPIC_FLAGS)
-	IF (FPIC_FLAGS)
+    INCLUDE(CheckCXXCompilerFlag)
+	CHECK_CXX_COMPILER_FLAG(-fPIC FLAG_FPIC_SUPPORTED)
+	IF(FLAG_FPIC_SUPPORTED)
 		ADD_DEFINITIONS(-fPIC)
-	ENDIF (FPIC_FLAGS)
-ENDIF ( NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
+	ENDIF()
+ENDIF()
 
 ################################################################################
 

@@ -7,6 +7,13 @@
 *.project
 /build/*.vcxproj
 /build/*.filters
+/build/*.lib
+/build/*.def
+/build/*.exp
+build/LICENSE.*
+/build/Testing
+/build/CTestTestfile.cmake
+/build/s25client.VC.opendb
 /build/CMakeCache.txt
 /build/CMakeFiles
 /build/Win32/Debug

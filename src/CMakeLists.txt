@@ -26,6 +26,7 @@ LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/myge
 ################################################################################
 
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
+LIST(REMOVE_ITEM SOURCES_OTHER "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
 SET(SOURCES_SUBDIRS )
@@ -105,12 +106,10 @@ IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
 	# Add the SDL-include flags to an apple build
-	#ADD_FLAGS(CMAKE_C_FLAGS -I${SDL_INCLUDE_DIR})
-	#ADD_FLAGS(CMAKE_CXX_FLAGS -I${SDL_INCLUDE_DIR})
 	INCLUDE_DIRECTORIES(SYSTEM ${SDL_INCLUDE_DIR})
 
-	# Add library
-	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL -L${CMAKE_SOURCE_DIR}/macos -lSDLmain)
+	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/macos)
+	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL)
 ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 
 ################################################################################
@@ -137,7 +136,6 @@ ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 
 ### XXX Add FindLua52
 #find_package(Lua52 REQUIRED)
-#IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 IF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "FreeBSD")
 	INCLUDE_DIRECTORIES(SYSTEM "/usr/local/include/lua52")
 	SET(LUA_LIB "/usr/local/lib/liblua${LUA_VERSION}.a")
@@ -207,9 +205,9 @@ ELSE()
 	SET(s25client_RC "")
 ENDIF()
 
-ADD_EXECUTABLE(s25client ${s25client_SRCS} ${s25client_RC})
-ADD_DEPENDENCIES(s25client updateversion)
-TARGET_LINK_LIBRARIES(s25client
+ADD_LIBRARY(s25Main STATIC ${s25client_SRCS})
+ADD_DEPENDENCIES(s25Main updateversion)
+TARGET_LINK_LIBRARIES(s25Main
 	siedler2
 	lobby_c
 	s25util
@@ -219,6 +217,9 @@ TARGET_LINK_LIBRARIES(s25client
 	${LUA_LIB}
 	${Boost_LIBRARIES}
 )
+
+ADD_EXECUTABLE(s25client main.cpp ${s25client_RC})
+TARGET_LINK_LIBRARIES(s25client s25Main)
 
 IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	TARGET_LINK_LIBRARIES(s25client ${SDL_LIBRARY} SDLmain)
@@ -241,7 +242,7 @@ IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 
 IF (MSVC)
-	ADD_CUSTOM_COMMAND( TARGET s25client
+	ADD_CUSTOM_COMMAND( TARGET s25Main
 						PRE_BUILD
 						COMMAND "$<TARGET_FILE:version>" "${CMAKE_SOURCE_DIR}"
 						DEPENDS version
@@ -250,15 +251,16 @@ IF (MSVC)
 	SET(RTTR_BINARY_DIR "${RTTR_CONTRIB_DIR}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
 	IF (EXISTS "${RTTR_BINARY_DIR}/libcurl.dll")
 		ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTTR_BINARY_DIR}/ $<TARGET_FILE_DIR:s25client>)
+		ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTTR_BINARY_DIR}/ ${CMAKE_CURRENT_BINARY_DIR}/..)
 	ELSE()
 		MESSAGE(WARNING "Folder with DLLs not found in ${RTTR_BINARY_DIR}. You may not be able to execute directly from VS")
 	ENDIF()
-	ADD_CUSTOM_COMMAND(TARGET s25client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_CURRENT_BINARY_DIR}/../RTTR")
+	ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_CURRENT_BINARY_DIR}/../RTTR")
 	CMAKE_POLICY(SET CMP0026 OLD) # Required for use of LOCATION_*
 	INCLUDE(CreateLaunchers)
 	CREATE_DEFAULT_TARGET_LAUNCHER(s25client WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/..")
 ENDIF()
 
-INSTALL(TARGETS s25client RUNTIME DESTINATION ${RTTR_BINDIR})
+add_subdirectory(test)
 
-################################################################################
+INSTALL(TARGETS s25client RUNTIME DESTINATION ${RTTR_BINDIR})

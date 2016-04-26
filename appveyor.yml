@@ -21,7 +21,7 @@ environment:
     
 install:
   - dir C:\Libraries
-  - git submodule update --init --recursive
+  - appveyor-retry git submodule update --init
   - cinst unrar
   - cd contrib
   - unrar x full-contrib-msvc.rar
@@ -38,3 +38,8 @@ build:
 build_script:
   - echo "Building for %CONFIGURATION% on %platform%"
   - msbuild /m /p:Configuration="%configuration%" /p:Platform="%platform%" /v:n build/s25client.sln
+
+test_script:
+  - cd build
+  - ctest --output-on-failure -C %CONFIGURATION%
+  - cd ..

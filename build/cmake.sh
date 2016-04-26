@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # You may override these from the environment
 : ${CMAKE_COMMAND:=cmake}
@@ -153,7 +153,7 @@ fi
 
 ###############################################################################
 
-echo "Setting Path-RTTR_PREFIX to \"$RTTR_PREFIX\""
+echo "Setting Path-Prefix to \"$RTTR_PREFIX\""
 PARAMS="$PARAMS -DRTTR_PREFIX=$RTTR_PREFIX"
 
 case "$RTTR_TOOL_CHAIN" in
@@ -176,7 +176,9 @@ PARAMS="$PARAMS -DRTTR_DATADIR=$RTTR_DATADIR"
 echo "Setting Library Dir to \"$RTTR_LIBDIR\""
 PARAMS="$PARAMS -DRTTR_LIBDIR=$RTTR_LIBDIR"
 
-echo "Disabling build of \"$RTTR_NOARCH\""
+if [ ! -z "$RTTR_NOARCH" ] ; then
+    echo "Disabling build of \"$RTTR_NOARCH\""
+fi
 if [ ! -z "$disable_arch" ] ; then
 	RTTR_NOARCH="$disable_arch $RTTR_NOARCH"
 fi
@@ -186,33 +188,25 @@ for I in $RTTR_NOARCH ; do
 	fi
 done
 
-case "$enable_debug" in
-	[Yy][Ee][Ss])
+if [[ $PARAMS != *"-DCMAKE_BUILD_TYPE="* ]]; then
+    if [[ "$enable_debug" =~ ^[Yy][Ee][Ss]$ ]]; then
 		mecho --magenta "Activating debug build"
 		PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=Debug"
-	;;
-	*)
-		case "$enable_reldeb" in
-			[Yy][Ee][Ss])
-				mecho --magenta "Activating release build with debug information"
-				PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=RelWithDebInfo"
-			;;
-			*)
-				mecho --magenta "Activating release build"
-				PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=Release"
-			;;
-		esac
-	;;
-esac
+    elif [[ "$enable_reldeb" =~ ^[Yy][Ee][Ss]$ ]]; then
+		mecho --magenta "Activating release build with debug information"
+		PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+	else
+		mecho --magenta "Activating release build"
+		PARAMS="$PARAMS -DCMAKE_BUILD_TYPE=Release"
+	fi
+fi
 
-case "$enable_verbose" in
-	[Yy][Ee][Ss])
+if [[ $PARAMS != *"-DCMAKE_VERBOSE_MAKEFILE="* ]]; then
+    if [[ "$enable_verbose" =~ ^[Yy][Ee][Ss]$ ]]; then
 		mecho --magenta "Activating verbose build"
 		PARAMS="$PARAMS -DCMAKE_VERBOSE_MAKEFILE=On"
-	;;
-	*)
-	;;
-esac
+	fi
+fi
 
 ###############################################################################
 

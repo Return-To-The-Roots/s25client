@@ -2,57 +2,91 @@ sudo: false
 language: cpp
 
 os:
-  - linux
+    - linux
 
 compiler:
-  - clang
-  - g++
+    - clang
+    - g++
 
 env:
-  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
-  - BUILD_TYPE=Debug CXX_FLAGS=-std=c++11
-  - BUILD_TYPE=Release CXX_FLAGS=-std=c++03
-  - BUILD_TYPE=Release CXX_FLAGS=-std=c++11
+    - BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+    - BUILD_TYPE=Debug CXX_FLAGS=-std=c++11
+    - BUILD_TYPE=Release CXX_FLAGS=-std=c++03
+    - BUILD_TYPE=Release CXX_FLAGS=-std=c++11
 
 addons:
-  apt:
-    sources:
-      - boost-latest
-      - ubuntu-toolchain-r-test
-    packages:
-      - libboost1.55-all-dev
-      - g++-4.8
-      - cmake
-      - libsdl1.2-dev
-      - libsdl-mixer1.2-dev
-      - libcurl4-openssl-dev
-      - libbz2-dev
-      - libminiupnpc-dev
-      - liblua5.2-dev
-      
+    apt:
+        sources:
+            - boost-latest
+            - ubuntu-toolchain-r-test
+        packages:
+            - libboost1.55-all-dev
+            - g++-4.8
+            - cmake
+            - libsdl1.2-dev
+            - libsdl-mixer1.2-dev
+            - libcurl4-openssl-dev
+            - libbz2-dev
+            - libminiupnpc-dev
+            - liblua5.2-dev
+            
 matrix:
-  include:
-    - os: osx
-      compiler: clang
-      install:
-        - brew update
-        - brew install sdl
-        - brew install sdl_mixer
-        - brew install gettext
-        - brew install miniupnpc
-        - brew link --force gettext
-      env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
-  exclude:
-    - compiler: clang
-      env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
-    - compiler: clang
-      env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03      
-
-script:
-  - cd build && ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-coverage ${CXX_FLAGS}" --generator="Unix Makefiles" --no-arch=i386 && make
+    include:
+        - os: osx
+          compiler: clang
+          install:
+              - brew update
+              - brew install sdl
+              - brew install sdl_mixer
+              - brew install gettext
+              - brew install miniupnpc
+              - brew link --force gettext
+          #                                                             Travis libs are x64 only
+          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="--no-arch=i386" GCOV="gcov"
+    exclude:
+        - compiler: clang
+          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
+        - compiler: clang
+          env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03            
 
 install:
-  - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
+    # Enable coverage analysis only in debug and for g++
+    - |
+        if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
+            export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
+            # GCov 4.6 cannot handle the file structure
+            export CXX="g++-4.8" 
+        fi
+    # C++11 requires gcc-4.8 or newer
+    - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
+    - |
+        if [[ "$CXX" == "g++"* ]]; then
+            # Adapt versions by simply replacing the prefix "g++"
+            export CC=${CXX/g++/gcc};
+            export GCOV=${CXX/g++/gcov};
+        else
+            export GCOV="gcov"
+        fi
+
+script:
+    # Information
+    - $CXX --version
+    - $GCOV --version
+    # Fail if any command failed
+    - set -e
+    - cd build
+    - ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" --generator="Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
+    - make
+    # Execute tests
+    - export CTEST_OUTPUT_ON_FAILURE=1
+    - make test
+    - set +e
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+    - bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
+    - |
+        files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
+        if [ "$files" != "" ]; then
+            bash <(curl -s https://codecov.io/bash) -f "$files"
+        fi
+
