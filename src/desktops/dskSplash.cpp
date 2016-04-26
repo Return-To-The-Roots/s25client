@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskSplash.h"
 
@@ -25,16 +23,10 @@
 #include "GameManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "dskMainMenu.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskSplash
  *
  *  Klasse des Splashscreen Desktops.
- *
- *  @author OLiver
  */
 
 dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))

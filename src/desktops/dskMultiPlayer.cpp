@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskMultiPlayer.h"
@@ -30,15 +28,9 @@
 #include "ingameWindows/iwLobbyConnect.h"
 #include "ogl/glArchivItem_Font.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskMultiPlayer
  *
  *  Klasse des Multispieler Desktops.
- *
- *  @author OLiver
  */
 
 dskMultiPlayer::dskMultiPlayer() : Desktop(LOADER.GetImageN("menu", 0))

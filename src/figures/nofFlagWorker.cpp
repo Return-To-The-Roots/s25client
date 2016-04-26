@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofFlagWorker.h"
 #include "world/GameWorldGame.h"
@@ -25,9 +23,6 @@
 #include "SerializedGameData.h"
 #include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : noFigure(job, pos, player, goal), flag(0), state(STATE_FIGUREWORK)

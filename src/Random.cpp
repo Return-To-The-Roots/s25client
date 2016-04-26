@@ -15,14 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Random.h"
 #include <cstdio>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 Random::Random()
 {
@@ -30,13 +25,10 @@ Random::Random()
     Init(123456789);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Initialisiert den Zufallszahlengenerator.
  *
  *  @param[in] init Zahl mit der der Zufallsgenerator initialisiert wird.
- *
- *  @author OLiver
  */
 void Random::Init(const unsigned int init)
 {
@@ -54,15 +46,12 @@ int Random::GetNextState(const int rngState, const int maxVal)
     return (rngState * 997 + 1 + maxVal) & 32767;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erzeugt eine Zufallszahl.
  *
  *  @param[in] max @p max-1 ist die maximale Zufallszahl welche geliefert werden soll.
  *
  *  @return liefert eine Zufallszahl.
- *
- *  @author OLiver
  */
 int Random::Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max)
 {

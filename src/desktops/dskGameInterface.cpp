@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskGameInterface.h"
 
@@ -75,17 +73,11 @@
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
 #include <sstream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noShip;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskGameInterface.
  *  Startet das Spiel und lädt alles Notwendige.
- *
- *  @author OLiver
  */
 dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
@@ -520,11 +512,8 @@ bool dskGameInterface::Msg_RightUp(const MouseCoords&  /*mc*/) //-V524
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Druck von Spezialtasten auswerten.
- *
- *  @author OLiver
  */
 bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 {
@@ -957,22 +946,16 @@ void dskGameInterface::CI_Error(const ClientError ce)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Verbindung verloren.
- *
- *  @author FloSoft
  */
 void dskGameInterface::LC_Status_ConnectionLost()
 {
     messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to lobby!"), COLOR_RED);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler
- *
- *  @author FloSoft
  */
 void dskGameInterface::LC_Status_Error(const std::string& error)
 {
@@ -996,11 +979,8 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wenn ein Spieler verloren hat
- *
- *  @author OLiver
  */
 void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
 {
@@ -1024,11 +1004,8 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
     minimap.UpdateNode(pt);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
- *
- *  @author OLiver
  */
 void dskGameInterface::GI_TreatyOfAllianceChanged()
 {
@@ -1042,11 +1019,8 @@ void dskGameInterface::GI_TreatyOfAllianceChanged()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Baut Weg zurück von Ende bis zu start_id
- *
- *  @author OLiver
  */
 void dskGameInterface::DemolishRoad(const unsigned start_id)
 {
@@ -1061,11 +1035,8 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
     road.route.resize(start_id - 1);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
- *
- *  @author OLiver
  */
 void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool showPigeon)
 {
@@ -1087,11 +1058,8 @@ void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool sh
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Neue Post-Nachricht eingetroffen
- *
- *  @author OLiver
  */
 void dskGameInterface::CI_NewPostMessage(const unsigned postmessages_count)
 {
@@ -1101,22 +1069,16 @@ void dskGameInterface::CI_NewPostMessage(const unsigned postmessages_count)
     LOADER.GetSoundN("sound", 114)->Play(255, false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Es wurde eine Postnachricht vom Spieler gelöscht
- *
- *  @author OLiver
  */
 void dskGameInterface::CI_PostMessageDeleted(const unsigned postmessages_count)
 {
     UpdatePostIcon(postmessages_count, false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Ein Spieler hat das Spiel gewonnen.
- *
- *  @author OLiver
  */
 void dskGameInterface::GI_Winner(const unsigned player_id)
 {
@@ -1124,11 +1086,8 @@ void dskGameInterface::GI_Winner(const unsigned player_id)
     snprintf(text, sizeof(text), _("Player '%s' is the winner!"), gwb.GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Ein Team hat das Spiel gewonnen.
- *
- *  @author poc
  */
 void dskGameInterface::GI_TeamWinner(const unsigned player_id)
 {

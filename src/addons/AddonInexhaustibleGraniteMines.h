@@ -6,12 +6,9 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  Addon for allowing to have unlimited resources.
-*
-*  @author FloSoft
-*/
+ *  Addon for allowing to have unlimited resources.
+ */
 class AddonInexhaustibleGraniteMines : public AddonBool
 {
     public:

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwLobbyRanking.h"
 #include "controls/ctrlTable.h"
@@ -25,14 +23,8 @@
 #include "gameData/const_gui_ids.h"
 #include <boost/lexical_cast.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktualisiert die Ranking-Tabelle.
- *
- *  @author Devil
  */
 void iwLobbyRanking::UpdateRankings(bool first)
 {

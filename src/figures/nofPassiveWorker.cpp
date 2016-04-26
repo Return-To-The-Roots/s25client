@@ -15,15 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofPassiveWorker.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 class noRoadNode;
 

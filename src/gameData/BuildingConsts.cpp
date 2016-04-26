@@ -19,9 +19,6 @@
 #include "BuildingConsts.h"
 #include "mygettext.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 const char* const BUILDING_HELP_STRINGS[40] =
 {
     // Headquarters

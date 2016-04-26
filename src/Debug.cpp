@@ -42,9 +42,6 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 #ifdef _WIN32
 
 typedef USHORT (WINAPI* CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);

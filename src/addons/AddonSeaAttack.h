@@ -22,7 +22,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  settings for sea attacks
  *
@@ -31,8 +30,6 @@
  *  enemy harbors block attacks
  *
  *  no sea attacks
- *
- *  @author poc
  */
 class AddonSeaAttack : public AddonList
 {

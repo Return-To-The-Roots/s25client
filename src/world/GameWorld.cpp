@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameWorld.h"
 #include "Loader.h"
@@ -35,9 +33,6 @@
 #include "libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
     GameWorldBase(players, gameSettings), // Init virtual base class

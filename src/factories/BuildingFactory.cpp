@@ -25,9 +25,6 @@
 #include "buildings/nobUsual.h"
 #include "GameClientPlayer.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
     noBuilding* bld;
     switch (type)

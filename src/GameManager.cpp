@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameManager.h"
 
@@ -48,20 +46,14 @@
 
 #include <ctime>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GameManager::GameManager() : frames(0), frame_count(0), framerate(0), frame_time(0),
     run_time(0), last_time(0), skipgf_last_time(0), skipgf_last_report_gf(0),
     cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spiel starten
- *
- *  @author FloSoft
  */
 bool GameManager::Start()
 {
@@ -129,11 +121,8 @@ bool GameManager::Start()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spiel beenden.
- *
- *  @author FloSoft
  */
 void GameManager::Stop()
 {
@@ -147,11 +136,8 @@ void GameManager::Stop()
     VIDEODRIVER.DestroyScreen();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptschleife.
- *
- *  @author FloSoft
  */
 bool GameManager::Run()
 {
@@ -290,11 +276,8 @@ bool GameManager::Run()
     return GLOBALVARS.notdone;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Startet und lädt das Menü.
- *
- *  @author FloSoft
  */
 bool GameManager::StartMenu()
 {
@@ -318,11 +301,8 @@ bool GameManager::StartMenu()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeigt das Hauptmenü.
- *
- *  @author FloSoft
  */
 bool GameManager::ShowMenu()
 {
@@ -342,11 +322,8 @@ bool GameManager::ShowMenu()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Set the cursor type
- *
- *  @author Divan
  */
 void GameManager::SetCursor(CursorType cursor, bool once)
 {
@@ -355,11 +332,8 @@ void GameManager::SetCursor(CursorType cursor, bool once)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Draw the cursor
- *
- *  @author Divan
  */
 void GameManager::DrawCursor()
 {

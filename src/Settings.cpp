@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Settings.h"
 
@@ -34,9 +32,6 @@
 #ifndef _WIN32
 #   include <cstring>
 #endif
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned int Settings::SETTINGS_VERSION = 12;
 const unsigned int Settings::SETTINGS_SECTIONS = 11;

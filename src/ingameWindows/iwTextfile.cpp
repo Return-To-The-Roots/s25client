@@ -16,8 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwTextfile.h"
 
@@ -31,20 +29,12 @@
 
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p iwTextfile.
  *
  *  @todo Das Fenster ist zu klein, um 80 Zeichen pro Zeile darstellen zu
  *        koennen. Ein horizontaler Scrollbalken fuer 640x480 waere nicht
  *        schlecht.
- *
- *  @author Devil
- *  @author FloSoft
- *  @author OLiver
  */
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("resource", 41))

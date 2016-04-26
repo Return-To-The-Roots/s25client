@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "helpers/win32_nanosleep.h"
 
@@ -26,10 +24,6 @@
 #include <ctime>
 #include <cstdio>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sleep at least some number of microseconds
  */
@@ -59,7 +53,6 @@ int usleep (useconds_t microseconds)
     return err;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  nanosleep replacement for windows.
  */

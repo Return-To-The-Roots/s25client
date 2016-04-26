@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "DriverWrapper.h"
 
@@ -33,9 +31,6 @@
 #ifndef _WIN32
 #	include <dlfcn.h>
 #endif // _WIN32
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 DriverWrapper::DriverWrapper() :  dll(0)
 {

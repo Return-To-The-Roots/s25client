@@ -15,16 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "FileChecksum.h"
 #include <cstdio>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 unsigned int CalcChecksumOfFile(const char* const path)
 {

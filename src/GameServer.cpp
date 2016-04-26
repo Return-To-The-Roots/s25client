@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "GameServer.h"
@@ -58,9 +56,6 @@
 #include "files.h"
 #include <boost/filesystem.hpp>
 #include <fstream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 GameServer::ServerConfig::ServerConfig()
 {
@@ -436,11 +431,8 @@ void GameServer::Stop()
     status = SS_STOPPED;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet den Spielstart-Countdown
- *
- *  @author FloSoft
  */
 bool GameServer::StartCountdown()
 {
@@ -483,11 +475,8 @@ bool GameServer::StartCountdown()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  stoppt den Spielstart-Countdown
- *
- *  @author FloSoft
  */
 void GameServer::CancelCountdown()
 {
@@ -497,12 +486,8 @@ void GameServer::CancelCountdown()
     LOG.write("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet das Spiel.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 bool GameServer::StartGame()
 {
@@ -760,12 +745,8 @@ void GameServer::RemoveLuaScript()
     SendToAll(GameMessage_RemoveLua());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Nachricht an Alle
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void GameServer::SendToAll(const GameMessage& msg)
 {
@@ -1035,11 +1016,8 @@ unsigned char GameServer::GetLaggingPlayer() const
     return 0xFF;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sendet ein NC-Paket ohne Befehle.
- *
- *  @author OLiver
  */
 void GameServer::SendNothingNC(const unsigned int& id)
 {
@@ -1176,11 +1154,8 @@ inline void GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
         KickPlayer(msg.player, NP_CONNECTIONLOST, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Passwort-Nachricht
- *
- *  @author FloSoft
  */
 void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
@@ -1197,12 +1172,8 @@ void GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
         KickPlayer(msg.player, NP_WRONGPASSWORD, 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Server-Chat-Nachricht.
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void GameServer::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
@@ -1309,11 +1280,8 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
     CheckAndSetColor(msg.player, msg.color);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielerstatus wechseln
- *
- *  @author FloSoft
  */
 inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {

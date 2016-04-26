@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
 #include "PostMsg.h"
@@ -24,9 +22,6 @@
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
 #include "gameData/MilitaryConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 class nobBaseWarehouse;
 

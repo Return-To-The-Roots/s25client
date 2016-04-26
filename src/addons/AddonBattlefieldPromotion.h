@@ -20,11 +20,8 @@
 
 #include "Addons.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for Battlefield Promotions
- *
- *  @author PoC
  */
 class AddonBattlefieldPromotion : public AddonBool
 {

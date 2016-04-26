@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwLobbyServerInfo.h"
 #include "controls/ctrlEdit.h"
@@ -26,14 +24,8 @@
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktualisiert das Serverinfo.
- *
- *  @author Devil
  */
 void iwLobbyServerInfo::UpdateServerInfo()
 {
@@ -85,11 +77,8 @@ void iwLobbyServerInfo::Msg_Timer(const unsigned int ctrl_id)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt Serverinfo und ServerNummer.
- *
- *  @author Devil
  */
 void iwLobbyServerInfo::Set(const LobbyServerInfo* serverinfo, unsigned int server)
 {

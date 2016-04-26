@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #ifdef _WIN32
     #include <windows.h>
@@ -27,14 +25,8 @@
 #include "Log.h"
 #include <cstdlib>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Signal-Handler
- *
- *  @author FloSoft
  */
 #ifdef _WIN32
 BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)

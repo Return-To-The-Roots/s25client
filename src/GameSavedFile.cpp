@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "BinaryFile.h"
@@ -27,9 +25,6 @@
 #include "libutil/src/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 SavedFile::SavedFile() : save_time(0)
 {
@@ -112,11 +107,8 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  schreibt die GlobalGameSettings in die Datei.
- *
- *  @author OLiver
  */
 void SavedFile::WriteGGS(BinaryFile& file)
 {
@@ -127,11 +119,8 @@ void SavedFile::WriteGGS(BinaryFile& file)
     file.WriteRawData(ser.GetData(), ser.GetLength());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liest die GlobalGameSettings aus der Datei.
- *
- *  @author OLiver
  */
 void SavedFile::ReadGGS(BinaryFile& file)
 {

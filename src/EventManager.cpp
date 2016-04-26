@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GameEvent.h"
@@ -25,9 +23,6 @@
 #include "helpers/containerUtils.h"
 #include "helpers/mapTraits.h"
 #include "Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 EventManager::~EventManager()
 {
@@ -67,8 +62,6 @@ GameEvent* EventManager::AddEvent(GameEvent* event)
  *  @param[in] obj       Das Objekt
  *  @param[in] gf_length Die GameFrame-Länge
  *  @param[in] id        ID des Events
- *
- *  @author OLiver
  */
 GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id)
 {
@@ -106,8 +99,6 @@ GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length,
 
 /**
  *  führt alle Events des aktuellen GameFrames aus.
- *
- *  @author OLiver
  */
 void EventManager::NextGF()
 {

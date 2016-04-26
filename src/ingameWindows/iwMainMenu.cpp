@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwMainMenu.h"
 
@@ -44,9 +42,6 @@
 #include "ai/AIPlayerJH.h"
 #include "GameClientPlayer.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwMainMenu::iwMainMenu(GameWorldView& gwv)
     : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
@@ -89,12 +84,9 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv)
     AddImageButton(30,  12, 231, 165, 32, TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Button-Click-Handler.
- *
- *  @author OLiver
-*/
+ */
 void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)

@@ -15,14 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlGroup.h"
 #include "drivers/ScreenResizeEvent.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 struct KeyEvent;
 
@@ -34,11 +29,8 @@ ctrlGroup::ctrlGroup(Window* parent,
     SetScale(scale);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
- *
- *  @author FloSoft
  */
 bool ctrlGroup::Draw_()
 {
@@ -48,11 +40,8 @@ bool ctrlGroup::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Reagiert auf Spielfenstergrößenänderung
- *
- *  @author Divan
  */
 void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {

@@ -15,14 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameMessage.h"
 #include "GameMessages.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 Message* GameMessage::create_game(unsigned short id)
 {

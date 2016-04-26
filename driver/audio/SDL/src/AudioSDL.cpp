@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "AudioSDL.h"
 
@@ -32,18 +30,12 @@
 #include <iostream>
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 static AudioSDL* nthis = NULL;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Instanzierungsfunktion von @p AudioSDL.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
- *
- *  @author FloSoft
  */
 DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void*  /*device_dependent*/)
 {
@@ -61,12 +53,9 @@ DRIVERDLLAPI const char* GetDriverName(void)
     return "(SDL) Audio via SDL_mixer-Library";
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class AudioSDL
  *
  *  Klasse für den SDL-Audiotreiber.
- *
- *  @author FloSoft
  */
 
 AudioSDL::AudioSDL(AudioDriverLoaderInterface* adli) : AudioDriver(adli), master_effects_volume(0xFF), master_music_volume(0xFF)
@@ -80,26 +69,20 @@ AudioSDL::~AudioSDL()
     CleanUp();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
  */
 const char* AudioSDL::GetName() const
 {
     return GetDriverName();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberinitialisierungsfunktion.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool AudioSDL::Initialize()
 {
@@ -128,11 +111,8 @@ bool AudioSDL::Initialize()
     return initialized;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberaufräumfunktion.
- *
- *  @author FloSoft
  */
 void AudioSDL::CleanUp()
 {
@@ -150,7 +130,6 @@ void AudioSDL::CleanUp()
     initialized = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Läd einen Effekt.
  *
@@ -159,8 +138,6 @@ void AudioSDL::CleanUp()
  *  @param[in] size Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size)
 {
@@ -204,7 +181,6 @@ Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsi
     return sd;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Läd ein Musikstück.
  *
@@ -213,8 +189,6 @@ Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsi
  *  @param[in] size Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size)
 {
@@ -276,11 +250,8 @@ Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsig
     return sd;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielt einen Sound ab.
- *
- *  @author OLiver
  */
 unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
@@ -305,11 +276,8 @@ unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, cons
     return play_id;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielt die Musik ab.
- *
- *  @author FloSoft
  */
 void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
 {
@@ -320,11 +288,8 @@ void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
     Mix_VolumeMusic(master_music_volume / 2);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Stoppt die Musik.
- *
- *  @author FloSoft
  */
 void AudioSDL::StopMusic()
 {

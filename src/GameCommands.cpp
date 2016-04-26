@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameCommands.h"
 #include "GameClientPlayer.h"
@@ -27,9 +25,6 @@
 #include "nodeObjs/noShip.h"
 #include "world/GameWorldGame.h"
 #include <iostream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 namespace gc{
 

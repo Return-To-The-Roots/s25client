@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
 #include "ai/AIEvents.h"
@@ -29,9 +27,6 @@
 #include "PostMsg.h"
 #include "GameClient.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)

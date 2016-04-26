@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noDisappearingEnvObject.h"
 
@@ -27,10 +25,6 @@
 #include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noBase.
  *
@@ -38,8 +32,6 @@
  *  @param[in] y        Y-Position
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
- *
- *  @author OLiver
  */
 noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
         const unsigned living_time, const unsigned add_var_living_time)
@@ -88,11 +80,8 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Benachrichtigen, wenn neuer GF erreicht wurde.
- *
- *  @author FloSoft
  */
 void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned int id)
 {
@@ -112,11 +101,8 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Räumt das Objekt auf.
- *
- *  @author FloSoft
  */
 void noDisappearingEnvObject::Destroy_noDisappearingEnvObject()
 {

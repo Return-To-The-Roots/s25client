@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noStaticObject.h"
 #include "noExtension.h"
@@ -29,10 +27,6 @@
 #include "GameClient.h"
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noStaticObject.
  *
@@ -40,8 +34,6 @@
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
  *  @param[in] size Größe des Objekts
  *  @param[in] type Typ des Objekts
- *
- *  @author FloSoft
  */
 noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned short file, unsigned char size, NodalObjectType type)
     : noCoordBase(type, pos), id(id), file(file), size(size)
@@ -75,14 +67,11 @@ noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) :
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Objekt.
  *
  *  @param[in] id Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
- *
- *  @author FloSoft
  */
 void noStaticObject::Draw(int x, int y)
 {
@@ -121,11 +110,8 @@ void noStaticObject::Draw(int x, int y)
         shadow->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zerstört das Objekt.
- *
- *  @author FloSoft
  */
 void noStaticObject::Destroy_noStaticObject()
 {

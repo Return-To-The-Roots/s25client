@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "MusicPlayer.h"
 #include "ingameWindows/iwMusicPlayer.h"
@@ -31,19 +29,12 @@
 #include <algorithm>
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Playlist::Playlist() : repeats(1), random(false)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet das Abspielen der Playlist.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void Playlist::Prepare()
 {
@@ -65,11 +56,8 @@ void Playlist::Prepare()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Playlist in Datei speichern
- *
- *  @author OLiver
  */
 bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 {
@@ -100,11 +88,8 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Playlist laden
- *
- *  @author OLiver
  */
 bool Playlist::Load(const std::string& filename)
 {
@@ -164,11 +149,8 @@ bool Playlist::Load(const std::string& filename)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
- *
- *  @author OLiver
  */
 void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
 {
@@ -177,11 +159,8 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
     window->SetRandomPlayback(random);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Liest die Werte aus dem iwMusicPlayer-Fenster
- *
- *  @author OLiver
  */
 void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
 {
@@ -206,21 +185,14 @@ void Playlist::SetStartSong(const unsigned id)
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
- *
- *
- *  @author OLiver
  */
 MusicPlayer::MusicPlayer() : playing(false)
 {
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  *  Startet Abspielvorgang
- *
- *  @author OLiver
  */
 void MusicPlayer::Play()
 {
@@ -229,11 +201,8 @@ void MusicPlayer::Play()
     PlayNext();
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  *  Stoppt Abspielvorgang
- *
- *  @author OLiver
  */
 void MusicPlayer::Stop()
 {
@@ -241,11 +210,8 @@ void MusicPlayer::Stop()
     playing = false;
 }
 
-/////////////////////////////////////////////////////////////////////////////
 /**
  * Spielt nächstes Stück ab
- *
- *  @author OLiver
  */
 void MusicPlayer::PlayNext()
 {

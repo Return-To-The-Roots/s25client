@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskMainMenu.h"
@@ -37,15 +35,9 @@
 #include "ingameWindows/iwTextfile.h"
 #include "ogl/glArchivItem_Font.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskMainMenu
  *
  *  Klasse des Hauptmenü Desktops.
- *
- *  @author OLiver
  */
 
 dskMainMenu::dskMainMenu() : Desktop(LOADER.GetImageN("menu", 0))
@@ -109,12 +101,7 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
- *
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {

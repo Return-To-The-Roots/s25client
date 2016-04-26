@@ -15,34 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "AudioDriver.h"
 #include "Sound.h"
 #include <cstddef>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class AudioDriverLoaderInterface;
 
 // Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
 IAudioDriver::~IAudioDriver(){}
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class AudioDriver
  *
  *  Basisklasse für einen Audiotreiber.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var AudioDriver::initialized
  *
  *  Initialisierungsstatus.
- *
- *  @author FloSoft
  */
 
 AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli)
@@ -60,13 +49,10 @@ AudioDriver::~AudioDriver()
     sounds.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
  */
 const char* AudioDriver::GetName() const
 {

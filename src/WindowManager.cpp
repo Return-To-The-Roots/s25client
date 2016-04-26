@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "WindowManager.h"
 
@@ -33,9 +31,6 @@
 #include "Log.h"
 
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 WindowManager::WindowManager()
     : disable_mouse(false),
@@ -58,13 +53,9 @@ void WindowManager::CleanUp()
     nextdesktop.reset();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenfunktion WindowManager-Klasse.
  *  Zeichnet Desktop und alle Fenster.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void WindowManager::Draw()
 {
@@ -115,14 +106,11 @@ void WindowManager::Draw()
     curDesktop->Msg_PaintAfter();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
  *
  *  @return liefert @p true bei aktivem Desktop,
  *                  @p false wenn der Desktop nicht den Fokus besitzt.
- *
- *  @author OLiver
  */
 bool WindowManager::IsDesktopActive()
 {
@@ -132,15 +120,12 @@ bool WindowManager::IsDesktopActive()
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
  *
  *  @param[in] msg   Nachricht welche geschickt werden soll
  *  @param[in] id    ID des Steuerelements
  *  @param[in] param Parameter der Nachricht
- *
- *  @author OLiver
  */
 
 /// Sendet eine Tastaturnachricht an die Fenster.
@@ -202,15 +187,12 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
 
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
  *
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
- *
- *  @author OLiver
  */
 void WindowManager::Show(IngameWindow* window, bool mouse)
 {
@@ -268,15 +250,12 @@ void WindowManager::ShowAfterSwitch(IngameWindow* window)
     nextWnds.push_back(window);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  merkt einen Desktop zum Wechsel vor.
  *
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
- *
- *  @author OLiver
  */
 void WindowManager::Switch(Desktop* desktop, bool mouse)
 {
@@ -299,13 +278,10 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
     return NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Drückens der Linken Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_LeftDown(MouseCoords mc)
 {
@@ -405,13 +381,10 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Loslassens der Linken Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_LeftUp(MouseCoords mc)
 {
@@ -459,13 +432,10 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     disable_mouse = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Drückens der Rechten Maustaste.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_RightDown(const MouseCoords& mc)
 {
@@ -538,13 +508,10 @@ void WindowManager::Msg_RightUp(const MouseCoords& mc)
     RelayMouseMessage(&Window::Msg_RightUp, mc);
 }
 
-///////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Verarbeitung Mausrad hoch.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author Divan
  */
 void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 {
@@ -615,13 +582,10 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung Mausrad runter
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author Divan
  */
 void WindowManager::Msg_WheelDown(const MouseCoords& mc)
 {
@@ -660,13 +624,10 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung des Verschiebens der Maus.
  *
  *  @param[in] mc Mauskoordinaten Struktur
- *
- *  @author OLiver
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
@@ -718,7 +679,6 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
  *  Liefert evtl. eine Größe die wir nicht wollen und daher korrigieren
@@ -727,8 +687,6 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
  *
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
- *
- *  @author Divan
  */
 void WindowManager::ScreenResized(unsigned short width, unsigned short height)
 {
@@ -782,15 +740,12 @@ void WindowManager::ScreenResized(unsigned short width, unsigned short height)
     LOG.write("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
  *  Liefert immer eine sinnvolle Größe, mind. 800x600.
  *
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
- *
- *  @author Divan
  */
 void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height)
 {
@@ -841,13 +796,10 @@ struct IsWindowId
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
  *
  *  @param[in] it Iterator auf das Fenster in der Fensterliste
- *
- *  @author OLiver
  */
 void WindowManager::Close(IngameWindow* window)
 {
@@ -887,13 +839,10 @@ void WindowManager::Close(IngameWindow* window)
     windows.erase(it);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Closes _ALL_ windows with the given ID
  *
  *  @param[in] id ID des/der Fenster(s) welche(s) geschlossen werden soll
- *
- *  @author OLiver
  */
 void WindowManager::Close(unsigned int id)
 {
@@ -906,11 +855,8 @@ void WindowManager::Close(unsigned int id)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wechselt den Desktop in den neuen Desktop
- *
- *  @author OLiver
  */
 void WindowManager::Switch()
 {

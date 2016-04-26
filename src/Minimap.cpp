@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Minimap.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/oglIncludes.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 Minimap::Minimap(const unsigned short map_width, const unsigned short map_height)
     : map_width(map_width), map_height(map_height)
@@ -82,11 +77,8 @@ void Minimap::BeforeDrawing()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit
- *
- *  @author OLiver
  */
 unsigned Minimap::VaryBrightness(const unsigned color, const int range) const
 {

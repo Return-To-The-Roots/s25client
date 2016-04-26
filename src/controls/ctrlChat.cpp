@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlChat.h"
 #include "ctrlScrollBar.h"
@@ -25,13 +23,9 @@
 #include "Log.h"
 #include "driver/src/MouseCoords.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p ctrlChat.
  *
@@ -43,8 +37,6 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] height Höhe des Controls
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
- *
- *  @author OLiver
  */
 ctrlChat::ctrlChat(Window* parent,
                    unsigned int id,
@@ -75,11 +67,8 @@ ctrlChat::~ctrlChat()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern
- *
- *  @author Divan
  */
 void ctrlChat::Resize_(unsigned short width, unsigned short height)
 {
@@ -135,11 +124,8 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
         scroll->SetPos(chat_lines.size() - page_size);
 
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet das Chat-Control.
- *
- *  @author OLiver
  */
 bool ctrlChat::Draw_()
 {

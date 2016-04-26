@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofForester.h"
 
@@ -29,9 +27,6 @@
 #include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 class nobUsual;
 

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskOptions.h"
 
@@ -49,15 +47,9 @@
 #include "ExtensionList.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskOptions
  *
  *  Klasse des Optionen Desktops.
- *
- *  @author OLiver
  */
 
 dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofCharburner.h"
 
@@ -29,9 +27,6 @@
 #include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 #include "SerializedGameData.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)

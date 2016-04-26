@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwChat.h"
 #include "Loader.h"
@@ -25,9 +23,6 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 unsigned char iwChat::chat_dest = 0;
 

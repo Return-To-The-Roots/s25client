@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "AIInterface.h"
 #include "ai/AIJHHelper.h"
@@ -32,9 +30,6 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
 #include <limits>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 // from Pathfinding.cpp TODO: in nice

@@ -15,13 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlOptionGroup.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 ctrlOptionGroup::ctrlOptionGroup(Window* parent,
@@ -33,11 +28,8 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
- *
- *  @author OLiver
  */
 bool ctrlOptionGroup::Draw_()
 {
@@ -46,11 +38,8 @@ bool ctrlOptionGroup::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wählt einen Button aus der Gruppe aus.
- *
- *  @author OLiver
  */
 void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 {

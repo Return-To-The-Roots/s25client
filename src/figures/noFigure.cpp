@@ -16,8 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "figures/noFigure.h"
 #include "Loader.h"
@@ -44,9 +42,6 @@
 #include "gameData/MapConsts.h"
 #include "Log.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 
 const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, 0, 0, std::vector<unsigned char>(0, 0));

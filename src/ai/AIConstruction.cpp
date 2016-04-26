@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "AIConstruction.h"
 
@@ -46,9 +44,6 @@
 #include <limits>
 #include <list>
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS }};
 

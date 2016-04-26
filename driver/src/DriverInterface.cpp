@@ -15,13 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "DriverInterfaceVersion.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 #ifdef _WIN32
 #   define DRIVERDLLAPI extern "C" __declspec(dllexport)
@@ -29,13 +24,10 @@
 #   define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  API-Versions-Lieferfunktion
  *
  *  @return liefert die API-Version des Treibers
- *
- *  @author FloSoft
  */
 DRIVERDLLAPI unsigned int GetDriverAPIVersion(void)
 {

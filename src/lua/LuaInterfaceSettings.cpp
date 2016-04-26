@@ -23,9 +23,6 @@
 #include "addons/const_addons.h"
 #include "libutil/src/Log.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 inline void check(bool testValue, const std::string& error)
 {
     if(!testValue)

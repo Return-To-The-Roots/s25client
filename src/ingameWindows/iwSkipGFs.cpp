@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwSkipGFs.h"
 #include "controls/ctrlEdit.h"
@@ -24,9 +22,6 @@
 #include "Loader.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     : IngameWindow(CGI_SKIPGFS, 0xFFFF, 0xFFFF, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41)), gwv(gwv)

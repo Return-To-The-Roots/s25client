@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwSave.h"
 
@@ -39,9 +37,6 @@
 #include "Settings.h"
 #include "helpers/converters.h"
 #include <boost/filesystem.hpp>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;
@@ -194,11 +189,8 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  c
     RefreshTable();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spiel laden.
- *
- *  @author OLiver
  */
 void iwLoad::SaveLoad()
 {

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskDirectIP.h"
@@ -31,9 +29,6 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 dskDirectIP::dskDirectIP() : Desktop(LOADER.GetImageN("menu", 0))
 {

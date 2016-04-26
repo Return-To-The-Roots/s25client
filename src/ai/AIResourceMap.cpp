@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "AIResourceMap.h"
 #include "AIJHHelper.h"
 #include "gameData/TerrainData.h"
 #include "buildings/nobUsual.h"
 #include "buildings/noBuildingSite.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 AIResourceMap::AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes)
     : res(res), aii(&aii), nodes(&nodes), resRadius(AIJH::RES_RADIUS[res])

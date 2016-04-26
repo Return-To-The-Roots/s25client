@@ -18,9 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "LanDiscoveryCfg.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 static LANDiscoveryBase::Config makeDiscoveryConfig()
 {
     LANDiscoveryBase::Config cfg;

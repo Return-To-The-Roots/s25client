@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwAddons.h"
 
@@ -28,9 +26,6 @@
 #include "gameData/const_gui_ids.h"
 #include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vector<AddonId>& addonIds)
@@ -188,11 +183,8 @@ void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selec
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  get scrollbar notification
- *
- *  @author FloSoft
  */
 void iwAddons::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
 {

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "languages.h"
 
@@ -29,9 +27,6 @@
 #include "mygettext/src/mygettext.h"
 
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 void Languages::loadLanguages()
 {
@@ -75,12 +70,7 @@ unsigned int Languages::getCount()
     return unsigned(languages.size());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
- *
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void Languages::setLanguage(const std::string& lang_code)
 {

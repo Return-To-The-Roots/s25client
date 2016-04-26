@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
 #include "defines.h" // IWYU pragma: keep
 #include "noAnimal.h"
 #include "Loader.h"
@@ -33,9 +30,6 @@
 
 #include "ogl/glSmartBitmap.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noAnimal::noAnimal(const Species species, const MapPoint pos) : noMovable(NOP_ANIMAL, pos)
     , species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(NULL), sound_moment(0)

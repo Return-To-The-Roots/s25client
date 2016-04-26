@@ -22,11 +22,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for allowing a custom build sequence
- *
- *  @author Divan
  */
 class AddonCustomBuildSequence : public AddonBool
 {

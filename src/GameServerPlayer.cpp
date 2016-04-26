@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameServerPlayer.h"
 #include "GameMessage.h"
@@ -24,9 +22,6 @@
 #include "drivers/VideoDriverWrapper.h"
 
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 GameServerPlayer::GameServerPlayer(const unsigned playerid)
     : GamePlayerInfo(playerid),

@@ -30,9 +30,6 @@
 #include "helpers/containerUtils.h"
 #include <set>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
 {
     noTree::ResetInstanceCounter();
@@ -641,13 +638,9 @@ BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, cons
     return bq;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  liefert das Terrain um den Punkt X, Y.
-*
-*  @author OLiver
-*  @author FloSoft
-*/
+ *  liefert das Terrain um den Punkt X, Y.
+ */
 TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 {
     switch(dir)
@@ -664,26 +657,20 @@ TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
-*  in Richtung DIR (Vorwärts).
-*
-*  @author OLiver
-*/
+ *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
+ *  in Richtung DIR (Vorwärts).
+ */
 TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
     RTTR_Assert(dir < 6);
     return (dir == 0) ? GetTerrainAround(pt, 5) : GetTerrainAround(pt, dir - 1);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
-*  in Richtung DIR (Rückwärts).
-*
-*  @author OLiver
-*/
+ *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
+ *  in Richtung DIR (Rückwärts).
+ */
 TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
     RTTR_Assert(dir < 6);
@@ -767,13 +754,9 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
-*
-*
-*  @author OLiver
-*/
+ *  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
+ */
 unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
@@ -787,12 +770,9 @@ unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) con
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  liefert den Straßen-Wert um den Punkt X, Y.
-*
-*  @author OLiver
-*/
+ *  liefert den Straßen-Wert um den Punkt X, Y.
+ */
 unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(dir < 6);
@@ -815,12 +795,9 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
     return GetNode(pt).fow[viewing_player].roads[dir];
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
-*
-*  @author OLiver
-*/
+ *  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
+ */
 void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 3);
@@ -828,12 +805,9 @@ void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char t
     GetNodeInt(pt).roads[dir] = type;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
-*  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
-*
-*  @author OLiver
-*/
+ *  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
+ */
 void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 6);

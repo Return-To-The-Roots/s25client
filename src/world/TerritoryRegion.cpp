@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "world/TerritoryRegion.h"
 
@@ -25,9 +23,6 @@
 #include "GameClientPlayer.h"
 #include "gameData/MilitaryConsts.h"
 #include "world/GameWorldBase.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb)
     : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), world(gwb)

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Desktop.h"
 
@@ -25,16 +23,10 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor für einen Spieldesktop
  *
  *  @param[in] background Hintergrund des Desktops
- *
- *  @author OLiver
  */
 Desktop::Desktop(glArchivItem_Bitmap* background)
     : Window(), background(background)
@@ -43,52 +35,32 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
     Resize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode zum Zeichnen des Desktops
  *  und der ggf. enthaltenen Steuerelemente.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool Desktop::Draw_()
 {
     if(background)
-    {
-        /*
-                short w,h;
-                double sW,sH, s;
-                sW = (double)VIDEODRIVER.GetScreenWidth() / background->getWidth();
-                sH = (double)VIDEODRIVER.GetScreenHeight() / background->getHeight();
-                s = (sW < sH ? sW : sH);
-                w = (short)((double) background->getWidth() * s);
-                h = (short)((double) background->getHeight() * s);
-                background->Draw(0, 0, w, h, 0, 0, 0, 0);*/
         background->Draw(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), 0, 0, 0, 0);
-    }
 
     DrawControls();
 
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Wechselt den aktuellen Desktop im WindowManager auf diesen Desktop.
- *
- *  @author OLiver
  */
 void Desktop::Show()
 {
     WINDOWMANAGER.Switch(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  Reagiert auf Spielfenstergrößenänderung
- *
- *  @author Divan
  */
 void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {

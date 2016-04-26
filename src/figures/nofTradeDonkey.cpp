@@ -28,9 +28,6 @@
 #include "Loader.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
     : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)
 {

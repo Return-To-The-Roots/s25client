@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noFighting.h"
 #include "EventManager.h"
@@ -31,9 +29,6 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameData/MilitaryConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NOP_FIGHTING)
 {

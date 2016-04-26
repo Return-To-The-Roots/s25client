@@ -21,11 +21,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for a Charburner
- *
- *  @author OLiver
  */
 class AddonCharburner : public AddonBool
 {

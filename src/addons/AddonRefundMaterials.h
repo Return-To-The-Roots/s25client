@@ -22,11 +22,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for refunding materials soon as a building gets destroyed.
- *
- *  @author FloSoft
  */
 class AddonRefundMaterials : public AddonList
 {

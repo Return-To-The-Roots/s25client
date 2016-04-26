@@ -20,11 +20,8 @@
 
 #include "Addons.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for a debugging asyncs
- *
- *  @author Maqs
  */
 class AddonAsyncDebug : public AddonBool
 {

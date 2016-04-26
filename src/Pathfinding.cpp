@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 #include "world/GameWorldGame.h"
@@ -25,9 +23,6 @@
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
 #include "gameData/GameConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 class noRoadNode;
 

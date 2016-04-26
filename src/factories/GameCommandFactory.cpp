@@ -24,9 +24,6 @@
 
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 template<class T_Handler>
 bool GameCommandFactory<T_Handler>::SetFlag(const MapPoint pt)
 {

@@ -30,9 +30,6 @@
 #include "libutil/src/Log.h"
 #include <fstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
 {
 

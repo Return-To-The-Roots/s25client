@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "CatapultStone.h"
 
@@ -35,9 +33,6 @@
 #include "gameData/MapConsts.h"
 
 #include <cmath>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noBase;
 
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,

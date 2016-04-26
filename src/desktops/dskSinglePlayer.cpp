@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskSinglePlayer.h"
@@ -38,15 +36,9 @@
 #include "files.h"
 #include <boost/filesystem.hpp>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskSinglePlayer
  *
  *  Klasse des Einzelspieler Desktops.
- *
- *  @author OLiver
  */
 
 dskSinglePlayer::dskSinglePlayer() : Desktop(LOADER.GetImageN("menu", 0))

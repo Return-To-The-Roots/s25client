@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskGameLoader.h"
 
@@ -35,15 +33,9 @@
 #include "ogl/glArchivItem_Font.h"
 #include "files.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
- *
- *  @author FloSoft
  */
 dskGameLoader::dskGameLoader(GameWorldViewer& worldViewer) : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)),
       position(0), worldViewer(worldViewer)
@@ -168,11 +160,8 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
     timer->Start(interval);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
- *
- *  @author FloSoft
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {

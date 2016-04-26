@@ -15,15 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlDeepening.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
 ctrlDeepening::ctrlDeepening(Window* parent,
@@ -45,11 +40,8 @@ ctrlDeepening::ctrlDeepening(Window* parent,
     this->height_ = height;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlDeepening::Draw_()
 {
@@ -81,11 +73,8 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
     this->fillColor = fill_color;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author Divan
  */
 void ctrlColorDeepening::DrawContent() const
 {

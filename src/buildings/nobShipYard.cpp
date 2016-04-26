@@ -19,9 +19,6 @@
 #include "nobShipYard.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nobShipYard::nobShipYard(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobUsual(BLD_SHIPYARD, pos, player, nation), mode(nobShipYard::BOATS)
 {

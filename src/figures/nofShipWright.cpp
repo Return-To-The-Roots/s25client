@@ -31,9 +31,6 @@
 #include "gameData/JobConsts.h"
 #include "libutil/src/colors.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_SHIPWRIGHT, pos, player, workplace), dest(MapPoint::Invalid())
 {}

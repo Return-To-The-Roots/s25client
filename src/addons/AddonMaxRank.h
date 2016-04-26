@@ -22,7 +22,6 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  limit max rank of soldiers
  *
@@ -35,8 +34,6 @@
  *  rank 1 Privatefirstclass
  *
  *  rank 0 Private
- *
- *  @author poc
  */
 class AddonMaxRank : public AddonList
 {

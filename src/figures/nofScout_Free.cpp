@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_Free.h"
 
@@ -25,9 +23,6 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofPlaner.h"
 
@@ -31,9 +29,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "gameData/JobConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)

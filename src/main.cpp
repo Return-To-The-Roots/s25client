@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "RTTR_AssertError.h"
 
@@ -71,9 +69,6 @@
 #include <limits>
 #include <cstdlib>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace po = boost::program_options;
 
 void WaitForEnter()
@@ -92,7 +87,6 @@ void WaitForEnter()
 
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls
  *  dies in der build_paths.h mit deaktiviertem NOHWETRANS und
@@ -100,8 +94,6 @@ void WaitForEnter()
  *
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
  *  @param[in] exception_pointer Genaue Beschreibung der Exception (siehe GetExceptionInformation)
- *
- *  @author OLiver
  */
 void ExceptionHandler (unsigned int exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
@@ -228,11 +220,8 @@ void UninstallSignalHandlers()
 #endif // _WIN32
 }
 
-//////////////////////////////////////////////////////////////////////////
 /**
  *  Exit-Handler, wird bei @p exit ausgeführt.
- *
- *  @author FloSoft
  */
 void ExitHandler()
 {
@@ -392,7 +381,6 @@ int RunProgram(po::variables_map& options)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
  *
@@ -400,9 +388,6 @@ int RunProgram(po::variables_map& options)
  *  @param[in] argv Array der übergebenen Argumente
  *
  *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
- *
- *  @author FloSoft
- *  @author OLiver
  */
 int main(int argc, char** argv)
 {

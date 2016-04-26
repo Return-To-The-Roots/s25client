@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwShip.h"
 #include "Loader.h"
@@ -32,9 +30,6 @@
 #include "gameData/JobConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "gameData/ShieldConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwShip::iwShip(GameWorldView& gwv, noShip* const ship)
     : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),

@@ -15,14 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) :
     text(text), color_(color), font(font)
@@ -41,11 +36,8 @@ ctrlText::ctrlText(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlText::Draw_()
 {

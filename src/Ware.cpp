@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Ware.h"
 
@@ -37,9 +35,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),

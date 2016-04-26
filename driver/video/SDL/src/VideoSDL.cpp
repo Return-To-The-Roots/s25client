@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "VideoSDL.h"
 #ifndef RTTR_Assert
@@ -35,18 +33,12 @@
 #include <SDL_syswm.h>
 #endif // _WIN32
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Instanzierungsfunktion von @p VideoSDL.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
- *
- *  @author FloSoft
  */
 DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
@@ -58,42 +50,30 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
     delete driver;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Namensfunktion von @p VideoSDL.
  *
  *  @return liefert den Namen des Treibers.
- *
- *  @author OLiver
  */
 DRIVERDLLAPI const char* GetDriverName(void)
 {
     return "(SDL) OpenGL via SDL-Library";
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /** @class VideoSDL
  *
  *  Klasse für den SDL Videotreiber.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var VideoSDL::screen
  *
  *  Das Fenster-SDL-Surface.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p VideoSDL.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
- *
- *  @author FloSoft
  */
 VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
 {}
@@ -103,26 +83,20 @@ VideoSDL::~VideoSDL()
     CleanUp();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des Treibernamens.
  *
  *  @return liefert den Treibernamen zurück
- *
- *  @author FloSoft
  */
 const char* VideoSDL::GetName() const
 {
     return GetDriverName();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberinitialisierungsfunktion.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoSDL::Initialize()
 {
@@ -144,11 +118,8 @@ bool VideoSDL::Initialize()
     return initialized;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Treiberaufräumfunktion.
- *
- *  @author FloSoft
  */
 void VideoSDL::CleanUp()
 {
@@ -162,7 +133,6 @@ void VideoSDL::CleanUp()
     initialized = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
@@ -171,8 +141,6 @@ void VideoSDL::CleanUp()
  *  @param[in] fullscreen Vollbildmodus ja oder nein
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
@@ -222,7 +190,6 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt oder verändert das Fenster mit entsprechenden Werten.
  *
@@ -233,8 +200,6 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
  *  @return @p true bei Erfolg, @p false bei Fehler
  *
  *  @todo Vollbildmodus ggf. wechseln
- *
- *  @author FloSoft
  */
 bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
 {
@@ -261,11 +226,8 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Schliesst das Fenster.
- *
- *  @author FloSoft
  */
 void VideoSDL::DestroyScreen()
 {
@@ -274,13 +236,10 @@ void VideoSDL::DestroyScreen()
     Initialize();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wechselt die OpenGL-Puffer.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoSDL::SwapBuffers()
 {
@@ -290,13 +249,10 @@ bool VideoSDL::SwapBuffers()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Die Nachrichtenschleife.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoSDL::MessageLoop()
 {
@@ -425,26 +381,20 @@ bool VideoSDL::MessageLoop()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Auslesen des TickCounts.
  *
  *  @return liefert den TickCount
- *
- *  @author FloSoft
  */
 unsigned long VideoSDL::GetTickCount() const
 {
     return SDL_GetTicks();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *   Listet verfügbare Videomodi auf
  *
  *  @param[in,out] video_modes Der Vector mit den Videomodes
- *
- *  @author OLiver
  */
 void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
@@ -458,29 +408,23 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Holen einer Subfunktion.
  *
  *  @param[in] function Name der Funktion welche geholt werden soll.
  *
  *  @return Adresse der Funktion bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 void* VideoSDL::GetFunction(const char* function) const
 {
     return SDL_GL_GetProcAddress(function);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der Mauskoordinaten.
  *
  *  @param[in] x X-Koordinate
  *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
  */
 void VideoSDL::SetMousePos(int x, int y)
 {
@@ -489,37 +433,28 @@ void VideoSDL::SetMousePos(int x, int y)
     SDL_WarpMouse(x, y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der X-Koordinate der Maus.
  *
  *  @param[in] x X-Koordinate
- *
- *  @author FloSoft
  */
 void VideoSDL::SetMousePosX(int x)
 {
     SetMousePos(x, mouse_xy.y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Funktion zum Setzen der Y-Koordinate der Maus.
  *
  *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
  */
 void VideoSDL::SetMousePosY(int y)
 {
     SetMousePos(mouse_xy.x, y);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Get state of the modifier keys
- *
- *  @author Divan
  */
 KeyEvent VideoSDL::GetModKeyState() const
 {

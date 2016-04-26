@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildings.h"
 #include "Loader.h"
@@ -36,9 +34,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "files.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned BUILDINGS_COUNT = 32;
 

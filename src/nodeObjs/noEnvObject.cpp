@@ -15,25 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "noEnvObject.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noEnvObject.
  *
  *  @param[in] id Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
- *
- *  @author FloSoft
  */
 noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short file)
     : noStaticObject(pos, id, file, 0, NOP_ENVIRONMENT)

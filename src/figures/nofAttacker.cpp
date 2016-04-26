@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofAttacker.h"
 #include "nofDefender.h"
@@ -35,9 +31,6 @@
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noFlag.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER

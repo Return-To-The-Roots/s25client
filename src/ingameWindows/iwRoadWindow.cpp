@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwRoadWindow.h"
 
@@ -25,9 +23,6 @@
 #include "controls/ctrlButton.h"
 #include "GameInterface.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
     : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),

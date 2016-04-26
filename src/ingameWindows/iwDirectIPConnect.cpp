@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwDirectIPConnect.h"
 #include "controls/ctrlButton.h"
@@ -32,9 +30,6 @@
 #include "Settings.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCONNECT, 0xFFFF, 0xFFFF, 300, 285, _("Join Game"), LOADER.GetImageN("resource", 41), true),
@@ -166,12 +161,9 @@ void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const 
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
- *
- *  @author FloSoft
  */
 void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, bool button)
 {
@@ -183,11 +175,8 @@ void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, boo
     GetCtrl<ctrlButton>(7)->Enable(button);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Hostnamen im Editfeld.
- *
- *  @author FloSoft
  */
 void iwDirectIPConnect::SetHost(const std::string& hostIp)
 {
@@ -206,11 +195,8 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
         Msg_ButtonClick(7);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Port im Editfeld.
- *
- *  @author FloSoft
  */
 void iwDirectIPConnect::SetPort(unsigned short port)
 {

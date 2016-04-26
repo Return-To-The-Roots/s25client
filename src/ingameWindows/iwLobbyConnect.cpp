@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwLobbyConnect.h"
 
@@ -32,9 +30,6 @@
 #include "iwMsgbox.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, 0xFFFF, 0xFFFF, 500, 260, _("Connecting to Lobby"), LOADER.GetImageN("resource", 41))
@@ -98,11 +93,8 @@ iwLobbyConnect::~iwLobbyConnect()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  speichert die eingegebenen Benutzerdaten in die Settings
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string& email)
 {
@@ -226,12 +218,9 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool button)
 {
@@ -248,11 +237,8 @@ void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool b
     b2->Enable(button);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wir wurden eingeloggt
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_LoggedIn(const std::string& email)
 {
@@ -267,11 +253,8 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
     WINDOWMANAGER.Switch(new dskLobby);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wir wurden registriert.
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_Registered()
 {
@@ -281,22 +264,16 @@ void iwLobbyConnect::LC_Registered()
     GetCtrl<ctrlButton>(8)->Enable(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Warten auf Antwort.
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_Status_Waiting()
 {
     SetText(_("Waiting for Reply..."), COLOR_YELLOW, false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Benutzerdefinierter Fehler (inkl Conn-Reset u.ä)
- *
- *  @author FloSoft
  */
 void iwLobbyConnect::LC_Status_Error(const std::string& error)
 {

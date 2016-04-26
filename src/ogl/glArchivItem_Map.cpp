@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Map.h"
 
 #include "../libsiedler2/src/ArchivItem_Raw.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "glAllocator.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 glArchivItem_Map::glArchivItem_Map()
     : ArchivItem_Map(), header(NULL)
@@ -37,7 +32,6 @@ glArchivItem_Map::~glArchivItem_Map()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  lädt die Mapdaten aus einer Datei.
  *
@@ -45,8 +39,6 @@ glArchivItem_Map::~glArchivItem_Map()
  *  @param[in] only_header Soll nur der Header gelesen werden?
  *
  *  @return liefert Null bei Erfolg, ungleich Null bei Fehler
- *
- *  @author FloSoft
  */
 int glArchivItem_Map::load(std::istream& file, bool only_header)
 {
@@ -59,13 +51,10 @@ int glArchivItem_Map::load(std::istream& file, bool only_header)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert einen Map-Layer zurück.
  *
  *  @param[in] type Typ des Layers.
- *
- *  @author FloSoft
  */
 const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
@@ -75,13 +64,10 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
     return item->getData();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert einen Map-Layer zurück.
  *
  *  @param[in] type Typ des Layers.
- *
- *  @author FloSoft
  */
 std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
@@ -96,51 +82,41 @@ bool glArchivItem_Map::HasLayer(MapLayer type) const
     return get(type + 1) != NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Mapdaten an einer bestimmten Stelle zurück.
  *
  *  @param[in] type Typ des Layers.
  *  @param[in] pos  Position in den Daten.
- *
- *  @author FloSoft
  */
 unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) const
 {
     return GetLayer(type)[pos];
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Mapdaten an einer bestimmten Stelle.
  *
  *  @param[in] type  Typ des Layers.
  *  @param[in] pos   Position in den Daten.
  *  @param[in] value zu setzender Wert an der Position.
- *
- *  @author FloSoft
  */
 void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value)
 {
     GetLayer(type)[pos] = value;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Mapdaten an der Stelle X,Y zurück.
  *
  *  @param[in] type Typ des Layers.
  *  @param[in] x    X-Position in den Daten.
  *  @param[in] y    Y-Position in den Daten.
- *
- *  @author FloSoft
  */
 unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned short x, unsigned short y) const
 {
     return GetMapDataAt(type, y * header->getWidth() + x);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Mapdaten an der Stelle X,Y.
  *
@@ -148,8 +124,6 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned short x, un
  *  @param[in] x     X-Position in den Daten.
  *  @param[in] y     Y-Position in den Daten.
  *  @param[in] value zu setzender Wert an der Position.
- *
- *  @author FloSoft
  */
 void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned short x, unsigned short y, unsigned char value)
 {

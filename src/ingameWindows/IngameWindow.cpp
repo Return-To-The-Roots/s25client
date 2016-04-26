@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "IngameWindow.h"
 
@@ -29,9 +27,6 @@
 #include "ogl/glArchivItem_Sound.h"
 #include "gameData/const_gui_ids.h"
 #include <cstring>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 const unsigned MAX_POS_SAVE_ENTRIES = CGI_MERCHANDISE_STATISTICS + 1;
 std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES, Point<unsigned short>::Invalid());

@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofAggressiveDefender.h"
 #include "nofAttacker.h"
@@ -27,9 +23,6 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)

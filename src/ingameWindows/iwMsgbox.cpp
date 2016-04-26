@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwMsgbox.h"
 
@@ -25,9 +23,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "controls/ctrlImage.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned msgboxid)
     : IngameWindow(CGI_MSGBOX, 0xFFFF, 0xFFFF, 420, 140, title, LOADER.GetImageN("resource", 41), true, true), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)

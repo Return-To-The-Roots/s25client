@@ -25,9 +25,6 @@
 #include "libutil/src/colors.h"
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 inline void check(bool testValue, const std::string& error)
 {
     if(!testValue)

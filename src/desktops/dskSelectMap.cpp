@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
 
@@ -48,51 +46,32 @@
 #include "libsiedler2/src/prototypen.h"
 #include "libutil/src/ucString.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskSelectMap
  *
  *  Klasse des Map-Auswahl Desktops.
- *
- *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var dskSelectMap::type
  *
  *  Typ des Servers.
- *
- *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var dskSelectMap::name
  *
  *  Name des Servers.
- *
- *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var dskSelectMap::pass
  *
  *  Passwort des Servers.
- *
- *  @author OLiver
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p dskSelectMap.
  *
  *  @param[in] type Typ des Servers
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
- *
- *  @author OLiver
- *  @author FloSoft
  */
 dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     : Desktop(LOADER.GetImageN("setup015", 0)),
@@ -146,11 +125,7 @@ dskSelectMap::~dskSelectMap()
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const int selection)
 {
@@ -173,11 +148,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
     table->SetSelection(0);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Occurs when user changes the selection in the table of maps.
- *
- *  @author FloSoft
  */
 void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int selection)
 {
@@ -336,22 +308,16 @@ void dskSelectMap::CI_Error(const ClientError ce)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
- *
- *  @author FloSoft
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Server wurde erstellt.
- *
- *  @author FloSoft
  */
 void dskSelectMap::LC_Created()
 {

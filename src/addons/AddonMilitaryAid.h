@@ -22,13 +22,10 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for indicating military building construction possibility.
  *
  *  Gfx by SpikeOne.
- *
- *  @author KaiN
  */
 class AddonMilitaryAid : public AddonBool
 {

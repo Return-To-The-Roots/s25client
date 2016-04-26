@@ -15,18 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlVarText.h"
 #include "ogl/glArchivItem_Font.h"
 #include <sstream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor des Textcontrols, welches variablen Inhalt haben kann.
  *
@@ -40,8 +34,6 @@ class Window;
  *  @param[in] font      Schrift des Textes
  *  @param[in] count     Anzahl der nachfolgenden Pointer
  *  @param[in] liste     Pointerliste der variablen Inhalte
- *
- *  @author FloSoft
  */
 ctrlVarText::ctrlVarText(Window* parent,
                          unsigned int id,
@@ -67,13 +59,10 @@ ctrlVarText::ctrlVarText(Window* parent,
 ctrlVarText::~ctrlVarText()
 {}
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool ctrlVarText::Draw_()
 {

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
 
@@ -35,9 +33,6 @@
 #   include <valgrind/memcheck.h>
 #endif
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
@@ -51,15 +46,12 @@ VideoDriverWrapper::~VideoDriverWrapper()
         FreeVideoInstance(videodriver);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wählt und lädt einen Displaytreiber.
  *
  *  @param[in] second @p true wenn 2te Chance aktiv, @p false wenn 2te Chance ausgeführt werden soll.
  *
  *  @return liefert @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::LoadDriver()
 {
@@ -86,7 +78,6 @@ bool VideoDriverWrapper::LoadDriver()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erstellt das Fenster.
  *
@@ -94,8 +85,6 @@ bool VideoDriverWrapper::LoadDriver()
  *  @param[in] height Höhe des Fensters
  *
  *  @return Bei Erfolg @p true ansonsten @p false
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen)
 {
@@ -148,7 +137,6 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verändert Auflösung, Fenster/Fullscreen
  *
@@ -157,8 +145,6 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
  *  @param[in] fullscreen Vollbild oder nicht
  *
  *  @return Bei Erfolg @p true ansonsten @p false
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const unsigned short screenHeight, const bool fullscreen)
 {
@@ -177,11 +163,8 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
     return result;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zerstört den DriverWrapper-Bildschirm.
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::DestroyScreen()
 {
@@ -203,15 +186,12 @@ bool VideoDriverWrapper::DestroyScreen()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  prüft, ob eine bestimmte Extension existiert.
  *
  *  @param[in] extension Die zu suchende Extension
  *
  *  @return Bei Erfolg @p true ansonsten @p false
- *
- *  @author FloSoft
  */
 bool VideoDriverWrapper::hasExtension(const std::string& extension)
 {
@@ -241,11 +221,8 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Löscht alle herausgegebenen Texturen aus dem Speicher.
- *
- *  @author FloSoft
  */
 void VideoDriverWrapper::CleanUp()
 {
@@ -366,11 +343,8 @@ bool VideoDriverWrapper::Initialize()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Viewport (neu) setzen
- *
- *  @author FloSoft
  */
 void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
 {
@@ -396,11 +370,8 @@ void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
     glLoadIdentity();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  lädt die driverwrapper-extensions.
- *
- *  @author flosoft
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
@@ -449,15 +420,12 @@ unsigned int VideoDriverWrapper::GetTickCount()
     return (unsigned int)videodriver->GetTickCount();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  lädt eine bestimmte DriverWrapper Extension-Funktion.
  *
  *  @param[in] extension Die Extension-Funktion
  *
  *  @return @p NULL bei Fehler, Adresse der gewünschten Funktion bei Erfolg.
- *
- *  @author FloSoft
  */
 void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
@@ -502,11 +470,8 @@ bool VideoDriverWrapper::IsRightDown()
     return videodriver->GetMouseStateR();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Mausposition
- *
- *  @author FloSoft
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
@@ -517,11 +482,8 @@ void VideoDriverWrapper::SetMousePos(const int x, const int y)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Listet verfügbare Videomodi auf.
- *
- *  @author OLiver
  */
 void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
@@ -535,11 +497,8 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) con
     videodriver->ListVideoModes(video_modes);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows.
- *
- *  @author OLiver
  */
 void* VideoDriverWrapper::GetMapPointer() const
 {

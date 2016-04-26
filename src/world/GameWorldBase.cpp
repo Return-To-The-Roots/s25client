@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
 #include "GameClient.h"
@@ -30,9 +28,6 @@
 #include "pathfinding/FreePathFinder.h"
 #include "gameData/TerrainData.h"
 #include "gameData/MapConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
     roadPathFinder(new RoadPathFinder(*this)),

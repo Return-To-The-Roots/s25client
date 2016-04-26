@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap.h"
 
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/oglIncludes.h"
 #include <vector>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 glArchivItem_Bitmap::glArchivItem_Bitmap()
 {
@@ -36,11 +31,8 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet die Textur.
- *
- *  @author FloSoft
  */
 void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color)
 {

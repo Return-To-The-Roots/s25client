@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlList.h"
 #include "ctrlScrollBar.h"
 #include "CollisionDetection.h"
 #include "WindowManager.h"
 #include "ogl/glArchivItem_Font.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlList::ctrlList(Window* parent,
                    unsigned int id,
@@ -164,13 +159,10 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlList::Draw_()
 {
@@ -199,11 +191,8 @@ bool ctrlList::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Zeile hinzu.
- *
- *  @author FloSoft
  */
 void ctrlList::AddString(const std::string& text)
 {
@@ -213,22 +202,16 @@ void ctrlList::AddString(const std::string& text)
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(lines.size()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Verändert einen String
- *
- *  @author OLiver
  */
 void ctrlList::SetString(const std::string& text, const unsigned id)
 {
     lines[id] = text;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Items.
- *
- *  @author FloSoft
  */
 void ctrlList::DeleteAllItems()
 {
@@ -236,15 +219,12 @@ void ctrlList::DeleteAllItems()
     selection_ = -1;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert den Wert einer Zeile.
  *
  *  @param[in] line Die Zeile
  *
  *  @return Text der Zeile
- *
- *  @author OLiver
  */
 const std::string& ctrlList::GetItemText(unsigned short line) const
 {
@@ -254,14 +234,11 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
     return EMPTY_STRING;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern.
  *
  *  @param[in] width  Neue Breite
  *  @param[in] height Neue Höhe
- *
- *  @author OLiver
  */
 void ctrlList::Resize_(unsigned short width, unsigned short height)
 {
@@ -282,11 +259,8 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  vertauscht zwei Zeilen
- *
- *  @author OLiver
  */
 void ctrlList::Swap(unsigned short first, unsigned short second)
 {
@@ -300,11 +274,8 @@ void ctrlList::Swap(unsigned short first, unsigned short second)
     std::swap(lines[first], lines[second]);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  entfernt eine Zeile
- *
- *  @author OLiver
  */
 void ctrlList::Remove(const unsigned short index)
 {

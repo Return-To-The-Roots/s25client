@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlCheck.h"
 #include "CollisionDetection.h"
@@ -24,9 +22,6 @@
 #include "driver/src/MouseCoords.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlCheck::ctrlCheck(Window* parent,
                      unsigned int id,
@@ -43,15 +38,12 @@ ctrlCheck::ctrlCheck(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  der Messagehandler.
  *
  *  @param[in] msg   Die Nachricht.
  *  @param[in] id    Die ID des Quellsteuerelements.
  *  @param[in] param Ein nachrichtenspezifischer Parameter.
- *
- *  @author OLiver
  */
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
@@ -66,11 +58,8 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlCheck::Draw_()
 {

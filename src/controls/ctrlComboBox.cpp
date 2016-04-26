@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Loader.h"
 #include "ctrlComboBox.h"
@@ -26,9 +24,6 @@
 #include "driver/src/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlComboBox::ctrlComboBox(Window* parent,
                            unsigned int id,
@@ -54,12 +49,8 @@ ctrlComboBox::ctrlComboBox(Window* parent,
     Resize_(width, height);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe verändern
- *
- *  @author Divan
- *  @author OLiver
  */
 void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
 {
@@ -213,11 +204,8 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int sele
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt einen String zur Liste hinzu.
- *
- *  @author OLiver
  */
 void ctrlComboBox::AddString(const std::string& text)
 {
@@ -225,11 +213,8 @@ void ctrlComboBox::AddString(const std::string& text)
     Resize_(width_, height_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Items der Liste.
- *
- *  @author OLiver
  */
 void ctrlComboBox::DeleteAllItems()
 {
@@ -237,11 +222,8 @@ void ctrlComboBox::DeleteAllItems()
     Resize_(width_, height_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wählt ein Item aus
- *
- *  @author OLiver
  */
 void ctrlComboBox::SetSelection(unsigned short selection)
 {
@@ -250,11 +232,8 @@ void ctrlComboBox::SetSelection(unsigned short selection)
     GetCtrl<ctrlList>(0)->SetSelection(selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlComboBox::Draw_()
 {
@@ -276,11 +255,8 @@ bool ctrlComboBox::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  blendet die Liste ein oder aus.
- *
- *  @author OLiver
  */
 void ctrlComboBox::ShowList(bool show)
 {

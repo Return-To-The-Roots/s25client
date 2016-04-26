@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlTable.h"
 #include "ctrlScrollBar.h"
@@ -27,9 +25,6 @@
 #include "driver/src/KeyEvent.h"
 #include <sstream>
 #include <cstdarg>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlTable::ctrlTable(Window* parent,
                      unsigned int id,
@@ -81,11 +76,8 @@ ctrlTable::~ctrlTable()
     columns.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe verändern
- *
- *  @author Divan
  */
 void ctrlTable::Resize_(unsigned short width, unsigned short height)
 {
@@ -114,11 +106,8 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
         Msg_ScrollShow(0, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Items.
- *
- *  @author OLiver
  */
 void ctrlTable::DeleteAllItems()
 {
@@ -131,14 +120,10 @@ void ctrlTable::DeleteAllItems()
     sort_direction = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Auswahl.
  *
  *  @param[in] selection Der Auswahlindex
- *
- *  @author FloSoft
- *  @author OLiver
  */
 void ctrlTable::SetSelection(int selection)
 {
@@ -161,14 +146,11 @@ void ctrlTable::SetSelection(int selection)
         parent_->Msg_TableSelectItem(id_, selection_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Zeile hinzu.
  *
  *  @param[in] alwaysnull Immer 0, wird nur für Liste gebraucht
  *  @param[in] ...        Die Werte für die Spalten.
- *
- *  @author OLiver
  */
 void ctrlTable::AddRow(unsigned alwaysnull, ...)
 {
@@ -191,7 +173,6 @@ void ctrlTable::AddRow(unsigned alwaysnull, ...)
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows.size()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert den Wert eines Feldes.
  *
@@ -199,8 +180,6 @@ void ctrlTable::AddRow(unsigned alwaysnull, ...)
  *  @param[in] column Die Spalte
  *
  *  @return Text in Feld <@p column,@p row>
- *
- *  @author OLiver
  */
 const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short column) const
 {
@@ -211,7 +190,6 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
     return rows.at(row).columns.at(column);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sortiert die Zeilen.
  *
@@ -220,8 +198,6 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *                         @p NULL  - Wechsel,
  *                         @p true  - A-Z,
  *                         @p false - Z-A
- *
- *  @author OLiver
  */
 void ctrlTable::SortRows(int column, bool* direction)
 {
@@ -266,13 +242,10 @@ void ctrlTable::SortRows(int column, bool* direction)
     }while(!done);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 bool ctrlTable::Draw_()
 {

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlButton.h"
 #include "Loader.h"
@@ -25,9 +23,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                        unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
@@ -106,11 +101,8 @@ void ctrlButton::TestMouseOver()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlButton::Draw_()
 {

@@ -19,9 +19,6 @@
 #include "GameEvent.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id):
     GameObject(sgd, obj_id),
     obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),

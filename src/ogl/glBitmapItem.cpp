@@ -21,9 +21,6 @@
 #include "libsiedler2/src/ArchivItem_Bitmap.h"
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 glBitmapItem::glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow, bool isOwning): bmp(b), type(shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP), isOwning_(isOwning)
 {
     b->getVisibleArea(x, y, w, h);

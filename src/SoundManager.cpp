@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "SoundManager.h"
 
@@ -26,9 +24,6 @@
 #include "ogl/glArchivItem_Sound.h"
 #include "Settings.h"
 #include "GameClient.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(0)
 {

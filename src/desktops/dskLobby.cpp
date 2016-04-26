@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskLobby.h"
@@ -43,9 +41,6 @@
 #include <Log.h>
 #include <boost/lexical_cast.hpp>
 #include <set>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL), servercreate(NULL)
 {
@@ -312,33 +307,24 @@ bool dskLobby::ConnectToSelectedGame()
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Verbindung verloren.
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Status_ConnectionLost()
 {
     LC_Status_IncompleteMessage();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: fehlerhafte Anfrage / kaputte Daten.
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Status_IncompleteMessage()
 {
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lost connection to lobby!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Benutzerdefinierter Fehler
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Status_Error(const std::string& error)
 {
@@ -346,22 +332,16 @@ void dskLobby::LC_Status_Error(const std::string& error)
         servercreate->LC_Status_Error(error);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Wir wurden erfolgreich mit einem Gameserver verbunden
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Connected()
 {
     WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Chatnachricht erhalten
- *
- *  @author FloSoft
  */
 void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {

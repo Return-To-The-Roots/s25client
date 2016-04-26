@@ -15,15 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlPercent.h"
 #include "ogl/glArchivItem_Font.h"
 #include <cstdio>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlPercent::ctrlPercent(Window* parent,
                          unsigned int id,
@@ -40,13 +35,10 @@ ctrlPercent::ctrlPercent(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlPercent::Draw_()
 {

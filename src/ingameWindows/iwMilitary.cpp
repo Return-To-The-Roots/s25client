@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwMilitary.h"
 #include "controls/ctrlProgress.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwMilitary::iwMilitary()
     : IngameWindow(CGI_MILITARY, 0xFFFE, 0xFFFE, 168, 330, _("Military"), LOADER.GetImageN("io", 5)),

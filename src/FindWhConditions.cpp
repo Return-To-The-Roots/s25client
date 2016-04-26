@@ -20,9 +20,6 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "gameData/ShieldConsts.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 namespace FW
 {
 

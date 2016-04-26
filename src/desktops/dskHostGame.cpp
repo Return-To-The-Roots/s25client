@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskHostGame.h"
 #include "dskGameLoader.h"
@@ -50,9 +48,6 @@
 #include "Log.h"
 
 #include "../libsiedler2/src/prototypen.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 dskHostGame::dskHostGame(const ServerType serverType) :
     Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType), wasActivated(false)
@@ -236,11 +231,8 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     GAMECLIENT.SetInterface(this);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
- *
- *  @author Divan
  */
 void dskHostGame::Resize_(unsigned short  /*width*/, unsigned short  /*height*/)
 {
@@ -399,11 +391,8 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     group->SetActive(this->active_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Methode vor dem Zeichnen
- *
- *  @author OLiver
  */
 void dskHostGame::Msg_PaintBefore()
 {
@@ -955,11 +944,8 @@ void dskHostGame::CI_Error(const ClientError ce)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)RankingInfo: Rankinginfo eines bestimmten Benutzers empfangen
- *
- *  @author FloSoft
  */
 void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
 {
@@ -970,11 +956,8 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
- *
- *  @author FloSoft
  */
 void dskHostGame::LC_Status_Error(const std::string& error)
 {

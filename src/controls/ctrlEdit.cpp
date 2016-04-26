@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlEdit.h"
 
@@ -26,9 +24,6 @@
 #include "CollisionDetection.h"
 #include "helpers/converters.h"
 #include <sstream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlEdit::ctrlEdit(Window* parent,
                    unsigned int id,
@@ -49,13 +44,10 @@ ctrlEdit::ctrlEdit(Window* parent,
     SetText("");
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Text.
  *
  *  @param[in] text Der Text.
- *
- *  @author OLiver
  */
 void ctrlEdit::SetText(const std::string& text)
 {
@@ -86,13 +78,10 @@ std::string ctrlEdit::GetText() const
     return cvUnicodeToUTF8(text_);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
  *
  *  @todo muss alles überarbeitet werden
- *
- *  @author OLiver
  */
 bool ctrlEdit::Draw_()
 {
@@ -150,13 +139,10 @@ bool ctrlEdit::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein Zeichen zum Text hinzu
  *
  *  @param[in] text Das Zeichen
- *
- *  @author FloSoft
  */
 void ctrlEdit::AddChar(unsigned int c)
 {
@@ -171,11 +157,8 @@ void ctrlEdit::AddChar(unsigned int c)
     CursorRight();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  entfernt ein Zeichen
- *
- *  @author FloSoft
  */
 void ctrlEdit::RemoveChar()
 {
@@ -191,11 +174,8 @@ void ctrlEdit::RemoveChar()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  benachrichtigt das Parent ("OnChange")
- *
- *  @author FloSoft
  */
 void ctrlEdit::Notify()
 {
@@ -210,11 +190,8 @@ void ctrlEdit::Msg_PaintAfter()
     focus_ = newFocus_;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Maustaste-gedrückt Callback
- *
- *  @author OLiver
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
@@ -233,11 +210,8 @@ bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Taste-gedrückt Callback
- *
- *  @author FloSoft
  */
 bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 {

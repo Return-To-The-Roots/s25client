@@ -15,15 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 #include "Random.h"
 #include "libutil/src/Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 void GameClient::ExecuteNWF()
 {

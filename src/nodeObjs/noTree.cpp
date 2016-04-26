@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noTree.h"
 
@@ -31,9 +29,6 @@
 #include "GameInterface.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;

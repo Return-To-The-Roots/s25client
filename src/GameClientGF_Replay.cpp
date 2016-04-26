@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 
@@ -25,9 +23,6 @@
 #include "GameManager.h"
 #include "ClientInterface.h"
 #include "libutil/src/Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 void GameClient::ExecuteGameFrame_Replay()
 {

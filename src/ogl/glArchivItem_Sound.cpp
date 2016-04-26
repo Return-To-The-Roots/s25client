@@ -15,13 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 glArchivItem_Sound::glArchivItem_Sound()
     : baseArchivItem_Sound(), sound(NULL)

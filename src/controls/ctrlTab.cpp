@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlTab.h"
 
@@ -25,9 +23,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "Loader.h"
 #include <cstring>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 ctrlTab::ctrlTab(Window* parent,
@@ -71,11 +66,8 @@ bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Tab hinzu.
- *
- *  @author OLiver
  */
 ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id)
 {
@@ -94,11 +86,8 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
     return NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  löscht alle Tabs.
- *
- *  @author OLiver
  */
 void ctrlTab::DeleteAllTabs()
 {
@@ -110,11 +99,8 @@ void ctrlTab::DeleteAllTabs()
     tab_selection = 0;
     tab_count = 0;
 }
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktiviert eine bestimmte Tabseite.
- *
- *  @author OLiver
  */
 void ctrlTab::SetSelection(unsigned short nr, bool  /*notify*/)
 {
@@ -143,12 +129,9 @@ void ctrlTab::SetSelection(unsigned short nr, bool  /*notify*/)
     GetCtrl<ctrlGroup>(tabs[nr] + MAX_TAB_COUNT + 1)->SetVisible(true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
  *  werden können
- *
- *  @author OLiver
  */
 ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
 {
@@ -164,13 +147,10 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
     return GetCtrl<ctrlGroup>(MAX_TAB_COUNT + 1 + tab_id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlTab::Draw_()
 {

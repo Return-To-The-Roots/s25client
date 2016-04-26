@@ -16,8 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwMilitaryBuilding.h"
 
@@ -36,9 +34,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "controls/ctrlButton.h"
 #include <set>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),

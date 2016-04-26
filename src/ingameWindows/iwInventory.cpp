@@ -15,16 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwInventory.h"
 #include "Loader.h"
 #include "GameClient.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwInventory::iwInventory()
     : iwWares(CGI_INVENTORY, 0xFFFF, 0xFFFF, 167, 376, _("Stock"), 2, false, SmallFont, GAMECLIENT.GetLocalPlayer().GetInventory())

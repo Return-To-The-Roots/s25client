@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofHunter.h"
 
@@ -33,9 +31,6 @@
 #include "gameData/JobConsts.h"
 #include "ai/AIEvents.h"
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 /// Maximale Distanz, die ein Jäger läuft, um ein Tier zu jagen
 const MapCoord MAX_HUNTING_DISTANCE = 50;

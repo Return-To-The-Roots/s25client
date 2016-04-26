@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwWares.h"
 #include "Loader.h"
@@ -28,9 +26,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class glArchivItem_Bitmap;
 
 //167, 416
@@ -215,13 +210,10 @@ void iwWares::Msg_PaintBefore()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  bestimmte Inventurseite zeigen.
  *
  *  @param[in] page Die neue Seite
- *
- *  @author FloSoft
  */
 void iwWares::SetPage(unsigned char page)
 {

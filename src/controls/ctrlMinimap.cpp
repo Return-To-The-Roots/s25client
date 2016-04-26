@@ -15,15 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlMinimap.h"
 #include "gameData/MinimapConsts.h"
 #include "Minimap.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned int id,
@@ -40,11 +35,8 @@ ctrlMinimap::ctrlMinimap( Window* parent,
     SetDisplaySize(width, height, map_width, map_height);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Größe ändern
- *
- *  @author Divan
  */
 void ctrlMinimap::Resize_(unsigned short width, unsigned short height)
 {

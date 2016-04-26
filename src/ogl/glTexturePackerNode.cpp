@@ -19,9 +19,6 @@
 #include "glTexturePackerNode.h"
 #include "ogl/glSmartBitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();

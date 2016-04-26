@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "PostMsg.h"
 #include "GameClient.h"
@@ -25,9 +23,6 @@
 #include "Loader.h"
 #include <boost/format.hpp>
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 PostMsg::PostMsg(const std::string& text, PostMessageCategory cat)
     : text(text), type(PMT_NORMAL), cat(cat), sendFrame(GAMECLIENT.GetGFNumber()) { }

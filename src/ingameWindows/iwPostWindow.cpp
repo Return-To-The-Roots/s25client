@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "iwPostWindow.h"
 #include "world/GameWorldView.h"
@@ -35,9 +31,6 @@
 #include "macros.h"
 #include "GameClient.h"
 #include <iostream>
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 iwPostWindow::iwPostWindow(GameWorldView& gwv)
     : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {
@@ -192,8 +185,6 @@ void iwPostWindow::Msg_PaintBefore()
 
 /**
  *  React on keypress
- *
- *  @author Divan
  */
 bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 {

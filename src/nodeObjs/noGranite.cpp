@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noGranite.h"
 
@@ -25,9 +23,6 @@
 #include "FOWObjects.h"
 
 #include "ogl/glSmartBitmap.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noGranite::noGranite(const GraniteType type, const unsigned char state) : noBase(NOP_GRANITE), type(type), state(state)
 {

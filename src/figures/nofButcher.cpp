@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofButcher.h"
 #include "Loader.h"
@@ -26,9 +23,6 @@
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
 nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual* workplace)

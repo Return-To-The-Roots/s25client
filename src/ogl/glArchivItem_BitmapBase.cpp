@@ -15,30 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_BitmapBase.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class glArchivItem_BitmapBase
  *
  *  Basisklasse für GL-Bitmapitems.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var glArchivItem_BitmapBase::texture
  *
  *  OpenGL-Textur des Bildes.
- *
- *  @author FloSoft
  */
 
 glArchivItem_BitmapBase::glArchivItem_BitmapBase()
@@ -66,11 +55,8 @@ glArchivItem_BitmapBase& glArchivItem_BitmapBase::operator=(const glArchivItem_B
     return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Liefert das GL-Textur-Handle.
- *
- *  @author FloSoft
  */
 unsigned int glArchivItem_BitmapBase::GetTexture()
 {
@@ -79,11 +65,8 @@ unsigned int glArchivItem_BitmapBase::GetTexture()
     return texture;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Löscht die GL-Textur (z.B fürs Neuerstellen)
- *
- *  @author FloSoft
  */
 void glArchivItem_BitmapBase::DeleteTexture()
 {
@@ -92,11 +75,8 @@ void glArchivItem_BitmapBase::DeleteTexture()
     texture = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Texturfilter auf einen bestimmten Wert.
- *
- *  @author FloSoft
  */
 void glArchivItem_BitmapBase::setFilter(unsigned int filter)
 {
@@ -110,11 +90,8 @@ void glArchivItem_BitmapBase::setFilter(unsigned int filter)
         DeleteTexture();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erzeugt die Textur.
- *
- *  @author FloSoft
  */
 void glArchivItem_BitmapBase::GenerateTexture()
 {

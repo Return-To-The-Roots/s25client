@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nobMilitary.h"
 #include "GameClient.h"
@@ -48,9 +44,6 @@
 
 #include <limits>
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class RoadSegment;
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
@@ -1249,11 +1242,8 @@ void nobMilitary::HitOfCatapultStone()
         GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
- *
- *  @author OLiver
  */
 bool nobMilitary::IsDemolitionAllowed() const
 {

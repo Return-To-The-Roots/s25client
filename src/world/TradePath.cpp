@@ -19,9 +19,6 @@
 #include "world/TradePath.h"
 #include "SerializedGameData.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 TradePath::TradePath(SerializedGameData& sgd): start(sgd.PopMapPoint()), goal(sgd.PopMapPoint()), route(sgd.PopContainer(route)){}
 
 void TradePath::Serialize(SerializedGameData& sgd) const

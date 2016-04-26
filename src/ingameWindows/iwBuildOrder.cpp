@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildOrder.h"
 #include "controls/ctrlComboBox.h"
@@ -25,9 +23,6 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwBuildOrder::iwBuildOrder()
     : IngameWindow(CGI_BUILDORDER, (unsigned short) - 1, (unsigned short) - 1, 320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),

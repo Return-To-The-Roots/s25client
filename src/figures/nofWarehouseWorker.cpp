@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofWarehouseWorker.h"
 #include "world/GameWorldGame.h"
@@ -28,9 +26,6 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
     : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))),

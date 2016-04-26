@@ -15,18 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noDisappearingMapEnvObject.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noBase.
  *
@@ -34,8 +28,6 @@
  *  @param[in] y        Y-Position
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
- *
- *  @author OLiver
  */
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const unsigned short map_id)
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
@@ -54,11 +46,8 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  An x,y zeichnen.
- *
- *  @author OLiver
  */
 void noDisappearingMapEnvObject::Draw(int x, int y)
 {
@@ -73,11 +62,8 @@ void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
     HandleEvent_noDisappearingEnvObject(id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Räumt das Objekt auf.
- *
- *  @author FloSoft
  */
 void noDisappearingMapEnvObject::Destroy_noDisappearingMapEnvObject()
 {

@@ -22,11 +22,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for allowing to have unlimited resources.
- *
- *  @author FloSoft
  */
 class AddonExhaustibleWells : public AddonBool
 {

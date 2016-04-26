@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noSign.h"
 #include "Loader.h"
@@ -24,10 +22,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p noBase.
  *
@@ -35,8 +29,6 @@
  *  @param[in] y        Y-Position
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
- *
- *  @author OLiver
  */
 noSign::noSign(const MapPoint pos,
                const unsigned char type,
@@ -59,11 +51,8 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingE
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  An x,y zeichnen.
- *
- *  @author OLiver
  */
 void noSign::Draw(int x, int y)
 {
@@ -86,11 +75,8 @@ void noSign::HandleEvent(const unsigned int id)
     HandleEvent_noDisappearingEnvObject(id);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Räumt das Objekt auf.
- *
- *  @author FloSoft
  */
 void noSign::Destroy_noSign()
 {

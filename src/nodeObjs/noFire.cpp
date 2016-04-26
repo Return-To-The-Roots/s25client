@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noFire.h"
 
@@ -28,9 +26,6 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noFire::noFire(const MapPoint pos, const unsigned char size)
     : noCoordBase(NOP_FIRE, pos), size(size), was_sounding(false), last_sound(0), next_interval(0)

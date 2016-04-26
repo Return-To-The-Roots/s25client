@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noFlag.h"
 
@@ -32,9 +30,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "gameData/TerrainData.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noFigure;
 
 noFlag::noFlag(const MapPoint pos,
@@ -160,12 +155,9 @@ void noFlag::Draw(int x, int y)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung"
  *  für den Fog of War.
- *
- *  @author OLiver
  */
 FOWObject* noFlag::CreateFOWObject() const
 {
@@ -173,11 +165,8 @@ FOWObject* noFlag::CreateFOWObject() const
     return new fowFlag(owner.color, owner.nation, flagtype);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Legt eine Ware an der Flagge ab.
- *
- *  @author OLiver
  */
 void noFlag::AddWare(Ware*& ware)
 {
@@ -195,11 +184,8 @@ void noFlag::AddWare(Ware*& ware)
     RTTR_Assert(false); // No place found???
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
- *
- *  @author OLiver
  */
 unsigned noFlag::GetWareCount() const
 {
@@ -211,15 +197,12 @@ unsigned noFlag::GetWareCount() const
     return count;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  * Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge),
  * entfernt sie von der Flagge und gibt sie zurück.
  *
  * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
  * und somit nicht die Träger benachrichtigt werden müssen.
- *
- *  @author OLiver
  */
 Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier)
 {
@@ -311,12 +294,9 @@ unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
     return ret;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte
  *  Richtung noch transportiert werden müssen.
- *
- *  @author OLiver
  */
 unsigned noFlag::GetPunishmentPoints(const unsigned char dir) const
 {
@@ -332,11 +312,8 @@ unsigned noFlag::GetPunishmentPoints(const unsigned char dir) const
     return points;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
- *
- *  @author OLiver
  */
 void noFlag::DestroyAttachedBuilding()
 {
@@ -349,11 +326,8 @@ void noFlag::DestroyAttachedBuilding()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
- *
- *  @author OLiver
  */
 void noFlag::Upgrade()
 {
@@ -361,11 +335,8 @@ void noFlag::Upgrade()
         flagtype = FT_LARGE;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Feind übernimmt die Flagge.
- *
- *  @author OLiver
  */
 void noFlag::Capture(const unsigned char new_owner)
 {
@@ -390,11 +361,8 @@ void noFlag::Capture(const unsigned char new_owner)
     this->player = new_owner;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
- *
- *  @author OLiver
  */
 bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 {
@@ -419,11 +387,8 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
- *
- *  @author OLiver
  */
 void noFlag::ImpossibleForBWU(const unsigned bwu_id)
 {

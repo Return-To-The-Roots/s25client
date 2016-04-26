@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "buildings/noBuildingSite.h"
 #include "GameClient.h"
@@ -33,9 +31,6 @@
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noRoadNode;
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)

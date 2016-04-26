@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwMissionStatement.h"
 #include "controls/ctrlMultiline.h"
@@ -25,20 +23,12 @@
 #include "gameData/const_gui_ids.h"
 #include <sstream>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p iwTextfile.
  *
  *  @todo Das Fenster ist zu klein, um 80 Zeichen pro Zeile darstellen zu
  *        koennen. Ein horizontaler Scrollbalken fuer 640x480 waere nicht
  *        schlecht.
- *
- *  @author Devil
- *  @author FloSoft
- *  @author OLiver
  */
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content)
     : IngameWindow(CGI_MISSION_STATEMENT, 0xFFFF, 0xFFFF, 640, 480, title, LOADER.GetImageN("io", 5))

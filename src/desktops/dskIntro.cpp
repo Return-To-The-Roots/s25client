@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "dskIntro.h"
 
@@ -25,15 +23,9 @@
 
 #include "dskMainMenu.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class dskIntro
  *
  *  Klasse des Intro Desktops.
- *
- *  @author FloSoft
  */
 
 dskIntro::dskIntro() : Desktop(LOADER.GetImageN("menu", 0))

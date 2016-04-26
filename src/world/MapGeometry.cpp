@@ -19,9 +19,6 @@
 #include "world/MapGeometry.h"
 #include <stdexcept>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
 {
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:

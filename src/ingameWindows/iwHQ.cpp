@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwHQ.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -24,9 +22,6 @@
 #include "ogl/glArchivItem_Font.h"
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwHQ::iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
     : iwBaseWarehouse(gwv, title, pages_count, wh)

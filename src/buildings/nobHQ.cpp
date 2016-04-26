@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nobHQ.h"
 #include "Loader.h"
@@ -30,9 +26,6 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include <numeric>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
     : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation), isTent_(isTent)

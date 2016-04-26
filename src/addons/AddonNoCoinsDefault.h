@@ -6,11 +6,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for disable coins by default
- *
- *  @author MrHase
  */
 class AddonNoCoinsDefault : public AddonBool
 {

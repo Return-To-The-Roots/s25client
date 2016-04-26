@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
 #include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "world/GameWorldViewer.h"
@@ -28,9 +25,6 @@
 #include "Settings.h"
 #include "controls/ctrlButton.h"
 #include "gameTypes/RoadBuildState.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 // 260x190, 300x250, 340x310
 

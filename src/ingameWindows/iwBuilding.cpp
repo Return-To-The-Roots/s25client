@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
 
@@ -32,9 +30,6 @@
 #include "iwHelp.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/BuildingConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;

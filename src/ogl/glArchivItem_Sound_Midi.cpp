@@ -15,25 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Midi.h"
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielt die Musik ab.
  *
  *  @param[in] volume Lautstärke der Musik.
  *  @param[in] loop   Endlosschleife ja/nein
- *
- *  @author FloSoft
  */
 void glArchivItem_Sound_Midi::Play(const unsigned repeats)
 {

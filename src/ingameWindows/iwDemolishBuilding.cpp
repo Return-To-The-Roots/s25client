@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwDemolishBuilding.h"
 #include "world/GameWorldView.h"
@@ -25,10 +23,6 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 #include "GameClient.h"
-
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
     : IngameWindow(building->CreateGUIID(), 0xFFFE, 0xFFFE, 200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)

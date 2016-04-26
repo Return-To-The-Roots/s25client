@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlMultiline.h"
 #include "ctrlScrollBar.h"
@@ -24,9 +22,6 @@
 #include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
 #include <algorithm>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlMultiline::ctrlMultiline(Window* parent,
                              unsigned int id,
@@ -43,11 +38,8 @@ ctrlMultiline::ctrlMultiline(Window* parent,
     AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, lines_in_control);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Zeile hinzu.
- *
- *  @author OLiver
  */
 void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool scroll)
 {
@@ -63,11 +55,8 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlMultiline::Draw_()
 {

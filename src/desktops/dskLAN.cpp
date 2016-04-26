@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include <build_version.h>
 #include "dskLAN.h"
@@ -32,9 +30,6 @@
 #include "controls/ctrlTable.h"
 #include <Serializer.h>
 #include <boost/lexical_cast.hpp>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 namespace {
     const unsigned btBackId = 3;

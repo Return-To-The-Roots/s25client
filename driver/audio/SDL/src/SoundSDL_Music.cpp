@@ -15,13 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "SoundSDL_Music.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 SoundSDL_Music::SoundSDL_Music() : music(NULL)
 {
@@ -32,15 +27,12 @@ SoundSDL_Music::~SoundSDL_Music()
     Mix_FreeMusic(music);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Abspielen Starten.
  *
  *  @param[in] loop  @p true für ununterbrochenes Abspielen
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author FloSoft
  */
 //int SoundSDL_Music::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
@@ -64,13 +56,10 @@ SoundSDL_Music::~SoundSDL_Music()
 //
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Abspielen Stoppen.
  *
  *  @param[in] channel Ignored
- *
- *  @author FloSoft
  */
 //void SoundSDL_Music::Stop(int channel)
 //{

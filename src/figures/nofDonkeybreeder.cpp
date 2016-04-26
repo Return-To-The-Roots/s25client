@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofDonkeybreeder.h"
 
@@ -30,9 +28,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class SerializedGameData;
 
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
@@ -45,11 +40,8 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet ihn beim Arbeiten.
- *
- *  @author FloSoft
  */
 void nofDonkeybreeder::DrawWorking(int x, int y)
 {
@@ -83,11 +75,8 @@ void nofDonkeybreeder::DrawWorking(int x, int y)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Der Arbeiter erzeugt eine Ware.
- *
- *  @author FloSoft
  */
 GoodType nofDonkeybreeder::ProduceWare()
 {

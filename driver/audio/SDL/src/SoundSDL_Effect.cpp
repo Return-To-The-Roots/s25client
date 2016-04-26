@@ -15,14 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "SoundSDL_Effect.h"
 #include <SDL_mixer.h>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 SoundSDL_Effect::SoundSDL_Effect() : sound(NULL)
 {
@@ -34,7 +29,6 @@ SoundSDL_Effect::~SoundSDL_Effect()
         Mix_FreeChunk(sound);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Abspielen Starten.
  *
@@ -42,8 +36,6 @@ SoundSDL_Effect::~SoundSDL_Effect()
  *  @param[in] loop   @p true für ununterbrochenes Abspielen
  *
  *  @return @p Play-ID bei Erfolg, @p 0xFFFFFFFF bei Fehler
- *
- *  @author FloSoft
  */
 //int SoundSDL_Effect::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
@@ -60,13 +52,10 @@ SoundSDL_Effect::~SoundSDL_Effect()
 //  return channel;
 //}
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Abspielen Stoppen.
  *
  *  @param[in] channel Channel der gestoppt werden soll (-1 für alle)
- *
- *  @author FloSoft
  */
 //void SoundSDL_Effect::Stop(int channel)
 //{

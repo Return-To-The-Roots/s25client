@@ -19,9 +19,6 @@
 #include "FramesInfo.h"
 #include "helpers/mathFuncs.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 FramesInfo::FramesInfo()
 {
     Clear();

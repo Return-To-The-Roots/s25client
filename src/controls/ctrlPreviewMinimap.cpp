@@ -15,15 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
 ctrlPreviewMinimap::Player::Player() : x(0), y(0), color(0)
@@ -42,11 +37,8 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
     SetMap(s2map);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet die MapPreview
- *
- *  @author OLiver
  */
 bool ctrlPreviewMinimap::Draw_()
 {

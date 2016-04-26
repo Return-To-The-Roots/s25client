@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noRoadNode.h"
 
@@ -24,9 +22,6 @@
 #include "GameClientPlayer.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)

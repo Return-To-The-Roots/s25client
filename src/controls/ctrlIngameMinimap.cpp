@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlIngameMinimap.h"
 #include "world/GameWorldView.h"
@@ -25,9 +23,6 @@
 #include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class Window;
 
 ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
@@ -45,11 +40,8 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet die MapPreview
- *
- *  @author OLiver
  */
 bool ctrlIngameMinimap::Draw_()
 {
@@ -125,11 +117,8 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt Breite und Höhe des Controls
- *
- *  @author OLiver
  */
 void ctrlIngameMinimap::SetDisplaySize(const unsigned short width, const unsigned short height)
 {

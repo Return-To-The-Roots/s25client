@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glSmartBitmap.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -26,9 +24,6 @@
 #include "libutil/src/colors.h"
 #include <limits>
 #include <climits>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 void glSmartBitmap::reset()
 {

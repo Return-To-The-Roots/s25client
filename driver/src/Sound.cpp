@@ -15,36 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "main.h" // IWYU pragma: keep
 #include "Sound.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @class Sound
  *
  *  Basisklasse für einen Sound.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var Sound::nr
  *
  *  Interne Nummer des Sounds.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var Sound::CallBack
  *
  *  Callback für Spielbenachrichtigung.
- *
- *  @author FloSoft
  */
 
 Sound::Sound() :  nr(-1), type(SD_UNKNOWN)

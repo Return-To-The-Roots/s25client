@@ -15,25 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Wave.h"
 
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Spielt den Sound ab.
  *
  *  @param[in] volume Lautstärke des Sounds.
  *  @param[in] loop   Endlosschleife ja/nein
- *
- *  @author FloSoft
  */
 unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {

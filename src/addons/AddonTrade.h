@@ -17,16 +17,9 @@
 #ifndef ADDONTRADE_H_INCLUDED
 #define ADDONTRADE_H_INCLUDED
 
-
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////S////////////////////////////////////////////////////
-/**
- *  Addon for a Charburner
- *
- *  @author OLiver
- */
 class AddonTrade : public AddonBool
 {
     public:

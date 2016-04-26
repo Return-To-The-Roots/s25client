@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwPleaseWait.h"
 
@@ -26,17 +24,11 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p iwPleaseWait.
  *
  *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
  *  mehrfach betätigen kann.
- *
- *  @author OLiver
  */
 iwPleaseWait::iwPleaseWait() : IngameWindow(CGI_PLEASEWAIT, 0xFFFF, 0xFFFF, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true)
 {

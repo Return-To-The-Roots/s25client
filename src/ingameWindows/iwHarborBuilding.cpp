@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwHarborBuilding.h"
 
@@ -26,9 +24,6 @@
 #include "GameClient.h"
 #include "controls/ctrlButton.h"
 #include "ogl/glArchivItem_Font.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
     : iwHQ(gwv, hb, _("Harbor building"), 4)
@@ -53,13 +48,10 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
     harbor_page->SetVisible(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Expeditionsknopf korrekt
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
- *
- *  @author FloSoft
  */
 void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 {
@@ -84,13 +76,10 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt den Expeditionsknopf korrekt
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
- *
- *  @author OLiver
  */
 void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 {

@@ -24,9 +24,6 @@
 #include <boost/static_assert.hpp>
 #include <vector>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 // Use unnamed namespace
 namespace{
 

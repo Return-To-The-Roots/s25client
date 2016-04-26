@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwSettings.h"
 
@@ -29,9 +27,6 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 #include <cstdio>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, 0xFFFF, 0xFFFF, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41))

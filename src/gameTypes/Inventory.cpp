@@ -19,9 +19,6 @@
 #include "Inventory.h"
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 void Inventory::clear()
 {
     std::fill(goods.begin(), goods.end(), 0);

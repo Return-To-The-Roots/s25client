@@ -22,11 +22,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  set ship movement speed
- *
- *  @author Marcus
  */
 class AddonShipSpeed : public AddonList
 {

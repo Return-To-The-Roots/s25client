@@ -15,30 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlTimer.h"
 
 #include "drivers/VideoDriverWrapper.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /** @var ctrlTimer::timer
  *
  *  Der Timer zum Abgleichen der Zeit.
- *
- *  @author FloSoft
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /** @var ctrlTimer::timeout
  *
  *  Die Zeit nach der der Timer zünden soll.
- *
- *  @author FloSoft
  */
 
 ctrlTimer::ctrlTimer(Window* parent,
@@ -49,11 +38,8 @@ ctrlTimer::ctrlTimer(Window* parent,
     Start(timeout);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  startet den Timer.
- *
- *  @author FloSoft
  */
 void ctrlTimer::Start(unsigned int timeout)
 {
@@ -63,11 +49,8 @@ void ctrlTimer::Start(unsigned int timeout)
     timer = VIDEODRIVER.GetTickCount();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  stoppt den Timer
- *
- *  @author FloSoft
  */
 void ctrlTimer::Stop()
 {

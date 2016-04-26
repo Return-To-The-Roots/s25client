@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "FOWObjects.h"
 #include "SerializedGameData.h"
@@ -25,9 +23,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "Loader.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(const unsigned color)

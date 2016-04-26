@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwDirectIPCreate.h"
 
@@ -29,9 +27,6 @@
 #include "desktops/dskSelectMap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCREATE, 0xFFFF, 0xFFFF, 300, 285, _("Create Game"), LOADER.GetImageN("resource", 41), true),
@@ -73,11 +68,8 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     port->SetText(LOADER.GetTextN("client", 3));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Statustext resetten
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 {
@@ -85,11 +77,8 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
     SetText("", COLOR_RED, true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Bei Enter nächstes Steuerelement auswählen
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::Msg_EditEnter(const unsigned int ctrl_id)
 {
@@ -130,11 +119,8 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned int ctrl_id, const i
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Button Clicki-Di-Bunti-Li
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
 {
@@ -182,12 +168,9 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool button)
 {
@@ -199,11 +182,8 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool
     GetCtrl<ctrlButton>(7)->Enable(button);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Status: Benutzerdefinierter Fehler
- *
- *  @author FloSoft
  */
 void iwDirectIPCreate::LC_Status_Error(const std::string& error)
 {

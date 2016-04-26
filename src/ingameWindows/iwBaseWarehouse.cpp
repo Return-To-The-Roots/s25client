@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwBaseWarehouse.h"
 
@@ -39,9 +37,6 @@
 #include "controls/ctrlOptionGroup.h"
 
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, const std::string& title,
                                  unsigned char page_count,

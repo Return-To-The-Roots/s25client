@@ -15,13 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlMultiSelectGroup.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class MouseCoords;
 
 ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
@@ -33,11 +28,8 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
- *
- *  @author jh
  */
 bool ctrlMultiSelectGroup::Draw_()
 {
@@ -46,11 +38,8 @@ bool ctrlMultiSelectGroup::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Selektiert einen neuen Button aus der Gruppe.
- *
- *  @author jh
  */
 void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 {
@@ -70,11 +59,8 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
         parent_->Msg_OptionGroupChange(GetID(), selection);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Entfernt die Selektion eines Buttons aus der Gruppe.
- *
- *  @author jh
  */
 void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify)
 {
@@ -95,11 +81,8 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
- *
- *  @author jh
  */
 void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify)
 {

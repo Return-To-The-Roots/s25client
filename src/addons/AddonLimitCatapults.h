@@ -22,11 +22,8 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for limiting the count of catapults
- *
- *  @author FloSoft
  */
 class AddonLimitCatapults : public AddonList
 {

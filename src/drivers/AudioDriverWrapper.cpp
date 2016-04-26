@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "AudioDriverWrapper.h"
 #include "VideoDriverWrapper.h"
 #include "driver/src/AudioInterface.h"
 #include "Settings.h"
 #include "MusicPlayer.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 {
@@ -113,7 +108,6 @@ bool AudioDriverWrapper::LoadDriver()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Lädt einen Sound.
  *
@@ -123,8 +117,6 @@ bool AudioDriverWrapper::LoadDriver()
  *  @param[in] size      Größe des Datenblocks
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
- *
- *  @author FloSoft
  */
 Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size)
 {

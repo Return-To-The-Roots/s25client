@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlScrollBar.h"
 #include "ctrlButton.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlScrollBar::ctrlScrollBar(Window* parent,
                              unsigned int id,
@@ -155,11 +150,8 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Scroll-Position.
- *
- *  @author OLiver
  */
 void ctrlScrollBar::SetPos(unsigned short scroll_pos)
 {
@@ -167,11 +159,8 @@ void ctrlScrollBar::SetPos(unsigned short scroll_pos)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Scroll-Höhe.
- *
- *  @author OLiver
  */
 void ctrlScrollBar::SetRange(unsigned short scroll_range)
 {
@@ -179,11 +168,8 @@ void ctrlScrollBar::SetRange(unsigned short scroll_range)
     CalculateScrollBar();
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Seiten-Höhe.
- *
- *  @author OLiver
  */
 void ctrlScrollBar::SetPageSize(unsigned short pagesize)
 {
@@ -212,13 +198,10 @@ void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
     CalculateScrollBar(height);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author OLiver
  */
 bool ctrlScrollBar::Draw_()
 {
@@ -234,11 +217,8 @@ bool ctrlScrollBar::Draw_()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  berechnet die Werte für die Scrollbar.
- *
- *  @author FloSoft
  */
 void ctrlScrollBar::CalculateScrollBar(unsigned short height)
 {

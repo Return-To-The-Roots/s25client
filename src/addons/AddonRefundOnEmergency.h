@@ -22,12 +22,9 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for refunding materials soon as a building gets destroyed and
  *  the emergency program is active
- *
- *  @author FloSoft
  */
 class AddonRefundOnEmergency : public AddonBool
 {

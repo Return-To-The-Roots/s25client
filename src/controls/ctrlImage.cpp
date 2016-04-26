@@ -15,16 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlImage.h"
 #include "CollisionDetection.h"
 #include "WindowManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlImage::ctrlImage(Window* parent,
                      unsigned int id,
@@ -42,11 +37,8 @@ ctrlImage::~ctrlImage()
     WINDOWMANAGER.SetToolTip(this, "");
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlImage::Draw_()
 {

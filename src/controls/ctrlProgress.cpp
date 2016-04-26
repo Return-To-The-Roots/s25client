@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlProgress.h"
 
@@ -26,9 +24,6 @@
 #include "CollisionDetection.h"
 
 #include <sstream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlProgress::ctrlProgress(Window* parent,
                            const unsigned int id,
@@ -66,25 +61,18 @@ ctrlProgress::ctrlProgress(Window* parent,
     AddImageButton(1, width - height, 0, height, height, tc, LOADER.GetImageN(str2, button_plus),  (button_plus_tooltip.length( ) ? button_plus_tooltip  : _("More")) );
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt die Position an den angegebenen Wert.
- *
- *  @author Devil
- *  @author FloSoft
  */
 void ctrlProgress::SetPosition(unsigned short position)
 {
     this->position = (position > maximum ? maximum : position);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichenmethode.
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
- *
- *  @author Devil
  */
 bool ctrlProgress::Draw_()
 {

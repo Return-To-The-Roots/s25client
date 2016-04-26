@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlBuildingIcon.h"
 #include "Loader.h"
@@ -25,9 +23,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "files.h"
 #include <string>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
                                    const unsigned int id,
@@ -41,11 +36,8 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
       type(type), nation(nation), size(size)
 {}
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool ctrlBuildingIcon::Draw_()
 {

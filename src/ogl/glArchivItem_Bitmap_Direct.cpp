@@ -15,16 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ArchivItem_Palette.h"
 #include "ogl/oglIncludes.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct()
 {
@@ -35,7 +30,6 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt einen Pixel auf einen bestimmten Wert.
  *
@@ -43,8 +37,6 @@ glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap
  *  @param[in] y       Y Koordinate des Pixels
  *  @param[in] color   Farbe des Pixels
  *  @param[in] palette Grundpalette
- *
- *  @author FloSoft
  */
 void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette)
 {
@@ -75,7 +67,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  setzt einen Pixel auf einen bestimmten Wert.
  *
@@ -85,8 +76,6 @@ void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y
  *  @param[in] g Grüner Wert
  *  @param[in] b Blauer Wert
  *  @param[in] a Alpha Wert (bei paletted nur 0xFF/0x00 unterstützt)
- *
- *  @author FloSoft
  */
 void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {

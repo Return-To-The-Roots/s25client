@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 
@@ -25,17 +23,11 @@
 #include "ClientInterface.h"
 #include "GameMessages.h"
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
  *
  *  @param[in] text        Der Text
  *  @param[in] destination Ziel der Nachricht
- *
- *  @author FloSoft
  */
 void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 {
@@ -57,11 +49,8 @@ void GameClient::Command_ToggleTeam(Team newteam)
     send_queue.push(new GameMessage_Player_Set_Team(0xff, newteam));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sendet den "Bereit"-Status.
- *
- *  @author FloSoft
  */
 void GameClient::Command_ToggleReady()
 {
@@ -73,15 +62,11 @@ void GameClient::Command_SetColor()
     send_queue.push(new GameMessage_Player_Set_Color(0xFF, GetLocalPlayer().color));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  wechselt einen Spieler.
  *
  *  @param[in] old_id Alte Spieler-ID
  *  @param[in] new_id Neue Spieler-ID
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned char player2)
 {

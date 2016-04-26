@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -24,9 +22,6 @@
 #include "GameClient.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class FOWObject;
 
 GameWorldViewer::GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings): GameWorldBase(players, gameSettings)

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noBuilding.h"
 #include "world/GameWorldGame.h"
@@ -26,9 +24,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/src/Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 class noFigure;
 
 noBuilding::noBuilding(const BuildingType type,

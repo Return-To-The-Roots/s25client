@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldView.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -40,9 +37,6 @@
 #include "helpers/converters.h"
 #include <boost/format.hpp>
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 GameWorldView::GameWorldView(GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height):
 	selPt(0, 0),
@@ -499,11 +493,8 @@ void GameWorldView::ToggleShowNamesAndProductivity()
         show_productivity = show_names = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  verschiebt das Bild zu einer bestimmten Stelle.
- *
- *  @author FloSoft
  */
 void GameWorldView::MoveTo(int x, int y, bool absolute)
 {

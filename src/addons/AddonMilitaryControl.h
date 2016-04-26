@@ -21,13 +21,9 @@
 
 #include "Addons.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon adds a 'order home' command button to military buildings. Pressing this button will send all soldiers of the highest rank available to the next warehouse
  *	the command was first added so the ai wouldnt have to change the military settings all the time to use the coins more efficiently - but with this addon players can use the command as well
- *
- *
- *  @author PoC
  */
 class AddonMilitaryControl : public AddonBool
 {

@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
 #include "ai/AIEvents.h"
@@ -37,9 +33,6 @@
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
@@ -364,12 +357,9 @@ namespace{
     };
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
  *  an einer (umliegenden) Stelle.
- *
- *  @author OLiver
  */
 bool nofBuildingWorker::GetResources(unsigned char type)
 {

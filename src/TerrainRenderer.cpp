@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 
@@ -36,9 +34,6 @@
 #include "ogl/oglIncludes.h"
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 /* Terrain rendering works like that:
  * Every point is associated with 2 triangles:
@@ -93,11 +88,8 @@ TerrainRenderer::PointF TerrainRenderer::GetBAround(const MapPoint pt, const uns
     return GetB(t, triangle) + PointF(offset);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  erzeugt die Terrain-Vertices.
- *
- *  @author OLiver
  */
 void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 {
@@ -174,12 +166,8 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewe
     vertex.borderColor[1] = ( GetColor(gwv.GetNeighbour(pt, 3)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, 4)) ) / 3.0f;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  erzeugt die OpenGL-Vertices.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 {
@@ -637,12 +625,8 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet den Kartenausschnitt.
- *
- *  @author OLiver
- *  @author FloSoft
  */
 void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 {
@@ -869,7 +853,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konvertiert die Koordinaten.
  *
@@ -877,8 +860,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
  *  @param[in,out] y  Die Y-Koordinate
  *  @param[out]    xo Das X-Offset
  *  @param[out]    yo Das Y-Offset
- *
- *  @author OLiver
  */
 MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) const
 {

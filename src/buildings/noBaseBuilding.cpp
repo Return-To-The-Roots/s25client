@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
 #include "GameClient.h"
@@ -35,9 +31,6 @@
 #include "GameInterface.h"
 #include "world/GameWorldGame.h"
 #include "Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
     : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])

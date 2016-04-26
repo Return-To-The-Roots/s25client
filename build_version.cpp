@@ -15,14 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include <build_version.h>
 #include <build_version_defines.h>
 #include <cstring>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 const char* GetWindowTitle()
 {

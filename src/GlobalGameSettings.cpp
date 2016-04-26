@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GlobalGameSettings.h"
 
@@ -74,9 +72,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true), random_location(false)
 {
     // register addons
@@ -107,14 +102,11 @@ GlobalGameSettings::~GlobalGameSettings()
     reset(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  clears the addon memory.
  *
  *  if @p recreate is @p true then the addons are re-registered
  *  and set to defaults
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::reset(bool recreate)
 {
@@ -212,11 +204,8 @@ void GlobalGameSettings::registerAddon(Addon* addon)
     std::sort(addons.begin(), addons.end());
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  loads the saved addon configuration from the SETTINGS.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::LoadSettings()
 {
@@ -226,11 +215,8 @@ void GlobalGameSettings::LoadSettings()
         setSelection((AddonId::type_)it->first, it->second);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  saves the current addon configuration to the SETTINGS.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::SaveSettings() const
 {
@@ -239,11 +225,8 @@ void GlobalGameSettings::SaveSettings() const
         SETTINGS.addons.configuration.insert(std::make_pair(it->addon->getId(), it->status));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  saves the current addon configuration to a serializer object.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::Serialize(Serializer& ser) const
 {
@@ -267,11 +250,8 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  reads the current addon configuration from a serializer object.
- *
- *  @author FloSoft
  */
 void GlobalGameSettings::Deserialize(Serializer& ser)
 {

@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofMetalworker.h"
 
@@ -35,9 +33,6 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameTypes/MessageTypes.h"
 #include "Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)

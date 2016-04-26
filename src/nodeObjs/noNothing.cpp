@@ -15,23 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noNothing.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noNothing::noNothing() : noBase(NOP_NOTHING)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  An x,y zeichnen.
- *
- *  @author OLiver
  */
 void noNothing::Draw(int  /*x*/, int  /*y*/)
 {

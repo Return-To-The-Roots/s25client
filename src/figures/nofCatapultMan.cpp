@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "nofCatapultMan.h"
 #include "Random.h"
@@ -32,9 +30,6 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
 

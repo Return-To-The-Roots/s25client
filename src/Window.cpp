@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "Window.h"
 #include "CollisionDetection.h"
@@ -27,15 +25,11 @@
 #include "ExtensionList.h"
 #include <cstdarg>
 
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
-
 Window::Window()
     : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Konstruktor von @p Window mit Parametern.
  *
@@ -43,8 +37,6 @@ Window::Window()
  *  @param[in] y      Y-Position des Fensters.
  *  @param[in] id     ID des Fensters
  *  @param[in] parent Handle auf das Parentfenster.
- *
- *  @author OLiver
  */
 Window::Window(unsigned short x,
                unsigned short y,
@@ -65,11 +57,8 @@ Window::~Window()
         delete it->second;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet das Fenster.
- *
- *  @author OLiver
  */
 bool Window::Draw()
 {
@@ -79,15 +68,12 @@ bool Window::Draw()
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die X-Koordinate.
  *
  *  @param[in] absolute Absolute Koordinate oder relative?
  *
  *  @return die X-Koordinate.
- *
- *  @author OLiver
  */
 unsigned short Window::GetX(bool absolute) const
 {
@@ -108,15 +94,12 @@ unsigned short Window::GetX(bool absolute) const
     return abs_x;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  liefert die Y-Koordinate.
  *
  *  @param[in] absolute Absolute Koordinate oder relative?
  *
  *  @return die Y-Koordinate.
- *
- *  @author OLiver
  */
 unsigned short Window::GetY(bool absolute) const
 {
@@ -138,15 +121,12 @@ unsigned short Window::GetY(bool absolute) const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Sendet eine Fensternachricht an die Steuerelemente.
  *
  *  @param[in] msg   Die Nachricht.
  *  @param[in] id    Die ID des Quellsteuerelements.
  *  @param[in] param Ein nachrichtenspezifischer Parameter.
- *
- *  @author OLiver
  */
 bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
 {
@@ -200,13 +180,10 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
     return processed;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktiviert das Fenster.
  *
  *  @param[in] activate Fenster aktivieren?
- *
- *  @author OLiver
  */
 void Window::SetActive(bool activate)
 {
@@ -214,13 +191,10 @@ void Window::SetActive(bool activate)
     ActivateControls(activate);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  aktiviert die Steuerelemente des Fensters.
  *
  *  @param[in] activate Steuerelemente aktivieren?
- *
- *  @author OLiver
  */
 void Window::ActivateControls(bool activate)
 {
@@ -228,14 +202,11 @@ void Window::ActivateControls(bool activate)
         it->second->SetActive(activate);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  sperrt eine Region eines Fensters.
  *
  *  @param[in] window das Fenster, welches die Region sperrt.
  *  @param[in] rect   das Rechteck, welches die Region beschreibt.
- *
- *  @author OLiver
  */
 void Window::LockRegion(Window* window, const Rect& rect)
 {
@@ -245,13 +216,10 @@ void Window::LockRegion(Window* window, const Rect& rect)
         tofreeAreas_.erase(it);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Gibt eine gesperrte Region wieder frei.
  *
  *  @param[in] window das Fenster, welches die Region sperrt.
- *
- *  @author OLiver
  */
 void Window::FreeRegion(Window* window)
 {
@@ -268,11 +236,8 @@ bool Window::IsMessageRelayAllowed() const
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein BuildingIcon hinzu.
- *
- *  @author OLiver
  */
 ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
         unsigned short x,
@@ -291,7 +256,6 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
     return AddCtrl(id, new ctrlBuildingIcon(this, id, x, y, type, nation, size, tooltip));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt einen ButtonCtrl hinzu.
  *
@@ -305,8 +269,6 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
  *  @param[in] font   Schrift des Buttons (nur für @p type gleich @p false)
  *  @param[in] image  Bild des Buttons (nur für @p type gleich @p true)
  *  @param[in] border Soll der Button einen Rahmen haben?
- *
- *  @author OLiver
  */
 
 
@@ -354,11 +316,8 @@ ctrlImageButton* Window::AddImageButton(unsigned int id, unsigned short x, unsig
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein ChatCtrl hinzu.
- *
- *  @author Devil
  */
 ctrlChat* Window::AddChatCtrl(unsigned int id,
                               unsigned short x,
@@ -379,11 +338,8 @@ ctrlChat* Window::AddChatCtrl(unsigned int id,
     return AddCtrl(id, new ctrlChat(this, id, x, y, width, height, tc, font));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Checkbox hinzu.
- *
- *  @author OLiver
  */
 ctrlCheck* Window::AddCheckBox(unsigned int id,
                                unsigned short x,
@@ -406,11 +362,8 @@ ctrlCheck* Window::AddCheckBox(unsigned int id,
     return AddCtrl(id, new ctrlCheck(this, id, x, y, width, height, tc, text, font, readonly));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Combobox hinzu.
- *
- *  @author OLiver
  */
 ctrlComboBox* Window::AddComboBox(unsigned int id,
                                   unsigned short x,
@@ -433,11 +386,8 @@ ctrlComboBox* Window::AddComboBox(unsigned int id,
     return AddCtrl(id, new ctrlComboBox(this, id, x, y, width, height, tc, font, max_list_height, readonly));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein vertieftes TextCtrl hinzu.
- *
- *  @author OLiver
  */
 ctrlDeepening* Window::AddDeepening(unsigned int id,
                                     unsigned short x,
@@ -460,11 +410,8 @@ ctrlDeepening* Window::AddDeepening(unsigned int id,
     return AddCtrl(id, new ctrlDeepening(this, id, x, y, width, height, tc, text, font, color));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  adds a colored Deepening
- *
- *  @author Divan
  */
 ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
         unsigned short x,
@@ -485,11 +432,8 @@ ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
     return AddCtrl(id, new ctrlColorDeepening(this, id, x, y, width, height, tc, fillColor));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein EditCtrl hinzu.
- *
- *  @author OLiver
  */
 ctrlEdit* Window::AddEdit(unsigned int id,
                           unsigned short x,
@@ -514,22 +458,16 @@ ctrlEdit* Window::AddEdit(unsigned int id,
     return AddCtrl(id, new ctrlEdit(this, id, x, y, width, height, tc, font, maxlength, password, disabled, notify));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Gruppe hinzu.
- *
- *  @author FloSoft
  */
 ctrlGroup* Window::AddGroup(unsigned int id, bool scale)
 {
     return AddCtrl(id, new ctrlGroup(this, id, scale));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein ImageCtrl hinzu.
- *
- *  @author OLiver
  */
 ctrlImage* Window::AddImage(unsigned int id,
                             unsigned short x,
@@ -545,11 +483,8 @@ ctrlImage* Window::AddImage(unsigned int id,
     return AddCtrl(id, new ctrlImage(this, id, x, y, image, tooltip));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein ListCtrl hinzu.
- *
- *  @author OLiver
  */
 ctrlList* Window::AddList(unsigned int id,
                           unsigned short x,
@@ -570,11 +505,8 @@ ctrlList* Window::AddList(unsigned int id,
     return AddCtrl(id, new ctrlList(this, id, x, y, width, height, tc, font));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein mehrzeiliges TextCtrl hinzu.
- *
- *  @author Devil
  */
 ctrlMultiline* Window::AddMultiline(unsigned int id,
                                     unsigned short x,
@@ -596,7 +528,6 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
     return AddCtrl(id, new ctrlMultiline(this, id, x, y, width, height, tc, font, format));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein OptionenGruppe hinzu.
  *
@@ -604,8 +535,6 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
  *  @param[in] select_type Typ der Auswahl
  *
  *  @return Instanz das Steuerelement.
- *
- *  @author OLiver
  */
 ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
                                         int select_type,
@@ -614,7 +543,6 @@ ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
     return AddCtrl(id, new ctrlOptionGroup(this, id, select_type, scale));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein MultiSelectGruppe hinzu.
  *
@@ -622,8 +550,6 @@ ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
  *  @param[in] select_type Typ der Auswahl
  *
  *  @return Instanz das Steuerelement.
- *
- *  @author jh
  */
 ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned int id,
         int select_type,
@@ -632,11 +558,8 @@ ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned int id,
     return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type, scale));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine prozentuale ProgressBar hinzu.
- *
- *  @author OLiver
  */
 ctrlPercent* Window::AddPercent(unsigned int id,
                                 unsigned short x,
@@ -659,11 +582,8 @@ ctrlPercent* Window::AddPercent(unsigned int id,
     return AddCtrl(id, new ctrlPercent(this, id, x, y, width, height, tc, text_color, font, percentage));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine ProgressBar hinzu.
- *
- *  @author OLiver
  */
 ctrlProgress* Window::AddProgress(unsigned int id,
                                   unsigned short x,
@@ -692,11 +612,8 @@ ctrlProgress* Window::AddProgress(unsigned int id,
     return AddCtrl(id, new ctrlProgress(this, id, x, y, width, height, tc, button_minus, button_plus, maximum, x_padding, y_padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Scrollbar hinzu.
- *
- *  @author OLiver
  */
 ctrlScrollBar* Window::AddScrollBar(unsigned int id,
                                     unsigned short x,
@@ -719,11 +636,8 @@ ctrlScrollBar* Window::AddScrollBar(unsigned int id,
     return AddCtrl(id, new ctrlScrollBar(this, id, x, y, width, height, button_height, tc, page_size));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein TabCtrl hinzu.
- *
- *  @author OLiver
  */
 ctrlTab* Window::AddTabCtrl(unsigned int id,
                             unsigned short x,
@@ -740,12 +654,9 @@ ctrlTab* Window::AddTabCtrl(unsigned int id,
     return AddCtrl(id, new ctrlTab(this, id, x, y, width));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt eine Tabelle hinzu.
  *  ... sollte eine Menge von const char*, int und SortType sein
- *
- *  @author OLiver
  */
 ctrlTable* Window::AddTable(unsigned int id,
                             unsigned short x,
@@ -776,18 +687,14 @@ ctrlTable* Window::AddTable(unsigned int id,
     return AddCtrl(id, ctrl);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt einen Timer hinzu.
- *
- *  @author FloSoft
  */
 ctrlTimer* Window::AddTimer(unsigned int id, unsigned int timeout)
 {
     return AddCtrl(id, new ctrlTimer(this, id, timeout));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein TextCtrl hinzu.
  *
@@ -803,8 +710,6 @@ ctrlTimer* Window::AddTimer(unsigned int id, unsigned int timeout)
  *                      @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
  *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
  *  @param[in] font   Schriftart
- *
- *  @author OLiver
  */
 ctrlText* Window::AddText(unsigned int id,
                           unsigned short x,
@@ -823,11 +728,8 @@ ctrlText* Window::AddText(unsigned int id,
     return AddCtrl(id, new ctrlText(this, id, x, y, text, color, format, font));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein vertieftes variables TextCtrl hinzu.
- *
- *  @author FloSoft
  */
 ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
         unsigned short x,
@@ -860,7 +762,6 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
     return AddCtrl(id, ctrl);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  fügt ein variables TextCtrl hinzu.
  *
@@ -878,8 +779,6 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
  *  @param[in] font       Schriftart
  *  @param[in] parameters Anzahl der nachfolgenden Parameter
  *  @param[in] ...        die variablen Parameter
- *
- *  @author OLiver
  */
 ctrlVarText* Window::AddVarText(unsigned int id,
                                 unsigned short x,
@@ -926,11 +825,8 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
     return AddCtrl(id, new ctrlPreviewMinimap(this, id, x, y, width, height, map));
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Zeichnet einen 3D-Rahmen.
- *
- *  @author OLiver
  */
 void Window::Draw3D(const unsigned short x,
                     const unsigned short y,
@@ -1056,13 +952,10 @@ void Window::Draw3D(const unsigned short x,
     glEnable(GL_TEXTURE_2D);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet ein Rechteck.
  *
  *  @param[in] x X-Koordinate
- *
- *  @author OLiver
  */
 void Window::DrawRectangle(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned int color)
 {
@@ -1080,13 +973,10 @@ void Window::DrawRectangle(unsigned short x, unsigned short y, unsigned short wi
     glEnable(GL_TEXTURE_2D);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet eine Linie.
  *
  *  @param[in] x X-Koordinate
- *
- *  @author jh
  */
 void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, unsigned short by, unsigned short width, unsigned int color)
 {
@@ -1102,11 +992,8 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
     glEnable(GL_TEXTURE_2D);
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  zeichnet die Steuerelemente.
- *
- *  @author OLiver
  */
 void Window::DrawControls()
 {
@@ -1128,7 +1015,6 @@ void Window::DrawControls()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  prüft ob Mauskoordinaten in einer gesperrten Region liegt.
  *
@@ -1137,8 +1023,6 @@ void Window::DrawControls()
  *
  *  @return @p true falls Mausposition innerhalb der gesperrten Region,
  *          @p false falls außerhalb
- *
- *  @author OLiver
  */
 bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
 {
@@ -1153,11 +1037,8 @@ bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
     return false;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/*
+/**
  *  skaliert einen Wert.
- *
- *  @author FloSoft
  */
 unsigned short Window::ScaleX(unsigned short val) const
 {

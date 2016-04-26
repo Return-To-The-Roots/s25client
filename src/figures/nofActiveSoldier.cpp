@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofActiveSoldier.h"
 #include "buildings/nobMilitary.h"
@@ -30,9 +26,6 @@
 
 #include "Log.h"
 #include <stdexcept>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player,
                                    nobBaseMilitary* const home, const unsigned char rank, const SoldierState init_state)

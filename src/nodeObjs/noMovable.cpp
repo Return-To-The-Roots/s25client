@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "noMovable.h"
 
@@ -27,9 +25,6 @@
 #include "GameEvent.h"
 #include "gameData/MapConsts.h"
 #include "Log.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)

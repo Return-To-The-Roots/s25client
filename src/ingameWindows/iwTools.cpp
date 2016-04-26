@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwTools.h"
 
@@ -27,9 +25,6 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 #include <iostream>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwTools::iwTools()
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),

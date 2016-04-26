@@ -19,8 +19,6 @@
 
 #pragma once
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "VideoInterface.h"
 #include "MouseCoords.h"
 #include <boost/array.hpp>

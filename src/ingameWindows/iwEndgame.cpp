@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "iwEndgame.h"
 #include "Loader.h"
@@ -25,9 +23,6 @@
 #include "WindowManager.h"
 #include "GameClient.h"
 #include "gameData/const_gui_ids.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 iwEndgame::iwEndgame()
     : IngameWindow(CGI_ENDGAME, 0xFFFF, 0xFFFF, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))

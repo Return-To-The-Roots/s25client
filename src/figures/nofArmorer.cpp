@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
-
-
 #include "defines.h" // IWYU pragma: keep
 #include "nofArmorer.h"
 #include "Loader.h"
@@ -31,9 +27,6 @@
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)

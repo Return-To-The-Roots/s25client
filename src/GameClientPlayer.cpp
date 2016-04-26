@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-// Header
 #include "defines.h" // IWYU pragma: keep
 #include "GameClientPlayer.h"
 #include "GameClient.h"
@@ -52,9 +50,6 @@
 #include "libutil/src/Log.h"
 #include <stdint.h>
 #include <limits>
-
-// Include last!
-#include "DebugNew.h" // IWYU pragma: keep
 
 // Standardbelegung der Transportreihenfolge festlegen
 const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT =

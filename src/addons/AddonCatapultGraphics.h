@@ -22,13 +22,10 @@
 #include "Addons.h"
 #include "mygettext/src/mygettext.h"
 
-///////////////////////////////////////////////////////////////////////////////
 /**
  *  Addon for new race specific catapult graphics.
  *
  *  Those graphics were made by Parasit.
- *
- *  @author FloSoft
  */
 class AddonCatapultGraphics : public AddonBool
 {
