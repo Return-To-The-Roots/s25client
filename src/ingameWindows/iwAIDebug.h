@@ -37,11 +37,11 @@ class iwAIDebug : public IngameWindow
         void Msg_PaintBefore() override;
 
     private:
+        GameWorldView& gwv;
         std::vector<AIPlayerJH*> ais_;
         unsigned selection;
         unsigned overlay;
         ctrlText* text;
-        GameWorldView& gwv;
 };
 
 #endif

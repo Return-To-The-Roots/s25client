@@ -1837,12 +1837,13 @@ AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
 std::string GameClient::FormatGFTime(const unsigned gf) const
 {
     // In Sekunden umrechnen
-    unsigned total_seconds = gf * framesinfo.gf_length / 1000;
+    unsigned seconds = gf * framesinfo.gf_length / 1000;
 
     // Angaben rausfiltern
-    unsigned hours = total_seconds / 3600;
-    unsigned minutes =  total_seconds / 60;
-    unsigned seconds = total_seconds % 60;
+    unsigned hours   = seconds / 3600;
+    seconds -= hours * 3600;
+    unsigned minutes = seconds / 60;
+    seconds -= minutes * 60;
 
     char str[64];
 

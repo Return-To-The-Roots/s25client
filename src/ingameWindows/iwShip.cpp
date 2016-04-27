@@ -260,7 +260,6 @@ void iwShip::DrawCargo()
     }
 
     // Waren zeichnen
-    Nation nation = owner.nation;
     for (unsigned i = 0; i < orderedWares.size(); ++i)
     {
         while (orderedWares[i] > 0)
