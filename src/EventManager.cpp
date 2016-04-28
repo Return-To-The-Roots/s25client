@@ -38,13 +38,13 @@ void EventManager::Clear()
     }
     events.clear();
 
-    for(GameObjList::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
+    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
         GameObject* obj = *it;
         *it = NULL;
         delete obj;
     }
-    kill_list.clear();
+    killList.clear();
 }
 
 GameEvent* EventManager::AddEvent(GameEvent* event)
@@ -130,7 +130,7 @@ void EventManager::NextGF()
     }
 
     // Kill-List durchgehen und Objekte in den Bytehimmel befördern
-    for (GameObjList::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
+    for (GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
         GameObject* obj = *it;
         *it = NULL;
@@ -138,13 +138,13 @@ void EventManager::NextGF()
         delete obj;
     }
 
-    kill_list.clear();
+    killList.clear();
 }
 
 void EventManager::Serialize(SerializedGameData& sgd) const
 {
     // Kill-Liste muss leer sein!
-    RTTR_Assert(kill_list.empty());
+    RTTR_Assert(killList.empty());
 
     std::list<const GameEvent*> save_events;
     // Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
@@ -225,7 +225,7 @@ bool EventManager::ObjectHasEvents(GameObject* obj)
 
 bool EventManager::ObjectIsInKillList(GameObject* obj)
 {
-    return helpers::contains(kill_list, obj);
+    return helpers::contains(killList, obj);
 }
 
 void EventManager::RemoveEvent(GameEvent*& ep)
@@ -264,6 +264,6 @@ void EventManager::RemoveEvent(GameEvent*& ep)
 void EventManager::AddToKillList(GameObject* obj)
 {
     RTTR_Assert(obj);
-    RTTR_Assert(!helpers::contains(kill_list, obj));
-    kill_list.push_back(obj);
+    RTTR_Assert(!helpers::contains(killList, obj));
+    killList.push_back(obj);
 }
