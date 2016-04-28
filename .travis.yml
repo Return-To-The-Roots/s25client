@@ -1,5 +1,8 @@
 sudo: false
 language: cpp
+branches:
+    only:
+        - master
 
 os:
     - linux
@@ -80,6 +83,8 @@ script:
     # Execute tests
     - export CTEST_OUTPUT_ON_FAILURE=1
     - make test
+    # Reset environment
+    - cd ..
     - set +e
 
 after_success:

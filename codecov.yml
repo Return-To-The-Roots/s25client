@@ -1,6 +1,8 @@
-comment:
-  layout: header, diff, changes
 coverage:
-  range: "65..95"
-  ignore:
-    - contrib/*
+    range: "65..95"
+    ignore:
+        - contrib/*
+        - src/test/*
+comment:
+    layout: "header, diff, changes"
+
