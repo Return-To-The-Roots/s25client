@@ -58,7 +58,18 @@ install:
         if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
             export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
             # GCov 4.6 cannot handle the file structure
-            export CXX="g++-4.8" 
+            export CXX="g++-4.8"
+            # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
+            export LCOV_ROOT="$HOME/lcov"
+            mkdir -p "$LCOV_ROOT"
+            wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz --output-document="$LCOV_ROOT/lcov.tar.gz"
+            tar xf "$LCOV_ROOT/lcov.tar.gz" --strip-components=1 -C $LCOV_ROOT
+            export PATH="$LCOV_ROOT/bin:$PATH"
+            which lcov
+            gem install coveralls-lcov
+            export RTTR_COVERAGE="1"
+        else
+            export RTTR_COVERAGE="0"
         fi
     # C++11 requires gcc-4.8 or newer
     - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
@@ -75,6 +86,7 @@ script:
     # Information
     - $CXX --version
     - $GCOV --version
+    - lcov --version 2>/dev/null || true
     # Fail if any command failed
     - set -e
     - cd build
@@ -88,10 +100,22 @@ script:
     - set +e
 
 after_success:
-    - bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
+    # Coverage.io
     - |
-        files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
-        if [ "$files" != "" ]; then
-            bash <(curl -s https://codecov.io/bash) -f "$files"
+        if [ "$RTTR_COVERAGE" = "1" ]; then
+            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
+            files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
+            if [ "$files" != "" ]; then
+                bash <(curl -s https://codecov.io/bash) -f "$files"
+            fi
+        fi
+    # Coveralls
+    - |
+        if [ "$RTTR_COVERAGE" = "1" ]; then
+            lcov --gcov-tool $GCOV --directory build --capture --output-file coverage.info
+            lcov --gcov-tool $GCOV --remove coverage.info 'contrib/*' '/usr/*' 'src/test/*' --output-file coverage.info
+            # Debug output
+            lcov --list coverage.info
+            coveralls-lcov coverage.info
         fi
 
