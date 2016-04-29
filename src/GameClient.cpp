@@ -265,7 +265,7 @@ void GameClient::StartGame(const unsigned int random_init)
     RANDOM.Init(random_init);
 
     // Spielwelt erzeugen
-    em = new EventManager();
+    em = new EventManager(framesinfo.gf_nr);
     gw = new GameWorld(players, ggs, *em);
     GameObject::SetPointers(gw);
     for(unsigned i = 0; i < players.getCount(); ++i)
@@ -1340,7 +1340,7 @@ void GameClient::NextGF()
     // Statistiken aktualisieren
     StatisticStep();
     //  EventManager Bescheid sagen
-    em->NextGF();
+    em->ExecuteNextGF();
     // Notfallprogramm durchlaufen lassen
     for(unsigned char i = 0; i < players.getCount(); ++i)
     {
