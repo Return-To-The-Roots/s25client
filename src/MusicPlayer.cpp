@@ -185,8 +185,6 @@ void Playlist::SetStartSong(const unsigned id)
     }
 }
 
-/**
- */
 MusicPlayer::MusicPlayer() : playing(false)
 {
 }

@@ -70,8 +70,6 @@ unsigned int Languages::getCount()
     return unsigned(languages.size());
 }
 
-/**
- */
 void Languages::setLanguage(const std::string& lang_code)
 {
     SETTINGS.language.language = lang_code; //-V807

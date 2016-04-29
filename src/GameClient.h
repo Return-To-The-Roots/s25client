@@ -104,7 +104,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void ExitGame();
 
         ClientState GetState() const { return state; }
-        inline unsigned int GetGFNumber() const { return framesinfo.gf_nr; }
+        unsigned int GetGFNumber() const;
         inline unsigned int GetGFLength() const { return framesinfo.gf_length; }
         inline unsigned int GetNWFLength() const { return framesinfo.nwf_length; }
         inline unsigned int GetFrameTime() const { return framesinfo.frameTime; }

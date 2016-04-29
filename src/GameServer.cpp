@@ -549,9 +549,8 @@ bool GameServer::StartGame()
         return false;
     }
 
-    // read back gf_nr (if savegame)
-    if(mapinfo.type == MAPTYPE_SAVEGAME)
-        framesinfo.gf_nr = GAMECLIENT.GetGFNumber();
+    // Init current GF
+    currentGF = GAMECLIENT.GetGFNumber();
 
     // Erste KI-Nachrichten schicken
     for(unsigned i = 0; i < this->serverconfig.playercount; ++i)
@@ -566,7 +565,7 @@ bool GameServer::StartGame()
     LOG.write("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
     // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, framesinfo.gf_length, true));
+    SendToAll(GameMessage_Server_NWFDone(0xff, currentGF, framesinfo.gf_length, true));
 
     // ab ins game wechseln
     status = SS_GAME;
@@ -859,10 +858,10 @@ void GameServer::ExecuteGameFrame()
     unsigned int currentTime = VIDEODRIVER.GetTickCount();
 
     // prüfen ob GF vergangen
-    if(currentTime - framesinfo.lastTime > framesinfo.gf_length || skiptogf > framesinfo.gf_nr)
+    if(currentTime - framesinfo.lastTime > framesinfo.gf_length || skiptogf > currentGF)
     {
         // NWF vergangen?
-        if(framesinfo.gf_nr % framesinfo.nwf_length==0)
+        if(currentGF % framesinfo.nwf_length==0)
         {
             const unsigned char laggingPlayerIdx = GetLaggingPlayer();
             if(laggingPlayerIdx != 0xFF)
@@ -889,9 +888,9 @@ void GameServer::RunGF(bool isNWF)
     for(unsigned i = 0; i < ai_players.size(); ++i)
     {
         if(ai_players[i])
-            ai_players[i]->RunGF(framesinfo.gf_nr, isNWF);
+            ai_players[i]->RunGF(currentGF, isNWF);
     }
-    ++framesinfo.gf_nr;
+    ++currentGF;
 }
 
 void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
@@ -946,7 +945,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         // Checksummen nicht gleich?
         if (curChecksum != referenceChecksum)
         {
-            LOG.lprintf("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", framesinfo.gf_nr, client, referencePlayerIdx,
+            LOG.lprintf("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", currentGF, client, referencePlayerIdx,
                 curChecksum.randState, referenceChecksum.randState,
                 curChecksum.objCt, referenceChecksum.objCt,
                 curChecksum.objIdCt, referenceChecksum.objIdCt);
@@ -981,12 +980,12 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         unsigned oldnNwfLen = framesinfo.nwf_length;
         framesinfo.ApplyNewGFLength();
 
-        LOG.lprintf("Server %d/%d: Speed changed from %d to %d. NWF %u to %u\n", framesinfo.gf_nr, framesinfo.gf_nr, oldGfLen, framesinfo.gf_length, oldnNwfLen, framesinfo.nwf_length);
+        LOG.lprintf("Server %d/%d: Speed changed from %d to %d. NWF %u to %u\n", currentGF, currentGF, oldGfLen, framesinfo.gf_length, oldnNwfLen, framesinfo.nwf_length);
     }
 
     framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
 
-    SendToAll(GameMessage_Server_NWFDone(0xff, framesinfo.gf_nr, framesinfo.gfLenghtNew));
+    SendToAll(GameMessage_Server_NWFDone(0xff, currentGF, framesinfo.gfLenghtNew));
 }
 
 void GameServer::CheckAndKickLaggingPlayer(const unsigned char playerIdx)
@@ -1579,7 +1578,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 bool GameServer::TogglePause()
 {
     framesinfo.isPaused = !framesinfo.isPaused;
-    SendToAll(GameMessage_Pause(framesinfo.isPaused, framesinfo.gf_nr + framesinfo.nwf_length));
+    SendToAll(GameMessage_Pause(framesinfo.isPaused, currentGF + framesinfo.nwf_length));
 
     return framesinfo.isPaused;
 }

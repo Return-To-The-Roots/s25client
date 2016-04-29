@@ -27,8 +27,6 @@ public:
     /// Changes the GF length to GFLengthNew and adapts the NWF length accordingly
     void ApplyNewGFLength();
 
-    /// Current GameFrame (GF) (from start of the game)
-    unsigned gf_nr;
     /// Lenght of one GF in ms (~ 1/speed of the game)
     unsigned gf_length;
     /// New length of a GF (applied on next NWF)
