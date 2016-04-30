@@ -729,7 +729,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
 {
     std::vector<unsigned char> new_route;
     // Weg gefunden?
-    if(!gwb.GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(gwb, road.mode == RM_BOAT), false))
+    if(!gwb.GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(gwb, road.mode == RM_BOAT)))
         return false;
 
     // Test on water way length

@@ -100,14 +100,10 @@ public:
     bool CheckShipRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos,
         MapPoint* dest);
     /// Find a route for trade caravanes
-    unsigned char FindTradePath(const MapPoint start,
-        const MapPoint dest, const unsigned char player, const unsigned max_route = 0xffffffff, const bool random_route = false,
-        std::vector<unsigned char> * route = NULL, unsigned* length = NULL,
-        const bool record = false) const;
-    /// Check whether trade path is still valid
-    bool CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, const unsigned char player,
-        MapPoint * dest = NULL) const;
-
+    unsigned char FindTradePath(const MapPoint start, const MapPoint dest, unsigned char player, unsigned max_route = 0xffffffff, bool random_route = false,
+        std::vector<unsigned char>* route = NULL, unsigned* length = NULL) const;
+    /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns destination pt
+    bool CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, unsigned startRouteIdx, unsigned char player, MapPoint* dest = NULL) const;
 
     /// setzt den Straﬂen-Wert an der Stelle X,Y (berichtigt).
     void SetRoad(const MapPoint pt, unsigned char dir, unsigned char type);
@@ -115,7 +111,6 @@ public:
     /// setzt den Straﬂen-Wert um den Punkt X,Y.
     void SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
-    /// Funktionen aus ehemaligen Game
     /// Baut eine Straﬂe ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
     /// Reiﬂt eine Straﬂe ab
@@ -158,8 +153,7 @@ public:
     void RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception);
     /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegr¸nden Alternative zu oberem)
     void SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player);
-    /// Bestimmt bei der Bewegung eines sp‰henden Objekts die Sichtbarkeiten an
-    /// den R‰ndern neu
+    /// Bestimmt bei der Bewegung eines sp‰henden Objekts die Sichtbarkeiten an den R‰ndern neu
     void RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
         const unsigned char moving_dir, MapPoint * enemy_territory);
 

@@ -80,8 +80,7 @@ void FreePathFinder::IncreaseCurrentVisit()
 bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
                                                    const bool randomRoute, const unsigned maxLength,
                                                    std::vector<unsigned char>* route, unsigned* length, unsigned char* firstDir,
-                                                   FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
-                                                   const bool  /*record*/)
+                                                   FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param)
 {
     if(start == dest)
     {

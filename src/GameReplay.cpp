@@ -25,9 +25,9 @@
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
 /// Version des Replay-Formates
-const unsigned short Replay::REPLAY_VERSION = 28;
+const unsigned short Replay::REPLAY_VERSION = 29;
 
-Replay::Replay() : nwf_length(0), random_init(0), pathfinding_results(false),
+Replay::Replay() : nwf_length(0), random_init(0),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
@@ -40,7 +40,6 @@ Replay::~Replay()
 void Replay::StopRecording()
 {
     file.Close();
-    pf_file.Close();
 
     SetPlayerCount(0);
 }
@@ -64,8 +63,6 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
     file.WriteUnsignedShort(nwf_length);
     /// Zufallsgeneratorinitialisierung
     file.WriteUnsignedInt(random_init);
-    /// Pathfinding-Results hier drin?
-    file.WriteUnsignedChar(pathfinding_results ? 1 : 0);
 
     // Position merken für End-GF
     last_gf_file_pos = file.Tell();
@@ -117,10 +114,6 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
 
     gf_file_pos  = 0;
 
-    // Create File for pathfinding results
-    if(pathfinding_results)
-        pf_file.Open(filename + "_res", OFM_WRITE);
-
     return true;
 }
 
@@ -142,8 +135,6 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
     nwf_length = file.ReadUnsignedShort();
     // Zufallsgeneratorinitialisierung
     random_init = file.ReadUnsignedInt();
-    /// Pathfinding-Results hier drin?
-    pathfinding_results = (file.ReadUnsignedChar() == 1);
     /// End-GF
     lastGF_ = file.ReadUnsignedInt();
     // Spieleranzahl
@@ -189,12 +180,6 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
         mapName = file.ReadShortString();
         mapInfo->title = mapName;
         mapInfo->type = mapType;
-
-        // Try to open precalculated pathfinding results
-        pathfinding_results = pf_file.Open(filename + "_res", OFM_READ);
-
-        if(!pathfinding_results)
-            pf_file.Open(filename + "_res", OFM_WRITE);
     } else if(mapType == MAPTYPE_SAVEGAME)
     {
         // Validate savegame
@@ -274,23 +259,6 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
     file.Flush();
 }
 
-/// Fügt Pathfinding-Result hinzu
-void Replay::AddPathfindingResult(const unsigned char data, const unsigned* const length, const MapPoint * const next_harbor)
-{
-    //if(!pathfinding_results)
-    //  return;
-
-    pf_file.WriteUnsignedChar(data);
-    if(length) pf_file.WriteUnsignedInt(*length);
-    if(next_harbor)
-    {
-        pf_file.WriteUnsignedShort(next_harbor->x);
-        pf_file.WriteUnsignedShort(next_harbor->y);
-    }
-    pf_file.Flush();
-}
-
-
 bool Replay::ReadGF(unsigned* gf)
 {
     //// kein Marker bedeutet das Ende der Welt
@@ -326,33 +294,6 @@ std::vector<unsigned char> Replay::ReadGameCommand()
     std::vector<unsigned char> result(file.ReadUnsignedShort());
     file.ReadRawData(&result.front(), result.size());
     return result;
-}
-
-bool Replay::ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor)
-{
-    if(!pathfinding_results)
-        return false;
-
-    unsigned char tmp = pf_file.ReadUnsignedChar();
-
-    if(pf_file.EndOfFile())
-    {
-        // Open the file for writing
-        pf_file.Close();
-        pf_file.Open(fileName_ + "_res", OFM_WRITE_ADD);
-        pathfinding_results = false;
-        return false;
-    }
-
-    *data = tmp;
-    if(length) *length = pf_file.ReadUnsignedInt();
-    if(next_harbor)
-    {
-        next_harbor->x = pf_file.ReadUnsignedShort();
-        next_harbor->y = pf_file.ReadUnsignedShort();
-    }
-
-    return true;
 }
 
 void Replay::UpdateLastGF(const unsigned last_gf)

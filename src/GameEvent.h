@@ -39,9 +39,7 @@ public:
 
     void Destroy() override{}
 
-    /// Serialisierungsfunktionen
-protected: void Serialize_Event(SerializedGameData& sgd) const;
-public: void Serialize(SerializedGameData& sgd) const override { Serialize_Event(sgd); }
+    void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GOT_EVENT; }
 

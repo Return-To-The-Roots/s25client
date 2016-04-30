@@ -443,7 +443,7 @@ void GameClientPlayer::Deserialize(SerializedGameData& sgd)
 
 template<class T_IsWarehouseGood>
 nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh, const bool use_boat_roads,
-    unsigned* const length, const RoadSegment* const forbidden, bool record) const
+    unsigned* const length, const RoadSegment* const forbidden) const
 {
     nobBaseWarehouse* best = NULL;
 
@@ -469,7 +469,7 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, const
 		if(gwg->CalcDistance(start.GetPos(), wh.GetPos()) > best_length)
 			continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
-        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : wh, to_wh ? wh : start, record, use_boat_roads, best_length, forbidden, &tlength))
+        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : wh, to_wh ? wh : start, use_boat_roads, best_length, forbidden, &tlength))
         {
             if(tlength < best_length || !best)
             {
@@ -2462,7 +2462,7 @@ void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const 
 }
 
 #define INSTANTIATE_FINDWH(Cond) template nobBaseWarehouse* GameClientPlayer::FindWarehouse\
-                                 (const noRoadNode&, const Cond&, const bool, const bool, unsigned* const, const RoadSegment* const, bool) const
+                                 (const noRoadNode&, const Cond&, const bool, const bool, unsigned* const, const RoadSegment* const) const
 
 INSTANTIATE_FINDWH(FW::HasMinWares);
 INSTANTIATE_FINDWH(FW::HasFigure);

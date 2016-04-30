@@ -828,7 +828,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigne
     }
 
     // und auch der Weg zu Fuß darf dann nicht so weit sein, wenn das alles bestanden ist, können wir ihn nehmen..
-    if(soldiers_count && gwg->FindHumanPath(pos, dest, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false) != 0xFF)
+    if(soldiers_count && gwg->FindHumanPath(pos, dest, MAX_ATTACKING_RUN_DISTANCE) != 0xFF)
         // Soldaten davon nehmen
         return soldiers_count;
     else

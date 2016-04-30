@@ -1903,42 +1903,6 @@ bool GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
     }
 }
 
-/// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
-void GameClient::AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor)
-{
-    // Sind wir im normalem Spiel?
-    if(!replay_mode || !replayinfo.replay.pathfinding_results)
-    {
-        // Dann hinzufügen
-        replayinfo.replay.AddPathfindingResult(dir, length, next_harbor);
-    }
-}
-
-/// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
-bool GameClient::ArePathfindingResultsAvailable() const
-{
-    // PathfindingResults are buggy. TODO. Until fixed:
-    return false;
-
-
-    // Replaymodus?
-    if(replay_mode || !replayinfo.replay.pathfinding_results)
-    {
-        // Unterstützt das Replay das auch (noch)?
-        if(replayinfo.replay.pathfinding_results && !replayinfo.end)
-            return true;
-    }
-
-    return false;
-}
-
-/// Gibt Pathfinding-Results zurück aus einem Replay
-bool GameClient::ReadPathfindingResult(unsigned char* dir, unsigned* length, MapPoint* next_harbor)
-{
-    return replayinfo.replay.ReadPathfindingResult(dir, length, next_harbor);
-}
-
-
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {

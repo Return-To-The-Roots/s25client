@@ -18,7 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "RoadPathFinder.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "world/GameWorldBase.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noRoadNode.h"
@@ -133,7 +132,7 @@ namespace SegmentConstraints{
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Stra�en
 template<class T_AdditionalCosts, class T_SegmentConstraints>
 bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal,
-                              const bool record, const unsigned max,
+                              const unsigned max,
                               const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
                               unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
@@ -150,18 +149,6 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         if(firstNodePos)
             *firstNodePos = start.GetPos();
         return true;
-    }
-
-    // Aus Replay lesen?
-    if(record && GAMECLIENT.ArePathfindingResultsAvailable())
-    {
-        unsigned char dir;
-        if(GAMECLIENT.ReadPathfindingResult(&dir, length, firstNodePos))
-        {
-            if(firstDir)
-                *firstDir = dir;
-            return (dir != 0xff);
-        }
     }
 
     // increase current_visit_on_roads, so we don't have to clear the visited-states at every run
@@ -220,11 +207,6 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 
             if (firstNodePos)
                 *firstNodePos = firstNode->GetPos();
-
-            if (record)
-            {
-                GAMECLIENT.AddPathfindingResult((unsigned char) firstNode->dir_, length, firstNodePos);
-            }
 
             // Done, path found
             return true;
@@ -337,13 +319,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     }
 
     // Liste leer und kein Ziel erreicht --> kein Weg
-    if(record)
-        GAMECLIENT.AddPathfindingResult(0xff, length, firstNodePos);
     return false;
 }
 
 bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, 
-              const bool record, const bool wareMode, const unsigned max, const RoadSegment* const forbidden,
+              const bool wareMode, const unsigned max, const RoadSegment* const forbidden,
               unsigned* const length, unsigned char* const firstDir, MapPoint* const firstNodePos)
 {
     RTTR_Assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!
@@ -351,17 +331,17 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
     if(wareMode)
     {
         if(forbidden)
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::Carrier(), SegmentConstraints::AvoidSegment(forbidden),
                                 length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::Carrier(), SegmentConstraints::None(),
                                 length, firstDir, firstNodePos);
     }else
     {
         if(forbidden)
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::None(),
                                 SegmentConstraints::And<
                                     SegmentConstraints::AvoidSegment,
@@ -369,34 +349,34 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal,
                                 >(forbidden),
                                 length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>(),
                                 length, firstDir, firstNodePos);
     }
 }
 
 bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
-                                const bool record, const bool allowWaterRoads, const unsigned max, const RoadSegment* const forbidden)
+                                const bool allowWaterRoads, const unsigned max, const RoadSegment* const forbidden)
 {
     if(allowWaterRoads)
     {
         if(forbidden)
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
         else
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::None(), SegmentConstraints::None());
     }else
     {
         if(forbidden)
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::None(),
                                 SegmentConstraints::And<
                                     SegmentConstraints::AvoidSegment,
                                     SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>
                                 >(forbidden));
         else
-            return FindPathImpl(start, goal, record, max,
+            return FindPathImpl(start, goal, max,
                                 AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>());
     }
 }

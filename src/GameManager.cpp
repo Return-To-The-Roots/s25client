@@ -152,7 +152,7 @@ bool GameManager::Run()
 
     unsigned current_time = VIDEODRIVER.GetTickCount();
 
-    const bool skipping = GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber();
+    const bool skipping = GAMECLIENT.skiptogf && GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber();
 
     //only draw if we dont skip ahead right now
     if(!skipping)

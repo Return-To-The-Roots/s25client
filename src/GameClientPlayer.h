@@ -208,7 +208,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// - forbidden optional roadSegment that must not be used
         template<class T_IsWarehouseGood>
         nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh, const bool use_boat_roads,
-            unsigned* const length = 0, const RoadSegment* const forbidden = NULL, bool record = true) const;
+            unsigned* const length = 0, const RoadSegment* const forbidden = NULL) const;
         /// Gibt dem Spieler bekannt, das eine neue Straße gebaut wurde
         void NewRoad(RoadSegment* const rs);
         /// Neue Straße hinzufügen

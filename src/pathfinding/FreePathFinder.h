@@ -44,14 +44,12 @@ public:
     bool FindPath(const MapPoint start, const MapPoint dest,
         const bool randomRoute, const unsigned maxLength,
         std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-        const TNodeChecker& nodeChecker,
-        const bool record);
+        const TNodeChecker& nodeChecker);
 
     bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
         const bool randomRoute, const unsigned maxLength,
         std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param,
-        const bool record);
+        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     template<class TNodeChecker>

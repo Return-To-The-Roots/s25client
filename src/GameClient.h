@@ -161,14 +161,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         unsigned SaveToFile(const std::string& filename);
         /// Visuelle Einstellungen aus den richtigen ableiten
         void ResetVisualSettings();
-
-        /// Schreibt ggf. Pathfinding-Results in das Replay, falls erforderlich
-        void AddPathfindingResult(const unsigned char dir, const unsigned* const length, const MapPoint* const next_harbor);
-        /// Gibt zurück, ob Pathfinding-Results zur Verfügung stehen
-        bool ArePathfindingResultsAvailable() const;
-        /// Gibt Pathfinding-Results zurück aus einem Replay
-        bool ReadPathfindingResult( unsigned char* dir, unsigned* length, MapPoint* next_harbor);
-
         void SystemChat(const std::string& text, unsigned char player = 0xFF);
         
         void ToggleHumanAIPlayer();

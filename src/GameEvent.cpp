@@ -30,7 +30,7 @@ GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id):
     RTTR_Assert(obj);
 }
 
-void GameEvent::Serialize_Event(SerializedGameData& sgd) const
+void GameEvent::Serialize(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
