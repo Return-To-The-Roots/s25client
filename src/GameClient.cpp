@@ -1569,14 +1569,20 @@ unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsi
 
 unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
 {
-    RTTR_Assert( ev );
-    return min<unsigned int>(((max_val * ((GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime)) / (ev->length * framesinfo.gf_length)), max_val - 1);
+    RTTR_Assert(ev);
+    unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    unsigned duration = ev->length * framesinfo.gf_length;
+    unsigned result = (max_val * elapsedTime) / duration;
+    RTTR_Assert(result < max_val);
+    return result;
 }
 
 int GameClient::Interpolate(int x1, int x2, GameEvent* ev)
 {
-    RTTR_Assert( ev );
-    return (x1 + ( (x2 - x1) * ((int(GetGFNumber()) - int(ev->startGF)) * int(framesinfo.gf_length) + int(framesinfo.frameTime))) / int(ev->length * framesinfo.gf_length));
+    RTTR_Assert(ev);
+    unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    unsigned duration = ev->length * framesinfo.gf_length;
+    return x1 + ((x2 - x1) * int(elapsedTime)) / int(duration);
 }
 
 void GameClient::ServerLost()
