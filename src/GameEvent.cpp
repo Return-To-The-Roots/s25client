@@ -22,9 +22,8 @@
 GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id):
     GameObject(sgd, obj_id),
     obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
-    gf(sgd.PopUnsignedInt()),
-    gf_length(sgd.PopUnsignedInt()),
-    gf_next(gf + gf_length),
+    startGF(sgd.PopUnsignedInt()),
+    length(sgd.PopUnsignedInt()),
     id(sgd.PopUnsignedInt())
 {
     RTTR_Assert(obj);
@@ -35,7 +34,7 @@ void GameEvent::Serialize(SerializedGameData& sgd) const
     Serialize_GameObject(sgd);
 
     sgd.PushObject(obj, false);
-    sgd.PushUnsignedInt(gf);
-    sgd.PushUnsignedInt(gf_length);
+    sgd.PushUnsignedInt(startGF);
+    sgd.PushUnsignedInt(length);
     sgd.PushUnsignedInt(id);
 }

@@ -48,10 +48,10 @@ EventManager::~EventManager()
 GameEvent* EventManager::AddEvent(GameEvent* event)
 {
     // Should be in the future!
-    RTTR_Assert(event->gf_next > currentGF);
+    RTTR_Assert(event->GetTargetGF() > currentGF);
     // Make sure the linked object is not an event itself
     RTTR_Assert(!dynamic_cast<GameEvent*>(event->obj));
-    events[event->gf_next].push_back(event);
+    events[event->GetTargetGF()].push_back(event);
     return event;
 }
 
@@ -193,7 +193,7 @@ void EventManager::RemoveEvent(GameEvent*& ep)
         return;
     }
 
-    EventMap::iterator itEventsAtTime = events.find(ep->gf_next);
+    EventMap::iterator itEventsAtTime = events.find(ep->GetTargetGF());
     if(itEventsAtTime != events.end())
     {
         EventList& eventsAtTime = itEventsAtTime->second;

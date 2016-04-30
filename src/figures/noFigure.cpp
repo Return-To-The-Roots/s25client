@@ -1020,15 +1020,12 @@ void noFigure::StopIfNecessary(const MapPoint pt)
     if(fs == FS_GOHOME || fs == FS_GOTOGOAL || (fs == FS_JOB && GetGOT() == GOT_NOF_CARRIER))
     {
         // Laufe ich zu diesem Punkt?
-        if(current_ev)
+        if(current_ev && !waiting_for_free_node && gwg->GetNeighbour(this->pos, GetCurMoveDir()) == pt)
         {
-            if(!waiting_for_free_node && gwg->GetNeighbour(this->pos, GetCurMoveDir()) == pt)
-            {
-                // Dann stehenbleiben
-                PauseWalking();
-                waiting_for_free_node = true;
-                gwg->StopOnRoads(this->pos, GetCurMoveDir());
-            }
+            // Dann stehenbleiben
+            PauseWalking();
+            waiting_for_free_node = true;
+            gwg->StopOnRoads(this->pos, GetCurMoveDir());
         }
     }
 }

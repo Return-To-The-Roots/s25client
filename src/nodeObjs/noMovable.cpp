@@ -124,8 +124,8 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
 {
     if(current_ev)
     {
-        RTTR_Assert(current_ev->gf_length > 0);
-        if(current_ev->gf_length == 0)
+        RTTR_Assert(current_ev->length > 0);
+        if(current_ev->length == 0)
         {
             LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n", GetEvMgr().GetCurrentGF());
             return Point<int>(0, 0);
@@ -135,8 +135,8 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
     RTTR_Assert(current_ev || pause_walked_gf);
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
-    unsigned gf_diff = current_ev ? (GetEvMgr().GetCurrentGF() - current_ev->gf) : pause_walked_gf;
-    unsigned evLength = current_ev ? current_ev->gf_length : pause_event_length;
+    unsigned gf_diff = current_ev ? (GetEvMgr().GetCurrentGF() - current_ev->startGF) : pause_walked_gf;
+    unsigned evLength = current_ev ? current_ev->length : pause_event_length;
     unsigned frame_time = current_ev ? GetEvMgr().GetCurrentGF() : 0;
 
     // Convert to real world time
@@ -202,12 +202,11 @@ Point<int> noMovable::CalcWalkingRelative() const
 void noMovable::PauseWalking()
 {
     // Frames festhalten, bis zu denen wir gekommen sind
-    pause_walked_gf = GetEvMgr().GetCurrentGF() - current_ev->gf;
+    pause_walked_gf = GetEvMgr().GetCurrentGF() - current_ev->startGF;
     // Länge merken
-    pause_event_length = current_ev->gf_length;
+    pause_event_length = current_ev->length;
     // Event abmelden
     GetEvMgr().RemoveEvent(current_ev);
-    current_ev = 0;
     moving = false;
 
     // Achtung, evtl wird er gleich in dem gf gestoppt, wo er auch losgelaufen war
@@ -222,7 +221,6 @@ void noMovable::PauseWalking()
         {
             gwg->RemoveFigure(this, gwg->GetNeighbour(pos, curMoveDir));
             gwg->AddFigure(this, pos);
-
         }
     }
 }
