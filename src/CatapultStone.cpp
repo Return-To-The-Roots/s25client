@@ -27,8 +27,6 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"
-#include "world/GameWorldView.h"
-#include "world/GameWorldViewer.h"
 #include "Random.h"
 #include "gameData/MapConsts.h"
 
@@ -42,8 +40,6 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
 {
     event = GetEvMgr().AddEvent(this, fly_duration);
 }
-
-
 
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
     dest_building(sgd.PopMapPoint()),
@@ -75,13 +71,8 @@ void CatapultStone::Destroy()
 {
 }
 
-void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int yoffset)
+void CatapultStone::Draw(const int xoffset, const int yoffset)
 {
-    // Stein überhaupt zeichnen (wenn Quelle und Ziel nicht sichtbar sind, dann nicht!)
-    if(gwv.GetViewer().GetVisibility(dest_building) != VIS_VISIBLE &&
-            gwv.GetViewer().GetVisibility(dest_map) != VIS_VISIBLE)
-        return;
-
     int world_width = gwg->GetWidth() * TR_W;
     int world_height = gwg->GetHeight() * TR_H;
 
@@ -98,10 +89,9 @@ void CatapultStone::Draw(const GameWorldView& gwv, const int xoffset, const int 
         int y = GAMECLIENT.Interpolate(start_y, dest_y, event);
 
         double whole = std::sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y)));
-        int s = GAMECLIENT.Interpolate(static_cast<int>(whole), event);
+        unsigned s = GAMECLIENT.Interpolate(static_cast<unsigned>(whole), event);
 
-
-        double dx = double(s) / whole  - 0.5;
+        double dx = double(s) / whole - 0.5;
 
         // Y-Verschiebung ausrechnen, damit die Nullpunkte beim Start- und Endpunkt liegen
         double y_diff = 0.5 * 0.5;

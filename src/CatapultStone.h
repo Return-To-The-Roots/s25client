@@ -20,20 +20,19 @@
 #include "GameObject.h"
 #include "gameTypes/MapTypes.h"
 
-class GameWorldView;
 class SerializedGameData;
 class GameEvent;
 
 /// Klasse für einen fliegenden Katapultstein
 class CatapultStone : public GameObject
 {
-    private:
-
-        /// (Map-)Koordinaten des Hauses, in dem er einschlagen soll
+public:
+        /// Target which was aimed for
         const MapPoint dest_building;
-        /// Aufschlagspunkt des Steines (Map-Koordinaten!)
+        /// Actual point this is going to hit (if equal dest_building -> Hit!)
         const MapPoint dest_map;
-        /// Koordinaten der Startposition des Steins
+private:
+    /// Koordinaten der Startposition des Steins
         const int start_x, start_y;
         /// Koordinaten der Zielposition des Steins
         const int dest_x, dest_y;
@@ -49,8 +48,6 @@ class CatapultStone : public GameObject
 
         CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
 
-        ~CatapultStone() override {}
-
         /// Zerstören
         void Destroy() override;
 
@@ -59,7 +56,7 @@ class CatapultStone : public GameObject
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
 
         // Zeichnet den fliegenden Stein
-        void Draw(const GameWorldView& gwv, const int xoffset, const int yoffset);
+        void Draw(const int xoffset, const int yoffset);
 
         /// Event-Handler
         void HandleEvent(const unsigned int id) override;

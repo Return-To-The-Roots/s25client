@@ -162,7 +162,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
 
     // Umherfliegende Katapultsteine zeichnen
     for(std::list<CatapultStone*>::iterator it = gwv.catapult_stones.begin(); it != gwv.catapult_stones.end(); ++it)
-        (*it)->Draw(*this, offset.x, offset.y);
+    {
+        if(gwv.GetVisibility((*it)->dest_building) == VIS_VISIBLE || gwv.GetVisibility((*it)->dest_map) == VIS_VISIBLE)
+            (*it)->Draw(offset.x, offset.y);
+    }
 
     if(zoomFactor != 1.f)
     {
