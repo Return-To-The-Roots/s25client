@@ -17,8 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "TradePathCache.h"
-#include "GameClient.h"
+#include "EventManager.h"
 #include "world/GameWorldGame.h"
+#include "GameClientPlayer.h"
 #include "gameData/GameConsts.h"
 
 bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player)
@@ -33,7 +34,7 @@ bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start,
         if(gwg.CheckTradeRoute(pathes[entryIdx].path.start, pathes[entryIdx].path.route, 0, player, &checkedGoal))
         {
             RTTR_Assert(checkedGoal == start || checkedGoal == goal);
-            pathes[entryIdx].lastUse = GAMECLIENT.GetGFNumber();
+            pathes[entryIdx].lastUse = gwg.GetEvMgr().GetCurrentGF();
             return true;
         }else
         {
@@ -100,6 +101,6 @@ void TradePathCache::AddEntry(const GameWorldGame& gwg, const TradePath& path, c
     }
 
     pathes[idx].player = player;
-    pathes[idx].lastUse = GAMECLIENT.GetGFNumber();
+    pathes[idx].lastUse = gwg.GetEvMgr().GetCurrentGF();
     pathes[idx].path = path;
 }

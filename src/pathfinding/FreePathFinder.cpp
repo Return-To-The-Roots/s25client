@@ -20,7 +20,7 @@
 #include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/NewNode.h"
 #include "world/GameWorldBase.h"
-#include "GameClient.h"
+#include "EventManager.h"
 #include "Log.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     {
         // Path where start==goal should never happen
         RTTR_Assert(false);
-        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", GAMECLIENT.GetGFNumber(), unsigned(start.x), unsigned(start.y));
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", gwb_.GetEvMgr().GetCurrentGF(), unsigned(start.x), unsigned(start.y));
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
             route->clear();
@@ -120,7 +120,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
     // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
     // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
-    const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * GAMECLIENT.GetGFNumber() % 6 : 0; 
+    const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
 
     while(!todo.empty())
     {		

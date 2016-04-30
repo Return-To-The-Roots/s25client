@@ -198,7 +198,7 @@ void nofCarrier::Draw(int x, int y)
                 bool animation = false;
 
                 // Ist es schon Zeit für eine Animation?
-                unsigned current_gf = GAMECLIENT.GetGFNumber();
+                unsigned current_gf = GetEvMgr().GetCurrentGF();
 
                 if(current_gf >= next_animation)
                 {
@@ -371,7 +371,7 @@ void nofCarrier::Draw(int x, int y)
 /// Bestimmt neuen Animationszeitpunkt
 void nofCarrier::SetNewAnimationMoment()
 {
-    next_animation = GAMECLIENT.GetGFNumber() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
+    next_animation = GetEvMgr().GetCurrentGF() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
 }
 
 void nofCarrier::Walked()
@@ -808,9 +808,9 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
             if(since_working_gf != 0xFFFFFFFF)
             {
                 // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-                worked_gf += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_working_gf);
+                worked_gf += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_working_gf);
                 // Zähler zurücksetzen
-                since_working_gf = GAMECLIENT.GetGFNumber();
+                since_working_gf = GetEvMgr().GetCurrentGF();
             }
 
             // Produktivität ausrechnen
@@ -956,7 +956,7 @@ void nofCarrier::StartWorking()
 {
     // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
     if(since_working_gf == 0xFFFFFFFF)
-        since_working_gf = GAMECLIENT.GetGFNumber();
+        since_working_gf = GetEvMgr().GetCurrentGF();
 }
 
 /// Für Produktivitätsmessungen: hört auf zu arbeiten
@@ -965,7 +965,7 @@ void nofCarrier::StopWorking()
     // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
     if(since_working_gf != 0xFFFFFFFF)
     {
-        worked_gf += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_working_gf);
+        worked_gf += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_working_gf);
         since_working_gf = 0xFFFFFFFF;
     }
 }

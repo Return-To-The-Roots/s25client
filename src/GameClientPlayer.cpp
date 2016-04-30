@@ -22,7 +22,7 @@
 #include "PostMsg.h"
 #include "RoadSegment.h"
 #include "Ware.h"
-
+#include "EventManager.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
@@ -546,7 +546,6 @@ void GameClientPlayer::RoadDestroyed()
             noBaseBuilding* wareGoal = ware->GetGoal();
 			if(wareGoal && ware->GetNextDir()==1 && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos() && ((wareGoal->GetBuildingType()!=BLD_STOREHOUSE && wareGoal->GetBuildingType()!=BLD_HEADQUARTERS && wareGoal->GetBuildingType()!=BLD_HARBORBUILDING) || wareGoal->GetType()==NOP_BUILDINGSITE))
 			{
-				//LOG.lprintf("road destroyed special at %i,%i gf: %u \n", (*it)->GetLocation()->GetX(),(*it)->GetLocation()->GetY(),GAMECLIENT.GetGFNumber());
 				unsigned gotfliproute = 1;
 				for(unsigned i=2; i<7; i++)
 				{
@@ -1782,7 +1781,7 @@ void GameClientPlayer::SuggestPact(const unsigned char targetPlayer, const PactT
 {
     pacts[targetPlayer][pt].accepted = false;
     pacts[targetPlayer][pt].duration = duration;
-    pacts[targetPlayer][pt].start = GAMECLIENT.GetGFNumber();
+    pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
 
     // Post-Message generieren, wenn dieser Pakt den lokalen Spieler betrifft
     if(targetPlayer == GAMECLIENT.GetPlayerID())
@@ -1804,7 +1803,7 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
 void GameClientPlayer::MakePact(const PactType pt, const unsigned char other_player, const unsigned duration)
 {
     pacts[other_player][pt].accepted = true;
-    pacts[other_player][pt].start = GAMECLIENT.GetGFNumber();
+    pacts[other_player][pt].start = gwg->GetEvMgr().GetCurrentGF();
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
@@ -1827,7 +1826,7 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
             if(pacts[other_player][pt].accepted)
                 return ACCEPTED;
         }
-        else if(GAMECLIENT.GetGFNumber() <= pacts[other_player][pt].start + pacts[other_player][pt].duration )
+        else if(gwg->GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration )
             return ACCEPTED;
     }
 
@@ -1853,8 +1852,8 @@ unsigned GameClientPlayer::GetRemainingPactTime(const PactType pt, const unsigne
         {
             if(pacts[other_player][pt].duration == 0xFFFFFFFF)
                 return 0xFFFFFFFF;
-            else if(GAMECLIENT.GetGFNumber() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
-                return ((pacts[other_player][pt].start + pacts[other_player][pt].duration) - GAMECLIENT.GetGFNumber());
+            else if(gwg->GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
+                return ((pacts[other_player][pt].start + pacts[other_player][pt].duration) - gwg->GetEvMgr().GetCurrentGF());
         }
     }
 

@@ -22,6 +22,7 @@
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "EventManager.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
 #include "SerializedGameData.h"
@@ -241,7 +242,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
     routes[dir]->WareJobRemoved(carrier);
 
-    if(!swap_wares)
+    if(!swap_wares && best_ware)
     {
         // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
@@ -275,10 +276,6 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
         }
     }
 
-    /*  RTTR_Assert(best_ware);
-        if(!best_ware)
-            LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFlag::SelectWare: best_ware = 0!\n", GAMECLIENT.GetGFNumber());
-    */
     return best_ware;
 }
 
@@ -375,7 +372,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
         if(bwus[i].id == bwu_id)
         {
             // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
-            if(GAMECLIENT.GetGFNumber() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
+            if(GetEvMgr().GetCurrentGF() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
                 return true;
 
             // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
@@ -397,7 +394,7 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
     {
         if(bwus[i].id == bwu_id)
         {
-            bwus[i].last_gf = GAMECLIENT.GetGFNumber();
+            bwus[i].last_gf = GetEvMgr().GetCurrentGF();
             return;
         }
     }

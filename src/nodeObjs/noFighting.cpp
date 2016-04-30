@@ -334,8 +334,7 @@ void noFighting::StartAttack()
 
 bool noFighting::IsActive() const
 {
-    // Figuren dürfen vorbei, wenn Kampf an sich und die Offset-Zeit abgelaufen ist
-    return (turn < 3/* || GAMECLIENT.GetGFNumber()-current_ev->gf < RELEASE_FIGURES_OFFSET*/);
+    return turn < 3;
 }
 
 bool noFighting::IsSoldierOfPlayer(const unsigned char player) const

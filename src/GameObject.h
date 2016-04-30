@@ -71,7 +71,7 @@ class GameObject
         /// Serialisierungsfunktion.
         void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
         /// Get Event Manager. Short and avoids dependency on GameWorldGame include
-        EventManager& GetEvMgr();
+        EventManager& GetEvMgr() const;
 
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;

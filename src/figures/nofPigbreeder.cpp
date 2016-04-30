@@ -23,11 +23,11 @@
 #include "world/GameWorldGame.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
+#include "EventManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "ogl/glSmartBitmap.h"
-class SerializedGameData;
 
 nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_PIGBREEDER, pos, player, workplace)
@@ -40,7 +40,6 @@ nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : n
 
 void nofPigbreeder::DrawWorking(int x, int y)
 {
-    //148
     signed char offsets[NAT_COUNT][2] = { {10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2} };
     signed char walkstart[NAT_COUNT][2] = { { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6} };
 
@@ -50,9 +49,6 @@ void nofPigbreeder::DrawWorking(int x, int y)
     unsigned int plColor = gwg->GetPlayer(player).color;
     int walksteps = 16;
 
-//  LOADER.GetPlayerImage("rom_bobs", 148+(now_id = GAMECLIENT.Interpolate(12,current_ev)%12))
-//      ->Draw(x+offsets[workplace->GetNation()][0],y+offsets[workplace->GetNation()][1],gwg->GetPlayer(workplace->GetPlayer()).color);
-
     if(now_id < 16)
     {
         if (now_id < 8) LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->Draw(x, y, 0, 0, 0, 0, 0, 0);
@@ -60,7 +56,6 @@ void nofPigbreeder::DrawWorking(int x, int y)
         int walky = y + walkstart[wpNation][1] + ((offsets[wpNation][1] - walkstart[wpNation][1]) * now_id / walksteps);
 
         LOADER.bob_jobs_cache[wpNation][JOB_PIGBREEDER][4][now_id % 8].draw(walkx, walky, COLOR_WHITE, plColor);
-//        LOADER.GetBobN("jobs")->Draw(14,4,false,now_id%8,walkx,walky,plColor);
     }
     if(now_id >= 16 && now_id < 40)
     {
@@ -80,7 +75,6 @@ void nofPigbreeder::DrawWorking(int x, int y)
         int walkx = x + offsets[wpNation][0] + (((walkstart[wpNation][0] - offsets[wpNation][0])) * (now_id - 40) / walksteps);
         int walky = y + offsets[wpNation][1] + (((walkstart[wpNation][1] - offsets[wpNation][1])) * (now_id - 40) / walksteps);
         LOADER.bob_jobs_cache[wpNation][JOB_PIGBREEDER][1][(now_id - 40) % 8].draw(walkx, walky, COLOR_WHITE, plColor);
-//        LOADER.GetBobN("jobs")->Draw(14,1,false,(now_id-40)%8,walkx,walky,plColor);
     }
 
 }
@@ -94,13 +88,12 @@ GoodType nofPigbreeder::ProduceWare()
 void nofPigbreeder::MakePigSounds()
 {
     /// Ist es wieder Zeit für einen Schweine-Sound?
-    if(GAMECLIENT.GetGFNumber() - last_id > 600 + unsigned(rand() % 200) - unsigned((workplace->GetProductivity()) * 5) &&
-            (GAMECLIENT.GetGFNumber() != last_id) && !GAMECLIENT.IsPaused())
+    unsigned timeDiffSound = 600 + unsigned(rand() % 200) - workplace->GetProductivity() * 5u;
+    if(GetEvMgr().GetCurrentGF() - last_id > timeDiffSound)
     {
         // "Oink"
-        LOADER.GetSoundN("sound", 86)->Play(255, false);
-
-        last_id = GAMECLIENT.GetGFNumber();
+        SOUNDMANAGER.PlayNOSound(86, this, 1);
+        last_id = GetEvMgr().GetCurrentGF();
     }
 
 }

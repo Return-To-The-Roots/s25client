@@ -37,6 +37,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
+#include "EventManager.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
@@ -1328,7 +1329,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     {
         if (visibility_before != VIS_VISIBLE && HasLua())
             GetLua().EventExplored(player, pt);
-        SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
+        SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
     }
     else
     {
@@ -1346,7 +1347,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
                 if(visibility_before == VIS_VISIBLE)
                 {
-                    SetVisibility(pt, player, VIS_FOW, GAMECLIENT.GetGFNumber());
+                    SetVisibility(pt, player, VIS_FOW, GetEvMgr().GetCurrentGF());
                 }
                 break;
             default:
@@ -1367,7 +1368,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 {
     Visibility visibility_before = GetNode(pt).fow[player].visibility;
-    SetVisibility(pt, player, VIS_VISIBLE, GAMECLIENT.GetGFNumber());
+    SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
 
     if (visibility_before != VIS_VISIBLE && HasLua())
         GetLua().EventExplored(player, pt);

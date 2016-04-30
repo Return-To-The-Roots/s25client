@@ -425,7 +425,7 @@ void nofBuildingWorker::StartNotWorking()
 {
     // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
     if(since_not_working == 0xFFFFFFFF)
-        since_not_working = GAMECLIENT.GetGFNumber();
+        since_not_working = GetEvMgr().GetCurrentGF();
 }
 
 void nofBuildingWorker::StopNotWorking()
@@ -433,7 +433,7 @@ void nofBuildingWorker::StopNotWorking()
     // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
     if(since_not_working != 0xFFFFFFFF)
     {
-        not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        not_working += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
         since_not_working = 0xFFFFFFFF;
     }
 }
@@ -446,9 +446,9 @@ unsigned short nofBuildingWorker::CalcProductivity()
     if(since_not_working != 0xFFFFFFFF)
     {
         // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-        not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        not_working += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
         // Zähler zurücksetzen
-        since_not_working = GAMECLIENT.GetGFNumber();
+        since_not_working = GetEvMgr().GetCurrentGF();
     }
 
     // Produktivität ausrechnen

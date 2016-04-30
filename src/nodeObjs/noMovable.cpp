@@ -127,7 +127,7 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
         RTTR_Assert(current_ev->gf_length > 0);
         if(current_ev->gf_length == 0)
         {
-            LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n", GAMECLIENT.GetGFNumber());
+            LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n", GetEvMgr().GetCurrentGF());
             return Point<int>(0, 0);
         }
     }
@@ -135,12 +135,12 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
     RTTR_Assert(current_ev || pause_walked_gf);
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
-    unsigned gf_diff = current_ev ? (GAMECLIENT.GetGFNumber() - current_ev->gf) : pause_walked_gf;
+    unsigned gf_diff = current_ev ? (GetEvMgr().GetCurrentGF() - current_ev->gf) : pause_walked_gf;
     unsigned evLength = current_ev ? current_ev->gf_length : pause_event_length;
-    unsigned frame_time = current_ev ? GAMECLIENT.GetFrameTime() : 0;
+    unsigned frame_time = current_ev ? GetEvMgr().GetCurrentGF() : 0;
 
     // Convert to real world time
-    const unsigned gfLength = GAMECLIENT.GetGFLength();
+    const unsigned gfLength = GetEvMgr().GetCurrentGF();
     // Time since the start of the event
     unsigned curTimePassed = gf_diff * gfLength + frame_time;
     // Duration of the event
@@ -202,7 +202,7 @@ Point<int> noMovable::CalcWalkingRelative() const
 void noMovable::PauseWalking()
 {
     // Frames festhalten, bis zu denen wir gekommen sind
-    pause_walked_gf = GAMECLIENT.GetGFNumber() - current_ev->gf;
+    pause_walked_gf = GetEvMgr().GetCurrentGF() - current_ev->gf;
     // Länge merken
     pause_event_length = current_ev->gf_length;
     // Event abmelden

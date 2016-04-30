@@ -261,7 +261,7 @@ void noFigure::StartWalking(const unsigned char newDir)
     RTTR_Assert(newDir <= 5);
     if(newDir > 5)
     {
-        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GAMECLIENT.GetGFNumber(), unsigned(newDir));
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GetEvMgr().GetCurrentGF(), unsigned(newDir));
         return;
     }
 
