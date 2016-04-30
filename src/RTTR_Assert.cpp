@@ -24,6 +24,8 @@
 #   include <windows.h>
 #endif
 
+bool RTTR_AssertEnableBreak = true;
+
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)
 {
     static const std::string thisFilePath = __FILE__;
