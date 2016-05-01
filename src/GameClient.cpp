@@ -33,7 +33,7 @@
 #include "GlobalGameSettings.h"
 #include "lua/LuaInterfaceGame.h"
 #include "gameData/GameConsts.h"
-#include "PostMsg.h"
+#include "postSystem/PostManager.h"
 #include "SerializedGameData.h"
 #include "LobbyClient.h"
 #include "files.h"
@@ -90,7 +90,6 @@ GameClient::GameClient()
     clientconfig.Clear();
     framesinfo.Clear();
     randcheckinfo.Clear();
-    postMessages.clear();
 }
 
 GameClient::~GameClient()
@@ -227,9 +226,6 @@ void GameClient::Stop()
     framesinfo.Clear();
     clientconfig.Clear();
     mapinfo.Clear();
-    for(std::list<PostMsg*>::iterator it = postMessages.begin(); it != postMessages.end(); ++it)
-        delete *it;
-    postMessages.clear();
 
     replayinfo.replay.StopRecording();
 
@@ -270,6 +266,7 @@ void GameClient::StartGame(const unsigned int random_init)
     GameObject::SetPointers(gw);
     for(unsigned i = 0; i < players.getCount(); ++i)
         players[i].SetGameWorldPointer(gw);
+    gw->GetPostMgr().AddPostBox(playerId_);
 
     if(ci)
         ci->CI_GameStarted(*gw);
@@ -1858,38 +1855,6 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
         sprintf(str, "%02u:%02u", minutes, seconds);
 
     return std::string(str);
-}
-
-
-// Sendet eine Postnachricht an den Spieler
-void GameClient::SendPostMessage(PostMsg* msg)
-{
-    if (postMessages.size() == MAX_POST_MESSAGES)
-    {
-        DeletePostMessage(postMessages.back());
-    }
-
-    postMessages.push_front(msg);
-
-    if(ci)
-        ci->CI_NewPostMessage(postMessages.size());
-}
-
-// Entfernt eine Postnachricht aus der Liste und löscht sie
-void GameClient::DeletePostMessage(PostMsg* msg)
-{
-    for(std::list<PostMsg*>::iterator it = postMessages.begin(); it != postMessages.end(); ++it)
-    {
-        if (msg == *it)
-        {
-            postMessages.erase(it);
-            delete msg;
-
-            if(ci)
-                ci->CI_PostMessageDeleted(postMessages.size());
-            break;
-        }
-    }
 }
 
 bool GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)

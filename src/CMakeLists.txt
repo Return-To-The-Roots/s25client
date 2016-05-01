@@ -53,6 +53,7 @@ AddDirectory(lua)
 AddDirectory(nodeObjs)
 AddDirectory(ogl)
 AddDirectory(pathfinding)
+AddDirectory(postSystem)
 AddDirectory(world)
 
 ################################################################################

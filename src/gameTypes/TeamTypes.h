@@ -15,17 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MessageTypes_h__
-#define MessageTypes_h__
+#ifndef TeamTypes_h__
+#define TeamTypes_h__
 
-enum PostMessageCategory
+enum Team
 {
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
+    TM_NOTEAM = 0,
+    TM_RANDOMTEAM,
+    TM_TEAM1,
+    TM_TEAM2,
+    TM_TEAM3,
+    TM_TEAM4,
+    TM_RANDOMTEAM2,
+    TM_RANDOMTEAM3,
+    TM_RANDOMTEAM4
 };
 
-#endif // MessageTypes_h__
+/// Anzahl der Team-Optionen
+const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
+
+#endif // TeamTypes_h__

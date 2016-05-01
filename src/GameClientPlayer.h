@@ -27,6 +27,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameData/MaxPlayers.h"
 #include "helpers/containerUtils.h"
 #include <boost/array.hpp>
 #include <list>
@@ -49,7 +50,7 @@ class noShip;
 class nobHarborBuilding;
 class GameWorldGame;
 class noFigure;
-
+class PostMsg;
 
 /// Informationen über Gebäude-Anzahlen
 struct BuildingCount
@@ -179,6 +180,7 @@ class GameClientPlayer : public GamePlayerInfo
         void DisableBuilding(BuildingType type) {building_enabled[type] = false;}
         bool IsBuildingEnabled(BuildingType type) const {return(building_enabled[type]);}
         std::vector< MapPoint >& GetRestrictedArea() {return(restricted_area);}
+        void SendPostMessage(PostMsg* msg);
 
     private:
 

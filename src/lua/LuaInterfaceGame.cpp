@@ -26,7 +26,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "WindowManager.h"
 #include "GlobalVars.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsg.h"
 #include "libutil/src/Serializer.h"
 #include "libutil/src/Log.h"
 #include <fstream>
@@ -260,18 +260,12 @@ void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title,
 // Must not be PostMessage as this is a windows define :(
 void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg)
 {
-    if(GAMECLIENT.GetPlayerID() != playerIdx)
-        return;
-
-    GAMECLIENT.SendPostMessage(new PostMsg(msg, PMC_OTHER));
+    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_OTHER));
 }
 
 void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
 {
-    if(GAMECLIENT.GetPlayerID() != playerIdx)
-        return;
-
-    GAMECLIENT.SendPostMessage(new PostMsgWithLocation(msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
+    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)

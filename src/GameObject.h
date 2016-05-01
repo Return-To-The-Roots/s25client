@@ -26,6 +26,7 @@
 class SerializedGameData;
 class GameWorldGame;
 class EventManager;
+class PostMsg;
 
 /// Basisklasse für alle Spielobjekte
 class GameObject
@@ -70,8 +71,11 @@ class GameObject
 
         /// Serialisierungsfunktion.
         void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
-        /// Get Event Manager. Short and avoids dependency on GameWorldGame include
+        // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
         EventManager& GetEvMgr() const;
+        /// Send the msg to given player
+        void SendPostMessage(unsigned player, PostMsg* msg);
+
 
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;

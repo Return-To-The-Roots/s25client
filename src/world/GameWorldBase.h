@@ -20,6 +20,7 @@
 
 #include "world/World.h"
 #include "buildings/nobBaseMilitary.h"
+#include "postSystem/PostManager.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
@@ -42,6 +43,7 @@ class GameWorldBase: public World
 {
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
+    PostManager postManager;
 
     GameClientPlayerList& players;
     const GlobalGameSettings& gameSettings;
@@ -139,6 +141,8 @@ public:
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
     EventManager& GetEvMgr(){ return em; }
     const EventManager& GetEvMgr() const { return em; }
+    PostManager& GetPostMgr(){ return postManager; }
+    const PostManager& GetPostMgr() const { return postManager; }
 
     struct PotentialSeaAttacker
     {

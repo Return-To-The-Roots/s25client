@@ -24,7 +24,7 @@
 #include "EventManager.h"
 #include "noShip.h"
 #include "GameClient.h"
-#include "PostMsg.h"
+#include "postSystem/ShipPostMsg.h"
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
@@ -126,8 +126,7 @@ void noShipBuildingSite::MakeBuildStep()
         gwg->RecalcBQAroundPointBig(pos);
 
         // Spieler über Fertigstellung benachrichtigen
-        if(GAMECLIENT.GetPlayerID() == this->player)
-            GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A new ship is ready"), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
+        SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A new ship is ready"), PMC_GENERAL, *ship));
 
         // KI Event senden
         GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, pos), player);

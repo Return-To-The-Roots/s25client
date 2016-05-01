@@ -26,16 +26,15 @@
 #include "GameReplay.h"
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
+#include "postSystem/PostBox.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/MapInfo.h"
-#include "gameData/PlayerConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "FramesInfo.h"
 
 class AIBase;
 class ClientInterface;
 class GameMessage_GameCommand;
-class PostMsg;
 class SavedFile;
 class GameEvent;
 class GameWorldView;
@@ -233,17 +232,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void WritePlayerInfo(SavedFile& file);
 // Post-Sachen
     public:
-
-        void SendPostMessage(PostMsg* msg);
-        const std::list<PostMsg*>& GetPostMessages() { return postMessages; }
-        void DeletePostMessage(PostMsg* msg);
-
         bool SendAIEvent(AIEvent::Base* ev, unsigned receiver);
 
-    private:
-        std::list<PostMsg*> postMessages;
-
-    public:
         /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu
         /// verstecken
         struct VisualSettings

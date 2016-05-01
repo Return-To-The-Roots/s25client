@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
@@ -61,15 +61,11 @@ void nofScout_LookoutTower::WorkAborted()
 
 void nofScout_LookoutTower::WorkplaceReached()
 {
-
     // Im enstprechenden Radius alles sichtbar machen
     gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
-                                               _("Lookout-tower occupied"), PMC_MILITARY, pos, workplace->GetBuildingType(), workplace->GetNation()));
-
+    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Lookout-tower occupied"), PMC_MILITARY, *workplace));
 }
 
 bool nofScout_LookoutTower::AreWaresAvailable()

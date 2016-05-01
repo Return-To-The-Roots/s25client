@@ -15,17 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MessageTypes_h__
-#define MessageTypes_h__
+#ifndef MaxPlayers_h__
+#define MaxPlayers_h__
 
-enum PostMessageCategory
-{
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
-};
+/// Maximale Anzahl an Spielern
+BOOST_CONSTEXPR_OR_CONST unsigned MAX_PLAYERS = 8;
 
-#endif // MessageTypes_h__
+#endif // MaxPlayers_h__

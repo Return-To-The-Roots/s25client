@@ -28,7 +28,7 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsg.h"
 #include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "lua/LuaInterfaceGame.h"
@@ -440,24 +440,28 @@ void nofGeologist::SetSign(const unsigned char resources)
     {
         if (!resAlreadyFound[type] && !IsSignInArea(type))
         {
-            if(GAMECLIENT.GetPlayerID() == this->player)
+            const char* msg;
+            switch(type)
             {
-                switch(type)
-                {
-                    case RES_IRON_ORE: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found iron ore"), PMC_GEOLOGIST, pos));
-                        break;
-                    case RES_GOLD: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found gold"), PMC_GEOLOGIST, pos));
-                        break;
-                    case RES_COAL: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found coal"), PMC_GEOLOGIST, pos));
-                        break;
-                    case RES_GRANITE: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found granite"), PMC_GEOLOGIST, pos));
-                        break;
-                    case RES_WATER: GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("Found water"), PMC_GEOLOGIST, pos));
-                        break;
-                    default:
-                        RTTR_Assert(false);
-                }
+            case RES_IRON_ORE:
+                msg = _("Found iron ore");
+                break;
+            case RES_GOLD:
+                msg = _("Found gold");
+                break;
+            case RES_COAL:
+                msg = _("Found coal");
+                break;
+            case RES_GRANITE:
+                msg = _("Found granite");
+                break;
+            case RES_WATER:
+                msg = _("Found water");
+                break;
+            default:
+                RTTR_Assert(false);
             }
+            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_GEOLOGIST, pos));
             GAMECLIENT.SendAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, pos, type), player);
         }
         resAlreadyFound[type] = true;

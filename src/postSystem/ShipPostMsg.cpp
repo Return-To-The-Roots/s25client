@@ -15,27 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PlayerConsts_h__
-#define PlayerConsts_h__
+#include "defines.h" // IWYU pragma: keep
+#include "ShipPostMsg.h"
+#include "nodeObjs/noShip.h"
+#include "Loader.h"
 
-/// Maximale Anzahl an Spielern
-const unsigned MAX_PLAYERS = 8;
+ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const noShip& ship):
+    PostMsg(sendFrame, text, cat, ship.GetPos())
+{}
 
-/// Team
-enum Team
+glArchivItem_Bitmap* ShipPostMsg::GetImage_() const
 {
-    TM_NOTEAM = 0,
-    TM_RANDOMTEAM,
-    TM_TEAM1,
-    TM_TEAM2,
-    TM_TEAM3,
-    TM_TEAM4,
-    TM_RANDOMTEAM2,
-    TM_RANDOMTEAM3,
-    TM_RANDOMTEAM4
-};
-
-/// Anzahl der Team-Optionen
-const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
-
-#endif // PlayerConsts_h__
+    return LOADER.GetImageN("boot_z", 12);
+}

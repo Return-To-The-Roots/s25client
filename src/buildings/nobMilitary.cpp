@@ -29,7 +29,7 @@
 #include "Random.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "FindWhConditions.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "ai/AIEvents.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
@@ -694,8 +694,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
     {
-        if(GAMECLIENT.GetPlayerID() == this->player)
-            GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building occupied"), PMC_MILITARY, pos, this->type_, this->nation));
+        SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building occupied"), PMC_MILITARY, *this));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -1008,10 +1007,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->MilitaryBuildingCaptured(pos, player);
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
-    if(GAMECLIENT.GetPlayerID() == old_player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building lost"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
-    if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("Military building captured"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
+    SendPostMessage(old_player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building lost"), PMC_MILITARY, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building captured"), PMC_MILITARY, *this));
 
     // ggf. Fenster schließen vom alten Spieler
     gwg->ImportantObjectDestroyed(pos);
@@ -1238,8 +1235,7 @@ void nobMilitary::HitOfCatapultStone()
         RegulateTroops();
 
     // Post verschicken
-    if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("A catapult is firing upon us!"), PMC_MILITARY, pos, GetBuildingType(), GetNation()));
+    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("A catapult is firing upon us!"), PMC_MILITARY, *this));
 }
 
 /**

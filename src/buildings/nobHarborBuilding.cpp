@@ -21,7 +21,7 @@
 #include "GameClient.h"
 #include "GameClientPlayer.h"
 #include "Ware.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
 #include "Random.h"
@@ -89,9 +89,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
         sea_ids[i] = gwg->IsCoastalPoint(gwg->GetNeighbour(pos, i));
 
     // Post versenden
-    if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(
-                                               _("New harbor building finished"), PMC_GENERAL, pos, BLD_HARBORBUILDING, nation));
+    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("New harbor building finished"), PMC_GENERAL, *this));
 }
 
 

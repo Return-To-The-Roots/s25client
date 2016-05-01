@@ -15,17 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MessageTypes_h__
-#define MessageTypes_h__
+#ifndef PostManager_h__
+#define PostManager_h__
 
-enum PostMessageCategory
+#include "gameData/MaxPlayers.h"
+#include <boost/array.hpp>
+
+class PostMsg;
+class PostBox;
+
+class PostManager
 {
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
+public:
+    PostManager();
+    ~PostManager();
+    void AddPostBox(unsigned player);
+    PostBox* GetPostBox(unsigned player) const { return postBoxes[player]; }
+    void RemovePostBox(unsigned player);
+    void SendMsg(unsigned player, PostMsg* msg);
+
+private:
+    boost::array<PostBox*, MAX_PLAYERS> postBoxes;
 };
 
-#endif // MessageTypes_h__
+#endif // PostManager_h__

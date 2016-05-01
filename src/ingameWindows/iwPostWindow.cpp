@@ -22,17 +22,33 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
+#include "postSystem/PostMsg.h"
+#include "postSystem/DiplomacyPostQuestion.h"
 #include "driver/src/KeyEvent.h"
 #include "Loader.h"
-#include "PostMsg.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "macros.h"
 #include "GameClient.h"
 #include <iostream>
-iwPostWindow::iwPostWindow(GameWorldView& gwv)
-    : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv)
+
+// Only internally visible
+namespace{
+    // Enum is auto-numbering once we set a start value
+    enum ButtonIds{
+        ID_GOTO = 14,
+        ID_DELETE,
+        ID_IMG,
+        ID_TEXT,
+        ID_ACCEPT,
+        ID_DENY,
+        ID_INFO
+    };
+}
+
+iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
+    : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv), postBox(postBox)
 {
     AddImageButton( 0, 18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190));   // Viewer: 191 - Papier
     AddImageButton( 1, 56, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 30));    // Viewer:  31 - Soldat
@@ -47,139 +63,120 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv)
     AddImageButton(10, 111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
     AddImageButton(11, 141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
+    // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
+    AddImageButton(ID_GOTO, 181, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
+    // Mülleimer, nur sichtbar, wenn Nachricht da
+    AddImageButton(ID_DELETE, 211, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 106))->SetVisible(false);
 
-    gotoButton = AddImageButton(14, 181, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 107)); // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
-    gotoButton->SetVisible(false);
-    deleteButton = AddImageButton(15, 211, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 106)); // Mülleimer, nur sichtbar, wenn Nachricht da
-    deleteButton->SetVisible(false);
+    AddText(ID_INFO, 127, 228, "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont)->SetVisible(false);
 
-
-
-    postMsgInfos = AddText(18, 127, 228, "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    postMsgInfos->SetVisible(false);
-
-    postImage = AddImage(13, 127, 155, LOADER.GetImageN("io", 225));
+    AddImage(ID_IMG, 127, 155, LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(12, 126, 141, 200, 50, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 50, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
     text->EnableBox(false);
     text->AddString("", COLOR_WINDOWBROWN, false);
     text->AddString("", COLOR_WINDOWBROWN, false);
     text->AddString("", COLOR_WINDOWBROWN, false);
 
-    SetMessageText(_("No letters!"));
+    // Button with OK and deny sign (tick and cross) for contracts
+    AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
+    AddImageButton(ID_DENY, 137, 185, 30, 26, TC_RED1, LOADER.GetImageN("io", 40))->SetVisible(false);
 
-    acceptButton = AddImageButton(16, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32)); // Button mit Haken, zum Annehmen von Verträgen
-    acceptButton->SetVisible(false);
-    declineButton = AddImageButton(17, 137, 185, 30, 26, TC_RED1, LOADER.GetImageN("io", 40)); // Button mit Kreuz, zum Ablehnen von Verträgen
-    declineButton->SetVisible(false);
-
-    currentMessage = 0;
+    lastMsgCt = postBox.GetNumMsgs();
+    curMsgIdx = postBox.GetNumMsgs();
     DisplayPostMessage();
-
-    lastSize = GAMECLIENT.GetPostMessages().size();
 }
 
 void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-            // Schnell zurück
-        case 8: currentMessage = 0;
+        case 8:
+            // To oldest
+            curMsgIdx = 0;
             DisplayPostMessage();
             break;
-            // Zurück
-        case 9: currentMessage = (currentMessage > 0) ? currentMessage - 1 : 0;
+        case 9:
+            // Back
+            curMsgIdx = (curMsgIdx > 0) ? curMsgIdx - 1 : 0;
             DisplayPostMessage();
             break;
-            // Vor
-        case 10: currentMessage = (currentMessage < GAMECLIENT.GetPostMessages().size()-1) ? currentMessage + 1 : GAMECLIENT.GetPostMessages().size()-1;
+        case 10:
+            // Forward
+            ++curMsgIdx;
             DisplayPostMessage();
             break;
-            // Schnell vor
-        case 11: currentMessage = GAMECLIENT.GetPostMessages().size() - 1;
+        case 11:
+            // To newest
+            curMsgIdx = postBox.GetNumMsgs();
             DisplayPostMessage();
             break;
-
-            // Goto
         case 14:
         {
-            PostMsg* pm = GetPostMsg(currentMessage);
-            PostMsgWithLocation* pml = dynamic_cast<PostMsgWithLocation*>(pm);
-            if (pml)
-            {
-                gwv.MoveToMapPt(pml->GetPos());
-            }
+            // Goto
+            PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
+            if (curMsg && curMsg->GetPos().isValid())
+                gwv.MoveToMapPt(curMsg->GetPos());
         }
         break;
 
-        // Löschen
-        case 15:
+        
+        case 15: // Delete
+        case 17: // Cross (Deny)
         {
-            if(!GAMECLIENT.GetPostMessages().empty())
-                DeletePostMessage(GetPostMsg(currentMessage));
+            PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
+            DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(curMsg);
+            if(dcurMsg)
+            {
+                // If it is a question about a new contract, tell the other player we denied it
+                if(dcurMsg->IsAccept())
+                  GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+            }
+            postBox.DeleteMsg(curMsg);
         }
         break;
 
         // Haken-Button ("Ja")
         case 16:
         {
-            PostMsg* pm = GetPostMsg(currentMessage);
-            DiplomacyPostQuestion* dpm = dynamic_cast<DiplomacyPostQuestion*>(pm);
-            if (dpm)
+            DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(postBox.GetMsg(curMsgIdx));
+            if (dcurMsg)
             {
-                // Vertrag akzeptieren? Ja
-                if(dpm->dp_type == DiplomacyPostQuestion::ACCEPT)
-                    GAMECLIENT.AcceptPact(true, dpm->id, dpm->pt, dpm->player);
-                // Vertrag beenden? Ja
-                else if(dpm->dp_type == DiplomacyPostQuestion::CANCEL)
-                    GAMECLIENT.CancelPact(dpm->pt, dpm->player);
-                DeletePostMessage(pm);
+                // New contract?
+                if(dcurMsg->IsAccept())
+                    GAMECLIENT.AcceptPact(true, dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                else
+                    GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                postBox.DeleteMsg(dcurMsg);
             }
         } break;
 
-        // Kreuz-Button ("Nein")
-        case 17:
-        {
-            PostMsg* pm = GetPostMsg(currentMessage);
-            DiplomacyPostQuestion* dpm = dynamic_cast<DiplomacyPostQuestion*>(pm);
-            if (dpm)
-            {
-                // Vertrag annehmen? Nein
-                // TODO: Sinnvoll ne art reject schicken, damit der andere mitbekommmt dass man nich will
-                //if(dpm->dp_type == DiplomacyPostQuestion::ACCEPT)
-                //  GAMECLIENT.CancelPact(dpm->pt,dpm->player);
-                DeletePostMessage(pm);
-            }
-        }
-        break;
     }
 
 }
 
 void iwPostWindow::Msg_PaintBefore()
 {
-    // Immer wenn sich die Anzahl der Nachrichten geändert hat neu prüfen was so angezeigt werden muss
-    unsigned currentSize = GAMECLIENT.GetPostMessages().size();
-    if (currentSize != lastSize)
+    if(curMsg && curMsg != postBox.GetMsg(curMsgIdx))
     {
-        // Neue Nachrichten dazugekommen, während das Fenster offen ist:
-        // Ansicht der vorherigen Nachricht beibehalten, außer es gab vorher gar keine Nachricht
-
-        if (lastSize < currentSize && lastSize != 0
-                // Wenn die erste Nachricht ausgewählt wurde, nehmen bleiben wir bei der ersten (=aktuellsten)
-                && currentMessage > 0)
+        // Message was either deleted or others were added and message was shifted
+        // So first search it, if not found we will display the next (newer) message
+        for(unsigned i = curMsgIdx; curMsgIdx > 0; curMsgIdx--)
         {
-            currentMessage += currentSize - lastSize;
-
-            // Falls das zufällig grad die 20 Nachrichtengrenze überschritten hat: Auf letzte Nachricht springen
-            if (currentMessage >= MAX_POST_MESSAGES)
-                currentMessage = MAX_POST_MESSAGES - 1;
+            if(postBox.GetMsg(i - 1))
+            {
+                curMsgIdx = i - 1;
+                break;
+            }
         }
-        lastSize = GAMECLIENT.GetPostMessages().size();
-
-        // Anzeigeeinstellungen setzen
+        
         DisplayPostMessage();
+    } else if(lastMsgCt != postBox.GetNumMsgs())
+    {
+        // At least update message count in status bar
+        DisplayPostMessage();
+        lastMsgCt = postBox.GetNumMsgs();
     }
 }
 
@@ -193,49 +190,24 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
         default:
             break;
         case KT_DELETE: // Delete current message
-        {
             Msg_ButtonClick(15);
-        } return true;
+            return true;
     }
 
     switch(ke.c)
     {
         case '+': // Next message
-        {
             Msg_ButtonClick(10);
-        } return true;
+            return true;
         case '-': // Previous message
-        {
             Msg_ButtonClick(9);
-        } return true;
+            return true;
         case 'g': // Go to site of event
-        {
-            if (!GAMECLIENT.GetPostMessages().empty())
-            {
-                Msg_ButtonClick(14);
-            }
-        } return true;
+            Msg_ButtonClick(14);
+            return true;
     }
 
     return false;
-}
-
-// Holt Nachricht Nummer pos
-PostMsg* iwPostWindow::GetPostMsg(unsigned pos) const
-{
-    PostMsg* pm = 0;
-    unsigned counter = 0;
-    for(std::list<PostMsg*>::const_iterator it = GAMECLIENT.GetPostMessages().begin(); it != GAMECLIENT.GetPostMessages().end(); ++it)
-    {
-        if (counter == pos)
-        {
-            pm = *it;
-            break;
-        }
-        counter++;
-    }
-    RTTR_Assert(pm);
-    return pm;
 }
 
 // Zeigt Nachricht an, passt Steuerelemente an
@@ -251,119 +223,67 @@ void iwPostWindow::DisplayPostMessage()
     const unsigned xTextCenter = 126;
     const unsigned yTextCenter = 151;
 
-    unsigned size = GAMECLIENT.GetPostMessages().size();
+    // Hide everything
+    GetCtrl<Window>(ID_IMG)->SetVisible(false);
+    GetCtrl<Window>(ID_DELETE)->SetVisible(false);
+    GetCtrl<Window>(ID_GOTO)->SetVisible(false);
+    GetCtrl<Window>(ID_ACCEPT)->SetVisible(false);
+    GetCtrl<Window>(ID_DENY)->SetVisible(false);
+    GetCtrl<Window>(ID_INFO)->SetVisible(false);
+
+    unsigned size = postBox.GetNumMsgs();
 
     // Keine Nachrichten, alles ausblenden, bis auf zentrierten Text
     if (size == 0)
     {
         SetMessageText(_("No letters!"));
-        GetCtrl<ctrlMultiline>(12)->Move(xTextCenter, yTextCenter);
-
-        postImage->SetVisible(false);
-        deleteButton->SetVisible(false);
-        gotoButton->SetVisible(false);
-        acceptButton->SetVisible(false);
-        declineButton->SetVisible(false);
-        postMsgInfos->SetVisible(false);
+        GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
         return;
     }
 
     // Falls currentMessage außerhalb der aktuellen Nachrichtenmenge liegt: korrigieren
-    if (currentMessage >= size)
-        currentMessage = size - 1;
+    if (curMsgIdx >= size)
+        curMsgIdx = size - 1;
 
-    PostMsg* pm = GetPostMsg(currentMessage);
+    curMsg = postBox.GetMsg(curMsgIdx);
 
-    // Nachrichten vorhanden, dann geht auf jeden Fall Löschbutton einblenden
-    deleteButton->SetVisible(true);
-
-    // Und ne Info-Zeile haben wir auch;
+    // We have a message, display its status...
     std::stringstream ss;
-    ss << _("Message") << " " << currentMessage + 1 << " " << _("of") << " " << size << " - GF: " << pm->GetSendFrame();
-    postMsgInfos->SetText(ss.str());
-    postMsgInfos->SetVisible(true);
+    ss << _("Message") << " " << curMsgIdx + 1 << " " << _("of") << " " << size << " - GF: " << curMsg->GetSendFrame();
+    GetCtrl<ctrlText>(ID_INFO)->SetText(ss.str());
+    GetCtrl<ctrlText>(ID_INFO)->SetVisible(true);
+    // ...and delete button
+    GetCtrl<Window>(ID_DELETE)->SetVisible(true);
 
-    // Rest abhängig vom Nachrichten-Typ
-    switch (pm->GetType())
+    SetMessageText(curMsg->GetText());
+    glArchivItem_Bitmap* const img = curMsg->GetImage_();
+    if(img)
     {
-        case PMT_IMAGE_WITH_LOCATION:
-        {
-            ImagePostMsgWithLocation* ipm = dynamic_cast<ImagePostMsgWithLocation*>(pm);
-            RTTR_Assert(ipm);
+        // We have an image, show it centered
+        GetCtrl<ctrlImage>(ID_IMG)->SetImage(img);
+        GetCtrl<Window>(ID_IMG)->Move(xImgBottomCenter + img->getNx() - img->getWidth() / 2,
+            yImgBottomCenter + img->getNy() - img->getHeight());
 
-            SetMessageText(pm->GetText());
-            GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);
-
-            glArchivItem_Bitmap* img = ipm->GetImage_();
-            postImage->SetImage(img);
-            postImage->Move(xImgBottomCenter + img->getNx() - img->getWidth() / 2,
-                            yImgBottomCenter + img->getNy() - img->getHeight());
-
-            postImage->SetVisible(true);
-            gotoButton->SetVisible(true);
-            acceptButton->SetVisible(false);
-            declineButton->SetVisible(false);
-        } break;
-        case PMT_WITH_LOCATION:
-        {
-            RTTR_Assert(dynamic_cast<PostMsgWithLocation*>(pm));
-
-            SetMessageText(pm->GetText());
-            GetCtrl<ctrlMultiline>(12)->Move(xTextCenter, yTextCenter);
-
-            postImage->SetVisible(false);
-            gotoButton->SetVisible(true);
-            acceptButton->SetVisible(false);
-            declineButton->SetVisible(false);
-        } break;
-        case PMT_DIPLOMACYQUESTION:
-        {
-            RTTR_Assert(dynamic_cast<DiplomacyPostQuestion*>(pm));
-
-            SetMessageText(pm->GetText());
-            GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);
-
-            // Zwei Buttons einblenden...
-            acceptButton->SetVisible(true);
-            declineButton->SetVisible(true);
-            gotoButton->SetVisible(false);
-            postImage->SetVisible(false);
-        } break;
-        case PMT_NORMAL:
-        case PMT_DIPLOMACYINFO:
-        {
-            SetMessageText(pm->GetText());
-            GetCtrl<ctrlMultiline>(12)->Move(xTextCenter, yTextCenter);
-
-            postImage->SetVisible(false);
-            gotoButton->SetVisible(false);
-            acceptButton->SetVisible(false);
-            declineButton->SetVisible(false);
-        } break;
-        case PMT_SHIP:
-        {
-            ShipPostMsg* ipm = dynamic_cast<ShipPostMsg*>(pm);
-            RTTR_Assert(ipm);
-
-            SetMessageText(pm->GetText());
-            GetCtrl<ctrlMultiline>(12)->Move(xTextTopCenter, yTextTopCenter);
-
-            glArchivItem_Bitmap* img = ipm->GetImage_();
-            postImage->SetImage(img);
-            postImage->Move(xImgBottomCenter + img->getNx() - img->getWidth() / 2,
-                            yImgBottomCenter + img->getNy() - img->getHeight());
-
-            postImage->SetVisible(true);
-            gotoButton->SetVisible(true);
-            acceptButton->SetVisible(false);
-            declineButton->SetVisible(false);
-        } break;
+        GetCtrl<Window>(ID_IMG)->SetVisible(true);
     }
+    if(dynamic_cast<const DiplomacyPostQuestion*>(curMsg))
+    {
+        GetCtrl<Window>(ID_ACCEPT)->SetVisible(true);
+        GetCtrl<Window>(ID_DENY)->SetVisible(true);
+    }
+    // Place text at top or center depending on whether we have an img or the acceptButton
+    if(img || GetCtrl<Window>(ID_ACCEPT)->GetVisible())
+        GetCtrl<Window>(ID_TEXT)->Move(xTextTopCenter, yTextTopCenter);
+    else
+        GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
+    // If message contains valid position, allow going to it
+    if(curMsg->GetPos().isValid())
+        GetCtrl<Window>(ID_GOTO)->SetVisible(true);
 }
 
 void iwPostWindow::SetMessageText(const std::string& message)
 {
-    ctrlMultiline* text = GetCtrl<ctrlMultiline>(12);
+    ctrlMultiline* text = GetCtrl<ctrlMultiline>(ID_TEXT);
 
     glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(message, 190, 190);
     std::vector<std::string> lines = wi.CreateSingleStrings(message);
@@ -375,10 +295,3 @@ void iwPostWindow::SetMessageText(const std::string& message)
             text->SetLine(i, "", COLOR_WINDOWBROWN);
     }
 }
-
-void iwPostWindow::DeletePostMessage(PostMsg* pm)
-{
-    GAMECLIENT.DeletePostMessage(pm);
-    currentMessage = (currentMessage > 0) ? currentMessage - 1 : 0;
-}
-

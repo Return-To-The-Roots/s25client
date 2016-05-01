@@ -19,7 +19,7 @@
 #include "nobStorehouse.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "PostMsg.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 class SerializedGameData;
 
@@ -36,8 +36,7 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
     gwg->GetPlayer(player).AddWarehouse(this);
 
     // Post versenden
-    if(GAMECLIENT.GetPlayerID() == this->player)
-        GAMECLIENT.SendPostMessage(new ImagePostMsgWithLocation(_("New storehouse finished"), PMC_GENERAL, pos, BLD_STOREHOUSE, nation));
+    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("New storehouse finished"), PMC_GENERAL, *this));
 }
 
 void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const

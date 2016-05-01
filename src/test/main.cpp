@@ -19,6 +19,39 @@
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
+#include <vector>
+#include <string>
+#include <iostream>
+
+namespace bfs = boost::filesystem;
+
+struct TestSetup
+{
+    TestSetup()
+    {
+        // Make sure we have the RTTR folder in our current working directory
+        std::vector<std::string> possiblePaths;
+        possiblePaths.push_back(".");
+        // Might be test folder
+        possiblePaths.push_back("..");
+        // Linux cmake style build setup
+        possiblePaths.push_back("../../../build");
+        // VS style build setup (additional Debug sub folder)
+        possiblePaths.push_back("../../../../build");
+        for(std::vector<std::string>::const_iterator it = possiblePaths.begin(); it != possiblePaths.end(); ++it)
+        {
+            if(bfs::is_directory(*it + "/RTTR"))
+            {
+                std::cout << "Changing to " << *it << std::endl;
+                bfs::current_path(*it);
+                break;
+            }
+        }
+    }
+};
+
+BOOST_GLOBAL_FIXTURE(TestSetup);
 
 BOOST_AUTO_TEST_CASE(Basic)
 {

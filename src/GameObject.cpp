@@ -20,6 +20,7 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
+#include "postSystem/PostBox.h"
 
 #include <iostream>
 
@@ -79,4 +80,9 @@ GameObject::~GameObject()
 EventManager& GameObject::GetEvMgr() const
 {
     return gwg->GetEvMgr();
+}
+
+void GameObject::SendPostMessage(unsigned player, PostMsg* msg)
+{
+    gwg->GetPostMgr().SendMsg(player, msg);
 }

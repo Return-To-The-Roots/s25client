@@ -26,7 +26,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "figures/noFigure.h"
 #include "Ware.h"
-#include "PostMsg.h"
+#include "postSystem/ShipPostMsg.h"
 #include "figures/nofAttacker.h"
 #include "ai/AIEvents.h"
 #include "world/GameWorldGame.h"
@@ -281,8 +281,7 @@ void noShip::HandleEvent(const unsigned int id)
             state = STATE_EXPEDITION_WAITING;
 
             // Spieler benachrichtigen
-            if(GAMECLIENT.GetPlayerID() == this->player)
-                GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship is ready for an expedition."), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
+            SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A ship is ready for an expedition."), PMC_GENERAL, *this));
 
             // KI Event senden
             GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
@@ -426,8 +425,8 @@ void noShip::Driven()
     if(enemy_territory_discovered.isValid())
     {
         // Send message if necessary
-        if(gwg->GetPlayer(player).ShipDiscoveredHostileTerritory(enemy_territory_discovered) && player == GAMECLIENT.GetPlayerID())
-            GAMECLIENT.SendPostMessage(new PostMsgWithLocation(_("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
+        if(gwg->GetPlayer(player).ShipDiscoveredHostileTerritory(enemy_territory_discovered))
+            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), _("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
     }
 
     switch(state)
@@ -714,8 +713,7 @@ void noShip::HandleState_ExpeditionDriving()
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                if(GAMECLIENT.GetPlayerID() == this->player)
-                    GAMECLIENT.SendPostMessage(new ShipPostMsg(_("A ship has reached the destination of its expedition."), PMC_GENERAL, gwg->GetPlayer(player).nation, pos));
+                SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A ship has reached the destination of its expedition."), PMC_GENERAL, *this));
 
                 // KI Event senden
                 GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);

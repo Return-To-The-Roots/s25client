@@ -20,7 +20,7 @@
 
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingQuality.h"
-#include "gameData/PlayerConsts.h"
+#include "gameData/MaxPlayers.h"
 #include <boost/array.hpp>
 #include <list>
 
