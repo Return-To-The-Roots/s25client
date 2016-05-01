@@ -261,7 +261,7 @@ void noFigure::StartWalking(const unsigned char newDir)
     RTTR_Assert(newDir <= 5);
     if(newDir > 5)
     {
-        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GAMECLIENT.GetGFNumber(), unsigned(newDir));
+        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GetEvMgr().GetCurrentGF(), unsigned(newDir));
         return;
     }
 
@@ -929,7 +929,7 @@ void noFigure::Die()
 {
     // Weg mit mir
     gwg->RemoveFigure(this, pos);
-    em->AddToKillList(this);
+    GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
         gwg->SetNO(pos, new noSkeleton(pos));
@@ -957,7 +957,7 @@ void noFigure::DieFailedTrade()
 {
     // Weg mit mir
     gwg->RemoveFigure(this, pos);
-    em->AddToKillList(this);
+    GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
         gwg->SetNO(pos, new noSkeleton(pos));
@@ -1020,15 +1020,12 @@ void noFigure::StopIfNecessary(const MapPoint pt)
     if(fs == FS_GOHOME || fs == FS_GOTOGOAL || (fs == FS_JOB && GetGOT() == GOT_NOF_CARRIER))
     {
         // Laufe ich zu diesem Punkt?
-        if(current_ev)
+        if(current_ev && !waiting_for_free_node && gwg->GetNeighbour(this->pos, GetCurMoveDir()) == pt)
         {
-            if(!waiting_for_free_node && gwg->GetNeighbour(this->pos, GetCurMoveDir()) == pt)
-            {
-                // Dann stehenbleiben
-                PauseWalking();
-                waiting_for_free_node = true;
-                gwg->StopOnRoads(this->pos, GetCurMoveDir());
-            }
+            // Dann stehenbleiben
+            PauseWalking();
+            waiting_for_free_node = true;
+            gwg->StopOnRoads(this->pos, GetCurMoveDir());
         }
     }
 }

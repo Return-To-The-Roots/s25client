@@ -18,18 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GameEvent.h"
-#include "GameClient.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mapTraits.h"
 #include "Log.h"
+#include <vector>
+
+EventManager::EventManager(unsigned startGF): currentGF(startGF), curActiveEvent(NULL)
+{}
 
 EventManager::~EventManager()
-{
-    Clear();
-}
-
-void EventManager::Clear()
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
@@ -38,44 +36,31 @@ void EventManager::Clear()
     }
     events.clear();
 
-    for(GameObjList::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
+    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
         GameObject* obj = *it;
         *it = NULL;
         delete obj;
     }
-    kill_list.clear();
+    killList.clear();
 }
 
 GameEvent* EventManager::AddEvent(GameEvent* event)
 {
     // Should be in the future!
-    RTTR_Assert(event->gf_next > GAMECLIENT.GetGFNumber());
-    RTTR_Assert(!dynamic_cast<GameEvent*>(event->obj)); // Why could this ever happen?
-    events[event->gf_next].push_back(event);
+    RTTR_Assert(event->GetTargetGF() > currentGF);
+    // Make sure the linked object is not an event itself
+    RTTR_Assert(!dynamic_cast<GameEvent*>(event->obj));
+    events[event->GetTargetGF()].push_back(event);
     return event;
 }
 
-/**
- *  fügt ein Event der Eventliste hinzu.
- *
- *  @param[in] obj       Das Objekt
- *  @param[in] gf_length Die GameFrame-Länge
- *  @param[in] id        ID des Events
- */
-GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id)
+GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned gf_length, const unsigned id)
 {
     RTTR_Assert(obj);
     RTTR_Assert(gf_length);
 
-    /*  if (IsEventActive(obj, id))
-        {
-            LOG.lprintf("EventManager::AddEvent1(): already active: %u %u\n", obj->GetGOT(), id);
-
-        }*/
-
-    // Event eintragen
-    return AddEvent(new GameEvent(obj, GAMECLIENT.GetGFNumber(), gf_length, id));
+    return AddEvent(new GameEvent(obj, currentGF, gf_length, id));
 }
 
 GameEvent* EventManager::AddEvent(SerializedGameData& sgd, const unsigned obj_id)
@@ -83,31 +68,22 @@ GameEvent* EventManager::AddEvent(SerializedGameData& sgd, const unsigned obj_id
     return AddEvent(new GameEvent(sgd, obj_id));
 }
 
-GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed)
+GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned gf_length, const unsigned id, const unsigned gf_elapsed)
 {
     RTTR_Assert(gf_length > gf_elapsed);
-
-    /*  if (IsEventActive(obj, id))
-        {
-            LOG.lprintf("EventManager::AddEvent2(): already active: %u %u\n", obj->GetGOT(), id);
-        }*/
-
     // Anfang des Events in die Vergangenheit zurückverlegen
-    RTTR_Assert(GAMECLIENT.GetGFNumber() >= gf_elapsed);
-    return AddEvent(new GameEvent(obj, GAMECLIENT.GetGFNumber() - gf_elapsed, gf_length, id));
+    RTTR_Assert(currentGF >= gf_elapsed);
+    return AddEvent(new GameEvent(obj, currentGF - gf_elapsed, gf_length, id));
 }
 
-/**
- *  führt alle Events des aktuellen GameFrames aus.
- */
-void EventManager::NextGF()
+void EventManager::ExecuteNextGF()
 {
-    unsigned int gfnr = GAMECLIENT.GetGFNumber();
+    currentGF++;
 
-    RTTR_Assert(events.empty() || events.begin()->first >= gfnr);
+    RTTR_Assert(events.empty() || events.begin()->first >= currentGF);
 
-    // Events abfragen
-    EventMap::iterator itCurEvents = events.find(gfnr);
+    // Get list of events for current GF
+    EventMap::iterator itCurEvents = events.find(currentGF);
     if(itCurEvents != events.end())
     {
         EventList& curEvents = itCurEvents->second;
@@ -129,25 +105,26 @@ void EventManager::NextGF()
         events.erase(itCurEvents);
     }
 
-    // Kill-List durchgehen und Objekte in den Bytehimmel befördern
-    for (GameObjList::iterator it = kill_list.begin(); it != kill_list.end(); ++it)
+    // Remove all objects
+    for (GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
         GameObject* obj = *it;
+        // Object is no longer in the kill list (some may check this upon destruction)
         *it = NULL;
         obj->Destroy();
         delete obj;
     }
 
-    kill_list.clear();
+    killList.clear();
 }
 
 void EventManager::Serialize(SerializedGameData& sgd) const
 {
-    // Kill-Liste muss leer sein!
-    RTTR_Assert(kill_list.empty());
+    // Kill list must be empty (do not store to-be-killed objects)
+    RTTR_Assert(killList.empty());
 
-    std::list<const GameEvent*> save_events;
-    // Nur Events speichern, die noch nicth vorher von anderen Objekten gespeichert wurden!
+    // Gather all events, that are not yet serialized
+    std::vector<const GameEvent*> save_events;
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
         for(EventList::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
@@ -162,15 +139,12 @@ void EventManager::Serialize(SerializedGameData& sgd) const
 
 void EventManager::Deserialize(SerializedGameData& sgd)
 {
-    // Events laden
-    // Nicht zur Eventliste hinzufügen, da dies ohnehin schon in Create_GameObject geschieht!!
     unsigned size = sgd.PopUnsignedInt();
-    // einzelne Objekte
+    // Pop all events, but do NOT add them. Deserialization will already do so
     for(unsigned i = 0; i < size; ++i)
         sgd.PopEvent();
 }
 
-/// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
 bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id) const
 {
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
@@ -185,28 +159,6 @@ bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id)
     }
 
     return false;
-}
-
-// only used for debugging purposes
-void EventManager::RemoveAllEventsOfObject(GameObject* obj)
-{
-    for(EventMap::iterator it = events.begin(); it != events.end();)
-    {
-        EventList& curEvents = it->second;
-        for(std::list<GameEvent*>::iterator e_it = curEvents.begin(); e_it != curEvents.end();)
-        {
-            if((*e_it)->obj == obj)
-            {
-                e_it = curEvents.erase(e_it);
-            }
-            else
-                ++e_it;
-        }
-        if(events.empty())
-            it = helpers::erase(events, it);
-        else
-            ++it;
-    }
 }
 
 bool EventManager::ObjectHasEvents(GameObject* obj)
@@ -225,7 +177,7 @@ bool EventManager::ObjectHasEvents(GameObject* obj)
 
 bool EventManager::ObjectIsInKillList(GameObject* obj)
 {
-    return helpers::contains(kill_list, obj);
+    return helpers::contains(killList, obj);
 }
 
 void EventManager::RemoveEvent(GameEvent*& ep)
@@ -241,29 +193,37 @@ void EventManager::RemoveEvent(GameEvent*& ep)
         return;
     }
 
-    EventMap::iterator itEventsAtTime = events.find(ep->gf_next);
+    EventMap::iterator itEventsAtTime = events.find(ep->GetTargetGF());
     if(itEventsAtTime != events.end())
     {
         EventList& eventsAtTime = itEventsAtTime->second;
         EventList::iterator e_it = std::find(eventsAtTime.begin(), eventsAtTime.end(), ep);
-        while(e_it != eventsAtTime.end())
+        if(e_it != eventsAtTime.end())
         {
-            e_it = eventsAtTime.erase(e_it);
-            if(e_it != eventsAtTime.end())
-                e_it = std::find(e_it, eventsAtTime.end(), ep);
+            eventsAtTime.erase(e_it);
+            RTTR_Assert(!helpers::contains(eventsAtTime, ep)); // Event existed multiple times?
+        } else
+        {
+            RTTR_Assert(false);
+            LOG.lprintf("Bug detected: Event to be removed did not exist");
         }
 
+        // Note: Removing this is possible, as it cannot be the currently processed list
+        //       because there is always the curActiveEvent left, which cannot be removed (check above)
         if(eventsAtTime.empty())
             events.erase(itEventsAtTime);
+    }else
+    {
+        RTTR_Assert(false);
+        LOG.lprintf("Bug detected: GF of event to be removed did not exist");
     }
 
-    delete ep;
-    ep = NULL;
+    deletePtr(ep);
 }
 
 void EventManager::AddToKillList(GameObject* obj)
 {
     RTTR_Assert(obj);
-    RTTR_Assert(!helpers::contains(kill_list, obj));
-    kill_list.push_back(obj);
+    RTTR_Assert(!helpers::contains(killList, obj));
+    killList.push_back(obj);
 }

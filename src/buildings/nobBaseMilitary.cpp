@@ -69,7 +69,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     }
 
     // Warteschlangenevent vernichten
-    em->RemoveEvent(leaving_event);
+    GetEvMgr().RemoveEvent(leaving_event);
 
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
@@ -134,7 +134,7 @@ void nobBaseMilitary::AddLeavingEvent()
     // Wenn gerade keiner rausgeht, muss neues Event angemeldet werden
     if(!go_out)
     {
-        leaving_event = em->AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
+        leaving_event = GetEvMgr().AddEvent(this, 20 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10));
         go_out = true;
     }
 }

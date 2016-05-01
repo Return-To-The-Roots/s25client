@@ -219,7 +219,7 @@ void nofBuildingWorker::TryToWork()
         if(ReadyForWork())
         {
             state = STATE_WAITING1;
-            current_ev = em->AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+            current_ev = GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
             StopNotWorking();
         }else
         {
@@ -301,7 +301,7 @@ void nofBuildingWorker::LostWork()
         case STATE_CATAPULT_BACKOFF:
         {
             // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
-            em->RemoveEvent(current_ev);
+            GetEvMgr().RemoveEvent(current_ev);
 
             // Bescheid sagen, dass Arbeit abgebrochen wurde
             WorkAborted();
@@ -425,7 +425,7 @@ void nofBuildingWorker::StartNotWorking()
 {
     // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
     if(since_not_working == 0xFFFFFFFF)
-        since_not_working = GAMECLIENT.GetGFNumber();
+        since_not_working = GetEvMgr().GetCurrentGF();
 }
 
 void nofBuildingWorker::StopNotWorking()
@@ -433,7 +433,7 @@ void nofBuildingWorker::StopNotWorking()
     // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
     if(since_not_working != 0xFFFFFFFF)
     {
-        not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        not_working += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
         since_not_working = 0xFFFFFFFF;
     }
 }
@@ -446,9 +446,9 @@ unsigned short nofBuildingWorker::CalcProductivity()
     if(since_not_working != 0xFFFFFFFF)
     {
         // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-        not_working += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_not_working);
+        not_working += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
         // Zähler zurücksetzen
-        since_not_working = GAMECLIENT.GetGFNumber();
+        since_not_working = GetEvMgr().GetCurrentGF();
     }
 
     // Produktivität ausrechnen
@@ -465,7 +465,7 @@ void nofBuildingWorker::ProductionStopped()
     // Wenn ich gerade warte und schon ein Arbeitsevent angemeldet habe, muss das wieder abgemeldet werden
     if(state == STATE_WAITING1)
     {
-        em->RemoveEvent(current_ev);
+        GetEvMgr().RemoveEvent(current_ev);
         current_ev = 0;
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         StartNotWorking();

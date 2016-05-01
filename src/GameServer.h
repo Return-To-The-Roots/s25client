@@ -143,6 +143,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         } status;
 
         FramesInfo framesinfo;
+        unsigned currentGF;
 
         class ServerConfig
         {

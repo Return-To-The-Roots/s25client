@@ -17,14 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "RoadSegment.h"
-
+#include "GameClientPlayer.h"
 #include "figures/nofCarrier.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
 #include "Random.h"
-#include "GameClient.h"
+#include "EventManager.h"
 #include "world/GameWorldGame.h"
 
 #include "Log.h"
@@ -263,10 +263,10 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
                     static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
-                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetPos().x, f2->GetPos().y, GAMECLIENT.GetGFNumber());
+                LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n", f2->GetPos().x, f2->GetPos().y, GetEvMgr().GetCurrentGF());
         }
         else
-			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n", f2->GetPos().x, f2->GetPos().y, GAMECLIENT.GetGFNumber());
+			LOG.lprintf("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n", f2->GetPos().x, f2->GetPos().y, GetEvMgr().GetCurrentGF());
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat

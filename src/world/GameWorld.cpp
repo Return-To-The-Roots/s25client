@@ -34,9 +34,9 @@
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
 
-GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
-    GameWorldBase(players, gameSettings), // Init virtual base class
-    GameWorldViewer(players, gameSettings), GameWorldGame(players, gameSettings)
+GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
+    GameWorldBase(players, gameSettings, em), // Init virtual base class
+    GameWorldViewer(players, gameSettings, em), GameWorldGame(players, gameSettings, em)
 {}
 
 /// Lädt eine Karte

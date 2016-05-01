@@ -173,7 +173,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
             else if (wait)
             {
                 // We have to wait, since we do not know whether there are any unreachable or reserved points where there's more to get
-                current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+                current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
                 StartNotWorking();
             }
@@ -217,7 +217,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
                 }
 
                 // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+                current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
                 StartNotWorking();
             }
@@ -247,7 +247,7 @@ void nofFarmhand::WalkToWorkpoint()
     {
         // Anfangen zu arbeiten
         state = STATE_WORK;
-        current_ev = em->AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
         WorkStarted();
         return;
     }

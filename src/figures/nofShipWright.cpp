@@ -133,7 +133,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned int  /*id*/)
                     // Nichts zu arbeiten gefunden
                     StartNotWorking();
                     // Weiter warten, vielleicht gibts ja später wieder mal was
-                    current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+                    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
                 }
             }
         } break;
@@ -227,7 +227,7 @@ void nofShipWright::WalkToWorkpoint()
     {
         // Anfangen zu arbeiten
         state = STATE_WORK;
-        current_ev = em->AddEvent(this, WORKING_TIME_SHIPS, 1);
+        current_ev = GetEvMgr().AddEvent(this, WORKING_TIME_SHIPS, 1);
         return;
     }
     unsigned char dir = gwg->FindHumanPath(pos, dest, 20);

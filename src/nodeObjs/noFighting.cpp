@@ -45,7 +45,7 @@ noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) :
     gwg->RemoveFigure(soldier2, soldier1->GetPos());
 
     // Beginn-Event Anmelden (Soldaten gehen auf ihre Seiten)
-    current_ev = em->AddEvent(this, 15);
+    current_ev = GetEvMgr().AddEvent(this, 15);
 
     // anderen Leute, die auf diesem Punkt zulaufen, stoppen
     gwg->StopOnRoads(soldier1->GetPos());
@@ -235,9 +235,9 @@ void noFighting::HandleEvent(const unsigned int id)
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         turn = 3 + (!turn);
                         // Event zum Sterben des einen Soldaten anmelden
-                        current_ev = em->AddEvent(this, 30);
+                        current_ev = GetEvMgr().AddEvent(this, 30);
                         // Umstehenden Figuren Bescheid nach gewisser Zeit Bescheid sagen
-                        /*em->AddEvent(this,RELEASE_FIGURES_OFFSET,1);*/
+                        /*GetEvMgr().AddEvent(this,RELEASE_FIGURES_OFFSET,1);*/
                         gwg->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
 
                         // In die Statistik eintragen
@@ -259,7 +259,7 @@ void noFighting::HandleEvent(const unsigned int id)
                 SOUNDMANAGER.WorkingFinished(this);
 
                 // Kampf ist endgültig beendet
-                em->AddToKillList(this);
+                GetEvMgr().AddToKillList(this);
                 gwg->RemoveFigure(this, pt);
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
@@ -328,14 +328,13 @@ void noFighting::StartAttack()
         defending_animation = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 3));
 
     // Entsprechendes Event anmelden
-    current_ev = em->AddEvent(this, 15);
+    current_ev = GetEvMgr().AddEvent(this, 15);
 
 }
 
 bool noFighting::IsActive() const
 {
-    // Figuren dürfen vorbei, wenn Kampf an sich und die Offset-Zeit abgelaufen ist
-    return (turn < 3/* || GAMECLIENT.GetGFNumber()-current_ev->gf < RELEASE_FIGURES_OFFSET*/);
+    return turn < 3;
 }
 
 bool noFighting::IsSoldierOfPlayer(const unsigned char player) const

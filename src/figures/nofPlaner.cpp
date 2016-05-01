@@ -85,7 +85,7 @@ void nofPlaner::Walked()
     else
     {
         /// Anfangen zu arbeiten
-        current_ev = em->AddEvent(this, JOB_CONSTS[JOB_PLANER].work_length, 1);
+        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[JOB_PLANER].work_length, 1);
         state = STATE_PLANING;
     }
 }
@@ -111,7 +111,7 @@ void nofPlaner::LostWork()
         // Event ggf. abmelden
         if(state == STATE_PLANING)
         {
-            em->RemoveEvent(current_ev);
+            GetEvMgr().RemoveEvent(current_ev);
             /// Sounds abmelden
             SOUNDMANAGER.WorkingFinished(this);
         }

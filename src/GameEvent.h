@@ -23,31 +23,30 @@
 class GameEvent: public GameObject
 {
 public:
+    /// Object that will handle this event
     GameObject* const obj;
-    const unsigned gf;
-    const unsigned gf_length;
-    const unsigned gf_next;
+    /// GF at which this event was added
+    const unsigned startGF;
+    /// Number of GF till event will be executed
+    const unsigned length;
+    /// ID of the event (meaning dependent on object)
     const unsigned id;
 
-    GameEvent(GameObject* const  obj, const unsigned gf, const unsigned gf_length, const unsigned id)
-        : obj(obj), gf(gf), gf_length(gf_length), gf_next(gf + gf_length), id(id)
+    GameEvent(GameObject* const obj, const unsigned startGF, const unsigned length, const unsigned id)
+        : obj(obj), startGF(startGF), length(length), id(id)
     {
+        RTTR_Assert(length > 0); // Events cannot be executed in the same GF as they are added
         RTTR_Assert(obj); // Events without an object are pointless
     }
 
     GameEvent(SerializedGameData& sgd, const unsigned obj_id);
+    void Serialize(SerializedGameData& sgd) const override;
 
     void Destroy() override{}
 
-    /// Serialisierungsfunktionen
-protected: void Serialize_Event(SerializedGameData& sgd) const;
-public: void Serialize(SerializedGameData& sgd) const override { Serialize_Event(sgd); }
-
     GO_Type GetGOT() const override { return GOT_EVENT; }
-
-    // Vergleichsoperatur für chronologisches Einfügen nach Ziel-GF
-    bool operator<= (const GameEvent& other) const { return gf_next <= other.gf_next; }
-    bool operator< (const GameEvent& other) const { return gf_next < other.gf_next; }
+    /// Return GF at which this event will be executed
+    unsigned GetTargetGF() const { return startGF + length; }
 };
 
 #endif // GameEvent_h__

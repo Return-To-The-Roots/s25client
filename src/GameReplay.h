@@ -70,7 +70,6 @@ class Replay : public SavedFile
         /// Liest ein Chat-Command aus
         void ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str);
         std::vector<unsigned char> ReadGameCommand();
-        bool ReadPathfindingResult(unsigned char* data, unsigned* length, MapPoint * next_harbor);
 
         /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
         void UpdateLastGF(const unsigned last_gf);
@@ -84,9 +83,6 @@ class Replay : public SavedFile
         unsigned short nwf_length;
         /// Zufallsgeneratorinitialisierung
         unsigned random_init;
-        /// Bestimmt, ob Pathfinding-Ergebnisse in diesem Replay gespeichert sind
-        bool pathfinding_results;
-
         /// End-GF
         unsigned lastGF_;
         /// Position des End-GF in der Datei
@@ -102,8 +98,6 @@ class Replay : public SavedFile
 
         /// Dateihandle
         BinaryFile file;
-        /// File handle for pathfinding results
-        BinaryFile pf_file;
         /// File path +  name
         std::string fileName_;
 };

@@ -53,7 +53,7 @@ class GameObject
         virtual GO_Type GetGOT() const = 0;
 
         /// Setzt Pointer auf GameWorld und EventManager
-        static void SetPointers(GameWorldGame* const gameWorld, EventManager* const eventManager){ GameObject::gwg = gameWorld; GameObject::em = eventManager; }
+        static void SetPointers(GameWorldGame* const gameWorld){ GameObject::gwg = gameWorld; }
         /// setzt den Objekt und Objekt-ID-Counter zurück
         static void ResetCounter() { objIdCounter_ = 1; objCounter_ = 0; };
         /// Gibt Anzahl Objekte zurück.
@@ -70,10 +70,11 @@ class GameObject
 
         /// Serialisierungsfunktion.
         void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
+        /// Get Event Manager. Short and avoids dependency on GameWorldGame include
+        EventManager& GetEvMgr() const;
 
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;
-        static EventManager* em;
 
     private:
         unsigned int objId; /// eindeutige Objekt-ID

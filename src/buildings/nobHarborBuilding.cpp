@@ -98,7 +98,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 
 void nobHarborBuilding::Destroy()
 {
-    em->RemoveEvent(orderware_ev);
+    GetEvMgr().RemoveEvent(orderware_ev);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GameClientPlayer& owner = gwg->GetPlayer(player);
@@ -529,7 +529,7 @@ void nobHarborBuilding::OrderExpeditionWares()
 
     // Wenn immer noch nicht alles da ist, später noch einmal bestellen
     if(!orderware_ev)
-        orderware_ev = em->AddEvent(this, 210, 10);
+        orderware_ev = GetEvMgr().AddEvent(this, 210, 10);
 }
 
 /// Eine bestellte Ware konnte doch nicht kommen
@@ -724,7 +724,7 @@ void nobHarborBuilding::AddFigure(noFigure* figure, const bool increase_visual_c
     if(figure->GetJobType() == JOB_BUILDER && expedition.active && !expedition.builder)
     {
         nobBaseWarehouse::RemoveDependentFigure(figure);
-        em->AddToKillList(figure);
+        GetEvMgr().AddToKillList(figure);
 
         expedition.builder = true;
         // Ggf. ist jetzt alles benötigte da
@@ -734,7 +734,7 @@ void nobHarborBuilding::AddFigure(noFigure* figure, const bool increase_visual_c
     else if(figure->GetJobType() == JOB_SCOUT && exploration_expedition.active && !IsExplorationExpeditionReady())
     {
         nobBaseWarehouse::RemoveDependentFigure(figure);
-        em->AddToKillList(figure);
+        GetEvMgr().AddToKillList(figure);
 
         ++exploration_expedition.scouts;
         inventory.visual.Add(JOB_SCOUT);
@@ -1020,7 +1020,7 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
     // Evtl. muss die Ware gleich das Schiff nehmen -> dann zum Schiffsreservoir hinzufügen
     // Assert: This is a ware that got ordered. There MUST be a path to the goal
     //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
-    RTTR_Assert(gwg->GetRoadPathFinder().PathExists(*this, goal, false, true));
+    RTTR_Assert(gwg->GetRoadPathFinder().PathExists(*this, goal, true));
     ware->RecalcRoute(); // Also sets nextHarbor!
     RTTR_Assert(ware->GetNextDir() != INVALID_DIR);
     if(ware->GetNextDir() == SHIP_DIR)
@@ -1177,7 +1177,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false))
+        if(!gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             continue;
         //neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = { static_cast<nobMilitary*>(*it), this , 0};
@@ -1201,10 +1201,9 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
-        if (gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE, false, NULL, false) == 0xFF)
+        if (gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE) == 0xFF)
             continue;
 
-        // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         unsigned min_distance = 0xffffffff;
         for(unsigned i = 0; i < defender_harbors.size(); ++i)

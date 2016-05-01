@@ -68,32 +68,18 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 }
 
 /// Findet einen Weg für Figuren
-unsigned char GameWorldBase::FindHumanPath(const MapPoint start, 
-        const MapPoint dest, const unsigned max_route, const bool random_route, unsigned* length, const bool record) const
+unsigned char GameWorldBase::FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route, const bool random_route, unsigned* length) const
 {
-    // Aus Replay lesen?
-    if(GAMECLIENT.ArePathfindingResultsAvailable() && !random_route)
-    {
-        unsigned char dir;
-        if(GAMECLIENT.ReadPathfindingResult(&dir, length, NULL))
-            return dir;
-    }
-
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, NULL, length, &first_dir, PathConditionHuman(*this), record);
-
-    if(!random_route)
-        GAMECLIENT.AddPathfindingResult(first_dir, length, NULL);
-
+    GetFreePathFinder().FindPath(start, dest, random_route, max_route, NULL, length, &first_dir, PathConditionHuman(*this));
     return first_dir;
-
 }
 
 /// Wegfindung für Menschen im Straßennetz
 unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* firstPt, const RoadSegment* const forbidden)
 {
     unsigned char first_dir = INVALID_DIR;
-    if(GetRoadPathFinder().FindPath(start, goal, true, false, std::numeric_limits<unsigned>::max(), forbidden, length, &first_dir, firstPt))
+    if(GetRoadPathFinder().FindPath(start, goal, false, std::numeric_limits<unsigned>::max(), forbidden, length, &first_dir, firstPt))
         return first_dir;
     else
         return INVALID_DIR;
@@ -103,16 +89,16 @@ unsigned char GameWorldGame::FindHumanPathOnRoads(const noRoadNode& start, const
 unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length, MapPoint* firstPt, unsigned max)
 {
     unsigned char first_dir = INVALID_DIR;
-    if(GetRoadPathFinder().FindPath(start, goal, true, true, max, NULL, length, &first_dir, firstPt))
+    if(GetRoadPathFinder().FindPath(start, goal, true, max, NULL, length, &first_dir, firstPt))
         return first_dir;
     else
         return INVALID_DIR;
 }
 
 /// Wegfindung für Schiffe auf dem Wasser
-bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length, const unsigned  /*max_length*/)
+bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length)
 {
-    return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, PathConditionShip(*this), false);
+    return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, PathConditionShip(*this));
 }
 
 /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
@@ -122,10 +108,8 @@ bool GameWorldGame::CheckShipRoute(const MapPoint start, const std::vector<unsig
 }
 
 /// Find a route for trade caravanes
-unsigned char GameWorldGame::FindTradePath(const MapPoint start, 
-        const MapPoint dest, const unsigned char player, const unsigned max_route, const bool random_route, 
-        std::vector<unsigned char>* route, unsigned* length, 
-        const bool record) const
+unsigned char GameWorldGame::FindTradePath(const MapPoint start, const MapPoint dest, unsigned char player, unsigned max_route, bool random_route, 
+        std::vector<unsigned char>* route, unsigned* length) const
 {
     unsigned char owner = GetNode(dest).owner;
     if(owner != 0 && !GetPlayer(player).IsAlly(owner -1))
@@ -137,15 +121,12 @@ unsigned char GameWorldGame::FindTradePath(const MapPoint start,
         return INVALID_DIR;
 
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, PathConditionTrade(*this, player), record);
+    GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, PathConditionTrade(*this, player));
 
     return first_dir;
 }
 
-/// Check whether trade path is still valid
-bool GameWorldGame::CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, 
-                                    const unsigned pos, const unsigned char player, 
-                                    MapPoint* dest) const
+bool GameWorldGame::CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, unsigned pos, unsigned char player, MapPoint* dest) const
 {
     return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionTrade(*this, player), dest);
 }

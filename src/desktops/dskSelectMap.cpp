@@ -125,8 +125,6 @@ dskSelectMap::~dskSelectMap()
 {
 }
 
-/**
- */
 void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const int selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(1);

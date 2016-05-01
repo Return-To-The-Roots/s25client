@@ -101,8 +101,6 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-/**
- */
 void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)

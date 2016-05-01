@@ -59,6 +59,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
+#include "EventManager.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "pathfinding/FreePathFinderImpl.h"
@@ -216,9 +217,9 @@ void dskGameInterface::Msg_PaintAfter()
     char nwf_string[256];
 
     if(GAMECLIENT.IsReplayModeOn())
-        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
+        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), gwb.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
     else
-        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), GAMECLIENT.GetGFNumber(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer().ping);
+        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), gwb.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer().ping);
 
     // tournament mode?
     unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
@@ -226,7 +227,7 @@ void dskGameInterface::Msg_PaintAfter()
     if(tmd)
     {
         // Convert gf to seconds
-        unsigned sec = (tmd - GAMECLIENT.GetGFNumber()) * GAMECLIENT.GetGFLength() / 1000;
+        unsigned sec = (tmd - gwb.GetEvMgr().GetCurrentGF()) * GAMECLIENT.GetGFLength() / 1000;
         char str[512];
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }
@@ -728,7 +729,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
 {
     std::vector<unsigned char> new_route;
     // Weg gefunden?
-    if(!gwb.GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(gwb, road.mode == RM_BOAT), false))
+    if(!gwb.GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(gwb, road.mode == RM_BOAT)))
         return false;
 
     // Test on water way length

@@ -35,7 +35,7 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
     : noCoordBase(NOP_BURNEDWAREHOUSE, pos), player(player), go_out_phase(0), people(people)
 {
     // Erstes Event anmelden
-    em->AddEvent(this, PHASE_LENGTH, 0);
+    GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
 }
 
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
@@ -92,7 +92,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
     if(possibleDirCt == 0)
     {
         // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
         // restliche Leute von der Inventur abziehen
         for(unsigned int i = 0; i < people.size(); ++i)
             gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), people[i]);
@@ -164,7 +164,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
     if(go_out_phase == GO_OUT_PHASES)
     {
         // fertig, sich selbst töten
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
         for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
             RTTR_Assert(*it == 0);
@@ -172,7 +172,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
     else
     {
         // Nächstes Event anmelden
-        em->AddEvent(this, PHASE_LENGTH, 0);
+        GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
     }
 
 }

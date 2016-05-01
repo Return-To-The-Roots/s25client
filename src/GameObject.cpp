@@ -19,6 +19,7 @@
 #include "GameObject.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "world/GameWorldGame.h"
 
 #include <iostream>
 
@@ -29,7 +30,6 @@ unsigned int GameObject::objIdCounter_ = 1;
 unsigned int GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
-EventManager* GameObject::em = NULL;
 
 GameObject::GameObject() : objId(objIdCounter_++)
 {
@@ -70,8 +70,13 @@ void GameObject::Serialize(SerializedGameData&  /*sgd*/) const
 
 GameObject::~GameObject()
 {
-    RTTR_Assert(!em || !em->ObjectHasEvents(this));
-    RTTR_Assert(!em || !em->ObjectIsInKillList(this));
+    RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(this));
+    RTTR_Assert(!gwg || !GetEvMgr().ObjectIsInKillList(this));
     // ein Objekt weniger
     --objCounter_;
+}
+
+EventManager& GameObject::GetEvMgr() const
+{
+    return gwg->GetEvMgr();
 }

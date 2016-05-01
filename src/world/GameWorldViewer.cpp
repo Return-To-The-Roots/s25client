@@ -24,7 +24,7 @@
 #include "nodeObjs/noShip.h"
 class FOWObject;
 
-GameWorldViewer::GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings): GameWorldBase(players, gameSettings)
+GameWorldViewer::GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em): GameWorldBase(players, gameSettings, em)
 {
 }
 

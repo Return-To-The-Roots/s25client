@@ -42,9 +42,9 @@ nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFa
 /// Malt den Arbeiter beim Arbeiten
 void nofForester::DrawWorking(int x, int y)
 {
-    unsigned short now_id;
+    unsigned short now_id = GAMECLIENT.Interpolate(36, current_ev);
     // Baum pflanzen
-    LOADER.GetPlayerImage("rom_bobs", 48 + (now_id = GAMECLIENT.Interpolate(36, current_ev)))
+    LOADER.GetPlayerImage("rom_bobs", 48 + now_id)
     ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     // Schaufel-Sound

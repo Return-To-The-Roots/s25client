@@ -178,11 +178,10 @@ bool AIInterface::IsRoadPoint(const MapPoint pt) const
 }
 
 
-bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route,
-        unsigned* length) const
+bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route, unsigned* length) const
 {
     bool boat = false;
-    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat, false);
+    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat);
 }
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
@@ -193,9 +192,9 @@ bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
     if(length)
-        return gwb.GetRoadPathFinder().FindPath(start, target, false, false, std::numeric_limits<unsigned>::max(), NULL, length);
+        return gwb.GetRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), NULL, length);
     else
-        return gwb.GetRoadPathFinder().PathExists(start, target, false, false);
+        return gwb.GetRoadPathFinder().PathExists(start, target, false);
 }
 
 const nobHQ* AIInterface::GetHeadquarter() const

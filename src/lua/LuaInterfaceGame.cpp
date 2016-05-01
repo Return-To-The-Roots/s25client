@@ -20,6 +20,7 @@
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "GameClient.h"
+#include "EventManager.h"
 #include "world/GameWorldGame.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -232,7 +233,7 @@ void LuaInterfaceGame::ClearResources()
 
 unsigned LuaInterfaceGame::GetGF()
 {
-    return GAMECLIENT.GetGFNumber();
+    return gw.GetEvMgr().GetCurrentGF();
 }
 
 unsigned LuaInterfaceGame::GetPlayerCount()

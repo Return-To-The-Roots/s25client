@@ -39,7 +39,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
     // Wenn der Baum klein ist, muss später mal wachsen
     if(!size)
     {
-        event = em->AddEvent(this, WAIT_LENGTH);
+        event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
         state = STATE_GROWING_WAIT;
     }
     else
@@ -54,7 +54,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
-        produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
+        produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 }
 
 noTree::~noTree()
@@ -64,7 +64,7 @@ noTree::~noTree()
 
 void noTree::Destroy_noTree()
 {
-    em->RemoveEvent(produce_animal_event);
+    GetEvMgr().RemoveEvent(produce_animal_event);
     Destroy_noCoordBase();
 }
 
@@ -154,7 +154,7 @@ void noTree::HandleEvent(const unsigned int id)
         // Neues Tier erzeugen
         ProduceAnimal();
         // nächstes Event anmelden
-        produce_animal_event = em->AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
+        produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 
         return;
     }
@@ -164,7 +164,7 @@ void noTree::HandleEvent(const unsigned int id)
         case STATE_GROWING_WAIT:
         {
             // Der Baum hat gewartet, also wächst er jetzt
-            event = em->AddEvent(this, GROWING_LENGTH);
+            event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
             state = STATE_GROWING_GROW;
 
         } break;
@@ -173,7 +173,7 @@ void noTree::HandleEvent(const unsigned int id)
             // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wächst
             if(++size != 3)
             {
-                event = em->AddEvent(this, WAIT_LENGTH);
+                event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
                 // Erstmal wieder bis zum nächsten Wachsstumsschub warten
                 state = STATE_GROWING_WAIT;
             }
@@ -190,19 +190,19 @@ void noTree::HandleEvent(const unsigned int id)
             // Jetzt umfallen
             state = STATE_FALLING_FALL;
 
-            event = em->AddEvent(this, 15);
+            event = GetEvMgr().AddEvent(this, 15);
         } break;
         case STATE_FALLING_FALL:
         {
             // Baum ist gefallen, nach bestimmer Zeit verschwinden
             state = STATE_FALLING_FALLEN;
-            event = em->AddEvent(this, 28);
+            event = GetEvMgr().AddEvent(this, 28);
         } break;
         case STATE_FALLING_FALLEN:
         {
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
             event = 0;
-            em->AddToKillList(this);
+            GetEvMgr().AddToKillList(this);
             gwg->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
             gwg->RecalcBQAroundPoint(pos);
 
@@ -225,7 +225,7 @@ FOWObject* noTree::CreateFOWObject() const
 void noTree::FallSoon()
 {
     // Warten bis der Holzfäller fertig ist und der Baum dann umfällt
-    event = em->AddEvent(this, 105);
+    event = GetEvMgr().AddEvent(this, 105);
     state = STATE_FALLING_WAIT;
 }
 
@@ -233,7 +233,7 @@ void noTree::DontFall()
 {
     if(state == STATE_FALLING_WAIT)
     {
-        em->RemoveEvent(event);
+        GetEvMgr().RemoveEvent(event);
         event = 0;
     }
 }

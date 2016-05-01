@@ -107,7 +107,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
 			else
 			{
 				// Nach 1. Warten wird gearbeitet
-				current_ev = em->AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+				current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
 				state = STATE_WORK;
 				workplace->is_working = true;
 				//LOG.lprintf("armorer handlewait1 - no consume wares %i \n",player);

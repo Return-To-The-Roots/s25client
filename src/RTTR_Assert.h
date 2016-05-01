@@ -28,6 +28,8 @@
 #endif // !RTTR_ENABLE_ASSERTS
 
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function);
+/// If true(default), a breakpoint is triggered on assert (if available)
+extern bool RTTR_AssertEnableBreak;
 
 /* Some aspects about RTTR_Assert:
     - do-while(false) so it can be used in conditions: if(foo) RTTR_Assert(bar);
@@ -41,7 +43,8 @@ void RTTR_AssertFailure(const char* condition, const char* file, const int line,
 		do{                                                                   \
 			if(!(cond))                                                       \
 			{                                                                 \
-				BREAKPOINT;                                                   \
+				if(RTTR_AssertEnableBreak)                                    \
+                    BREAKPOINT;                                               \
 				RTTR_AssertFailure(#cond, __FILE__, __LINE__, FUNCTION_NAME); \
 			}                                                                 \
 		}while(false)

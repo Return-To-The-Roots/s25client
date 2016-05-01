@@ -29,10 +29,11 @@ void GameClient::ExecuteGameFrame_Replay()
     randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
     AsyncChecksum checksum(randcheckinfo.rand);
 
-    RTTR_Assert(replayinfo.next_gf >= framesinfo.gf_nr || framesinfo.gf_nr > replayinfo.replay.lastGF_);
+    const unsigned curGF = GetGFNumber();
+    RTTR_Assert(replayinfo.next_gf >= curGF || curGF > replayinfo.replay.lastGF_);
 
     // Commands alle aus der Datei lesen
-    while(replayinfo.next_gf == framesinfo.gf_nr) // Schon an der Zeit?
+    while(replayinfo.next_gf == curGF) // Schon an der Zeit?
     {
         // RC-Type auslesen
         Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
@@ -70,13 +71,13 @@ void GameClient::ExecuteGameFrame_Replay()
                 {
                     // Meldung mit GF erzeugen
                     char text[256];
-                    sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), framesinfo.gf_nr);
+                    sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF);
 
                     // Messenger im Game (prints to console too)
                     if(ci)
                         ci->CI_ReplayAsync(text);
 
-                    LOG.lprintf("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", framesinfo.gf_nr,
+                    LOG.lprintf("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", curGF,
                         msg.checksum.randState, checksum.randState,
                         msg.checksum.objCt, checksum.objCt,
                         msg.checksum.objIdCt, checksum.objIdCt);
@@ -98,13 +99,13 @@ void GameClient::ExecuteGameFrame_Replay()
     NextGF();
 
     // Replay zu Ende?
-    if(framesinfo.gf_nr == replayinfo.replay.lastGF_)
+    if(curGF == replayinfo.replay.lastGF_)
     {
         // Replay zu Ende
 
         // Meldung erzeugen
         char text[256];
-        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), framesinfo.gf_nr, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
 
         // Messenger im Game
         if(ci)

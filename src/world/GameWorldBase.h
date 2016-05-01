@@ -35,6 +35,7 @@ class nobHarborBuilding;
 class noFlag;
 class noBase;
 class LuaInterfaceGame;
+class EventManager;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase: public World
@@ -44,6 +45,7 @@ class GameWorldBase: public World
 
     GameClientPlayerList& players;
     const GlobalGameSettings& gameSettings;
+    EventManager& em;
 protected:
     boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
     /// Interface zum GUI
@@ -52,7 +54,7 @@ protected:
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings);
+    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -85,15 +87,10 @@ public:
     /// Pr�ft, ob von einem bestimmten Punkt aus der Untergrund f�r Figuren zug�nglich ist (kein Wasser,Lava,Sumpf)
     bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;
 
-    /* Wegfindung auf Stra�en - Basisroutine
-    bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& goal,
-        const bool ware_mode, unsigned* length, unsigned char* first_dir, MapPoint* next_harbor,
-        const RoadSegment* const forbidden, const bool record = true, const unsigned max = 0xFFFFFFFF) const;*/
-    /// Findet einen Weg f�r Figuren
-    unsigned char FindHumanPath(const MapPoint start,
-        const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL, const bool record = true) const;
-    /// Wegfindung f�r Schiffe auf dem Wasser
-    bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char> * route, unsigned* length, const unsigned max_length = 200);
+    /// Finds a path for figures. Returns 0xFF if none found
+    unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL) const;
+    /// Find path for ships. Return true on success
+    bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length);
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
@@ -140,6 +137,8 @@ public:
     unsigned GetPlayerCount() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
+    EventManager& GetEvMgr(){ return em; }
+    const EventManager& GetEvMgr() const { return em; }
 
     struct PotentialSeaAttacker
     {

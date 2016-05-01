@@ -197,9 +197,9 @@ class AIInterface: public GameCommandFactory<AIInterface>
 		/// player.FindWarehouse
         template<class T_IsWarehouseGood>
         nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh, const bool use_boat_roads,
-            unsigned* const length = 0, const RoadSegment* const forbidden = NULL, bool record = true) const
+            unsigned* const length = 0, const RoadSegment* const forbidden = NULL) const
         {
-            return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden, record);
+            return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
         }
 
         /// Returns a list of military buildings around a given point and a given radius

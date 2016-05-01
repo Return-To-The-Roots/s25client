@@ -26,7 +26,6 @@ FramesInfo::FramesInfo()
 
 void FramesInfo::Clear()
 {
-    gf_nr = 0;
     gf_length = 0;
     gfLenghtNew = 0;
     gfLenghtNew2 = 0;

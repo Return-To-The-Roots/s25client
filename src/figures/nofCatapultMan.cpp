@@ -170,7 +170,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             if(possibleTargets.empty())
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = em->AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
+                current_ev = GetEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
                 StartNotWorking();
                 return;
             }
@@ -239,7 +239,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 
-            current_ev = em->AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
+            current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
 
             state = STATE_CATAPULT_TARGETBUILDING;
 
@@ -308,7 +308,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start.x, start.y, dest.x, dest.y, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
-            current_ev = em->AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
+            current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = STATE_CATAPULT_BACKOFF;
         } break;

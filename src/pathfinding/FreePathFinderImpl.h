@@ -23,6 +23,7 @@
 #include "pathfinding/NewNode.h"
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListBinaryHeap.h"
+#include "EventManager.h"
 
 typedef std::vector<FreePathNode> FreePathNodes;
 extern FreePathNodes fpNodes;
@@ -56,8 +57,7 @@ template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
               const bool randomRoute, const unsigned maxLength,
               std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-              const TNodeChecker& nodeChecker,
-              const bool  /*record*/)
+              const TNodeChecker& nodeChecker)
 {
     RTTR_Assert(start != dest);
 
@@ -82,7 +82,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
     // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
     // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
-    const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * GAMECLIENT.GetGFNumber() % 6 : 0; 
+    const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
 
     while(!todo.empty())
     {

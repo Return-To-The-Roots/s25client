@@ -29,10 +29,10 @@
 #include "gameData/TerrainData.h"
 #include "gameData/MapConsts.h"
 
-GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings):
+GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
     roadPathFinder(new RoadPathFinder(*this)),
     freePathFinder(new FreePathFinder(*this)),
-    players(players), gameSettings(gameSettings),
+    players(players), gameSettings(gameSettings), em(em),
     gi(NULL)
 {}
 

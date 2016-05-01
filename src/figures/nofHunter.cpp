@@ -209,7 +209,7 @@ void nofHunter::TryStartHunting()
     else
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
-        current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
         //tell the ai that there is nothing left to hunt!
         GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
 
@@ -350,9 +350,9 @@ void nofHunter::HandleStateFindingShootingPoint()
         {
             // fire!
             state = STATE_HUNTER_SHOOTING;
-            current_ev = em->AddEvent(this, 16, 1);
+            current_ev = GetEvMgr().AddEvent(this, 16, 1);
         }else if(animal->IsGettingReadyForShooting())
-            current_ev = em->AddEvent(this, 15, 2); // Give the animal some time for getting ready
+            current_ev = GetEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
         else
         {
             // Something went wrong, animal is doing something else?
@@ -394,7 +394,7 @@ void nofHunter::HandleStateWalkingToCadaver()
     {
         // dann ausnehmen
         state = STATE_HUNTER_EVISCERATING;
-        current_ev = em->AddEvent(this, 80, 1);
+        current_ev = GetEvMgr().AddEvent(this, 80, 1);
     }
     else
     {
@@ -489,7 +489,7 @@ void nofHunter::AnimalLost()
         case STATE_HUNTER_EVISCERATING:
         {
             // Arbeits-Event abmelden
-            em->RemoveEvent(current_ev);
+            GetEvMgr().RemoveEvent(current_ev);
             // Nach Hause laufen
             StartWalkingHome();
             WalkHome();

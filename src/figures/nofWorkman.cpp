@@ -66,7 +66,7 @@ void nofWorkman::HandleDerivedEvent(const unsigned int  /*id*/)
 void nofWorkman::HandleStateWaiting1()
 {
     // Nach 1. Warten wird gearbeitet
-    current_ev = em->AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
     state = STATE_WORK;
     workplace->is_working = true;
 
@@ -99,7 +99,7 @@ void nofWorkman::HandleStateWork()
 {
     // Nach Arbeiten wird noch ein bisschen gewartet, bevor das Produkt herausgetragen wird
     // Bei 0 mind. 1 GF
-    current_ev = em->AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
+    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
     state = STATE_WAITING2;
     // wir arbeiten nicht mehr
     workplace->is_working = false;

@@ -161,7 +161,7 @@ void Ware::GoalDestroyed()
         gwg->GetPlayer(location->GetPlayer()).RemoveWare(this);
         goal = NULL;
         location = NULL;
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
     }
     else
     {

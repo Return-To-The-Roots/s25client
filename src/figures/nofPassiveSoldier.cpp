@@ -49,7 +49,7 @@ nofPassiveSoldier::~nofPassiveSoldier()
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
-    em->RemoveEvent(healing_event);
+    GetEvMgr().RemoveEvent(healing_event);
     Destroy_nofSoldier();
 }
 
@@ -90,7 +90,7 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
                     if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE])
-                        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+                        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
                 }
             }
 
@@ -104,14 +104,14 @@ void nofPassiveSoldier::Heal()
     // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
     if(healing_event)
     {
-        em->RemoveEvent(healing_event);
+        GetEvMgr().RemoveEvent(healing_event);
         healing_event = NULL;
     }
 
     // Ist er verletzt?
     // Dann muss er geheilt werden
     if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE])
-        healing_event = em->AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
 }
 
 void nofPassiveSoldier::GoalReached()

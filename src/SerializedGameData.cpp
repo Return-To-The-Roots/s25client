@@ -196,7 +196,7 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
+void SerializedGameData::MakeSnapshot(GameWorld& gw)
 {
     Prepare(false);
 
@@ -206,7 +206,7 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
     // Objektmanager serialisieren
     gw.Serialize(*this);
     // EventManager serialisieren
-    evMgr.Serialize(*this);
+    gw.GetEvMgr().Serialize(*this);
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
         gw.GetPlayer(i).Serialize(*this);
@@ -214,17 +214,17 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw, EventManager& evMgr)
     writtenObjIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(GameWorld& gw, EventManager& evMgr)
+void SerializedGameData::ReadSnapshot(GameWorld& gw)
 {
     Prepare(true);
 
-    em = &evMgr;
+    em = &gw.GetEvMgr();
 
     expectedObjectsReadCount = PopUnsignedInt();
     GameObject::SetObjCount(expectedObjectsReadCount);
 
     gw.Deserialize(*this);
-    evMgr.Deserialize(*this);
+    em->Deserialize(*this);
     for (unsigned i = 0; i < gw.GetPlayerCount(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 

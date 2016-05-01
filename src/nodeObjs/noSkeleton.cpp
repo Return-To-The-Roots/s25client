@@ -28,7 +28,7 @@ noSkeleton::noSkeleton(const MapPoint pos)
     : noCoordBase(NOP_ENVIRONMENT, pos),
       type(0)
 {
-    current_event = em->AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
+    current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
 }
 
 noSkeleton::~noSkeleton()
@@ -41,7 +41,7 @@ void noSkeleton::Destroy_noSkeleton()
 
     // ggf Event abmelden
     if(current_event)
-        em->RemoveEvent(current_event);
+        GetEvMgr().RemoveEvent(current_event);
 
     Destroy_noCoordBase();
 }
@@ -72,12 +72,12 @@ void noSkeleton::HandleEvent(const unsigned int  /*id*/)
     {
         // weiter verwesen, dann später sterben nach ner zufälligen Zeit
         type = 1;
-        current_event = em->AddEvent(this, 10000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
+        current_event = GetEvMgr().AddEvent(this, 10000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
     }
     else
     {
         // ganz weg damit
         current_event = 0;
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
     }
 }

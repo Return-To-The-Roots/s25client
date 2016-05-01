@@ -38,7 +38,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
     : noCoordBase(NOP_ENVIRONMENT, pos),
       disappearing(false)
 {
-    dead_event = em->AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
+    dead_event = GetEvMgr().AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
 }
 
 void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameData& sgd) const
@@ -88,7 +88,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
     if(id)
     {
         // endgültig vernichten
-        em->AddToKillList(this);
+        GetEvMgr().AddToKillList(this);
         dead_event = 0;
     }
     else
@@ -96,7 +96,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
         // Jetzt verschwinden
         disappearing = true;
         // In ner bestimmten Zeit dann endgültig vernichten
-        dead_event = em->AddEvent(this, 30, 1);
+        dead_event = GetEvMgr().AddEvent(this, 30, 1);
     }
 }
 
@@ -111,7 +111,7 @@ void noDisappearingEnvObject::Destroy_noDisappearingEnvObject()
 
     // ggf Event abmelden
     if(dead_event)
-        em->RemoveEvent(dead_event);
+        GetEvMgr().RemoveEvent(dead_event);
 
     Destroy_noCoordBase();
 }

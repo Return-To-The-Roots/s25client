@@ -180,7 +180,7 @@ void nofCarrier::Destroy_nofCarrier()
     // Ware vernichten (abmelden)
     RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
     LooseWare();
-    em->RemoveEvent(productivity_ev);
+    GetEvMgr().RemoveEvent(productivity_ev);
 
     Destroy_noFigure();
 }
@@ -198,7 +198,7 @@ void nofCarrier::Draw(int x, int y)
                 bool animation = false;
 
                 // Ist es schon Zeit für eine Animation?
-                unsigned current_gf = GAMECLIENT.GetGFNumber();
+                unsigned current_gf = GetEvMgr().GetCurrentGF();
 
                 if(current_gf >= next_animation)
                 {
@@ -371,7 +371,7 @@ void nofCarrier::Draw(int x, int y)
 /// Bestimmt neuen Animationszeitpunkt
 void nofCarrier::SetNewAnimationMoment()
 {
-    next_animation = GAMECLIENT.GetGFNumber() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
+    next_animation = GetEvMgr().GetCurrentGF() + NEXT_ANIMATION + rand() % NEXT_ANIMATION_RANDOM;
 }
 
 void nofCarrier::Walked()
@@ -592,7 +592,7 @@ void nofCarrier::LookForWares()
 void nofCarrier::GoalReached()
 {
     // Erstes Produktivitätsevent anmelden
-    productivity_ev = em->AddEvent(this, PRODUCTIVITY_GF, 1);
+    productivity_ev = GetEvMgr().AddEvent(this, PRODUCTIVITY_GF, 1);
     // Wir arbeiten schonmal
     StartWorking();
 
@@ -636,7 +636,7 @@ void nofCarrier::AbrogateWorkplace()
 {
     if(workplace)
     {
-        em->RemoveEvent(productivity_ev);
+        GetEvMgr().RemoveEvent(productivity_ev);
         productivity_ev = 0;
 
         // anderen Träger herausfinden
@@ -686,7 +686,7 @@ namespace{
 void nofCarrier::LostWork()
 {
     workplace = NULL;
-    em->RemoveEvent(productivity_ev);
+    GetEvMgr().RemoveEvent(productivity_ev);
 
     if(state == CARRS_FIGUREWORK)
         GoHome();
@@ -808,9 +808,9 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
             if(since_working_gf != 0xFFFFFFFF)
             {
                 // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-                worked_gf += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_working_gf);
+                worked_gf += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_working_gf);
                 // Zähler zurücksetzen
-                since_working_gf = GAMECLIENT.GetGFNumber();
+                since_working_gf = GetEvMgr().GetCurrentGF();
             }
 
             // Produktivität ausrechnen
@@ -820,7 +820,7 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
             worked_gf = 0;
 
             // Nächstes Event anmelden
-            productivity_ev = em->AddEvent(this, PRODUCTIVITY_GF, 1);
+            productivity_ev = GetEvMgr().AddEvent(this, PRODUCTIVITY_GF, 1);
 
             // Reif für einen Esel?
             if(productivity >= DONKEY_PRODUCTIVITY && ct == CT_NORMAL)
@@ -956,7 +956,7 @@ void nofCarrier::StartWorking()
 {
     // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
     if(since_working_gf == 0xFFFFFFFF)
-        since_working_gf = GAMECLIENT.GetGFNumber();
+        since_working_gf = GetEvMgr().GetCurrentGF();
 }
 
 /// Für Produktivitätsmessungen: hört auf zu arbeiten
@@ -965,7 +965,7 @@ void nofCarrier::StopWorking()
     // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
     if(since_working_gf != 0xFFFFFFFF)
     {
-        worked_gf += static_cast<unsigned short>(GAMECLIENT.GetGFNumber() - since_working_gf);
+        worked_gf += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_working_gf);
         since_working_gf = 0xFFFFFFFF;
     }
 }

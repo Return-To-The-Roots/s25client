@@ -29,43 +29,44 @@ class GameObject;
 class EventManager
 {
     public:
-        EventManager(): curActiveEvent(NULL){}
+        explicit EventManager(unsigned startGF);
         ~EventManager();
 
-        /// führt alle Events des aktuellen GameFrames aus.
-        void NextGF();
-        /// fügt ein Event der Eventliste hinzu.
-        GameEvent* AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id = 0);
-        /// Deserialisiert ein Event und fügt es hinzu
-        GameEvent* AddEvent(SerializedGameData& sgd, const unsigned obj_id);
-        /// Fügt ein schon angebrochenes Event hinzu (Events, wenn jemand beim Laufen stehengeblieben ist z.B.)
-        /// Ein altes Event wird also quasi fortgeführt (um gf_elapsed in der Vergangenheit angelegt)
-        GameEvent* AddEvent(GameObject* obj, const unsigned int gf_length, const unsigned int id, const unsigned gf_elapsed);
-
-        /// Löscht alle Listen für Spielende
-        void Clear();
-        /// Removes an event and sets the pointer to NULL
+        /// Increase the GF# and execute all events of that GF
+        void ExecuteNextGF();
+        /// Add an event for the given object
+        /// @param length Number of GFs after which it is executed (>0)
+        /// @param id     ID of the event (passed to OnEvent)
+        GameEvent* AddEvent(GameObject* obj, const unsigned length, const unsigned id = 0);
+        /// Add an event that was started before, but paused (e.g. removed as someone stopped walking due to an obstacle)
+        /// @param elapsed Number of GFs that have already elapsed of the length. Passing 0 is equal to adding a regular event
+        GameEvent* AddEvent(GameObject* obj, const unsigned length, const unsigned id, const unsigned elapsed);
+        /// Remove an event and sets the pointer to NULL
         void RemoveEvent(GameEvent*& ep);
-        /// Objekt will gekillt werden
+        /// Add an object to be destroyed after current GF
         void AddToKillList(GameObject* obj);
 
-        /// Serialisieren
         void Serialize(SerializedGameData& sgd) const;
-        /// Deserialisieren
         void Deserialize(SerializedGameData& sgd);
+        /// Deserializes an event and adds it
+        GameEvent* AddEvent(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Ist ein Event mit bestimmter id für ein bestimmtes Objekt bereits vorhanden?
+        unsigned GetCurrentGF() const { return currentGF; }
+
+        // Debugging
+        /// Check if there is already an event of the given id for this object
         bool IsEventActive(const GameObject* const obj, const unsigned id) const;
-
-        void RemoveAllEventsOfObject(GameObject* obj);
         bool ObjectHasEvents(GameObject* obj);
         bool ObjectIsInKillList(GameObject* obj);
     private:
+        // Use list to allow removing of events while iterating (Event A can cause Event B in the same GF to be removed)
         typedef std::list<GameEvent*> EventList;
         typedef std::map<unsigned, EventList> EventMap;
+        // Use list to allow adding events while iterating (Destroying 1 object may lead to destruction of another)
         typedef std::list<GameObject*> GameObjList;
-        EventMap events;     /// Liste der Events für die einzelnen Objekte
-        GameObjList kill_list; /// Liste mit Objekten die unmittelbar nach NextGF gekillt werden sollen
+        unsigned currentGF;
+        EventMap events;      /// Mapping of GF to Events to be executed in this GF
+        GameObjList killList; /// Objects that will be killed after current GF
         GameEvent* curActiveEvent;
 
         GameEvent* AddEvent(GameEvent* event);
