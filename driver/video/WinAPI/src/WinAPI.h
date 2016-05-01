@@ -98,7 +98,7 @@ class VideoWinAPI : public VideoDriver
         HWND  screen;    /// Fensterhandle.
         HDC   screen_dc; /// Zeichenkontext des Fensters.
         HGLRC screen_rc; /// OpenGL-Kontext des Fensters.
-        bool isWindowResizable;
+        bool isWindowResizable, isMinimized;
 };
 
 #endif // !WINAPI_H_INCLUDED

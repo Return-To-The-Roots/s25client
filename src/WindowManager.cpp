@@ -688,54 +688,8 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
  */
-void WindowManager::ScreenResized(unsigned short width, unsigned short height)
+void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHeight)
 {
-    unsigned short newWidth  = width;
-    unsigned short newHeight = height;
-
-//  bool mustResize = false;
-    // Minimale Ausdehnung erfällt?
-//  if(newWidth  < 800 || newHeight < 600)
-//  {
-//      mustResize = true;
-//      if(newWidth  < 800) newWidth  = 800;
-//      if(newHeight < 600) newHeight = 600;
-//  }
-
-    // Es kann passieren dass wir versuchen ein 800x600-Fenster zu erstellen,
-    // aber das Betriebssystem es immer wieder verkleinert. Hier sollten wir
-    // uns nicht auf einen endlosen Kampf einlassen, denn der Klägere gibt nach.
-    // Problem: Böse Windowmanager wie Metacity feuern ständig Resize-Events,
-    // wenn man den die Fenstergröße zieht und wir sie wieder zu vergrößern
-    // versuchen.
-    // Wir müssen also durch Warten halbwegs ausschließen, dass wir es
-    // mit dem Nutzer zu tun haben.
-    // TODO: Dann den Treiber zwingen, ein nicht resizable Fenster zu öffnen
-    // und erst wieder, wenn der Nutzer im Menü nochmal eine Auflösung einstellt,
-    // das Resizen zulassen.
-//  if(width < 800 || height < 600)
-//  if(lastScreenWidthSignal  == width)
-//  if(lastScreenHeightSignal == height)
-//  if(lastScreenSignalCount == 500)
-//  {
-//      VIDEODRIVER.ResizeScreen(width, height, VIDEODRIVER.IsFullscreen());
-//      return;
-//  }
-
-    // Letzten Wert merken
-//  if(lastScreenWidthSignal == width
-//     && lastScreenHeightSignal == height)
-//  {
-//      ++lastScreenSignalCount;
-//  }
-//  else
-//  {
-//      lastScreenWidthSignal  = width;
-//      lastScreenHeightSignal = height;
-//      lastScreenSignalCount  = 0;
-//  }
-
-    // Und los
     VIDEODRIVER.ResizeScreen(newWidth, newHeight, VIDEODRIVER.IsFullscreen());
     LOG.write("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 }

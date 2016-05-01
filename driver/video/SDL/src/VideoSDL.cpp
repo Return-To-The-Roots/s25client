@@ -270,6 +270,14 @@ bool VideoSDL::MessageLoop()
             case SDL_QUIT:
                 return false;
 
+            case SDL_ACTIVEEVENT:
+                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain)
+                {
+                    // Window was restored. We need a resize to avoid a black screen
+                    CallBack->ScreenResized(screenWidth, screenHeight);
+                }
+                break;
+
             case SDL_VIDEORESIZE:
             {
                 screenWidth = ev.resize.w;

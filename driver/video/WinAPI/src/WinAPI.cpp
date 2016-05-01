@@ -86,7 +86,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack):
     VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0),
-    screen(NULL), screen_dc(NULL), screen_rc(NULL), isWindowResizable(false)
+    screen(NULL), screen_dc(NULL), screen_rc(NULL), isWindowResizable(false), isMinimized(true)
 {
     memset(&dm_prev, 0, sizeof(DEVMODE));
     dm_prev.dmSize = sizeof(DEVMODE);
@@ -675,9 +675,11 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             return 0;
         } break;
         case WM_SIZE:
+            if(wParam == SIZE_MINIMIZED)
+                pVideoWinAPI->isMinimized = true;
             if(wParam != SIZE_MAXIMIZED && wParam != SIZE_RESTORED)
                 break;
-            if(pVideoWinAPI->screenWidth != LOWORD(lParam) || pVideoWinAPI->screenHeight != HIWORD(lParam))
+            if(pVideoWinAPI->screenWidth != LOWORD(lParam) || pVideoWinAPI->screenHeight != HIWORD(lParam) || pVideoWinAPI->isMinimized)
             {
                 pVideoWinAPI->screenWidth = LOWORD(lParam);
                 pVideoWinAPI->screenHeight = HIWORD(lParam);
@@ -686,6 +688,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
                 pVideoWinAPI->CallBack->ScreenResized(pVideoWinAPI->screenWidth, pVideoWinAPI->screenHeight);
                 pVideoWinAPI->isWindowResizable = true;
             }
+            pVideoWinAPI->isMinimized = false;
             break;
         case WM_ACTIVATE:
         {
