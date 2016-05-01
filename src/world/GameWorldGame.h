@@ -34,7 +34,7 @@ class nofActiveSoldier;
 class nofAttacker;
 
 /// "Interface-Klasse" für das Spiel
-class GameWorldGame : public virtual GameWorldBase
+class GameWorldGame: public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
@@ -175,6 +175,8 @@ public:
 
     /// Returns true, if the given (map)-resource is available at that node
     bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
+protected:
+    void VisibilityChanged(const MapPoint pt, unsigned player) override;
 };
 
 #endif // GameWorldGame_h__

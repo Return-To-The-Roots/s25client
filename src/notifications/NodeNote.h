@@ -15,25 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ToolNote_h__
-#define ToolNote_h__
+#ifndef NodeNote_h__
+#define NodeNote_h__
 
+#include "gameTypes/MapTypes.h"
 #include "notifications/notifications.h"
 
-struct ToolNote
+struct NodeNote
 {
-    ENABLE_NOTIFICATION(ToolNote);
+    ENABLE_NOTIFICATION(NodeNote);
 
     enum Type
     {
-        OrderCompleted // An ordered tool was produced
+        Altitude  // Nodes altitude was changed
     };
 
-    ToolNote(Type type, unsigned player):
-        type(type), player(player){}
+    NodeNote(Type type, const MapPoint& pt):
+        type(type), pt(pt){}
 
     const Type type;
-    const unsigned player;
+    const MapPoint pt;
 };
 
-#endif // ToolNote_h__
+#endif // NodeNote_h__

@@ -1328,16 +1328,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
             default:
                 throw std::logic_error("Invalid exploration value");
         }
-
     }
-
-    // Minimap Bescheid sagen
-    if(gi && visibility_before != GetNode(pt).fow[player].visibility)
-        gi->GI_UpdateMinimap(pt);
-
-    // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GAMECLIENT.GetPlayerID() || (GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
-        VisibilityChanged(pt);
 }
 
 void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
@@ -1347,14 +1338,6 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 
     if (visibility_before != VIS_VISIBLE && HasLua())
         GetLua().EventExplored(player, pt);
-
-    // Minimap Bescheid sagen
-    if(gi && visibility_before != GetNode(pt).fow[player].visibility)
-        gi->GI_UpdateMinimap(pt);
-
-    // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GAMECLIENT.GetPlayerID() || (GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
-        VisibilityChanged(pt);
 }
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception)
@@ -1573,6 +1556,14 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
 
     // Gibts Ressourcen von dem Typ an diesem Punkt?
     return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
+}
+
+void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player)
+{
+    GameWorldBase::VisibilityChanged(pt, player);
+    // Minimap Bescheid sagen
+    if(gi)
+        gi->GI_UpdateMinimap(pt);
 }
 
 /// Create Trade graphs

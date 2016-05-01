@@ -76,12 +76,12 @@
 #include <boost/bind.hpp>
 #include <sstream>
 
-dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL),
+dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
+    worldViewer(GAMECLIENT.GetPlayerID(), world),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
-    gwb(worldViewer),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
-    selected(0, 0), minimap(gwv.GetViewer()), isScrolling(false), zoomLvl(0)
+    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(0)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -105,7 +105,7 @@ dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL)
 
     LOBBYCLIENT.SetInterface(this);
     GAMECLIENT.SetInterface(this);
-    gwb.SetGameInterface(this);
+    world.SetGameInterface(this);
 
     cbb.loadEdges( LOADER.GetInfoN("resource") );
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), &borders);
@@ -118,13 +118,13 @@ dskGameInterface::dskGameInterface(GameWorldViewer& worldViewer) : Desktop(NULL)
         NewPostMessage(postBox.GetNumMsgs());
 
     // Jump to players HQ if it exists
-    if(GAMECLIENT.GetLocalPlayer().hqPos.isValid())
-        gwv.MoveToMapPt(GAMECLIENT.GetLocalPlayer().hqPos);
+    if(worldViewer.GetPlayer().hqPos.isValid())
+        gwv.MoveToMapPt(worldViewer.GetPlayer().hqPos);
 }
 
 PostBox& dskGameInterface::GetPostBox()
 {
-    PostBox* postBox = gwb.GetPostMgr().GetPostBox(GAMECLIENT.GetPlayerID());
+    PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerID());
     RTTR_Assert(postBox != NULL);
     return *postBox;
 }
@@ -223,9 +223,9 @@ void dskGameInterface::Msg_PaintAfter()
     char nwf_string[256];
 
     if(GAMECLIENT.IsReplayModeOn())
-        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), gwb.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
+        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
     else
-        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), gwb.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer().ping);
+        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer().ping);
 
     // tournament mode?
     unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
@@ -233,7 +233,7 @@ void dskGameInterface::Msg_PaintAfter()
     if(tmd)
     {
         // Convert gf to seconds
-        unsigned sec = (tmd - gwb.GetEvMgr().GetCurrentGF()) * GAMECLIENT.GetGFLength() / 1000;
+        unsigned sec = (tmd - worldViewer.GetWorld().GetEvMgr().GetCurrentGF()) * GAMECLIENT.GetGFLength() / 1000;
         char str[512];
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }
@@ -258,9 +258,9 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Laggende Spieler anzeigen in Form von Schnecken
-    for(unsigned int i = 0; i < gwb.GetPlayerCount(); ++i)
+    for(unsigned int i = 0; i < worldViewer.GetWorld().GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = gwb.GetPlayer(i);
+        GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(i);
         if(player.is_lagging)
             LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
     }
@@ -298,14 +298,14 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
-            if(gwb.RoadAvailable(road.mode == RM_BOAT, cSel) &&
-                gwb.GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID() &&
-                gwb.IsPlayerTerritory(cSel))
+            if(worldViewer.GetWorld().RoadAvailable(road.mode == RM_BOAT, cSel) &&
+                worldViewer.IsOwner(cSel) &&
+                worldViewer.GetWorld().IsPlayerTerritory(cSel))
             {
                 if(!BuildRoadPart(cSel, false))
                     ShowRoadWindow(mc.x, mc.y);
             }
-            else if(gwb.GetBQ(cSel, GAMECLIENT.GetPlayerID()) != BQ_NOTHING)
+            else if(worldViewer.GetBQ(cSel) != BQ_NOTHING)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
                 unsigned tbr = TestBuiltRoad(cSel);
@@ -324,7 +324,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
-            else if(gwb.GetNO(cSel)->GetType() == NOP_FLAG && cSel != road.start)
+            else if(worldViewer.GetWorld().GetNO(cSel)->GetType() == NOP_FLAG && cSel != road.start)
             {
                 if(BuildRoadPart(cSel, 1))
                 {
@@ -355,48 +355,46 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const MapPoint cSel = gwv.GetSelectedPt();
 
         // Vielleicht steht hier auch ein Schiff?
-        if(noShip* ship = gwv.GetViewer().GetShip(cSel, GAMECLIENT.GetPlayerID()))
+        if(noShip* ship = worldViewer.GetShip(cSel))
         {
             WINDOWMANAGER.Show(new iwShip(gwv, ship));
             return true;
         }
 
         // Evtl ists nen Haus? (unser Haus)
-        const noBase& selObj = *gwb.GetNO(cSel);
-        if(selObj.GetType() == NOP_BUILDING   && gwb.GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
+        const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
+        if(selObj.GetType() == NOP_BUILDING && worldViewer.IsOwner(cSel))
         {
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(new iwHQ(gwv, gwb.GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
+                WINDOWMANAGER.Show(new iwHQ(gwv, worldViewer.GetWorld().GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwStorehouse(gwv, gwb.GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(new iwStorehouse(gwv, worldViewer.GetWorld().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, gwb.GetSpecObj<nobHarborBuilding>(cSel)));
+                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, worldViewer.GetWorld().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(bt <= BLD_FORTRESS)
-                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, gwb.GetSpecObj<nobMilitary>(cSel)));
+                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, worldViewer.GetWorld().GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(new iwBuilding(gwv, gwb.GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.Show(new iwBuilding(gwv, worldViewer.GetWorld().GetSpecObj<nobUsual>(cSel)));
             return true;
         }
-
         // oder vielleicht eine Baustelle?
-        else if(selObj.GetType() == NOP_BUILDINGSITE && gwb.GetNode(cSel).owner - 1 == (signed)GAMECLIENT.GetPlayerID())
+        else if(selObj.GetType() == NOP_BUILDINGSITE && worldViewer.IsOwner(cSel))
         {
-            WINDOWMANAGER.Show(new iwBuildingSite(gwv, gwb.GetSpecObj<noBuildingSite>(cSel)));
+            WINDOWMANAGER.Show(new iwBuildingSite(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
             return true;
         }
 
         action_tabs.watch = true;
         // Unser Land
-        const MapNode& selNode = gwb.GetNode(cSel);
-        if(selNode.owner == GAMECLIENT.GetPlayerID() + 1)
+        if(worldViewer.IsOwner(cSel))
         {
-            const BuildingQuality bq = gwb.GetBQ(cSel, GAMECLIENT.GetPlayerID());
+            const BuildingQuality bq = worldViewer.GetBQ(cSel);
             // Kann hier was gebaut werden?
             if(bq >= BQ_HUT)
             {
@@ -417,7 +415,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
-                enable_military_buildings = !gwb.IsMilitaryBuildingNearNode(cSel, GAMECLIENT.GetPlayerID());
+                enable_military_buildings = !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerID());
             }
             else if(bq == BQ_FLAG)
                 action_tabs.setflag = true;
@@ -428,7 +426,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             // Prüfen, ob irgendwo Straßen anliegen
             bool roads = false;
             for(unsigned i = 0; i < 6; ++i)
-                if(gwb.GetPointRoad(cSel, i, true))
+                if(worldViewer.GetWorld().GetPointRoad(cSel, i, true))
                     roads = true;
 
             if( (roads) && !(
@@ -437,18 +435,18 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 action_tabs.cutroad = true;
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
-        else if(gwv.GetViewer().GetVisibility(cSel) == VIS_VISIBLE)
+        else if(worldViewer.GetVisibility(cSel) == VIS_VISIBLE)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {
-                noBuilding* building = gwb.GetSpecObj<noBuilding>(cSel);
+                noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel);
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
-                if(gwb.GetGGS().isEnabled(AddonId::TRADE))
+                if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(GAMECLIENT.GetLocalPlayer().IsAlly(building->GetPlayer())
+                    if(worldViewer.GetPlayer().IsAlly(building->GetPlayer())
                             && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
                     {
                         WINDOWMANAGER.Show(new iwTrade(*static_cast<nobBaseWarehouse*>(building)));
@@ -460,7 +458,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
                 {
                     // Dann darf es nicht neu gebaut sein!
-                    if(!gwb.GetSpecObj<nobMilitary>(cSel)->IsNewBuilt())
+                    if(!worldViewer.GetWorld().GetSpecObj<nobMilitary>(cSel)->IsNewBuilt())
                         action_tabs.attack = action_tabs.sea_attack = true;
                 }
                 // oder ein HQ oder Hafen?
@@ -592,16 +590,17 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             unsigned playerIdx = ke.c - '1';
             if(GAMECLIENT.IsReplayModeOn())
             {
-                GAMECLIENT.ChangePlayerIngame(GAMECLIENT.GetPlayerID(), playerIdx);
+                GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerID(), playerIdx);
+                RTTR_Assert(worldViewer.GetPlayerID() == playerIdx);
                 // zum HQ hinscrollen
-                GameClientPlayer& player = gwb.GetPlayer(playerIdx);
+                const GameClientPlayer& player = worldViewer.GetPlayer();
                 if(player.hqPos.isValid())
                     gwv.MoveToMapPt(player.hqPos);
 
             }
-            else if(playerIdx < gwb.GetPlayerCount())
+            else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
             {
-                GameClientPlayer& player = gwb.GetPlayer(playerIdx);
+                GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
                 if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
                     GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
@@ -621,12 +620,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             // GameClient Bescheid sagen
             GAMECLIENT.ToggleReplayFOW();
             // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
-            gwv.GetViewer().RecalcAllColors();
+            worldViewer.RecalcAllColors();
             minimap.UpdateAll();
             return true;
         case 'h': // Zum HQ springen
         {
-            GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+            const GameClientPlayer& player = worldViewer.GetPlayer();
             // Prüfen, ob dieses überhaupt noch existiert
             if(player.hqPos.x != 0xFFFF)
                 gwv.MoveToMapPt(player.hqPos);
@@ -722,11 +721,11 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
     }
     else
     {
-        gwb.RemoveVisualRoad(road.start, road.route);
+        worldViewer.GetWorld().RemoveVisualRoad(road.start, road.route);
         for(unsigned i = 0; i < road.route.size(); ++i)
         {
-            gwb.SetPointVirtualRoad(road.start, road.route[i], 0);
-            road.start = gwb.GetNeighbour(road.start, road.route[i]);
+            worldViewer.GetWorld().SetPointVirtualRoad(road.start, road.route[i], 0);
+            road.start = worldViewer.GetWorld().GetNeighbour(road.start, road.route[i]);
         }
     }
 }
@@ -735,13 +734,13 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
 {
     std::vector<unsigned char> new_route;
     // Weg gefunden?
-    if(!gwb.GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(gwb, road.mode == RM_BOAT)))
+    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(worldViewer.GetWorld(), road.mode == RM_BOAT)))
         return false;
 
     // Test on water way length
     if(road.mode == RM_BOAT)
     {
-        unsigned char index = gwb.GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
+        unsigned char index = worldViewer.GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
         RTTR_Assert(index < waterwayLengths.size());
         const unsigned max_length = waterwayLengths[index];
@@ -763,9 +762,9 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     // Weg (visuell) bauen
     for(unsigned i = 0; i < new_route.size(); ++i)
     {
-        gwb.SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
-        road.point = gwb.GetNeighbour(road.point, new_route[i]);
-        gwb.RecalcBQForRoad(road.point);
+        worldViewer.GetWorld().SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
+        road.point = worldViewer.GetWorld().GetNeighbour(road.point, new_route[i]);
+        worldViewer.GetWorld().RecalcBQForRoad(road.point);
     }
     // Zielpunkt updaten (für Wasserweg)
     cSel = road.point;
@@ -783,14 +782,14 @@ unsigned dskGameInterface::TestBuiltRoad(const MapPoint pt)
         if(pt2 == pt)
             return i + 1;
 
-        pt2 = gwb.GetNeighbour(pt2, road.route[i]);
+        pt2 = worldViewer.GetWorld().GetNeighbour(pt2, road.route[i]);
     }
     return 0;
 }
 
 void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
 {
-    roadwindow = new iwRoadWindow(*this, gwb.GetBQ(road.point, GAMECLIENT.GetPlayerID()) != BQ_NOTHING, mouse_x, mouse_y);
+    roadwindow = new iwRoadWindow(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mouse_x, mouse_y);
     WINDOWMANAGER.Show(roadwindow, true);
 }
 
@@ -803,7 +802,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     {
         for(unsigned char x = 0; x < 6; ++x)
         {
-            if(TerrainData::IsWater(gwb.GetTerrainAround(cSel, x)))
+            if(TerrainData::IsWater(worldViewer.GetWorld().GetTerrainAround(cSel, x)))
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -812,11 +811,11 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     if(action_tabs.flag)
     {
 
-        if(gwb.GetNO(gwb.GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
+        if(worldViewer.GetWorld().GetNO(worldViewer.GetWorld().GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
             params = iwAction::AWFT_HQ;
-        else if(gwb.GetNO(cSel)->GetType() == NOP_FLAG)
+        else if(worldViewer.GetWorld().GetNO(cSel)->GetType() == NOP_FLAG)
         {
-            if(gwb.GetSpecObj<noFlag>(cSel)->GetFlagType() == FT_WATER)
+            if(worldViewer.GetWorld().GetSpecObj<noFlag>(cSel)->GetFlagType() == FT_WATER)
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -824,8 +823,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        if(GAMECLIENT.GetLocalPlayer().IsPlayerAttackable(gwb.GetSpecObj<noBuilding>(cSel)->GetPlayer()))
-            params = gwv.GetViewer().GetAvailableSoldiersForAttack(GAMECLIENT.GetPlayerID(), cSel);
+        if(worldViewer.GetPlayer().IsPlayerAttackable(worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel)->GetPlayer()))
+            params = worldViewer.GetAvailableSoldiersForAttack(cSel);
     }
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mouse_x, mouse_y, params, enable_military_buildings);
@@ -870,7 +869,7 @@ void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
 {
     // Info-Meldung ausgeben
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' left the game!"), gwb.GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
@@ -888,8 +887,8 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
 void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
 {
     char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), gwb.GetPlayer(player_id).name.c_str());
-    messenger.AddMessage(from, gwb.GetPlayer(player_id).color, cd, msg);
+    snprintf(from, sizeof(from), _("<%s> "), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
+    messenger.AddMessage(from, worldViewer.GetWorld().GetPlayer(player_id).color, cd, msg);
 }
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
@@ -972,17 +971,17 @@ void dskGameInterface::LC_Status_Error(const std::string& error)
 void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
     // Meldung anzeigen
-    std::string text = "Player '" + gwb.GetPlayer(player1).name + "' switched to player '" + gwb.GetPlayer(player2).name + "'";
+    std::string text = "Player '" + worldViewer.GetWorld().GetPlayer(player1).name + "' switched to player '" + worldViewer.GetWorld().GetPlayer(player2).name + "'";
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
-    const unsigned char localPlayerID = GAMECLIENT.GetPlayerID();
+    const unsigned localPlayerID = worldViewer.GetPlayerID();
     if(player1 == localPlayerID || player2 == localPlayerID)
     {
+        worldViewer.ChangePlayer(player1 == localPlayerID ? player2 : player1);
         // Set visual settings back to the actual ones
         GAMECLIENT.ResetVisualSettings();
         minimap.UpdateAll();
-        gwv.GetViewer().RecalcAllColors();
     }
 }
 
@@ -992,14 +991,14 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), gwb.GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
-    if(player_id == GAMECLIENT.GetPlayerID())
+    if(player_id == worldViewer.GetPlayerID())
     {
         /// Sichtbarkeiten neu berechnen
-        gwv.GetViewer().RecalcAllColors();
+        worldViewer.RecalcAllColors();
         // Minimap updaten
         minimap.UpdateAll();
     }
@@ -1017,10 +1016,10 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 void dskGameInterface::GI_TreatyOfAllianceChanged()
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(gwb.GetGGS().team_view)
+    if(worldViewer.GetWorld().GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
-        gwv.GetViewer().RecalcAllColors();
+        worldViewer.RecalcAllColors();
         // Minimap updaten
         minimap.UpdateAll();
     }
@@ -1034,9 +1033,9 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
     for(unsigned i = road.route.size(); i >= start_id; --i)
     {
         MapPoint t = road.point;
-        road.point = gwb.GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
-        gwb.SetPointVirtualRoad(road.point, road.route[i - 1], 0);
-        gwb.RecalcBQForRoad(t);
+        road.point = worldViewer.GetWorld().GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
+        worldViewer.GetWorld().SetPointVirtualRoad(road.point, road.route[i - 1], 0);
+        worldViewer.GetWorld().RecalcBQForRoad(t);
     }
 
     road.route.resize(start_id - 1);
@@ -1090,7 +1089,7 @@ void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
 void dskGameInterface::GI_Winner(const unsigned player_id)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), gwb.GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
 /**
@@ -1100,7 +1099,8 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
 {
     unsigned winnercount = 0;
     char winners[5];
-    for(unsigned i = 0; i < gwb.GetPlayerCount() && winnercount < 5; i++)
+    const GameWorldBase& world = worldViewer.GetWorld();
+    for(unsigned i = 0; i < world.GetPlayerCount() && winnercount < 5; i++)
     {
         winners[winnercount] = i;
         winnercount += player_id & (1 << i) ? 1 : 0;
@@ -1109,13 +1109,13 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
     switch (winnercount)
     {
         case 2:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), gwb.GetPlayer(winners[0]).name.c_str(), gwb.GetPlayer(winners[1]).name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), world.GetPlayer(winners[0]).name.c_str(), world.GetPlayer(winners[1]).name.c_str());
             break;
         case 3:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), gwb.GetPlayer(winners[0]).name.c_str(), gwb.GetPlayer(winners[1]).name.c_str(), gwb.GetPlayer(winners[2]).name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"), world.GetPlayer(winners[0]).name.c_str(), world.GetPlayer(winners[1]).name.c_str(), world.GetPlayer(winners[2]).name.c_str());
             break;
         case 4:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), gwb.GetPlayer(winners[0]).name.c_str(), gwb.GetPlayer(winners[1]).name.c_str(), gwb.GetPlayer(winners[2]).name.c_str(), gwb.GetPlayer(winners[3]).name.c_str());
+            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"), world.GetPlayer(winners[0]).name.c_str(), world.GetPlayer(winners[1]).name.c_str(), world.GetPlayer(winners[2]).name.c_str(), world.GetPlayer(winners[3]).name.c_str());
             break;
         default:
             snprintf(text, sizeof(text), "%s", _("Team victory!"));

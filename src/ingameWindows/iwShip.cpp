@@ -26,14 +26,14 @@
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldBase.h"
 #include "gameData/JobConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "gameData/ShieldConsts.h"
 
 iwShip::iwShip(GameWorldView& gwv, noShip* const ship)
     : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), ship_id(ship ? gwv.GetViewer().GetPlayer(ship->GetPlayer()).GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())
+      gwv(gwv), ship_id(ship ? gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerID())
 {
     AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
     AddImageButton( 2, 18, 192, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
@@ -69,7 +69,7 @@ void iwShip::Msg_PaintBefore()
 void iwShip::Msg_PaintAfter()
 {
     // Schiff holen
-    noShip* ship = (player == 0xff) ? NULL : gwv.GetViewer().GetPlayer(player).GetShipByID(ship_id);
+    noShip* ship = (player == 0xff) ? NULL : gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
 
     // Kein Schiff gefunden? Dann erstes Schiff holen
     if(!ship)
@@ -77,7 +77,7 @@ void iwShip::Msg_PaintAfter()
         ship_id = 0;
         // Nochmal probieren
         if(player != 0xff)
-            ship = gwv.GetViewer().GetPlayer(player).GetShipByID(ship_id);
+            ship = gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
@@ -91,7 +91,7 @@ void iwShip::Msg_PaintAfter()
     NormalFont->Draw(GetX() + 42, GetY() + 42, ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
-    sprintf(str, "%u/%u", ship_id + 1, gwv.GetViewer().GetPlayer(ship->GetPlayer()).GetShipCount());
+    sprintf(str, "%u/%u", ship_id + 1, gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount());
     NormalFont->Draw(GetX() + 208, GetY() + 42, str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->Draw(GetX() + 138, GetY() + 117);
@@ -103,8 +103,7 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetViewer().GetNextFreeHarborPoint(ship->GetPos(),
-                                                ship->GetCurrentHarbor(), i, ship->GetPlayer()) > 0);
+            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), i, ship->GetPlayer()) > 0);
 
     }
     else
@@ -120,7 +119,7 @@ void iwShip::Msg_PaintAfter()
 
 void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    noShip* ship = gwv.GetViewer().GetPlayer(player).GetShipByID(ship_id);
+    noShip* ship = gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
 
     if(!ship)
         return;
@@ -149,7 +148,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         case 4:
         {
             if(ship_id == 0)
-                ship_id = gwv.GetViewer().GetPlayer(ship->GetPlayer()).GetShipCount() - 1;
+                ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount() - 1;
             else
                 --ship_id;
         } break;
@@ -157,14 +156,14 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         case 5:
         {
             ++ship_id;
-            if(ship_id == gwv.GetViewer().GetPlayer(ship->GetPlayer()).GetShipCount())
+            if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount())
                 ship_id = 0;
 
         } break;
         // Letztes Schiff
         case 6:
         {
-            ship_id = gwv.GetViewer().GetPlayer(ship->GetPlayer()).GetShipCount() - 1;
+            ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount() - 1;
         } break;
         case 7: // "Gehe Zu Ort"
         {
@@ -180,7 +179,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwShip::DrawCargo()
 {
-    const GameClientPlayer& owner = gwv.GetViewer().GetPlayer(player);
+    const GameClientPlayer& owner = gwv.GetWorld().GetPlayer(player);
     noShip* ship = owner.GetShipByID(ship_id);
 
     std::vector<unsigned short> orderedWares = std::vector<unsigned short>(WARE_TYPES_COUNT);
@@ -209,7 +208,7 @@ void iwShip::DrawCargo()
     }
     else if(ship->IsOnExplorationExpedition())
     {
-        orderedFigures[JOB_SCOUT] = gwv.GetViewer().GetGGS().GetNumScoutsExedition();
+        orderedFigures[JOB_SCOUT] = gwv.GetWorld().GetGGS().GetNumScoutsExedition();
     }
 
     // Start Offset zum malen

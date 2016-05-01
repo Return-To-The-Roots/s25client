@@ -110,9 +110,6 @@ public:
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Point<int> GetNodePos(const MapPoint pt) const;
 
-    /// Ver�ndert die H�he eines Punktes und die damit verbundenen Schatten
-    void AltitudeChanged(const MapPoint pt) override;
-
     /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
     void RecalcBQAroundPoint(const MapPoint pt);
     /// Berechnet Bauqualitäten wie bei letzterer Funktion, bloß noch den 2. Kreis um x;y herum
@@ -187,9 +184,10 @@ public:
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
 protected:
-
-    /// F�r abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
-    virtual void VisibilityChanged(const MapPoint pt) = 0;
+    /// Called when the visibility of point changed for a player
+    void VisibilityChanged(const MapPoint pt, unsigned player) override;
+    /// Called, when the altitude of a point was changed
+    void AltitudeChanged(const MapPoint pt) override;
 
     /// Gibt n�chsten Hafenpunkt in einer bestimmten Richtung zur�ck, bzw. 0, wenn es keinen gibt
     unsigned GetNextHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir,

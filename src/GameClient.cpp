@@ -274,20 +274,6 @@ void GameClient::StartGame(const unsigned int random_init)
     if(mapinfo.savegame)
     {
         mapinfo.savegame->sgd.ReadSnapshot(*gw);
-
-        // TODO: schöner machen:
-        // Die Fläche, die nur von einem Allierten des Spielers gesehen werden, müssen noch dem TerrainRenderer mitgeteilt werden
-        // oder entsprechende Flächen müssen vorher bekannt gemacht werden
-        // Die folgende Schleife aktualisiert einfach *alle* Punkt, ist also ziemlich ineffizient
-        unsigned short height = gw->GetHeight();
-        unsigned short width =  gw->GetWidth();
-        for (unsigned short y = 0; y < height; ++y)
-        {
-            for (unsigned short x = 0; x < width; ++x)
-            {
-                gw->VisibilityChanged(MapPoint(x, y));
-            }
-        }
         // Visuelle Einstellungen ableiten
         ResetVisualSettings();
     }

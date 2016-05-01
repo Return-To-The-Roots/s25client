@@ -25,6 +25,7 @@
 #include "world/MapGeometry.h"
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldBase.h"
 #include "gameData/TerrainData.h"
 #include "ExtensionList.h"
 #include "Loader.h"
@@ -122,7 +123,7 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 /// erzeugt Vertex
 void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    GetVertex(pt).pos = Point<float>(gwv.GetNodePos(pt));
+    GetVertex(pt).pos = Point<float>(gwv.GetWorld().GetNodePos(pt));
 }
 
 
@@ -160,10 +161,10 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewe
     /// @todo GetTerrainX und Co durch GetTerrainXA ausdrücken
     Vertex& vertex = GetVertex(pt);
     vertex.borderPos[0] = ( GetTerrainAround(pt, 5) + GetNodePos(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
-    vertex.borderColor[0] = ( GetColor(gwv.GetNeighbour(pt, 5)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, 4)) ) / 3.0f;
+    vertex.borderColor[0] = ( GetColor(gwv.GetNeighbour(pt, Direction::SOUTHWEST)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
 
     vertex.borderPos[1] = ( GetTerrainAround(pt, 3) + GetNodePos(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
-    vertex.borderColor[1] = ( GetColor(gwv.GetNeighbour(pt, 3)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, 4)) ) / 3.0f;
+    vertex.borderColor[1] = ( GetColor(gwv.GetNeighbour(pt, Direction::EAST)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
 }
 
 /**
@@ -171,9 +172,10 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewe
  */
 void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 {
-    width = gwv.GetWidth();
-    height = gwv.GetHeight();
-    LandscapeType lt = gwv.GetLandscapeType();
+    const GameWorldBase& world = gwv.GetWorld();
+    width = world.GetWidth();
+    height = world.GetHeight();
+    LandscapeType lt = world.GetLandscapeType();
 
     GenerateVertices(gwv);
 
@@ -187,8 +189,8 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         for(MapCoord x = 0; x < width; ++x)
         {
             MapPoint pt(x, y);
-            TerrainType t1 = gwv.GetNode(pt).t1; //-V807
-            TerrainType t2 = gwv.GetNode(pt).t2;
+            TerrainType t1 = world.GetNode(pt).t1; //-V807
+            TerrainType t2 = world.GetNode(pt).t2;
             unsigned int pos = GetVertexIdx(pt);
 
             if( (borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)) )
@@ -196,14 +198,14 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
             if( (borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].left_right_offset[1] = triangleCount++;
 
-            t1 = gwv.GetNeighbourNode(pt, 3).t1;
+            t1 = world.GetNeighbourNode(pt, 3).t1;
             if( (borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t1, t2)) )
                 borders[pos].right_left_offset[0] = triangleCount++;
             if( (borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].right_left_offset[1] = triangleCount++;
 
-            t1 = gwv.GetNode(pt).t1;
-            t2 = gwv.GetNeighbourNode(pt, 5).t2;
+            t1 = world.GetNode(pt).t1;
+            t2 = world.GetNeighbourNode(pt, 5).t2;
             if( (borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t2, t1)) )
                 borders[pos].top_down_offset[0] = triangleCount++;
             if( (borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t2)) )
@@ -299,9 +301,9 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, const GameWorldView
     Color& clr0 = gl_colors[pos][0];
     Color& clr1 = gl_colors[pos][1];
     Color& clr2 = gl_colors[pos][2];
-    clr0.r = clr0.g = clr0.b = GetColor(gwv.GetNeighbour(pt, 4));
+    clr0.r = clr0.g = clr0.b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST));
     clr1.r = clr1.g = clr1.b = GetColor(pt);
-    clr2.r = clr2.g = clr2.b = GetColor(gwv.GetNeighbour(pt, 5));
+    clr2.r = clr2.g = clr2.b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHWEST));
 
     ++pos;
 
@@ -309,8 +311,8 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, const GameWorldView
     Color& clr4 = gl_colors[pos][1];
     Color& clr5 = gl_colors[pos][2];
     clr3.r = clr3.g = clr3.b = GetColor(pt);
-    clr4.r = clr4.g = clr4.b = GetColor(gwv.GetNeighbour(pt, 4));
-    clr5.r = clr5.g = clr5.b = GetColor(gwv.GetNeighbour(pt, 3));
+    clr4.r = clr4.g = clr4.b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST));
+    clr5.r = clr5.g = clr5.b = GetColor(gwv.GetNeighbour(pt, Direction::EAST));
 
 
     /// Bei Vertexbuffern das die Daten aktualisieren
@@ -497,7 +499,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
             first_offset = offset;
 
         gl_colors[offset][i ? 0 : 2].r = gl_colors[offset][i ? 0 : 2].g = gl_colors[offset][i ? 0 : 2].b = GetColor(pt); //-V807
-        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(gwv.GetNeighbour(pt, 4)); //-V807
+        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST)); //-V807
         gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetBColor(pt, i); //-V807
 
         ++count_borders;
@@ -513,8 +515,8 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
         if(!first_offset)
             first_offset = offset;
 
-        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(gwv.GetNeighbour(pt, 4));
-        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(gwv.GetNeighbour(pt, 3));
+        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST));
+        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(gwv.GetNeighbour(pt, Direction::EAST));
         MapPoint pt2(pt.x + i, pt.y);
         if(pt2.x >= width)
             pt2.x -= width;
@@ -533,13 +535,13 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
         if(!first_offset)
             first_offset = offset;
 
-        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(gwv.GetNeighbour(pt, 5));
-        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(gwv.GetNeighbour(pt, 4));
+        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHWEST));
+        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST));
 
         if(i == 0)
             gl_colors[offset][2].r = gl_colors[offset][2].g = gl_colors[offset][2].b = GetBColor(pt, i); //-V807
         else
-            gl_colors[offset][0].r = gl_colors[offset][0].g = gl_colors[offset][0].b = GetBColor(gwv.GetNeighbour(pt, 5), i); //-V807
+            gl_colors[offset][0].r = gl_colors[offset][0].g = gl_colors[offset][0].b = GetBColor(gwv.GetNeighbour(pt, Direction::SOUTHWEST), i); //-V807
 
         ++count_borders;
     }
@@ -905,8 +907,8 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
     GameWorldViewer& gwViewer = gwv.GetViewer();
     Visibility visibility = gwViewer.GetVisibility(t);
 
-	int totalWidth  = gwViewer.GetWidth()  * TR_W;
-	int totalHeight = gwViewer.GetHeight() * TR_H;
+	int totalWidth  = gwViewer.GetWorld().GetWidth()  * TR_W;
+	int totalHeight = gwViewer.GetWorld().GetHeight() * TR_H;
 
     // Wegtypen für die drei Richtungen
     for(unsigned dir = 0; dir < 3; ++dir)
@@ -914,7 +916,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         unsigned char type = gwViewer.GetVisibleRoad(t, dir, visibility);
         if (!type)
             continue;
-        MapPoint ta = gwViewer.GetNeighbour(t, 3 + dir);
+        MapPoint ta = gwViewer.GetNeighbour(t, Direction::fromInt(3 + dir));
 
         PointI endPos = PointI(GetNodePos(ta)) + offset;
         PointI diff = startPos - endPos;
@@ -944,8 +946,8 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
             case RoadSegment::RT_DONKEY:
             case RoadSegment::RT_NORMAL:
             {
-                TerrainType t1 = gwViewer.GetTerrainAround(t, dir + 2);
-                TerrainType t2 = gwViewer.GetTerrainAround(t, dir + 3);
+                TerrainType t1 = gwViewer.GetWorld().GetTerrainAround(t, dir + 2);
+                TerrainType t2 = gwViewer.GetWorld().GetTerrainAround(t, dir + 3);
 
                 // Prüfen, ob Bergwege gezeichnet werden müssen, indem man guckt, ob der Weg einen
                 // Berg "streift" oder auch eine Bergwiese
@@ -1068,14 +1070,13 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& 
     UpdateVertexColor(pt, gwv);
 
     for(unsigned i = 0; i < 6; ++i)
-        UpdateVertexColor(gwv.GetNeighbour(pt, i), gwv);
-
+        UpdateVertexColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv);
 
     // und für die Ränder
     UpdateBorderVertex(pt, gwv);
 
     for(unsigned i = 0; i < 6; ++i)
-        UpdateBorderVertex(gwv.GetNeighbour(pt, i), gwv);
+        UpdateBorderVertex(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv);
 
     // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
     UpdateTrianglePos(pt, gwv, true);
@@ -1083,15 +1084,15 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& 
 
     for(unsigned i = 0; i < 6; ++i)
     {
-        UpdateTrianglePos(gwv.GetNeighbour(pt, i), gwv, true);
-        UpdateTriangleColor(gwv.GetNeighbour(pt, i), gwv, true);
+        UpdateTrianglePos(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv, true);
+        UpdateTriangleColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv, true);
     }
 
 
     // Auch im zweiten Kreis drumherum die Dreiecke neu berechnen, da die durch die Schattenänderung der umliegenden
     // Punkte auch geändert werden könnten
     for(unsigned i = 0; i < 12; ++i)
-        UpdateTriangleColor(gwv.GetNeighbour2(pt, i), gwv, true);
+        UpdateTriangleColor(gwv.GetWorld().GetNeighbour2(pt, i), gwv, true);
 
 
     // und für die Ränder
@@ -1100,12 +1101,12 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& 
 
     for(unsigned i = 0; i < 6; ++i)
     {
-        UpdateBorderTrianglePos(gwv.GetNeighbour(pt, i), gwv, true);
-        UpdateBorderTriangleColor(gwv.GetNeighbour(pt, i), gwv, true);
+        UpdateBorderTrianglePos(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv, true);
+        UpdateBorderTriangleColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv, true);
     }
 
     for(unsigned i = 0; i < 12; ++i)
-        UpdateBorderTriangleColor(gwv.GetNeighbour2(pt, i), gwv, true);
+        UpdateBorderTriangleColor(gwv.GetWorld().GetNeighbour2(pt, i), gwv, true);
 }
 
 void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer& gwv)
@@ -1116,22 +1117,22 @@ void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer
 
     UpdateVertexColor(pt, gwv);
     for(unsigned i = 0; i < 6; ++i)
-        UpdateVertexColor(gwv.GetNeighbour(pt, i), gwv);
+        UpdateVertexColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv);
 
     // und für die Ränder
     UpdateBorderVertex(pt, gwv);
     for(unsigned i = 0; i < 6; ++i)
-        UpdateBorderVertex(gwv.GetNeighbour(pt, i), gwv);
+        UpdateBorderVertex(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv);
 
     // den selbst sowieso die Punkte darum updaten, da sich bei letzteren die Schattierung geändert haben könnte
     UpdateTriangleColor(pt, gwv, true);
     for(unsigned i = 0; i < 6; ++i)
-        UpdateTriangleColor(gwv.GetNeighbour(pt, i), gwv, true);
+        UpdateTriangleColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv, true);
 
     // und für die Ränder
     UpdateBorderTriangleColor(pt, gwv, true);
     for(unsigned i = 0; i < 6; ++i)
-        UpdateBorderTriangleColor(gwv.GetNeighbour(pt, i), gwv, true);
+        UpdateBorderTriangleColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), gwv, true);
 }
 
 

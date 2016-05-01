@@ -18,35 +18,51 @@
 #ifndef GameWorldViewer_h__
 #define GameWorldViewer_h__
 
-#include "world/GameWorldBase.h"
 #include "TerrainRenderer.h"
+#include "notifications/Subscribtion.h"
+#include "gameTypes/BuildingQuality.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapTypes.h"
 
-class MouseCoords;
-class noShip;
+class GameClientPlayer;
 class FOWObject;
-struct RoadBuildState;
+class GameWorldBase;
+struct MapNode;
+struct NodeNote;
+class noShip;
+class TerrainRenderer;
 
-/// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
-class GameWorldViewer: public virtual GameWorldBase
+/// This is a players Viewer on the GameWorld
+class GameWorldViewer
 {
+    unsigned player_;
+    GameWorldBase& gwb;
     TerrainRenderer tr;
+    Subscribtion evVisibilityChanged, evAltitudeChanged;
 public:
 
-    GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldViewer(unsigned player, GameWorldBase& gwb);
 
+    GameWorldBase& GetWorld() { return gwb; }
+    const GameWorldBase& GetWorld() const { return gwb; }
     TerrainRenderer& GetTerrainRenderer() { return tr; }
+    GameClientPlayer& GetPlayer();
+    const GameClientPlayer& GetPlayer() const;
+    unsigned GetPlayerID() const { return player_; }
 
     /// Get number of soldiers that can attack that point
-    unsigned GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt);
+    unsigned GetAvailableSoldiersForAttack(const MapPoint pt);
+    /// Get number of soldiers for attacking a point via sea
+    unsigned GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const;
 
+    /// Get BQ for this player
+    BuildingQuality GetBQ(const MapPoint& pt) const;
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
     Visibility GetVisibility(const MapPoint pt) const;
-
-    /// Höhe wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
-    void AltitudeChanged(const MapPoint pt) override;
-    /// Sichtbarkeit wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
-    void VisibilityChanged(const MapPoint pt) override;
+    /// Returns true, if we own this point (but may not be our territory if this is a border point)
+    bool IsOwner(const MapPoint& pt) const;
+    const MapNode& GetNode(const MapPoint& pt) const;
+    MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
 
     /// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
     unsigned char GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const;
@@ -58,15 +74,17 @@ public:
     /// with the local player via team view
     unsigned char GetYoungestFOWNodePlayer(const MapPoint pos) const;
 
+    /// Get first found ship of this player at that point or NULL of none
+    noShip* GetShip(const MapPoint pt) const;
+
     /// Schattierungen (vor allem FoW) neu berechnen
     void RecalcAllColors();
 
-    /// Get first found ship of this player at that point or NULL of none
-    noShip* GetShip(const MapPoint pt, const unsigned char player) const;
-
-    /// Get number of soldiers for attacking a point via sea
-    unsigned GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, const MapPoint pt) const;
-
+    /// Makes this a viewer for another player
+    void ChangePlayer(unsigned player);
+private:
+    inline void VisibilityChanged(const MapPoint& pt, unsigned player);
+    void SubscribeToEvents();
 };
 
 #endif // GameWorldViewer_h__

@@ -28,7 +28,7 @@
 #include "iwHelp.h"
 #include "buildings/nobMilitary.h"
 #include "world/GameWorldView.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldBase.h"
 #include "figures/nofPassiveSoldier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
@@ -61,7 +61,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const bu
 	// "Go to next" (building of same type)
     AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
 	//addon military control active? -> show button
-	if(gwv.GetViewer().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
+	if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
 		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
 }
 
@@ -101,7 +101,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
 
     // Draw health above soldiers
-    if (gwv.GetViewer().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS)) { 
+    if (gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS)) {
         unsigned short leftXCoordinate = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2;
 
         // black background for hitpoints
@@ -145,7 +145,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             if(!building->IsDemolitionAllowed())
             {
                 // Messagebox anzeigen
-                DemolitionNotAllowed(gwv.GetViewer().GetGGS());
+                DemolitionNotAllowed(gwv.GetWorld().GetGGS());
             }
             else
             {

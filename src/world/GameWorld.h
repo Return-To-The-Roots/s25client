@@ -25,7 +25,7 @@
 
 class SerializedGameData;
 
-class GameWorld : public GameWorldViewer, public GameWorldGame
+class GameWorld: public GameWorldGame
 {
     public:
 

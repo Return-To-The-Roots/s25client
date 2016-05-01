@@ -23,7 +23,7 @@
 #include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
 
-class GameWorldViewer;
+class GameWorldBase;
 class GlobalGameSettings;
 
 /// Verbindungsstatus beim Verbinden zum Server
@@ -66,7 +66,7 @@ class ClientInterface
         virtual void CI_NewPlayer(const unsigned player_id){}
         virtual void CI_PlayerLeft(const unsigned player_id){}
 
-        virtual void CI_GameStarted(GameWorldViewer& worldViwer){}
+        virtual void CI_GameStarted(GameWorldBase& world){}
 
         virtual void CI_PSChanged(const unsigned player_id, const PlayerState ps){}
         virtual void CI_NationChanged(const unsigned player_id, const Nation nation){}

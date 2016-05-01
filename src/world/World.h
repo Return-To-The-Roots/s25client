@@ -232,6 +232,7 @@ public:
 protected:
     /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
     virtual void AltitudeChanged(const MapPoint pt) = 0;
+    virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
     /// Sets the real road to whether a virtual road for this pt and direction exists
     void ApplyRoad(const MapPoint pt, unsigned char dir);
     MapNode::BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }

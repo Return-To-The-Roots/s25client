@@ -326,6 +326,7 @@ void World::SetVisibility(const MapPoint pt, const unsigned char player, const V
         deletePtr(node.fow[player].object);
     else if(vis == VIS_FOW)
         SaveFOWNode(pt, player, curTime);
+    VisibilityChanged(pt, player);
 }
 
 void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)

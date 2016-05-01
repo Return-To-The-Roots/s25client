@@ -24,6 +24,7 @@
 #include "iwObservate.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
+#include "world/GameWorldBase.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
@@ -159,7 +160,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             {
                 if (j < building_count[i])
                 {
-                    building_available[i][j] = GAMECLIENT.GetLocalPlayer().IsBuildingEnabled(building_icons[i][j]);
+                    building_available[i][j] = gwv.GetViewer().GetPlayer().IsBuildingEnabled(building_icons[i][j]);
                 }
                 else
                 {
@@ -184,18 +185,18 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         }
 
         // Mint and Goldmine
-        if(gwv.GetViewer().GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
+        if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             building_available[1][7] = false;
             building_available[3][0] = false;
         }
 
         // Catapult
-        if (!GAMECLIENT.GetLocalPlayer().CanBuildCatapult()) //-V807
+        if (!gwv.GetViewer().GetPlayer().CanBuildCatapult()) //-V807
             building_available[1][12] = false;
 
         // Charburner
-        if(!gwv.GetViewer().GetGGS().isEnabled(AddonId::CHARBURNER))
+        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             building_available[2][3] = false;
 
         for(unsigned char i = 0; i < TABS_COUNT[tabs.build_tabs]; ++i)
@@ -309,7 +310,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
 
         selected_soldiers_count_sea = 1;
-        available_soldiers_count_sea = gwv.GetViewer().GetAvailableSoldiersForSeaAttackCount(GAMECLIENT.GetPlayerID(), selectedPt);
+        available_soldiers_count_sea = gwv.GetViewer().GetAvailableSoldiersForSeaAttackCount(selectedPt);
 
         AddAttackControls(group, available_soldiers_count_sea);
     }
@@ -339,10 +340,10 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 {
     RTTR_Assert(group);
 
-    if(gwv.GetViewer().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
         unsigned char flag_dir = 0;
-        noFlag* flag = gwv.GetViewer().GetRoadFlag(selectedPt, flag_dir);
+        noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
         if(flag && flag->routes[flag_dir]->GetRoadType() == RoadSegment::RT_NORMAL)
         {
             width = 90;
@@ -354,7 +355,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 void iwAction::DoUpgradeRoad()
 {
     unsigned char flag_dir = 0;
-    noFlag* flag = gwv.GetViewer().GetRoadFlag(selectedPt, flag_dir);
+    noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
     if(flag)
         GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
 }
@@ -617,13 +618,13 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
         } break;
         case 3: // Flagge abreißen
         {
-            NodalObjectType nop = (gwv.GetViewer().GetNO(gwv.GetViewer().GetNeighbour(selectedPt, 1)))->GetType() ;
+            NodalObjectType nop = (gwv.GetWorld().GetNO(gwv.GetViewer().GetNeighbour(selectedPt, Direction::NORTHWEST)))->GetType() ;
             // Haben wir ne Baustelle/Gebäude dran?
             if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
             {
                 // Abreißen?
                 Close();
-                noBaseBuilding* building = gwv.GetViewer().GetSpecObj<noBaseBuilding>(gwv.GetViewer().GetNeighbour(selectedPt, 1));
+                noBaseBuilding* building = gwv.GetWorld().GetSpecObj<noBaseBuilding>(gwv.GetViewer().GetNeighbour(selectedPt, Direction::NORTHWEST));
 
                 // Militärgebäude?
                 if(building->GetGOT() == GOT_NOB_MILITARY)
@@ -632,7 +633,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
                     if(!static_cast<nobMilitary*>(building)->IsDemolitionAllowed())
                     {
                         // Nein, dann Messagebox anzeigen
-                        iwMilitaryBuilding::DemolitionNotAllowed(gwv.GetViewer().GetGGS());
+                        iwMilitaryBuilding::DemolitionNotAllowed(gwv.GetWorld().GetGGS());
                         break;
                     }
 
@@ -694,7 +695,7 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
         case 1: // Straße abreißen
         {
             unsigned char flag_dir = 0;
-            noFlag* flag = gwv.GetViewer().GetRoadFlag(selectedPt, flag_dir);
+            noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
             if(flag)
                 GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);
         } break;

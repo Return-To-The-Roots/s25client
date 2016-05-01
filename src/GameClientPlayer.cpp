@@ -1353,7 +1353,6 @@ bool GameClientPlayer::IsAlly(const unsigned char player) const
         return true;
     else
         return (GetPactState(TREATY_OF_ALLIANCE, player) == GameClientPlayer::ACCEPTED);
-
 }
 
 /// Darf der andere Spieler von mir angegriffen werden?

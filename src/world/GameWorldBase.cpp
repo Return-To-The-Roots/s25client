@@ -23,6 +23,8 @@
 #include "figures/nofPassiveSoldier.h"
 #include "nodeObjs/noMovable.h"
 #include "nodeObjs/noFlag.h"
+#include "notifications/NodeNote.h"
+#include "notifications/PlayerNodeNote.h"
 #include "lua/LuaInterfaceGame.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
@@ -164,15 +166,15 @@ bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigne
 
 bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
 {
-    if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
+    const noBase* obj = GetNO(pt);
+    if(obj->GetType() == NOP_BUILDING || obj->GetType() == NOP_BUILDINGSITE)
     {
-        if( (GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() >= BLD_BARRACKS &&
-                GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() <= BLD_FORTRESS) ||
-                GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == BLD_HEADQUARTERS ||
-                GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == BLD_HARBORBUILDING)
+        BuildingType buildingType = static_cast<const noBaseBuilding*>(obj)->GetBuildingType();
+        if( (buildingType >= BLD_BARRACKS && buildingType <= BLD_FORTRESS) ||
+             buildingType == BLD_HEADQUARTERS ||
+             buildingType == BLD_HARBORBUILDING)
             return true;
     }
-
 
     return false;
 }
@@ -252,10 +254,16 @@ Point<int> GameWorldBase::GetNodePos(const MapPoint pt) const
     return result;
 }
 
+void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player)
+{
+    GetNotifications().publish(PlayerNodeNote(PlayerNodeNote::Visibility, pt, player));
+}
+
 /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
 void GameWorldBase::AltitudeChanged(const MapPoint pt)
 {
     RecalcBQAroundPointBig(pt);
+    GetNotifications().publish(NodeNote(NodeNote::Altitude, pt));
 }
 
 void GameWorldBase::RecalcBQAroundPoint(const MapPoint pt)

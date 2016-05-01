@@ -35,8 +35,7 @@
 #include <boost/filesystem.hpp>
 
 GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
-    GameWorldBase(players, gameSettings, em), // Init virtual base class
-    GameWorldViewer(players, gameSettings, em), GameWorldGame(players, gameSettings, em)
+    GameWorldGame(players, gameSettings, em)
 {}
 
 /// Lädt eine Karte
@@ -85,9 +84,6 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     CreateTradeGraphs();
-
-    GetTerrainRenderer().GenerateOpenGL(*this);
-
     return true;
 }
 
@@ -164,8 +160,6 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
             RecalcBQ(MapPoint(x, y));
         }
     }
-
-    GetTerrainRenderer().GenerateOpenGL(*this);
 }
 
 
