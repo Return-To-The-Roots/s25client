@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
     // And nothing should be left
     BOOST_CHECK(!evMgr.IsEventActive(&obj, 42));
     BOOST_CHECK(!evMgr.ObjectHasEvents(&obj));
-};
+}
 
 BOOST_AUTO_TEST_CASE(AddSuspendedEvent)
 {
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(AddSuspendedEvent)
     evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 1u);
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.front(), 42u);
-};
+}
 
 BOOST_AUTO_TEST_CASE(MultipleEvents)
 {
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(MultipleEvents)
     evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 3u);
     BOOST_REQUIRE_EQUAL(obj.handledEventIds[2], 44u);
-};
+}
 
 class TestLogKill: public TestEventHandler
 {
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(KillList)
     evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(TestLogKill::killNum, 1u);
     BOOST_REQUIRE(!evMgr.ObjectIsInKillList(obj));
-};
+}
 
 class TestRemoveEvent: public TestEventHandler
 {
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(RemoveEvent)
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 2u);
     BOOST_REQUIRE_EQUAL(obj.handledEventIds[1], 42u);
     BOOST_CHECK(!evMgr.ObjectHasEvents(&obj));
-};
+}
 
 BOOST_AUTO_TEST_CASE(InvalidEvent)
 {
@@ -214,6 +214,6 @@ BOOST_AUTO_TEST_CASE(InvalidEvent)
     BOOST_CHECK_THROW(evMgr.AddEvent(NULL, 200, 0, 150), RTTR_AssertError);
     RTTR_AssertEnableBreak = true;
 #endif
-};
+}
 
 BOOST_AUTO_TEST_SUITE_END()
