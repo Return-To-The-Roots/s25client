@@ -188,7 +188,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
                         case JOB_FISHER:
                         {
                             const std::string msg = (job_ == JOB_STONEMASON) ? _("No more stones in range") : _("No more fishes in range");
-                            SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), msg, PMC_GENERAL, *workplace));
+                            SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), msg, PMC_GENERAL, *workplace));
                             outOfRessourcesMsgSent = true;
                             workplace->SetProductivityToZero();
                             break;

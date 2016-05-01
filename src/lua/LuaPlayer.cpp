@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaPlayer.h"
-#include "GameClient.h"
+#include "EventManager.h"
 #include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -67,7 +67,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     if(notify)
     {
         player.SendPostMessage(new PostMsgWithBuilding(
-            GAMECLIENT.GetGFNumber(),
+            player.GetGameWorld()->GetEvMgr().GetCurrentGF(),
             _(BUILDING_NAMES[bld]),
             PMC_GENERAL,
             bld,

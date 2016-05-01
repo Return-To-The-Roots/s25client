@@ -283,7 +283,7 @@ void noShip::HandleEvent(const unsigned int id)
             state = STATE_EXPEDITION_WAITING;
 
             // Spieler benachrichtigen
-            SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A ship is ready for an expedition."), PMC_GENERAL, *this));
+            SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A ship is ready for an expedition."), PMC_GENERAL, *this));
             gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, player, pos));
             break;
         case STATE_EXPLORATIONEXPEDITION_LOADING:
@@ -426,7 +426,7 @@ void noShip::Driven()
     {
         // Send message if necessary
         if(gwg->GetPlayer(player).ShipDiscoveredHostileTerritory(enemy_territory_discovered))
-            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), _("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
+            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
     }
 
     switch(state)
@@ -713,7 +713,7 @@ void noShip::HandleState_ExpeditionDriving()
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A ship has reached the destination of its expedition."), PMC_GENERAL, *this));
+                SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A ship has reached the destination of its expedition."), PMC_GENERAL, *this));
                 gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, player, pos));
             }
         } break;

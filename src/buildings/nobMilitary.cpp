@@ -690,7 +690,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
     {
-        SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building occupied"), PMC_MILITARY, *this));
+        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building occupied"), PMC_MILITARY, *this));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -1002,8 +1002,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->MilitaryBuildingCaptured(pos, player);
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
-    SendPostMessage(old_player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building lost"), PMC_MILITARY, *this));
-    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building captured"), PMC_MILITARY, *this));
+    SendPostMessage(old_player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building lost"), PMC_MILITARY, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building captured"), PMC_MILITARY, *this));
 
     // ggf. Fenster schließen vom alten Spieler
     gwg->ImportantObjectDestroyed(pos);
@@ -1228,7 +1228,7 @@ void nobMilitary::HitOfCatapultStone()
         RegulateTroops();
 
     // Post verschicken
-    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("A catapult is firing upon us!"), PMC_MILITARY, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("A catapult is firing upon us!"), PMC_MILITARY, *this));
 }
 
 /**

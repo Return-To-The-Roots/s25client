@@ -145,7 +145,7 @@ GoodType nofMetalworker::GetOrderedTool()
         --owner.tools_ordered[tool];
 
         if (ToolsOrderedTotal() == 0)
-            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), _("Completed the ordered amount of tools."), PMC_GENERAL));
+            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PMC_GENERAL));
 
         iwTools::UpdateOrders();
         return TOOLS_SETTINGS_IDS[tool];

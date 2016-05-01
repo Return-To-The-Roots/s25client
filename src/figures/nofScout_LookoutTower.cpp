@@ -65,7 +65,7 @@ void nofScout_LookoutTower::WorkplaceReached()
     gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Lookout-tower occupied"), PMC_MILITARY, *workplace));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PMC_MILITARY, *workplace));
 }
 
 bool nofScout_LookoutTower::AreWaresAvailable()

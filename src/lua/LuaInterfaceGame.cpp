@@ -260,12 +260,12 @@ void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title,
 // Must not be PostMessage as this is a windows define :(
 void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg)
 {
-    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_OTHER));
+    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PMC_OTHER));
 }
 
 void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
 {
-    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
+    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PMC_OTHER, gw.MakeMapPoint(Point<int>(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)

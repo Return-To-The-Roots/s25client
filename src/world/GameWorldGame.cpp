@@ -422,7 +422,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if (newBuilt && sizeChanges[i] < 0)
-            GetPostMgr().SendMsg(i, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Lost land by this building"), PMC_MILITARY, building));
+            GetPostMgr().SendMsg(i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PMC_MILITARY, building));
     }
 
     for(int y = region.y1; y < region.y2; ++y)
