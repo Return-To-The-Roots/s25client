@@ -19,9 +19,9 @@
 #include "nobStorehouse.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
+#include "EventManager.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
-class SerializedGameData;
 
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)

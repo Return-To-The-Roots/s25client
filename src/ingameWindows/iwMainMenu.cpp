@@ -100,7 +100,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 2: // Werkzeugproduktion
         {
-            WINDOWMANAGER.Show(new iwTools);
+            WINDOWMANAGER.Show(new iwTools(gwv));
         } break;
         case 3: // Statistik
         {

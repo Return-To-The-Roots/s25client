@@ -23,6 +23,7 @@
 #include <vector>
 
 class GameWorldViewer;
+class GameWorldBase;
 struct RoadBuildState;
 class TerrainRenderer;
 class noBaseBuilding;
@@ -82,6 +83,7 @@ public:
     ~GameWorldView();
 
     GameWorldViewer& GetViewer() const { return gwv; }
+    GameWorldBase& GetWorld() const;
 
     void SetPos(const Point<int>& newPos) { pos = newPos; }
     Point<int> GetPos() const { return pos; }

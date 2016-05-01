@@ -20,19 +20,25 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "notifications/Subscribtion.h"
+
+class GameWorldView;
+class GameWorldBase;
 
 /// Fenster mit den Militäreinstellungen.
 class iwTools : public IngameWindow
 {
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
-
     public:
 
-        iwTools();
+        iwTools(GameWorldView& gwv);
         ~iwTools() override;
 
     private:
+        GameWorldBase& gwb;
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        bool settings_changed;
+        bool shouldUpdateTexts;
+        Subscribtion toolSubscription;
 
         /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
         void UpdateSettings();
@@ -43,13 +49,8 @@ class iwTools : public IngameWindow
         void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
         void Msg_Timer(const unsigned int ctrl_id) override;
 
-        //qx:tools
-        unsigned int m_Updated;
-        static unsigned int m_UpdateReq;
         void UpdateTexts();
         void Msg_PaintBefore() override;
-    public:
-        static void UpdateOrders();
 };
 
 #endif // !iwTOOLS_H_INCLUDED

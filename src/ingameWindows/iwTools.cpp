@@ -22,13 +22,18 @@
 #include "GameClient.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlProgress.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldBase.h"
+#include "notifications/NotificationManager.h"
+#include "notifications/ToolNote.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
+#include <boost/lambda/lambda.hpp>
 #include <iostream>
 
-iwTools::iwTools()
+iwTools::iwTools(GameWorldView& gwv)
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
-      settings_changed(false)
+      gwb(gwv.GetWorld()), settings_changed(false)
 {
     // Einzelne Balken
     AddProgress( 0, 17,  25, 132, 26, TC_GREY, 141, 140, 10, _("Tongs"), 4, 4, 0, _("Less often"), _("More often"));
@@ -56,7 +61,7 @@ iwTools::iwTools()
             AddDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, str.str(), NormalFont, COLOR_YELLOW);
         }
     }
-    m_Updated = GAMECLIENT.GetGFNumber();
+    shouldUpdateTexts = false;
 
     // Info
     AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
@@ -69,6 +74,8 @@ iwTools::iwTools()
 
     // Netzwerk-Übertragungs-Timer
     AddTimer(14, 2000);
+
+    toolSubscription = gwb.GetNotifications().subscribe<ToolNote>(boost::lambda::var(shouldUpdateTexts) = true);
 }
 
 iwTools::~iwTools()
@@ -91,7 +98,6 @@ void iwTools::TransmitSettings()
     }
 }
 
-// qx:tools
 void iwTools::UpdateTexts()
 {
     if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
@@ -105,18 +111,13 @@ void iwTools::UpdateTexts()
         }
     }
 }
-unsigned int iwTools::m_UpdateReq = 0;
-void iwTools::UpdateOrders()
-{
-    m_UpdateReq = GAMECLIENT.GetGFNumber();
-}
 
 void iwTools::Msg_PaintBefore()
 {
-    if (m_Updated < m_UpdateReq)
+    if (shouldUpdateTexts)
     {
         UpdateTexts();
-        m_Updated = m_UpdateReq;
+        shouldUpdateTexts = false;
     }
 }
 
