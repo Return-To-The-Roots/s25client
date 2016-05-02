@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
     mgr.publish(TestNote("Test"));
     BOOST_CHECK_EQUAL(notes1.size(), 2u);
     BOOST_CHECK_EQUAL(notes2.size(), 1u);
-};
+}
 
 BOOST_AUTO_TEST_CASE(DestroyManager)
 {
@@ -96,6 +96,6 @@ BOOST_AUTO_TEST_CASE(DestroyManager)
         // Manager goes out of scope
     }
     // But we shall not crash when subscribtion goes out of scope
-};
+}
 
 BOOST_AUTO_TEST_SUITE_END()
