@@ -22,7 +22,7 @@
 #include "KeyEvent.h"
 #include <vector>
 
-/// Listet verfügbare Videomodi auf
+/// Window size or resolution
 struct VideoMode
 {
     unsigned short width;
@@ -42,16 +42,13 @@ public:
     /// Funktion zum Auslesen des Treibernamens.
     virtual const char* GetName() const = 0;
 
-    /// Treiberinitialisierungsfunktion.
     virtual bool Initialize() = 0;
 
-    /// Treiberaufräumfunktion.
     virtual void CleanUp() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
     virtual bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
 
-    /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
     virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
 
     /// Schliesst das Fenster.
@@ -89,13 +86,12 @@ public:
     /// Funktion zum Setzen der Y-Koordinate der Maus.
     virtual void SetMousePosY(int y) = 0;
 
-    /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
+    /// Return true when left mouse button is pressed
     virtual bool GetMouseStateL() const = 0;
 
-    /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
+    /// Return true when right mouse button is pressed
     virtual bool GetMouseStateR() const = 0;
 
-    //
     virtual unsigned short GetScreenWidth()  const = 0;
     virtual unsigned short GetScreenHeight() const = 0;
     virtual bool IsFullscreen() const = 0;
@@ -103,10 +99,9 @@ public:
     /// Get state of the modifier keys
     virtual KeyEvent GetModKeyState() const = 0;
 
-    /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+    /// Get pointer to window (device-dependent!), HWND unter Windows
     virtual void* GetMapPointer() const = 0;
 
-    /// prüft auf Initialisierung.
     virtual bool IsInitialized() = 0;
 };
 

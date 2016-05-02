@@ -88,7 +88,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             // Ggf. Spielerfarbe mit einberechnen, falls das von einem Spieler ein Territorium ist
             if(owner)
             {
-                // Gebäude?
+                // Building?
                 GO_Type got = gwv.GetNO(pt)->GetGOT();
                 FOW_Type fot = gwv.GetFOWObject(pt, viewing_player)->GetType();
 
@@ -96,7 +96,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
                     got == GOT_NOB_STOREHOUSE || got == GOT_NOB_SHIPYARD || got == GOT_NOB_HARBORBUILDING ||
                     got == GOT_NOB_HQ || got == GOT_BUILDINGSITE)) || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
                     drawn_object = DO_BUILDING;
-                /// Straßen?
+                /// Roads?
                 else if(IsRoad(pt, visibility))
                     drawn_object = DO_ROAD;
                 // ansonsten normales Territorium?
@@ -105,7 +105,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 
                 if(drawn_object == DO_BUILDING && houses)
                     color = BUILDING_COLOR;
-                /// Straßen?
+                /// Roads?
                 else if(drawn_object == DO_ROAD && roads)
                     color = ROAD_COLOR;
                 // ansonsten normales Territorium?
@@ -134,7 +134,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 }
 
 /**
- *  Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
+ *  Calculate the normal terrain color for a given point and triangle
  */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
@@ -157,7 +157,7 @@ unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 }
 
 /**
- *  Prüft ob an einer Stelle eine Straße gezeichnet werden muss
+ *  Check if there is a road at that point
  */
 bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 {
@@ -194,15 +194,13 @@ void IngameMinimap::UpdateNode(const MapPoint pt)
 }
 
 /**
- *  Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
- *  in dem Falle: Karte aktualisieren
+ *  Additional stuff we need to do before drawing (in this case: update the map)
  */
 void IngameMinimap::BeforeDrawing()
 {
     // Ab welcher Knotenanzahl (Teil der Gesamtknotenanzahl) die Textur komplett neu erstellt werden soll
     static const unsigned MAX_NODES_UPDATE_DENOMINATOR = 2; // (2 = 1/2, 3 = 1/3 usw.)
 
-                                                            // überhaupt änderungen nötig?
     if(!nodesToUpdate.empty())
     {
         // Komplette Textur neu erzeugen, weil es zu viele Knoten sind?
@@ -210,7 +208,6 @@ void IngameMinimap::BeforeDrawing()
         {
             // Ja, alles neu erzeugen
             UpdateAll();
-            // Alles Aktualisierungen wieder zurücksetzen
             for(MapPoint p(0, 0); p.y < map_height; p.y++)
                 for(p.x = 0; p.x < map_width; p.x++)
                     nodes_updated[GetMMIdx(p)] = false;
@@ -225,7 +222,6 @@ void IngameMinimap::BeforeDrawing()
                     map.tex_setPixel((it->x * 2 + t + (it->y & 1)) % (map_width * 2), it->y, GetRed(color), GetGreen(color),
                         GetBlue(color), GetAlpha(color));
                 }
-                // Jetzt muss er nicht mehr geändert werden
                 nodes_updated[GetMMIdx(*it)] = false;
             }
         }
@@ -244,8 +240,7 @@ void IngameMinimap::UpdateAll()
 }
 
 /**
- *  Alle Punkte Updaten, bei denen das DrawnObject
- *  gleich dem übergebenen drawn_object ist
+ *  Update all nodes with the given drawn object
  */
 void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 {
@@ -257,10 +252,10 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
             MapPoint pt(x, y);
             for(unsigned t = 0; t < 2; ++t)
             {
-                if(dos[GetMMIdx(pt)] == drawn_object || // das gewünschte Objekt
-                    (drawn_object == DO_PLAYER && // bei DO_PLAYER auf evtl. nicht gezeichnete Häuser und Straßen
-                        ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) || // achten, da dort auch nur das Player-
-                            (dos[GetMMIdx(pt)] == DO_ROAD && !roads)))) // Territorium zu sehen ist!
+                if(dos[GetMMIdx(pt)] == drawn_object ||
+                    (drawn_object == DO_PLAYER && // for DO_PLAYER check for not drawn buildings or roads as there is only the player territory visible
+                        ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) ||
+                            (dos[GetMMIdx(pt)] == DO_ROAD && !roads))))
                 {
                     unsigned color = CalcPixelColor(pt, t);
                     map.tex_setPixel((x * 2 + t + (y & 1)) % (map_width * 2), y, GetRed(color), GetGreen(color),

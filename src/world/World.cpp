@@ -52,14 +52,13 @@ void World::Init(const unsigned short width, const unsigned short height, Landsc
     nodes.resize(width_ * height_);
     militarySquares.Init(width, height);
 
-    // Dummy-Hafenpos für Index 0 einfügen
-    // -> the dummy is so that the harbor "0" might be used for ships with no particular destination
+    // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());
 }
 
 void World::Unload()
 {
-    // Straßen sammeln und alle dann vernichten
+    // Collect and destroy roads
     std::set<RoadSegment*> roadsegments;
     for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
@@ -163,7 +162,6 @@ MapPoint World::GetNeighbour2(const MapPoint pt, unsigned dir) const
     return MakeMapPoint(::GetNeighbour2(Point<int>(pt), dir));
 }
 
-/// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
 unsigned World::CalcDistance(const int x1, const int y1, const int x2, const int y2) const
 {
     int dx = ((x1 - x2) * 2) + (y1 & 1) - (y2 & 1);
@@ -295,7 +293,7 @@ const FOWObject* World::GetFOWObject(const MapPoint pt, const unsigned spectator
         return noFowObj;
 }
 
-/// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
+/// Returns the GOT if an object or GOT_NOTHING if none
 GO_Type World::GetGOT(const MapPoint pt) const
 {
     noBase* obj = GetNode(pt).obj;
@@ -325,14 +323,13 @@ void World::SetVisibility(const MapPoint pt, const unsigned char player, const V
 
     node.fow[player].visibility = vis;
     if(vis == VIS_VISIBLE)
-        deletePtr(node.fow[player].object);  // Etwaige FOW-Objekte zerstören
+        deletePtr(node.fow[player].object);
     else if(vis == VIS_FOW)
         SaveFOWNode(pt, player, curTime);
 }
 
 void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
 {
-    // Höhe verändern
     GetNodeInt(pt).altitude = altitude;
 
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
@@ -348,7 +345,7 @@ bool World::IsPlayerTerritory(const MapPoint pt) const
 {
     const unsigned char owner = GetNode(pt).owner;
 
-    // Umliegende Punkte dürfen keinem anderen gehören
+    // Neighbour nodes must belong to this player
     for(unsigned i = 0; i < 6; ++i)
     {
         if(GetNeighbourNode(pt, i).owner != owner)
@@ -422,7 +419,7 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const bool visual, const bool f
                 val = BQ_FLAG;
         }
 
-        // 2. Außenschale prüfen ( keine Hütten werden ab Steigung 3 )
+        // Check radius-2 nodes (no huts above altiude diff of 2)
         for(unsigned i = 0; i < 12; ++i)
         {
             if((th = GetNode(GetNeighbour2(pt, i)).altitude) > ph)
@@ -444,7 +441,7 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const bool visual, const bool f
             }
         }
 
-        // 1. Auäcnschale ( käcnen Flaggen werden ab Steigung 4)
+        // Direct neighbours (can become flags at altidude diff of 4)
         for(unsigned i = 0; i < 6; ++i)
         {
             if((th = GetNeighbourNode(pt, i).altitude) > ph)
@@ -488,14 +485,14 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const bool visual, const bool f
     {
         for(unsigned i = 0; i < 6; ++i)
         {
-            // Baum --> rundrum Hütte
+            // Baum --> around = hut
             if(GetNO(GetNeighbour(pt, i))->GetType() == NOP_TREE)
             {
                 val = BQ_HUT;
                 break;
             }
 
-            /*// StaticObject --> rundrum Flagge/Hütte
+            /*// StaticObject --> rundrum flag/hut
             else if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_OBJECT)
             {
             const noStaticObject *obj = GetSpecObj<noStaticObject>(GetXA(x, y, i), GetYA(x, y, i));
@@ -538,7 +535,7 @@ BuildingQuality World::CalcBQ(const MapPoint pt, const bool visual, const bool f
     if(GetNO(GetNeighbour(pt, 5))->GetBM() == noBase::BM_FLAG)
         return BQ_NOTHING;
 
-    // Gebäude
+    // Buildings
     if(val == BQ_CASTLE)
     {
         for(unsigned i = 0; i < 12; ++i)
@@ -656,21 +653,12 @@ TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
     throw std::logic_error("Invalid direction");
 }
 
-
-/**
- *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
- *  in Richtung DIR (Vorwärts).
- */
 TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
 {
     RTTR_Assert(dir < 6);
     return (dir == 0) ? GetTerrainAround(pt, 5) : GetTerrainAround(pt, dir - 1);
 }
 
-/**
- *  Gibt das Terrain zurück, über das ein Mensch/Tier laufen müsste, von X, Y
- *  in Richtung DIR (Rückwärts).
- */
 TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
 {
     RTTR_Assert(dir < 6);
@@ -697,7 +685,7 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
             fow.roads[i] = 0;
     }
 
-    // Besitzverhältnisse speichern, damit auch die Grenzsteine im FoW gezeichnet werden können
+    // Store ownership so FoW boundary stones can be drawn
     fow.owner = GetNode(pt).owner;
     // Grenzsteine merken
     fow.boundary_stones = GetNode(pt).boundary_stones;
@@ -736,7 +724,6 @@ bool World::IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) c
     return false;
 }
 
-/// Gibt den Punkt eines bestimmtes Meeres um den Hafen herum an, sodass Schiffe diesen anfahren können
 MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const
 {
     RTTR_Assert(harbor_id);
@@ -753,26 +740,19 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
     return MapPoint(0xFFFF, 0xFFFF);
 }
 
-
-/**
- *  liefert den Straßen-Wert an der Stelle X, Y (berichtigt).
- */
 unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
     RTTR_Assert(dir < 3);
 
     const MapNode& node = GetNode(pt);
-    // Entweder muss es eine richtige Straße sein oder es müssen auch visuelle Straßen erlaubt sein
+    // It must be a real road or virtual roads must be allowed
     if(all || node.roads_real[(unsigned)dir])
         return node.roads[(unsigned)dir];
 
     return 0;
 }
 
-/**
- *  liefert den Straßen-Wert um den Punkt X, Y.
- */
 unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
 {
     RTTR_Assert(dir < 6);
@@ -795,9 +775,6 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
     return GetNode(pt).fow[viewing_player].roads[dir];
 }
 
-/**
- *  setzt den virtuellen Straßen-Wert an der Stelle X, Y (berichtigt).
- */
 void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 3);
@@ -805,9 +782,6 @@ void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char t
     GetNodeInt(pt).roads[dir] = type;
 }
 
-/**
- *  setzt den virtuellen Straßen-Wert um den Punkt X, Y.
- */
 void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 6);
@@ -830,7 +804,6 @@ void World::RemoveCatapultStone(CatapultStone* cs)
     catapult_stones.remove(cs);
 }
 
-/// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
 MapPoint World::GetHarborPoint(const unsigned harbor_id) const
 {
     RTTR_Assert(harbor_id);
@@ -838,10 +811,9 @@ MapPoint World::GetHarborPoint(const unsigned harbor_id) const
     return harbor_pos[harbor_id].pos;
 }
 
-/// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer hat
 unsigned short World::IsCoastalPoint(const MapPoint pt) const
 {
-    // Punkt muss selbst zu keinem Meer gehören
+    // Point itself must not be a sea
     if(GetNode(pt).sea_id)
         return 0;
 
@@ -849,13 +821,13 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
     if(IsWaterPoint(pt))
         return 0;
 
-    // Um den Punkt herum muss ein gültiger Meeres Punkt sein
+    // Surrounding must be valid sea
     for(unsigned i = 0; i < 6; ++i)
     {
         unsigned short sea_id = GetNeighbourNode(pt, i).sea_id;
         if(sea_id)
         {
-            // Dieses Meer schiffbar (todo: andere Kritierien wie Hafenplätze etc.)?
+            // Check size (TODO: Others checks like harbor spots?)
             if(GetSeaSize(sea_id) > 20)
                 return sea_id;
         }

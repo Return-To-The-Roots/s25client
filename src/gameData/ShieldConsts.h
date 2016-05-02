@@ -18,7 +18,7 @@
 #ifndef ShieldConsts_h__
 #define ShieldConsts_h__
 
-/// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
+/// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das rÃ¶mische normale Schild fÃ¼r
 /// die Warensysteme usw
 inline GoodType ConvertShields(const GoodType& good)
 {
@@ -27,7 +27,7 @@ inline GoodType ConvertShields(const GoodType& good)
         good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
 }
 
-/// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
+/// Umgekehrte Konvertierung: Gibt den Schildtyp fÃ¼r jede Nation an
 const boost::array<GoodType, NAT_COUNT> SUPPRESS_UNUSED SHIELD_TYPES =
 {{
     GD_SHIELDAFRICANS,

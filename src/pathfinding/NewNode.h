@@ -22,7 +22,7 @@
 #include "pathfinding/OpenListBinaryHeap.h"
 #include <set>
 
-/// Konstante für einen ungültigen Vorgängerknoten
+/// Konstante fÃ¼r einen ungÃ¼ltigen VorgÃ¤ngerknoten
 const unsigned INVALID_PREV = 0xFFFFFFFF;
 
 /// Class for a node used by the free pathfinding
@@ -33,15 +33,15 @@ struct NewNode
     /// Wegkosten, die vom Startpunkt bis zu diesem Knoten bestehen
     unsigned way;
     unsigned wayEven;
-    /// Die Richtung, über die dieser Knoten erreicht wurde
+    /// Die Richtung, Ã¼ber die dieser Knoten erreicht wurde
     unsigned char dir;
     unsigned char dirEven;
-    /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
+    /// ID (gebildet aus y*Kartenbreite+x) des VorgÃ¤nngerknotens
     unsigned prev;
     unsigned prevEven;
-    /// Iterator auf Position in der Prioritätswarteschlange (std::set), freies Pathfinding
+    /// Iterator auf Position in der PrioritÃ¤tswarteschlange (std::set), freies Pathfinding
     std::set<PathfindingPoint>::iterator it_p; //-V730_NOINIT
-    /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
+    /// Wurde Knoten schon besucht (fÃ¼r A*-Algorithmus), wenn lastVisited == currentVisit
     unsigned lastVisited;
     unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
     MapPoint mapPt;

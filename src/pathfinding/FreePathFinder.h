@@ -51,7 +51,7 @@ public:
         std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
         FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
-    /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
+    /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurÃ¼ck
     template<class TNodeChecker>
     bool CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, const TNodeChecker& nodeChecker, MapPoint* dest) const;
 

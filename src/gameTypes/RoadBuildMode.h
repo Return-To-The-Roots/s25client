@@ -20,9 +20,9 @@
 
 enum RoadBuildMode
 {
-    RM_DISABLED, // kein Straﬂenbau
-    RM_NORMAL, // Bau einer normalen Straﬂe
-    RM_BOAT // Bau einer Wasserstraﬂe
+    RM_DISABLED, // No building
+    RM_NORMAL,   // Building regular road
+    RM_BOAT      // Building water road
 };
 
 #endif // RoadBuildMode_h__

@@ -58,7 +58,7 @@ namespace FW
 
     bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
     {
-        // Einlagern darf nicht verboten sein, Bootstypen zu normalen Trägern machen
+        // Boat carriers are normal figures in the wh
         Job job = type;
         if(job == JOB_BOATCARRIER)
             job = JOB_HELPER;

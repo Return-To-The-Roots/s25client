@@ -76,7 +76,7 @@ void FreePathFinder::IncreaseCurrentVisit()
         currentVisit++;
 }
 
-/// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf allgemeinen Terrain (ohne Straßen), für Wegbau und frei herumlaufende Berufe
+/// Pathfinder ( A* ), O(v lg v) --> Normal terrain (ignoring roads) for road building and free walking jobs
 bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
                                                    const bool randomRoute, const unsigned maxLength,
                                                    std::vector<unsigned char>* route, unsigned* length, unsigned char* firstDir,
@@ -106,19 +106,17 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     bool prevStepEven = true; //flips between even and odd 
     unsigned stepsTilSwitch = 1;
 
-    // Anfangsknoten einfügen
+    // Add start node
     unsigned startId = gwb_.GetIdx(start);
     todo.push_back(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0));
-    // Und mit entsprechenden Werten füllen
-    //pf_nodes[start_id].it_p = ret.first;
+    // And init it
     nodes[startId].prevEven = INVALID_PREV;
     nodes[startId].lastVisitedEven = currentVisit;
     nodes[startId].wayEven = 0;
     nodes[startId].dirEven = 0;
     //LOG.lprintf("pf: from %i, %i to %i, %i \n", x_start, y_start, x_dest, y_dest);
 
-    // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
-    // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+    // Start at random dir (so different jobs may use different roads)
     const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
 
     while(!todo.empty())
@@ -133,7 +131,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         //prevstepEven ? LOG.lprintf("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.lprintf("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
         stepsTilSwitch--;
 
-        // Knoten mit den geringsten Wegkosten auswählen
+        // Get node with lowest cost
         PathfindingPoint best = *todo.begin();
         // Knoten behandelt --> raus aus der todo Liste
         todo.erase(todo.begin());
@@ -152,14 +150,14 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         if(destId == bestId)
         {
             // Ziel erreicht!
-            // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
+            // Return the values if requested
             const unsigned routeLen = prevStepEven ? nodes[bestId].wayEven : nodes[bestId].way;
             if(length)
                 *length = routeLen;
             if(route)
                 route->resize(routeLen);
 
-            // Route rekonstruieren und ggf. die erste Richtung speichern, falls gewünscht
+            // Reconstruct route and get first direction (if requested)
             bool alternate = prevStepEven;
             for(unsigned z = routeLen - 1; bestId != startId; --z)
             {
@@ -198,8 +196,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                 continue;
             }
 
-            // Das Ziel wollen wir auf jedenfall erreichen lassen, daher nur diese zusätzlichen
-            // Bedingungen, wenn es nicht das Ziel ist
+            // Check additional constraints for non-destination points
             if(nbId != destId && ((prevStepEven && IsNodeOK) || (!prevStepEven && IsNodeOKAlternate)))
             {
                 if(prevStepEven)
@@ -248,7 +245,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                 }
             }
 
-            // Zusätzliche Bedingungen, auch die das letzte Stück zum Ziel betreffen
+            // Conditions for all nodes
             if(IsNodeToDestOk)
             {
                 if(!IsNodeToDestOk(gwb_, neighbourPos, i, param))

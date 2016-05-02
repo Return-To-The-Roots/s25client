@@ -16,7 +16,7 @@
 #ifndef BuildingQuality_h__
 #define BuildingQuality_h__
 
-// Bauqualitäten
+/// Buildingqualities
 enum BuildingQuality
 {
     BQ_NOTHING = 0,

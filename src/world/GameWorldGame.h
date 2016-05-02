@@ -33,22 +33,20 @@ class noRoadNode;
 class nofActiveSoldier;
 class nofAttacker;
 
-/// "Interface-Klasse" f¸r das Spiel
+/// "Interface-Klasse" f√ºr das Spiel
 class GameWorldGame : public virtual GameWorldBase
 {
-    /// Zerstˆrt Spielerteile auf einem Punkt, wenn der Punkt dem Spieler nun nich mehr gehˆrt
+    /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
 
-    /// Pr¸ft, ob auf diesem Punkt Deko-Objekte liegen, die f¸r den Wegbau entfernt werden kˆnnen
+    /// Return if there are deco-objects that can be removed when building roads
     bool IsObjectionableForRoad(const MapPoint pt);
 
-
-    /// Punkt vollst‰ndig sichtbar?
     bool IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const;
-    /// Pr¸ft, ob auf angegebenen Punkt sich ein Sp‰her von player befindet
+    /// Return if there is a scout of this player at that node
     bool IsScoutingFigureOnNode(const MapPoint pt, const unsigned player, const unsigned distance) const;
-    /// Berechnet die Sichtbarkeit eines Punktes neu f¸r den angegebenen Spieler
-    /// exception ist ein Geb‰ude (Sp‰hturm, Milit‰rgeb‰ude), was nicht mit in die Berechnugn einbezogen
+    /// Berechnet die Sichtbarkeit eines Punktes neu f√ºr den angegebenen Spieler
+    /// exception ist ein Geb√§ude (Sp√§hturm, Milit√§rgeb√§ude), was nicht mit in die Berechnugn einbezogen
     /// werden soll, z.b. weil es abgerissen wird
     void RecalcVisibility(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception);
     /// Setzt Punkt auf jeden Fall auf sichtbar
@@ -69,34 +67,34 @@ public:
     GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldGame() override;
 
-    /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verf¸ung
+    /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verf√ºung
     inline GameInterface* GetGameInterface() const { return gi; }
 
-    /// Pr¸ft, ob dieser Punkt von Menschen betreten werden kann
+    /// Pr√ºft, ob dieser Punkt von Menschen betreten werden kann
     bool IsNodeForFigures(const MapPoint pt) const;
-    /// Kann dieser Punkt von auf Straﬂen laufenden Menschen betreten werden? (K‰mpfe!)
+    /// Kann dieser Punkt von auf Stra√üen laufenden Menschen betreten werden? (K√§mpfe!)
     bool IsRoadNodeForFigures(const MapPoint pt, const unsigned char dir);
-    /// L‰sst alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
+    /// L√§sst alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
     void StopOnRoads(const MapPoint pt, const unsigned char dir = 0xff);
 
-    /// Sagt Bescheid, dass der Punkt wieder freigeworden ist und l‰sst ggf. Figuren drumherum wieder weiterlaufen
+    /// Sagt Bescheid, dass der Punkt wieder freigeworden ist und l√§sst ggf. Figuren drumherum wieder weiterlaufen
     void RoadNodeAvailable(const MapPoint pt);
 
     /// Flagge an x,y setzen, dis_dir ist der aus welche Richtung der Weg kommt, wenn man einen Weg mit Flagge baut
     /// kann ansonsten auf 255 gesetzt werden
     void SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 255);
-    /// Flagge soll zerstrˆrt werden
+    /// Flagge soll zerstr√∂rt werden
     void DestroyFlag(const MapPoint pt);
     /// Baustelle setzen
     void SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
-    /// Geb‰ude bzw Baustelle abreiﬂen
+    /// Geb√§ude bzw Baustelle abrei√üen
     void DestroyBuilding(const MapPoint pt, const unsigned char playe);
 
-    /// Wegfindung f¸r Menschen im Straﬂennetz
+    /// Wegfindung f√ºr Menschen im Stra√üennetz
     unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL, const RoadSegment* const forbidden = NULL);
-    /// Wegfindung f¸r Waren im Straﬂennetz
+    /// Wegfindung f√ºr Waren im Stra√üennetz
     unsigned char FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL, unsigned max = std::numeric_limits<unsigned>::max());
-    /// Pr¸ft, ob eine Schiffsroute noch G¸ltigkeit hat
+    /// Pr√ºft, ob eine Schiffsroute noch G√ºltigkeit hat
     bool CheckShipRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos,
         MapPoint* dest);
     /// Find a route for trade caravanes
@@ -105,72 +103,72 @@ public:
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns destination pt
     bool CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, unsigned startRouteIdx, unsigned char player, MapPoint* dest = NULL) const;
 
-    /// setzt den Straﬂen-Wert an der Stelle X,Y (berichtigt).
+    /// setzt den Stra√üen-Wert an der Stelle X,Y (berichtigt).
     void SetRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
-    /// setzt den Straﬂen-Wert um den Punkt X,Y.
+    /// setzt den Stra√üen-Wert um den Punkt X,Y.
     void SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
-    /// Baut eine Straﬂe ( nicht nur visuell, sondern auch wirklich )
+    /// Baut eine Stra√üe ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
-    /// Reiﬂt eine Straﬂe ab
+    /// Rei√üt eine Stra√üe ab
     void DestroyRoad(const MapPoint pt, const unsigned char dir);
-    /// baut eine Straﬂe aus
+    /// baut eine Stra√üe aus
     void UpgradeRoad(const MapPoint pt, const unsigned char dir);
 
     /// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
-    /// Milit‰rgeb‰ude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll
+    /// Milit√§rgeb√§ude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll
     void RecalcTerritory(const noBaseBuilding& building, const bool destroyed, const bool newBuilt);
 
-    /// Berechnet das Land in einem bestimmten Bereich um ein aktuelles Milit‰rgeb‰ude rum neu und gibt zur¸ck ob sich etwas ver‰ndern w¸rde (auf f¸r ki wichtigem untergrund) wenn das Geb‰ude zerstˆrt werden w¸rde
+    /// Berechnet das Land in einem bestimmten Bereich um ein aktuelles Milit√§rgeb√§ude rum neu und gibt zur√ºck ob sich etwas ver√§ndern w√ºrde (auf f√ºr ki wichtigem untergrund) wenn das Geb√§ude zerst√∂rt werden w√ºrde
     bool DoesTerritoryChange(const noBaseBuilding& building, const bool destroyed, const bool newBuilt) const;
 
-    /// Greift ein Milit‰rgeb‰ude auf x,y an (entsendet daf¸r die Soldaten etc.)
+    /// Greift ein Milit√§rgeb√§ude auf x,y an (entsendet daf√ºr die Soldaten etc.)
     void Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);
-    /// Greift ein Milit‰regeb‰ude mit Schiffen an
+    /// Greift ein Milit√§regeb√§ude mit Schiffen an
     void AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);
 
     MilitarySquares& GetMilitarySquares();
 
-    /// L‰sst alles spielerische abbrennen, indem es alle Flaggen der Spieler zerstˆrt
+    /// L√§sst alles spielerische abbrennen, indem es alle Flaggen der Spieler zerst√∂rt
     void Armageddon();
 
-    /// L‰sst alles spielerische eines Spielers abbrennen, indem es alle Flaggen eines Spieler zerstˆrt
+    /// L√§sst alles spielerische eines Spielers abbrennen, indem es alle Flaggen eines Spieler zerst√∂rt
     void Armageddon(const unsigned char player);
 
     /// Sagt der GW Bescheid, dass ein Objekt von Bedeutung an x,y vernichtet wurde, damit dieser
     /// dass ggf. an den WindowManager weiterleiten kann, damit auch ein Fenster wieder geschlossen wird
     virtual void ImportantObjectDestroyed(const MapPoint pt) = 0;
-    /// Sagt, dass ein Milit‰rgeb‰ude eingenommen wurde und ggf. ein entsprechender "Fanfarensound" abgespielt werden sollte
+    /// Sagt, dass ein Milit√§rgeb√§ude eingenommen wurde und ggf. ein entsprechender "Fanfarensound" abgespielt werden sollte
     virtual void MilitaryBuildingCaptured(const MapPoint pt, const unsigned char player) = 0;
 
-    /// Ist der Punkt ein geeigneter Platz zum Warten vor dem Milit‰rgeb‰ude
+    /// Ist der Punkt ein geeigneter Platz zum Warten vor dem Milit√§rgeb√§ude
     bool ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center);
-    /// Geeigneter Punkt f¸r K‰mpfe?
+    /// Geeigneter Punkt f√ºr K√§mpfe?
     bool ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags, nofActiveSoldier* exception = NULL);
 
     /// Berechnet die Sichtbarkeiten neu um einen Punkt mit radius
     void RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception);
-    /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegr¸nden Alternative zu oberem)
+    /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegr√ºnden Alternative zu oberem)
     void SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player);
-    /// Bestimmt bei der Bewegung eines sp‰henden Objekts die Sichtbarkeiten an den R‰ndern neu
+    /// Bestimmt bei der Bewegung eines sp√§henden Objekts die Sichtbarkeiten an den R√§ndern neu
     void RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
         const unsigned char moving_dir, MapPoint * enemy_territory);
 
     /// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)
     bool IsBorderNode(const MapPoint pt, const unsigned char player) const;
 
-    // Konvertiert Ressourcen zwischen Typen hin und her oder lˆscht sie.
-    // F¸r Spiele ohne Gold.
+    // Konvertiert Ressourcen zwischen Typen hin und her oder l√∂scht sie.
+    // F√ºr Spiele ohne Gold.
     void ConvertMineResourceTypes(unsigned char from, unsigned char to);
 
-    /// Gr¸ndet vom Schiff aus eine neue Kolonie, gibt true zur¸ck bei Erfolg
+    /// Gr√ºndet vom Schiff aus eine neue Kolonie, gibt true zur√ºck bei Erfolg
     bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist
     void AddHarborBuildingSiteFromSea(noBuildingSite* building_site) { harbor_building_sites_from_sea.push_back(building_site); }
     /// Removes it. It is allowed to be called with a regular harbor building site (no-op in that case)
     void RemoveHarborBuildingSiteFromSea(noBuildingSite* building_site);
-    /// Gibt zur¸ck, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
+    /// Gibt zur√ºck, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea(const noBuildingSite* building_site) const;
     /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
     std::vector<unsigned> GetHarborPointsWithinReach(const unsigned hbId, const unsigned seaId) const;

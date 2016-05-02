@@ -90,13 +90,13 @@ public:
 
     void SetZoomFactor(float zoomFactor);
 
-    /// Bauqualit‰ten anzeigen oder nicht
+    /// Bauqualit√§ten anzeigen oder nicht
     void ToggleShowBQ() { show_bq = !show_bq; }
-    /// Geb‰udenamen zeigen oder nicht
+    /// Geb√§udenamen zeigen oder nicht
     void ToggleShowNames() { show_names = !show_names; }
-    /// Produktivit‰t zeigen oder nicht
+    /// Produktivit√§t zeigen oder nicht
     void ToggleShowProductivity() { show_productivity = !show_productivity; };
-    /// Schaltet Produktivit‰ten/Namen komplett aus oder an
+    /// Schaltet Produktivit√§ten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
     void Draw(const RoadBuildState& rb, const bool draw_selected = false, const MapPoint selected = MapPoint::Invalid(), unsigned* water = NULL);
@@ -114,7 +114,7 @@ public:
     /// Set the debug node printer used. Max. 1 at a time. NULL for disabling
     void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }
 
-    /// Gibt selektierten Punkt zur¸ck
+    /// Gibt selektierten Punkt zur√ºck
     MapPoint GetSelectedPt() const { return selPt; }
 
     /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird

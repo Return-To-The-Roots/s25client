@@ -23,7 +23,7 @@
 
 class nobBaseWarehouse;
 
-/// Vorgefertigte Bedingungsfunktionen für FindWarehouse, param jeweils Pointer auf die einzelnen Strukturen
+/// Vorgefertigte Bedingungsfunktionen fÃ¼r FindWarehouse, param jeweils Pointer auf die einzelnen Strukturen
 namespace FW
 {
     struct HasMinWares
@@ -83,7 +83,7 @@ namespace FW
         bool operator()(const nobBaseWarehouse& wh) const;
     };
 
-    // Lagerhäuser enthalten die jeweiligen Waren, liefern sie aber NICHT gleichzeitig ein
+    // LagerhÃ¤user enthalten die jeweiligen Waren, liefern sie aber NICHT gleichzeitig ein
     struct HasWareButNoCollect: protected HasMinWares, protected CollectsWare
     {
         HasWareButNoCollect(const GoodType type): HasMinWares(type, 1), CollectsWare(type){}

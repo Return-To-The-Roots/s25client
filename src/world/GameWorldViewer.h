@@ -27,7 +27,7 @@ class noShip;
 class FOWObject;
 struct RoadBuildState;
 
-/// "Interface-Klasse" für GameWorldBase, die die Daten grafisch anzeigt
+/// "Interface-Klasse" fÃ¼r GameWorldBase, die die Daten grafisch anzeigt
 class GameWorldViewer: public virtual GameWorldBase
 {
     TerrainRenderer tr;
@@ -37,15 +37,15 @@ public:
 
     TerrainRenderer& GetTerrainRenderer() { return tr; }
 
-    /// Sucht die Anzahl der verfügbaren Soldaten, um das Militärgebäude an diesem Punkt anzugreifen
+    /// Get number of soldiers that can attack that point
     unsigned GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt);
 
-    /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
+    /// Ermittelt Sichtbarkeit eines Punktes fÃ¼r den lokalen Spieler, berÃ¼cksichtigt ggf. Teamkameraden
     Visibility GetVisibility(const MapPoint pt) const;
 
-    /// Höhe wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
+    /// HÃ¶he wurde verÃ¤ndert: TerrainRenderer Bescheid sagen, damit es entsprechend verÃ¤ndert werden kann
     void AltitudeChanged(const MapPoint pt) override;
-    /// Sichtbarkeit wurde verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
+    /// Sichtbarkeit wurde verÃ¤ndert: TerrainRenderer Bescheid sagen, damit es entsprechend verÃ¤ndert werden kann
     void VisibilityChanged(const MapPoint pt) override;
 
     /// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
@@ -61,10 +61,10 @@ public:
     /// Schattierungen (vor allem FoW) neu berechnen
     void RecalcAllColors();
 
-    /// Gibt das erste Schiff, was gefunden wird von diesem Spieler, zurück, ansonsten NULL, falls es nicht existiert
+    /// Get first found ship of this player at that point or NULL of none
     noShip* GetShip(const MapPoint pt, const unsigned char player) const;
 
-    /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
+    /// Get number of soldiers for attacking a point via sea
     unsigned GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker, const MapPoint pt) const;
 
 };

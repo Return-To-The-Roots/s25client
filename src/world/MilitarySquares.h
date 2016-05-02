@@ -30,7 +30,7 @@ class MilitarySquares
     /// military buildings (including HQs and harbors) per military square
     std::vector< std::list<nobBaseMilitary*> > squares;
     unsigned width, height;
-    // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
+    // Liefert das entsprechende MilitÃ¤rquadrat fÃ¼r einen bestimmten Punkt auf der Karte zurÃ¼ck (normale Koordinaten)
     std::list<nobBaseMilitary*>& GetSquare(const MapPoint pt);
 
 public:

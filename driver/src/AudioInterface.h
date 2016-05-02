@@ -30,10 +30,8 @@ public:
     /// Funktion zum Auslesen des Treibernamens.
     virtual const char* GetName() const = 0;
 
-    /// Treiberinitialisierungsfunktion.
     virtual bool Initialize() = 0;
 
-    /// Treiberaufräumfunktion.
     virtual void CleanUp() = 0;
 
     virtual Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) = 0;
@@ -49,13 +47,12 @@ public:
     virtual void StopEffect(const unsigned int play_id) = 0;
     /// Wird ein Sound (noch) abgespielt?
     virtual bool IsEffectPlaying(const unsigned play_id) = 0;
-    /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+    /// Changes volume of a played sound (if it is still playing)
     virtual void ChangeVolume(const unsigned play_id, const unsigned char volume) = 0;
 
     virtual void SetMasterEffectVolume(unsigned char volume) = 0;
     virtual void SetMasterMusicVolume(unsigned char volume) = 0;
 
-    /// prüft auf Initialisierung.
     virtual bool IsInitialized() = 0;
 
 };
