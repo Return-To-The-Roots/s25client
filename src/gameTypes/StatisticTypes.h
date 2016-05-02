@@ -18,7 +18,7 @@
 #ifndef StatisticTypes_h__
 #define StatisticTypes_h__
 
-/// Verfügbare Statistikarten
+/// Statistic categories
 enum StatisticType
 {
     STAT_COUNTRY = 0,
@@ -38,7 +38,7 @@ const unsigned STAT_TYPE_COUNT = 9;
 /// Anzahl Warenstatistikarten
 const unsigned STAT_MERCHANDISE_TYPE_COUNT = 14;
 
-/// Statistikzeiträume
+/// Update intervalls
 enum StatisticTime
 {
     STAT_15M = 0,
@@ -47,7 +47,7 @@ enum StatisticTime
     STAT_16H
 };
 
-/// Anzahl Statistikzeiträume
+/// Number of update intervalls
 const unsigned STAT_TIME_COUNT = 4;
 
 /// Anzahl der Statistikschritte, die gespeichert werden

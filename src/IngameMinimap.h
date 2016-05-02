@@ -27,30 +27,30 @@ class IngameMinimap: public Minimap
 {
     /// Referenz auf den GameWorldViewer
     const GameWorldViewer& gwv;
-    /// Speichert die einzelnen Ver‰nderungen eines jeden Mappunktes, damit nicht unnˆtigerweise
-    /// in einem GF mehrmals der Mappunkt ver‰ndert wird
+    /// Speichert die einzelnen Ver√§nderungen eines jeden Mappunktes, damit nicht unn√∂tigerweise
+    /// in einem GF mehrmals der Mappunkt ver√§ndert wird
     std::vector<bool> nodes_updated;
-    /// Liste mit allen Punkten, die ge‰ndert werden m¸ssen
+    /// Liste mit allen Punkten, die ge√§ndert werden m√ºssen
     std::vector<MapPoint> nodesToUpdate;
 
 
-    /// F¸r jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
+    /// F√ºr jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
     enum DrawnObject
     {
         DO_INVALID = 0,
-        DO_INVISIBLE, /// im im vollst‰ndigem Dunklen
+        DO_INVISIBLE, /// im im vollst√§ndigem Dunklen
         DO_TERRAIN, /// Nur Terrain oder Baum und Granit ohne irgendwas
         DO_PLAYER, /// Nur Terrain oder Baum und Granit mit Spielerterritorium dazu
-        DO_BUILDING, /// Geb‰ude
-        DO_ROAD /// Straﬂe
+        DO_BUILDING, /// Geb√§ude
+        DO_ROAD /// Stra√üe
     };
 
     std::vector<DrawnObject> dos;
 
     /// Einzelne Dinge anzeigen oder nicht anzeigen
-    bool territory; /// L‰nder der Spieler
-    bool houses; /// H‰user
-    bool roads; /// Straﬂen
+    bool territory; /// L√§nder der Spieler
+    bool houses; /// H√§user
+    bool roads; /// Stra√üen
 
 public:
     IngameMinimap(const GameWorldViewer& gwv);
@@ -69,18 +69,18 @@ public:
 
 protected:
 
-    /// Berechnet die Farbe f¸r einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
+    /// Berechnet die Farbe f√ºr einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
     unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;
-    /// Berechnet f¸r einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
+    /// Berechnet f√ºr einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
     unsigned CalcTerrainColor(const MapPoint pt, const unsigned t);
-    /// Pr¸ft ob an einer Stelle eine Straﬂe gezeichnet werden muss
+    /// Pr√ºft ob an einer Stelle eine Stra√üe gezeichnet werden muss
     bool IsRoad(const MapPoint pt, const Visibility visibility);
     /// Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein (player muss mit +1 gegeben sein!)
     unsigned CombineWithPlayerColor(const unsigned color, const unsigned char player) const;
-    /// Zus‰tzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
+    /// Zus√§tzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     /// in dem Falle: Karte aktualisieren
     void BeforeDrawing() override;
-    /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem ¸bergebenen drawn_object ist
+    /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem √ºbergebenen drawn_object ist
     void UpdateAll(const DrawnObject drawn_object);
 };
 

@@ -17,13 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
-#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "Random.h"
 #include "gameData/JobConsts.h"
 #include "SoundManager.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
+#include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "GameClient.h"
 #include "world/GameWorldGame.h"
@@ -188,7 +188,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
                         case JOB_FISHER:
                         {
                             const std::string msg = (job_ == JOB_STONEMASON) ? _("No more stones in range") : _("No more fishes in range");
-                            SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), msg, PMC_GENERAL, *workplace));
+                            SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), msg, PMC_GENERAL, *workplace));
                             outOfRessourcesMsgSent = true;
                             workplace->SetProductivityToZero();
                             break;
@@ -204,7 +204,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
                     case BLD_WOODCUTTER:
                     case BLD_QUARRY:
                     case BLD_FISHERY:
-                        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
+                        gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;
                     default:
                         break;

@@ -70,7 +70,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     FreePathNode& startNode = fpNodes[startId];
     FreePathNode& destNode  = fpNodes[destId];
 
-    // Anfangsknoten einfügen Und mit entsprechenden Werten füllen
+    // Anfangsknoten einfÃ¼gen Und mit entsprechenden Werten fÃ¼llen
     startNode.targetDistance = gwb_.CalcDistance(start, dest);
     startNode.estimatedDistance = startNode.targetDistance;
     startNode.lastVisited = currentVisit;
@@ -80,27 +80,27 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
     todo.push(&startNode);
 
-    // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
+    // Bei ZufÃ¤lliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders fÃ¼r die Soldaten wichtig)
     // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
     const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
 
     while(!todo.empty())
     {
-        // Knoten mit den geringsten Wegkosten auswählen
+        // Knoten mit den geringsten Wegkosten auswÃ¤hlen
         FreePathNode& best = *todo.pop();
 
         // Ziel schon erreicht?
         if(&best == &destNode)
         {
             // Ziel erreicht!
-            // Jeweils die einzelnen Angaben zurückgeben, falls gewünscht (Pointer übergeben)
+            // Jeweils die einzelnen Angaben zurÃ¼ckgeben, falls gewÃ¼nscht (Pointer Ã¼bergeben)
             if(length)
                 *length = best.curDistance;
             if(route)
                 route->resize(best.curDistance);
 
             FreePathNode* curNode = &best;
-            // Route rekonstruieren und ggf. die erste Richtung speichern, falls gewünscht
+            // Route rekonstruieren und ggf. die erste Richtung speichern, falls gewÃ¼nscht
             for(unsigned z = best.curDistance; z > 0; --z)
             {
                 if(route)
@@ -139,7 +139,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
             // Knoten schon auf dem Feld gebildet?
             if (neighbour.lastVisited == currentVisit)
             {
-                // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
+                // Dann nur ggf. Weg und VorgÃ¤nger korrigieren, falls der Weg kÃ¼rzer ist
                 if(best.curDistance + 1 < neighbour.curDistance)
                 {
                     // Check if we can use this transition
@@ -182,7 +182,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     return false;
 }
 
-/// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
+/// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurÃ¼ck
 template<class TNodeChecker>
 bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, 
                                 const TNodeChecker& nodeChecker, MapPoint* dest) const

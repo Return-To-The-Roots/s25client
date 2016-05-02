@@ -51,6 +51,7 @@ AddDirectory(helpers)
 AddDirectory(ingameWindows)
 AddDirectory(lua)
 AddDirectory(nodeObjs)
+AddDirectory(notifications)
 AddDirectory(ogl)
 AddDirectory(pathfinding)
 AddDirectory(postSystem)
@@ -220,6 +221,10 @@ TARGET_LINK_LIBRARIES(s25Main
 	${Boost_LIBRARIES}
 )
 
+IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+	TARGET_LINK_LIBRARIES(s25Main dl)
+ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+
 ADD_EXECUTABLE(s25client main.cpp ${s25client_RC})
 TARGET_LINK_LIBRARIES(s25client s25Main)
 
@@ -236,7 +241,7 @@ IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 
 IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-	TARGET_LINK_LIBRARIES(s25client dl pthread)
+	TARGET_LINK_LIBRARIES(s25client pthread)
 ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 
 IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")

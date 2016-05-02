@@ -1857,23 +1857,6 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     return std::string(str);
 }
 
-bool GameClient::SendAIEvent(AIEvent::Base* ev, unsigned receiver)
-{
-    if (human_ai && playerId_ == receiver)
-    {
-        human_ai->SendAIEvent(ev);
-        return true;
-    }
-    
-    if (IsHost())
-        return GAMESERVER.SendAIEvent(ev, receiver);
-    else
-    {
-        delete ev;
-        return true;
-    }
-}
-
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {

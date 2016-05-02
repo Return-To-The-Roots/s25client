@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -15,14 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RoadBuildMode_h__
-#define RoadBuildMode_h__
+#ifndef notifications_h__
+#define notifications_h__
 
-enum RoadBuildMode
-{
-    RM_DISABLED, // No building
-    RM_NORMAL,   // Building regular road
-    RM_BOAT      // Building water road
-};
+#include "TypeId.h"
 
-#endif // RoadBuildMode_h__
+/** The notification system dispatches notifications based on their type.
+ * To enable a type to be dispatched and listened on, you need to call the
+ * macro 'ENABLE_NOTIFICATION' with the type name in the public part of that type */
+#define ENABLE_NOTIFICATION(Type) \
+    static uint32_t getNoteId(){ return TypeId::value<Type>(); }
+
+#endif // notifications_h__

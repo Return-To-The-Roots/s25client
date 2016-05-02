@@ -19,9 +19,9 @@
 #include "noBaseBuilding.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
-#include "ai/AIEvents.h"
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
+#include "notifications/BuildingNote.h"
 #include "gameData/DoorConsts.h"
 #include "gameData/MapConsts.h"
 #include "nobBaseWarehouse.h"
@@ -85,8 +85,7 @@ noBaseBuilding::~noBaseBuilding()
 void noBaseBuilding::Destroy_noBaseBuilding()
 {
     DestroyAllRoads();
-    //notify the ai about this
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingDestroyed, pos, type_), player);
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, type_));
 
     if(gwg->GetGameInterface())
         gwg->GetGameInterface()->GI_UpdateMinimap(pos);

@@ -113,9 +113,6 @@ void nofWoodcutter::WorkFinished()
 {
     // Holz in die Hand nehmen
     ware = GD_WOOD;
-
-    // evtl. AIEvent senden
-    //GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::TreeChopped, pos), player);  only clutters the action list for the ai
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all

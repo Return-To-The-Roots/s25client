@@ -20,7 +20,7 @@
 
 #include "gameTypes/AnimalTypes.h"
 
-/// Informationen über die  einzelnen Tierarten
+/// Informationen Ã¼ber die  einzelnen Tierarten
 struct AnimalConst
 {
     /// IDs in der map_lst, wo die Lauf-IDs von der jeweiligen Tierart beginnen
@@ -41,7 +41,7 @@ struct AnimalConst
 
 const AnimalConst ANIMALCONSTS[SPEC_COUNT] =
 {
-    {1600, 0, 1648, 1649, 8, 20}, // Polarbär
+    {1600, 0, 1648, 1649, 8, 20}, // PolarbÃ¤r
     {1700, 0, 1736, 1737, 6, 20}, // Hase hell
     {1740, 0, 1776, 1777, 6, 20}, // Hase dunkel
     {1800, 1840, 1836, 0, 6, 20}, // Fuchs

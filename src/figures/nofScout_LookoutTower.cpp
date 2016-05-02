@@ -19,6 +19,7 @@
 #include "nofScout_LookoutTower.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
+#include "EventManager.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
 #include "gameData/MilitaryConsts.h"
@@ -65,7 +66,7 @@ void nofScout_LookoutTower::WorkplaceReached()
     gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Lookout-tower occupied"), PMC_MILITARY, *workplace));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PMC_MILITARY, *workplace));
 }
 
 bool nofScout_LookoutTower::AreWaresAvailable()

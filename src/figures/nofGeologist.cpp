@@ -23,16 +23,15 @@
 #include "Random.h"
 #include "GameClient.h"
 #include "nodeObjs/noSign.h"
+#include "notifications/ResourceNote.h"
 #include "gameData/GameConsts.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "postSystem/PostMsg.h"
-#include "ai/AIEvents.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "lua/LuaInterfaceGame.h"
-class noRoadNode;
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), node_goal(0, 0)
@@ -436,42 +435,42 @@ void nofGeologist::SetSign(const unsigned char resources)
         quantity = 0;
     }
 
-    if (type < RES_TYPES_COUNT)
-    {
-        if (!resAlreadyFound[type] && !IsSignInArea(type))
-        {
-            const char* msg;
-            switch(type)
-            {
-            case RES_IRON_ORE:
-                msg = _("Found iron ore");
-                break;
-            case RES_GOLD:
-                msg = _("Found gold");
-                break;
-            case RES_COAL:
-                msg = _("Found coal");
-                break;
-            case RES_GRANITE:
-                msg = _("Found granite");
-                break;
-            case RES_WATER:
-                msg = _("Found water");
-                break;
-            default:
-                RTTR_Assert(false);
-            }
-            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), msg, PMC_GEOLOGIST, pos));
-            GAMECLIENT.SendAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, pos, type), player);
-        }
-        resAlreadyFound[type] = true;
-    }
-
-    if(gwg->HasLua())
-        gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);
-
     // Schild setzen
     gwg->SetNO(pos, new noSign(pos, type, quantity));
+
+    // If nothing found, there is nothing left to do
+    if(type == RES_TYPES_COUNT)
+        return;
+
+    if(!resAlreadyFound[type] && !IsSignInArea(type))
+    {
+        const char* msg;
+        switch(type)
+        {
+        case RES_IRON_ORE:
+            msg = _("Found iron ore");
+            break;
+        case RES_GOLD:
+            msg = _("Found gold");
+            break;
+        case RES_COAL:
+            msg = _("Found coal");
+            break;
+        case RES_GRANITE:
+            msg = _("Found granite");
+            break;
+        case RES_WATER:
+            msg = _("Found water");
+            break;
+        default:
+            RTTR_Assert(false);
+        }
+        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PMC_GEOLOGIST, pos));
+        gwg->GetNotifications().publish(ResourceNote(player, pos, type, quantity));
+        if(gwg->HasLua())
+            gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);
+    }
+    resAlreadyFound[type] = true;
 }
 
 void nofGeologist::LostWork()

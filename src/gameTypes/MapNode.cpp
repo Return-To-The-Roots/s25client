@@ -46,7 +46,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
     {
         const MapNode::FoWData& curFoW = fow[z];
         sgd.PushUnsignedChar(static_cast<unsigned char>(curFoW.visibility));
-        // Nur im FoW können FOW-Objekte stehen
+        // Only in FoW can be FoW objects
         if(curFoW.visibility == VIS_FOW)
         {
             sgd.PushUnsignedInt(curFoW.last_update_time);
@@ -91,7 +91,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
     {
         MapNode::FoWData& curFoW = fow[z];
         curFoW.visibility = Visibility(sgd.PopUnsignedChar());
-        // Nur im FoW können FOW-Objekte stehen
+        // Only in FoW can be FoW objects
         if(curFoW.visibility == VIS_FOW)
         {
             curFoW.last_update_time = sgd.PopUnsignedInt();

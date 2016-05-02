@@ -27,10 +27,16 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
-iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayerJH*>& ais_)
+iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     : IngameWindow(CGI_AI_DEBUG, 0xFFFF, 0xFFFF, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), ais_(ais_)
+      gwv(gwv)
 {
+    for(std::vector<AIBase*>::const_iterator it = ais.begin(); it != ais.end(); ++it)
+    {
+        AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(*it);
+        if(ai)
+            ais_.push_back(ai);
+    }
     // Wenn keine KI-Spieler, schließen
     if (ais_.empty())
     {
@@ -126,7 +132,6 @@ void iwAIDebug::Msg_PaintBefore()
             case AIEvent::BuildingDestroyed: ss << "BuildingDestroyed" << std::endl; break;
             case AIEvent::BuildingConquered: ss << "BuildingConquered" << std::endl; break;
             case AIEvent::BuildingLost: ss << "BuildingLost" << std::endl; break;
-            case AIEvent::BuildingOccupied: ss << "BuildingOccupied" << std::endl; break;
             case AIEvent::BorderChanged: ss << "BorderChanged" << std::endl; break;
             case AIEvent::TerritoryLost: ss << "world/TerritoryLost" << std::endl; break;
             case AIEvent::NoMoreResourcesReachable: ss << "NoMoreResourcesReachable" << std::endl; break;

@@ -21,6 +21,7 @@
 #include "world/World.h"
 #include "buildings/nobBaseMilitary.h"
 #include "postSystem/PostManager.h"
+#include "notifications/NotificationManager.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
@@ -44,6 +45,7 @@ class GameWorldBase: public World
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
     PostManager postManager;
+    NotificationManager notifications;
 
     GameClientPlayerList& players;
     const GlobalGameSettings& gameSettings;
@@ -76,7 +78,7 @@ public:
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
 
     /// Berechnet BQ bei einer gebauten Stra�e
-    void CalcRoad(const MapPoint pt, const unsigned char player);
+    void RecalcBQForRoad(const MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
     bool IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const;
 
@@ -143,6 +145,7 @@ public:
     const EventManager& GetEvMgr() const { return em; }
     PostManager& GetPostMgr(){ return postManager; }
     const PostManager& GetPostMgr() const { return postManager; }
+    NotificationManager& GetNotifications() const { return const_cast<GameWorldBase*>(this)->notifications; } // We want to be abled to add notifications even on a const world
 
     struct PotentialSeaAttacker
     {

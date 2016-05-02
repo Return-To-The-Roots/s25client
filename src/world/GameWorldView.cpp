@@ -61,6 +61,11 @@ GameWorldView::~GameWorldView()
 {
 }
 
+GameWorldBase& GameWorldView::GetWorld() const
+{
+    return gwv;
+}
+
 void GameWorldView::SetZoomFactor(float zoomFactor)
 {
     this->zoomFactor = zoomFactor;

@@ -23,17 +23,14 @@
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
 #include "gameData/GameConsts.h"
-class RoadSegment;
-class noRoadNode;
 
-/// Paremter-Struktur für Straßenbaupathfinding
+/// Param for road-build pathfinding
 struct Param_RoadPath
 {
-    /// Straßenbaumodus erlaubt?
+    /// Boat or normal road
     bool boat_road;
 };
 
-/// Abbruch-Bedingungen für Straßenbau-Pathfinding
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char  /*dir*/, const void* param)
 {
     const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
@@ -49,7 +46,7 @@ bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsig
     return true;
 }
 
-/// Abbruch-Bedingungen für Straßenbau-Pathfinding for comfort road construction with a possible flag every 2 steps
+/// Condition for comfort road construction with a possible flag every 2 steps
 bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const unsigned char  /*dir*/, const void* param)
 {
     const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);

@@ -33,7 +33,7 @@ class MapLoader
     std::vector<MapPoint> hqPositions;
 
     /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
-    /// Wasserpunkte mit der gleichen sea_id belegt und die Anzahl zurückgibt
+    /// Wasserpunkte mit der gleichen sea_id belegt und die Anzahl zurÃ¼ckgibt
     unsigned MeasureSea(const MapPoint pt, const unsigned short sea_id);
 
     void InitSeasAndHarbors();

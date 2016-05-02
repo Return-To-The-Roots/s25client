@@ -31,10 +31,10 @@ class SerializedGameData;
 /// Eigenschaften von einem Punkt auf der Map
 struct MapNode
 {
-    /// Straßen
+    /// Roads
     boost::array<unsigned char, 3> roads;
     boost::array<bool, 3> roads_real;
-    /// Höhe
+    /// Height
     unsigned char altitude;
     /// Schattierung
     unsigned char shadow;
@@ -44,14 +44,13 @@ struct MapNode
     unsigned char resources;
     /// Reservierungen
     bool reserved;
-    /// Eigentümer (Spieler)
+    /// Owner (playerIdx - 1)
     unsigned char owner;
     /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
     typedef boost::array<unsigned char, 4> BoundaryStones;
     BoundaryStones boundary_stones;
-    /// Bauqualität
     BuildingQuality bq, bqVisual;
-    /// Visuelle Sachen für alle Spieler, die in Zusammenhang mit dem FoW stehen
+    /// How a player sees the point in FoW
     struct FoWData
     {
         /// Zeit (GF-Zeitpunkt), zu der, der Punkt zuletzt aktualisiert wurde
@@ -60,7 +59,6 @@ struct MapNode
         Visibility visibility;
         /// FOW-Objekt
         FOWObject* object;
-        /// Straßen im FoW
         boost::array<unsigned char, 3> roads;
         /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
         unsigned char owner;
@@ -70,14 +68,14 @@ struct MapNode
     };
     boost::array<FoWData, MAX_PLAYERS> fow;
 
-    /// Meeres-ID, d.h. zu welchem Meer gehört dieser Punkt (0 = kein Meer)
+    /// To which sea this belongs to (0=None)
     unsigned short sea_id;
     /// Hafenpunkt-ID (0 = kein Hafenpunkt)
     unsigned harbor_id;
 
     /// Objekt, welches sich dort befindet
     noBase* obj;
-    /// Figuren, Kämpfe, die sich dort befinden
+    /// Figures or fights on this node
     std::list<noBase*> figures;
 
     MapNode(): obj(NULL){}
@@ -86,3 +84,4 @@ struct MapNode
 };
 
 #endif // MapNode_h__
+

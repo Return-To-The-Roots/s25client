@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "AIEvents.h"
 #include "AIInterface.h"
 #include "GameCommand.h"
 
@@ -27,8 +26,6 @@ class GameWorldBase;
 class GameClientPlayer;
 class GlobalGameSettings;
 class GameClientPlayerList;
-
-
 
 /// Basisklasse für sämtliche KI-Spieler
 class AIBase
@@ -68,8 +65,6 @@ class AIBase
         const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
         /// Markiert die GameCommands als abgearbeitet
         void FetchGameCommands() { gcs.clear(); }
-
-        virtual void SendAIEvent(AIEvent::Base* ev) { delete ev; }
 };
 
 #endif //!AIBASE_H_INCLUDED

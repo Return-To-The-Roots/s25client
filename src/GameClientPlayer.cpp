@@ -1787,7 +1787,7 @@ void GameClientPlayer::SuggestPact(const unsigned char targetPlayer, const PactT
     pacts[targetPlayer][pt].duration = duration;
     pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
 
-    gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(GAMECLIENT.GetGFNumber(), pt, pacts[targetPlayer][pt].start, *this, duration));
+    gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
 }
 
 void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer)
@@ -1809,7 +1809,7 @@ void GameClientPlayer::MakePact(const PactType pt, const unsigned char other_pla
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
-    SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, gwg->GetPlayer(other_player), true));
+    SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, gwg->GetPlayer(other_player), true));
 }
 
 /// Zeigt an, ob ein Pakt besteht
@@ -1839,7 +1839,7 @@ void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt)
 	for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
 		if(i != playerid && IsAlly(i))
-            gwg->GetPlayer(i).SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
+            gwg->GetPlayer(i).SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
 	}
 }
 
@@ -1884,14 +1884,14 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
             otherPlayer.pacts[playerid][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, *this, false));
-            SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), pt, gwg->GetPlayer(otherPlayerIdx), false));
+            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, *this, false));
+            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, gwg->GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
         }
         // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
         else
-            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new DiplomacyPostQuestion(GAMECLIENT.GetGFNumber(), pt, pacts[otherPlayerIdx][pt].start,*this));
+            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start,*this));
     }
     else
     {
@@ -2270,7 +2270,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
         if (!emergency)
         {
             emergency = true;
-            SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("The emergency program has been activated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PMC_GENERAL));
         }
     }
     else
@@ -2279,7 +2279,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
         if (emergency)
         {
             emergency = false;
-            SendPostMessage(new PostMsg(GAMECLIENT.GetGFNumber(), _("The emergency program has been deactivated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PMC_GENERAL));
             FindMaterialForBuildingSites();
         }
     }

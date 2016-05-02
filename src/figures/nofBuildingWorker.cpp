@@ -17,11 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
-#include "ai/AIEvents.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "Loader.h"
 #include "nodeObjs/noFlag.h"
+#include "notifications/BuildingNote.h"
 #include "Ware.h"
 #include "GameClient.h"
 #include "GameClientPlayer.h"
@@ -404,9 +404,8 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         workplace->SetProductivityToZero();
 
         const char* const error = (workplace->GetBuildingType() == BLD_WELL) ? _("This well has dried out") : _("This mine is exhausted");
-        SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), error, PMC_GENERAL, *workplace));
-        // KI-Event erzeugen
-        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::NoMoreResourcesReachable, workplace->GetPos(), workplace->GetBuildingType()), player);
+        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), error, PMC_GENERAL, *workplace));
+        gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
     }
 
     return false;

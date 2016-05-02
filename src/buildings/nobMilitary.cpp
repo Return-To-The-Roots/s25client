@@ -30,9 +30,9 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "FindWhConditions.h"
 #include "postSystem/PostMsgWithBuilding.h"
-#include "ai/AIEvents.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
+#include "notifications/BuildingNote.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
@@ -44,7 +44,6 @@
 
 #include <limits>
 #include <stdexcept>
-class RoadSegment;
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), coinsDisabled(false),
@@ -129,7 +128,7 @@ void nobMilitary::Destroy_nobMilitary()
     if(!new_built)
         gwg->RecalcTerritory(*this, true, false);
 
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), player);
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, type_));
 }
 
 void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
@@ -418,9 +417,6 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
     }
 
     RegulateTroops();
-
-    // KI-Event senden
-    //GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BorderChanged, pos, type), player);
 }
 
 
@@ -694,7 +690,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
     {
-        SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building occupied"), PMC_MILITARY, *this));
+        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building occupied"), PMC_MILITARY, *this));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -703,8 +699,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         CloseDoor();
         // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
         gwg->MilitaryBuildingCaptured(pos, player);
-        // AIEvent senden an besitzer
-        GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type_), player);
+        gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, type_));
     }
     else
     {
@@ -1007,15 +1002,13 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->MilitaryBuildingCaptured(pos, player);
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
-    SendPostMessage(old_player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building lost"), PMC_MILITARY, *this));
-    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("Military building captured"), PMC_MILITARY, *this));
+    SendPostMessage(old_player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building lost"), PMC_MILITARY, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building captured"), PMC_MILITARY, *this));
 
     // ggf. Fenster schließen vom alten Spieler
     gwg->ImportantObjectDestroyed(pos);
-
-    // AIEvent senden an gewinner&verlierer
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingConquered, pos, type_), player);
-    GAMECLIENT.SendAIEvent(new AIEvent::Building(AIEvent::BuildingLost, pos, type_), old_player);
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, type_));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, type_));
 }
 
 void nobMilitary::NeedOccupyingTroops()
@@ -1235,7 +1228,7 @@ void nobMilitary::HitOfCatapultStone()
         RegulateTroops();
 
     // Post verschicken
-    SendPostMessage(player, new PostMsgWithBuilding(GAMECLIENT.GetGFNumber(), _("A catapult is firing upon us!"), PMC_MILITARY, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("A catapult is firing upon us!"), PMC_MILITARY, *this));
 }
 
 /**

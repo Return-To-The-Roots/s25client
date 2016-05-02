@@ -118,7 +118,7 @@ class AIPlayerJH : public AIBase
 
         void PlanNewBuildings( const unsigned gf );
 
-        void SendAIEvent(AIEvent::Base* ev) override;
+        void SendAIEvent(AIEvent::Base* ev);
 		
         /// Executes a job form the job queue
         void ExecuteAIJob();
@@ -347,6 +347,8 @@ class AIPlayerJH : public AIBase
     protected:
         AIEventManager eventManager;
         AIConstruction* construction;
+    private:
+        Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip;
 };
 
 

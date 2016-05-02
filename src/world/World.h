@@ -40,7 +40,7 @@ template <typename T> struct Point;
 /// Base class representing the world itself, no algorithms, handlers etc!
 class World
 {
-    /// Informationen über die Weltmeere
+    /// Informationen Ã¼ber die Weltmeere
     struct Sea
     {
         /// Anzahl der Knoten, welches sich in diesem Meer befinden
@@ -82,10 +82,10 @@ public:
 
     // Grundlegende Initialisierungen
     virtual void Init(const unsigned short width, const unsigned short height, LandscapeType lt);
-    /// Aufräumen
+    /// AufrÃ¤umen
     virtual void Unload();
 
-    /// Größe der Map abfragen
+    /// GrÃ¶ÃŸe der Map abfragen
     unsigned short GetWidth() const { return width_; }
     unsigned short GetHeight() const { return height_; }
 
@@ -127,7 +127,7 @@ public:
     CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
 
 
-    /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
+    /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter BerÃ¼cksichtigung der KartengrenzÃ¼berquerung
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
     /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
@@ -139,24 +139,24 @@ public:
     // Returns the linear index for a map point
     inline unsigned GetIdx(const MapPoint pt) const;
 
-    /// Gibt Map-Knotenpunkt zurück
+    /// Gibt Map-Knotenpunkt zurÃ¼ck
     inline const MapNode& GetNode(const MapPoint pt) const;
-    /// Gibt MapKnotenpunkt darum zurück
+    /// Gibt MapKnotenpunkt darum zurÃ¼ck
     inline const MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) const;
 
     void AddFigure(noBase* fig, const MapPoint pt);
     void RemoveFigure(noBase* fig, const MapPoint pt);
-    // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
+    // Gibt ein NO zurÃ¼ck, falls keins existiert, wird ein "Nothing-Objekt" zurÃ¼ckgegeben
     noBase* GetNO(const MapPoint pt);
-    // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
+    // Gibt ein NO zurÃ¼ck, falls keins existiert, wird ein "Nothing-Objekt" zurÃ¼ckgegeben
     const noBase* GetNO(const MapPoint pt) const;
     /// Places a nodeobject at a given position. If replace is true, the old object is replace, else it is assumed as non-existant
     void SetNO(const MapPoint pt, noBase* obj, const bool replace = false);
     /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if there is no obj
     void DestroyNO(const MapPoint pt, const bool checkExists = true);
-    /// Gibt ein FOW-Objekt zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
+    /// Gibt ein FOW-Objekt zurÃ¼ck, falls keins existiert, wird ein "Nothing-Objekt" zurÃ¼ckgegeben
     const FOWObject* GetFOWObject(const MapPoint pt, const unsigned spectator_player) const;
-    /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
+    /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurÃ¼ck bzw. GOT_NOTHING, wenn keins existiert
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
     void SetResource(const MapPoint pt, const unsigned char newResource){ GetNodeInt(pt).resources = newResource; }
@@ -166,7 +166,7 @@ public:
 
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
 
-    /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
+    /// PrÃ¼ft, ob der Pkut zu dem Spieler gehÃ¶rt (wenn er der Besitzer ist und es false zurÃ¼ckliefert, ist es Grenzgebiet)
     bool IsPlayerTerritory(const MapPoint pt) const;
     /// Ist eine Flagge irgendwo um x,y ?
     bool FlagNear(const MapPoint pt) const;
@@ -175,12 +175,12 @@ public:
     /// Returns the BQ for the given player
     BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual = true) const;
 
-    /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
+    /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurÃ¼ck
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
 
-    // Gibt ein spezifisches Objekt zurück
+    // Gibt ein spezifisches Objekt zurÃ¼ck
     template<typename T> T* GetSpecObj(const MapPoint pt) { return dynamic_cast<T*>(GetNode(pt).obj); }
-    // Gibt ein spezifisches Objekt zurück
+    // Gibt ein spezifisches Objekt zurÃ¼ck
     template<typename T> const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>(GetNode(pt).obj); }
 
     /// Returns the terrain that is on the clockwise side of the edge in the given direction:
@@ -190,7 +190,7 @@ public:
     TerrainType GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
     /// Returns the terrain to the right when walking from the point in the given direction (backward direction?)
     TerrainType GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
-    /// Erzeugt FOW-Objekte, -Straßen und -Grensteine von aktuellen Punkt für einen bestimmten Spieler
+    /// Erzeugt FOW-Objekte, -StraÃŸen und -Grensteine von aktuellen Punkt fÃ¼r einen bestimmten Spieler
     void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
     /// Returns whether a node is inside a (shippable) sea (surrounded by shippable water)
@@ -203,34 +203,34 @@ public:
     /// Returns the coast pt for a given harbor (where ships can land) if any
     MapPoint GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const;
     inline unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
-    /// Gibt die Anzahl an Hafenpunkten zurück
+    /// Gibt die Anzahl an Hafenpunkten zurÃ¼ck
     unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
-    /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
+    /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurÃ¼ck
     MapPoint GetHarborPoint(const unsigned harbor_id) const;
-    /// Gibt die ID eines Hafenpunktes zurück
+    /// Gibt die ID eines Hafenpunktes zurÃ¼ck
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
     const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const Direction dir) const { return harbor_pos[harborId].neighbors[dir.toUInt()]; }
     /// Returns the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     unsigned short IsCoastalPoint(const MapPoint pt) const;
 
-    /// liefert den Straßen-Wert an der Stelle X,Y
+    /// liefert den StraÃŸen-Wert an der Stelle X,Y
     unsigned char GetRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
-    /// liefert den Straßen-Wert um den Punkt X,Y.
+    /// liefert den StraÃŸen-Wert um den Punkt X,Y.
     unsigned char GetPointRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
-    /// liefert FOW-Straßen-Wert um den punkt X,Y
+    /// liefert FOW-StraÃŸen-Wert um den punkt X,Y
     unsigned char GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const;
 
-    /// setzt den virtuellen Straßen-Wert an der Stelle X,Y (berichtigt).
+    /// setzt den virtuellen StraÃŸen-Wert an der Stelle X,Y (berichtigt).
     void SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
-    /// setzt den virtuellen Straßen-Wert um den Punkt X,Y.
+    /// setzt den virtuellen StraÃŸen-Wert um den Punkt X,Y.
     void SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
-    /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
+    /// FÃ¼gt einen Katapultstein der Welt hinzu, der gezeichnt werden will
     void AddCatapultStone(CatapultStone* cs);
     void RemoveCatapultStone(CatapultStone* cs);
 
 protected:
-    /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
+    /// FÃ¼r abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
     virtual void AltitudeChanged(const MapPoint pt) = 0;
     /// Sets the real road to whether a virtual road for this pt and direction exists
     void ApplyRoad(const MapPoint pt, unsigned char dir);

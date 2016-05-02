@@ -28,7 +28,8 @@
 #include "Ware.h"
 #include "postSystem/ShipPostMsg.h"
 #include "figures/nofAttacker.h"
-#include "ai/AIEvents.h"
+#include "notifications/ExpeditionNote.h"
+#include "notifications/ShipNote.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -141,12 +142,13 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id) :
 
 void noShip::Destroy()
 {
-    // Schiff wieder abmelden
-    gwg->GetPlayer(player).RemoveShip(this);
     for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
         RTTR_Assert(!*it);
     for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
         RTTR_Assert(!*it);
+    gwg->GetNotifications().publish(ShipNote(ShipNote::Destroyed, player, pos));
+    // Schiff wieder abmelden
+    gwg->GetPlayer(player).RemoveShip(this);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
@@ -281,10 +283,8 @@ void noShip::HandleEvent(const unsigned int id)
             state = STATE_EXPEDITION_WAITING;
 
             // Spieler benachrichtigen
-            SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A ship is ready for an expedition."), PMC_GENERAL, *this));
-
-            // KI Event senden
-            GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
+            SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A ship is ready for an expedition."), PMC_GENERAL, *this));
+            gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, player, pos));
             break;
         case STATE_EXPLORATIONEXPEDITION_LOADING:
         case STATE_EXPLORATIONEXPEDITION_WAITING:
@@ -426,7 +426,7 @@ void noShip::Driven()
     {
         // Send message if necessary
         if(gwg->GetPlayer(player).ShipDiscoveredHostileTerritory(enemy_territory_discovered))
-            SendPostMessage(player, new PostMsg(GAMECLIENT.GetGFNumber(), _("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
+            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("A ship disovered an enemy territory"), PMC_MILITARY, enemy_territory_discovered));
     }
 
     switch(state)
@@ -643,8 +643,8 @@ void noShip::FoundColony()
         // Neue Arbeit suchen
         gwg->GetPlayer(player).GetJobForShip(this);
     }
-    else //colony founding FAILED - notify ai
-        GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
+    else //colony founding FAILED
+        gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, player, pos));
 }
 
 void noShip::HandleState_GoToHarbor()
@@ -713,10 +713,8 @@ void noShip::HandleState_ExpeditionDriving()
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                SendPostMessage(player, new ShipPostMsg(GAMECLIENT.GetGFNumber(), _("A ship has reached the destination of its expedition."), PMC_GENERAL, *this));
-
-                // KI Event senden
-                GAMECLIENT.SendAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, pos), player);
+                SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A ship has reached the destination of its expedition."), PMC_GENERAL, *this));
+                gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, player, pos));
             }
         } break;
         case NO_ROUTE_FOUND:

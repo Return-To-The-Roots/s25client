@@ -18,7 +18,7 @@
 #ifndef PathfindingPoint_h__
 #define PathfindingPoint_h__
 
-/// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x, y im set mit rumgeschleppt werden müsen
+/// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x, y im set mit rumgeschleppt werden mÃ¼sen
 struct PathfindingPoint
 {
 public:
@@ -28,10 +28,10 @@ public:
     PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay): id_(id), distance_(distance), estimate_(curWay + distance_)
     {}
 
-    /// Operator für den Vergleich
+    /// Operator fÃ¼r den Vergleich
     bool operator<(const PathfindingPoint& rhs) const
     {
-        // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng monoton steigende Folge brauchen
+        // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir fÃ¼r std::set eine streng monoton steigende Folge brauchen
         if(estimate_ == rhs.estimate_)
             return (id_ < rhs.id_);
         else
