@@ -137,10 +137,10 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     unsigned gf_diff = current_ev ? (GetEvMgr().GetCurrentGF() - current_ev->startGF) : pause_walked_gf;
     unsigned evLength = current_ev ? current_ev->length : pause_event_length;
-    unsigned frame_time = current_ev ? GetEvMgr().GetCurrentGF() : 0;
+    unsigned frame_time = current_ev ? GAMECLIENT.GetFrameTime() : 0;
 
     // Convert to real world time
-    const unsigned gfLength = GetEvMgr().GetCurrentGF();
+    const unsigned gfLength = GAMECLIENT.GetGFLength();
     // Time since the start of the event
     unsigned curTimePassed = gf_diff * gfLength + frame_time;
     // Duration of the event
