@@ -51,7 +51,12 @@ struct TestSetup
     }
 };
 
-BOOST_GLOBAL_FIXTURE(TestSetup);
+#if BOOST_VERSION >= 105900
+    BOOST_GLOBAL_FIXTURE(TestSetup);
+#else
+	// Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
+	BOOST_GLOBAL_FIXTURE(TestSetup)
+#endif
 
 BOOST_AUTO_TEST_CASE(Basic)
 {
