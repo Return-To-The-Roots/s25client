@@ -3,8 +3,9 @@
 cd $(dirname $0)
 
 if [ ! "$1" = "interminal" ] ; then
+	scriptPath=$(pwd)
 	echo "#!/bin/sh" > /tmp/rttr.command
-	echo "$0 interminal" >> /tmp/rttr.command
+	echo "$scriptPath/$0 interminal" >> /tmp/rttr.command
 	chmod 0755 /tmp/rttr.command
 	open rttr.terminal
 	sleep 2
@@ -12,7 +13,7 @@ if [ ! "$1" = "interminal" ] ; then
 	exit $?
 fi
 
-export DYLD_LIBRARY_PATH=$(pwd):$DYLD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH="$(pwd):$DYLD_LIBRARY_PATH"
 
 chmod 0755 ../rttr.command ../share/s25rttr/RTTR/s25update ../bin/s25client ../share/s25rttr/RTTR/sound-convert >/dev/null 2>&1
 
