@@ -283,6 +283,9 @@ bool InitProgram()
 
 bool InitDirectories()
 {
+    std::string curPath = boost::filesystem::current_path().string();
+    LOG.lprintf("Starting in %s\n", curPath.c_str());
+
     // diverse dirs anlegen
     const unsigned int dir_count = 7;
     unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
