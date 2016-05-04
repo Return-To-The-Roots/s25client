@@ -67,6 +67,8 @@ class DriverWrapper
     private:
         /// Handle auf die DLL
         HINSTANCE dll;
+        /// Checks if the library is valid. Puts either the name or the error message into nameOrError
+        static bool CheckLibrary(const std::string& path, DriverType dt, std::string& nameOrError);
 };
 
 #endif // DRIVERWRAPPER_H_INCLUDED

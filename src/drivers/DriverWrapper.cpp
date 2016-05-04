@@ -27,10 +27,23 @@
 #include "../driver/src/DriverInterfaceVersion.h"
 #include "Log.h"
 #include "error.h"
+#include "mygettext/src/mygettext.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 #ifndef _WIN32
 #	include <dlfcn.h>
 #endif // _WIN32
+
+namespace{
+    struct DeleterFreeLib
+    {
+        typedef HINSTANCE pointer;
+        void operator()(HINSTANCE dll) const
+        {
+            FreeLibrary(dll);
+        }
+    };
+}
 
 DriverWrapper::DriverWrapper() :  dll(0)
 {
@@ -114,6 +127,42 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
     return GetDLLFunction2(dll, name);
 }
 
+bool DriverWrapper::CheckLibrary(const std::string& path, DriverType dt, std::string& nameOrError)
+{
+    boost::interprocess::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryA(path.c_str()));
+
+    if(!dll)
+    {
+        nameOrError = _("Failed to load library. Check dependencies!");
+        return false;
+    }
+
+    PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>(GetDLLFunction2(dll.get(), "GetDriverAPIVersion"));
+    if(!GetDriverAPIVersion)
+    {
+        nameOrError = _("Not a RTTR driver library!");
+        return false;
+    }
+    if(GetDriverAPIVersion() != DRIVERAPIVERSION)
+    {
+        nameOrError = _("Invalid API version!");
+        return false;
+    }
+
+    PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetDLLFunction2(dll.get(), "GetDriverName"));
+    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(GetDLLFunction2(dll.get(), "CreateAudioInstance"));
+    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(GetDLLFunction2(dll.get(), "CreateVideoInstance"));
+
+    if(!GetDriverName || (dt == DT_VIDEO && !CreateVideoInstance) || (dt == DT_AUDIO && !CreateAudioInstance))
+    {
+        nameOrError = _("Missing required API function");
+        return false;
+    }
+
+    nameOrError = GetDriverName();
+    return true;
+}
+
 std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const DriverType dt)
 {
     std::vector<DriverItem> driver_list;
@@ -132,10 +181,9 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #   endif // !__APPLE__
 #endif // !_WIN32
 
-    LOG.lprintf("searching for drivers in %s\n", path.c_str());
+    LOG.lprintf(_("Searching for drivers in %s\n"), path.c_str());
     std::vector<std::string> driver_files = ListDir(path, extension, false);
 
-    HINSTANCE dll;
     for(std::vector<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
     {
         std::string path(*it);
@@ -154,31 +202,11 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
                 continue;
         }
 #endif
-
-        if( (dll = LoadLibraryA(path.c_str())) )
-        {
-            PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>(GetDLLFunction2(dll, "GetDriverAPIVersion"));
-
-            if(GetDriverAPIVersion && GetDriverAPIVersion() == DRIVERAPIVERSION)
-            {
-                PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetDLLFunction2(dll, "GetDriverName"));
-
-                if(GetDriverName)
-                {
-                    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(GetDLLFunction2(dll, "CreateAudioInstance"));
-                    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(GetDLLFunction2(dll, "CreateVideoInstance"));
-
-                    if((dt == DT_VIDEO && CreateVideoInstance) || (dt == DT_AUDIO && CreateAudioInstance))
-                    {
-                        DriverItem di(*it, GetDriverName());
-                        driver_list.push_back(di);
-                    }
-                }
-            }
-
-            FreeLibrary(dll);
-            dll = 0;
-        }
+        std::string nameOrError;
+        if(!CheckLibrary(path, dt, nameOrError))
+            LOG.lprintf(_("Skipping %s: %s"), path.c_str(), nameOrError.c_str());
+        else
+            driver_list.push_back(DriverItem(path, nameOrError));
     }
     return driver_list;
 }
