@@ -73,7 +73,7 @@ VERSION=$(grep WINDOW_VERSION build_version_defines.h | cut -d ' ' -f 3 | cut -d
 REVISION=$(grep WINDOW_REVISION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
 # get savegame version
-SAVEGAMEVERSION=$(grep Savegame::SAVE_VERSION src/GameSavegame.cpp | cut -d ' ' -f 6 | cut -d \; -f 1)
+SAVEGAMEVERSION=$(grep Savegame::SAVE_VERSION $SRCDIR/src/GameSavegame.cpp | cut -d ' ' -f 6 | cut -d \; -f 1)
 
 if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
 	echo "error: revision is null"
