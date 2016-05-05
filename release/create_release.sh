@@ -186,10 +186,11 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT] ; then
 	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})"' \;) | tee $L
 	
 	# savegame version
+	UPDATERPATH=$(dirname $(find $ARCHNEWDIR/updater -name "s25update*" | head -n 1))
 	S=/tmp/savegameversion.$$
 	echo "reading savegame version"
 	echo $SAVEGAMEVERSION > $S	
-	cp -v $S $ARCHNEWDIR/updater/savegameversion || exit 1	
+	cp -v $S $UPDATERPATH/savegameversion || exit 1	
 	
 	# note hashes
 	F=/tmp/files.$$
