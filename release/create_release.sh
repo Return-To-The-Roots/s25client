@@ -72,6 +72,9 @@ VERSION=$(grep WINDOW_VERSION build_version_defines.h | cut -d ' ' -f 3 | cut -d
 # get revision
 REVISION=$(grep WINDOW_REVISION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
+# get savegame version
+SAVEGAMEVERSION=$(grep Savegame::SAVE_VERSION src/GameSavegame.cpp | cut -d ' ' -f 6 | cut -d \; -f 1)
+
 if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
 	echo "error: revision is null"
 	error
@@ -190,9 +193,15 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT] ; then
 	# bzip files
 	find $ARCHNEWDIR/updater -type f -exec bzip2 -v {} \;
 	
+	# savegame version
+	S=/tmp/savegameversion.$$
+	echo "reading savegame version"
+	echo $SAVEGAMEVERSION > $S	
+	
 	# move file lists
 	mv -v $L $ARCHNEWDIR/updater/links || exit 1
 	mv -v $F $ARCHNEWDIR/updater/files || exit 1
+	mv -v $S $ARCHNEWDIR/updater/savegameversion || exit 1
 
 	# create human version notifier
 	echo "$REVISION" > $ARCHNEWDIR/revision-${REVISION} || exit 1
