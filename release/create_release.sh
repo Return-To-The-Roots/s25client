@@ -189,7 +189,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT] ; then
 	S=/tmp/savegameversion.$$
 	echo "reading savegame version"
 	echo $SAVEGAMEVERSION > $S	
-	mv -v $S $ARCHNEWDIR/updater/savegameversion || exit 1	
+	cp -v $S $ARCHNEWDIR/updater/savegameversion || exit 1	
 	
 	# note hashes
 	F=/tmp/files.$$
@@ -202,6 +202,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT] ; then
 	# move file lists
 	mv -v $L $ARCHNEWDIR/updater/links || exit 1
 	mv -v $F $ARCHNEWDIR/updater/files || exit 1
+	mv -v $S $ARCHNEWDIR/updater/savegameversion || exit 1	
 
 	# create human version notifier
 	echo "$REVISION" > $ARCHNEWDIR/revision-${REVISION} || exit 1
