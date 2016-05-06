@@ -126,7 +126,7 @@ class TerrainRenderer
         /// erzeugt Rand-Vertex
         void UpdateBorderVertex(const MapPoint pt, const GameWorldViewer& gwv);
 
-        /// Erzeugt fertiges Dreieick für OpenGL
+        /// Erzeugt fertiges Dreieck für OpenGL
         void UpdateTrianglePos(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
         void UpdateTriangleColor(const MapPoint pt, const GameWorldViewer& gwv, const bool update);
         void UpdateTriangleTerrain(const MapPoint pt, const GameWorldViewer& gwv, const bool update);

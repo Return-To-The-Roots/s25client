@@ -19,6 +19,7 @@
 #include "glArchivItem_BitmapBase.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
+#include "oglIncludes.h"
 
 /** @class glArchivItem_BitmapBase
  *

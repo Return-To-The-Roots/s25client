@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap.h"
-
+#include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/oglIncludes.h"
 #include <vector>
@@ -30,6 +30,8 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
     : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_BitmapBase(item)
 {
 }
+
+#include <iostream>
 
 /**
  *  Zeichnet die Textur.
@@ -48,45 +50,32 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
     if(dst_h == 0)
         dst_h = src_h;
 
-    VIDEODRIVER.BindTexture(GetTexture());
-
     RTTR_Assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
-    struct GL_T2F_C4UB_V3F_Struct
-    {
-        GLfloat tx, ty;
-        GLubyte r, g, b, a;
-        GLfloat x, y, z;
-    };
-
-    GL_T2F_C4UB_V3F_Struct tmp[4];
+    Point<GLfloat> texCoords[4], vertices[4];
 
     int x = -nx_ + dst_x;
     int y = -ny_ + dst_y;
 
-    tmp[0].x = tmp[1].x = GLfloat(x);
-    tmp[2].x = tmp[3].x = GLfloat(x + dst_w);
+    vertices[0].x = vertices[1].x = GLfloat(x);
+    vertices[2].x = vertices[3].x = GLfloat(x + dst_w);
+    vertices[0].y = vertices[3].y = GLfloat(y);
+    vertices[1].y = vertices[2].y = GLfloat(y + dst_h);
 
-    tmp[0].y = tmp[3].y = GLfloat(y);
-    tmp[1].y = tmp[2].y = GLfloat(y + dst_h);
+    texCoords[0].x = texCoords[1].x = GLfloat(src_x) / tex_width_;
+    texCoords[2].x = texCoords[3].x = GLfloat(src_x + src_w) / tex_width_;
+    texCoords[0].y = texCoords[3].y = GLfloat(src_y) / tex_height_;
+    texCoords[1].y = texCoords[2].y = GLfloat(src_y + src_h) / tex_height_;
 
-    tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0f;
-
-    tmp[0].tx = tmp[1].tx = (GLfloat)src_x / tex_width_;
-    tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / tex_width_;
-
-    tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height_;
-    tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height_;
-
-    tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
-    tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
-    tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
-    tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
-
-    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+    VIDEODRIVER.BindTexture(GetTexture());
+    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, 4);
-
-    return;
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void glArchivItem_Bitmap::FillTexture()

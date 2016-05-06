@@ -23,11 +23,7 @@
 #include "GameManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "dskMainMenu.h"
-class MouseCoords;
-/** @class dskSplash
- *
- *  Klasse des Splashscreen Desktops.
- */
+#include "ogl/oglIncludes.h"
 
 dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))
 {

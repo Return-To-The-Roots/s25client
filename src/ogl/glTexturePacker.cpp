@@ -20,6 +20,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "oglIncludes.h"
 #include <algorithm>
 
 glTexturePacker::~glTexturePacker()

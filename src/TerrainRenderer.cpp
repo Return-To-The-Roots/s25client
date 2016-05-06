@@ -846,8 +846,15 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     }
     glPopMatrix();
 
+    // unbind VBO
+    if(vboBuffersUsed)
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+
     DrawWays(sorted_roads);
 
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
     // Wieder zurück ins normale modulate
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
@@ -890,13 +897,6 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) con
     RTTR_Assert(ptOut.x < width && ptOut.y < height);
     return ptOut;
 }
-
-struct GL_T2F_C3F_V3F_Struct
-{
-    GLfloat tx, ty;
-    GLfloat r, g, b;
-    GLfloat x, y, z;
-};
 
 void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldView& gwv, MapPoint t, const PointI& offset)
 {
@@ -965,6 +965,13 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
     }
 }
 
+struct Tex2C3Ver2
+{
+    GLfloat tx, ty;
+    GLfloat r, g, b;
+    GLfloat x, y;
+};
+
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
 {
     // 2D Array: [3][4]
@@ -986,82 +993,72 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         PointI( 3,  3)
     }};
 
-    if (vboBuffersUsed)
-    {
-        // unbind VBO
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-    }
+    size_t maxSize = 0;
+    for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad)
+        maxSize = std::max(maxSize, itRoad->size());
+
+    if(maxSize == 0)
+        return;
+
+    boost::scoped_array<Tex2C3Ver2> vertexData(new Tex2C3Ver2[maxSize * 4]);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glVertexPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].x);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].tx);
+    glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
     int type = 0;
     for (PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
-        unsigned int i = 0;
-        boost::scoped_array<GL_T2F_C3F_V3F_Struct> tmp(new GL_T2F_C3F_V3F_Struct[itRoad->size() * 4]);
+        Tex2C3Ver2* curVertexData = vertexData.get();
 
         for (std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
         {
             RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
-            tmp[i].tx = 0.0f;
-            tmp[i].ty = 0.0f;
-
-            tmp[i].r = it->color1;
-            tmp[i].g = it->color1;
-            tmp[i].b = it->color1;
-
+            curVertexData->tx = 0.0f;
+            curVertexData->ty = 0.0f;
+            curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
             PointI tmpP = it->pos + begin_end_coords[it->dir * 4];
-            tmp[i].x = GLfloat(tmpP.x);
-            tmp[i].y = GLfloat(tmpP.y);
-            tmp[i].z = 0.0f;
+            curVertexData->x = GLfloat(tmpP.x);
+            curVertexData->y = GLfloat(tmpP.y);
 
-            i++;
+            curVertexData++;
 
-            tmp[i].tx = 0.0f;
-            tmp[i].ty = 1.0f;
-
-            tmp[i].r = it->color1;
-            tmp[i].g = it->color1;
-            tmp[i].b = it->color1;
-
+            curVertexData->tx = 0.0f;
+            curVertexData->ty = 1.0f;
+            curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
             tmpP = it->pos + begin_end_coords[it->dir * 4 + 1];
-            tmp[i].x = GLfloat(tmpP.x);
-            tmp[i].y = GLfloat(tmpP.y);
-            tmp[i].z = 0.0f;
+            curVertexData->x = GLfloat(tmpP.x);
+            curVertexData->y = GLfloat(tmpP.y);
 
-            i++;
+            curVertexData++;
 
-            tmp[i].tx = 0.78f;
-            tmp[i].ty = 1.0f;
-
-            tmp[i].r = it->color2;
-            tmp[i].g = it->color2;
-            tmp[i].b = it->color2;
-
+            curVertexData->tx = 0.78f;
+            curVertexData->ty = 1.0f;
+            curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 2];
-            tmp[i].x = GLfloat(tmpP.x);
-            tmp[i].y = GLfloat(tmpP.y);
-            tmp[i].z = 0.0f;
+            curVertexData->x = GLfloat(tmpP.x);
+            curVertexData->y = GLfloat(tmpP.y);
 
-            i++;
+            curVertexData++;
 
-            tmp[i].tx = 0.78f;
-            tmp[i].ty = 0.0f;
-
-            tmp[i].r = it->color2;
-            tmp[i].g = it->color2;
-            tmp[i].b = it->color2;
-
+            curVertexData->tx = 0.78f;
+            curVertexData->ty = 0.0f;
+            curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 3];
-            tmp[i].x = GLfloat(tmpP.x);
-            tmp[i].y = GLfloat(tmpP.y);
-            tmp[i].z = 0.0f;
+            curVertexData->x = GLfloat(tmpP.x);
+            curVertexData->y = GLfloat(tmpP.y);
 
-            i++;
+            curVertexData++;
         }
 
-        glInterleavedArrays(GL_T2F_C3F_V3F, 0, tmp.get());
         VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(type))->GetTexture());
-        glDrawArrays(GL_QUADS, 0, i);
+        glDrawArrays(GL_QUADS, 0, itRoad->size() * 4);
     }
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv)

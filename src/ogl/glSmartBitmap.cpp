@@ -22,6 +22,7 @@
 #include "libsiedler2/src/ArchivItem_Bitmap.h"
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
+#include "oglIncludes.h"
 #include <limits>
 #include <climits>
 
@@ -214,14 +215,14 @@ void glSmartBitmap::generateTexture()
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stride, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
 
-    tmpTexData[0].tx = tmpTexData[1].tx = 0.0f;
-    tmpTexData[2].tx = tmpTexData[3].tx = hasPlayer ? 0.5f : 1.0f;
+    texCoords[0].x = texCoords[1].x = 0.0f;
+    texCoords[2].x = texCoords[3].x = hasPlayer ? 0.5f : 1.0f;
 
-    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[4].ty = tmpTexData[7].ty = 0.0f;
-    tmpTexData[1].ty = tmpTexData[2].ty = tmpTexData[5].ty = tmpTexData[6].ty = 1.0f;
+    texCoords[0].y = texCoords[3].y = texCoords[4].y = texCoords[7].y = 0.0f;
+    texCoords[1].y = texCoords[2].y = texCoords[5].y = texCoords[6].y = 1.0f;
 
-    tmpTexData[4].tx = tmpTexData[5].tx = 0.5f;
-    tmpTexData[6].tx = tmpTexData[7].tx = 1.0f;
+    texCoords[4].x = texCoords[5].x = 0.5f;
+    texCoords[6].x = texCoords[7].x = 1.0f;
 }
 
 void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
@@ -245,43 +246,60 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
     RTTR_Assert(percent <= 100);
 
     const float partDrawn = percent / 100.f;
+    Point<GLfloat> vertices[8], curTexCoords[8];
+    struct
+    {
+        GLbyte r, g, b, a;
+    } colors[8];
 
-    tmpTexData[0].x = tmpTexData[1].x = GLfloat(x - nx);
-    tmpTexData[2].x = tmpTexData[3].x = GLfloat(x - nx + w);
+    vertices[0].x = vertices[1].x = GLfloat(x - nx);
+    vertices[2].x = vertices[3].x = GLfloat(x - nx + w);
 
-    tmpTexData[0].y = tmpTexData[3].y = GLfloat(y - ny + h - h * partDrawn);
-    tmpTexData[1].y = tmpTexData[2].y = GLfloat(y - ny + h);
+    vertices[0].y = vertices[3].y = GLfloat(y - ny + h - h * partDrawn);
+    vertices[1].y = vertices[2].y = GLfloat(y - ny + h);
 
-    tmpTexData[0].r = tmpTexData[1].r = tmpTexData[2].r = tmpTexData[3].r = GetRed(color);
-    tmpTexData[0].g = tmpTexData[1].g = tmpTexData[2].g = tmpTexData[3].g = GetGreen(color);
-    tmpTexData[0].b = tmpTexData[1].b = tmpTexData[2].b = tmpTexData[3].b = GetBlue(color);
-    tmpTexData[0].a = tmpTexData[1].a = tmpTexData[2].a = tmpTexData[3].a = GetAlpha(color);
+    colors[0].r = GetRed(color);
+    colors[0].g = GetGreen(color);
+    colors[0].b = GetBlue(color);
+    colors[0].a = GetAlpha(color);
+    colors[3] = colors[2] = colors[1] = colors[0];
 
-    float oldTy0 = tmpTexData[0].ty;
-    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[1].ty - (tmpTexData[1].ty - tmpTexData[0].ty) * partDrawn;
+    curTexCoords[0] = texCoords[0];
+    curTexCoords[1] = texCoords[1];
+    curTexCoords[2] = texCoords[2];
+    curTexCoords[3] = texCoords[3];
+    curTexCoords[0].y = curTexCoords[3].y = curTexCoords[1].y - (curTexCoords[1].y - curTexCoords[0].y) * partDrawn;
 
     int numQuads;
     if (player_color && hasPlayer)
     {
-        tmpTexData[4].x = tmpTexData[5].x = tmpTexData[0].x;
-        tmpTexData[6].x = tmpTexData[7].x = tmpTexData[2].x;
-        tmpTexData[4].y = tmpTexData[7].y = tmpTexData[0].y;
-        tmpTexData[5].y = tmpTexData[6].y = tmpTexData[1].y;
+        std::copy(vertices, vertices + 4, vertices + 4);
 
-        tmpTexData[4].r = tmpTexData[5].r = tmpTexData[6].r = tmpTexData[7].r = GetRed(player_color);
-        tmpTexData[4].g = tmpTexData[5].g = tmpTexData[6].g = tmpTexData[7].g = GetGreen(player_color);
-        tmpTexData[4].b = tmpTexData[5].b = tmpTexData[6].b = tmpTexData[7].b = GetBlue(player_color);
-        tmpTexData[4].a = tmpTexData[5].a = tmpTexData[6].a = tmpTexData[7].a = GetAlpha(player_color);
+        colors[4].r = GetRed(player_color);
+        colors[4].g = GetGreen(player_color);
+        colors[4].b = GetBlue(player_color);
+        colors[4].a = GetAlpha(player_color);
+        colors[7] = colors[6] = colors[5] = colors[4];
 
-        tmpTexData[4].ty = tmpTexData[7].ty = tmpTexData[0].ty;
+        curTexCoords[4] = texCoords[4];
+        curTexCoords[5] = texCoords[5];
+        curTexCoords[6] = texCoords[6];
+        curTexCoords[7] = texCoords[7];
+        curTexCoords[4].y = curTexCoords[7].y = curTexCoords[0].y;
 
         numQuads = 8;
     } else
         numQuads = 4;
 
-    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmpTexData);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glTexCoordPointer(2, GL_FLOAT, 0, curTexCoords);
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
     VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, numQuads);
-
-    tmpTexData[0].ty = tmpTexData[3].ty = tmpTexData[4].ty = tmpTexData[7].ty = oldTy0;
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 }

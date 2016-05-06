@@ -54,14 +54,14 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer
 
             b->drawTo(buffer, gw, gh, current->x, current->y);
 
-            b->tmpTexData[0].tx = b->tmpTexData[1].tx = (float)current->x / (float)gw;
-            b->tmpTexData[2].tx = b->tmpTexData[3].tx = b->isPlayer() ? (float)(current->x + current->w / 2) / (float)gw : (float)(current->x + current->w) / (float)gw;
+            b->texCoords[0].x = b->texCoords[1].x = (float)current->x / (float)gw;
+            b->texCoords[2].x = b->texCoords[3].x = b->isPlayer() ? (float)(current->x + current->w / 2) / (float)gw : (float)(current->x + current->w) / (float)gw;
 
-            b->tmpTexData[0].ty = b->tmpTexData[3].ty = b->tmpTexData[4].ty = b->tmpTexData[7].ty = (float)current->y / (float)gh;
-            b->tmpTexData[1].ty = b->tmpTexData[2].ty = b->tmpTexData[5].ty = b->tmpTexData[6].ty = (float)(current->y + current->h) / (float)gh;
+            b->texCoords[0].y = b->texCoords[3].y = b->texCoords[4].y = b->texCoords[7].y = (float)current->y / (float)gh;
+            b->texCoords[1].y = b->texCoords[2].y = b->texCoords[5].y = b->texCoords[6].y = (float)(current->y + current->h) / (float)gh;
 
-            b->tmpTexData[4].tx = b->tmpTexData[5].tx = (float)(current->x + current->w / 2) / (float)gw;
-            b->tmpTexData[6].tx = b->tmpTexData[7].tx = (float)(current->x + current->w) / (float)gw;
+            b->texCoords[4].x = b->texCoords[5].x = (float)(current->x + current->w / 2) / (float)gw;
+            b->texCoords[6].x = b->texCoords[7].x = (float)(current->x + current->w) / (float)gw;
 
             return true;
         }

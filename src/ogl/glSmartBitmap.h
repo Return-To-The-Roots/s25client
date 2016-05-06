@@ -21,7 +21,7 @@
 #pragma once
 
 #include "ogl/glBitmapItem.h"
-#include "ogl/oglIncludes.h"
+#include "Point.h"
 #include <vector>
 #include <stdint.h>
 
@@ -42,23 +42,12 @@ class glSmartBitmap
 
         bool hasPlayer;
 
-        struct GL_T2F_C4UB_V3F_Struct
-        {
-            GLfloat tx, ty;
-            GLubyte r, g, b, a;
-            GLfloat x, y, z;
-        };
-
         std::vector<glBitmapItem> items;
 
     public:
-        GL_T2F_C4UB_V3F_Struct tmpTexData[8];
+        Point<float> texCoords[8];
 
-        glSmartBitmap() : w(0), h(0), nx(0), ny(0), sharedTexture(false), texture(0), hasPlayer(false)
-        {
-            tmpTexData[0].z = tmpTexData[1].z = tmpTexData[2].z = tmpTexData[3].z = 0.0f;
-            tmpTexData[4].z = tmpTexData[5].z = tmpTexData[6].z = tmpTexData[7].z = 0.0f;
-        }
+        glSmartBitmap() : w(0), h(0), nx(0), ny(0), sharedTexture(false), texture(0), hasPlayer(false) {}
         ~glSmartBitmap();
         void reset();
 
@@ -88,7 +77,5 @@ class glSmartBitmap
 
         static unsigned nextPowerOfTwo(unsigned k);
 };
-
-
 
 #endif

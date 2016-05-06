@@ -17,9 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Player.h"
-
+#include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
+#include "oglIncludes.h"
 #include <vector>
 
 void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color, const unsigned int player_color)
@@ -36,57 +37,58 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
     if(dst_h == 0)
         dst_h = src_h;
 
-    struct GL_T2F_C4UB_V3F_Struct
-    {
-        GLfloat tx, ty;
-        GLubyte r, g, b, a;
-        GLfloat x, y, z;
-    };
-
-    GL_T2F_C4UB_V3F_Struct tmp[8];
-
-    tmp[0].z = tmp[1].z = tmp[2].z = tmp[3].z = 0.0;
+    Point<GLfloat> texCoords[8], vertices[8];
 
     int x = -nx_ + dst_x;
     int y = -ny_ + dst_y;
 
-    tmp[0].x = tmp[1].x = GLfloat(x);
-    tmp[2].x = tmp[3].x = GLfloat(x + dst_w);
+    vertices[0].x = vertices[1].x = GLfloat(x);
+    vertices[2].x = vertices[3].x = GLfloat(x + dst_w);
 
-    tmp[0].y = tmp[3].y = GLfloat(y);
-    tmp[1].y = tmp[2].y = GLfloat(y + dst_h);
+    vertices[0].y = vertices[3].y = GLfloat(y);
+    vertices[1].y = vertices[2].y = GLfloat(y + dst_h);
 
-    tmp[0].tx = tmp[1].tx = (GLfloat)(src_x) / (GLfloat)tex_width_ / 2.0f;
-    tmp[2].tx = tmp[3].tx = (GLfloat)(src_x + src_w) / (GLfloat)tex_width_ / 2.0f;
+    texCoords[0].x = texCoords[1].x = (GLfloat)(src_x) / (GLfloat)tex_width_ / 2.0f;
+    texCoords[2].x = texCoords[3].x = (GLfloat)(src_x + src_w) / (GLfloat)tex_width_ / 2.0f;
 
-    tmp[0].ty = tmp[3].ty = (GLfloat)src_y / tex_height_;
-    tmp[1].ty = tmp[2].ty = (GLfloat)(src_y + src_h) / tex_height_;
+    texCoords[0].y = texCoords[3].y = (GLfloat)src_y / tex_height_;
+    texCoords[1].y = texCoords[2].y = (GLfloat)(src_y + src_h) / tex_height_;
 
-    tmp[4] = tmp[0];
-    tmp[5] = tmp[1];
-    tmp[6] = tmp[2];
-    tmp[7] = tmp[3];
+    std::copy(vertices, vertices + 4, vertices + 4);
+    std::copy(texCoords, texCoords + 4, texCoords + 4);
 
-    tmp[4].tx += 0.5;
-    tmp[5].tx += 0.5;
-    tmp[6].tx += 0.5;
-    tmp[7].tx += 0.5;
+    texCoords[4].x += 0.5;
+    texCoords[5].x += 0.5;
+    texCoords[6].x += 0.5;
+    texCoords[7].x += 0.5;
 
-    tmp[0].r = tmp[1].r = tmp[2].r = tmp[3].r = GetRed(color);
-    tmp[0].g = tmp[1].g = tmp[2].g = tmp[3].g = GetGreen(color);
-    tmp[0].b = tmp[1].b = tmp[2].b = tmp[3].b = GetBlue(color);
-    tmp[0].a = tmp[1].a = tmp[2].a = tmp[3].a = GetAlpha(color);
+    struct
+    {
+        GLbyte r, g, b, a;
+    } colors[8];
+    colors[0].r = GetRed(color);
+    colors[0].g = GetGreen(color);
+    colors[0].b = GetBlue(color);
+    colors[0].a = GetAlpha(color);
+    colors[3] = colors[2] = colors[1] = colors[0];
 
-    tmp[4].r = tmp[5].r = tmp[6].r = tmp[7].r = GetRed(player_color);
-    tmp[4].g = tmp[5].g = tmp[6].g = tmp[7].g = GetGreen(player_color);
-    tmp[4].b = tmp[5].b = tmp[6].b = tmp[7].b = GetBlue(player_color);
-    tmp[4].a = tmp[5].a = tmp[6].a = tmp[7].a = GetAlpha(player_color);
+    colors[4].r = GetRed(player_color);
+    colors[4].g = GetGreen(player_color);
+    colors[4].b = GetBlue(player_color);
+    colors[4].a = GetAlpha(player_color);
+    colors[7] = colors[6] = colors[5] = colors[4];
 
-    glInterleavedArrays(GL_T2F_C4UB_V3F, 0, tmp);
-
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
     VIDEODRIVER.BindTexture(GetTexture());
-
     glDrawArrays(GL_QUADS, 0, 8);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void glArchivItem_Bitmap_Player::FillTexture()
