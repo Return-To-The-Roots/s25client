@@ -482,7 +482,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const Point<int> pos, 
     {
         if(boundary_stones[i + 1])
         {
-            Point<int> tmp = pos - Point<int>((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetTerrainAround(pt, 3 + i)) / 2.0f);
+            Point<int> tmp = pos - Point<int>((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetNeighbourPos(pt, 3 + i)) / 2.0f);
 
             LOADER.boundary_stone_cache[nation].draw(
                 tmp.x, tmp.y,

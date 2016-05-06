@@ -68,7 +68,7 @@ TerrainRenderer::~TerrainRenderer()
     }
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetTerrainAround(MapPoint pt, const unsigned dir)
+TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsigned dir)
 {
     PointI ptNb = GetNeighbour(PointI(pt), Direction::fromInt(dir));
 
@@ -145,18 +145,17 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
 void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv)
 {
     const MapNode& node = gwv.GetNode(pt);
-    GetVertex(pt).terrain[0] = node.t1;
-    GetVertex(pt).terrain[1] = node.t2;
+    terrain[GetVertexIdx(pt)][0] = node.t1;
+    terrain[GetVertexIdx(pt)][1] = node.t2;
 }
 
 void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    /// @todo GetTerrainX und Co durch GetTerrainXA ausdrücken
     Vertex& vertex = GetVertex(pt);
-    vertex.borderPos[0] = ( GetTerrainAround(pt, 5) + GetNodePos(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
+    vertex.borderPos[0] = ( GetNeighbourPos(pt, 5) + GetNodePos(pt) + GetNeighbourPos(pt, 4) ) / 3.0f;
     vertex.borderColor[0] = ( GetColor(gwv.GetNeighbour(pt, Direction::SOUTHWEST)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
 
-    vertex.borderPos[1] = ( GetTerrainAround(pt, 3) + GetNodePos(pt) + GetTerrainAround(pt, 4) ) / 3.0f;
+    vertex.borderPos[1] = ( GetNeighbourPos(pt, 3) + GetNodePos(pt) + GetNeighbourPos(pt, 4) ) / 3.0f;
     vertex.borderColor[1] = ( GetColor(gwv.GetNeighbour(pt, Direction::EAST)) + GetColor(pt) + GetColor(gwv.GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
 }
 
@@ -259,21 +258,19 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     }
 }
 
-/// Erzeugt fertiges Dreieick für OpenGL
-
 void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer&  /*gwv*/, const bool update)
 {
     unsigned int pos = GetTriangleIdx(pt);
 
-    gl_vertices[pos][0] = GetTerrainAround(pt, 4);
+    gl_vertices[pos][0] = GetNeighbourPos(pt, 4);
     gl_vertices[pos][1] = GetNodePos(pt);
-    gl_vertices[pos][2] = GetTerrainAround(pt, 5);
+    gl_vertices[pos][2] = GetNeighbourPos(pt, 5);
 
     ++pos;
 
     gl_vertices[pos][0] = GetNodePos(pt);
-    gl_vertices[pos][1] = GetTerrainAround(pt, 4);
-    gl_vertices[pos][2] = GetTerrainAround(pt, 3);
+    gl_vertices[pos][1] = GetNeighbourPos(pt, 4);
+    gl_vertices[pos][2] = GetNeighbourPos(pt, 3);
 
     if(update && vboBuffersUsed)
     {
@@ -410,7 +407,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorld
             first_offset = offset;
 
         gl_vertices[offset][i ? 0 : 2] = GetNodePos(pt);
-        gl_vertices[offset][1        ] = GetTerrainAround(pt, 4);
+        gl_vertices[offset][1        ] = GetNeighbourPos(pt, 4);
         gl_vertices[offset][i ? 2 : 0] = GetB(pt, i);
 
         ++count_borders;
@@ -426,8 +423,8 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorld
         if(!first_offset)
             first_offset = offset;
 
-        gl_vertices[offset][i ? 2 : 0] = GetTerrainAround(pt, 4);
-        gl_vertices[offset][1        ] = GetTerrainAround(pt, 3);
+        gl_vertices[offset][i ? 2 : 0] = GetNeighbourPos(pt, 4);
+        gl_vertices[offset][1        ] = GetNeighbourPos(pt, 3);
 
         if(i == 0)
             gl_vertices[offset][2] = GetB(pt, 1);
@@ -447,8 +444,8 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorld
         if(!first_offset)
             first_offset = offset;
 
-        gl_vertices[offset][i ? 2 : 0] = GetTerrainAround(pt, 5);
-        gl_vertices[offset][1        ] = GetTerrainAround(pt, 4);
+        gl_vertices[offset][i ? 2 : 0] = GetNeighbourPos(pt, 5);
+        gl_vertices[offset][1        ] = GetNeighbourPos(pt, 4);
 
         if(i == 0)
             gl_vertices[offset][2] = GetB(pt, i);
