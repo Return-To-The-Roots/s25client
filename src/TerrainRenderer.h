@@ -19,14 +19,15 @@
 
 #include "gameTypes/MapTypes.h"
 #include "Point.h"
-#include <vector>
 #include <boost/array.hpp>
+#include <boost/core/noncopyable.hpp>
+#include <vector>
 
 class GameWorldViewer;
 class GameWorldView;
 
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
-class TerrainRenderer
+class TerrainRenderer: private boost::noncopyable
 {
         typedef Point<float> PointF;
         typedef Point<int> PointI;
@@ -149,7 +150,6 @@ class TerrainRenderer
 
         void DrawWays(const PreparedRoads& sorted_roads);
 
-
     public:
 
         TerrainRenderer();
@@ -157,7 +157,6 @@ class TerrainRenderer
 
         /// erzeugt die OpenGL-Vertices.
         void GenerateOpenGL(const GameWorldViewer& gwv);
-
 
         /// zeichnet den Kartenausschnitt.
         void Draw(const GameWorldView& gwv, unsigned int* water);
@@ -177,8 +176,6 @@ class TerrainRenderer
 
         /// Berechnet Schattierungen der gesamten Map neu
         void UpdateAllColors(const GameWorldViewer& gwv);
-
 };
-
 
 #endif

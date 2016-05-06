@@ -42,7 +42,7 @@ void GameWorldViewer::SubscribeToEvents()
     // Notify renderer about altitude changes
     evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>(
         bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::Altitude)
-        [bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pt, _1), *this)]
+        [bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pt, _1), boost::cref(*this))]
     );
     // And visibility changes
     evVisibilityChanged = gwb.GetNotifications().subscribe<PlayerNodeNote>(
