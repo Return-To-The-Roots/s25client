@@ -63,9 +63,8 @@ TerrainRenderer::~TerrainRenderer()
 {
     if(vboBuffersUsed)
     {
-        glDeleteBuffersARB(1, (const GLuint*)&vbo_vertices);
-        glDeleteBuffersARB(1, (const GLuint*)&vbo_texcoords);
-        glDeleteBuffersARB(1, (const GLuint*)&vbo_colors);
+        const GLuint vbos[3] = {vbo_vertices, vbo_texcoords, vbo_colors};
+        glDeleteBuffersARB(3, vbos);
     }
 }
 
@@ -89,9 +88,6 @@ TerrainRenderer::PointF TerrainRenderer::GetBAround(const MapPoint pt, const uns
     return GetB(t, triangle) + PointF(offset);
 }
 
-/**
- *  erzeugt die Terrain-Vertices.
- */
 void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 {
     vertices.clear();
@@ -120,12 +116,10 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
     }
 }
 
-/// erzeugt Vertex
 void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv)
 {
     GetVertex(pt).pos = Point<float>(gwv.GetWorld().GetNodePos(pt));
 }
-
 
 void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv)
 {
@@ -155,7 +149,6 @@ void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldView
     GetVertex(pt).terrain[1] = node.t2;
 }
 
-/// erzeugt Rand-Vertex
 void TerrainRenderer::UpdateBorderVertex(const MapPoint pt, const GameWorldViewer& gwv)
 {
     /// @todo GetTerrainX und Co durch GetTerrainXA ausdrücken
@@ -243,31 +236,26 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 
     if(SETTINGS.video.vbo)
     {
-        // Generiere und Binde den Vertex Buffer
-        glGenBuffersARB(1, (GLuint*)&vbo_vertices);
+        // Create and fill the 3 VBOs for vertices, texCoords and colors
+        GLuint vbos[3];
+        glGenBuffersARB(3, vbos);
+        BOOST_STATIC_ASSERT_MSG(sizeof(vbo_vertices) >= sizeof(GLuint), "Cannot store Gluint in vbo variable!");
+        vbo_vertices = vbos[0];
+        vbo_texcoords = vbos[1];
+        vbo_colors = vbos[2];
+
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_vertices.size() * sizeof(Triangle), &gl_vertices.front(), GL_STATIC_DRAW_ARB);
-        glVertexPointer(2, GL_FLOAT, 0, NULL);
 
-        // Generiere und Binde den Textur Koordinaten Buffer
-        glGenBuffersARB(1, (GLuint*)&vbo_texcoords);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_texcoords.size() * sizeof(Triangle), &gl_texcoords.front(), GL_STATIC_DRAW_ARB );
-        glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_texcoords.size() * sizeof(Triangle), &gl_texcoords.front(), GL_STATIC_DRAW_ARB);
 
-        // Generiere und Binde den Color Buffer
-        glGenBuffersARB(1, (GLuint*)&vbo_colors);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB );
-        glColorPointer(3, GL_FLOAT, 0, NULL);
-
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB);
+        
+        // Unbind VBO to not interfere with other program parts
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
         vboBuffersUsed = true;
-    }
-    else
-    {
-        glVertexPointer(2, GL_FLOAT, 0, &gl_vertices.front());
-        glTexCoordPointer(2, GL_FLOAT, 0, &gl_texcoords.front());
-        glColorPointer(3, GL_FLOAT, 0, &gl_colors.front());
     }
 }
 
@@ -291,6 +279,7 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, const GameWorldViewer
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_vertices[pos - 1]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -315,11 +304,11 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, const GameWorldView
     clr5.r = clr5.g = clr5.b = GetColor(gwv.GetNeighbour(pt, Direction::EAST));
 
 
-    /// Bei Vertexbuffern das die Daten aktualisieren
     if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(ColorTriangle), 2 * sizeof(ColorTriangle), &gl_colors[pos - 1]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -390,11 +379,11 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, const GameWorldVi
         texCoord2[0].y = texCoord2[2].y;
     }
 
-    /// Bei Vertexbuffern das die Daten aktualisieren
     if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_texcoords[pos - 1]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -469,11 +458,11 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, const GameWorld
         ++count_borders;
     }
 
-    /// Bei Vertexbuffern das die Daten aktualisieren
     if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_vertices[first_offset]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -546,11 +535,11 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const GameWor
         ++count_borders;
     }
 
-    /// Bei Vertexbuffern das die Daten aktualisieren
     if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(ColorTriangle), count_borders * sizeof(ColorTriangle), &gl_colors[first_offset]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -619,11 +608,11 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const GameW
         }
     }
 
-    /// Bei Vertexbuffern das die Daten aktualisieren
     if(update && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
         glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_texcoords[first_offset]);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
 
@@ -634,22 +623,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 {
     RTTR_Assert(!gl_vertices.empty());
     RTTR_Assert(!borders.empty());
-
-    /*  if ((gwv.GetXOffset() == gwv.terrain_last_xoffset) && (gwv.GetYOffset() == gwv.terrain_last_yoffset) && (gwv.terrain_list != 0) && (GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) == gwv.terrain_last_global_animation))
-        {
-            glCallList(gwv.terrain_list);
-            *water = gwv.terrain_last_water;
-            return;
-        }
-
-        gwv.terrain_last_xoffset = gwv.GetXOffset();
-        gwv.terrain_last_yoffset = gwv.GetYOffset();
-        gwv.terrain_last_global_animation = GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0);
-
-        if (gwv.terrain_list == 0)
-            gwv.terrain_list = glGenLists(1);
-
-        glNewList(gwv.terrain_list, GL_COMPILE_AND_EXECUTE);*/
 
     // nach Texture in Listen sortieren
     boost::array< std::vector<MapTile>, TT_COUNT> sorted_textures;
@@ -763,16 +736,21 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
 
     lastOffset = PointI(0, 0);
 
+    // Arrays aktivieren
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
     if(vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-        glVertexPointer(2, GL_FLOAT, 0, NULL);
+        glVertexPointer(2, GL_FLOAT, 0, 0);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-        glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+        glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glColorPointer(3, GL_FLOAT, 0, NULL);
+        glColorPointer(3, GL_FLOAT, 0, 0);
     }
     else
     {
@@ -780,11 +758,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
         glTexCoordPointer(2, GL_FLOAT, 0, &gl_texcoords.front());
         glColorPointer(3, GL_FLOAT, 0, &gl_colors.front());
     }
-
-    // Arrays aktivieren
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
 
     // Modulate2x
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -861,15 +834,6 @@ void TerrainRenderer::Draw(const GameWorldView& gwv, unsigned int* water)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
-
-/**
- *  Konvertiert die Koordinaten.
- *
- *  @param[in,out] x  Die X-Koordinate
- *  @param[in,out] y  Die Y-Koordinate
- *  @param[out]    xo Das X-Offset
- *  @param[out]    yo Das Y-Offset
- */
 MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) const
 {
     MapPoint ptOut;
@@ -1003,9 +967,10 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         return;
 
     boost::scoped_array<Tex2C3Ver2> vertexData(new Tex2C3Ver2[maxSize * 4]);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+    // These should still be enabled
+    RTTR_Assert(glIsEnabled(GL_VERTEX_ARRAY));
+    RTTR_Assert(glIsEnabled(GL_TEXTURE_COORD_ARRAY));
+    RTTR_Assert(glIsEnabled(GL_COLOR_ARRAY));
     glVertexPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].x);
     glTexCoordPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].tx);
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
@@ -1058,9 +1023,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
         VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(type))->GetTexture());
         glDrawArrays(GL_QUADS, 0, itRoad->size() * 4);
     }
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+    // Note: No glDisableClientState as we did not enable it
 }
 
 void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv)
@@ -1156,12 +1119,8 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 
     if(vboBuffersUsed)
     {
-        // Generiere und Binde den Color Buffer
-        glGenBuffersARB(1, (GLuint*)&vbo_colors);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB );
-        glColorPointer(3, GL_FLOAT, 0, NULL);
+        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
-    else
-        glColorPointer(3, GL_FLOAT, 0, &gl_colors.front());
 }
