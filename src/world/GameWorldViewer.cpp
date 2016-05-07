@@ -84,7 +84,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 
 BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 {
-    return GetWorld().GetBQ(pt, player_);
+    return GetWorld().GetBQ(pt, player_, true);
 }
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const

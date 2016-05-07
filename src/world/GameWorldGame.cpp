@@ -105,7 +105,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
  */
 void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char type)
 {
-    RTTR_Assert(dir < 6);
+    RTTR_Assert(dir < 3);
 
     // Virtuelle Straße setzen
     SetVirtualRoad(pt, dir, type);

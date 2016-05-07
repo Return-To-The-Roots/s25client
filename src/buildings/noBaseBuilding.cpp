@@ -44,7 +44,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(!gwg->GetPointRoad(pos, 4))
+    if(!gwg->GetPointRoad(pos, 4, false))
     {
         gwg->SetPointRoad(pos, 4, 1);
 

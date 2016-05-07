@@ -404,18 +404,12 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
     // FOW-Objekt erzeugen
     noBase* obj = GetNO(pt);
-    delete fow.object;
+    deletePtr(fow.object);
     fow.object = obj->CreateFOWObject();
-
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(unsigned i = 0; i < 3; ++i)
-    {
-        if(GetNode(pt).roads_real[i])
-            fow.roads[i] = GetNode(pt).roads[i];
-        else
-            fow.roads[i] = 0;
-    }
+        fow.roads[i] = GetNode(pt).roads_real[i];
 
     // Store ownership so FoW boundary stones can be drawn
     fow.owner = GetNode(pt).owner;
@@ -472,27 +466,22 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
     return MapPoint(0xFFFF, 0xFFFF);
 }
 
-unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
+unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool visual) const
 {
-    RTTR_Assert(pt.x < width_ && pt.y < height_);
     RTTR_Assert(dir < 3);
 
     const MapNode& node = GetNode(pt);
-    // It must be a real road or virtual roads must be allowed
-    if(all || node.roads_real[(unsigned)dir])
-        return node.roads[(unsigned)dir];
-
-    return 0;
+    return visual ? node.roads[dir] : node.roads_real[dir];
 }
 
-unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
+unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool visual) const
 {
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        return GetRoad(pt, dir - 3, all);
+        return GetRoad(pt, dir - 3, visual);
     else
-        return GetRoad(GetNeighbour(pt, dir), dir, all);
+        return GetRoad(GetNeighbour(pt, dir), dir, visual);
 }
 
 unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
@@ -500,7 +489,7 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        dir = dir - 3;
+        dir -= 3;
     else
         pt = GetNeighbour(pt, dir);
 
@@ -570,7 +559,7 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
 
 void World::ApplyRoad(const MapPoint pt, unsigned char dir)
 {
-    GetNodeInt(pt).roads_real[dir] = GetNode(pt).roads[dir] != 0;
+    GetNodeInt(pt).roads_real[dir] = GetNode(pt).roads[dir];
 }
 
 void World::SetBQ(const MapPoint pt, BuildingQuality bq, BuildingQuality bqVisual)

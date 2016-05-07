@@ -31,9 +31,9 @@ class SerializedGameData;
 /// Eigenschaften von einem Punkt auf der Map
 struct MapNode
 {
-    /// Roads
+    /// Roads from this point: E, SE, SW
     boost::array<unsigned char, 3> roads;
-    boost::array<bool, 3> roads_real;
+    boost::array<unsigned char, 3> roads_real;
     /// Height
     unsigned char altitude;
     /// Schattierung

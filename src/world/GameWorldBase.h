@@ -75,7 +75,7 @@ public:
 
     /// Kann a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road
-    bool RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual = true) const;
+    bool RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual) const;
     /// Pr�ft ob exakt die gleiche Stra�e schon gebaut wurde
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
 

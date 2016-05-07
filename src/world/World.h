@@ -169,7 +169,7 @@ public:
     /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
     bool IsPlayerTerritory(const MapPoint pt) const;
     /// Returns the BQ for the given player
-    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual = true) const;
+    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual) const;
 
     /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
@@ -206,13 +206,13 @@ public:
     /// Gibt die ID eines Hafenpunktes zurück
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
     const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const Direction dir) const { return harbor_pos[harborId].neighbors[dir.toUInt()]; }
-    /// Returns the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
+    /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     unsigned short IsCoastalPoint(const MapPoint pt) const;
 
-    /// liefert den Straßen-Wert an der Stelle X,Y
-    unsigned char GetRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
-    /// liefert den Straßen-Wert um den Punkt X,Y.
-    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
+    /// Return the road type of this point in the given direction (E, SE, SW) or 0 if no road
+    unsigned char GetRoad(const MapPoint pt, unsigned char dir, bool visual) const;
+    /// Return the road type from this point in the given direction (Full circle direction)
+    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir, bool visual) const;
     /// liefert FOW-Straßen-Wert um den punkt X,Y
     unsigned char GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const;
 

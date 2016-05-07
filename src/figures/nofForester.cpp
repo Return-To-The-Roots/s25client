@@ -79,7 +79,7 @@ void nofForester::WorkFinished()
     // Wenn irgendwo ne Straße schon ist, NICHT einsetzen!
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(gwg->GetPointRoad(pos, i))
+        if(gwg->GetPointRoad(pos, i, false))
             return;
     }
 
@@ -131,7 +131,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt)
     // darf außerdem nich auf einer Straße liegen
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetPointRoad(pt, i))
+        if(gwg->GetPointRoad(pt, i, false))
             return PQ_NOTPOSSIBLE;
     }
 

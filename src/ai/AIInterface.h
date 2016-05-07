@@ -144,7 +144,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Checks whether there is a road on a point or not
         bool IsRoadPoint(const MapPoint pt) const;
 
-        bool GetPointRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt()) > 0; }
+        bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt(), false) > 0; }
 
         /// Returns the terrain around a given point in a given direction
         TerrainType GetTerrainAround(const MapPoint pt, Direction direction) const { return gwb.GetTerrainAround(pt, direction.toUInt()); }
@@ -175,7 +175,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
 
         /// Returns building quality on a given spot
-        BuildingQuality GetBuildingQuality(const MapPoint pt) const { return gwb.GetBQ(pt, playerID_); }
+        BuildingQuality GetBuildingQuality(const MapPoint pt) const { return gwb.GetBQ(pt, playerID_, true); }
 		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const { return gwb.GetNode(pt).bqVisual; }
 
         // Tries to find a free path for a road and return length and the route

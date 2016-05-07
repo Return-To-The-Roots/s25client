@@ -251,7 +251,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
                     continue;
 
-                if((GetWorld().RoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
+                if((GetWorld().RoadAvailable(rb.mode == RM_BOAT, curPt, true) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
                     || (gwv.GetBQ(curPt) == BQ_FLAG))
                 {
                     unsigned id;

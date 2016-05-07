@@ -133,7 +133,7 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool  /*boat_road*/, const MapPoint s
     for(unsigned i = 0; i < route.size() - 1; ++i)
     {
         // Richtiger Weg auf diesem Punkt?
-        if(!GetPointRoad(tmp, route[i]))
+        if(!GetPointRoad(tmp, route[i], false))
             return false;
 
         tmp = GetNeighbour(tmp, route[i]);
@@ -215,7 +215,7 @@ void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<uns
 bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const
 {
     // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
-    unsigned char road = GetPointRoad(pt, dir);
+    unsigned char road = GetPointRoad(pt, dir, false);
     if(road && road != RoadSegment::RT_BOAT + 1)
         return true;
 
@@ -244,7 +244,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsign
         // suchen, wo der Weg weitergeht
         for(i = 0; i < 6; ++i)
         {
-            if(i != prevDir && GetPointRoad(pt, i))
+            if(i != prevDir && GetPointRoad(pt, i, false))
                 break;
         }
 

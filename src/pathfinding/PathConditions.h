@@ -32,7 +32,7 @@ struct PathConditionRoad
     // Called for every node but the start & goal and should return true, if this point is usable
     FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
-        return gwb.IsPlayerTerritory(pt) && gwb.RoadAvailable(isBoatRoad, pt);
+        return gwb.IsPlayerTerritory(pt) && gwb.RoadAvailable(isBoatRoad, pt, true);
     }
 
     // Called for every edge (node to other node)
