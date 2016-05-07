@@ -34,7 +34,6 @@ class iwTools : public IngameWindow
         ~iwTools() override;
 
     private:
-        GameWorldBase& gwb;
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
         bool settings_changed;
         bool shouldUpdateTexts;

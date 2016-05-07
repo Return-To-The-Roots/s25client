@@ -33,7 +33,7 @@
 
 iwTools::iwTools(GameWorldView& gwv)
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
-      gwb(gwv.GetWorld()), settings_changed(false)
+      settings_changed(false)
 {
     // Einzelne Balken
     AddProgress( 0, 17,  25, 132, 26, TC_GREY, 141, 140, 10, _("Tongs"), 4, 4, 0, _("Less often"), _("More often"));
@@ -75,7 +75,7 @@ iwTools::iwTools(GameWorldView& gwv)
     // Netzwerk-Übertragungs-Timer
     AddTimer(14, 2000);
 
-    toolSubscription = gwb.GetNotifications().subscribe<ToolNote>(boost::lambda::var(shouldUpdateTexts) = true);
+    toolSubscription = gwv.GetWorld().GetNotifications().subscribe<ToolNote>(boost::lambda::var(shouldUpdateTexts) = true);
 }
 
 iwTools::~iwTools()

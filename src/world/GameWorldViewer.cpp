@@ -51,24 +51,19 @@ void GameWorldViewer::SubscribeToEvents()
     );
 }
 
-GameClientPlayer& GameWorldViewer::GetPlayer()
-{
-    return GetWorld().GetPlayer(player_);
-}
-
 const GameClientPlayer& GameWorldViewer::GetPlayer() const
 {
     return GetWorld().GetPlayer(player_);
 }
 
-unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt)
+unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 {
     // Ist das angegriffenne ein normales Gebäude?
-    nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
+    const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
         // Wird es gerade eingenommen?
-        if(static_cast<nobMilitary*>(attacked_building)->IsCaptured())
+        if(static_cast<const nobMilitary*>(attacked_building)->IsCaptured())
             // Dann darf es nicht angegriffen werden
             return 0;
     }

@@ -29,7 +29,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
-iwTrade::iwTrade(nobBaseWarehouse& wh)
+iwTrade::iwTrade(const nobBaseWarehouse& wh)
     : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
       wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))
 {

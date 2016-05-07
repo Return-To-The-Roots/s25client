@@ -343,7 +343,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
         unsigned char flag_dir = 0;
-        noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
+        const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
         if(flag && flag->routes[flag_dir]->GetRoadType() == RoadSegment::RT_NORMAL)
         {
             width = 90;
@@ -355,7 +355,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 void iwAction::DoUpgradeRoad()
 {
     unsigned char flag_dir = 0;
-    noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
+    const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
     if(flag)
         GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
 }
@@ -624,19 +624,18 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
             {
                 // Abreißen?
                 Close();
-                noBaseBuilding* building = gwv.GetWorld().GetSpecObj<noBaseBuilding>(gwv.GetViewer().GetNeighbour(selectedPt, Direction::NORTHWEST));
+                const noBaseBuilding* building = gwv.GetWorld().GetSpecObj<noBaseBuilding>(gwv.GetViewer().GetNeighbour(selectedPt, Direction::NORTHWEST));
 
                 // Militärgebäude?
                 if(building->GetGOT() == GOT_NOB_MILITARY)
                 {
                     // Darf das Gebäude abgerissen werden?
-                    if(!static_cast<nobMilitary*>(building)->IsDemolitionAllowed())
+                    if(!static_cast<const nobMilitary*>(building)->IsDemolitionAllowed())
                     {
                         // Nein, dann Messagebox anzeigen
                         iwMilitaryBuilding::DemolitionNotAllowed(gwv.GetWorld().GetGGS());
                         break;
                     }
-
                 }
 
                 WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building, true));
@@ -695,7 +694,7 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
         case 1: // Straße abreißen
         {
             unsigned char flag_dir = 0;
-            noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
+            const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
             if(flag)
                 GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);
         } break;

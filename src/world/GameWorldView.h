@@ -64,7 +64,7 @@ class GameWorldView
     /// Last drawn map point
     Point<int> lastPt;
 
-    GameWorldViewer& gwv;
+    const GameWorldViewer& gwv;
 
     unsigned d_what;
     unsigned d_player;
@@ -79,11 +79,11 @@ class GameWorldView
     float zoomFactor;
 
 public:
-    GameWorldView(GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
+    GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
     ~GameWorldView();
 
-    GameWorldViewer& GetViewer() const { return gwv; }
-    GameWorldBase& GetWorld() const;
+    const GameWorldViewer& GetViewer() const { return gwv; }
+    const GameWorldBase& GetWorld() const;
 
     void SetPos(const Point<int>& newPos) { pos = newPos; }
     Point<int> GetPos() const { return pos; }

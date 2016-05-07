@@ -216,21 +216,29 @@ bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir)
     return (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2));
 }
 
-noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i)
+noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir)
 {
-    unsigned char i = 0;
+    // Getting a flag is const
+    const noFlag* flag = const_cast<const GameWorldBase*>(this)->GetRoadFlag(pt, dir, prevDir);
+    // However we self are not const, so we allow returning a non-const flag pointer
+    return const_cast<noFlag*>(flag);
+}
+
+const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir) const
+{
+    unsigned i = 0;
 
     while(true)
     {
         // suchen, wo der Weg weitergeht
         for(i = 0; i < 6; ++i)
         {
-            if(GetPointRoad(pt, i) && i != last_i)
+            if(i != prevDir && GetPointRoad(pt, i))
                 break;
         }
 
         if(i == 6)
-            return 0;
+            return NULL;
 
         pt = GetNeighbour(pt, i);
 
@@ -240,7 +248,7 @@ noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned las
             dir = (i + 3) % 6;
             return GetSpecObj<noFlag>(pt);
         }
-        last_i = (i + 3) % 6;
+        prevDir = (i + 3) % 6;
     }
 }
 

@@ -37,7 +37,7 @@ class nofAttacker;
 class GameWorldGame: public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
-    void DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
+    void DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
 
     /// Return if there are deco-objects that can be removed when building roads
     bool IsObjectionableForRoad(const MapPoint pt);

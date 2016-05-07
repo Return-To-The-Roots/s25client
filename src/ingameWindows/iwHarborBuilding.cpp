@@ -60,7 +60,7 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
     // in Kraft getreten ist!
-    bool exp = static_cast<nobHarborBuilding*>(wh)->IsExpeditionActive();
+    bool exp = static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive();
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
@@ -88,7 +88,7 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
     // in Kraft getreten ist!
-    bool exp = static_cast<nobHarborBuilding*>(wh)->IsExplorationExpeditionActive();
+    bool exp = static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive();
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)

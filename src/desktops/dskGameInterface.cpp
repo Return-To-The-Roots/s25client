@@ -369,18 +369,18 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 //WINDOWMANAGER.Show(new iwTrade(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(new iwHQ(gwv, worldViewer.GetWorld().GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
+                WINDOWMANAGER.Show(new iwHQ(gwv, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel), _("Headquarters"), 3));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwStorehouse(gwv, worldViewer.GetWorld().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(new iwStorehouse(gwv, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, worldViewer.GetWorld().GetSpecObj<nobHarborBuilding>(cSel)));
+                WINDOWMANAGER.Show(new iwHarborBuilding(gwv, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(bt <= BLD_FORTRESS)
-                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, worldViewer.GetWorld().GetSpecObj<nobMilitary>(cSel)));
+                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(new iwBuilding(gwv, worldViewer.GetWorld().GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.Show(new iwBuilding(gwv, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
             return true;
         }
         // oder vielleicht eine Baustelle?
@@ -439,7 +439,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {
-                noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel);
+                const noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel);
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
@@ -449,7 +449,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     if(worldViewer.GetPlayer().IsAlly(building->GetPlayer())
                             && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
                     {
-                        WINDOWMANAGER.Show(new iwTrade(*static_cast<nobBaseWarehouse*>(building)));
+                        WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building)));
                         return true;
                     }
                 }
@@ -721,10 +721,10 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
     }
     else
     {
-        worldViewer.GetWorld().RemoveVisualRoad(road.start, road.route);
+        worldViewer.GetWorldNonConst().RemoveVisualRoad(road.start, road.route);
         for(unsigned i = 0; i < road.route.size(); ++i)
         {
-            worldViewer.GetWorld().SetPointVirtualRoad(road.start, road.route[i], 0);
+            worldViewer.GetWorldNonConst().SetPointVirtualRoad(road.start, road.route[i], 0);
             road.start = worldViewer.GetWorld().GetNeighbour(road.start, road.route[i]);
         }
     }
@@ -762,9 +762,9 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     // Weg (visuell) bauen
     for(unsigned i = 0; i < new_route.size(); ++i)
     {
-        worldViewer.GetWorld().SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.GetWorldNonConst().SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, new_route[i]);
-        worldViewer.GetWorld().RecalcBQForRoad(road.point);
+        worldViewer.GetWorldNonConst().RecalcBQForRoad(road.point);
     }
     // Zielpunkt updaten (für Wasserweg)
     cSel = road.point;
@@ -1034,8 +1034,8 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
     {
         MapPoint t = road.point;
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
-        worldViewer.GetWorld().SetPointVirtualRoad(road.point, road.route[i - 1], 0);
-        worldViewer.GetWorld().RecalcBQForRoad(t);
+        worldViewer.GetWorldNonConst().SetPointVirtualRoad(road.point, road.route[i - 1], 0);
+        worldViewer.GetWorldNonConst().RecalcBQForRoad(t);
     }
 
     road.route.resize(start_id - 1);

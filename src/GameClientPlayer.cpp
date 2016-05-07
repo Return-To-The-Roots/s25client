@@ -2370,7 +2370,7 @@ bool GameClientPlayer::IsDependentFigure(noFigure* fig)
     return false;
 }
 
-std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(nobBaseWarehouse& goalWh) const
+std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(const nobBaseWarehouse& goalWh) const
 {
     std::vector<nobBaseWarehouse*> result;
 

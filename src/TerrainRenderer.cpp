@@ -67,7 +67,7 @@ TerrainRenderer::~TerrainRenderer()
     }
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsigned dir)
+TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsigned dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
     PointI ptNb = ::GetNeighbour(PointI(pt), Direction::fromInt(dir));
@@ -78,7 +78,7 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsi
     return GetNodePos(t) + PointF(offset);
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle, const unsigned char dir)
+TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle, const unsigned char dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
     PointI ptNb = ::GetNeighbour(PointI(pt), Direction::fromInt(dir));
@@ -615,7 +615,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, const bool 
 /**
  *  zeichnet den Kartenausschnitt.
  */
-void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned int* water)
+void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned int* water) const
 {
     RTTR_Assert(!gl_vertices.empty());
     RTTR_Assert(!borders.empty());
@@ -873,7 +873,7 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) con
     return ptOut;
 }
 
-void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt, const PointI& offset)
+void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt, const PointI& offset) const
 {
     PointI startPos = PointI(GetNodePos(pt)) + offset;
 
@@ -946,7 +946,7 @@ struct Tex2C3Ver2
     GLfloat x, y;
 };
 
-void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads)
+void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 {
     // 2D Array: [3][4]
     static const boost::array<PointI, 12> begin_end_coords =
@@ -1133,7 +1133,7 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
     }
 }
 
-MapPoint TerrainRenderer::GetNeighbour(const MapPoint& pt, const Direction dir)
+MapPoint TerrainRenderer::GetNeighbour(const MapPoint& pt, const Direction dir) const
 {
     return MakeMapPoint(::GetNeighbour(Point<int>(pt), dir), width, height);
 }

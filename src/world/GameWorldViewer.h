@@ -32,7 +32,7 @@ struct NodeNote;
 class noShip;
 class TerrainRenderer;
 
-/// This is a players Viewer on the GameWorld
+/// This is a players View(er) on the GameWorld
 class GameWorldViewer
 {
     unsigned player_;
@@ -43,15 +43,18 @@ public:
 
     GameWorldViewer(unsigned player, GameWorldBase& gwb);
 
-    GameWorldBase& GetWorld() { return gwb; }
+    /// Return the world itself
     const GameWorldBase& GetWorld() const { return gwb; }
-    TerrainRenderer& GetTerrainRenderer() { return tr; }
-    GameClientPlayer& GetPlayer();
+    /// Return non-const world (TODO: Remove, this is a view only!)
+    GameWorldBase& GetWorldNonConst() { return gwb; }
+    const TerrainRenderer& GetTerrainRenderer() const { return tr; }
+    /// Get the player instance for this view
     const GameClientPlayer& GetPlayer() const;
+    /// Get the ID of the views player
     unsigned GetPlayerID() const { return player_; }
 
     /// Get number of soldiers that can attack that point
-    unsigned GetAvailableSoldiersForAttack(const MapPoint pt);
+    unsigned GetAvailableSoldiersForAttack(const MapPoint pt) const;
     /// Get number of soldiers for attacking a point via sea
     unsigned GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const;
 

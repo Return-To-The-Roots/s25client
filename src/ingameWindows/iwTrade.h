@@ -7,7 +7,7 @@ class nobBaseWarehouse;
 
 class iwTrade : public IngameWindow
 {
-        nobBaseWarehouse& wh;              /// Das zugehörige Gebäudeobjekt
+        const nobBaseWarehouse& wh;              /// Das zugehörige Gebäudeobjekt
         /// Possible wares
         std::vector<GoodType> wares;
         /// Possible figures
@@ -16,7 +16,7 @@ class iwTrade : public IngameWindow
         std::vector<nobBaseWarehouse*> possibleSrcWarehouses;
 
     public:
-        iwTrade(nobBaseWarehouse& wh);
+        iwTrade(const nobBaseWarehouse& wh);
 
     private:
 

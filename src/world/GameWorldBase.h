@@ -101,8 +101,10 @@ public:
     /// Baut eine (bisher noch visuell gebaute) Stra�e wieder zur�ck
     void RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route);
 
-    /// x,y ist ein Punkt auf irgendeinem Wegstck, gibt die Flagge zur�ck
-    noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i = 255);
+    /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
+    /// prevDir (if set) will be skipped when searching for the road points
+    noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255);
+    const noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255) const;
 
     /// Erzeugt eine GUI-ID f�r die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }

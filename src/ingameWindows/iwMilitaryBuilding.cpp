@@ -81,10 +81,10 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
     std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> > soldiers;
-    for(SortedTroops::iterator it = building->troops.begin(); it != building->troops.end(); ++it)
+    for(SortedTroops::const_iterator it = building->troops.begin(); it != building->troops.end(); ++it)
         soldiers.insert(*it);
 
-    for(std::list<noFigure*>::iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)
+    for(std::list<noFigure*>::const_iterator it = building->leave_house.begin(); it != building->leave_house.end(); ++it)
     {
         if((*it)->GetGOT() == GOT_NOF_ATTACKER ||
                 (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER ||

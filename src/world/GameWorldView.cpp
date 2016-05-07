@@ -38,7 +38,7 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-GameWorldView::GameWorldView(GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height):
+GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height):
 	selPt(0, 0),
 	debugNodePrinter(NULL),
 	show_bq(false),
@@ -61,7 +61,7 @@ GameWorldView::~GameWorldView()
 {
 }
 
-GameWorldBase& GameWorldView::GetWorld() const
+const GameWorldBase& GameWorldView::GetWorld() const
 {
     return gwv.GetWorld();
 }
@@ -104,7 +104,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     glTranslatef(static_cast<GLfloat>(pos.x) / zoomFactor, static_cast<GLfloat>(pos.y) / zoomFactor, 0.0f);
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
-    TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
+    const TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
     terrainRenderer.Draw(GetFirstPt(), GetLastPt(), gwv, water);
     glTranslatef(static_cast<GLfloat>(offset.x), static_cast<GLfloat>(offset.y), 0.0f);
 
@@ -166,7 +166,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     DrawGUI(rb, terrainRenderer, draw_selected, selected);
 
     // Umherfliegende Katapultsteine zeichnen
-    for(std::list<CatapultStone*>::iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
+    for(std::list<CatapultStone*>::const_iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
     {
         if(gwv.GetVisibility((*it)->dest_building) == VIS_VISIBLE || gwv.GetVisibility((*it)->dest_map) == VIS_VISIBLE)
             (*it)->Draw(offset.x, offset.y);
@@ -290,7 +290,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             Point<int> curOffset;
             MapPoint pt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
 
-            noBaseBuilding* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
+            const noBaseBuilding* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
             if(!no)
                 continue;
 

@@ -52,13 +52,8 @@ noFlag::noFlag(const MapPoint pos,
     unsigned char dir;
     noFlag* flag = gwg->GetRoadFlag(pos, dir, dis_dir);
 
-    if(flag)
-    {
-        if (flag->routes[dir])
-        {
-            flag->routes[dir]->SplitRoad(this);
-        }
-    }
+    if(flag && flag->routes[dir])
+        flag->routes[dir]->SplitRoad(this);
 
     // auf Wasseranteile prüfen
     for(unsigned i = 0; i < 6; ++i)

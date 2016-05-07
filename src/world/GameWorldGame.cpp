@@ -666,7 +666,7 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     return region;
 }
 
-void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings)
+void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception, bool allowDestructionOfMilBuildings)
 {
     noBase* no = GetNO(pt);
 
@@ -674,29 +674,23 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
     if((no->GetType() == NOP_FLAG || no->GetType() == NOP_BUILDING || no->GetType() == NOP_BUILDINGSITE) && exception != no)
     {
         // Wurde das Objekt auch nicht vom Gegner übernommen?
-        if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != new_player)
+        if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != newOwner)
         {
 			//maybe buildings that push territory should not be destroyed right now?- can happen with improved alliances addon or in rare cases even without the addon so allow those buildings & their flag to survive.
-			if(!allowdestructionofmilbuildings)
+			if(!allowDestructionOfMilBuildings)
 			{
-				if(no->GetGOT() == GOT_NOB_HQ || no->GetGOT() == GOT_NOB_HARBORBUILDING || (no->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(pt)->IsNewBuilt()) || (no->GetType()==NOP_BUILDINGSITE && GetSpecObj<noBuildingSite>(pt)->IsHarborBuildingSiteFromSea()))
+                const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, 1)) : no;
+				if(noCheckMil->GetGOT() == GOT_NOB_HQ ||
+                    noCheckMil->GetGOT() == GOT_NOB_HARBORBUILDING ||
+                    (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !dynamic_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt()) ||
+                    (noCheckMil->GetType() == NOP_BUILDINGSITE && dynamic_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
 				{
 					//LOG.lprintf("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type, %i \n", x, y, no->GetType());
 					return;
 				}
-				//flag of such a building?				
-				if(no->GetType()==NOP_FLAG)
-				{
-					noBase* no2=GetNO(GetNeighbour(pt, 1));
-					if(no2->GetGOT() == GOT_NOB_HQ || no2->GetGOT() == GOT_NOB_HARBORBUILDING || (no2->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(GetNeighbour(pt, 1))->IsNewBuilt()) || (no2->GetType()==NOP_BUILDINGSITE && GetSpecObj<noBuildingSite>(GetNeighbour(pt, 1))->IsHarborBuildingSiteFromSea()))
-					{
-						//LOG.lprintf("DestroyPlayerRests of a flag of a hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type, %i \n", GetXA(x, y, 1), GetYA(x, y, 1), no2->GetType());
-						return;
-					}
-				}
 			}				
             // vorher Bescheid sagen
-            if(no->GetType() == NOP_FLAG && no != (exception ? exception->GetFlag() : NULL))
+            if(no->GetType() == NOP_FLAG && (!exception || no != exception->GetFlag()))
                 static_cast<noFlag*>(no)->DestroyAttachedBuilding();
 
             no->Destroy();
@@ -704,6 +698,8 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             return;
         }
     }
+
+    // TODO: This might not be required. Roads are destroyed when their flags are destroyed
 
     // ggf. Weg kappen
     unsigned char dir;
