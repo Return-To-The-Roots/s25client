@@ -299,6 +299,7 @@ void GameClient::StartGame(const unsigned int random_init)
         if (target != 3)
             gw->ConvertMineResourceTypes(3, target);
     }
+    gw->InitAfterLoad();
 
     // Zeit setzen
     framesinfo.lastTime = VIDEODRIVER.GetTickCount();

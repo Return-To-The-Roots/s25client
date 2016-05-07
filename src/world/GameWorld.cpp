@@ -151,15 +151,6 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
         else
             lua->Deserialize(luaSaveState);
     }
-
-    // BQ neu berechnen
-    for(unsigned y = 0; y < GetHeight(); ++y)
-    {
-        for(unsigned x = 0; x < GetWidth(); ++x)
-        {
-            RecalcBQ(MapPoint(x, y));
-        }
-    }
 }
 
 

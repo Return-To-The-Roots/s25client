@@ -168,8 +168,6 @@ public:
 
     /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
     bool IsPlayerTerritory(const MapPoint pt) const;
-    /// Recalculates the BQ for the given point
-    void RecalcBQ(const MapPoint pt);
     /// Returns the BQ for the given player
     BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual = true) const;
 
@@ -234,14 +232,10 @@ protected:
     /// Sets the real road to whether a virtual road for this pt and direction exists
     void ApplyRoad(const MapPoint pt, unsigned char dir);
     MapNode::BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
+    void SetBQ(const MapPoint pt, BuildingQuality bq, BuildingQuality bqVisual);
 
     /// Berechnet die Schattierung eines Punktes neu
     void RecalcShadow(const MapPoint pt);
-
-private:
-    /// Calculates BQ for a point. Visual affects used road state, flagOnly checks only if flag is possible
-    BuildingQuality CalcBQ(const MapPoint pt, const bool visual, const bool flagOnly = false) const;
-
 };
 
 //////////////////////////////////////////////////////////////////////////

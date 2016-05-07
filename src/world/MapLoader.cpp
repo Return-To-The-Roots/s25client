@@ -54,10 +54,7 @@ bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Explorati
     for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
     {
         for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
-        {
             world.RecalcShadow(pt);
-            world.RecalcBQ(pt);
-        }
     }
 
     // If we have explored FoW, create the FoW objects

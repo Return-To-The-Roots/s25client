@@ -63,6 +63,8 @@ public:
 
     // Grundlegende Initialisierungen
     void Init(const unsigned short width, const unsigned short height, LandscapeType lt) override;
+    // Remaining initialization after loading (BQ...)
+    void InitAfterLoad();
 
     /// Setzt GameInterface
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
@@ -182,6 +184,11 @@ public:
     std::vector<PotentialSeaAttacker> GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const;
     /// Gibt Anzahl oder gesch�tzte St�rke(rang summe + anzahl) der verf�gbaren Soldaten die zu einem Schiffsangriff starten k�nnen von einer bestimmten sea id aus
     unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
+
+    /// Recalculates the BQ for the given point
+    void RecalcBQ(const MapPoint pt);
+    /// Calculates BQ for a point. Visual affects used road state, flagOnly checks only if flag is possible
+    BuildingQuality CalcBQ(const MapPoint pt, const bool visual, const bool flagOnly = false) const;
 
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
