@@ -105,7 +105,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
-    terrainRenderer.Draw(*this, water);
+    terrainRenderer.Draw(GetFirstPt(), GetLastPt(), gwv, water);
     glTranslatef(static_cast<GLfloat>(offset.x), static_cast<GLfloat>(offset.y), 0.0f);
 
     for(int y = firstPt.y; y <= lastPt.y; ++y)
