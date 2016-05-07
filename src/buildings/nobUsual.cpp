@@ -74,16 +74,16 @@ nobUsual::nobUsual(BuildingType type,
     owner.AddUsualBuilding(this);
 }
 
-nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
-    : noBuilding(sgd, obj_id),
-      worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
-      productivity(sgd.PopUnsignedShort()),
-      disable_production(sgd.PopBool()),
-      disable_production_virtual(sgd.PopBool()),
-      last_ordered_ware(sgd.PopUnsignedChar()),
-      orderware_ev(sgd.PopEvent()),
-      productivity_ev(sgd.PopEvent()),
-      is_working(sgd.PopBool())
+nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id):
+    noBuilding(sgd, obj_id),
+    worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
+    productivity(sgd.PopUnsignedShort()),
+    disable_production(sgd.PopBool()),
+    disable_production_virtual(disable_production),
+    last_ordered_ware(sgd.PopUnsignedChar()),
+    orderware_ev(sgd.PopEvent()),
+    productivity_ev(sgd.PopEvent()),
+    is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)
         wares[i] = sgd.PopUnsignedChar();
@@ -97,9 +97,26 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
         sgd.PopObjectContainer(ordered_wares[i], GOT_WARE);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         last_productivities[i] = sgd.PopUnsignedShort();
+}
 
-    // Visuellen Produktionszustand dem realen anpassen
-    disable_production_virtual = disable_production;
+void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
+{
+    Serialize_noBuilding(sgd);
+
+    sgd.PushObject(worker, false);
+    sgd.PushUnsignedShort(productivity);
+    sgd.PushBool(disable_production);
+    sgd.PushUnsignedChar(last_ordered_ware);
+    sgd.PushObject(orderware_ev, true);
+    sgd.PushObject(productivity_ev, true);
+    sgd.PushBool(is_working);
+
+    for(unsigned i = 0; i < 3; ++i)
+        sgd.PushUnsignedChar(wares[i]);
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
+        sgd.PushObjectContainer(ordered_wares[i], true);
+    for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
+        sgd.PushUnsignedShort(last_productivities[i]);
 }
 
 nobUsual::~nobUsual()
@@ -137,27 +154,6 @@ void nobUsual::Destroy_nobUsual()
         gwg->GetPlayer(player).DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i], wares[i]);
 
     Destroy_noBuilding();
-}
-
-void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
-{
-    Serialize_noBuilding(sgd);
-
-    sgd.PushObject(worker, false);
-    sgd.PushUnsignedShort(productivity);
-    sgd.PushBool(disable_production);
-    sgd.PushBool(disable_production_virtual);
-    sgd.PushUnsignedChar(last_ordered_ware);
-    sgd.PushObject(orderware_ev, true);
-    sgd.PushObject(productivity_ev, true);
-    sgd.PushBool(is_working);
-
-    for(unsigned i = 0; i < 3; ++i)
-        sgd.PushUnsignedChar(wares[i]);
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
-        sgd.PushObjectContainer(ordered_wares[i], true);
-    for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
-        sgd.PushUnsignedShort(last_productivities[i]);
 }
 
 void nobUsual::Draw(int x, int y)

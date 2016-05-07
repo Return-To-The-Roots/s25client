@@ -134,25 +134,10 @@ void nobMilitary::Destroy_nobMilitary()
 void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
-
-    unsigned char bitfield = 0;
-
-    if (new_built)
-    {
-        bitfield |= (1 << 0);
-    }
-
-    // reverse for compatibility :)
-    if (!captured_not_built)
-    {
-        bitfield |= (1 << 1);
-    }
-
-    sgd.PushUnsignedChar(bitfield);
-
+    sgd.PushBool(new_built);
+    sgd.PushBool(captured_not_built);
     sgd.PushUnsignedChar(coins);
     sgd.PushBool(coinsDisabled);
-    sgd.PushBool(coinsDisabledVirtual);
     sgd.PushUnsignedChar(frontier_distance);
     sgd.PushUnsignedChar(size);
     sgd.PushBool(capturing);
@@ -167,27 +152,19 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id),
+    new_built(sgd.PopBool()),
+    captured_not_built(sgd.PopBool()),
+    coins(sgd.PopUnsignedChar()),
+    coinsDisabled(sgd.PopBool()),
+    coinsDisabledVirtual(coinsDisabled),
+    frontier_distance(sgd.PopUnsignedChar()),
+    size(sgd.PopUnsignedChar()),
+    capturing(sgd.PopBool()),
+    capturing_soldiers(sgd.PopUnsignedInt()),
+    goldorder_event(sgd.PopEvent()),
+    upgrade_event(sgd.PopEvent()),
     is_regulating_troops(false)
 {
-    // use a bitfield instead of 1 unsigned char per boolean
-    // mainly for compatibility :-)
-
-    unsigned char bitfield = sgd.PopUnsignedChar();
-
-    new_built = bitfield & (1 << 0);
-    captured_not_built = !(bitfield & (1 << 1));
-
-    coins = sgd.PopUnsignedChar();
-    coinsDisabled = sgd.PopBool();
-    coinsDisabledVirtual = sgd.PopBool();
-    frontier_distance = sgd.PopUnsignedChar();
-    size = sgd.PopUnsignedChar();
-    capturing = sgd.PopBool();
-    capturing_soldiers = sgd.PopUnsignedInt();
-    goldorder_event = sgd.PopEvent();
-    upgrade_event = sgd.PopEvent();
-
-
     sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
     sgd.PopObjectContainer(ordered_coins, GOT_WARE);
     sgd.PopObjectContainer(troops, GOT_NOF_PASSIVESOLDIER);
