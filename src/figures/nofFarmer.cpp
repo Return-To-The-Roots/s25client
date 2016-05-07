@@ -116,7 +116,7 @@ void nofFarmer::WorkFinished()
         // If there is any road now, don't set the grain field
         for(unsigned i = 0; i < 6; ++i)
         {
-            if(gwg->GetPointRoad(pos, i, false))
+            if(gwg->GetPointRoad(pos, i))
                 return;
         }
 
@@ -157,7 +157,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt)
         // Nicht auf Straßen bauen!
         for(unsigned char i = 0; i < 6; ++i)
         {
-            if(gwg->GetPointRoad(pt, i, false))
+            if(gwg->GetPointRoad(pt, i))
                 return PQ_NOTPOSSIBLE;
         }
 

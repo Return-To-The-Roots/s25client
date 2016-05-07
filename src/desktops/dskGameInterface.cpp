@@ -283,11 +283,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     if(road.mode)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
-        MapPoint cSel = gwv.GetSelectedPt();
-        // Um auf Wasserweglängenbegrenzun reagieren zu können:
-        MapPoint cSel2(cSel);
+        const MapPoint selPt = gwv.GetSelectedPt();
 
-        if(cSel == road.point)
+        if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
             ShowRoadWindow(mc.x, mc.y);
@@ -298,46 +296,47 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
-            if(worldViewer.GetWorld().RoadAvailable(road.mode == RM_BOAT, cSel, true) &&
-                worldViewer.IsOwner(cSel) &&
-                worldViewer.GetWorld().IsPlayerTerritory(cSel))
+            if(worldViewer.IsRoadAvailable(road.mode == RM_BOAT, selPt) &&
+                worldViewer.IsOwner(selPt) &&
+                worldViewer.GetWorld().IsPlayerTerritory(selPt))
             {
-                if(!BuildRoadPart(cSel, false))
+                MapPoint targetPt = selPt;
+                if(!BuildRoadPart(targetPt))
                     ShowRoadWindow(mc.x, mc.y);
             }
-            else if(worldViewer.GetBQ(cSel) != BQ_NOTHING)
+            else if(worldViewer.GetBQ(selPt) != BQ_NOTHING)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
-                unsigned tbr = TestBuiltRoad(cSel);
-                if(tbr)
-                    DemolishRoad(tbr);
+                unsigned idOnRoad = GetIdInCurBuildRoad(selPt);
+                if(idOnRoad)
+                    DemolishRoad(idOnRoad);
                 else
                 {
-                    if(BuildRoadPart(cSel, 1))
+                    MapPoint targetPt = selPt;
+                    if(BuildRoadPart(targetPt))
                     {
                         // Ist der Zielpunkt der gleiche geblieben?
-                        if (cSel == cSel2)
+                        if (selPt == targetPt)
                             GI_BuildRoad();
                     }
-                    else if (cSel == cSel2)
+                    else if (selPt == targetPt)
                         ShowRoadWindow(mc.x, mc.y);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
-            else if(worldViewer.GetWorld().GetNO(cSel)->GetType() == NOP_FLAG && cSel != road.start)
+            else if(worldViewer.GetWorld().GetNO(selPt)->GetType() == NOP_FLAG && selPt != road.start)
             {
-                if(BuildRoadPart(cSel, 1))
+                MapPoint targetPt = selPt;
+                if(BuildRoadPart(targetPt))
                 {
-                    if (cSel == cSel2)
+                    if (selPt == targetPt)
                         GI_BuildRoad();
                 }
-                else if (cSel == cSel2)
+                else if (selPt == targetPt)
                     ShowRoadWindow(mc.x, mc.y);
-            }
-
-            else
+            } else
             {
-                unsigned tbr = TestBuiltRoad(cSel);
+                unsigned tbr = GetIdInCurBuildRoad(selPt);
                 // Wurde bereits auf das gebaute Stück geklickt?
                 if(tbr)
                     DemolishRoad(tbr);
@@ -426,7 +425,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             // Prüfen, ob irgendwo Straßen anliegen
             bool roads = false;
             for(unsigned i = 0; i < 6; ++i)
-                if(worldViewer.GetWorld().GetPointRoad(cSel, i, true))
+                if(worldViewer.GetVisiblePointRoad(cSel, Direction::fromInt(i)))
                     roads = true;
 
             if( (roads) && !(
@@ -713,28 +712,40 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
         return;
 
     road.mode = rm;
-    if(rm != RM_DISABLED)
-    {
+    if(rm == RM_DISABLED)
+        worldViewer.RemoveVisualRoad(road.start, road.route);
+    else {
         road.route.clear();
         RTTR_Assert(selected.x < width_ && selected.y < height_);
         road.start = road.point = selected;
     }
-    else
-    {
-        worldViewer.GetWorldNonConst().RemoveVisualRoad(road.start, road.route);
-        for(unsigned i = 0; i < road.route.size(); ++i)
-        {
-            worldViewer.GetWorldNonConst().SetPointVirtualRoad(road.start, road.route[i], 0);
-            road.start = worldViewer.GetWorld().GetNeighbour(road.start, road.route[i]);
-        }
-    }
 }
 
-bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
+struct PathConditionRoad
+{
+    const GameWorldViewer& worldViewer;
+    const bool isBoatRoad;
+
+    PathConditionRoad(const GameWorldViewer& worldViewer, const bool isBoatRoad): worldViewer(worldViewer), isBoatRoad(isBoatRoad){}
+
+    // Called for every node but the start & goal and should return true, if this point is usable
+    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
+    {
+        return worldViewer.GetWorld().IsPlayerTerritory(pt) && worldViewer.IsRoadAvailable(isBoatRoad, pt);
+    }
+
+    // Called for every edge (node to other node)
+    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
+    {
+        return true;
+    }
+};
+
+bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
 {
     std::vector<unsigned char> new_route;
     // Weg gefunden?
-    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(worldViewer.GetWorld(), road.mode == RM_BOAT)))
+    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(worldViewer, road.mode == RM_BOAT)))
         return false;
 
     // Test on water way length
@@ -762,10 +773,12 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     // Weg (visuell) bauen
     for(unsigned i = 0; i < new_route.size(); ++i)
     {
-        worldViewer.GetWorldNonConst().SetPointVirtualRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.SetVisiblePointRoad(road.point, Direction::fromInt(new_route[i]), (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.RecalcBQForRoad(road.point);
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, new_route[i]);
-        worldViewer.GetWorldNonConst().RecalcBQForRoad(road.point);
     }
+    worldViewer.RecalcBQForRoad(road.point);
+
     // Zielpunkt updaten (für Wasserweg)
     cSel = road.point;
 
@@ -774,15 +787,15 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel, bool  /*end*/)
     return true;
 }
 
-unsigned dskGameInterface::TestBuiltRoad(const MapPoint pt)
+unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
 {
-    MapPoint pt2 = road.start;
+    MapPoint curPt = road.start;
     for(unsigned i = 0; i < road.route.size(); ++i)
     {
-        if(pt2 == pt)
+        if(curPt == pt)
             return i + 1;
 
-        pt2 = worldViewer.GetWorld().GetNeighbour(pt2, road.route[i]);
+        curPt = worldViewer.GetNeighbour(curPt, Direction::fromInt(road.route[i]));
     }
     return 0;
 }
@@ -1030,12 +1043,13 @@ void dskGameInterface::GI_TreatyOfAllianceChanged()
  */
 void dskGameInterface::DemolishRoad(const unsigned start_id)
 {
+    RTTR_Assert(start_id > 0);
     for(unsigned i = road.route.size(); i >= start_id; --i)
     {
         MapPoint t = road.point;
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
-        worldViewer.GetWorldNonConst().SetPointVirtualRoad(road.point, road.route[i - 1], 0);
-        worldViewer.GetWorldNonConst().RecalcBQForRoad(t);
+        worldViewer.SetVisiblePointRoad(road.point, Direction::fromInt(road.route[i - 1]), 0);
+        worldViewer.RecalcBQForRoad(t);
     }
 
     road.route.resize(start_id - 1);

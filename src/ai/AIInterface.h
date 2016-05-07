@@ -144,7 +144,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Checks whether there is a road on a point or not
         bool IsRoadPoint(const MapPoint pt) const;
 
-        bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt(), false) > 0; }
+        bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt()) > 0; }
 
         /// Returns the terrain around a given point in a given direction
         TerrainType GetTerrainAround(const MapPoint pt, Direction direction) const { return gwb.GetTerrainAround(pt, direction.toUInt()); }
@@ -169,14 +169,14 @@ class AIInterface: public GameCommandFactory<AIInterface>
 
         bool IsMilitaryBuildingNearNode(const MapPoint pt, const unsigned char player) const { return gwb.IsMilitaryBuildingNearNode(pt, player); }
 
-        bool RoadAvailable(const MapPoint pt, bool boat_road = false) {return gwb.RoadAvailable(boat_road, pt, false);}
+        bool RoadAvailable(const MapPoint pt, bool boat_road = false) {return gwb.RoadAvailable(boat_road, pt);}
 
         ///returns true when the buildingqulity at the 2nd point is lower than the bq on the first point
         bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
 
         /// Returns building quality on a given spot
-        BuildingQuality GetBuildingQuality(const MapPoint pt) const { return gwb.GetBQ(pt, playerID_, true); }
-		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const { return gwb.GetNode(pt).bqVisual; }
+        BuildingQuality GetBuildingQuality(const MapPoint pt) const;
+		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const;
 
         // Tries to find a free path for a road and return length and the route
         bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route = NULL,
@@ -280,9 +280,6 @@ class AIInterface: public GameCommandFactory<AIInterface>
 
         void CallGeologist(const noFlag* flag);
         using GC_Factory::CallGeologist;
-
-        /// Sends a chat message to all players TODO: enemy/ally-chat
-        void Chat(std::string& message);
 };
 
 

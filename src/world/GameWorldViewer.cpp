@@ -18,12 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
+#include "world/BQCalculator.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
 #include "notifications/NodeNote.h"
+#include "notifications/RoadNote.h"
 #include "notifications/PlayerNodeNote.h"
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
@@ -31,12 +33,38 @@
 
 GameWorldViewer::GameWorldViewer(unsigned player, GameWorldBase& gwb): player_(player), gwb(gwb)
 {
-    tr.GenerateOpenGL(*this);
-    SubscribeToEvents();
+    InitTerrainRenderer();
+    InitVisualData();
 }
 
-void GameWorldViewer::SubscribeToEvents()
+void GameWorldViewer::InitVisualData()
 {
+    visualNodes.resize(gwb.GetWidth() * gwb.GetHeight());
+    for(MapPoint pt(0, 0); pt.y < gwb.GetHeight(); ++pt.y)
+    {
+        for(pt.x = 0; pt.x < gwb.GetWidth(); ++pt.x)
+        {
+            VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
+            const MapNode& node = gwb.GetNode(pt);
+            vNode.bq = node.bq;
+            for(unsigned i = 0; i < 3; ++i)
+                vNode.roads[i] = node.roads_real[i];
+        }
+    }
+    namespace bl = boost::lambda;
+    using bl::_1;
+    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(
+        bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1)
+        );
+    evBQChanged = gwb.GetNotifications().subscribe<NodeNote>(
+        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)
+        [bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pt, _1))]
+    );
+}
+
+void GameWorldViewer::InitTerrainRenderer()
+{
+    tr.GenerateOpenGL(*this);
     namespace bl = boost::lambda;
     using bl::_1;
     // Notify renderer about altitude changes
@@ -84,7 +112,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 
 BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 {
-    return GetWorld().GetBQ(pt, player_, true);
+    return GetWorld().AdjustBQ(pt, player_, visualNodes[GetWorld().GetIdx(pt)].bq);
 }
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
@@ -121,14 +149,54 @@ void GameWorldViewer::RecalcAllColors()
 }
 
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
-unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const
+unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char roadDir, const Visibility visibility) const
 {
     if(visibility == VIS_VISIBLE)
-        return GetWorld().GetRoad(pt, dir, true);
+        return GetVisibleRoad(pt, roadDir);
     else if(visibility == VIS_FOW)
-        return GetWorld().GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[dir];
+        return GetWorld().GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[roadDir];
     else
         return 0; // No road
+}
+
+unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char roadDir) const
+{
+    unsigned char visualResult = visualNodes[GetWorld().GetIdx(pt)].roads[roadDir];
+    if(visualResult)
+        return visualResult;
+    else
+        return GetWorld().GetRoad(pt, roadDir);
+}
+
+unsigned char GameWorldViewer::GetVisiblePointRoad(const MapPoint pt, Direction dir) const
+{
+    if(dir.toUInt() >= 3)
+        return GetVisibleRoad(pt, dir.toUInt() - 3);
+    else
+        return GetVisibleRoad(GetNeighbour(pt, dir), dir.toUInt());
+}
+
+void GameWorldViewer::SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type)
+{
+    MapPoint nodePt;
+    if(dir.toUInt() >= 3)
+    {
+        nodePt = pt;
+        dir = Direction::fromInt(dir.toUInt() - 3);
+    }else
+        nodePt = GetNeighbour(pt, dir);
+    visualNodes[GetWorld().GetIdx(nodePt)].roads[dir.toUInt()] = type;
+}
+
+bool GameWorldViewer::IsOnRoad(const MapPoint& pt) const
+{
+    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
+        if(GetVisibleRoad(pt, roadDir))
+            return true;
+    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
+        if(GetVisibleRoad(GetNeighbour(pt, Direction::fromInt(roadDir)), roadDir))
+            return true;
+    return false;
 }
 
 /// Return a ship at this position owned by the given player. Prefers ships that need instructions.
@@ -185,6 +253,43 @@ void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
     // If visibility changed for us, or our team mate if shared view is on -> Update renderer
     if(player == player_ || (GetWorld().GetGGS().team_view && GetWorld().GetPlayer(player_).IsAlly(player)))
         tr.VisibilityChanged(pt, *this);
+}
+
+void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
+{
+    if(note.player != player_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed))
+        return;
+    // Road construction command ended -> Remove visual overlay
+    RemoveVisualRoad(note.pos, note.route);
+}
+
+void GameWorldViewer::RecalcBQ(const MapPoint& pt)
+{
+    BQCalculator calcBQ(GetWorld());
+    visualNodes[GetWorld().GetIdx(pt)].bq = calcBQ(pt, boost::lambda::bind(&GameWorldViewer::IsOnRoad, this, boost::lambda::_1));
+}
+
+void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
+{
+    RecalcBQ(pt);
+
+    for(unsigned i = 3; i < 6; ++i)
+        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
+}
+
+void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route)
+{
+    MapPoint curPt = start;
+    for(unsigned i = 0; i < route.size(); ++i)
+    {
+        SetVisiblePointRoad(curPt, Direction::fromInt(route[i]), 0);
+        curPt = GetWorld().GetNeighbour(curPt, route[i]);
+    }
+}
+
+bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const
+{
+    return !IsOnRoad(pt) && GetWorld().RoadAvailable(isWaterRoad, pt);
 }
 
 /// Get the "youngest" FOWObject of all players who share the view with the local player

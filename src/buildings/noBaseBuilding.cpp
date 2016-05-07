@@ -44,9 +44,9 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(!gwg->GetPointRoad(pos, 4, false))
+    if(!gwg->GetPointRoad(pos, 4))
     {
-        gwg->SetPointRoad(pos, 4, 1);
+        gwg->SetPointRoad(pos, 4, RoadSegment::RT_NORMAL + 1);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)

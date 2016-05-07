@@ -73,11 +73,12 @@ public:
     /// die sich dort befinden, zur�ck
     std::vector<noBase*> GetDynamicObjectsFrom(const MapPoint pt) const;
 
-    /// Kann a node be used for a road (no flag/bld, no other road, no danger...)
+    /// Can a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road
-    bool RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual) const;
-    /// Pr�ft ob exakt die gleiche Stra�e schon gebaut wurde
+    bool RoadAvailable(const bool boat_road, const MapPoint pt) const;
+    /// Check if this road already exists completely
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
+    bool IsOnRoad(const MapPoint& pt) const;
 
     /// Berechnet BQ bei einer gebauten Stra�e
     void RecalcBQForRoad(const MapPoint pt);
@@ -99,9 +100,6 @@ public:
     bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length);
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
-
-    /// Baut eine (bisher noch visuell gebaute) Stra�e wieder zur�ck
-    void RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route);
 
     /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
     /// prevDir (if set) will be skipped when searching for the road points
@@ -187,8 +185,6 @@ public:
 
     /// Recalculates the BQ for the given point
     void RecalcBQ(const MapPoint pt);
-    /// Calculates BQ for a point. Visual affects used road state, flagOnly checks only if flag is possible
-    BuildingQuality CalcBQ(const MapPoint pt, const bool visual, const bool flagOnly = false) const;
 
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }

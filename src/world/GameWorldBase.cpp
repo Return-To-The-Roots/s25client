@@ -23,6 +23,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "nodeObjs/noMovable.h"
 #include "nodeObjs/noFlag.h"
+#include "BQCalculator.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"
 #include "lua/LuaInterfaceGame.h"
@@ -30,6 +31,8 @@
 #include "pathfinding/FreePathFinder.h"
 #include "gameData/TerrainData.h"
 #include "gameData/MapConsts.h"
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
     roadPathFinder(new RoadPathFinder(*this)),
@@ -69,7 +72,7 @@ unsigned GameWorldBase::GetPlayerCount() const
     return players.size();
 }
 
-bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual) const
+bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt) const
 {
     // Hindernisse
     if(GetNode(pt).obj)
@@ -90,7 +93,7 @@ bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt, const
             return false;
 
         // Other roads at this point?
-        if(GetPointRoad(pt, z, visual))
+        if(GetPointRoad(pt, z))
             return false;
     }
 
@@ -133,12 +136,23 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool  /*boat_road*/, const MapPoint s
     for(unsigned i = 0; i < route.size() - 1; ++i)
     {
         // Richtiger Weg auf diesem Punkt?
-        if(!GetPointRoad(tmp, route[i], false))
+        if(!GetPointRoad(tmp, route[i]))
             return false;
 
         tmp = GetNeighbour(tmp, route[i]);
     }
     return true;
+}
+
+bool GameWorldBase::IsOnRoad(const MapPoint& pt) const
+{
+    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
+        if(GetRoad(pt, roadDir))
+            return true;
+    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
+        if(GetRoad(GetNeighbour(pt, Direction::fromInt(roadDir)), roadDir))
+            return true;
+    return false;
 }
 
 void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
@@ -195,27 +209,10 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return militarySquares.GetBuildingsInRange(pt, radius);
 }
 
-/// Baut eine (bisher noch visuell gebaute) Straße wieder zurück
-void GameWorldBase::RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route)
-{
-    MapPoint pt(start);
-    // Wieder zurückbauen
-    for(unsigned z = 0; z < route.size(); ++z)
-    {
-        if (!GetPointRoad(pt, route[z], false))
-        {
-            SetPointVirtualRoad(pt, route[z], 0);
-            RecalcBQForRoad(pt);
-        }
-
-        pt = GetNeighbour(pt, route[z]);
-    }
-}
-
 bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const
 {
     // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
-    unsigned char road = GetPointRoad(pt, dir, false);
+    unsigned char road = GetPointRoad(pt, dir);
     if(road && road != RoadSegment::RT_BOAT + 1)
         return true;
 
@@ -244,7 +241,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsign
         // suchen, wo der Weg weitergeht
         for(i = 0; i < 6; ++i)
         {
-            if(i != prevDir && GetPointRoad(pt, i, false))
+            if(i != prevDir && GetPointRoad(pt, i))
                 break;
         }
 
@@ -844,258 +841,9 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
     return attackers;
 }
 
-BuildingQuality GameWorldBase::CalcBQ(const MapPoint pt, const bool visual, const bool flagonly /*= false*/) const
-{
-    //////////////////////////////////////////////////////////////////////////
-    // 1. Check maximum allowed BQ on terrain
-
-    unsigned building_hits = 0;
-    unsigned mine_hits = 0;
-    unsigned flag_hits = 0;
-
-    // bebaubar?
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
-        if(bq == TerrainBQ::CASTLE)
-            ++building_hits;
-        else if(bq == TerrainBQ::MINE)
-            ++mine_hits;
-        else if(bq == TerrainBQ::FLAG)
-            ++flag_hits;
-        else if(bq == TerrainBQ::DANGER)
-            return BQ_NOTHING;
-    }
-
-    BuildingQuality curBQ;
-    if(flag_hits)
-        curBQ = BQ_FLAG;
-    else if(mine_hits == 6)
-        curBQ = BQ_MINE;
-    else if(mine_hits)
-        curBQ = BQ_FLAG;
-    else if(building_hits == 6)
-        curBQ = BQ_CASTLE;
-    else if(building_hits)
-        curBQ = BQ_FLAG;
-    else
-        return BQ_NOTHING;
-
-
-    //////////////////////////////////////////////////////////////////////////
-    // 2. Reduce BQ based on altitude
-
-    RTTR_Assert(curBQ == BQ_FLAG || curBQ == BQ_MINE || curBQ == BQ_CASTLE);
-
-    unsigned char curAltitude = GetNode(pt).altitude;
-    // Bergwerke anders handhaben
-    if(curBQ == BQ_CASTLE)
-    {
-        unsigned char otherAltitude = GetNeighbourNode(pt, 4).altitude;
-        if(otherAltitude > curAltitude)
-        {
-            if(otherAltitude - curAltitude > 1)
-                curBQ = BQ_FLAG;
-        }
-
-        // Check radius-2 nodes (no huts above altiude diff of 2)
-        for(unsigned i = 0; i < 12; ++i)
-        {
-            otherAltitude = GetNode(GetNeighbour2(pt, i)).altitude;
-            if(otherAltitude > curAltitude + 2)
-            {
-                curBQ = BQ_HUT;
-                break;
-            }
-
-            if(otherAltitude + 2 < curAltitude)
-            {
-                curBQ = BQ_HUT;
-                break;
-            }
-        }
-
-        // Direct neighbours (can become flags above altidude diff of 3)
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            otherAltitude = GetNeighbourNode(pt, i).altitude;
-            if(otherAltitude > curAltitude + 3)
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-
-            if(otherAltitude + 3 < curAltitude)
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-        }
-    } else if(curBQ == BQ_MINE && GetNeighbourNode(pt, 4).altitude > curAltitude + 3)
-    {
-        // Mines only possible till altitude diff of 3
-        curBQ = BQ_FLAG;
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // 3. Check neighbouring objects that make building impossible
-
-    // Cannot build on blocking objects
-    if(GetNO(pt)->GetBM() != noBase::BM_NOTBLOCKING)
-        return BQ_NOTHING;
-
-    // Blocking manners of neighbours (cache for reuse)
-    boost::array<noBase::BlockingManner, 6> neighbourBlocks;
-    for(unsigned i = 0; i < 6; ++i)
-        neighbourBlocks[i] = GetNO(GetNeighbour(pt, i))->GetBM();
-
-    // Don't build anything around charburner piles
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        if(neighbourBlocks[i] == noBase::BM_CHARBURNERPILE)
-            return BQ_NOTHING;
-    }
-
-    // Build nothing if we have a flag EAST or SW
-    if(neighbourBlocks[3] == noBase::BM_FLAG || neighbourBlocks[5] == noBase::BM_FLAG)
-        return BQ_NOTHING;
-
-    if(flagonly)
-    {
-        // Only remaining check for flags is for neighbouring flags
-        // So do this there and skip the rest
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            if(neighbourBlocks[i] == noBase::BM_FLAG)
-                return BQ_NOTHING;
-        }
-
-        return BQ_FLAG;
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // 4. Potentially reduce BQ if some objects are nearby
-
-    if(curBQ > BQ_HUT && curBQ != BQ_MINE)
-    {
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            // Baum --> around = hut
-            if(neighbourBlocks[i] == noBase::BM_TREE)
-            {
-                curBQ = BQ_HUT;
-                break;
-            }
-
-            /*// StaticObject --> rundrum flag/hut
-            else if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_OBJECT)
-            {
-            const noStaticObject *obj = GetSpecObj<noStaticObject>(GetXA(x, y, i), GetYA(x, y, i));
-            if(obj->GetSize() == 2)
-            val = BQ_FLAG;
-            else
-            val = BQ_HUT;
-
-            break;
-            }*/
-        }
-    }
-
-    // Stein, Feuer und Getreidefeld --> rundrum Flagge
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        if(neighbourBlocks[i] == noBase::BM_GRANITE)
-        {
-            curBQ = BQ_FLAG;
-            break;
-        }
-    }
-
-    // Flagge
-    if(curBQ == BQ_CASTLE)
-    {
-        for(unsigned i = 0; i < 3; ++i)
-        {
-            if(neighbourBlocks[i] == noBase::BM_FLAG)
-                curBQ = BQ_HOUSE;
-        }
-    }
-
-    // Buildings
-    if(curBQ == BQ_CASTLE)
-    {
-        for(unsigned i = 0; i < 12; ++i)
-        {
-            noBase::BlockingManner bm = GetNO(GetNeighbour2(pt, i))->GetBM();
-
-            if(bm >= noBase::BM_HUT && bm <= noBase::BM_MINE)
-                curBQ = BQ_HOUSE;
-        }
-    }
-
-    for(unsigned i = 0; i < 3; ++i)
-    {
-        if(curBQ != BQ_CASTLE)
-            break;
-        for(unsigned char c = 0; c < 6; ++c)
-        {
-            if(GetPointRoad(GetNeighbour(pt, i), c, visual))
-            {
-                curBQ = BQ_HOUSE;
-                break;
-            }
-        }
-    }
-
-    if(curBQ != BQ_FLAG)
-    {
-        // If point is on a road -> Flag only
-        for(unsigned char c = 0; c < 6; ++c)
-        {
-            if(GetPointRoad(pt, c, visual))
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-        }
-    }
-
-    if(curBQ == BQ_FLAG)
-    {
-        // If any neighbour is a flag -> Flag is impossible
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            if(neighbourBlocks[i] == noBase::BM_FLAG)
-                return BQ_NOTHING;
-        }
-        // Else -> Flag
-        return BQ_FLAG;
-    }
-
-    // Schloss bis hierhin und ist hier ein Hafenplatz?
-    if(curBQ == BQ_CASTLE && GetNode(pt).harbor_id)
-        // Dann machen wir einen Hafen draus
-        curBQ = BQ_HARBOR;
-
-    //////////////////////////////////////////////////////////////////////////
-    // At this point we can still build a building/mine
-
-    // If there is a flag where the house flag would be -> OK
-    if(neighbourBlocks[4] == noBase::BM_FLAG)
-        return curBQ;
-
-    // If we can build the house flag -> OK
-    if(CalcBQ(GetNeighbour(pt, 4), visual, true) != BQ_NOTHING)
-        return curBQ;
-
-    // If not, we could still build a flag, unless there is another one around
-    for(unsigned i = 0; i < 3; ++i)
-        if(neighbourBlocks[i] == noBase::BM_FLAG)
-            return BQ_NOTHING;
-    return BQ_FLAG;
-}
-
 void GameWorldBase::RecalcBQ(const MapPoint pt)
 {
-    SetBQ(pt, CalcBQ(pt, false), CalcBQ(pt, true));
+    BQCalculator calcBQ(*this);
+    if(SetBQ(pt, calcBQ(pt, boost::lambda::bind(&GameWorldBase::IsOnRoad, this, boost::lambda::_1))))
+        GetNotifications().publish(NodeNote(NodeNote::BQ, pt));
 }

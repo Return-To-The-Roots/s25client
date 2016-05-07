@@ -31,14 +31,11 @@ struct MapNode;
 struct NodeNote;
 class noShip;
 class TerrainRenderer;
+struct RoadNote;
 
 /// This is a players View(er) on the GameWorld
 class GameWorldViewer
 {
-    unsigned player_;
-    GameWorldBase& gwb;
-    TerrainRenderer tr;
-    Subscribtion evVisibilityChanged, evAltitudeChanged;
 public:
 
     GameWorldViewer(unsigned player, GameWorldBase& gwb);
@@ -60,6 +57,8 @@ public:
 
     /// Get BQ for this player
     BuildingQuality GetBQ(const MapPoint& pt) const;
+    /// Recalculates the visual BQ when a road part is build at that point
+    void RecalcBQForRoad(const MapPoint& pt);
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
     Visibility GetVisibility(const MapPoint pt) const;
     /// Returns true, if we own this point (but may not be our territory if this is a border point)
@@ -68,7 +67,16 @@ public:
     MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
 
     /// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
-    unsigned char GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const;
+    unsigned char GetVisibleRoad(const MapPoint pt, unsigned char roadDir, const Visibility visibility) const;
+    unsigned char GetVisibleRoad(const MapPoint pt, unsigned char roadDir) const;
+    /// Get road, including virtual ones
+    unsigned char GetVisiblePointRoad(const MapPoint pt, Direction dir) const;
+    void SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type);
+    bool IsOnRoad(const MapPoint& pt) const;
+    /// Remove a visual (not yet built) road
+    void RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route);
+    /// Checks if the road can be build in the world and additonally if there is no virtual road at that point
+    bool IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const;
 
     /// Get the "youngest" FOWObject of all players who share the view with the local player
     const FOWObject* GetYoungestFOWObject(const MapPoint pos) const;
@@ -85,9 +93,24 @@ public:
 
     /// Makes this a viewer for another player
     void ChangePlayer(unsigned player);
+
 private:
+    /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
+    struct VisualMapNode{
+        boost::array<unsigned char, 3> roads; // If != 0 then this road value is used (road construction) else real road is used
+        BuildingQuality bq;
+    };
+    unsigned player_;
+    GameWorldBase& gwb;
+    TerrainRenderer tr;
+    Subscribtion evVisibilityChanged, evAltitudeChanged, evRoadConstruction, evBQChanged;
+    std::vector<VisualMapNode> visualNodes;
+
+    void InitVisualData();
+    void InitTerrainRenderer();
     inline void VisibilityChanged(const MapPoint& pt, unsigned player);
-    void SubscribeToEvents();
+    inline void RoadConstructionEnded(const RoadNote& note);
+    void RecalcBQ(const MapPoint& pt);
 };
 
 #endif // GameWorldViewer_h__

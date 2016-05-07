@@ -103,10 +103,10 @@ namespace{
         switch(note.type)
         {
         case RoadNote::Constructed:
-            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, note.pos, note.firstDir));
+            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, note.pos, note.route.front()));
             break;
         case RoadNote::ConstructionFailed:
-            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, note.pos, note.firstDir));
+            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, note.pos, note.route.front()));
             break;
         }
     }

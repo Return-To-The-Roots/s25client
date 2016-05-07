@@ -118,10 +118,10 @@ class dskGameInterface :
         // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
         // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
         // call-by-reference
-        bool BuildRoadPart(MapPoint& cSel, bool end);
-        // Prft, ob x;y auf der bereits gebauten Strecke liegt und gibt die Position+1 zurck vom Startpunkt der Strecke aus
-        // wenn der Punkt nicht draufliegt, kommt 0 zurck
-        unsigned TestBuiltRoad(const MapPoint pt);
+        bool BuildRoadPart(MapPoint& cSel);
+        // Return the id (index + 1) of the point in the currently build road (1 = startPt)
+        // If pt is not on the road, return 0
+        unsigned GetIdInCurBuildRoad(const MapPoint pt);
         // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
         // ansonsten gibt's nur nen Button zum Abbrechen
         void ShowRoadWindow(int mouse_x, int mouse_y);

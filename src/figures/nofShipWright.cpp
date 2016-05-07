@@ -209,7 +209,7 @@ bool nofShipWright::IsPointGood(const MapPoint pt) const
     // Auf Wegen nicht bauen
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(gwg->GetPointRoad(pt, i, false))
+        if(gwg->GetPointRoad(pt, i))
             return false;
     }
 

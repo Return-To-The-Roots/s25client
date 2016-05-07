@@ -166,10 +166,12 @@ public:
 
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
 
-    /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
+    /// Check if the point completely belongs to a player (if false but point itself belongs to player then it is a border)
     bool IsPlayerTerritory(const MapPoint pt) const;
-    /// Returns the BQ for the given player
-    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual) const;
+    /// Return the BQ for the given player at the point (including ownership constraints)
+    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player) const;
+    /// Incooporates node ownership into the given BQ
+    BuildingQuality AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
     /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
@@ -210,16 +212,11 @@ public:
     unsigned short IsCoastalPoint(const MapPoint pt) const;
 
     /// Return the road type of this point in the given direction (E, SE, SW) or 0 if no road
-    unsigned char GetRoad(const MapPoint pt, unsigned char dir, bool visual) const;
+    unsigned char GetRoad(const MapPoint pt, unsigned char dir) const;
     /// Return the road type from this point in the given direction (Full circle direction)
-    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir, bool visual) const;
+    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir) const;
     /// liefert FOW-Straßen-Wert um den punkt X,Y
     unsigned char GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const;
-
-    /// setzt den virtuellen Straßen-Wert an der Stelle X,Y (berichtigt).
-    void SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
-    /// setzt den virtuellen Straßen-Wert um den Punkt X,Y.
-    void SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
     /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
     void AddCatapultStone(CatapultStone* cs);
@@ -229,10 +226,11 @@ protected:
     /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
     virtual void AltitudeChanged(const MapPoint pt) = 0;
     virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
-    /// Sets the real road to whether a virtual road for this pt and direction exists
-    void ApplyRoad(const MapPoint pt, unsigned char dir);
+    /// Sets the road for the given (road) direction
+    void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
     MapNode::BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
-    void SetBQ(const MapPoint pt, BuildingQuality bq, BuildingQuality bqVisual);
+    /// Set the BQ at the point and return true if it was changed
+    bool SetBQ(const MapPoint pt, BuildingQuality bq);
 
     /// Berechnet die Schattierung eines Punktes neu
     void RecalcShadow(const MapPoint pt);

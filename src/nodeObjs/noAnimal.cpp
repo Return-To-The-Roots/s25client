@@ -300,7 +300,7 @@ unsigned char noAnimal::FindDir()
             bool roads = false;
             for(unsigned char d2 = 0; d2 < 6; ++d2)
             {
-                if(gwg->GetPointRoad(dst, d2, false))
+                if(gwg->GetPointRoad(dst, d2))
                 {
                     roads = true;
                     break;

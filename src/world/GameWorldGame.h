@@ -103,11 +103,8 @@ public:
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns destination pt
     bool CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, unsigned startRouteIdx, unsigned char player, MapPoint* dest = NULL) const;
 
-    /// setzt den Straßen-Wert an der Stelle X,Y (berichtigt).
-    void SetRoad(const MapPoint pt, unsigned char dir, unsigned char type);
-
     /// setzt den Straßen-Wert um den Punkt X,Y.
-    void SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type);
+    void SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type);
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);

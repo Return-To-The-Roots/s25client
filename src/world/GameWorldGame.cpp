@@ -61,7 +61,7 @@ MilitarySquares& GameWorldGame::GetMilitarySquares()
 
 void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir)
 {
-    if(GetBQ(pt, player, false) == BQ_NOTHING)
+    if(GetBQ(pt, player) == BQ_NOTHING)
         return;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
@@ -100,32 +100,19 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
     gi->GI_FlagDestroyed(pt);
 }
 
-/**
- *  setzt den echten Straßen-Wert an der Stelle X, Y (berichtigt).
- */
-void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char type)
-{
-    RTTR_Assert(dir < 3);
-
-    // Virtuelle Straße setzen
-    SetVirtualRoad(pt, dir, type);
-    ApplyRoad(pt, dir);
-
-    if(gi)
-        gi->GI_UpdateMinimap(pt);
-}
-
-/**
- *  setzt den Straßen-Wert um den Punkt X, Y.
- */
-void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type)
+void GameWorldGame::SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        SetRoad(pt, dir - 3, type);
+        dir -= 3;
     else
-        SetRoad(GetNeighbour(pt, dir), dir, type);
+        pt = GetNeighbour(pt, dir);
+
+    SetRoad(pt, dir, type);
+
+    if(gi)
+        gi->GI_UpdateMinimap(pt);
 }
 
 void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
@@ -134,7 +121,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
         return;
 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    const BuildingQuality bq = GetBQ(pt, player, false);
+    const BuildingQuality bq = GetBQ(pt, player);
 
     switch(BUILDING_SIZE[type])
     {
@@ -204,9 +191,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
     if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerid)
     {
-        // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-        RemoveVisualRoad(start, route);
-        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
+        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
         return;
     }
 
@@ -217,14 +202,11 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         curPt = GetNeighbour(curPt, route[i]);
 
         // Feld bebaubar und auf unserem Gebiet
-        if(!RoadAvailable(boat_road, curPt, false) || !IsPlayerTerritory(curPt))
+        if(!RoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
         {
-            // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist und ansonsten den visuellen wieder zurückbauen
+            // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
             if (!RoadAlreadyBuilt(boat_road, start, route))
-            {
-                RemoveVisualRoad(start, route);
-                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
-            }
+                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
             return;
         }
     }
@@ -237,9 +219,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         // Falscher Spieler?
         if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerid)
         {
-            // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-            RemoveVisualRoad(start, route);
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
             return;
         }
     }
@@ -247,11 +227,9 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     {
         // Check if we can build a flag there, also check for trees at that point.
         // TODO: Probably safe to remove the tree check as BQ checks for trees already
-        if(GetBQ(curPt, playerid, false) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
+        if(GetBQ(curPt, playerid) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
         {
-            // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-            RemoveVisualRoad(start, route);
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
             return;
         }
         //keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
@@ -282,7 +260,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
 
     // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
     GetPlayer(playerid).NewRoad(rs);
-    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerid, start, route.front()));
+    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerid, start, route));
 }
 
 bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)

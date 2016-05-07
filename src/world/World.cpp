@@ -356,15 +356,20 @@ bool World::IsPlayerTerritory(const MapPoint pt) const
     return true;
 }
 
-BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, const bool visual /*= true*/) const
+BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
+{
+    return AdjustBQ(pt, player,  GetNode(pt).bq);
+}
+
+BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
 {
     if(GetNode(pt).owner != player + 1 || !IsPlayerTerritory(pt))
         return BQ_NOTHING;
-    BuildingQuality bq = visual ?  GetNode(pt).bqVisual : GetNode(pt).bq;
     // If we could build a building, but the buildings flag point is at the border, we can only build a flag
-    if(bq != BQ_NOTHING && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
-        bq = BQ_FLAG;
-    return bq;
+    if(nodeBQ != BQ_NOTHING && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
+        return BQ_FLAG;
+    else
+        return nodeBQ;
 }
 
 /**
@@ -466,22 +471,21 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
     return MapPoint(0xFFFF, 0xFFFF);
 }
 
-unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool visual) const
+unsigned char World::GetRoad(const MapPoint pt, unsigned char dir) const
 {
     RTTR_Assert(dir < 3);
 
-    const MapNode& node = GetNode(pt);
-    return visual ? node.roads[dir] : node.roads_real[dir];
+    return GetNode(pt).roads_real[dir];
 }
 
-unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool visual) const
+unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir) const
 {
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        return GetRoad(pt, dir - 3, visual);
+        return GetRoad(pt, dir - 3);
     else
-        return GetRoad(GetNeighbour(pt, dir), dir, visual);
+        return GetRoad(GetNeighbour(pt, dir), dir);
 }
 
 unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
@@ -494,23 +498,6 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
         pt = GetNeighbour(pt, dir);
 
     return GetNode(pt).fow[viewing_player].roads[dir];
-}
-
-void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
-{
-    RTTR_Assert(dir < 3);
-
-    GetNodeInt(pt).roads[dir] = type;
-}
-
-void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
-{
-    RTTR_Assert(dir < 6);
-
-    if(dir >= 3)
-        SetVirtualRoad(pt, dir - 3, type);
-    else
-        SetVirtualRoad(GetNeighbour(pt, dir), dir, type);
 }
 
 void World::AddCatapultStone(CatapultStone* cs)
@@ -557,15 +544,17 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
     return 0;
 }
 
-void World::ApplyRoad(const MapPoint pt, unsigned char dir)
+void World::SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type)
 {
-    GetNodeInt(pt).roads_real[dir] = GetNode(pt).roads[dir];
+    RTTR_Assert(roadDir < 3);
+    GetNodeInt(pt).roads_real[roadDir] = type;
 }
 
-void World::SetBQ(const MapPoint pt, BuildingQuality bq, BuildingQuality bqVisual)
+bool World::SetBQ(const MapPoint pt, BuildingQuality bq)
 {
-    GetNodeInt(pt).bq = bq;
-    GetNodeInt(pt).bqVisual = bqVisual;
+    BuildingQuality oldBQ = bq;
+    std::swap(GetNodeInt(pt).bq, oldBQ);
+    return oldBQ != bq;
 }
 
 void World::RecalcShadow(const MapPoint pt)

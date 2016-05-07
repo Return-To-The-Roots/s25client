@@ -27,7 +27,8 @@ struct NodeNote
 
     enum Type
     {
-        Altitude  // Nodes altitude was changed
+        Altitude,  // Nodes altitude was changed
+        BQ         // Building quality
     };
 
     NodeNote(Type type, const MapPoint& pt):

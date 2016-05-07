@@ -22,26 +22,6 @@
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainData.h"
 
-struct PathConditionRoad
-{
-    const GameWorldBase& gwb;
-    const bool isBoatRoad;
-
-    PathConditionRoad(const GameWorldBase& gwb, const bool isBoatRoad): gwb(gwb), isBoatRoad(isBoatRoad){}
-
-    // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
-    {
-        return gwb.IsPlayerTerritory(pt) && gwb.RoadAvailable(isBoatRoad, pt, true);
-    }
-
-    // Called for every edge (node to other node)
-    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
-    {
-        return true;
-    }
-};
-
 struct PathConditionHuman
 {
     const GameWorldBase& gwb;

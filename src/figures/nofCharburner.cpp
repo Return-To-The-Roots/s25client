@@ -173,7 +173,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
         // darf außerdem nicht neben einer Straße liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
-            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j, false))
+            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j))
                 return PQ_NOTPOSSIBLE;
         }
     }

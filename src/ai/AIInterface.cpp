@@ -171,7 +171,7 @@ bool AIInterface::IsRoadPoint(const MapPoint pt) const
 {
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if (gwb.GetPointRoad(pt, i, false))
+        if (gwb.GetPointRoad(pt, i))
             return true;
     }
     return false;
@@ -186,7 +186,17 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
 {
-    return gwb.GetBQ(pt2, playerID_, true) < gwb.GetBQ(pt1, playerID_, true);
+    return gwb.GetBQ(pt2, playerID_) < gwb.GetBQ(pt1, playerID_);
+}
+
+BuildingQuality AIInterface::GetBuildingQuality(const MapPoint pt) const
+{
+    return gwb.GetBQ(pt, playerID_);
+}
+
+BuildingQuality AIInterface::GetBuildingQualityAnyOwner(const MapPoint pt) const
+{
+    return gwb.GetNode(pt).bq;
 }
 
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
