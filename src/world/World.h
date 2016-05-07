@@ -168,8 +168,6 @@ public:
 
     /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
     bool IsPlayerTerritory(const MapPoint pt) const;
-    /// Ist eine Flagge irgendwo um x,y ?
-    bool FlagNear(const MapPoint pt) const;
     /// Recalculates the BQ for the given point
     void RecalcBQ(const MapPoint pt);
     /// Returns the BQ for the given player
