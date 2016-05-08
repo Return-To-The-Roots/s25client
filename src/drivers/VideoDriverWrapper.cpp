@@ -110,6 +110,8 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
         fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;
     }
+    // Set this, as there is no message sent for the resize by the driver
+    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
 #else
     if(!videodriver->CreateScreen(screen_width, screen_height, fullscreen))
     {
@@ -124,8 +126,6 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
         fatal_error("Initialisieren des OpenGL-Kontexts fehlgeschlagen!\n");
         return false;
     }
-
-
 
     // WindowManager informieren
     WINDOWMANAGER.Msg_ScreenResize(screen_width, screen_height);
@@ -155,6 +155,17 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
     }
 
     const bool result = videodriver->ResizeScreen(screenWidth, screenHeight, fullscreen);
+#ifdef _WIN32
+    if(!videodriver->IsFullscreen())
+    {
+        // We cannot change the size of a maximized window. So restore it here
+        WINDOWPLACEMENT wp;
+        wp.length = sizeof(WINDOWPLACEMENT);
+
+        if(GetWindowPlacement((HWND)GetMapPointer(), &wp) && ((wp.showCmd & SW_MAXIMIZE) == SW_MAXIMIZE))
+            ShowWindow((HWND)GetMapPointer(), SW_RESTORE);
+    }
+#endif
 
     RenewViewport();
 

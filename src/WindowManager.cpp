@@ -690,7 +690,8 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
  */
 void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHeight)
 {
-    VIDEODRIVER.ResizeScreen(newWidth, newHeight, VIDEODRIVER.IsFullscreen());
+    VIDEODRIVER.RenewViewport();
+    Msg_ScreenResize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
     LOG.write("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 }
 
