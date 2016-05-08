@@ -36,7 +36,7 @@
 #include "gameData/ShieldConsts.h"
 #include "postSystem/PostManager.h"
 #include "GameInterface.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingCount.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
@@ -1232,22 +1232,25 @@ const std::list<nobUsual*>& GameClientPlayer::GetBuildings(const BuildingType ty
 }
 
 /// Liefert die Anzahl aller Gebäude einzeln
-void GameClientPlayer::GetBuildingCount(BuildingCount& bc) const
+BuildingCount GameClientPlayer::GetBuildingCount() const
 {
-    memset(&bc, 0, sizeof(bc));
+    BuildingCount bc;
+    std::fill(bc.buildings.begin(), bc.buildings.end(), 0);
+    std::fill(bc.buildingSites.begin(), bc.buildingSites.end(), 0);
 
     // Normale Gebäude zählen
     for(unsigned i = 0; i < 30; ++i)
-        bc.building_counts[i + 10] = buildings[i].size();
+        bc.buildings[i + 10] = buildings[i].size();
     // Lagerhäuser zählen
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
-        ++bc.building_counts[(*it)->GetBuildingType()];
+        ++bc.buildings[(*it)->GetBuildingType()];
     // Militärgebäude zählen
     for(std::list<nobMilitary*>::const_iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
-        ++bc.building_counts[(*it)->GetBuildingType()];
+        ++bc.buildings[(*it)->GetBuildingType()];
     // Baustellen zählen
     for(std::list<noBuildingSite*>::const_iterator it = building_sites.begin(); it != building_sites.end(); ++it)
-        ++bc.building_site_counts[(*it)->GetBuildingType()];
+        ++bc.buildingSites[(*it)->GetBuildingType()];
+    return bc;
 }
 
 
@@ -2318,18 +2321,16 @@ bool GameClientPlayer::CanBuildCatapult() const
     if(!gwg->GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
-    BuildingCount bc;
-    GetBuildingCount(bc);
+    BuildingCount bc = GetBuildingCount();
 
     unsigned int max = 0;
-
     // proportional?
     if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
-        max = int(bc.building_counts[BLD_BARRACKS] * 0.125 +
-                  bc.building_counts[BLD_GUARDHOUSE] * 0.25 +
-                  bc.building_counts[BLD_WATCHTOWER] * 0.5 +
-                  bc.building_counts[BLD_FORTRESS] + 0.111); // to avoid rounding errors
+        max = int(bc.buildings[BLD_BARRACKS] * 0.125 +
+                  bc.buildings[BLD_GUARDHOUSE] * 0.25 +
+                  bc.buildings[BLD_WATCHTOWER] * 0.5 +
+                  bc.buildings[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     }
     else if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
@@ -2337,7 +2338,7 @@ bool GameClientPlayer::CanBuildCatapult() const
         max = limits[gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
-    return bc.building_counts[BLD_CATAPULT] + bc.building_site_counts[BLD_CATAPULT] < max;
+    return bc.buildings[BLD_CATAPULT] + bc.buildingSites[BLD_CATAPULT] < max;
 }
 
 /// A ship has discovered new hostile territory --> determines if this is new

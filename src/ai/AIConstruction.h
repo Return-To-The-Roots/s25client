@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "GameClientPlayer.h"
+#include "gameTypes/BuildingCount.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/MapTypes.h"
 #include <vector>

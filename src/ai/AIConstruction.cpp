@@ -487,7 +487,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 	}
     if(biggestBld == BLD_WATCHTOWER || biggestBld == BLD_FORTRESS)
     {
-        if(aijh.UpdateUpgradeBuilding() < 0 && buildingCounts.building_site_counts[biggestBld] < 1 && (inventory.goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand() % 10 != 0)
+        if(aijh.UpdateUpgradeBuilding() < 0 && buildingCounts.buildingSites[biggestBld] < 1 && (inventory.goods[GD_STONES] > 20 || GetBuildingCount(BLD_QUARRY) > 0) && rand() % 10 != 0)
         {
             return biggestBld;
         }
@@ -555,12 +555,12 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 
 unsigned AIConstruction::GetBuildingCount(BuildingType type)
 {
-    return buildingCounts.building_counts[type] + buildingCounts.building_site_counts[type];
+    return buildingCounts.buildings[type] + buildingCounts.buildingSites[type];
 }
 
 unsigned AIConstruction::GetBuildingSitesCount(BuildingType type)
 {
-    return buildingCounts.building_site_counts[type];
+    return buildingCounts.buildingSites[type];
 }
 
 bool AIConstruction::Wanted(BuildingType type)
@@ -571,10 +571,10 @@ bool AIConstruction::Wanted(BuildingType type)
         return aii.CanBuildCatapult() && (aii.GetInventory().goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)));
     if ((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
         //todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
-        return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.building_counts[BLD_SAWMILL] > 0 || (aii.GetInventory().goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0)) && MilitaryBuildingSitesLimit());
+        return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS) + GetBuildingCount(BLD_WATCHTOWER) > 0 || buildingCounts.buildings[BLD_SAWMILL] > 0 || (aii.GetInventory().goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0)) && MilitaryBuildingSitesLimit());
     if(type==BLD_SAWMILL && GetBuildingCount(BLD_SAWMILL)>1)
 	{
-		if (aijh.AmountInStorage(GD_WOOD,0) < 15*(buildingCounts.building_site_counts[BLD_SAWMILL]+1))
+		if (aijh.AmountInStorage(GD_WOOD,0) < 15*(buildingCounts.buildingSites[BLD_SAWMILL]+1))
 			return false;
 	}
 	return GetBuildingCount(type)+constructionorders[type] < buildingsWanted[type];
@@ -582,8 +582,8 @@ bool AIConstruction::Wanted(BuildingType type)
 
 bool AIConstruction::MilitaryBuildingSitesLimit()
 {
-	unsigned complete = buildingCounts.building_counts[BLD_WATCHTOWER] + buildingCounts.building_counts[BLD_FORTRESS] + buildingCounts.building_counts[BLD_GUARDHOUSE] + buildingCounts.building_counts[BLD_BARRACKS];
-	unsigned inconstruction = buildingCounts.building_site_counts[BLD_WATCHTOWER] + buildingCounts.building_site_counts[BLD_FORTRESS] + buildingCounts.building_site_counts[BLD_GUARDHOUSE] + buildingCounts.building_site_counts[BLD_BARRACKS];
+	unsigned complete = buildingCounts.buildings[BLD_WATCHTOWER] + buildingCounts.buildings[BLD_FORTRESS] + buildingCounts.buildings[BLD_GUARDHOUSE] + buildingCounts.buildings[BLD_BARRACKS];
+	unsigned inconstruction = buildingCounts.buildingSites[BLD_WATCHTOWER] + buildingCounts.buildingSites[BLD_FORTRESS] + buildingCounts.buildingSites[BLD_GUARDHOUSE] + buildingCounts.buildingSites[BLD_BARRACKS];
 	return complete+3 > inconstruction;
 }
 
@@ -593,7 +593,7 @@ void AIConstruction::RefreshBuildingCount()
     unsigned foodusers=GetBuildingCount(BLD_CHARBURNER)+GetBuildingCount(BLD_MILL)+GetBuildingCount(BLD_BREWERY)+GetBuildingCount(BLD_PIGFARM)+GetBuildingCount(BLD_DONKEYBREEDER);
 	
 
-    aii.GetBuildingCount(buildingCounts);
+    buildingCounts = aii.GetBuildingCount();
     //no military buildings -> usually start only
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
 
@@ -674,15 +674,15 @@ void AIConstruction::RefreshBuildingCount()
         //metalworks is 1 if there is at least 1 smelter, 2 if mines are inexhaustible and we have at least 4 ironsmelters
         buildingsWanted[BLD_METALWORKS] = (GetBuildingCount(BLD_IRONSMELTER) > 0) ? 1 : 0 ;
 
-        if(buildingCounts.building_counts[BLD_FARM] >= buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY])
-            buildingsWanted[BLD_MILL] = std::min(buildingCounts.building_counts[BLD_FARM] - (buildingCounts.building_counts[BLD_PIGFARM] + buildingCounts.building_counts[BLD_DONKEYBREEDER] + buildingCounts.building_counts[BLD_BREWERY]), GetBuildingCount(BLD_BAKERY) + 1);
+        if(buildingCounts.buildings[BLD_FARM] >= buildingCounts.buildings[BLD_PIGFARM] + buildingCounts.buildings[BLD_DONKEYBREEDER] + buildingCounts.buildings[BLD_BREWERY])
+            buildingsWanted[BLD_MILL] = std::min(buildingCounts.buildings[BLD_FARM] - (buildingCounts.buildings[BLD_PIGFARM] + buildingCounts.buildings[BLD_DONKEYBREEDER] + buildingCounts.buildings[BLD_BREWERY]), GetBuildingCount(BLD_BAKERY) + 1);
         else
-            buildingsWanted[BLD_MILL] = buildingCounts.building_counts[BLD_MILL];
+            buildingsWanted[BLD_MILL] = buildingCounts.buildings[BLD_MILL];
 
         resourcelimit = inventory.people[JOB_BAKER] + inventory.goods[GD_ROLLINGPIN] + 1;
         buildingsWanted[BLD_BAKERY] = min<unsigned>(GetBuildingCount(BLD_MILL), resourcelimit);
 
-        buildingsWanted[BLD_PIGFARM] = (buildingCounts.building_counts[BLD_FARM] < 8) ? buildingCounts.building_counts[BLD_FARM] / 4 : (buildingCounts.building_counts[BLD_FARM] - 2) / 4;
+        buildingsWanted[BLD_PIGFARM] = (buildingCounts.buildings[BLD_FARM] < 8) ? buildingCounts.buildings[BLD_FARM] / 4 : (buildingCounts.buildings[BLD_FARM] - 2) / 4;
         if (buildingsWanted[BLD_PIGFARM] > GetBuildingCount(BLD_SLAUGHTERHOUSE) + 1)
             buildingsWanted[BLD_PIGFARM] = GetBuildingCount(BLD_SLAUGHTERHOUSE) + 1;
         buildingsWanted[BLD_SLAUGHTERHOUSE] = (GetBuildingCount(BLD_PIGFARM) > inventory.goods[GD_CLEAVER] + inventory.people[JOB_BUTCHER]) ? inventory.goods[GD_CLEAVER] + inventory.people[JOB_BUTCHER] : (GetBuildingCount(BLD_PIGFARM));

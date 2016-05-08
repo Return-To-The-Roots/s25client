@@ -26,6 +26,7 @@
 #include "buildings/noBuilding.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
+#include "gameTypes/BuildingCount.h"
 #include "gameData/TerrainData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
@@ -210,6 +211,11 @@ bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& tar
 const nobHQ* AIInterface::GetHeadquarter() const
 {
     return gwb.GetSpecObj<nobHQ>(player_.hqPos);
+}
+
+BuildingCount AIInterface::GetBuildingCount() const
+{
+    return player_.GetBuildingCount();
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const

@@ -19,211 +19,184 @@
 #include "GameCommandFactory.h"
 #include "GameCommands.h"
 
-#include "GameClient.h"
-#include "ai/AIInterface.h"
-
 #include <stdexcept>
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SetFlag(const MapPoint pt)
+bool GameCommandFactory::SetFlag(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::SetFlag(pt) );
+    return AddGC( new gc::SetFlag(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::DestroyFlag(const MapPoint pt)
+bool GameCommandFactory::DestroyFlag(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::DestroyFlag(pt) );
+    return AddGC( new gc::DestroyFlag(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<unsigned char>& route)
+bool GameCommandFactory::BuildRoad(const MapPoint pt, bool boat_road, const std::vector<unsigned char>& route)
 {
-    return AddGC_Virt( new gc::BuildRoad(pt, boat_road, route) );
+    return AddGC( new gc::BuildRoad(pt, boat_road, route) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::DestroyRoad(const MapPoint pt, const unsigned char start_dir)
+bool GameCommandFactory::DestroyRoad(const MapPoint pt, unsigned char start_dir)
 {
-    return AddGC_Virt( new gc::DestroyRoad(pt, start_dir) );
+    return AddGC( new gc::DestroyRoad(pt, start_dir) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::UpgradeRoad(const MapPoint pt, const unsigned char start_dir)
+bool GameCommandFactory::UpgradeRoad(const MapPoint pt, unsigned char start_dir)
 {
-    return AddGC_Virt( new gc::UpgradeRoad(pt, start_dir) );
+    return AddGC( new gc::UpgradeRoad(pt, start_dir) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeDistribution(const Distributions& data)
+bool GameCommandFactory::ChangeDistribution(const Distributions& data)
 {
-    return AddGC_Virt( new gc::ChangeDistribution(data) );
+    return AddGC( new gc::ChangeDistribution(data) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeBuildOrder(const unsigned char order_type, const BuildOrders& data)
+bool GameCommandFactory::ChangeBuildOrder(unsigned char order_type, const BuildOrders& data)
 {
-    return AddGC_Virt( new gc::ChangeBuildOrder(order_type, data) );
+    return AddGC( new gc::ChangeBuildOrder(order_type, data) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SetBuildingSite(const MapPoint pt, const BuildingType bt)
+bool GameCommandFactory::SetBuildingSite(const MapPoint pt, BuildingType bt)
 {
-    return AddGC_Virt( new gc::SetBuildingSite(pt, bt) );
+    return AddGC( new gc::SetBuildingSite(pt, bt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::DestroyBuilding(const MapPoint pt)
+bool GameCommandFactory::DestroyBuilding(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::DestroyBuilding(pt) );
+    return AddGC( new gc::DestroyBuilding(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SendSoldiersHome(const MapPoint pt)
+bool GameCommandFactory::SendSoldiersHome(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::SendSoldiersHome(pt) );
+    return AddGC( new gc::SendSoldiersHome(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::OrderNewSoldiers(const MapPoint pt)
+bool GameCommandFactory::OrderNewSoldiers(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::OrderNewSoldiers(pt) );
+    return AddGC( new gc::OrderNewSoldiers(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeTransport(const TransportOrders& data)
+bool GameCommandFactory::ChangeTransport(const TransportOrders& data)
 {
-    return AddGC_Virt( new gc::ChangeTransport(data) );
+    return AddGC( new gc::ChangeTransport(data) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
+bool GameCommandFactory::ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
 {
-    return AddGC_Virt( new gc::ChangeMilitary(data) );
+    return AddGC( new gc::ChangeMilitary(data) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeTools(const ToolSettings& data, signed char* order_delta/* = NULL*/)
+bool GameCommandFactory::ChangeTools(const ToolSettings& data, signed char* order_delta/* = NULL*/)
 {
-    return AddGC_Virt( new gc::ChangeTools(data, order_delta) );
+    return AddGC( new gc::ChangeTools(data, order_delta) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::CallGeologist(const MapPoint pt)
+bool GameCommandFactory::CallGeologist(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::CallGeologist(pt) );
+    return AddGC( new gc::CallGeologist(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::CallScout(const MapPoint pt)
+bool GameCommandFactory::CallScout(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::CallScout(pt) );
+    return AddGC( new gc::CallScout(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::Attack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
+bool GameCommandFactory::Attack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers)
 {
-    return AddGC_Virt( new gc::Attack(pt, soldiers_count, strong_soldiers) );
+    return AddGC( new gc::Attack(pt, soldiers_count, strong_soldiers) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SeaAttack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
+bool GameCommandFactory::SeaAttack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers)
 {
-    return AddGC_Virt( new gc::SeaAttack(pt, soldiers_count, strong_soldiers) );
+    return AddGC( new gc::SeaAttack(pt, soldiers_count, strong_soldiers) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SetCoinsAllowed(const MapPoint pt, const bool enabled)
+bool GameCommandFactory::SetCoinsAllowed(const MapPoint pt, bool enabled)
 {
-    return AddGC_Virt( new gc::SetCoinsAllowed(pt, enabled) );
+    return AddGC( new gc::SetCoinsAllowed(pt, enabled) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SetProductionEnabled(const MapPoint pt, const bool enabled)
+bool GameCommandFactory::SetProductionEnabled(const MapPoint pt, bool enabled)
 {
-    return AddGC_Virt( new gc::SetProductionEnabled(pt, enabled) );
+    return AddGC( new gc::SetProductionEnabled(pt, enabled) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::NotifyAlliesOfLocation(const MapPoint pt)
+bool GameCommandFactory::NotifyAlliesOfLocation(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::NotifyAlliesOfLocation(pt) );
+    return AddGC( new gc::NotifyAlliesOfLocation(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SetInventorySetting(const MapPoint pt, const bool isJob, const unsigned char type, const InventorySetting state)
+bool GameCommandFactory::SetInventorySetting(const MapPoint pt, bool isJob, unsigned char type, InventorySetting state)
 {
-    return AddGC_Virt( new gc::SetInventorySetting(pt, isJob, type, state) );
+    return AddGC( new gc::SetInventorySetting(pt, isJob, type, state) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states)
+bool GameCommandFactory::SetInventorySetting(const MapPoint pt, GoodType good, InventorySetting state)
 {
-    return AddGC_Virt( new gc::SetAllInventorySettings(pt, isJob, states) );
+    return SetInventorySetting(pt, false, good, state);
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count)
+bool GameCommandFactory::SetInventorySetting(const MapPoint pt, Job job, InventorySetting state)
 {
-    return AddGC_Virt( new gc::ChangeReserve(pt, rank, count) );
+    return SetInventorySetting(pt, true, job, state);
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::CheatArmageddon()
+bool GameCommandFactory::SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states)
 {
-    return AddGC_Virt( new gc::CheatArmageddon() );
+    return AddGC( new gc::SetAllInventorySettings(pt, isJob, states) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::Surrender()
+bool GameCommandFactory::ChangeReserve(const MapPoint pt, unsigned char rank, unsigned char count)
 {
-    return AddGC_Virt( new gc::Surrender() );
+    return AddGC( new gc::ChangeReserve(pt, rank, count) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::DestroyAll()
+bool GameCommandFactory::CheatArmageddon()
 {
-    return AddGC_Virt( new gc::DestroyAll() );
+    return AddGC( new gc::CheatArmageddon() );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::SuggestPact(const unsigned char player, const PactType pt, const unsigned duration)
+bool GameCommandFactory::Surrender()
 {
-    return AddGC_Virt( new gc::SuggestPact(player, pt, duration) );
+    return AddGC( new gc::Surrender() );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char player)
+bool GameCommandFactory::DestroyAll()
 {
-    return AddGC_Virt( new gc::AcceptPact(accepted, id, pt, player) );
+    return AddGC( new gc::DestroyAll() );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::CancelPact(const PactType pt, const unsigned char player)
+bool GameCommandFactory::SuggestPact(unsigned char player, PactType pt, unsigned duration)
 {
-    return AddGC_Virt( new gc::CancelPact(pt, player) );
+    return AddGC( new gc::SuggestPact(player, pt, duration) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::ToggleShipYardMode(const MapPoint pt)
+bool GameCommandFactory::AcceptPact(bool accepted, unsigned id, PactType pt, unsigned char player)
 {
-    return AddGC_Virt( new gc::ToggleShipYardMode(pt) );
+    return AddGC( new gc::AcceptPact(accepted, id, pt, player) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::StartExpedition(const MapPoint pt)
+bool GameCommandFactory::CancelPact(const PactType pt, unsigned char player)
 {
-    return AddGC_Virt( new gc::StartExpedition(pt) );
+    return AddGC( new gc::CancelPact(pt, player) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::FoundColony(unsigned int shipID)
+bool GameCommandFactory::ToggleShipYardMode(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::ExpeditionCommand(gc::ExpeditionCommand::FOUNDCOLONY, shipID) );
+    return AddGC( new gc::ToggleShipYardMode(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::TravelToNextSpot(ShipDirection direction, unsigned int shipID)
+bool GameCommandFactory::StartExpedition(const MapPoint pt)
+{
+    return AddGC( new gc::StartExpedition(pt) );
+}
+
+bool GameCommandFactory::FoundColony(unsigned int shipID)
+{
+    return AddGC( new gc::ExpeditionCommand(gc::ExpeditionCommand::FOUNDCOLONY, shipID) );
+}
+
+bool GameCommandFactory::TravelToNextSpot(ShipDirection direction, unsigned int shipID)
 {
     gc::ExpeditionCommand::Action action;
     switch (ShipDirection::Type(direction))
@@ -249,30 +222,21 @@ bool GameCommandFactory<T_Handler>::TravelToNextSpot(ShipDirection direction, un
     default:
         throw std::invalid_argument("Direction");
     }
-    return AddGC_Virt( new gc::ExpeditionCommand(action, shipID) );
+    return AddGC( new gc::ExpeditionCommand(action, shipID) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::CancelExpedition(unsigned int shipID)
+bool GameCommandFactory::CancelExpedition(unsigned int shipID)
 {
-    return AddGC_Virt( new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID) );
+    return AddGC( new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::StartExplorationExpedition(const MapPoint pt)
+bool GameCommandFactory::StartExplorationExpedition(const MapPoint pt)
 {
-    return AddGC_Virt( new gc::StartExplorationExpedition(pt) );
+    return AddGC( new gc::StartExplorationExpedition(pt) );
 }
 
-template<class T_Handler>
-bool GameCommandFactory<T_Handler>::TradeOverLand(const MapPoint pt, const bool ware_figure, const GoodType gt, const Job job, const unsigned count)
+bool GameCommandFactory::TradeOverLand(const MapPoint pt, bool ware_figure, GoodType gt, Job job, unsigned count)
 {
-    return AddGC_Virt( new gc::TradeOverLand(pt, ware_figure,gt, job, count) );
+    return AddGC( new gc::TradeOverLand(pt, ware_figure, gt, job, count) );
 }
 
-//////////////////////////////////////////////////////////////////////////
-/// Declare all Factories/Derived classes here to create the code for them
-
-template class GameCommandFactory<GameClient>;
-
-template class GameCommandFactory<AIInterface>;

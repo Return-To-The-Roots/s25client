@@ -22,6 +22,7 @@
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
+#include "gameTypes/BuildingCount.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "notifications/BuildingNote.h"
 #include "helpers/converters.h"
@@ -168,9 +169,7 @@ unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
-    BuildingCount bc;
-    player.GetBuildingCount(bc);
-    return bc.building_counts[bld];
+    return player.GetBuildingCount().buildings[bld];
 }
 
 unsigned LuaPlayer::GetWareCount(GoodType ware)

@@ -40,7 +40,7 @@ class nobMilitary;
 class nobUsual;
 struct Inventory;
 
-class AIInterface: public GameCommandFactory<AIInterface>
+class AIInterface: public GameCommandFactory
 {
     public:
         AIInterface(const GameWorldBase& gwb, const GameClientPlayer& player,
@@ -48,8 +48,6 @@ class AIInterface: public GameCommandFactory<AIInterface>
             gwb(gwb), player_(player), players(players), gcs(gcs), playerID_(playerID) {}
 
     private:
-        typedef GameCommandFactory<AIInterface> GC_Factory;
-        friend class GameCommandFactory<AIInterface>;
 
         /// Pointer to GameWorld, containing all information about the world
         const GameWorldBase& gwb;
@@ -62,7 +60,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// ID of AI player
         const unsigned char playerID_;
 
-        bool AddGC(gc::GameCommand* gc)
+        bool AddGC(gc::GameCommand* gc) override
         {
             gcs.push_back(gc);
             return true;
@@ -226,7 +224,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         const std::list<nobBaseWarehouse*>& GetStorehouses() const {return player_.GetStorehouses();}
 
         // Retrieves the current counts of all buildings
-        void GetBuildingCount(BuildingCount& counts) const { player_.GetBuildingCount(counts); }
+        BuildingCount GetBuildingCount() const;
 
         // Returns the inventory of the ai player
         const Inventory& GetInventory() const { return player_.GetInventory(); }
@@ -251,35 +249,35 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const;
 
         void SetCoinsAllowed(const nobMilitary* building, const bool enabled);
-        using GC_Factory::SetCoinsAllowed;
+        using GameCommandFactory::SetCoinsAllowed;
 
 		///getnation
 		unsigned GetNation() {return player_.nation;}
 
         void StartExpedition(const nobHarborBuilding* harbor);
-        using GC_Factory::StartExpedition;
+        using GameCommandFactory::StartExpedition;
 
         /// Lets a ship found a colony
-        void FoundColony(const noShip* ship) { FoundColony(player_.GetShipID(ship)); }
-        using GC_Factory::FoundColony;
+        void FoundColony(const noShip* ship) { FoundColony(GetShipID(ship)); }
+        using GameCommandFactory::FoundColony;
 
-        void TravelToNextSpot(ShipDirection direction, const noShip* ship) { TravelToNextSpot(direction, player_.GetShipID(ship)); }
-        using GC_Factory::TravelToNextSpot;
+        void TravelToNextSpot(ShipDirection direction, const noShip* ship) { TravelToNextSpot(direction, GetShipID(ship)); }
+        using GameCommandFactory::TravelToNextSpot;
 
-        void CancelExpedition(const noShip* ship) { CancelExpedition(player_.GetShipID(ship)); }
-        using GC_Factory::CancelExpedition;
+        void CancelExpedition(const noShip* ship) { CancelExpedition(GetShipID(ship)); }
+        using GameCommandFactory::CancelExpedition;
 
         void ToggleShipYardMode(const nobShipYard* yard);
-        using GC_Factory::ToggleShipYardMode;
+        using GameCommandFactory::ToggleShipYardMode;
 
         void DestroyBuilding(const noBuilding* building);
-        using GC_Factory::DestroyBuilding;
+        using GameCommandFactory::DestroyBuilding;
 
         void DestroyFlag(const noFlag* flag);
-        using GC_Factory::DestroyFlag;
+        using GameCommandFactory::DestroyFlag;
 
         void CallGeologist(const noFlag* flag);
-        using GC_Factory::CallGeologist;
+        using GameCommandFactory::CallGeologist;
 };
 
 

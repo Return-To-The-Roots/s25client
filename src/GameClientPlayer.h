@@ -33,32 +33,25 @@
 #include <list>
 #include <queue>
 
-class noFlag;
-class RoadSegment;
-class nobBaseWarehouse;
-class noRoadNode;
+struct BuildingCount;
+class GameWorldGame;
 class noBaseBuilding;
 class noBuildingSite;
-class Ware;
+class noFigure;
+class noFlag;
+class noRoadNode;
+class noShip;
+class nobBaseMilitary;
+class nobBaseWarehouse;
+class nobHarborBuilding;
 class nobMilitary;
 class nobUsual;
-class nofFlagWorker;
-class nobBaseMilitary;
-class SerializedGameData;
 class nofCarrier;
-class noShip;
-class nobHarborBuilding;
-class GameWorldGame;
-class noFigure;
+class nofFlagWorker;
 class PostMsg;
-
-/// Informationen über Gebäude-Anzahlen
-struct BuildingCount
-{
-    boost::array<unsigned, 40> building_counts;
-    boost::array<unsigned, 40> building_site_counts;
-};
-
+class RoadSegment;
+class SerializedGameData;
+class Ware;
 
 class GameClientPlayer : public GamePlayerInfo
 {
@@ -282,7 +275,7 @@ class GameClientPlayer : public GamePlayerInfo
         /// Gibt Liste von Gebäuden des Spieler zurück
         const std::list<nobUsual*>& GetBuildings(const BuildingType type) const;
         /// Liefert die Anzahl aller Gebäude einzeln
-        void GetBuildingCount(BuildingCount& bc) const;
+        BuildingCount GetBuildingCount() const;
         /// Berechnet die durschnittlichen Produktivität eines jeden Gebäudetyps
         /// (erwartet als Argument ein 40-er Array!)
         void CalcProductivities(std::vector<unsigned short>& productivities);

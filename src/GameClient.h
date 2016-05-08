@@ -40,11 +40,10 @@ class GameEvent;
 class GameWorldView;
 class GameWorld;
 
-class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory<GameClient>
+class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
 {
-    friend class GameCommandFactory<GameClient>;
     /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
-    bool AddGC(gc::GameCommand* gc);
+    bool AddGC(gc::GameCommand* gc) override;
 
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 5;
