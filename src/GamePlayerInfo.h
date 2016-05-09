@@ -18,14 +18,11 @@
 #ifndef GAMEPLAYERINFO_H_INCLUDED
 #define GAMEPLAYERINFO_H_INCLUDED
 
-#include "gameTypes/AIInfo.h"
-#include "gameTypes/PlayerState.h"
-#include "gameData/NationConsts.h"
-#include "gameTypes/TeamTypes.h"
+#include "BasePlayerInfo.h"
 
 class Serializer;
 
-class GamePlayerInfo
+class GamePlayerInfo: public BasePlayerInfo
 {
     public:
         GamePlayerInfo(const unsigned playerid);
@@ -34,11 +31,6 @@ class GamePlayerInfo
         virtual ~GamePlayerInfo();
 
         void clear();
-
-        /// Slot used by a human player (has socket etc)
-        bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
-        /// Slot filled (Used by human or AI, but excludes currently connecting humans)
-        bool isUsed() const { return (ps == PS_KI || ps == PS_OCCUPIED); }
 
         /// Ist Spieler besiegt?
         bool isDefeated() const { return defeated; }
@@ -54,6 +46,9 @@ class GamePlayerInfo
         int GetColorIdx() const;
         static int GetColorIdx(unsigned color);
 
+        void InitRating();
+        void SetAIName(unsigned id);
+
     protected:
         /// Player-ID
         unsigned playerid;
@@ -61,25 +56,13 @@ class GamePlayerInfo
         bool defeated;
 
     public:
-        /// Spielertyp (Mensch, KI oder geschlossen..?)
-        PlayerState ps;
-        /// Wenn KI, was für eine?
-        AI::Info aiInfo;
-
-        /// Spielername
-        std::string name;
         /// ehemaliger Spielername bei einem geladenen Spiel
         std::string origin_name;
 
         bool is_host;
 
-        Nation nation;
-        Team team;
-        /// Actual color (ARGB)
-        unsigned color;
-
         unsigned ping;
-        unsigned int rating;
+        unsigned rating;
 
         bool ready;
 };

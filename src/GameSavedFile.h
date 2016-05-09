@@ -24,6 +24,7 @@
 #include "../libutil/src/MyTime.h"
 #include <string>
 
+struct BasePlayerInfo;
 class BinaryFile;
 
 /// Basisklasse für Replays und Savegames
@@ -49,20 +50,7 @@ protected:
     /// liest die GlobalGameSettings aus der Datei.
     void ReadGGS(BinaryFile& file);
 
-
 public:
-    /// Spieler
-    struct Player
-    {
-        /// PlayerState
-        unsigned ps;
-        /// (Damaliger) Name des Spielers
-        std::string name;
-        /// Volk, Farbe, Team
-        Nation nation;
-        unsigned color;
-        unsigned char team;
-    };
 
     /// Zeitpunkt der Aufnahme
     unser_time_t save_time;
@@ -71,13 +59,13 @@ public:
     /// GGS
     GlobalGameSettings ggs;
 
-    Player& GetPlayer(unsigned idx){ return players[idx]; }
-    const Player& GetPlayer(unsigned idx) const { return players[idx]; }
-    unsigned GetPlayerCount(){ return players.size(); }
-    void SetPlayerCount(unsigned size){ players.clear(); players.resize(size); }
+    const BasePlayerInfo& GetPlayer(unsigned idx) const;
+    unsigned GetPlayerCount();
+    void AddPlayer(const BasePlayerInfo& player);
+    void ClearPlayers();
 
 private:
-    std::vector<Player> players;
+    std::vector<BasePlayerInfo> players;
 };
 
 #endif // !GAMEFILES_H_INCLUDED

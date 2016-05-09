@@ -19,11 +19,10 @@
 #include <build_version.h>
 #include "BinaryFile.h"
 #include "GameSavedFile.h"
-#include "GamePlayerInfo.h"
+#include "BasePlayerInfo.h"
 #include "helpers/Deleter.h"
 #include "libutil/src/Serializer.h"
 #include "libutil/src/Log.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <cstring>
 
 SavedFile::SavedFile() : save_time(0)
@@ -76,35 +75,22 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
 
 void SavedFile::WritePlayerData(BinaryFile& file)
 {
-    // Spielerdaten
-    for(std::vector<Player>::const_iterator it = players.begin(); it != players.end(); ++it)
-    {
-        file.WriteUnsignedInt(it->ps);
+    Serializer ser;
+    ser.PushUnsignedChar(players.size());
+    for(std::vector<BasePlayerInfo>::const_iterator it = players.begin(); it != players.end(); ++it)
+        it->Serialize(ser, true);
 
-        if(it->ps != PS_LOCKED)
-        {
-            file.WriteShortString(it->name);
-            file.WriteUnsignedChar(it->nation);
-            file.WriteUnsignedInt(it->color);
-            file.WriteUnsignedChar(it->team);
-        }
-    }
+    ser.WriteToFile(file);
 }
 
 void SavedFile::ReadPlayerData(BinaryFile& file)
 {
-    for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
-    {
-        it->ps = file.ReadUnsignedInt();
-
-        if(it->ps != PS_LOCKED)
-        {
-            it->name = file.ReadShortString();
-            it->nation = Nation(file.ReadUnsignedChar());
-            it->color = file.ReadUnsignedInt();
-            it->team = file.ReadUnsignedChar();
-        }
-    }
+    players.clear();
+    Serializer ser;
+    ser.ReadFromFile(file);
+    players.resize(ser.PopUnsignedChar());
+    for(std::vector<BasePlayerInfo>::iterator it = players.begin(); it != players.end(); ++it)
+        it->Deserialize(ser, true);
 }
 
 /**
@@ -114,9 +100,7 @@ void SavedFile::WriteGGS(BinaryFile& file)
 {
     Serializer ser;
     ggs.Serialize(ser);
-
-    file.WriteUnsignedInt(ser.GetLength());
-    file.WriteRawData(ser.GetData(), ser.GetLength());
+    ser.WriteToFile(file);
 }
 
 /**
@@ -124,11 +108,27 @@ void SavedFile::WriteGGS(BinaryFile& file)
  */
 void SavedFile::ReadGGS(BinaryFile& file)
 {
-    unsigned length = file.ReadUnsignedInt();
-    boost::interprocess::unique_ptr<unsigned char, Deleter<unsigned char[]> > buffer(new unsigned char[length]);
-
-    file.ReadRawData(buffer.get(), length);
-    Serializer ser(buffer.get(), length);
-
+    Serializer ser;
+    ser.ReadFromFile(file);
     ggs.Deserialize(ser);
+}
+
+const BasePlayerInfo& SavedFile::GetPlayer(unsigned idx) const
+{
+    return players[idx];
+}
+
+unsigned SavedFile::GetPlayerCount()
+{
+    return players.size();
+}
+
+void SavedFile::AddPlayer(const BasePlayerInfo& player)
+{
+    players.push_back(player);
+}
+
+void SavedFile::ClearPlayers()
+{
+    players.clear();
 }

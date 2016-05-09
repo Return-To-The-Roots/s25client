@@ -24,7 +24,7 @@
 /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
 const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
 /// Version des Savegame-Formates
-const unsigned short Savegame::SAVE_VERSION = 35;
+const unsigned short Savegame::SAVE_VERSION = 36;
 
 Savegame::Savegame() : SavedFile(), start_gf(0)
 {
@@ -55,29 +55,12 @@ bool Savegame::Save(BinaryFile& file)
 
     // Timestamp der Aufzeichnung
     unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
-    file.WriteRawData(&tmpTime, 8);
+    file.WriteRawData(&tmpTime, sizeof(tmpTime));
 
     // Mapname
     file.WriteShortString(mapName);
 
-    // Anzahl Spieler
-    file.WriteUnsignedChar(GetPlayerCount());
-
-    // Größe der Spielerdaten (später ausfüllen)
-    unsigned players_size = 0;
-    unsigned players_pos = file.Tell();
-    file.WriteUnsignedInt(players_size);
-
-    // Spielerdaten
     WritePlayerData(file);
-
-    // Wieder zurückspringen und Größe des Spielerblocks eintragen
-    unsigned new_pos = file.Tell();
-    file.Seek(players_pos, SEEK_SET);
-    file.WriteUnsignedInt(new_pos - players_pos - 4);
-    file.Seek(new_pos, SEEK_SET);
-
-    // GGS
     WriteGGS(file);
 
     // Start-GF
@@ -110,41 +93,20 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
         return false;
 
     // Zeitstempel
-    file.ReadRawData(&save_time, 8);
+    file.ReadRawData(&save_time, sizeof(save_time));
     save_time = libendian::ConvertEndianess<false>::toNative(save_time);
 
     // Map-Name
     mapName = file.ReadShortString();
 
-    // Anzahl Spieler
-    SetPlayerCount(file.ReadUnsignedChar());
-
-    // Spielerzeug
-    if(load_players)
-    {
-        // Größe des Spielerblocks überspringen
-        file.Seek(4, SEEK_CUR);
-
-        ReadPlayerData(file);
-    }
-    else
-    {
-        // Überspringen
-        unsigned player_size = file.ReadUnsignedInt();
-        file.Seek(player_size, SEEK_CUR);
-    }
-
-    // GGS
+    ReadPlayerData(file);
     ReadGGS(file);
 
     // Start-GF
     start_gf = file.ReadUnsignedInt();
 
     if(load_sgd)
-    {
-        // Serialisiertes Spielzeug lesen
-        sgd.ReadFromFile(file);
-    }
+        sgd.ReadFromFile(file); // Serialisiertes Spielzeug lesen
 
     return true;
 }

@@ -105,8 +105,8 @@ void iwPlayReplay::PopulateTable()
         for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
         {
             // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
-            const SavedFile::Player& curPlayer = replay.GetPlayer(i);
-            if(curPlayer.ps == PS_OCCUPIED || curPlayer.ps == PS_KI)
+            const BasePlayerInfo& curPlayer = replay.GetPlayer(i);
+            if(curPlayer.isUsed())
             {
                 // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
                 if(!tmp_players.empty())

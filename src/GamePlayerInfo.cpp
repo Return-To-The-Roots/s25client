@@ -19,39 +19,28 @@
 #include "GamePlayerInfo.h"
 #include "Serializer.h"
 #include "libutil/src/colors.h"
+#include "mygettext/src/mygettext.h"
 #include <algorithm>
 
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid) :
     playerid(playerid),
     defeated(false),
-    ps(PS_FREE),
-    aiInfo(),
     is_host(false),
-    nation(NAT_ROMANS),
-    team(TM_NOTEAM),
-    color(PLAYER_COLORS[0]),
     ping(0),
     rating(0),
     ready(false)
-{
-}
+{}
 
 GamePlayerInfo::GamePlayerInfo(const unsigned playerid, Serializer& ser) :
     playerid(playerid),
     defeated(false),
-    ps(PlayerState(ser.PopUnsignedChar())),
-    aiInfo(ser),
-    name(ser.PopString()),
     origin_name(ser.PopString()),
     is_host(ser.PopBool()),
-    nation(Nation(ser.PopUnsignedChar())),
-    team(Team(ser.PopUnsignedChar())),
-    color(ser.PopUnsignedInt()),
     ping(ser.PopUnsignedInt()),
     rating(ser.PopUnsignedInt()),
     ready(ser.PopBool())
 {
-
+    BasePlayerInfo::Deserialize(ser, false);
 }
 
 GamePlayerInfo::~GamePlayerInfo()
@@ -73,17 +62,12 @@ void GamePlayerInfo::clear()
 /// serialisiert die Daten.
 void GamePlayerInfo::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedChar(static_cast<unsigned char>(ps));
-    aiInfo.serialize(ser);
-    ser.PushString(name);
     ser.PushString(origin_name);
     ser.PushBool(is_host);
-    ser.PushUnsignedChar(static_cast<unsigned char>(nation));
-    ser.PushUnsignedChar(team);
-    ser.PushUnsignedInt(color);
     ser.PushUnsignedInt(ping);
     ser.PushUnsignedInt(rating);
     ser.PushBool(ready);
+    BasePlayerInfo::Serialize(ser, false);
 }
 
 void GamePlayerInfo::SwapInfo(GamePlayerInfo& two)
@@ -112,4 +96,59 @@ int GamePlayerInfo::GetColorIdx(unsigned color)
             return i;
     }
     return -1;
+}
+
+void GamePlayerInfo::InitRating()
+{
+    if(ps == PS_OCCUPIED)
+        rating = 1000;
+    else if(ps == PS_KI)
+    {
+        if(aiInfo.type == AI::DEFAULT)
+        {
+            switch(aiInfo.level)
+            {
+            case AI::EASY:
+                rating = 42;
+                break;
+            case AI::MEDIUM:
+                rating = 666;
+                break;
+            case AI::HARD:
+                rating = 1337;
+                break;
+            }
+        } else
+            rating = 0;
+    } else
+        rating = 0;
+}
+
+void GamePlayerInfo::SetAIName(unsigned playerId)
+{
+    RTTR_Assert(ps == PS_KI);
+    char str[128];
+    if(aiInfo.type == AI::DUMMY)
+        sprintf(str, _("Dummy %u"), playerId);
+    else
+        sprintf(str, _("Computer %u"), playerId);
+
+    name = str;
+    name += _(" (AI)");
+
+    if(aiInfo.type == AI::DEFAULT)
+    {
+        switch(aiInfo.level)
+        {
+        case AI::EASY:
+            name += _(" (easy)");
+            break;
+        case AI::MEDIUM:
+            name += _(" (medium)");
+            break;
+        case AI::HARD:
+            name += _(" (hard)");
+            break;
+        }
+    }
 }

@@ -216,24 +216,24 @@ bool GameServer::Start()
             for(unsigned char i = 0; i < serverconfig.playercount; ++i)
             {
                 // PlayerState
-                const SavedFile::Player& savePlayer = save.GetPlayer(i);
-                players[i].ps = PlayerState(savePlayer.ps);
+                const BasePlayerInfo& savePlayer = save.GetPlayer(i);
+                players[i].ps = savePlayer.ps;
 
-                if(players[i].ps != PS_LOCKED)
+                if(players[i].isUsed())
                 {
+                    players[i].aiInfo = savePlayer.aiInfo;
                     // (ehemaliger) Spielername
                     players[i].origin_name = savePlayer.name;
 
                     // Volk, Team und Farbe
                     players[i].nation = savePlayer.nation;
                     players[i].color = savePlayer.color;
-                    players[i].team = Team(savePlayer.team);
-
+                    players[i].team = savePlayer.team;
                 }
 
-                // Besetzt --> freigeben, damit auch jemand reinkann
                 if(players[i].ps == PS_OCCUPIED)
                 {
+                    // Besetzt --> freigeben, damit auch jemand reinkann
                     players[i].ps = PS_FREE;
                     // Erster richtiger Spieler? Dann ist das der Host später
                     if(!host_found)
@@ -241,24 +241,9 @@ bool GameServer::Start()
                         players[i].is_host = true;
                         host_found = true;
                     }
-                }
-                // KI-Spieler? Namen erzeugen und typ finden
-                //warning: if you ever add new ai types - it is not enough that the server knows about the ai! when the host joins his server he will get ONMSPLAYERLIST which also doesnt include the aitype!
-                else if(players[i].ps == PS_KI)
-                {
-                    if(!strncmp(savePlayer.name.c_str(), "Computer", 7))
-                    {
-                        LOG.lprintf("loading aijh: %s \n", savePlayer.name.c_str());
-                        players[i].aiInfo = AI::Info(AI::DEFAULT);
-                        players[i].rating = 666;
-                    }
-                    else
-                    {
-                        LOG.lprintf("loading default - dummy: %s \n", savePlayer.name.c_str());
-                        players[i].aiInfo = AI::Info(AI::DUMMY);
-                    }
+                }else if(players[i].ps == PS_KI)
                     players[i].name = savePlayer.name;
-                }
+                players[i].InitRating();
             }
 
             // Einstellungen aus dem Savegame für die Addons werden in Load geladen
@@ -593,8 +578,6 @@ void GameServer::TogglePlayerState(unsigned char client)
         {
             player.ps = PS_KI;
             player.aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
-            // Baby mit einem Namen Taufen ("Name (KI)")
-            SetAIName(client);
         } break;
         case PS_KI:
             {
@@ -614,7 +597,6 @@ void GameServer::TogglePlayerState(unsigned char client)
                         player.aiInfo = AI::Info(AI::DUMMY);
                         break;
                     }
-                    SetAIName(client);
                     break;
                 case AI::DUMMY:
                     if(mapinfo.type != MAPTYPE_SAVEGAME)
@@ -642,6 +624,8 @@ void GameServer::TogglePlayerState(unsigned char client)
                 player.ps = PS_FREE;
         } break;
     }
+    if(player.ps == PS_KI)
+        player.SetAIName(player.getPlayerID());
     player.ready = (player.ps == PS_KI);
 
     // Tat verkünden
@@ -1588,35 +1572,4 @@ void GameServer::SwapPlayer(const unsigned char player1, const unsigned char pla
     SendToAll(GameMessage_Player_Swap(player1, player2));
     // Spieler vertauschen
     players[player1].SwapInfo(players[player2]);
-}
-
-void GameServer::SetAIName(const unsigned player_id)
-{
-    // Baby mit einem Namen Taufen ("Name (KI)")
-    char str[128];
-    GameServerPlayer& player = players[player_id];
-    if (player.aiInfo.type == AI::DUMMY)
-        sprintf(str, _("Dummy %u"), unsigned(player_id));
-    else
-        sprintf(str, _("Computer %u"), unsigned(player_id));
-
-    player.name = str;
-    player.name += _(" (AI)");
-
-    if (player.aiInfo.type == AI::DEFAULT)
-    {
-        switch(player.aiInfo.level)
-        {
-        case AI::EASY:
-            player.name += _(" (easy)");
-            break;
-        case AI::MEDIUM:
-            player.name += _(" (medium)");
-            break;
-        case AI::HARD:
-            player.name += _(" (hard)");
-            break;
-        }
-    }
-
 }

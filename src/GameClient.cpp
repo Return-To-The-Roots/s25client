@@ -389,16 +389,14 @@ void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
         GameClientPlayer& player = players[i];
         const GamePlayerInfo& msgPlayer = msg.gpl[i];
         player.ps = msgPlayer.ps;
+        player.aiInfo = msgPlayer.aiInfo;
         player.name = msgPlayer.name;
+        player.nation = msgPlayer.nation;
+        player.color = msgPlayer.color;
+        player.team = msgPlayer.team;
         player.origin_name = msgPlayer.origin_name;
         player.is_host = msgPlayer.is_host;
-        player.nation = msgPlayer.nation;
-        player.team = msgPlayer.team;
-        player.color = msgPlayer.color;
         player.ping = msgPlayer.ping;
-        player.rating = msgPlayer.rating;
-        player.ps = msgPlayer.ps;
-        player.aiInfo = msgPlayer.aiInfo;
         player.rating = msgPlayer.rating;
 
         if(ci)
@@ -430,7 +428,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_New& msg)
     players[msg.player].name = msg.name;
     players[msg.player].ps = PS_OCCUPIED;
     players[msg.player].ping = 0;
-    players[msg.player].rating = 1000;
+    players[msg.player].InitRating();
 
     if(ci)
         ci->CI_NewPlayer(msg.player);
@@ -461,37 +459,9 @@ void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
     GameClientPlayer* player = players.getElement(msg.player);
     player->ps = msg.ps;
     player->aiInfo = msg.aiInfo;
-
-    // Baby mit einem Namen Taufen ("Name (KI)")
-    if (player->aiInfo.type == AI::DEFAULT)
-    {
-        char str[512];
-        sprintf(str, _("Computer %u"), unsigned(msg.player));
-        player->name = str;
-        player->name += _(" (AI)");
-        switch (player->aiInfo.level)
-        {
-        case AI::EASY:
-            player->name += _(" (easy)");
-            player->rating = 42;
-            break;
-        case AI::MEDIUM:
-            player->name += _(" (medium)");
-            player->rating = 666;
-            break;
-        case AI::HARD:
-            player->name += _(" (hard)");
-            player->rating = 1337;
-            break;
-        }
-    }
-    else if (player->aiInfo.type == AI::DUMMY)
-    {
-        char str[512];
-        sprintf(str, _("Dummy %u"), unsigned(msg.player));
-        player->name = str;
-        player->rating = 0; // ;-)
-    }
+    player->InitRating();
+    if(player->ps == PS_KI)
+        player->SetAIName(player->getPlayerID());
 
     player->ready = (player->ps == PS_KI);
     if(ci)
@@ -1371,23 +1341,9 @@ void GameClient::SendNothingNC(int checksum)
 
 void GameClient::WritePlayerInfo(SavedFile& file)
 {
-    // Spieleranzahl
-    file.SetPlayerCount(players.getCount());
-
     // Spielerdaten
     for(unsigned i = 0; i < players.getCount(); ++i)
-    {
-        SavedFile::Player& player = file.GetPlayer(i);
-        player.ps = unsigned(players[i].ps);
-
-        if(players[i].ps != PS_LOCKED)
-        {
-            player.name = players[i].name;
-            player.nation = players[i].nation;
-            player.color = players[i].color;
-            player.team = players[i].team;
-        }
-    }
+        file.AddPlayer(players[i]);
 }
 
 void GameClient::WriteReplayHeader(const unsigned random_init)
@@ -1441,15 +1397,16 @@ bool GameClient::StartReplay(const std::string& path)
     {
         players.push_back(GameClientPlayer(i));
 
-        const SavedFile::Player& player = replayinfo.replay.GetPlayer(i);
-        players[i].ps = PlayerState(player.ps);
+        const BasePlayerInfo& player = replayinfo.replay.GetPlayer(i);
+        players[i].ps = player.ps;
 
-        if(players[i].ps != PS_LOCKED)
+        if(players[i].isUsed())
         {
+            players[i].aiInfo = player.aiInfo;
             players[i].name = player.name;
             players[i].nation = player.nation;
             players[i].color = player.color;
-            players[i].team = Team(player.team);
+            players[i].team = player.team;
         }
     }
 

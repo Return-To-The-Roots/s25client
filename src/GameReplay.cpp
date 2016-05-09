@@ -20,12 +20,13 @@
 #include "GameSavegame.h"
 #include "gameTypes/MapInfo.h"
 #include "Log.h"
+#include "libendian/src/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
 
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
 /// Version des Replay-Formates
-const unsigned short Replay::REPLAY_VERSION = 29;
+const unsigned short Replay::REPLAY_VERSION = 30;
 
 Replay::Replay() : nwf_length(0), random_init(0),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
@@ -40,8 +41,7 @@ Replay::~Replay()
 void Replay::StopRecording()
 {
     file.Close();
-
-    SetPlayerCount(0);
+    ClearPlayers();
 }
 
 bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
@@ -57,8 +57,8 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
 
     // Versionszeug schreiben
     WriteVersion(file, 6, REPLAY_SIGNATURE, REPLAY_VERSION);
-    // Timestamp der Aufzeichnung (TODO: Little/Big Endian unterscheidung)
-    file.WriteRawData(&save_time, 8);
+    unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
+    file.WriteRawData(&tmpTime, sizeof(tmpTime));
     /// NWF-Länge
     file.WriteUnsignedShort(nwf_length);
     /// Zufallsgeneratorinitialisierung
@@ -130,19 +130,16 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
         return false;
 
     // Zeitstempel
-    file.ReadRawData(&save_time, 8);
+    file.ReadRawData(&save_time, sizeof(save_time));
+    save_time = libendian::ConvertEndianess<false>::toNative(save_time);
     // NWF-Länge
     nwf_length = file.ReadUnsignedShort();
     // Zufallsgeneratorinitialisierung
     random_init = file.ReadUnsignedInt();
     /// End-GF
     lastGF_ = file.ReadUnsignedInt();
-    // Spieleranzahl
-    SetPlayerCount(file.ReadUnsignedChar());
 
-    // Spielerdaten
     ReadPlayerData(file);
-    // GGS
     ReadGGS(file);
 
     // Map-Type

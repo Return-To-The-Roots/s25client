@@ -109,7 +109,7 @@ void LuaServerPlayer::SetAI(unsigned level)
     player.ps = PS_KI;
     player.aiInfo = info;
     player.ready = true;
-    GAMESERVER.SetAIName(player.getPlayerID());
+    player.SetAIName(player.getPlayerID());
     GAMESERVER.SendToAll(GameMessage_Player_Set_State(player.getPlayerID(), player.ps, player.aiInfo));
     // If we added a new AI, set an initial color
     // Do this after(!) the player state was set

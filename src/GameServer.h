@@ -100,9 +100,6 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         /// Sendet ein NC-Paket ohne Befehle
         void SendNothingNC(const unsigned int& id);
 
-        /// Generiert einen KI-Namen
-        void SetAIName(const unsigned player_id);
-
         unsigned GetFilledSlots() const;
         /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
         void AnnounceStatusChange();
