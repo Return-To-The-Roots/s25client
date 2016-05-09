@@ -21,8 +21,8 @@
 #include "Desktop.h"
 #include "ClientInterface.h"
 #include "LobbyInterface.h"
-#include "GameProtocol.h"
 #include "GlobalGameSettings.h"
+#include "gameTypes/ServerType.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 

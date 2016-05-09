@@ -23,10 +23,11 @@
 #include "GameMessageInterface.h"
 
 #include "GamePlayerList.h"
-#include "GameReplay.h"
+#include "Replay.h"
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
 #include "postSystem/PostBox.h"
+#include "gameTypes/ChatDestination.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/MilitaryConsts.h"

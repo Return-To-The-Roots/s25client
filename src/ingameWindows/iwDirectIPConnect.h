@@ -21,6 +21,7 @@
 
 #include "IngameWindow.h"
 #include "ClientInterface.h"
+#include "gameTypes/ServerType.h"
 
 class iwDirectIPConnect : public IngameWindow, public ClientInterface
 {

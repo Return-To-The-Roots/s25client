@@ -34,7 +34,7 @@
 
 #include "GameServerPlayer.h"
 #include "GameManager.h"
-#include "GameSavegame.h"
+#include "Savegame.h"
 #include "ai/AIBase.h"
 #include "Settings.h"
 #include "Debug.h"

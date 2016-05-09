@@ -15,27 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "MapInfo.h"
-#include "Savegame.h"
+#ifndef SIGNAL_H_INCLUDED
+#define SIGNAL_H_INCLUDED
 
-MapInfo::MapInfo()
-{
-    Clear();
-}
+#pragma once
 
-MapInfo::~MapInfo()
-{}
+///////////////////////////////////////////////////////////////////////////////
+// externs
+#ifdef _WIN32
+BOOL WINAPI HandlerRoutine(DWORD dwCtrlType);
+#else
+void HandlerRoutine(int sig);
+#endif // _WIN32
 
-void MapInfo::Clear()
-{
-    type = MAPTYPE_OLDMAP;
-    title.clear();
-    filepath.clear();
-    luaFilepath.clear();
-    mapData.Clear();
-    luaData.Clear();
-    mapChecksum = 0;
-    luaChecksum = 0;
-    savegame.reset();
-}
+#endif // SIGNAL_H_INCLUDED

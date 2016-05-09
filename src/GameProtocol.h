@@ -165,22 +165,6 @@ enum
 // Wie lange maximal warten, bis Rausschmiss des Spielers (in milliseconds)
 const unsigned PING_TIMEOUT     = 2 * 60 * 1000; // 2min
 
-// Ziele fürs Chatten (Ingame)
-enum ChatDestination
-{
-    CD_SYSTEM = 0,
-    CD_ALL,
-    CD_ALLIES,
-    CD_ENEMIES
-};
-
-/// Map-Typ
-enum MapType
-{
-    MAPTYPE_OLDMAP = 0,
-    MAPTYPE_SAVEGAME
-};
-
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!
 const unsigned MAP_PART_SIZE = 512;

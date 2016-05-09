@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include "GameProtocol.h"
-#include "gameTypes/PlayerState.h"
+#include "gameTypes/ChatDestination.h"
 #include "gameData/NationConsts.h"
+#include "gameTypes/PlayerState.h"
 
 class GameWorldBase;
 class GlobalGameSettings;

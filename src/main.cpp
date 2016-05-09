@@ -26,7 +26,7 @@
 #   include <csignal>
 #endif
 
-#include "signale.h"
+#include "SignalHandler.h"
 
 #include "GameManager.h"
 

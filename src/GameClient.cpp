@@ -21,7 +21,7 @@
 
 #include "GameManager.h"
 #include "GameMessages.h"
-#include "GameSavegame.h"
+#include "Savegame.h"
 #include "GlobalVars.h"
 #include "SocketSet.h"
 #include "Loader.h"

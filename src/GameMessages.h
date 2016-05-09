@@ -19,10 +19,11 @@
 
 #include "GameMessage.h"
 #include "GameMessageInterface.h"
-#include "GameProtocol.h"
 #include "GamePlayerList.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
+#include "gameTypes/ChatDestination.h"
+#include "gameTypes/MapType.h"
 #include "../libutil/src/Log.h"
 class MessageInterface;
 /*

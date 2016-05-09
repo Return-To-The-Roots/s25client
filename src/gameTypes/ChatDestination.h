@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "MapInfo.h"
-#include "Savegame.h"
+#ifndef ChatDestination_h__
+#define ChatDestination_h__
 
-MapInfo::MapInfo()
+// Ziele fürs Chatten (Ingame)
+enum ChatDestination
 {
-    Clear();
-}
+    CD_SYSTEM = 0,
+    CD_ALL,
+    CD_ALLIES,
+    CD_ENEMIES
+};
 
-MapInfo::~MapInfo()
-{}
-
-void MapInfo::Clear()
-{
-    type = MAPTYPE_OLDMAP;
-    title.clear();
-    filepath.clear();
-    luaFilepath.clear();
-    mapData.Clear();
-    luaData.Clear();
-    mapChecksum = 0;
-    luaChecksum = 0;
-    savegame.reset();
-}
+#endif // ChatDestination_h__
