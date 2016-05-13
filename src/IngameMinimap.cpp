@@ -35,9 +35,6 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
 
-    // Beobeachtender Spieler
-    unsigned char viewing_player = gwv.GetPlayerID();
-
     Visibility visibility = gwv.GetVisibility(pt);
 
     if(visibility == VIS_INVISIBLE)
@@ -49,11 +46,11 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     {
         DrawnObject drawn_object = DO_INVALID;
 
-        bool fow = (visibility == VIS_FOW);
+        const bool fow = (visibility == VIS_FOW);
 
         unsigned char owner;
-        NodalObjectType got;
-        FOW_Type fot;
+        NodalObjectType got = NOP_NOTHING;
+        FOW_Type fot = FOW_NOTHING;
         if(!fow)
         {
             owner = gwv.GetNode(pt).owner;

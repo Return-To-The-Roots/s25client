@@ -20,6 +20,7 @@
 #include "libutil/src/Serializer.h"
 #include "libutil/src/colors.h"
 #include "mygettext/src/mygettext.h"
+#include <cstdio>
 
 JoinPlayerInfo::JoinPlayerInfo():
     rating(0),

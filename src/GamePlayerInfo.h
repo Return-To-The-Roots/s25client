@@ -28,8 +28,9 @@ struct GamePlayerInfo: public PlayerInfo
     unsigned GetPlayerId() const { return id; }
     bool IsDefeated() const { return isDefeated; }
 
+private:
+    unsigned id;
 protected:
-    const unsigned id;
     bool isDefeated;
 };
 

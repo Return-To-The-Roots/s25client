@@ -25,6 +25,7 @@
 
 #include "GlobalVars.h"
 #include <iostream>
+#include <cstdio>
 
 /**
  *  Signal-Handler

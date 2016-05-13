@@ -203,7 +203,7 @@ bool GameWorldViewer::IsOnRoad(const MapPoint& pt) const
 /// Return a ship at this position owned by the given player. Prefers ships that need instructions.
 noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 {
-    noShip* ship = NULL;
+    noShip* resultShip = NULL;
 
     for (unsigned i = 0; i < 7; ++i)
     {
@@ -219,18 +219,18 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
         {
             if((*it)->GetGOT() != GOT_SHIP)
                 continue;
-            noShip* tmp = static_cast<noShip*>(*it);
+            noShip* curShip = static_cast<noShip*>(*it);
 
-            if (tmp->GetPlayer() == playerId_ && tmp->GetPos() == pt || tmp->GetDestinationForCurrentMove() == pt)
+            if (curShip->GetPlayer() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
             {
-                if(tmp->IsWaitingForExpeditionInstructions())
-                    return tmp;
-                ship = tmp;
+                if(curShip->IsWaitingForExpeditionInstructions())
+                    return curShip;
+                resultShip = curShip;
             }
         }
     }
 
-    return ship;
+    return resultShip;
 }
 
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück

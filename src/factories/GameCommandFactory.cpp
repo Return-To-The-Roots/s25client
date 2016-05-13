@@ -18,7 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameCommandFactory.h"
 #include "GameCommands.h"
-
 #include <stdexcept>
 
 bool GameCommandFactory::SetFlag(const MapPoint pt)

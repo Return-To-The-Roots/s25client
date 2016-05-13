@@ -465,6 +465,7 @@ void nofGeologist::SetSign(const unsigned char resources)
             break;
         default:
             RTTR_Assert(false);
+            return;
         }
         SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PMC_GEOLOGIST, pos));
         gwg->GetNotifications().publish(ResourceNote(player, pos, type, quantity));

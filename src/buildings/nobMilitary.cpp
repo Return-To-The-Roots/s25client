@@ -46,8 +46,8 @@
 #include <stdexcept>
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), new_built(true), coins(0), coinsDisabled(false),
-      coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(0), upgrade_event(0), is_regulating_troops(false), captured_not_built(false)
+    : nobBaseMilitary(type, pos, player, nation), new_built(true), captured_not_built(false), coins(0), coinsDisabled(false),
+      coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL), is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetPlayer(player).AddMilitaryBuilding(this);

@@ -33,8 +33,8 @@ void intrusive_ptr_release(gc::GameCommand* x);
 
 // Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
 // Only factory classes should be in here
-#define GC_FRIEND_DECL friend class GameCommand; friend class GameCommandFactory
-
+#define GC_FRIEND_DECL friend class GameCommand;         \
+                       friend class ::GameCommandFactory
 
 namespace gc
 {

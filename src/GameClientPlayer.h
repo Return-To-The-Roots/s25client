@@ -56,8 +56,8 @@ class Ware;
 class GameClientPlayer: public GamePlayerInfo
 {
     private:
-        // Zugriff der Spieler auf die Spielwelt
-        GameWorldGame& gwg;
+        // Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
+        GameWorldGame* gwg;
         /// Liste der Warenhäuser des Spielers
         std::list<nobBaseWarehouse*> warehouses;
         /// Liste von Häfen
@@ -193,7 +193,7 @@ class GameClientPlayer: public GamePlayerInfo
         // Deserialisieren
         void Deserialize(SerializedGameData& sgd);
 
-        GameWorldGame& GetGameWorld(){ return gwg; }
+        GameWorldGame& GetGameWorld(){ return *gwg; }
 
         /// Looks for the closes warehouse for the point 'start' (including it) that matches the conditions by the functor
         /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be considered
