@@ -22,16 +22,17 @@
 #include "gameTypes/MapTypes.h"
 #include <vector>
 
-class TerritoryRegion;
 class CatapultStone;
 class GameInterface;
 class MilitarySquares;
-class RoadSegment;
 class noBaseBuilding;
 class noBuildingSite;
 class noRoadNode;
 class nofActiveSoldier;
 class nofAttacker;
+struct PlayerInfo;
+class RoadSegment;
+class TerritoryRegion;
 
 /// "Interface-Klasse" für das Spiel
 class GameWorldGame: public GameWorldBase
@@ -64,7 +65,7 @@ protected:
 
 public:
 
-    GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldGame(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung

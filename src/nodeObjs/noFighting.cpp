@@ -21,6 +21,7 @@
 #include "figures/nofActiveSoldier.h"
 #include "Random.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "noSkeleton.h"

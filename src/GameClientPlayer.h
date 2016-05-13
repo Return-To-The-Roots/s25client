@@ -19,10 +19,10 @@
 #define GAMECLIENTPLAYER_H_
 
 #include "GamePlayerInfo.h"
+#include "GameMessage_GameCommand.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include "gameTypes/Inventory.h"
-#include "GameMessage_GameCommand.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/PactTypes.h"
@@ -53,12 +53,11 @@ class RoadSegment;
 class SerializedGameData;
 class Ware;
 
-class GameClientPlayer : public GamePlayerInfo
+class GameClientPlayer: public GamePlayerInfo
 {
     private:
-
         // Zugriff der Spieler auf die Spielwelt
-        GameWorldGame* gwg;
+        GameWorldGame& gwg;
         /// Liste der Warenhäuser des Spielers
         std::list<nobBaseWarehouse*> warehouses;
         /// Liste von Häfen
@@ -148,7 +147,7 @@ class GameClientPlayer : public GamePlayerInfo
         // Informationen über die Verteilung
         struct Distribution
         {
-            unsigned char percent_buildings[BUILDING_TYPES_COUNT];
+            boost::array<unsigned char, BUILDING_TYPES_COUNT> percent_buildings;
             std::list<BuildingType> client_buildings; // alle Gebäude, die diese Ware bekommen, zusammengefasst
             std::vector<unsigned char> goals;
             unsigned selected_goal;
@@ -171,8 +170,9 @@ class GameClientPlayer : public GamePlayerInfo
 
         void EnableBuilding(BuildingType type) {building_enabled[type] = true;}
         void DisableBuilding(BuildingType type) {building_enabled[type] = false;}
-        bool IsBuildingEnabled(BuildingType type) const {return(building_enabled[type]);}
-        std::vector< MapPoint >& GetRestrictedArea() {return(restricted_area);}
+        bool IsBuildingEnabled(BuildingType type) const {return building_enabled[type];}
+        std::vector<MapPoint>& GetRestrictedArea() { return restricted_area; }
+        const std::vector<MapPoint>& GetRestrictedArea() const { return restricted_area; }
         void SendPostMessage(PostMsg* msg);
 
     private:
@@ -185,16 +185,15 @@ class GameClientPlayer : public GamePlayerInfo
         void MakePact(const PactType pt, const unsigned char other_player, const unsigned duration);
 
     public:
-        GameClientPlayer(const unsigned playerid);
+        GameClientPlayer(unsigned playerid, const PlayerInfo& playerInfo, GameWorldGame& gwg);
+        ~GameClientPlayer();
 
         /// Serialisieren
         void Serialize(SerializedGameData& sgd);
         // Deserialisieren
         void Deserialize(SerializedGameData& sgd);
 
-        /// Setzt GameWorld
-        void SetGameWorldPointer(GameWorldGame* const gwg) { this->gwg = gwg; }
-        GameWorldGame* GetGameWorld(){ return gwg; }
+        GameWorldGame& GetGameWorld(){ return gwg; }
 
         /// Looks for the closes warehouse for the point 'start' (including it) that matches the conditions by the functor
         /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be considered

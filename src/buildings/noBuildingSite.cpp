@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "buildings/noBuildingSite.h"
-#include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "Ware.h"
 #include "figures/nofBuilder.h"
 #include "figures/nofPlaner.h"

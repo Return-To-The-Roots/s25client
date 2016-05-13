@@ -19,13 +19,21 @@
 
 #include "GameMessage.h"
 #include "GameMessageInterface.h"
-#include "GamePlayerList.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
+#include "GameProtocol.h"
+#include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapType.h"
-#include "../libutil/src/Log.h"
+#include "gameTypes/Nation.h"
+#include "gameTypes/PlayerState.h"
+#include "gameTypes/TeamTypes.h"
+#include "libutil/src/Serializer.h"
+#include "libutil/src/Log.h"
+
+struct JoinPlayerInfo;
 class MessageInterface;
+
 /*
  * das Klassenkommentar ist alles Client-Sicht, für Server-Sicht ist alles andersrum
  *
@@ -36,7 +44,6 @@ class MessageInterface;
  * ist zum Verschicken der Nachrichten gedacht!
  */
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Ping-Nachricht
 class GameMessage_Ping : public GameMessage
 {
@@ -51,7 +58,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// ausgehende Pong-Nachricht
 class GameMessage_Pong : public GameMessage
 {
@@ -65,7 +71,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// ausgehende Server-Typ-Nachricht
 class GameMessage_Server_Type: public GameMessage
 {
@@ -100,7 +105,6 @@ public:
 	}
 };
 
-
 class GameMessage_Server_TypeOK: public GameMessage
 {
 public:
@@ -128,8 +132,6 @@ public:
 	}
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
 /// ein/ausgehende Server-Password-Nachricht
 class GameMessage_Server_Password : public GameMessage
 {
@@ -158,7 +160,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// ausgehende Server-Name-Nachricht
 class GameMessage_Server_Name : public GameMessage
 {
@@ -188,7 +189,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Server-Start-Nachricht
 class GameMessage_Server_Start : public GameMessage
 {
@@ -221,7 +221,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Server-Countdown-Nachricht
 class GameMessage_Server_Countdown : public GameMessage
 {
@@ -251,7 +250,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Server-CancelCountdown-Nachricht
 class GameMessage_Server_CancelCountdown : public GameMessage
 {
@@ -265,7 +263,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// ein/ausgehende Server-Chat-Nachricht
 class GameMessage_Server_Chat : public GameMessage
 {
@@ -327,7 +324,6 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Server-Async-Nachricht
 class GameMessage_Server_Async : public GameMessage
 {
@@ -364,7 +360,6 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Player-ID-Nachricht
 class GameMessage_Player_Id : public GameMessage
 {
@@ -396,7 +391,6 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// ausgehende Player-Name-Nachricht
 class GameMessage_Player_Name : public GameMessage
 {
@@ -429,44 +423,21 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende Player-List-Nachricht
 class GameMessage_Player_List : public GameMessage
 {
 public:
-	GamePlayerList gpl;
+    std::vector<JoinPlayerInfo> playerInfos;
 
-	GameMessage_Player_List(): GameMessage(NMS_PLAYER_LIST) { }
-	GameMessage_Player_List(const GameServerPlayerList& gpl): GameMessage(NMS_PLAYER_LIST, 0xFF), gpl(gpl)
-	{
-		LOG.write(">>> NMS_PLAYER_LIST(%d)\n", gpl.getCount());
-	}
+	GameMessage_Player_List();
+	GameMessage_Player_List(const std::vector<JoinPlayerInfo>& playerInfos);
+    ~GameMessage_Player_List();
 
-	void Serialize(Serializer& ser) const override
-    {
-        GameMessage::Serialize(ser);
-        gpl.serialize(ser);
-    }
-
-    void Deserialize(Serializer& ser) override
-	{
-		GameMessage::Deserialize(ser);
-        gpl.deserialize(ser);
-	}
-
-	void Run(MessageInterface* callback) override
-	{
-		LOG.write("<<< NMS_PLAYER_LIST(%d)\n", gpl.getCount());
-		for(unsigned int i = 0; i < gpl.getCount(); ++i)
-		{
-			const GamePlayerInfo* playerInfo = gpl.getElement(i);
-			LOG.write("    %d: %s %d %d %d %d %d %d %s\n", i, playerInfo->name.c_str(), playerInfo->ps, playerInfo->rating, playerInfo->ping, playerInfo->nation, playerInfo->color, playerInfo->team, (playerInfo->ready ? "true" : "false") );
-		}
-		GetInterface(callback)->OnGameMessage(*this);
-	}
+	void Serialize(Serializer& ser) const override;
+    void Deserialize(Serializer& ser) override;
+	void Run(MessageInterface* callback) override;
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende -Nachricht
 class GameMessage_Player_Set_State : public GameMessage
 {
@@ -503,7 +474,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende -Nachricht
 class GameMessage_Player_Set_Nation : public GameMessage
 {
@@ -597,7 +567,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende Player-Kicked-Nachricht
 class GameMessage_Player_Kicked : public GameMessage
 {
@@ -630,7 +599,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende Player-Ping-Nachricht
 class GameMessage_Player_Ping : public GameMessage
 {
@@ -659,7 +627,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende Player-New-Nachricht
 class GameMessage_Player_New : public GameMessage
 {
@@ -692,7 +659,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende Player-Ready-Nachricht
 class GameMessage_Player_Ready : public GameMessage
 {
@@ -725,7 +691,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// gehende Player-Swap-Nachricht
 class GameMessage_Player_Swap : public GameMessage
 {
@@ -1049,7 +1014,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// ausgehende GetAsyncLog-Nachricht
 class GameMessage_GetAsyncLog : public GameMessage
 {
@@ -1066,7 +1030,6 @@ public:
 	}
 };
 
-///////////////////////////////////////////////////////////////////////////////
 /// eingehende SendAsyncLog-Nachricht
 class GameMessage_SendAsyncLog : public GameMessage
 {

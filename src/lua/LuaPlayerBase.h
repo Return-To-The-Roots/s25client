@@ -22,7 +22,7 @@
 #include "gameData/NationConsts.h"
 #include <kaguya/kaguya.hpp>
 
-class GamePlayerInfo;
+struct BasePlayerInfo;
 
 class LuaPlayerBase
 {
@@ -30,7 +30,7 @@ protected:
     LuaPlayerBase(){}
     virtual ~LuaPlayerBase(){}
 
-    virtual const GamePlayerInfo& GetPlayer() const = 0;
+    virtual const BasePlayerInfo& GetPlayer() const = 0;
 public:
     static void Register(kaguya::State& state);
 

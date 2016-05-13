@@ -22,6 +22,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
 #include "notifications/NodeNote.h"
@@ -31,7 +32,7 @@
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/bind.hpp>
 
-GameWorldViewer::GameWorldViewer(unsigned player, GameWorldBase& gwb): player_(player), gwb(gwb)
+GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb): playerId_(playerId), gwb(gwb)
 {
     InitTerrainRenderer();
     InitVisualData();
@@ -81,7 +82,7 @@ void GameWorldViewer::InitTerrainRenderer()
 
 const GameClientPlayer& GameWorldViewer::GetPlayer() const
 {
-    return GetWorld().GetPlayer(player_);
+    return GetWorld().GetPlayer(playerId_);
 }
 
 unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
@@ -103,8 +104,8 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == player_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
-            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, player_);
+        if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, playerId_);
     }
 
     return total_count;
@@ -112,7 +113,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 
 BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 {
-    return GetWorld().AdjustBQ(pt, player_, visualNodes[GetWorld().GetIdx(pt)].bq);
+    return GetWorld().AdjustBQ(pt, playerId_, visualNodes[GetWorld().GetIdx(pt)].bq);
 }
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
@@ -122,15 +123,15 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
         return VIS_VISIBLE;
 
     // Spieler schon tot? Dann auch alles sichtbar?
-    if(GetPlayer().isDefeated())
+    if(GetPlayer().IsDefeated())
         return VIS_VISIBLE;
 
-    return GetWorld().CalcWithAllyVisiblity(pt, player_);
+    return GetWorld().CalcWithAllyVisiblity(pt, playerId_);
 }
 
 bool GameWorldViewer::IsOwner(const MapPoint& pt) const
 {
-    return GetWorld().GetNode(pt).owner == player_ + 1;
+    return GetWorld().GetNode(pt).owner == playerId_ + 1;
 }
 
 const MapNode& GameWorldViewer::GetNode(const MapPoint& pt) const
@@ -220,7 +221,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
                 continue;
             noShip* tmp = static_cast<noShip*>(*it);
 
-            if (tmp->GetPlayer() == player_ && tmp->GetPos() == pt || tmp->GetDestinationForCurrentMove() == pt)
+            if (tmp->GetPlayer() == playerId_ && tmp->GetPos() == pt || tmp->GetDestinationForCurrentMove() == pt)
             {
                 if(tmp->IsWaitingForExpeditionInstructions())
                     return tmp;
@@ -237,27 +238,27 @@ unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const MapPoint p
 {
     if(GetWorld().GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
-    return unsigned(GetWorld().GetAvailableSoldiersForSeaAttack(player_, pt).size());
+    return unsigned(GetWorld().GetAvailableSoldiersForSeaAttack(playerId_, pt).size());
 }
 
 void GameWorldViewer::ChangePlayer(unsigned player)
 {
-    if(player == player_)
+    if(player == playerId_)
         return;
-    player_ = player;
+    playerId_ = player;
     RecalcAllColors();
 }
 
 void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
 {
     // If visibility changed for us, or our team mate if shared view is on -> Update renderer
-    if(player == player_ || (GetWorld().GetGGS().team_view && GetWorld().GetPlayer(player_).IsAlly(player)))
+    if(player == playerId_ || (GetWorld().GetGGS().team_view && GetWorld().GetPlayer(playerId_).IsAlly(player)))
         tr.VisibilityChanged(pt, *this);
 }
 
 void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
 {
-    if(note.player != player_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed))
+    if(note.player != playerId_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed))
         return;
     // Road construction command ended -> Remove visual overlay
     RemoveVisualRoad(note.pos, note.route);
@@ -302,8 +303,8 @@ const FOWObject* GameWorldViewer::GetYoungestFOWObject(const MapPoint pos) const
 /// with the local player via team view
 unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) const
 {
-    unsigned char youngest_player = player_;
-    unsigned youngest_time = GetWorld().GetNode(pos).fow[player_].last_update_time;
+    unsigned char youngest_player = playerId_;
+    unsigned youngest_time = GetWorld().GetNode(pos).fow[playerId_].last_update_time;
 
     // Shared team view enabled?
     if(GetWorld().GetGGS().team_view)
@@ -311,7 +312,7 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) cons
         // Then check if team members have a better (="younger", see our economy) fow object
         for(unsigned i = 0; i <  GetWorld().GetPlayerCount(); ++i)
         {
-            if(!GetWorld().GetPlayer(i).IsAlly(player_))
+            if(!GetWorld().GetPlayer(i).IsAlly(playerId_))
                 continue;
             // Has the player FOW at this point at all?
             const MapNode::FoWData& name = GetWorld().GetNode(pos).fow[i];

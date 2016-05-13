@@ -15,29 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaServerPlayer_h__
-#define LuaServerPlayer_h__
+#ifndef GameLobby_h__
+#define GameLobby_h__
 
-#include "LuaPlayerBase.h"
-#include <kaguya/kaguya.hpp>
+#include "GlobalGameSettings.h"
+#include <vector>
 
-class GameServerPlayer;
+struct JoinPlayerInfo;
 
-class LuaServerPlayer: public LuaPlayerBase
+/// Model of the game lobby (preparation when starting a map)
+/// Not to be confused with the lobby (List of online games)
+class GameLobby
 {
-    const unsigned playerId;
-    GameServerPlayer& player;
-protected:
-    const BasePlayerInfo& GetPlayer() const override;
 public:
-    LuaServerPlayer(unsigned playerId);
-    static void Register(kaguya::State& state);
+    GameLobby(unsigned numPlayers);
+    ~GameLobby();
 
-    void SetNation(Nation nat);
-    void SetTeam(Team team);
-    void SetColor(unsigned colorOrIdx);
-    void Close();
-    void SetAI(unsigned level);
+    JoinPlayerInfo& GetPlayer(unsigned playerId);
+    const JoinPlayerInfo& GetPlayer(unsigned playerId) const;
+    const std::vector<JoinPlayerInfo>& GetPlayers() const { return players; }
+    unsigned GetPlayerCount() const;
+
+    GlobalGameSettings& GetSettings() { return ggs; }
+    const GlobalGameSettings& GetSettings() const { return ggs; }
+private:
+    std::vector<JoinPlayerInfo> players;
+    GlobalGameSettings ggs;
 };
 
-#endif // LuaServerPlayer_h__
+#endif // GameLobby_h__

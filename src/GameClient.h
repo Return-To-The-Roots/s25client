@@ -17,29 +17,37 @@
 #ifndef GAMECLIENT_H_
 #define GAMECLIENT_H_
 
-#include "Singleton.h"
-#include "Socket.h"
-
 #include "GameMessageInterface.h"
-
-#include "GamePlayerList.h"
 #include "Replay.h"
 #include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
 #include "postSystem/PostBox.h"
+#include "GameCommand.h"
 #include "gameTypes/ChatDestination.h"
-#include "gameTypes/SettingsTypes.h"
 #include "gameTypes/MapInfo.h"
+#include "gameTypes/SettingsTypes.h"
+#include "gameTypes/ServerType.h"
+#include "gameTypes/TeamTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "FramesInfo.h"
+#include "helpers/Deleter.h"
+#include "libutil/src/Singleton.h"
+#include "libutil/src/Socket.h"
+#include "libutil/src/MessageQueue.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+
+namespace AI{ struct Info; }
 
 class AIBase;
 class ClientInterface;
 class GameMessage_GameCommand;
 class SavedFile;
+class GameClientPlayer;
 class GameEvent;
+class GameLobby;
 class GameWorldView;
 class GameWorld;
+class EventManager;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
 {
@@ -69,17 +77,16 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         std::string GetGameName() const { return clientconfig.gameName; }
 
         inline unsigned char GetPlayerID() const { return playerId_; }
-        inline unsigned GetPlayerCount() const { return players.getCount(); }
+        unsigned GetPlayerCount() const;
         /// Liefert einen Player zurück
-        inline GameClientPlayer& GetPlayer(const unsigned int id) { return *players.getElement(id); }
+        GameClientPlayer& GetPlayer(const unsigned int id);
         inline GameClientPlayer& GetLocalPlayer() { return GetPlayer(playerId_); }
         bool IsSinglePlayer() const;
-        /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
-        AIBase* CreateAIPlayer(const unsigned playerid);
+        /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
+        AIBase* CreateAIPlayer(unsigned playerid, const AI::Info& aiInfo);
 
-        /// Gibt GGS zurück
-        const GlobalGameSettings& GetGGS() const { return ggs; }
-        void LoadGGS();
+        /// Return current GameSettings. Only valid during the game!
+        const GlobalGameSettings& GetGGS() const;
 
         bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host, bool use_ipv6);
         void Run();
@@ -92,6 +99,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         /// Gibt Map-Typ zurück
         const MapType GetMapType() const { return mapinfo.type; }
         const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
+        GameLobby& GetGameLobby();
 
         // Initialisiert und startet das Spiel
         void StartGame(const unsigned random_init);
@@ -111,10 +119,10 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         int Interpolate(int x1, int x2, GameEvent* ev);
 
         void Command_Chat(const std::string& text, const ChatDestination cd );
-        void Command_ToggleNation();
-        void Command_ToggleTeam(Team newteam);
-        void Command_SetColor();
-        void Command_ToggleReady();
+        void Command_SetNation(Nation newNation);
+        void Command_SetTeam(Team newTeam);
+        void Command_SetColor(unsigned newColor);
+        void Command_SetReady(bool isReady);
 
         void IncreaseSpeed();
 
@@ -152,7 +160,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void RequestSwapToPlayer(const unsigned char newId);
 
         /// Laggt ein bestimmter Spieler gerade?
-        bool IsLagging(const unsigned int id) { return GetPlayer(id).is_lagging; }
+        bool IsLagging(const unsigned int id);
         /// Spiel pausiert?
         bool IsPaused() const { return framesinfo.isPaused; }
         /// Schreibt Header der Save-Datei
@@ -251,21 +259,20 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 		/// skip ahead how many gf?
 		unsigned int skiptogf;
     private:
-        /// Spielwelt
-        GameWorld* gw;
-        /// EventManager
-        EventManager* em;
-        /// Spieler
-        GameClientPlayerList players;
         /// Spieler-ID dieses Clients
         unsigned char playerId_;
-        /// Globale Spieleinstellungen
+        /// Globale Spieleinstellungen (TODO: Remove. Should be either game state or game lobby state)
         GlobalGameSettings ggs;
 
         MessageQueue recv_queue, send_queue;
         Socket socket;
 
         ClientState state;
+        /// Gameworld and event manager (valid during LOADING and GAME state)
+        boost::interprocess::unique_ptr<GameWorld, Deleter<GameWorld> > gw;
+        boost::interprocess::unique_ptr<EventManager, Deleter<EventManager> > em;
+        /// Game lobby (valid during CONFIG state)
+        boost::interprocess::unique_ptr<GameLobby, Deleter<GameLobby> > gameLobby;
 
         class ClientConfig
         {
@@ -297,7 +304,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
         ClientInterface* ci;
         
-        AIBase *human_ai;
+        boost::interprocess::unique_ptr<AIBase, Deleter<AIBase> > human_ai;
 
         /// GameCommands, die vom Client noch an den Server gesendet werden müssen
         std::vector<gc::GameCommandPtr> gameCommands_;

@@ -22,6 +22,7 @@
 #include "Random.h"
 #include "buildings/nobUsual.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "notifications/BuildingNote.h"

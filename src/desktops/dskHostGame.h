@@ -26,6 +26,7 @@
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
+class GameLobby;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
 
@@ -37,7 +38,6 @@ class dskHostGame :
 {
     public:
 
-        /// Map übergeben, damit die Kartenvorschau erstellt werden kann
         dskHostGame(const ServerType serverType);
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
@@ -55,7 +55,7 @@ class dskHostGame :
         void ChangeTeam(const unsigned i, const unsigned char nr);
         void ChangeReady(const unsigned i, const bool ready);
         void ChangeNation(const unsigned i, const Nation nation);
-        void ChangePing(const unsigned i);
+        void ChangePing(unsigned playerId);
         void ChangeColor(const unsigned i, const unsigned color);
 
         void Msg_PaintBefore() override;
@@ -95,9 +95,9 @@ class dskHostGame :
         void GoBack();
         bool IsSinglePlayer(){ return serverType == ServerType::LOCAL; }
     private:
-        GlobalGameSettings ggs_;
-        bool hasCountdown_;
         const ServerType serverType;
+        GameLobby& gameLobby;
+        bool hasCountdown_;
         boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
         bool wasActivated, allowAddonChange;
 };

@@ -21,22 +21,22 @@
 #pragma once
 
 #include "Singleton.h"
-
 #include "GameMessageInterface.h"
-
 #include "GlobalGameSettings.h"
-#include "GamePlayerList.h"
 #include "gameTypes/MapInfo.h"
+#include "gameTypes/ServerType.h"
 #include "FramesInfo.h"
 #include "Random.h"
 #include "helpers/Deleter.h"
-#include <LANDiscoveryService.h>
+#include "libutil/src/LANDiscoveryService.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <vector>
 
+class AIBase;
 struct CreateServerInfo;
 class GameMessage;
-class AIBase;
 class GameMessage_GameCommand;
+class GameServerPlayer;
 namespace AIEvent { class Base; }
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
@@ -90,7 +90,6 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         void SendToAll(const GameMessage& msg);
         void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
-        void KickPlayer(NS_PlayerKicked npk);
 
         void ClientWatchDog();
 
@@ -135,6 +134,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         enum ServerState
         {
             SS_STOPPED = 0,
+            SS_CREATING_LOBBY, // Creating game lobby (Call Start() next)
             SS_CONFIG,
             SS_GAME
         } status;
@@ -161,7 +161,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         MapInfo mapinfo;
 
         Socket serversocket;
-        GameServerPlayerList players;
+        std::vector<GameServerPlayer> players;
         GlobalGameSettings ggs_;
 
         /// der Spielstartcountdown

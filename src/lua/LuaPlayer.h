@@ -31,7 +31,7 @@ class LuaPlayer: public LuaPlayerBase
 {
     GameClientPlayer& player;
 protected:
-    const GamePlayerInfo& GetPlayer() const override;
+    const BasePlayerInfo& GetPlayer() const override;
 public:
     LuaPlayer(GameClientPlayer& player): player(player){}
     static void Register(kaguya::State& state);

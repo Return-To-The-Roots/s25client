@@ -19,6 +19,7 @@
 #include "nofArmorer.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"

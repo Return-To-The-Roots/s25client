@@ -22,7 +22,9 @@
 #include "Random.h"
 #include "GameManager.h"
 #include "ClientInterface.h"
+#include "GameMessage_GameCommand.h"
 #include "libutil/src/Log.h"
+#include "libutil/src/Serializer.h"
 
 void GameClient::ExecuteGameFrame_Replay()
 {
@@ -32,48 +34,39 @@ void GameClient::ExecuteGameFrame_Replay()
     const unsigned curGF = GetGFNumber();
     RTTR_Assert(replayinfo.next_gf >= curGF || curGF > replayinfo.replay.lastGF_);
 
-    // Commands alle aus der Datei lesen
-    while(replayinfo.next_gf == curGF) // Schon an der Zeit?
+    // Execute all commands from the replay for the current GF
+    while(replayinfo.next_gf == curGF)
     {
-        // RC-Type auslesen
+        // What type of command follows?
         Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
 
-        // Chat Command?
         if(rc == Replay::RC_CHAT)
         {
             unsigned char player, dest;
             std::string message;
             replayinfo.replay.ReadChatCommand(&player, &dest, message);
 
-            // Nächsten Zeitpunkt lesen
-            replayinfo.replay.ReadGF(&replayinfo.next_gf);
-
             if(ci)
                 ci->CI_Chat(player, ChatDestination(dest), message);
-        }
-        // Game Command?
-        else if(rc == Replay::RC_GAME)
+        } else if(rc == Replay::RC_GAME)
         {
             std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
             Serializer ser(&gcData.front(), gcData.size());
             GameMessage_GameCommand msg;
             msg.Deserialize(ser);
-            // Nächsten Zeitpunkt lesen
-            replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-            // NCs ausführen (4 Bytes Checksumme und 1 Byte Player-ID überspringen)
+            // Execute them
             ExecuteAllGCs(msg);
 
-            // Replay ist NSYNC äh ASYNC!
+            // Check for async if checksum data is valid
             if(msg.checksum.randState != 0 &&  msg.checksum != checksum)
             {
+                // Show message if this is the first async GF
                 if(replayinfo.async == 0)
                 {
-                    // Meldung mit GF erzeugen
                     char text[256];
                     sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF);
 
-                    // Messenger im Game (prints to console too)
                     if(ci)
                         ci->CI_ReplayAsync(text);
 
@@ -82,32 +75,26 @@ void GameClient::ExecuteGameFrame_Replay()
                         msg.checksum.objCt, checksum.objCt,
                         msg.checksum.objIdCt, checksum.objIdCt);
 
-                    // pausieren
+                    // and pause the game for further investigation
                     framesinfo.isPaused = true;
                 }
 
                 replayinfo.async++;
             }
-
-            // resync random generator, so replay "can't" be async.
-            // (of course it can, since we resynchronize only after each command, the command itself could be use multiple rand values)
-            //RANDOM.ReplaySet(msg.checksum);
         }
+        // Read GF of next command
+        replayinfo.replay.ReadGF(&replayinfo.next_gf);
     }
 
-    // Frame ausführen
+    // Run game simulation
     NextGF();
 
-    // Replay zu Ende?
+    // Check for game end
     if(curGF == replayinfo.replay.lastGF_)
     {
-        // Replay zu Ende
-
-        // Meldung erzeugen
         char text[256];
         sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
 
-        // Messenger im Game
         if(ci)
             ci->CI_ReplayEndReached(text);
 
@@ -121,8 +108,6 @@ void GameClient::ExecuteGameFrame_Replay()
         }
 
         replayinfo.end = true;
-
-        // pausieren
         framesinfo.isPaused = true;
     }
 }

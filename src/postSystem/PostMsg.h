@@ -23,7 +23,7 @@
 #include "gameTypes/PactTypes.h"
 #include <string>
 
-class GamePlayerInfo;
+struct BasePlayerInfo;
 class glArchivItem_Bitmap;
 
 class PostMsg
@@ -32,7 +32,7 @@ public:
     /// Create a simple message
     PostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const MapPoint& pt = MapPoint::Invalid());
     /// Reponse to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
-    PostMsg(unsigned sendFrame, PactType pt, const GamePlayerInfo& otherPlayer, bool acceptedOrCanceled);
+    PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled);
     virtual ~PostMsg(){}
 
     unsigned GetSendFrame() const { return sendFrame_; }

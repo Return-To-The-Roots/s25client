@@ -19,6 +19,7 @@
 #define PathConditions_h__
 
 #include "world/GameWorldBase.h"
+#include "GameClientPlayer.h"
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainData.h"
 

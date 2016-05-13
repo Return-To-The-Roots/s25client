@@ -33,7 +33,6 @@
 
 class noFlag;
 class AIConstruction;
-class GameClientPlayerList;
 class GlobalGameSettings;
 class noShip;
 class nobBaseWarehouse;
@@ -92,8 +91,7 @@ class AIPlayerJH : public AIBase
         friend class iwAIDebug;
 
     public:
-        AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                   const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level);
+        AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const AI::Level level);
         ~AIPlayerJH() override;
 
         AIInterface& GetInterface() { return aii; }

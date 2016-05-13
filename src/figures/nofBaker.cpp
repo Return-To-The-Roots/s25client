@@ -19,13 +19,13 @@
 #include "nofBaker.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-class SerializedGameData;
 
 nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_BAKER, pos, player, workplace)

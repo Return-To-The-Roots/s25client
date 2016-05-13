@@ -34,8 +34,8 @@
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
 
-GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
-    GameWorldGame(players, gameSettings, em)
+GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em):
+    GameWorldGame(playerInfos, gameSettings, em)
 {}
 
 /// Lädt eine Karte

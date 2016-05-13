@@ -38,7 +38,7 @@ class GameWorldViewer
 {
 public:
 
-    GameWorldViewer(unsigned player, GameWorldBase& gwb);
+    GameWorldViewer(unsigned playerId, GameWorldBase& gwb);
 
     /// Return the world itself
     const GameWorldBase& GetWorld() const { return gwb; }
@@ -48,7 +48,7 @@ public:
     /// Get the player instance for this view
     const GameClientPlayer& GetPlayer() const;
     /// Get the ID of the views player
-    unsigned GetPlayerID() const { return player_; }
+    unsigned GetPlayerID() const { return playerId_; }
 
     /// Get number of soldiers that can attack that point
     unsigned GetAvailableSoldiersForAttack(const MapPoint pt) const;
@@ -100,7 +100,7 @@ private:
         boost::array<unsigned char, 3> roads; // If != 0 then this road value is used (road construction) else real road is used
         BuildingQuality bq;
     };
-    unsigned player_;
+    unsigned playerId_;
     GameWorldBase& gwb;
     TerrainRenderer tr;
     Subscribtion evVisibilityChanged, evAltitudeChanged, evRoadConstruction, evBQChanged;

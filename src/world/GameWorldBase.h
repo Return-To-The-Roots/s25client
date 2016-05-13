@@ -24,20 +24,20 @@
 #include "notifications/NotificationManager.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <vector>
 
-class RoadPathFinder;
-class FreePathFinder;
-class GameInterface;
-class noBuildingSite;
-class GameClientPlayerList;
-class GlobalGameSettings;
-class GameClientPlayer;
-class nofPassiveSoldier;
-class nobHarborBuilding;
-class noFlag;
-class noBase;
-class LuaInterfaceGame;
 class EventManager;
+class FreePathFinder;
+class GameClientPlayer;
+class GameInterface;
+class GlobalGameSettings;
+class LuaInterfaceGame;
+class noBase;
+class noBuildingSite;
+class noFlag;
+class nobHarborBuilding;
+class nofPassiveSoldier;
+class RoadPathFinder;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase: public World
@@ -47,7 +47,7 @@ class GameWorldBase: public World
     PostManager postManager;
     NotificationManager notifications;
 
-    GameClientPlayerList& players;
+    std::vector<GameClientPlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
 protected:
@@ -58,7 +58,7 @@ protected:
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldBase(const std::vector<GameClientPlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -136,7 +136,8 @@ public:
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
     /// Return the player with the given index
-    GameClientPlayer& GetPlayer(const unsigned id) const;
+    GameClientPlayer& GetPlayer(const unsigned id);
+    const GameClientPlayer& GetPlayer(const unsigned id) const;
     unsigned GetPlayerCount() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }

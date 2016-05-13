@@ -19,6 +19,7 @@
 #include "noShip.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"

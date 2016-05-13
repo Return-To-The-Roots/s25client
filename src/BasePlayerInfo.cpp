@@ -23,9 +23,27 @@
 BasePlayerInfo::BasePlayerInfo():
     ps(PS_FREE),
     nation(NAT_ROMANS),
-    team(TM_NOTEAM),
-    color(PLAYER_COLORS[0])
+    color(PLAYER_COLORS[0]),
+    team(TM_NOTEAM)
 {}
+
+BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData):
+    ps(static_cast<PlayerState>(ser.PopUnsignedChar())),
+    aiInfo(!lightData || ps == PS_KI ? ser : AI::Info())
+{
+    if(lightData && !isUsed())
+    {
+        nation = NAT_ROMANS;
+        team = TM_NOTEAM;
+        color = PLAYER_COLORS[0];
+    }else
+    {
+        name = ser.PopString();
+        nation = static_cast<Nation>(ser.PopUnsignedChar());
+        color = ser.PopUnsignedInt();
+        team = static_cast<Team>(ser.PopUnsignedChar());
+    }
+}
 
 void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
 {
@@ -38,17 +56,4 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     ser.PushUnsignedChar(static_cast<unsigned char>(nation));
     ser.PushUnsignedInt(color);
     ser.PushUnsignedChar(static_cast<unsigned char>(team));
-}
-
-void BasePlayerInfo::Deserialize(Serializer& ser, bool lightData)
-{
-    ps = static_cast<PlayerState>(ser.PopUnsignedChar());
-    if(lightData && !isUsed())
-        return;
-    if(!lightData || ps == PS_KI)
-        aiInfo = AI::Info(ser);
-    name = ser.PopString();
-    nation = static_cast<Nation>(ser.PopUnsignedChar());
-    color = ser.PopUnsignedInt();
-    team = static_cast<Team>(ser.PopUnsignedChar());
 }

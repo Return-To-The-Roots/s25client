@@ -260,7 +260,7 @@ void dskGameInterface::Msg_PaintAfter()
     // Laggende Spieler anzeigen in Form von Schnecken
     for(unsigned int i = 0; i < worldViewer.GetWorld().GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(i);
+        const GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(i);
         if(player.is_lagging)
             LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
     }
@@ -599,7 +599,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             }
             else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
             {
-                GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
+                const GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
                 if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
                     GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }

@@ -20,6 +20,7 @@
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
 #include "ingameWindows/iwMissionStatement.h"

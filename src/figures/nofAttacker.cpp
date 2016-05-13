@@ -22,6 +22,7 @@
 #include "nofPassiveSoldier.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "Random.h"
 #include "nodeObjs/noFighting.h"

@@ -21,13 +21,13 @@
 #include "world/GameWorldBase.h"
 #include "GameClientPlayer.h"
 #include "factories/GameCommandFactory.h"
+#include "GameCommand.h"
 #include "gameTypes/Direction.h"
 #include "ai/Resource.h"
 #include "NodalObjectTypes.h"
 
 class nobHQ;
 class nobShipYard;
-class GameClientPlayerList;
 class RoadSegment;
 class noBuilding;
 class noBuildingSite;
@@ -43,9 +43,8 @@ struct Inventory;
 class AIInterface: public GameCommandFactory
 {
     public:
-        AIInterface(const GameWorldBase& gwb, const GameClientPlayer& player,
-                    const GameClientPlayerList& players, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID) :
-            gwb(gwb), player_(player), players(players), gcs(gcs), playerID_(playerID) {}
+        AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID) :
+            gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID) {}
 
     private:
 
@@ -53,8 +52,6 @@ class AIInterface: public GameCommandFactory
         const GameWorldBase& gwb;
         /// Pointer to this player, containing all information about his economoy, buildings, etc.
         const GameClientPlayer& player_;
-        /// Pointer to list with all other players, for alliances, etc
-        const GameClientPlayerList& players;
         /// Pointer to the game commands queue, to send commands to the game
         std::vector<gc::GameCommandPtr>& gcs;
         /// ID of AI player
@@ -112,7 +109,7 @@ class AIInterface: public GameCommandFactory
         unsigned char GetPlayerID() const { return playerID_; }
         unsigned GetPlayerCount() const { return gwb.GetPlayerCount(); }
 
-		bool IsDefeated() const {return player_.isDefeated();}
+		bool IsDefeated() const {return player_.IsDefeated();}
 
         /// Returns a specific object from a position on the map (const version)
         template<typename T> const T* GetSpecObj(const MapPoint pt) const { return gwb.GetSpecObj<T>(pt); }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,56 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GAMEPLAYERINFO_H_INCLUDED
-#define GAMEPLAYERINFO_H_INCLUDED
+#ifndef GamePlayerInfo_h__
+#define GamePlayerInfo_h__
 
-#include "BasePlayerInfo.h"
+#include "PlayerInfo.h"
 
-class Serializer;
-
-class GamePlayerInfo: public BasePlayerInfo
+/// Holds information for players relevant during match-making
+struct GamePlayerInfo: public PlayerInfo
 {
-    public:
-        GamePlayerInfo(const unsigned playerid);
-        GamePlayerInfo(const unsigned playerid, Serializer& ser);
+    GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo);
 
-        virtual ~GamePlayerInfo();
+    unsigned GetPlayerId() const { return id; }
+    bool IsDefeated() const { return isDefeated; }
 
-        void clear();
-
-        /// Ist Spieler besiegt?
-        bool isDefeated() const { return defeated; }
-
-        /// serialisiert die Daten.
-        void serialize(Serializer& ser) const;
-
-        unsigned getPlayerID() const { return playerid; }
-
-        /// Wechselt Spieler
-        void SwapInfo(GamePlayerInfo& two);
-        /// Returns index of color in PLAYER_COLORS array or -1 if not found
-        int GetColorIdx() const;
-        static int GetColorIdx(unsigned color);
-
-        void InitRating();
-        void SetAIName(unsigned id);
-
-    protected:
-        /// Player-ID
-        unsigned playerid;
-        /// Besiegt?
-        bool defeated;
-
-    public:
-        /// ehemaliger Spielername bei einem geladenen Spiel
-        std::string origin_name;
-
-        bool is_host;
-
-        unsigned ping;
-        unsigned rating;
-
-        bool ready;
+protected:
+    const unsigned id;
+    bool isDefeated;
 };
 
-#endif // GAMEPLAYERINFO_H_INCLUDED
+#endif // GamePlayerInfo_h__

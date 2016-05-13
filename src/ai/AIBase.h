@@ -25,7 +25,6 @@
 class GameWorldBase;
 class GameClientPlayer;
 class GlobalGameSettings;
-class GameClientPlayerList;
 
 /// Basisklasse für sämtliche KI-Spieler
 class AIBase
@@ -37,8 +36,6 @@ class AIBase
         const GameWorldBase& gwb;
         /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
         const GameClientPlayer& player;
-        /// Verweis auf etwaige andere Spieler, bspw. um deren Bündnisse zu überprüfen etc.
-        const GameClientPlayerList& players;
         /// Queue der GameCommands, die noch bearbeitet werden müssen
         std::vector<gc::GameCommandPtr> gcs;
         /// Stärke der KI
@@ -48,9 +45,8 @@ class AIBase
 
     public:
 
-        AIBase(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-               const GameClientPlayerList& players, const GlobalGameSettings& ggs, const AI::Level level)
-            : playerid(playerid), gwb(gwb), player(player), players(players), level(level), aii(gwb, player, players, gcs, playerid), ggs(ggs) {}
+        AIBase(const unsigned char playerid, const GameWorldBase& gwb, const AI::Level level)
+            : playerid(playerid), gwb(gwb), player(gwb.GetPlayer(playerid)), level(level), aii(gwb, gcs, playerid), ggs(gwb.GetGGS()) {}
 
         virtual ~AIBase() {}
 

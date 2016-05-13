@@ -19,7 +19,7 @@
 #include "IngameMinimap.h"
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
-#include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "FOWObjects.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"
@@ -36,7 +36,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     unsigned color = 0;
 
     // Beobeachtender Spieler
-    unsigned char viewing_player = GAMECLIENT.GetPlayerID();
+    unsigned char viewing_player = gwv.GetPlayerID();
 
     Visibility visibility = gwv.GetVisibility(pt);
 
@@ -60,8 +60,9 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             got = gwv.GetWorld().GetNO(pt)->GetType();
         } else
         {
-            owner = gwv.GetNode(pt).fow[GAMECLIENT.GetPlayerID()].owner;
-            fot = gwv.GetYoungestFOWObject(pt)->GetType();
+            const unsigned char fowPlayerId = gwv.GetYoungestFOWNodePlayer(pt);
+            owner = gwv.GetNode(pt).fow[fowPlayerId].owner;
+            fot = gwv.GetNode(pt).fow[fowPlayerId].object->GetType();
         }
 
        // Baum an dieser Stelle?
@@ -180,7 +181,7 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
     // Spielerfarbe mit einberechnen
-    unsigned player_color = GAMECLIENT.GetPlayer(player - 1).color;
+    unsigned player_color = gwv.GetWorld().GetPlayer(player - 1).color;
 
     return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2,
         (GetGreen(color) + GetGreen(player_color)) / 2,

@@ -17,3 +17,44 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameMessages.h"
+#include "JoinPlayerInfo.h"
+
+GameMessage_Player_List::GameMessage_Player_List(): GameMessage(NMS_PLAYER_LIST)
+{}
+
+GameMessage_Player_List::GameMessage_Player_List(const std::vector<JoinPlayerInfo>& playerInfos) : GameMessage(NMS_PLAYER_LIST, 0xFF), playerInfos(playerInfos)
+{
+    LOG.write(">>> NMS_PLAYER_LIST(%u)\n", playerInfos.size());
+}
+
+GameMessage_Player_List::~GameMessage_Player_List()
+{}
+
+void GameMessage_Player_List::Serialize(Serializer& ser) const
+{
+    GameMessage::Serialize(ser);
+    ser.PushUnsignedInt(playerInfos.size());
+    for(std::vector<JoinPlayerInfo>::const_iterator it = playerInfos.begin(); it != playerInfos.end(); ++it)
+        it->Serialize(ser);
+}
+
+void GameMessage_Player_List::Deserialize(Serializer& ser)
+{
+    GameMessage::Deserialize(ser);
+    unsigned numPlayers = ser.PopUnsignedInt();
+    playerInfos.clear();
+    playerInfos.reserve(numPlayers);
+    for(unsigned i = 0; i < numPlayers; ++i)
+        playerInfos.push_back(JoinPlayerInfo(ser));
+}
+
+void GameMessage_Player_List::Run(MessageInterface* callback)
+{
+    LOG.write("<<< NMS_PLAYER_LIST(%d)\n", playerInfos.size());
+    for(unsigned i = 0; i < playerInfos.size(); ++i)
+    {
+        const JoinPlayerInfo& playerInfo = playerInfos[i];
+        LOG.write("    %d: %s %d %d %d %d %d %d %s\n", i, playerInfo.name.c_str(), playerInfo.ps, playerInfo.rating, playerInfo.ping, playerInfo.nation, playerInfo.color, playerInfo.team, (playerInfo.isReady ? "true" : "false"));
+    }
+    GetInterface(callback)->OnGameMessage(*this);
+}

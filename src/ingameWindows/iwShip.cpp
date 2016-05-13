@@ -19,6 +19,7 @@
 #include "iwShip.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
 #include "Ware.h"

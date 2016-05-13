@@ -17,8 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "Random.h"
+#include "GameMessage_GameCommand.h"
 #include "libutil/src/Log.h"
+#include "libutil/src/Serializer.h"
 
 void GameClient::ExecuteNWF()
 {
@@ -27,11 +30,12 @@ void GameClient::ExecuteNWF()
     AsyncChecksum checksum(RANDOM.GetCurrentRandomValue());
     const unsigned curGF = GetGFNumber();
 
-    for(unsigned i = 0; i < players.getCount(); ++i)
+    for(unsigned i = 0; i < GetPlayerCount(); ++i)
     {
-        if(players[i].isUsed())
+        GameClientPlayer& player = GetPlayer(i);
+        if(player.isUsed())
         {
-            GameMessage_GameCommand& msg = players[i].gc_queue.front();
+            GameMessage_GameCommand& msg = player.gc_queue.front();
 
             // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
             // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
@@ -48,7 +52,7 @@ void GameClient::ExecuteNWF()
             ExecuteAllGCs(msg);
 
             // Nachricht abwerfen :)
-            players[i].gc_queue.pop();
+            player.gc_queue.pop();
         }
     }
 
@@ -58,5 +62,4 @@ void GameClient::ExecuteNWF()
 
     // alles gesendet --> Liste löschen
     gameCommands_.clear();
-
 }

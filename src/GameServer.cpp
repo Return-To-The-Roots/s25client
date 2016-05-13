@@ -41,7 +41,7 @@
 #include "fileFuncs.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Bitmap.h"
-
+#include "GameMessage_GameCommand.h"
 #include "gameData/GameConsts.h"
 #include "gameData/LanDiscoveryCfg.h"
 #include "gameTypes/LanGameInfo.h"
@@ -157,6 +157,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         } break;
     }
 
+    status = SS_CREATING_LOBBY;
     // Von Lobby abhängig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
     // erstellen dürfen
     if(serverconfig.servertype == ServerType::LOBBY)
@@ -171,6 +172,8 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
 
 bool GameServer::Start()
 {
+    RTTR_Assert(status == SS_CREATING_LOBBY);
+
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
 
@@ -185,7 +188,7 @@ bool GameServer::Start()
 
     // Speicher für Spieler anlegen
     for(unsigned i = 0; i < serverconfig.playercount; ++i)
-        players.push_back(GameServerPlayer(i));
+        players.push_back(GameServerPlayer());
 
     // Potentielle KI-Player anlegen
     ai_players.resize(serverconfig.playercount);
@@ -201,10 +204,9 @@ bool GameServer::Start()
         case MAPTYPE_OLDMAP:
         {
             // Host bei normalen Spieler der erste Spieler
-            players[0].is_host = true;
+            players[0].isHost = true;
 
-            GAMECLIENT.LoadGGS();
-            ggs_ = GAMECLIENT.GetGGS();
+            ggs_.LoadSettings();
         } break;
         case MAPTYPE_SAVEGAME:
         {
@@ -223,7 +225,7 @@ bool GameServer::Start()
                 {
                     players[i].aiInfo = savePlayer.aiInfo;
                     // (ehemaliger) Spielername
-                    players[i].origin_name = savePlayer.name;
+                    players[i].originName = savePlayer.name;
 
                     // Volk, Team und Farbe
                     players[i].nation = savePlayer.nation;
@@ -238,7 +240,7 @@ bool GameServer::Start()
                     // Erster richtiger Spieler? Dann ist das der Host später
                     if(!host_found)
                     {
-                        players[i].is_host = true;
+                        players[i].isHost = true;
                         host_found = true;
                     }
                 }else if(players[i].ps == PS_KI)
@@ -387,6 +389,9 @@ void GameServer::Run()
 // stoppt den server
 void GameServer::Stop()
 {
+    if(status == SS_STOPPED)
+        return;
+
     // player verabschieden
     players.clear();
 
@@ -408,11 +413,12 @@ void GameServer::Stop()
 
     lanAnnouncer.Stop();
 
-    if(status != SS_STOPPED)
-        LOG.lprintf("server state changed to stop\n");    
+    if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
+        LOBBYCLIENT.DeleteServer();
 
     // status
     status = SS_STOPPED;
+    LOG.lprintf("server state changed to stop\n");
 }
 
 /**
@@ -432,7 +438,7 @@ bool GameServer::StartCountdown()
         // noch nicht alle spieler da -> feierabend!
         if( (player.ps == PS_FREE) || (player.ps == PS_RESERVED) )
             return false;
-        else if(player.ps != PS_LOCKED && player.ps != PS_KI && !player.ready)
+        else if(player.ps != PS_LOCKED && player.ps != PS_KI && !player.isReady)
             return false;
         if(player.ps == PS_OCCUPIED)
             playerCount++;
@@ -542,7 +548,7 @@ bool GameServer::StartGame()
         if(players[i].ps == PS_KI)
         {
             SendNothingNC(i);
-            ai_players[i] = GAMECLIENT.CreateAIPlayer(i);
+            ai_players[i] = GAMECLIENT.CreateAIPlayer(i, players[i].aiInfo);
         }
     }
 
@@ -561,7 +567,7 @@ bool GameServer::StartGame()
 // wechselt Spielerstatus durch
 void GameServer::TogglePlayerState(unsigned char client)
 {
-    GameServerPlayer&  player = players[client];
+    GameServerPlayer& player = players[client];
 
     // oh ein spieler, weg mit ihm!
     if(player.ps == PS_OCCUPIED)
@@ -625,8 +631,8 @@ void GameServer::TogglePlayerState(unsigned char client)
         } break;
     }
     if(player.ps == PS_KI)
-        player.SetAIName(player.getPlayerID());
-    player.ready = (player.ps == PS_KI);
+        player.SetAIName(client);
+    player.isReady = (player.ps == PS_KI);
 
     // Tat verkünden
     SendToAll(GameMessage_Player_Set_State(client, player.ps, player.aiInfo));
@@ -732,13 +738,11 @@ void GameServer::RemoveLuaScript()
  */
 void GameServer::SendToAll(const GameMessage& msg)
 {
-    for(unsigned int id = 0; id < players.getCount(); ++id)
+    for(std::vector<GameServerPlayer>::iterator it = players.begin(); it != players.end(); ++it)
     {
-        GameServerPlayer& player = players[id];
-
         // ist der Slot Belegt, dann Nachricht senden
-        if(player.ps == PS_OCCUPIED)
-            player.send_queue.push(msg.duplicate());
+        if(it->ps == PS_OCCUPIED)
+            it->send_queue.push(msg.duplicate());
     }
 }
 
@@ -746,49 +750,33 @@ void GameServer::SendToAll(const GameMessage& msg)
 // kickt einen spieler und räumt auf
 void GameServer::KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param)
 {
-    NS_PlayerKicked npk;
-    npk.playerid = playerid;
-    npk.cause = cause;
-    npk.param = param;
-
-    KickPlayer(npk);
-}
-
-void GameServer::KickPlayer(NS_PlayerKicked npk)
-{
-    GameServerPlayer& player = players[npk.playerid];
+    GameServerPlayer& player = players[playerid];
+    PlayerState oldPs = player.ps;
 
     // send-queue flushen
     player.send_queue.flush(player.so);
+    player.CloseConnections();
 
-    PlayerState oldPs = player.ps;
-
-    // töten, falls außerhalb
+    // If we are ingame, replace by KI
     if(status == SS_GAME)
     {
         // KI-Spieler muss übernehmen
         player.ps = PS_KI;
         player.aiInfo.type = AI::DUMMY;
         player.aiInfo.level = AI::MEDIUM;
-        ai_players[npk.playerid] = GAMECLIENT.CreateAIPlayer(npk.playerid);
-        // Und Socket schließen, das brauchen wir nicht mehr
-        player.so.Close();
-        // Clear queue as this is an AI now (Client executes the GCs, not the server, otherwise we WOULD need to execute those GCs)
-        player.gc_queue.clear();
+        ai_players[playerid] = GAMECLIENT.CreateAIPlayer(playerid, player.aiInfo);
     }
-    else
-        player.clear();
 
     // Do not send notifications if the player was not already there
     if(oldPs == PS_RESERVED)
         return;
 
-    SendToAll(GameMessage_Player_Kicked(npk.playerid, npk.cause, npk.param));
+    SendToAll(GameMessage_Player_Kicked(playerid, cause, param));
     AnnounceStatusChange();
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", npk.playerid, npk.cause, npk.param);
+    LOG.write("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", playerid, cause, param);
 
     if(status == SS_GAME)
-        SendNothingNC(npk.playerid);
+        SendNothingNC(playerid);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -922,7 +910,8 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
             referencePlayerIdx = client;
         }
 
-        player.gc_queue.pop_front();
+        // Remove first (current) msg
+        player.gc_queue.erase(player.gc_queue.begin());
         RTTR_Assert(player.gc_queue.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
 
         // Checksummen nicht gleich?
@@ -937,7 +926,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
             if (async_player1 == -1)
             {
                 GameServerPlayer& refPlayer = players[referencePlayerIdx];
-                async_player1 = refPlayer.getPlayerID();
+                async_player1 = referencePlayerIdx;
                 async_player1_done = false;
                 refPlayer.send_queue.push(new GameMessage_GetAsyncLog(async_player1));
                 refPlayer.send_queue.flush(refPlayer.so);
@@ -1030,7 +1019,7 @@ void GameServer::WaitForClients()
                 if(players[client].ps == PS_FREE)
                 {
                     // platz reservieren
-                    players[client].reserve(socket, client);
+                    players[client].reserve(socket);
                     playerid = client;
                     //LOG.lprintf("new socket, about to tell him about his playerid: %i \n",playerid);
                     // schleife beenden
@@ -1272,16 +1261,16 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 
     GameServerPlayer& player = players[msg.player];
 
-    player.ready = msg.ready;
+    player.isReady = msg.ready;
 
     // countdown ggf abbrechen
-    if(!player.ready && countdown.do_countdown)
+    if(!player.isReady && countdown.do_countdown)
         CancelCountdown();
 
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_READY(%s)\n", msg.player, (player.ready ? "true" : "false"));
-    // Ready-Change senden
-    SendToAll(GameMessage_Player_Ready(msg.player, msg.ready));
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n", msg.player, (player.ready ? "true" : "false"));
+    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_READY(%s)\n", msg.player, (player.isReady ? "true" : "false"));
+    // Broadcast to all players
+    SendToAll(msg);
+    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n", msg.player, (player.isReady ? "true" : "false"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1319,7 +1308,7 @@ inline void GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
         player.send_queue.push(new GameMessage_Server_Name(serverconfig.gamename));
 
         // Spielerliste senden
-        player.send_queue.push(new GameMessage_Player_List(players));
+        player.send_queue.push(new GameMessage_Player_List(std::vector<JoinPlayerInfo>(players.begin(), players.end())));
 
         // Assign unique color
         CheckAndSetColor(msg.player, player.color);
@@ -1351,19 +1340,9 @@ void GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
     if(player.ps != PS_OCCUPIED)
         return;
 
-    //// Command schließlich an alle Clients weiterleiten, aber nicht wenn derjenige Spieler besiegt wurde!
-    if(!player.isDefeated())
-    {
-        // NFCs speichern
-        player.gc_queue.push_back(msg);
-        SendToAll(msg);
-    }else
-    {
-        GameMessage_GameCommand emptyMsg = msg;
-        emptyMsg.gcs.clear();
-        player.gc_queue.push_back(emptyMsg);
-        SendToAll(emptyMsg);
-    }
+    // Save and broadcast command
+    player.gc_queue.push_back(msg);
+    SendToAll(msg);
 }
 
 void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
@@ -1540,19 +1519,20 @@ void GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
 
 void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
 {
+    RTTR_Assert(status == SS_GAME); // Change player only ingame
+
     LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
     using std::swap;
     swap(players[new_id].ps, players[old_id].ps);
     swap(players[new_id].so, players[old_id].so);
     swap(players[new_id].send_queue, players[old_id].send_queue);
     swap(players[new_id].recv_queue, players[old_id].recv_queue);
-    swap(players[new_id].aiInfo, players[old_id].aiInfo);
 
     // Alte KI löschen
     delete ai_players[new_id];
     ai_players[new_id] = NULL;
-
-    ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id);
+    // Place a dummy AI at the original spot
+    ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id, AI::Info(AI::DUMMY));
 
     //swap the gamecommand queue
     swap(players[old_id].gc_queue, players[new_id].gc_queue);
@@ -1568,8 +1548,9 @@ bool GameServer::TogglePause()
 
 void GameServer::SwapPlayer(const unsigned char player1, const unsigned char player2)
 {
-    // Message verschicken
+    RTTR_Assert(status == SS_CONFIG); // Swap player during match-making
     SendToAll(GameMessage_Player_Swap(player1, player2));
-    // Spieler vertauschen
-    players[player1].SwapInfo(players[player2]);
+    // Swap everything
+    using std::swap;
+    swap(players[player1], players[player2]);
 }

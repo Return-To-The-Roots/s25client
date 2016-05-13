@@ -19,6 +19,7 @@
 #include "iwInventory.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "gameData/const_gui_ids.h"
 
 iwInventory::iwInventory()

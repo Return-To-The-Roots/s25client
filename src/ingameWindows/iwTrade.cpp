@@ -20,6 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"

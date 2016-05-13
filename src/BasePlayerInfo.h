@@ -38,16 +38,15 @@ struct BasePlayerInfo
     Team team;
 
     BasePlayerInfo();
+    /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
+    BasePlayerInfo(Serializer& ser, bool lightData);
+    /// Serialize data. If lightData is true, unused data is not written (e.g. unused slot -> Skip rest)
+    void Serialize(Serializer& ser, bool lightData) const;
 
     /// Slot used by a human player (has socket etc)
     bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
     /// Slot filled (Used by human or AI, but excludes currently connecting humans)
     bool isUsed() const { return (ps == PS_KI || ps == PS_OCCUPIED); }
-
-    /// Serialize data. If lightData is true, unused data is not written (e.g. unused slot -> Skip rest)
-    void Serialize(Serializer& ser, bool lightData) const;
-    /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
-    void Deserialize(Serializer& ser, bool lightData);
 };
 
 #endif // BasePlayerInfo_h__

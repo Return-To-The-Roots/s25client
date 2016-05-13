@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
@@ -34,7 +35,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 
-GameWorldBase::GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
+GameWorldBase::GameWorldBase(const std::vector<GameClientPlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em):
     roadPathFinder(new RoadPathFinder(*this)),
     freePathFinder(new FreePathFinder(*this)),
     players(players), gameSettings(gameSettings), em(em),
@@ -61,7 +62,13 @@ void GameWorldBase::InitAfterLoad()
     }
 }
 
-GameClientPlayer& GameWorldBase::GetPlayer(const unsigned id) const
+GameClientPlayer& GameWorldBase::GetPlayer(const unsigned id)
+{
+    RTTR_Assert(id < GetPlayerCount());
+    return players[id];
+}
+
+const GameClientPlayer& GameWorldBase::GetPlayer(const unsigned id) const
 {
     RTTR_Assert(id < GetPlayerCount());
     return players[id];

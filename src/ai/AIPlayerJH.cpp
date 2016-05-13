@@ -117,9 +117,7 @@ namespace{
     }
 }
 
-AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                       const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                       const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level),
+AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerid, gwb, level),
                         UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false), UpgradeBldPos(MapPoint::Invalid())
 {
     construction = new AIConstruction(aii, *this);

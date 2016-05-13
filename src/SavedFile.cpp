@@ -88,9 +88,10 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     players.clear();
     Serializer ser;
     ser.ReadFromFile(file);
-    players.resize(ser.PopUnsignedChar());
-    for(std::vector<BasePlayerInfo>::iterator it = players.begin(); it != players.end(); ++it)
-        it->Deserialize(ser, true);
+    const unsigned playerCt = ser.PopUnsignedChar();
+    players.reserve(playerCt);
+    for(unsigned i = 0; i < playerCt; i++)
+        players.push_back(BasePlayerInfo(ser, true));
 }
 
 /**

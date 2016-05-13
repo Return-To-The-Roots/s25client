@@ -35,7 +35,6 @@
 #include "gameData/GameConsts.h"
 #include "postSystem/PostManager.h"
 #include "SerializedGameData.h"
-#include "LobbyClient.h"
 #include "files.h"
 #include "fileFuncs.h"
 #include "ClientInterface.h"
@@ -48,6 +47,8 @@
 #include "helpers/Deleter.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Font.h"
+#include "GameLobby.h"
+#include "JoinPlayerInfo.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorld.h"
 #include "libsiedler2/src/prototypen.h"
@@ -84,8 +85,8 @@ void GameClient::ReplayInfo::Clear()
 }
 
 GameClient::GameClient()
-    : skiptogf(0), gw(NULL), em(NULL), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
-      ci(NULL), human_ai(NULL), replay_mode(false), game_log(NULL)
+    : skiptogf(0), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED),
+      ci(NULL), replay_mode(false), game_log(NULL)
 {
     clientconfig.Clear();
     framesinfo.Clear();
@@ -95,7 +96,6 @@ GameClient::GameClient()
 GameClient::~GameClient()
 {
     Stop();
-    ExitGame();
 }
 
 /**
@@ -111,7 +111,6 @@ GameClient::~GameClient()
 bool GameClient::Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host, bool use_ipv6)
 {
     Stop();
-    ggs.LoadSettings();
 
     // Name und Password kopieren
     clientconfig.server = server;
@@ -200,25 +199,13 @@ void GameClient::Run()
  */
 void GameClient::Stop()
 {
-    if(state != CS_STOPPED)
-    {
-        if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
-            LOBBYCLIENT.DeleteServer();
+    if(state == CS_STOPPED)
+        return;
 
-        LOG.lprintf("client state changed to stop\n");
-    }
-
-    // Nicht im Spiel --> Spieler löschen
-    // (im Spiel wird das dann von ExitGame übernommen, da die Spielerdaten evtl noch für
-    // Statistiken usw. benötigt werden
-    if(state != CS_GAME)
-    {
-        if(human_ai)
-            deletePtr(human_ai);
-        players.clear();
-    }
-
-    state = CS_STOPPED;
+    if(state == CS_LOADING || state == CS_GAME)
+        ExitGame();
+    else if(state == CS_CONNECT || state == CS_CONFIG)
+        gameLobby.reset();
 
     if (IsHost())
         GAMESERVER.Stop();
@@ -229,13 +216,24 @@ void GameClient::Stop()
 
     replayinfo.replay.StopRecording();
 
-    // NFC-Queues aufräumen
-    gameCommands_.clear();
-
     socket.Close();
 
     // clear jump target
     skiptogf=0;
+
+    // Consistency check: No world, no lobby remaining
+    RTTR_Assert(!gw);
+    RTTR_Assert(!gameLobby);
+
+    state = CS_STOPPED;
+    LOG.lprintf("client state changed to stop\n");
+}
+
+GameLobby& GameClient::GetGameLobby()
+{
+    RTTR_Assert(state == CS_CONFIG);
+    RTTR_Assert(gameLobby);
+    return *gameLobby;
 }
 
 /**
@@ -245,6 +243,8 @@ void GameClient::Stop()
  */
 void GameClient::StartGame(const unsigned int random_init)
 {
+    RTTR_Assert(state == CS_CONFIG || (state == CS_STOPPED && replay_mode));
+
     // Daten zurücksetzen
     randcheckinfo.Clear();
 
@@ -252,7 +252,7 @@ void GameClient::StartGame(const unsigned int random_init)
     framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
-    framesinfo.gf_length = SPEED_GF_LENGTHS[ggs.game_speed];
+    framesinfo.gf_length = SPEED_GF_LENGTHS[gameLobby->GetSettings().game_speed];
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
@@ -260,13 +260,18 @@ void GameClient::StartGame(const unsigned int random_init)
 
     // If we have a savegame, start at its first GF, else at 0
     unsigned startGF = (mapinfo.type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
-    em = new EventManager(startGF);
-    // Create the world itself
-    gw = new GameWorld(players, ggs, *em);
-    GameObject::SetPointers(gw);
-    for(unsigned i = 0; i < players.getCount(); ++i)
-        players[i].SetGameWorldPointer(gw);
+    // Create the world, starting with the event manager
+    em.reset(new EventManager(startGF));
+    // Store settings (only reference stored in World)
+    ggs = gameLobby->GetSettings();
+    gw.reset(new GameWorld(std::vector<PlayerInfo>(gameLobby->GetPlayers().begin(), gameLobby->GetPlayers().end()), ggs, *em));
+    // Init data
+    GameObject::SetPointers(gw.get());
     gw->GetPostMgr().AddPostBox(playerId_);
+    // Release lobby
+    gameLobby.reset();
+
+    state = CS_LOADING;
 
     if(ci)
         ci->CI_GameStarted(*gw);
@@ -281,14 +286,14 @@ void GameClient::StartGame(const unsigned int random_init)
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
         /// Startbündnisse setzen
-        for(unsigned i = 0; i < GetPlayerCount(); ++i)
-            players[i].MakeStartPacts();
+        for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
+            gw->GetPlayer(i).MakeStartPacts();
 
         gw->LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
 
         /// Evtl. Goldvorkommen ändern
         unsigned char target = 0xFF; // löschen
-        switch(GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
+        switch(ggs.getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             case 0: target = 3; break; //in Gold   konvertieren bzw. nichts tun
             case 1: target = 0xFF; break; // löschen
@@ -337,12 +342,14 @@ void GameClient::RealStart()
 
 void GameClient::ExitGame()
 {
+    RTTR_Assert(state == CS_GAME || state == CS_LOADING);
     GameObject::SetPointers(NULL);
     // Spielwelt zerstören
-    deletePtr(human_ai);
-    deletePtr(gw);
-    deletePtr(em);
-    players.clear();
+    human_ai.reset();
+    gw.reset();
+    em.reset();
+    // Clear remaining commands
+    gameCommands_.clear();
 }
 
 unsigned int GameClient::GetGFNumber() const
@@ -384,35 +391,21 @@ void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 {
-    for(unsigned int i = 0; i < players.getCount(); ++i)
+    RTTR_Assert(state == CS_CONNECT);
+    RTTR_Assert(gameLobby);
+    RTTR_Assert(gameLobby->GetPlayerCount() == msg.playerInfos.size());
+
+    for(unsigned i = 0; i < gameLobby->GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = players[i];
-        const GamePlayerInfo& msgPlayer = msg.gpl[i];
-        player.ps = msgPlayer.ps;
-        player.aiInfo = msgPlayer.aiInfo;
-        player.name = msgPlayer.name;
-        player.nation = msgPlayer.nation;
-        player.color = msgPlayer.color;
-        player.team = msgPlayer.team;
-        player.origin_name = msgPlayer.origin_name;
-        player.is_host = msgPlayer.is_host;
-        player.ping = msgPlayer.ping;
-        player.rating = msgPlayer.rating;
-
-        if(ci)
-            ci->CI_PSChanged(i, player.ps);
-
-        if(player.ps == PS_KI)
-        {
-            player.ready = true;
-            if(ci)
-                ci->CI_ReadyChanged(i, player.ready);
-        }
+        JoinPlayerInfo& playerInfo = gameLobby->GetPlayer(i);
+        playerInfo = msg.playerInfos[i];
+        if(playerInfo.ps == PS_KI)
+            playerInfo.isReady = true;
     }
 
+    state = CS_CONFIG;
     if(ci)
         ci->CI_NextConnectState(CS_FINISHED);
-    state = CS_CONFIG;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -420,29 +413,39 @@ void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_New& msg)
 {
-    LOG.write("<<< NMS_PLAYER_NEW(%d)\n", msg.player );
-
-    if(msg.player >= GetPlayerCount())
+    LOG.write("<<< NMS_PLAYER_NEW(%d)\n", msg.player);
+    RTTR_Assert(state == CS_CONFIG);
+    if(msg.player >= gameLobby->GetPlayerCount())
         return;
 
-    players[msg.player].name = msg.name;
-    players[msg.player].ps = PS_OCCUPIED;
-    players[msg.player].ping = 0;
-    players[msg.player].InitRating();
+    JoinPlayerInfo& playerInfo = gameLobby->GetPlayer(msg.player);
+
+    playerInfo.name = msg.name;
+    playerInfo.ps = PS_OCCUPIED;
+    playerInfo.ping = 0;
+    playerInfo.InitRating();
 
     if(ci)
         ci->CI_NewPlayer(msg.player);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// player joined
-/// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
 {
-    if(msg.player >= GetPlayerCount())
+    if(state == CS_CONFIG)
+    {
+        if(msg.player >= gameLobby->GetPlayerCount())
+            return;
+        gameLobby->GetPlayer(msg.player).ping = msg.ping;
+    }else if(state == CS_LOADING || state == CS_GAME)
+    {
+        if(msg.player >= GetPlayerCount())
+            return;
+        GetPlayer(msg.player).ping = msg.ping;
+    } else
+    {
+        RTTR_Assert(false);
         return;
-
-    players[msg.player].ping = msg.ping;
+    }
 
     if(ci)
         ci->CI_PingChanged(msg.player, msg.ping);
@@ -453,21 +456,22 @@ void GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
 {
-    if(msg.player >= players.getCount())
+    RTTR_Assert(state == CS_CONFIG);
+    if(msg.player >= gameLobby->GetPlayerCount())
         return;
 
-    GameClientPlayer* player = players.getElement(msg.player);
-    player->ps = msg.ps;
-    player->aiInfo = msg.aiInfo;
-    player->InitRating();
-    if(player->ps == PS_KI)
-        player->SetAIName(player->getPlayerID());
+    JoinPlayerInfo& playerInfo = gameLobby->GetPlayer(msg.player);
+    playerInfo.ps = msg.ps;
+    playerInfo.aiInfo = msg.aiInfo;
+    playerInfo.InitRating();
+    if(playerInfo.ps == PS_KI)
+        playerInfo.SetAIName(msg.player);
 
-    player->ready = (player->ps == PS_KI);
+    playerInfo.isReady = (playerInfo.ps == PS_KI);
     if(ci)
     {
-        ci->CI_PSChanged(msg.player, player->ps);
-        ci->CI_ReadyChanged(msg.player, player->ready);
+        ci->CI_PSChanged(msg.player, playerInfo.ps);
+        ci->CI_ReadyChanged(msg.player, playerInfo.isReady);
     }
 }
 
@@ -476,10 +480,11 @@ void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 {
-    if(msg.player >= GetPlayerCount())
+    RTTR_Assert(state == CS_CONFIG);
+    if(msg.player >= gameLobby->GetPlayerCount())
         return;
 
-    players[msg.player].nation = msg.nation;
+    gameLobby->GetPlayer(msg.player).nation = msg.nation;
 
     if(ci)
         ci->CI_NationChanged(msg.player, msg.nation);
@@ -490,10 +495,11 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 {
-    if(msg.player >= GetPlayerCount())
+    RTTR_Assert(state == CS_CONFIG);
+    if(msg.player >= gameLobby->GetPlayerCount())
         return;
 
-    players[msg.player].team = msg.team;
+    gameLobby->GetPlayer(msg.player).team = msg.team;
 
     if(ci)
         ci->CI_TeamChanged(msg.player, msg.team);
@@ -504,10 +510,11 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 {
-    if(msg.player >= GetPlayerCount())
+    RTTR_Assert(state == CS_CONFIG);
+    if(msg.player >= gameLobby->GetPlayerCount())
         return;
 
-    players[msg.player].color = msg.color;
+    gameLobby->GetPlayer(msg.player).color = msg.color;
 
     if(ci)
         ci->CI_ColorChanged(msg.player, msg.color);
@@ -522,13 +529,14 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
     LOG.write("<<< NMS_PLAYER_READY(%d, %s)\n", msg.player, (msg.ready ? "true" : "false"));
 
-    if(msg.player >= GetPlayerCount())
+    RTTR_Assert(state == CS_CONFIG);
+    if(msg.player >= gameLobby->GetPlayerCount())
         return;
 
-    players[msg.player].ready = msg.ready;
+    gameLobby->GetPlayer(msg.player).isReady = msg.ready;
 
     if(ci)
-        ci->CI_ReadyChanged(msg.player, players[msg.player].ready);
+        ci->CI_ReadyChanged(msg.player, msg.ready);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -538,16 +546,18 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 {
     LOG.write("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n", msg.player, msg.cause, msg.param);
 
-    if(msg.player >= GetPlayerCount())
-        return;
+    RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
-    if(state == CS_GAME)
+    if(state == CS_CONFIG)
+    {
+        if(msg.player >= gameLobby->GetPlayerCount())
+            return;
+        gameLobby->GetPlayer(msg.player).ps = PS_FREE;
+    }else
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
-        players[msg.player].ps = PS_KI;
+        gw->GetPlayer(msg.player).ps = PS_KI;
     }
-    else
-        players[msg.player].clear();
 
     if(ci)
         ci->CI_PlayerLeft(msg.player);
@@ -557,16 +567,16 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
     LOG.write("<<< NMS_PLAYER_SWAP(%u, %u)\n", msg.player, msg.player2);
 
-    if(msg.player >= GetPlayerCount() || msg.player2 >= GetPlayerCount())
-        return;
+    RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
-    if(state == CS_GAME)
+    if(state == CS_CONFIG)
     {
-        ChangePlayerIngame(msg.player, msg.player2);
-    }else
-    {
-        // We are in preparation steps -> switch player info
-        players[msg.player].SwapInfo(players[msg.player2]);
+        if(msg.player >= gameLobby->GetPlayerCount() || msg.player2 >= gameLobby->GetPlayerCount())
+            return;
+
+        // During preparation just swap the players
+        using std::swap;
+        swap(gameLobby->GetPlayer(msg.player), gameLobby->GetPlayer(msg.player2));
 
         // Evtl. sind wir betroffen?
         if(playerId_ == msg.player)
@@ -576,6 +586,11 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 
         if(ci)
             ci->CI_PlayersSwapped(msg.player, msg.player2);
+    }else
+    {
+        if(msg.player >= gw->GetPlayerCount() || msg.player2 >= gw->GetPlayerCount())
+            return;
+        ChangePlayerIngame(msg.player, msg.player2);
     }
 }
 
@@ -673,20 +688,22 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
-    if(msg.player >= GetPlayerCount())
+    if(state != CS_GAME)
         return;
 
-    if(state == CS_GAME)
-        /// Mit im Replay aufzeichnen
-        replayinfo.replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
+    if(msg.player >= gw->GetPlayerCount())
+        return;
 
-    GameClientPlayer& player = GetPlayer(msg.player);
+    /// Mit im Replay aufzeichnen
+    replayinfo.replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
+
+    GameClientPlayer& player = gw->GetPlayer(msg.player);
 
     // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-    if(player.isDefeated() && msg.destination != CD_ALL)
+    if(player.IsDefeated() && msg.destination != CD_ALL)
         return;
     // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
-    bool ally = GetLocalPlayer().IsAlly(msg.player);
+    bool ally = player.IsAlly(playerId_);
 
     // Chatziel unerscheiden und ggf. nicht senden
     if(!ally && msg.destination == CD_ALLIES)
@@ -708,11 +725,14 @@ void GameClient::OnGameMessage(const GameMessage_System_Chat& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 {
+    if(state != CS_GAME)
+        return;
+
     // Liste mit Namen und Checksummen erzeugen
     std::stringstream checksum_list;
     for(unsigned int i = 0; i < msg.checksums.size(); ++i)
     {
-        checksum_list << players.getElement(i)->name << ": " << msg.checksums[i];
+        checksum_list << gw->GetPlayer(i).name << ": " << msg.checksums[i];
         if(i + 1 < msg.checksums.size())
             checksum_list << ", ";
     }
@@ -723,7 +743,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     LOG.lprintf("\n");
 
     // Messenger im Game
-    if(ci && state == CS_GAME)
+    if(ci)
         ci->CI_Async(checksum_list.str());
 
     std::string timeStr = TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s");
@@ -780,6 +800,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 {
+    RTTR_Assert(state == CS_CONNECT);
     LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.data.size());
     if(msg.isMapData)
         std::copy(msg.data.begin(), msg.data.end(), mapinfo.mapData.data.begin() + msg.offset);
@@ -831,10 +852,8 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
                 RTTR_Assert(header);
 
-                players.clear();
-                for(unsigned i = 0; i < header->getPlayer(); ++i)
-                    players.push_back(GameClientPlayer(i));
-
+                RTTR_Assert(!gameLobby);
+                gameLobby.reset(new GameLobby(header->getPlayer()));
                 mapinfo.title = cvStringToUTF8(header->getName());
 
             } break;
@@ -849,17 +868,14 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                     return;
                 }
 
-                players.clear();
-                for(unsigned i = 0; i < mapinfo.savegame->GetPlayerCount(); ++i)
-                    players.push_back(GameClientPlayer(i));
-
+                RTTR_Assert(!gameLobby);
+                gameLobby.reset(new GameLobby(mapinfo.savegame->GetPlayerCount()));
                 mapinfo.title = mapinfo.savegame->mapName;
-
 
             } break;
         }
 
-        if(playerId_ >= GetPlayerCount())
+        if(playerId_ >= gameLobby->GetPlayerCount())
         {
             if(ci)
                 ci->CI_Error(CE_WRONGMAP);
@@ -895,12 +911,13 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnGameMessage(const GameMessage_GGSChange& msg)
 {
+    RTTR_Assert(state == CS_CONFIG);
     LOG.write("<<< NMS_GGS_CHANGE\n");
 
-    ggs = msg.ggs;
+    gameLobby->GetSettings() = msg.ggs;
 
     if(ci)
-        ci->CI_GGSChanged(ggs);
+        ci->CI_GGSChanged(msg.ggs);
 }
 
 void GameClient::OnGameMessage(const GameMessage_RemoveLua& msg)
@@ -916,12 +933,15 @@ void GameClient::OnGameMessage(const GameMessage_RemoveLua& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 void GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 {
-    if(msg.player >= GetPlayerCount())
+    if(state != CS_LOADING && state != CS_GAME)
+        return;
+    if(msg.player >= gw->GetPlayerCount())
         return;
     LOG.write("CLIENT <<< GC %u\n", msg.player);
     // Nachricht in Queue einhängen
-    players[msg.player].gc_queue.push(msg);
-    RTTR_Assert(msg.player != playerId_ || players[msg.player].gc_queue.size() == 1);
+    gw->GetPlayer(msg.player).gc_queue.push(msg);
+    // If this is our GC then it must be the next and only command as we need to execute this before we even send the next one
+    RTTR_Assert(msg.player != playerId_ || gw->GetPlayer(msg.player).gc_queue.size() == 1);
 }
 
 void GameClient::IncreaseSpeed()
@@ -1052,19 +1072,21 @@ void GameClient::OnGameMessage(const GameMessage_GetAsyncLog&  /*msg*/)
 /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
 bool GameClient::IsPlayerLagging()
 {
+    RTTR_Assert(state == CS_GAME);
     bool is_lagging = false;
 
-    for(unsigned char i = 0; i < players.getCount(); ++i)
+    for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
-        if(players[i].isUsed())
+        GameClientPlayer& player = gw->GetPlayer(i);
+        if(player.isUsed())
         {
-            if(players[i].gc_queue.empty())
+            if(player.gc_queue.empty())
             {
-                players[i].is_lagging = true;
+                player.is_lagging = true;
                 is_lagging = true;
             }
             else
-                players[i].is_lagging = false;
+                player.is_lagging = false;
         }
     }
 
@@ -1074,43 +1096,46 @@ bool GameClient::IsPlayerLagging()
 /// Führt für alle Spieler einen Statistikschritt aus, wenn die Zeit es verlangt
 void GameClient::StatisticStep()
 {
-    for (unsigned int i = 0; i < players.getCount(); ++i)
-    {
-        players[i].StatisticStep();
-    }
+    for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
+        gw->GetPlayer(i).StatisticStep();
 
     // Check objective if there is one and there are at least two players
-    if (ggs.game_objective == GO_NONE)
+    if (GetGGS().game_objective != GO_CONQUER3_4 && GetGGS().game_objective != GO_TOTALDOMINATION)
         return;
 
     // check winning condition
-    unsigned int max = 0, sum = 0, best = 0xFFFF, maxteam = 0, teampoints = 0, curteam = 0, bestteam = 0xFFFF;
+    unsigned max = 0, sum = 0, best = 0xFFFF, maxteam = 0, bestteam = 0xFFFF;
 
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
-    for (unsigned int i = 0; i < players.getCount(); ++i)
+    for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
-        if(ggs.lock_teams) //in games with locked team settings check for team victory
+        GameClientPlayer& player = gw->GetPlayer(i);
+        if(GetGGS().lock_teams) //in games with locked team settings check for team victory
         {
-            curteam = 0;
-            teampoints = 0;
-            if(players[i].isDefeated())continue;
-            for(unsigned int j = 0; j < players.getCount(); ++j)
+            if(player.IsDefeated())
+                continue;
+            unsigned curteam = 0;
+            unsigned teampoints = 0;
+            for(unsigned j = 0; j < gw->GetPlayerCount(); ++j)
             {
-                if(i != j && players[j].IsAlly(i) && !players[j].isDefeated())
+                if(i == j || !player.IsAlly(j))
+                    continue;
+                GameClientPlayer& teamPlayer = gw->GetPlayer(j);
+                if(!teamPlayer.IsDefeated())
                 {
                     curteam = curteam | (1 << j);
-                    teampoints += players[j].GetStatisticCurrentValue(STAT_COUNTRY);
+                    teampoints += teamPlayer.GetStatisticCurrentValue(STAT_COUNTRY);
                 }
             }
-            teampoints += players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+            teampoints += player.GetStatisticCurrentValue(STAT_COUNTRY);
             curteam = curteam | (1 << i);
-            if(teampoints > maxteam && teampoints - players[i].GetStatisticCurrentValue(STAT_COUNTRY) > 0)
+            if(teampoints > maxteam && teampoints > player.GetStatisticCurrentValue(STAT_COUNTRY))
             {
                 maxteam = teampoints;
                 bestteam = curteam;
             }
         }
-        unsigned int v = players[i].GetStatisticCurrentValue(STAT_COUNTRY);
+        unsigned v = player.GetStatisticCurrentValue(STAT_COUNTRY);
         if (v > max)
         {
             max = v;
@@ -1120,7 +1145,7 @@ void GameClient::StatisticStep()
         sum += v;
     }
 
-    switch (ggs.game_objective)
+    switch (GetGGS().game_objective)
     {
         case GO_CONQUER3_4: // at least 3/4 of the land
             if ((max * 4 >= sum * 3) && (best != 0xFFFF))
@@ -1148,7 +1173,7 @@ void GameClient::StatisticStep()
     }
 
     // We have a winner! Objective was changed to GO_NONE to avoid further checks.
-    if (ggs.game_objective == GO_NONE)
+    if (GetGGS().game_objective == GO_NONE)
     {
         if(maxteam <= best)
             gw->GetGameInterface()->GI_Winner(best);
@@ -1294,14 +1319,15 @@ void GameClient::NextGF()
     //  EventManager Bescheid sagen
     em->ExecuteNextGF();
     // Notfallprogramm durchlaufen lassen
-    for(unsigned char i = 0; i < players.getCount(); ++i)
+    for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
-        if(players[i].isUsed())
+        GameClientPlayer& player = gw->GetPlayer(i);
+        if(player.isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
-            players[i].TestForEmergencyProgramm();
+            player.TestForEmergencyProgramm();
             // Bündnisse auf Aktualität überprüfen
-            players[i].TestPacts();
+            player.TestPacts();
         }
     }
     
@@ -1324,7 +1350,7 @@ void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
     for(unsigned char i = 0; i < gcs.gcs.size(); ++i)
     {
         // NC ausführen
-        gcs.gcs[i]->Execute(*gw, players[gcs.player], gcs.player);
+        gcs.gcs[i]->Execute(*gw, gw->GetPlayer(gcs.player), gcs.player);
     }
 }
 
@@ -1341,9 +1367,10 @@ void GameClient::SendNothingNC(int checksum)
 
 void GameClient::WritePlayerInfo(SavedFile& file)
 {
+    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
     // Spielerdaten
-    for(unsigned i = 0; i < players.getCount(); ++i)
-        file.AddPlayer(players[i]);
+    for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
+        file.AddPlayer(gw->GetPlayer(i));
 }
 
 void GameClient::WriteReplayHeader(const unsigned random_init)
@@ -1364,7 +1391,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
     WritePlayerInfo(replayinfo.replay);
 
     // GGS-Daten
-    replayinfo.replay.ggs = ggs;
+    replayinfo.replay.ggs = GetGGS();
 
     // Mapname
     replayinfo.replay.mapName = mapinfo.title;
@@ -1377,6 +1404,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
 
 bool GameClient::StartReplay(const std::string& path)
 {
+    RTTR_Assert(state == CS_STOPPED);
     replayinfo.Clear();
     mapinfo.Clear();
     replayinfo.filename = path;
@@ -1389,33 +1417,21 @@ bool GameClient::StartReplay(const std::string& path)
         return false;
     }
 
+    gameLobby.reset(new GameLobby(replayinfo.replay.GetPlayerCount()));
+
     // NWF-Länge
     framesinfo.nwf_length = replayinfo.replay.nwf_length;
 
     // Spielerdaten
-    for(unsigned char i = 0; i < replayinfo.replay.GetPlayerCount(); ++i)
-    {
-        players.push_back(GameClientPlayer(i));
-
-        const BasePlayerInfo& player = replayinfo.replay.GetPlayer(i);
-        players[i].ps = player.ps;
-
-        if(players[i].isUsed())
-        {
-            players[i].aiInfo = player.aiInfo;
-            players[i].name = player.name;
-            players[i].nation = player.nation;
-            players[i].color = player.color;
-            players[i].team = player.team;
-        }
-    }
+    for(unsigned i = 0; i < replayinfo.replay.GetPlayerCount(); ++i)
+        gameLobby->GetPlayer(i) = JoinPlayerInfo(replayinfo.replay.GetPlayer(i));
 
     bool playerFound = false;
     // Find a player to spectate from
     // First find a human player
-    for(unsigned char i = 0; i < players.getCount(); ++i)
+    for(unsigned char i = 0; i < gameLobby->GetPlayerCount(); ++i)
     {
-        if(players[i].ps == PS_OCCUPIED)
+        if(gameLobby->GetPlayer(i).ps == PS_OCCUPIED)
         {
             playerId_ = i;
             playerFound = true;
@@ -1425,9 +1441,9 @@ bool GameClient::StartReplay(const std::string& path)
     if(!playerFound)
     {
         // If no human found, take the first AI
-        for(unsigned char i = 0; i < players.getCount(); ++i)
+        for(unsigned char i = 0; i < gameLobby->GetPlayerCount(); ++i)
         {
-            if(players[i].ps == PS_KI)
+            if(gameLobby->GetPlayer(i).ps == PS_KI)
             {
                 playerId_ = i;
                 break;
@@ -1436,7 +1452,7 @@ bool GameClient::StartReplay(const std::string& path)
     }
 
     // GGS-Daten
-    ggs = replayinfo.replay.ggs;
+    gameLobby->GetSettings() = replayinfo.replay.ggs;
 
     switch(mapinfo.type)
     {
@@ -1490,8 +1506,6 @@ bool GameClient::StartReplay(const std::string& path)
 
     replayinfo.replay.ReadGF(&replayinfo.next_gf);
 
-    state = CS_LOADING;
-
     return true;
 }
 
@@ -1528,9 +1542,6 @@ int GameClient::Interpolate(int x1, int x2, GameEvent* ev)
 
 void GameClient::ServerLost()
 {
-    if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
-        LOBBYCLIENT.DeleteServer();
-
     if(ci)
         ci->CI_Error(CE_CONNECTIONLOST);
 
@@ -1630,7 +1641,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     WritePlayerInfo(save);
 
     // GGS-Daten
-    save.ggs = ggs;
+    save.ggs = GetGGS();
 
     save.start_gf = GetGFNumber();
 
@@ -1734,19 +1745,34 @@ void GameClient::SetReplayPause(bool pause)
 bool GameClient::AddGC(gc::GameCommand* gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.isPaused || GetLocalPlayer().isDefeated())
+    if(framesinfo.isPaused || GetLocalPlayer().IsDefeated())
         return false;
 
     gameCommands_.push_back(gc);
     return true;
 }
 
+
+unsigned GameClient::GetPlayerCount() const
+{
+    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    return gw->GetPlayerCount();
+}
+
+GameClientPlayer& GameClient::GetPlayer(const unsigned int id)
+{
+    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    RTTR_Assert(id < GetPlayerCount());
+    return gw->GetPlayer(id);
+}
+
 bool GameClient::IsSinglePlayer() const
 {
+    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
     bool foundPlayer = false;
-    for(GameClientPlayerList::const_iterator it = players.begin(); it != players.end(); ++it)
+    for(unsigned i = 0; i < gw->GetPlayerCount(); i++)
     {
-        if(it->ps == PS_OCCUPIED)
+        if(gw->GetPlayer(i).ps == PS_OCCUPIED)
         {
             if(foundPlayer)
                 return false;
@@ -1758,24 +1784,18 @@ bool GameClient::IsSinglePlayer() const
 }
 
 /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
-AIBase* GameClient::CreateAIPlayer(const unsigned playerid)
+AIBase* GameClient::CreateAIPlayer(unsigned playerid, const AI::Info& aiInfo)
 {
-    switch (players[playerid].aiInfo.type)
-    {
-    case AI::DUMMY:
-        {
-            return new AIPlayer(playerid, *gw, players[playerid], players, ggs, AI::EASY);
-        } break;
-    case AI::DEFAULT:
-        {
-            return new AIPlayerJH(playerid, *gw, players[playerid], players, ggs, players[playerid].aiInfo.level);
-        } break;
-        default:
-        {
-            return new AIPlayer(playerid, *gw, players[playerid], players, ggs, AI::EASY);
-        } break;
-    }
+    if(aiInfo.type == AI::DEFAULT)
+        return new AIPlayerJH(playerid, *gw, aiInfo.level);
+    else
+        return new AIPlayer(playerid, *gw, aiInfo.level);
+}
 
+const GlobalGameSettings& GameClient::GetGGS() const
+{
+    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    return ggs;
 }
 
 /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
@@ -1804,30 +1824,19 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
-    if(unsigned(ggs.game_objective) >= OBJECTIVES_COUNT)
-        return TOURNAMENT_MODES_DURATION[ggs.game_objective - OBJECTIVES_COUNT] * 60 * 1000 / framesinfo.gf_length;
+    if(unsigned(GetGGS().game_objective) >= OBJECTIVES_COUNT)
+        return TOURNAMENT_MODES_DURATION[GetGGS().game_objective - OBJECTIVES_COUNT] * 60 * 1000 / framesinfo.gf_length;
     else
         return 0;
-}
-
-void GameClient::LoadGGS()
-{
-    std::cout << "Loading settings...";
-    ggs.LoadSettings();
-    std::cout << "Done." << std::endl;
 }
 
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    if (human_ai)
-    {
-        delete human_ai;
-        human_ai = NULL;
-    } else
-    {
-        human_ai = new AIPlayerJH(playerId_, *gw, players[playerId_], players, ggs, AI::EASY);
-    }
+    if(human_ai)
+        human_ai.reset();
+    else
+        human_ai.reset(CreateAIPlayer(playerId_, AI::Info(AI::DEFAULT, AI::EASY)));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)
@@ -1837,4 +1846,9 @@ void GameClient::RequestSwapToPlayer(const unsigned char newId)
     GameClientPlayer& player = GetPlayer(newId);
     if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
         send_queue.push(new GameMessage_Player_Swap(playerId_, newId));
+}
+
+bool GameClient::IsLagging(const unsigned int id)
+{
+    return GetPlayer(id).is_lagging;
 }

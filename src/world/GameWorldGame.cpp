@@ -43,10 +43,19 @@
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
 #include "helpers/containerUtils.h"
-
 #include <stdexcept>
 
-GameWorldGame::GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em): GameWorldBase(players, gameSettings, em)
+inline std::vector<GameClientPlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
+{
+    std::vector<GameClientPlayer> players;
+    players.reserve(playerInfos.size());
+    for(unsigned i = 0; i < playerInfos.size(); ++i)
+        players.push_back(GameClientPlayer(i, playerInfos[i], gwg));
+    return players;
+}
+
+GameWorldGame::GameWorldGame(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em):
+    GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
 {
     TradePathCache::inst().Clear();
 }

@@ -24,13 +24,12 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Loader.h"
 #include <numeric>
-class noFigure;
-class noRoadNode;
 
 nobUsual::nobUsual(BuildingType type,
                    MapPoint pos,

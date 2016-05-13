@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,29 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaServerPlayer_h__
-#define LuaServerPlayer_h__
+#ifndef PlayerInfo_h__
+#define PlayerInfo_h__
 
-#include "LuaPlayerBase.h"
-#include <kaguya/kaguya.hpp>
+#include "BasePlayerInfo.h"
 
-class GameServerPlayer;
-
-class LuaServerPlayer: public LuaPlayerBase
+/// Holds all information about a player (Not specific to game, match-making etc.)
+struct PlayerInfo: public BasePlayerInfo
 {
-    const unsigned playerId;
-    GameServerPlayer& player;
-protected:
-    const BasePlayerInfo& GetPlayer() const override;
-public:
-    LuaServerPlayer(unsigned playerId);
-    static void Register(kaguya::State& state);
+    bool isHost;
+    unsigned ping;
 
-    void SetNation(Nation nat);
-    void SetTeam(Team team);
-    void SetColor(unsigned colorOrIdx);
-    void Close();
-    void SetAI(unsigned level);
+    PlayerInfo();
+    explicit PlayerInfo(const BasePlayerInfo& baseInfo);
+    explicit PlayerInfo(Serializer& ser);
+
+    // Serialize complete struct
+    void Serialize(Serializer& ser) const;
 };
 
-#endif // LuaServerPlayer_h__
+#endif // PlayerInfo_h__

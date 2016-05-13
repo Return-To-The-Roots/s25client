@@ -28,6 +28,7 @@
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "WindowManager.h"
 #include "controls/ctrlBuildingIcon.h"
 #include "controls/ctrlGroup.h"
@@ -78,6 +79,8 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         TAB_ATTACK  4 = Angriff
         TAB_ATTACK  10-14 = Direktauswahl Anzahl
     */
+
+    const GameClientPlayer& player = gwv.GetViewer().GetPlayer();
 
     /// Haupttab
     ctrlTab* main_tab = AddTabCtrl(0, 10, 20, 180);
@@ -160,7 +163,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             {
                 if (j < building_count[i])
                 {
-                    building_available[i][j] = gwv.GetViewer().GetPlayer().IsBuildingEnabled(building_icons[i][j]);
+                    building_available[i][j] = player.IsBuildingEnabled(building_icons[i][j]);
                 }
                 else
                 {
@@ -192,7 +195,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         }
 
         // Catapult
-        if (!gwv.GetViewer().GetPlayer().CanBuildCatapult()) //-V807
+        if (!player.CanBuildCatapult()) //-V807
             building_available[1][12] = false;
 
         // Charburner
@@ -214,16 +217,16 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 tooltip << _(BUILDING_NAMES[building_icons[bt][j]]);
 
                 tooltip << _("\nCosts: ");
-                if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].boards > 0)
-                    tooltip << (int)BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].boards << _(" boards");
-                if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].stones > 0)
+                if(BUILDING_COSTS[player.nation][building_icons[bt][j]].boards > 0)
+                    tooltip << (int)BUILDING_COSTS[player.nation][building_icons[bt][j]].boards << _(" boards");
+                if(BUILDING_COSTS[player.nation][building_icons[bt][j]].stones > 0)
                 {
-                    if(BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].boards > 0)
+                    if(BUILDING_COSTS[player.nation][building_icons[bt][j]].boards > 0)
                         tooltip << ", ";
-                    tooltip << (int)BUILDING_COSTS[GAMECLIENT.GetLocalPlayer().nation][building_icons[bt][j]].stones << _(" stones");
+                    tooltip << (int)BUILDING_COSTS[player.nation][building_icons[bt][j]].stones << _(" stones");
                 }
 
-                build_tab->GetGroup(bt)->AddBuildingIcon(j, (k % 5) * 36, (k / 5) * 36 + 45, building_icons[bt][j], GAMECLIENT.GetLocalPlayer().nation, 36, tooltip.str());
+                build_tab->GetGroup(bt)->AddBuildingIcon(j, (k % 5) * 36, (k / 5) * 36 + 45, building_icons[bt][j], player.nation, 36, tooltip.str());
 
                 ++k;
             }
@@ -719,7 +722,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
             gwv.ToggleShowNamesAndProductivity();
             break;
         case 3: // zum HQ
-            gwv.MoveToMapPt(GAMECLIENT.GetLocalPlayer().hqPos);
+            gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().hqPos);
             break;
 		case 4:
 			GAMECLIENT.NotifyAlliesOfLocation(selectedPt);

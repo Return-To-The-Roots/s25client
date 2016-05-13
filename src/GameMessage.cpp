@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameMessage.h"
 #include "GameMessages.h"
+#include "GameMessage_GameCommand.h"
 
 Message* GameMessage::create_game(unsigned short id)
 {

@@ -20,13 +20,13 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
-class SerializedGameData;
 
 nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_HELPER, pos, player, workplace)

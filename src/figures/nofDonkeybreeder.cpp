@@ -19,7 +19,7 @@
 #include "nofDonkeybreeder.h"
 
 #include "GameClient.h"
-
+#include "GameClientPlayer.h"
 #include "buildings/nobUsual.h"
 #include "nofCarrier.h"
 #include "Loader.h"
@@ -28,7 +28,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
-class SerializedGameData;
 
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_DONKEYBREEDER, pos, player, workplace)

@@ -21,7 +21,6 @@
 #include "GameManager.h"
 #include "iwSave.h"
 #include "WindowManager.h"
-#include "GameClient.h"
 #include "gameData/const_gui_ids.h"
 
 iwEndgame::iwEndgame()
@@ -43,7 +42,6 @@ void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
         case 0: // OK
         {
             GAMEMANAGER.ShowMenu();
-            GAMECLIENT.ExitGame();
         } break;
         case 1: // Abbrechen
         {

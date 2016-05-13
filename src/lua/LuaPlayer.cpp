@@ -35,7 +35,7 @@ inline void check(bool testValue, const std::string& error)
         throw std::runtime_error(error);
 }
 
-const GamePlayerInfo& LuaPlayer::GetPlayer() const
+const BasePlayerInfo& LuaPlayer::GetPlayer() const
 {
     return player;
 }
@@ -68,7 +68,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     if(notify)
     {
         player.SendPostMessage(new PostMsgWithBuilding(
-            player.GetGameWorld()->GetEvMgr().GetCurrentGF(),
+            player.GetGameWorld().GetEvMgr().GetCurrentGF(),
             _(BUILDING_NAMES[bld]),
             PMC_GENERAL,
             bld,
@@ -187,9 +187,9 @@ unsigned LuaPlayer::GetPeopleCount(Job job)
 bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
-    check(x < player.GetGameWorld()->GetWidth(), "x coordinate to large");
-    check(y < player.GetGameWorld()->GetHeight(), "y coordinate to large");
-    player.GetGameWorld()->GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.getPlayerID(), MapPoint(x, y), bld));
+    check(x < player.GetGameWorld().GetWidth(), "x coordinate to large");
+    check(y < player.GetGameWorld().GetHeight(), "y coordinate to large");
+    player.GetGameWorld().GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));
     return true;
 }
 
@@ -198,7 +198,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     const MapPoint hqPos = player.hqPos;
     if(hqPos.isValid())
     {
-        nobHQ* hq = player.GetGameWorld()->GetSpecObj<nobHQ>(hqPos);
+        nobHQ* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
         if(hq)
             hq->SetIsTent(isTent);
     }

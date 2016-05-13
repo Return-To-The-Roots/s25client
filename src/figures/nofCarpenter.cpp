@@ -19,11 +19,11 @@
 #include "nofCarpenter.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
 
 nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_CARPENTER, pos, player, workplace)

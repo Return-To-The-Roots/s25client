@@ -18,14 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofTradeDonkey.h"
 #include "GameClient.h"
-#include "gameData/JobConsts.h"
+#include "GameClientPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "SerializedGameData.h"
-#include "gameData/GameConsts.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
 #include "Loader.h"
+#include "gameData/JobConsts.h"
+#include "gameData/GameConsts.h"
 #include "libutil/src/colors.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)

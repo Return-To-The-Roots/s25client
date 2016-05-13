@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "PostMsg.h"
-#include "GamePlayerInfo.h"
+#include "BasePlayerInfo.h"
 #include "mygettext/src/mygettext.h"
 #include <boost/format.hpp>
 
@@ -25,18 +25,18 @@ PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostMessageCategor
     sendFrame_(sendFrame), text_(text), cat_(cat), pt_(pt)
 {}
 
-PostMsg::PostMsg(unsigned sendFrame, PactType pt, const GamePlayerInfo& otherPlayer, bool acceptedOrCanceled):
+PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled):
     sendFrame_(sendFrame), cat_(PMC_DIPLOMACY), pt_(MapPoint::Invalid())
 {
     if(acceptedOrCanceled)
     {
         text_ = boost::str(
-            boost::format(_("The %s between player '%s' and you has been concluded.")) % PACT_NAMES[pt] % otherPlayer.nation
+            boost::format(_("The %s between player '%s' and you has been concluded.")) % PACT_NAMES[pt] % otherPlayer.name
         );
     } else
     {
         text_ = boost::str(
-            boost::format(_("The %s between player '%s' and you has been cancelled.")) % PACT_NAMES[pt] % otherPlayer.nation
+            boost::format(_("The %s between player '%s' and you has been cancelled.")) % PACT_NAMES[pt] % otherPlayer.name
         );
     }
 }

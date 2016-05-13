@@ -31,6 +31,7 @@
 #include "iwMsgbox.h"
 #include "desktops/dskGameLoader.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "BasePlayerInfo.h"
 #include "gameData/const_gui_ids.h"
 #include "helpers/converters.h"
 #include <boost/filesystem.hpp>

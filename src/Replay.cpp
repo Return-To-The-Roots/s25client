@@ -69,8 +69,6 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
 
     /// End-GF (erstmal nur 0, wird dann im Spiel immer geupdatet)
     file.WriteUnsignedInt(lastGF_);
-    // Anzahl Spieler
-    file.WriteUnsignedChar(GetPlayerCount());
     // Spielerdaten
     WritePlayerData(file);
     // GGS

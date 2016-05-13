@@ -20,6 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlProgress.h"
 #include "world/GameWorldView.h"

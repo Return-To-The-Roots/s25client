@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaPlayerBase.h"
-#include "GamePlayerInfo.h"
+#include "BasePlayerInfo.h"
 #include <stdexcept>
 
 inline void check(bool testValue, const std::string& error)

@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"

@@ -19,34 +19,29 @@
 
 #pragma once
 
-#include "GamePlayerInfo.h"
-#include "GameMessage_GameCommand.h"
-#include "Socket.h"
-#include "MessageQueue.h"
-#include "../libutil/src/MyTime.h"
+#include "JoinPlayerInfo.h"
+#include "libutil/src/Socket.h"
+#include "libutil/src/MessageQueue.h"
+#include "libutil/src/MyTime.h"
+#include <vector>
 
-#include <list>
-
+class GameMessage_GameCommand;
 class Serializer;
 
 // GamePlayerInfo für die PlayerSlots des Servers
-class GameServerPlayer : public GamePlayerInfo
+class GameServerPlayer: public JoinPlayerInfo
 {
     public:
-        GameServerPlayer(const unsigned playerid);
-        GameServerPlayer(const unsigned playerid, Serializer& ser);
-        ~GameServerPlayer() override;
+        GameServerPlayer();
+        ~GameServerPlayer();
 
         /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
         unsigned GetTimeOut() const;
 
         void doPing();
         void doTimeout();
-        void reserve(const Socket& sock, unsigned char id);
-        void clear();
-
-        /// Tauscht Spieler
-        void SwapInfo(GameServerPlayer& two);
+        void reserve(const Socket& sock);
+        void CloseConnections();
 
         /// Spieler laggt
         void Lagging();
@@ -66,7 +61,7 @@ class GameServerPlayer : public GamePlayerInfo
         MessageQueue send_queue;
         MessageQueue recv_queue;
 
-        std::list<GameMessage_GameCommand> gc_queue;
+        std::vector<GameMessage_GameCommand> gc_queue;
 
         unsigned int lastping;
 };

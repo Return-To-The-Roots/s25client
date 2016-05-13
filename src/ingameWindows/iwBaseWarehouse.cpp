@@ -21,6 +21,7 @@
 #include "Loader.h"
 
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "iwDemolishBuilding.h"
 #include "WindowManager.h"
 #include "iwHelp.h"

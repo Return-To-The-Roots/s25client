@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "LobbyClient.h"
 #include "GameManager.h"
 #include "world/GameWorldBase.h"

@@ -15,29 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaServerPlayer_h__
-#define LuaServerPlayer_h__
+#include "defines.h" // IWYU pragma: keep
+#include "GameLobby.h"
+#include "JoinPlayerInfo.h"
 
-#include "LuaPlayerBase.h"
-#include <kaguya/kaguya.hpp>
+GameLobby::GameLobby(unsigned numPlayers): players(numPlayers){}
+GameLobby::~GameLobby(){}
 
-class GameServerPlayer;
-
-class LuaServerPlayer: public LuaPlayerBase
+JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId)
 {
-    const unsigned playerId;
-    GameServerPlayer& player;
-protected:
-    const BasePlayerInfo& GetPlayer() const override;
-public:
-    LuaServerPlayer(unsigned playerId);
-    static void Register(kaguya::State& state);
+    return players[playerId];
+}
 
-    void SetNation(Nation nat);
-    void SetTeam(Team team);
-    void SetColor(unsigned colorOrIdx);
-    void Close();
-    void SetAI(unsigned level);
-};
+const JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId) const
+{
+    return players[playerId];
+}
 
-#endif // LuaServerPlayer_h__
+unsigned GameLobby::GetPlayerCount() const
+{
+    return players.size();
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,29 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaServerPlayer_h__
-#define LuaServerPlayer_h__
+#include "defines.h" // IWYU pragma: keep
+#include "PlayerInfo.h"
+#include "libutil/src/Serializer.h"
 
-#include "LuaPlayerBase.h"
-#include <kaguya/kaguya.hpp>
+PlayerInfo::PlayerInfo():
+    isHost(false),
+    ping(0)
+{}
 
-class GameServerPlayer;
+PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) :
+    BasePlayerInfo(baseInfo),
+    isHost(false),
+    ping(0)
+{}
 
-class LuaServerPlayer: public LuaPlayerBase
+PlayerInfo::PlayerInfo(Serializer& ser):
+    BasePlayerInfo(ser, false),
+    isHost(ser.PopBool()),
+    ping(ser.PopUnsignedInt())
+{}
+
+void PlayerInfo::Serialize(Serializer& ser) const
 {
-    const unsigned playerId;
-    GameServerPlayer& player;
-protected:
-    const BasePlayerInfo& GetPlayer() const override;
-public:
-    LuaServerPlayer(unsigned playerId);
-    static void Register(kaguya::State& state);
+    BasePlayerInfo::Serialize(ser, false);
+    ser.PushBool(isHost);
+    ser.PushUnsignedInt(ping);
+}
 
-    void SetNation(Nation nat);
-    void SetTeam(Team team);
-    void SetColor(unsigned colorOrIdx);
-    void Close();
-    void SetAI(unsigned level);
-};
-
-#endif // LuaServerPlayer_h__

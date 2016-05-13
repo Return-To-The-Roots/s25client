@@ -27,25 +27,26 @@
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobMilitary.h"
+#include "buildings/nobHarborBuilding.h"
 #include "figures/nofFlagWorker.h"
 #include "figures/nofCarrier.h"
 #include "nodeObjs/noShip.h"
-#include "buildings/nobHarborBuilding.h"
 #include "FindWhConditions.h"
-#include "gameData/MilitaryConsts.h"
-#include "gameData/ShieldConsts.h"
 #include "postSystem/PostManager.h"
 #include "GameInterface.h"
-#include "gameTypes/BuildingCount.h"
-#include "gameTypes/GoodTypes.h"
-#include "gameTypes/JobTypes.h"
-#include "gameTypes/PactTypes.h"
-#include "gameTypes/MessageTypes.h"
+#include "GameMessage_GameCommand.h"
 #include "world/TradeRoute.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
+#include "gameTypes/BuildingCount.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
+#include "gameTypes/PactTypes.h"
+#include "gameTypes/MessageTypes.h"
+#include "gameData/MilitaryConsts.h"
+#include "gameData/ShieldConsts.h"
 #include "libutil/src/Log.h"
 #include <stdint.h>
 #include <limits>
@@ -56,14 +57,11 @@ const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT =
     2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
 }};
 
-GameClientPlayer::GameClientPlayer(const unsigned playerid):
-		GamePlayerInfo(playerid), gwg(NULL), is_lagging(false),
+GameClientPlayer::GameClientPlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg):
+		GamePlayerInfo(playerId, playerInfo), gwg(gwg), is_lagging(false),
 		hqPos(MapPoint::Invalid()), emergency(false)
 {
-    for (unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
-    {
-        building_enabled[i] = true;
-    }
+    std::fill(building_enabled.begin(), building_enabled.end(), true);
 
     // Verteilung mit Standardwerten füllen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
     distribution[GD_FLOUR].client_buildings.push_back(BLD_BAKERY);
@@ -75,9 +73,9 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
 
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
-    for(unsigned char i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        memset(distribution[i].percent_buildings, 0, 40 * sizeof(unsigned char));
+        std::fill(distribution[i].percent_buildings.begin(), distribution[i].percent_buildings.end(), 0);
         distribution[i].selected_goal = 0;
     }
 
@@ -208,6 +206,9 @@ GameClientPlayer::GameClientPlayer(const unsigned playerid):
     memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
 }
 
+
+GameClientPlayer::~GameClientPlayer()
+{}
 void GameClientPlayer::Serialize(SerializedGameData& sgd)
 {
     // PlayerStatus speichern, ehemalig
@@ -465,10 +466,10 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, const
         }
 
 		//now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
-		if(gwg->CalcDistance(start.GetPos(), wh.GetPos()) > best_length)
+		if(gwg.CalcDistance(start.GetPos(), wh.GetPos()) > best_length)
 			continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen bei der wegfindung
-        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : wh, to_wh ? wh : start, use_boat_roads, best_length, forbidden, &tlength))
+        if(gwg.GetRoadPathFinder().FindPath(to_wh ? start : wh, to_wh ? wh : start, use_boat_roads, best_length, forbidden, &tlength))
         {
             if(tlength < best_length || !best)
             {
@@ -806,7 +807,7 @@ void GameClientPlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 
 void GameClientPlayer::SendPostMessage(PostMsg* msg)
 {
-    gwg->GetPostMgr().SendMsg(playerid, msg);
+    gwg.GetPostMgr().SendMsg(id, msg);
 }
 
 bool GameClientPlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
@@ -921,8 +922,8 @@ RoadSegment* GameClientPlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode**
             noRoadNode* current_best_goal = 0;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *(*it)->GetF1(), &length1, NULL, *it) != 0xFF;
-            bool isF2Reachable = gwg->FindHumanPathOnRoads(*start, *(*it)->GetF2(), &length2, NULL, *it) != 0xFF;
+            bool isF1Reachable = gwg.FindHumanPathOnRoads(*start, *(*it)->GetF1(), &length1, NULL, *it) != 0xFF;
+            bool isF2Reachable = gwg.FindHumanPathOnRoads(*start, *(*it)->GetF2(), &length2, NULL, *it) != 0xFF;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
@@ -1026,7 +1027,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
             {
                 points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
 
-                unsigned distance = gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2;
+                unsigned distance = gwg.CalcDistance(start->GetPos(), (*it)->GetPos()) / 2;
                 cfw.push_back(ClientForWare(*it, points > distance ? points - distance : 0, points));
             }
         }
@@ -1046,7 +1047,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                 {
                     points += distribution[gt].percent_buildings[BLD_HEADQUARTERS] * 30;
 
-                    unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
+                    unsigned distance = gwg.CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
                     cfw.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
                 }
             }
@@ -1071,7 +1072,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
                             points = 0;
                     }
 
-                    unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
+                    unsigned distance = gwg.CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
                     cfw.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
                 }
             }
@@ -1106,7 +1107,7 @@ noBaseBuilding* GameClientPlayer::FindClientForWare(Ware* ware)
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
-        if (gwg->FindPathForWareOnRoads(*start, *it->bb, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
+        if (gwg.FindPathForWareOnRoads(*start, *it->bb, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
         {
             unsigned score = it->points - (path_length / 2);
 
@@ -1160,7 +1161,7 @@ nobBaseMilitary* GameClientPlayer::FindClientForCoin(Ware* ware) const
         if(points)
         {
             // Weg dorthin berechnen
-            if(gwg->FindPathForWareOnRoads(*ware->GetLocation(), **it, &way_points) != 0xFF)
+            if(gwg.FindPathForWareOnRoads(*ware->GetLocation(), **it, &way_points) != 0xFF)
             {
                 // Die Wegpunkte noch davon abziehen
                 points -= way_points;
@@ -1193,7 +1194,7 @@ void GameClientPlayer::RemoveBuildingSite(noBuildingSite* building_site)
     building_sites.remove(building_site);
 
     if(building_site->GetBuildingType() == BLD_HARBORBUILDING)
-        gwg->RemoveHarborBuildingSiteFromSea(building_site);
+        gwg.RemoveHarborBuildingSiteFromSea(building_site);
 }
 
 void GameClientPlayer::AddUsualBuilding(nobUsual* building)
@@ -1352,7 +1353,7 @@ void GameClientPlayer::ConvertTransportData(const TransportOrders& transport_dat
 bool GameClientPlayer::IsAlly(const unsigned char player) const
 {
     // Der Spieler ist ja auch zu sich selber verbündet ;
-    if(playerid == player)
+    if(id == player)
         return true;
     else
         return (GetPactState(TREATY_OF_ALLIANCE, player) == GameClientPlayer::ACCEPTED);
@@ -1446,7 +1447,7 @@ void GameClientPlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 
 void GameClientPlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
-    noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
+    noFlag* flag = gwg.GetSpecObj<noFlag>(pt);
     /// Find wh with given job type (e.g. geologist, scout, ...)
     nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job, true), false, false);
 
@@ -1577,15 +1578,15 @@ void GameClientPlayer::TestDefeat()
 {
     // Nicht schon besiegt?
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
-    if(!defeated && military_buildings.empty() && warehouses.empty())
+    if(!isDefeated && military_buildings.empty() && warehouses.empty())
     {
-        defeated = true;
+        isDefeated = true;
 
         // GUI Bescheid sagen
-		if(gwg->GetGameInterface())
-			gwg->GetGameInterface()->GI_PlayerDefeated(playerid);
+		if(gwg.GetGameInterface())
+			gwg.GetGameInterface()->GI_PlayerDefeated(id);
 		else
-			LOG.lprintf("Warning: Player %i defeated but could not find GameInterface (GameClientPlayer.cpp::TestDefeat()\n",playerid);
+			LOG.lprintf("Warning: Player %i defeated but could not find GameInterface (GameClientPlayer.cpp::TestDefeat()\n",id);
     }
 }
 
@@ -1633,10 +1634,10 @@ void GameClientPlayer::TestDefeat()
 
 void GameClientPlayer::Surrender()
 {
-    defeated = true;
+    isDefeated = true;
 
     // GUI Bescheid sagen
-    gwg->GetGameInterface()->GI_PlayerDefeated(playerid);
+    gwg.GetGameInterface()->GI_PlayerDefeated(id);
 }
 
 void GameClientPlayer::SetStatisticValue(StatisticType type, unsigned int value)
@@ -1776,10 +1777,10 @@ void GameClientPlayer::PactChanged(const PactType pt)
     RecalcMilitaryFlags();
 
     // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
-    if(pt == TREATY_OF_ALLIANCE && GAMECLIENT.GetPlayerID() == playerid)
+    if(pt == TREATY_OF_ALLIANCE && GAMECLIENT.GetPlayerID() == id)
     {
-        if(gwg->GetGameInterface())
-            gwg->GetGameInterface()->GI_TreatyOfAllianceChanged();
+        if(gwg.GetGameInterface())
+            gwg.GetGameInterface()->GI_TreatyOfAllianceChanged();
     }
 }
 
@@ -1787,9 +1788,9 @@ void GameClientPlayer::SuggestPact(const unsigned char targetPlayer, const PactT
 {
     pacts[targetPlayer][pt].accepted = false;
     pacts[targetPlayer][pt].duration = duration;
-    pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
+    pacts[targetPlayer][pt].start = gwg.GetEvMgr().GetCurrentGF();
 
-    gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
+    gwg.GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
 }
 
 void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer)
@@ -1797,9 +1798,9 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
     if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].start == id)
     {
         MakePact(pt, targetPlayer, pacts[targetPlayer][pt].duration);
-        gwg->GetPlayer(targetPlayer).MakePact(pt, playerid, pacts[targetPlayer][pt].duration);
+        gwg.GetPlayer(targetPlayer).MakePact(pt, id, pacts[targetPlayer][pt].duration);
         PactChanged(pt);
-        gwg->GetPlayer(targetPlayer).PactChanged(pt);
+        gwg.GetPlayer(targetPlayer).PactChanged(pt);
     }
 }
 
@@ -1807,11 +1808,11 @@ void GameClientPlayer::AcceptPact(const unsigned id, const PactType pt, const un
 void GameClientPlayer::MakePact(const PactType pt, const unsigned char other_player, const unsigned duration)
 {
     pacts[other_player][pt].accepted = true;
-    pacts[other_player][pt].start = gwg->GetEvMgr().GetCurrentGF();
+    pacts[other_player][pt].start = gwg.GetEvMgr().GetCurrentGF();
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
-    SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, gwg->GetPlayer(other_player), true));
+    SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(other_player), true));
 }
 
 /// Zeigt an, ob ein Pakt besteht
@@ -1828,7 +1829,7 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
             if(pacts[other_player][pt].accepted)
                 return ACCEPTED;
         }
-        else if(gwg->GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration )
+        else if(gwg.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration )
             return ACCEPTED;
     }
 
@@ -1838,10 +1839,10 @@ GameClientPlayer::PactState GameClientPlayer::GetPactState(const PactType pt, co
 ///all allied players get a letter with the location
 void GameClientPlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {	
-	for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+	for(unsigned i = 0; i < gwg.GetPlayerCount(); ++i)
     {
-		if(i != playerid && IsAlly(i))
-            gwg->GetPlayer(i).SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
+		if(i != id && IsAlly(i))
+            gwg.GetPlayer(i).SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
 	}
 }
 
@@ -1854,8 +1855,8 @@ unsigned GameClientPlayer::GetRemainingPactTime(const PactType pt, const unsigne
         {
             if(pacts[other_player][pt].duration == 0xFFFFFFFF)
                 return 0xFFFFFFFF;
-            else if(gwg->GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
-                return ((pacts[other_player][pt].start + pacts[other_player][pt].duration) - gwg->GetEvMgr().GetCurrentGF());
+            else if(gwg.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
+                return ((pacts[other_player][pt].start + pacts[other_player][pt].duration) - gwg.GetEvMgr().GetCurrentGF());
         }
     }
 
@@ -1873,27 +1874,27 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
         pacts[otherPlayerIdx][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        GameClientPlayer& otherPlayer = gwg->GetPlayer(otherPlayerIdx);
-        if(otherPlayer.pacts[playerid][pt].want_cancel)
+        GameClientPlayer& otherPlayer = gwg.GetPlayer(otherPlayerIdx);
+        if(otherPlayer.pacts[id][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
             pacts[otherPlayerIdx][pt].accepted = false;
             pacts[otherPlayerIdx][pt].duration = 0;
             pacts[otherPlayerIdx][pt].want_cancel = false;
 
-            otherPlayer.pacts[playerid][pt].accepted = false;
-            otherPlayer.pacts[playerid][pt].duration = 0;
-            otherPlayer.pacts[playerid][pt].want_cancel = false;
+            otherPlayer.pacts[id][pt].accepted = false;
+            otherPlayer.pacts[id][pt].duration = 0;
+            otherPlayer.pacts[id][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, *this, false));
-            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, gwg->GetPlayer(otherPlayerIdx), false));
+            gwg.GetPlayer(otherPlayerIdx).SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), pt, *this, false));
+            SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
         }
         // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
         else
-            gwg->GetPlayer(otherPlayerIdx).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start,*this));
+            gwg.GetPlayer(otherPlayerIdx).SendPostMessage(new DiplomacyPostQuestion(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start,*this));
     }
     else
     {
@@ -1904,19 +1905,23 @@ void GameClientPlayer::CancelPact(const PactType pt, const unsigned char otherPl
 
 void GameClientPlayer::MakeStartPacts()
 {
-    // Zu den Spielern im selben Team Bündnisse (sowohl Bündnisvertrag als auch Nichtangriffspakt) aufbauen
-    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    // Translate possible random team to real team or no team
+    Team ownTeam = GetFixedTeam(team);
+    if(ownTeam == TM_NOTEAM)
+        return;
+    RTTR_Assert(ownTeam >= TM_TEAM1 && ownTeam <= TM_TEAM4);
+
+    // Create ally- and non-aggression-pact or all players of same team
+    for(unsigned i = 0; i < gwg.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& p = gwg->GetPlayer(i);
-        if(GetFixedTeam(team) == GetFixedTeam(p.team) && GetFixedTeam(team) >= TM_TEAM1 && GetFixedTeam(team) <= TM_TEAM4)
+        if(ownTeam != GetFixedTeam(gwg.GetPlayer(i).team))
+            continue;
+        for(unsigned z = 0; z < PACTS_COUNT; ++z)
         {
-            for(unsigned z = 0; z < PACTS_COUNT; ++z)
-            {
-                pacts[i][z].accepted = true;
-                pacts[i][z].duration = 0xFFFFFFFF;
-                pacts[i][z].start = 0;
-                pacts[i][z].want_cancel = false;
-            }
+            pacts[i][z].duration = 0xFFFFFFFF;
+            pacts[i][z].start = 0;
+            pacts[i][z].accepted = true;
+            pacts[i][z].want_cancel = false;
         }
     }
 }
@@ -1983,9 +1988,9 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
     {
         for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
         {
-            if ((*it)->IsIdling() && gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
+            if ((*it)->IsIdling() && gwg.IsAtThisSea(gwg.GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
             {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
+                sfh.push_back(ShipForHarbor(*it, gwg.CalcDistance(hb->GetPos(), (*it)->GetPos())));
             }
         }
     }
@@ -1995,14 +2000,14 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
         {
             if ((*it)->IsIdling())
             {
-                if (gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
+                if (gwg.IsAtThisSea(gwg.GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
                 {
-                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
+                    sfh.push_back(ShipForHarbor(*it, gwg.CalcDistance(hb->GetPos(), (*it)->GetPos())));
                 }
             }
             else if ((*it)->IsGoingToHarbor(hb))
             {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
+                sfh.push_back(ShipForHarbor(*it, gwg.CalcDistance(hb->GetPos(), (*it)->GetPos())));
             }
         }
     }
@@ -2026,7 +2031,7 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
 
         noShip* ship = it->ship;
 
-        MapPoint dest = gwg->GetCoastalPoint(hb->GetHarborPosID(), ship->GetSeaID());
+        MapPoint dest = gwg.GetCoastalPoint(hb->GetHarborPosID(), ship->GetSeaID());
 
         // ship already there?
         if (ship->GetPos() == dest)
@@ -2035,7 +2040,7 @@ bool GameClientPlayer::OrderShip(nobHarborBuilding* hb)
             return(true);
         }
 
-        if (gwg->FindShipPath(ship->GetPos(), dest, &route, &distance))
+        if (gwg.FindShipPath(ship->GetPos(), dest, &route, &distance))
         {
             if (distance < best_distance)
             {
@@ -2107,9 +2112,9 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), ship->GetSeaID()))
+        if(gwg.IsAtThisSea((*it)->GetHarborPosID(), ship->GetSeaID()))
         {
-            MapPoint dest = gwg->GetCoastalPoint((*it)->GetHarborPosID(), ship->GetSeaID());
+            MapPoint dest = gwg.GetCoastalPoint((*it)->GetHarborPosID(), ship->GetSeaID());
 
             // Evtl. sind wir schon da?
             if(ship->GetPos() == dest)
@@ -2121,7 +2126,7 @@ void GameClientPlayer::GetJobForShip(noShip* ship)
             unsigned length;
             std::vector<unsigned char> route;
 
-            if(gwg->FindShipPath(ship->GetPos(), dest, &route, &length))
+            if(gwg.FindShipPath(ship->GetPos(), dest, &route, &length))
             {
                 // Punkte ausrechnen
                 int points = (*it)->GetNeedForShip(ships_coming) - length;
@@ -2170,7 +2175,7 @@ void GameClientPlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbo
         if(helpers::contains(harbor_buildings, *it))
             continue;
 
-        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), sea_id))
+        if(gwg.IsAtThisSea((*it)->GetHarborPosID(), sea_id))
             harbor_buildings.push_back(*it);
     }
 }
@@ -2215,11 +2220,11 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start
             continue;
 
         // Prüfen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
-        if(!gwg->IsAtThisSea(hb->GetHarborPosID(), ship->GetSeaID()))
+        if(!gwg.IsAtThisSea(hb->GetHarborPosID(), ship->GetSeaID()))
             continue;
 
         // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
-        unsigned distance = gwg->CalcDistance(ship->GetPos(), hb->GetPos());
+        unsigned distance = gwg.CalcDistance(ship->GetPos(), hb->GetPos());
 
         // Kürzerer Weg als bisher bestes Ziel?
         if(distance < best_distance)
@@ -2233,11 +2238,11 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start
     if(best)
     {
         // Weg dorthin suchen
-        MapPoint dest = gwg->GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
+        MapPoint dest = gwg.GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
         route->clear();
         *goal_harbor_id = best->GetHarborPosID();
         // Weg dorthin gefunden?
-        if(start == dest || gwg->FindShipPath(start, dest, route, NULL))
+        if(start == dest || gwg.FindShipPath(start, dest, route, NULL))
             return true;
     }
     
@@ -2247,10 +2252,8 @@ bool GameClientPlayer::FindHarborForUnloading(noShip* ship, const MapPoint start
 void GameClientPlayer::TestForEmergencyProgramm()
 {
     // we are already defeated, do not even think about an emergency program - it's too late :-(
-    if (defeated || warehouses.empty())
-    {
+    if (isDefeated)
         return;
-    }
 
     // In Lagern vorhandene Bretter und Steine zählen
     unsigned boards = 0;
@@ -2272,7 +2275,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
         if (!emergency)
         {
             emergency = true;
-            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PMC_GENERAL));
         }
     }
     else
@@ -2281,7 +2284,7 @@ void GameClientPlayer::TestForEmergencyProgramm()
         if (emergency)
         {
             emergency = false;
-            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PMC_GENERAL));
             FindMaterialForBuildingSites();
         }
     }
@@ -2290,9 +2293,9 @@ void GameClientPlayer::TestForEmergencyProgramm()
 /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GameClientPlayer::TestPacts()
 {
-    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg.GetPlayerCount(); ++i)
     {
-        if(i==playerid)
+        if(i==id)
             continue;
 
         for(unsigned pactId = 0; pactId < PACTS_COUNT; pactId++)
@@ -2304,11 +2307,11 @@ void GameClientPlayer::TestPacts()
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pactId].duration = 0;
-                RTTR_Assert(gwg->GetPlayer(i).pacts[playerid][pactId].duration);
-                gwg->GetPlayer(i).pacts[playerid][pactId].duration = 0;
+                RTTR_Assert(gwg.GetPlayer(i).pacts[id][pactId].duration);
+                gwg.GetPlayer(i).pacts[id][pactId].duration = 0;
                 // And notify
                 PactChanged(PactType(pactId));
-                gwg->GetPlayer(i).PactChanged(PactType(pactId));
+                gwg.GetPlayer(i).PactChanged(PactType(pactId));
             }
         }
     }
@@ -2318,24 +2321,24 @@ void GameClientPlayer::TestPacts()
 bool GameClientPlayer::CanBuildCatapult() const
 {
     // Wenn AddonId::LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-    if(!gwg->GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
+    if(!gwg.GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
     BuildingCount bc = GetBuildingCount();
 
     unsigned int max = 0;
     // proportional?
-    if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
+    if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
         max = int(bc.buildings[BLD_BARRACKS] * 0.125 +
                   bc.buildings[BLD_GUARDHOUSE] * 0.25 +
                   bc.buildings[BLD_WATCHTOWER] * 0.5 +
                   bc.buildings[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     }
-    else if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
+    else if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
         const boost::array<unsigned, 6> limits = {{ 0, 3, 5, 10, 20, 30}};
-        max = limits[gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
+        max = limits[gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
     return bc.buildings[BLD_CATAPULT] + bc.buildingSites[BLD_CATAPULT] < max;
@@ -2349,7 +2352,7 @@ bool GameClientPlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
     for(unsigned i = 0; i < enemies_discovered_by_ships.size(); ++i)
     {
-        if(gwg->CalcDistance(enemies_discovered_by_ships[i].x, enemies_discovered_by_ships[i].y, location.x, location.y) < 30)
+        if(gwg.CalcDistance(enemies_discovered_by_ships[i].x, enemies_discovered_by_ships[i].y, location.x, location.y) < 30)
             return false;
     }
 
@@ -2376,7 +2379,7 @@ std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(const n
     std::vector<nobBaseWarehouse*> result;
 
     // Don't try to trade with us!
-    if(goalWh.GetPlayer() == playerid)
+    if(goalWh.GetPlayer() == id)
         return result;
 
     const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
@@ -2384,7 +2387,7 @@ std::vector<nobBaseWarehouse*> GameClientPlayer::GetWarehousesForTrading(const n
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
-        if(TradePathCache::inst().PathExists(*gwg, (*it)->GetFlag()->GetPos(), goalFlagPos, playerid))
+        if(TradePathCache::inst().PathExists(gwg, (*it)->GetFlag()->GetPos(), goalFlagPos, id))
             result.push_back(*it);
     }
 
@@ -2416,13 +2419,13 @@ void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const 
         return;
 
     // Don't try to trade with us!
-    if(goalWh->GetPlayer() == playerid)
+    if(goalWh->GetPlayer() == id)
         return;
 
     const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
     std::vector<nobBaseWarehouse*> whs(warehouses.begin(), warehouses.end());
-    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, *gwg));
+    std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, gwg));
     for(std::vector<nobBaseWarehouse*>::const_iterator it = whs.begin(); it != whs.end(); ++it)
     {
         // Get available wares
@@ -2439,13 +2442,13 @@ void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const 
         available = std::min(available, count);
 
         // Find a trade path from flag to flag
-        TradeRoute tr(*gwg, playerid, (*it)->GetFlag()->GetPos(), goalFlagPos);
+        TradeRoute tr(gwg, id, (*it)->GetFlag()->GetPos(), goalFlagPos);
 
         // Found a path?
         if(tr.IsValid())
         {
             // Add to cache for future searches
-            TradePathCache::inst().AddEntry(*gwg, tr.GetTradePath(), playerid);
+            TradePathCache::inst().AddEntry(gwg, tr.GetTradePath(), id);
 
             (*it)->StartTradeCaravane(gt, job, available, tr, goalWh);
             count -= available;
