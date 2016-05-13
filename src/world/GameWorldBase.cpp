@@ -162,6 +162,14 @@ bool GameWorldBase::IsOnRoad(const MapPoint& pt) const
     return false;
 }
 
+bool GameWorldBase::IsFlagAround(const MapPoint& pt) const
+{
+    for(unsigned i = 0; i < 6; ++i)
+        if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
+            return true;
+    return false;
+}
+
 void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
 {
     RecalcBQ(pt);

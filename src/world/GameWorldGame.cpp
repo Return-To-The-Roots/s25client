@@ -72,6 +72,9 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const
 {
     if(GetBQ(pt, player) == BQ_NOTHING)
         return;
+    // There must be no other flag around that point
+    if(IsFlagAround(pt))
+        return;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
     if(GetNO(pt)->GetType() != NOP_FLAG)

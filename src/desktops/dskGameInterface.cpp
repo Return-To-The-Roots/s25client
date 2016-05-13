@@ -410,7 +410,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     default: break;
                 }
 
-                action_tabs.setflag = true;
+                if(!worldViewer.GetWorld().IsFlagAround(cSel))
+                    action_tabs.setflag = true;
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
@@ -418,8 +419,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             }
             else if(bq == BQ_FLAG)
                 action_tabs.setflag = true;
-
-            if(selObj.GetType() == NOP_FLAG)
+            else if(selObj.GetType() == NOP_FLAG)
                 action_tabs.flag = true;
 
             // Prüfen, ob irgendwo Straßen anliegen

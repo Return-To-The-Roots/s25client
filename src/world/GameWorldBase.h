@@ -79,6 +79,8 @@ public:
     /// Check if this road already exists completely
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
     bool IsOnRoad(const MapPoint& pt) const;
+    /// Check if a flag is at a neighbour node
+    bool IsFlagAround(const MapPoint& pt) const;
 
     /// Berechnet BQ bei einer gebauten Stra�e
     void RecalcBQForRoad(const MapPoint pt);
