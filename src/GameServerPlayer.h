@@ -39,7 +39,7 @@ class GameServerPlayer: public JoinPlayerInfo
         unsigned GetTimeOut() const;
 
         void doPing();
-        void doTimeout();
+        void checkConnectTimeout();
         void reserve(const Socket& sock);
         void CloseConnections();
 

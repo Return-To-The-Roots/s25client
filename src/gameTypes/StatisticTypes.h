@@ -53,4 +53,8 @@ const unsigned STAT_TIME_COUNT = 4;
 /// Anzahl der Statistikschritte, die gespeichert werden
 const unsigned STAT_STEP_COUNT = 30;
 
+inline unsigned short incrStatIndex(unsigned short i) { return (i == STAT_STEP_COUNT - 1) ? 0 : ++i; }
+inline unsigned short decrStatIndex(unsigned short i) { return (i == 0) ? STAT_STEP_COUNT - 1 : --i; }
+inline unsigned short decrStatIndex(unsigned short i, unsigned short amount) { return (i < amount) ? STAT_STEP_COUNT - (amount - i) - 1 : i - amount; }
+
 #endif // StatisticTypes_h__

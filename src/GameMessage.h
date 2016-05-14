@@ -36,7 +36,7 @@ class GameMessage : public Message
 
         void Deserialize(Serializer& ser) override;
 
-        /// Run Methode für GameMessages, wobei PlayerID ggf. schon in der Message festgemacht wurde
+        /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
         virtual void Run(MessageInterface* callback) = 0;
 
         void run(MessageInterface* callback, unsigned int id) override

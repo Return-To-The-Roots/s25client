@@ -92,10 +92,10 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
         if(GetPlayer(player1).ps != PS_OCCUPIED)
             return;
         // new_id must be an AI
-        if(GetPlayer(player2).ps != PS_KI)
+        if(GetPlayer(player2).ps != PS_AI)
             return;
 
-        GetPlayer(player1).ps = PS_KI;
+        GetPlayer(player1).ps = PS_AI;
         GetPlayer(player2).ps = PS_OCCUPIED;
     }
 

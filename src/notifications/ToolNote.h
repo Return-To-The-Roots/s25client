@@ -26,6 +26,7 @@ struct ToolNote
 
     enum Type
     {
+        OrderPlaced,   // New order was placed (might be only a visual one)
         OrderCompleted // An ordered tool was produced
     };
 

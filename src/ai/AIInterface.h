@@ -106,7 +106,7 @@ class AIInterface: public GameCommandFactory
         /// Get Distance between to points (wraps around at end of world)
         unsigned GetDistance(MapPoint p1, MapPoint p2) const { return gwb.CalcDistance(p1, p2); }
 
-        unsigned char GetPlayerID() const { return playerID_; }
+        unsigned char GetPlayerId() const { return playerID_; }
         unsigned GetPlayerCount() const { return gwb.GetPlayerCount(); }
 
 		bool IsDefeated() const {return player_.IsDefeated();}
@@ -187,7 +187,7 @@ class AIInterface: public GameCommandFactory
 		bool CanBuildBuildingtype(BuildingType bt) const { return player_.IsBuildingEnabled(bt); }
 
         /// Tests whether a player is attackable or not (alliances, etc)
-        bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsPlayerAttackable(playerID); }
+        bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsAttackable(playerID); }
 
 		/// player.FindWarehouse
         template<class T_IsWarehouseGood>

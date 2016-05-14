@@ -24,7 +24,7 @@ enum PlayerState
     PS_RESERVED,
     PS_OCCUPIED,
     PS_LOCKED,
-    PS_KI
+    PS_AI
 };
 
 #endif // PlayerState_h__

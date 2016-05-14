@@ -295,7 +295,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                 continue;
 
             // Is object not belonging to local player?
-            if(no->GetPlayer() != gwv.GetPlayerID())
+            if(no->GetPlayer() != gwv.GetPlayerId())
                 continue;
 
             Point<int> curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
@@ -397,7 +397,7 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const Point<int>& cu
         //Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
-            if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerID()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
+            if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
                 LOADER.GetImageN("map_new", 20000)->Draw(curPos.x + 1, curPos.y - bm->getHeight() - 5);
         }
     }

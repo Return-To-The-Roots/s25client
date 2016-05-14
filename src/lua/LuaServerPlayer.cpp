@@ -106,7 +106,7 @@ void LuaServerPlayer::SetAI(unsigned level)
     if(player.ps == PS_OCCUPIED)
         GAMESERVER.KickPlayer(playerId, NP_NOCAUSE, 0);
     bool wasUsed = player.isUsed();
-    player.ps = PS_KI;
+    player.ps = PS_AI;
     player.aiInfo = info;
     player.isReady = true;
     player.SetAIName(playerId);

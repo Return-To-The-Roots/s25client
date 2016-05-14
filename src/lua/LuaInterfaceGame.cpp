@@ -244,7 +244,7 @@ unsigned LuaInterfaceGame::GetPlayerCount()
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 {
-    if(playerIdx >= 0 && GAMECLIENT.GetPlayerID() != unsigned(playerIdx))
+    if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
     GAMECLIENT.SystemChat(msg);
@@ -252,7 +252,7 @@ void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 
 void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
 {
-    if(playerIdx >= 0 && GAMECLIENT.GetPlayerID() != unsigned(playerIdx))
+    if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
     WINDOWMANAGER.Show(new iwMissionStatement(title, msg));

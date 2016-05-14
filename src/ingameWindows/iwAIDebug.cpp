@@ -92,12 +92,12 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
         case 1:
         {
             this->selection = selection;
-            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerID(), false);
+            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerId(), false);
         } break;
         case 0:
         {
             overlay = selection;
-            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerID(), true);
+            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerId(), true);
         } break;
     }
 }

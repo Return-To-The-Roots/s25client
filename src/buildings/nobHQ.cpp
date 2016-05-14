@@ -352,7 +352,7 @@ nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(
     gwg->GetMilitarySquares().Add(this);
 
     // Startpos setzen
-    gwg->GetPlayer(player).hqPos = this->pos;
+    gwg->GetPlayer(player).SetHQ(*this);
 }
 
 void nobHQ::Draw(int x, int y)

@@ -192,7 +192,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
 }
 
 
-void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
+void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
 {
     // No routes with less than 2 parts. Actually invalid!
     if(route.size() < 2)
@@ -201,9 +201,9 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         return;
     }
 
-    if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerid)
+    if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerId)
     {
-        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
+        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
         return;
     }
 
@@ -218,7 +218,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         {
             // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
             if (!RoadAlreadyBuilt(boat_road, start, route))
-                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
+                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
     }
@@ -229,9 +229,9 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     if(GetNO(curPt)->GetGOT() == GOT_FLAG)
     {
         // Falscher Spieler?
-        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerid)
+        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
         {
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
     }
@@ -239,13 +239,13 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     {
         // Check if we can build a flag there, also check for trees at that point.
         // TODO: Probably safe to remove the tree check as BQ checks for trees already
-        if(GetBQ(curPt, playerid) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
+        if(GetBQ(curPt, playerId) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
         {
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route));
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
         //keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
-        SetFlag(curPt, playerid, (route[route.size() - 1] + 3) % 6);
+        SetFlag(curPt, playerId, (route[route.size() - 1] + 3) % 6);
     }
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)
@@ -271,8 +271,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     GetSpecObj<noFlag>(end)->routes[(route.back() + 3) % 6] = rs;
 
     // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
-    GetPlayer(playerid).NewRoad(rs);
-    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerid, start, route));
+    GetPlayer(playerId).NewRoadConnection(rs);
+    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
 }
 
 bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
@@ -778,7 +778,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         return;
 
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
@@ -813,7 +813,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         // Militäreinstellungen zum Angriff eingestellt wurden
         unsigned soldiers_count =
             (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
-            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker).militarySettings_[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
+            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) : 0;
 
         unsigned int distance = CalcDistance(pt, (*it)->GetPos());
 
@@ -916,7 +916,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
@@ -1387,7 +1387,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }
@@ -1411,7 +1411,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }

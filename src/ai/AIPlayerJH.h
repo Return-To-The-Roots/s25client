@@ -91,7 +91,7 @@ class AIPlayerJH : public AIBase
         friend class iwAIDebug;
 
     public:
-        AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const AI::Level level);
+        AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
         ~AIPlayerJH() override;
 
         AIInterface& GetInterface() { return aii; }
@@ -324,7 +324,7 @@ class AIPlayerJH : public AIBase
 		
 
         const std::string& GetPlayerName() { return player.name; }
-        unsigned char GetPlayerID() { return playerid; }
+        unsigned char GetPlayerId() { return playerId; }
         AIConstruction* GetConstruction() { return construction; }
         AIJH::Job* GetCurrentJob() { return currentJob.get(); }
     public:

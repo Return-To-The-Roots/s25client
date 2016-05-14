@@ -30,8 +30,8 @@ class GlobalGameSettings;
 class AIBase
 {
     protected:
-        /// Eigene PlayerID, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
-        const unsigned char playerid;
+        /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
+        const unsigned char playerId;
         /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
         const GameWorldBase& gwb;
         /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
@@ -45,8 +45,8 @@ class AIBase
 
     public:
 
-        AIBase(const unsigned char playerid, const GameWorldBase& gwb, const AI::Level level)
-            : playerid(playerid), gwb(gwb), player(gwb.GetPlayer(playerid)), level(level), aii(gwb, gcs, playerid), ggs(gwb.GetGGS()) {}
+        AIBase(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
+            : playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId), ggs(gwb.GetGGS()) {}
 
         virtual ~AIBase() {}
 

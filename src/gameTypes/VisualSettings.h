@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,24 +14,26 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AIPLAYER_H_INCLUDED
-#define AIPLAYER_H_INCLUDED
 
-#pragma once
+#ifndef VisualSettings_h__
+#define VisualSettings_h__
 
-#include "AIBase.h"
-class GameWorldBase;
-class GlobalGameSettings;
+#include "gameTypes/SettingsTypes.h"
 
-/// Klasse fÃ¼r die standardmÃ¤ÃŸige (vorerst) KI
-class AIPlayer : public AIBase
+struct VisualSettings
 {
-    public:
-        AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
-
-        /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-        /// gf ist die GF-Zahl vom Spiel
-        void RunGF(const unsigned gf, bool gfisnwf) override;
+    /// Verteilung
+    Distributions distribution;
+    /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
+    unsigned char order_type;
+    /// Baureihenfolge
+    BuildOrders build_order;
+    /// Transport-Reihenfolge
+    TransportOrders transport_order;
+    /// Militäreinstellungen (die vom Militärmenü)
+    boost::array<unsigned char, MILITARY_SETTINGS_COUNT> military_settings;
+    /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
+    ToolSettings tools_settings;
 };
 
-#endif //!AIPLAYER_H_INCLUDED
+#endif // VisualSettings_h__

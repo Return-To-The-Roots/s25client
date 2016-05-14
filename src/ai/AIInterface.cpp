@@ -210,7 +210,7 @@ bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& tar
 
 const nobHQ* AIInterface::GetHeadquarter() const
 {
-    return gwb.GetSpecObj<nobHQ>(player_.hqPos);
+    return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
 }
 
 BuildingCount AIInterface::GetBuildingCount() const

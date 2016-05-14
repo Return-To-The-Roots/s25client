@@ -48,7 +48,7 @@ public:
     /// Get the player instance for this view
     const GameClientPlayer& GetPlayer() const;
     /// Get the ID of the views player
-    unsigned GetPlayerID() const { return playerId_; }
+    unsigned GetPlayerId() const { return playerId_; }
 
     /// Get number of soldiers that can attack that point
     unsigned GetAvailableSoldiersForAttack(const MapPoint pt) const;

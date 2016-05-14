@@ -545,7 +545,7 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
         const nobHarborBuilding *hb = GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GetGGS().getSelection(AddonId::SEA_ATTACK)==1))			
+		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsAttackable(GetNode(harborPt).owner-1) && GetGGS().getSelection(AddonId::SEA_ATTACK)==1))			
 			continue;
 
 		// Ist Ziel der Hafenspot? -> add sea_ids
@@ -638,7 +638,7 @@ std::vector<unsigned> GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAtta
 
 		//target isnt the harbor pos AND there is an enemy harbor AND the sea attack addon is set to block on enemy harbor? -> done for this harbor pos
 		const nobHarborBuilding *hb=GetSpecObj<nobHarborBuilding>(harborPt);
-		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsPlayerAttackable(GetNode(harborPt).owner-1) && GetGGS().getSelection(AddonId::SEA_ATTACK)==1))
+		if(pt != harborPt && hb && (GetPlayer(player_attacker).IsAttackable(GetNode(harborPt).owner-1) && GetGGS().getSelection(AddonId::SEA_ATTACK)==1))
 			continue;
 		// Ist Ziel der Hafenspot? -> add sea_ids from which we can actually attack the harbor
 		if(pt == harborPt)
@@ -786,7 +786,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
     if(GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(pt)->GetGOT() !=  GOT_NOB_HQ && GetNO(pt)->GetGOT() !=  GOT_NOB_MILITARY)
         return attackers;
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return attackers;
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)

@@ -88,7 +88,7 @@ iwStatistics::iwStatistics()
             } break;
             case 2: // Nur man selber
             {
-                const bool visible = (GAMECLIENT.GetPlayerID() == i);
+                const bool visible = (GAMECLIENT.GetPlayerId() == i);
                 activePlayers[i] = visible;
                 GetCtrl<ctrlImageButton>(1 + i)->Enable(visible);
             } break;

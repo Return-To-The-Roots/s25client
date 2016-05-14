@@ -241,7 +241,7 @@ GameLobby& GameClient::GetGameLobby()
  *
  *  @param[in] random_init Initialwert des Zufallsgenerators.
  */
-void GameClient::StartGame(const unsigned int random_init)
+void GameClient::StartGame(const unsigned random_init)
 {
     RTTR_Assert(state == CS_CONFIG || (state == CS_STOPPED && replay_mode));
 
@@ -276,11 +276,12 @@ void GameClient::StartGame(const unsigned int random_init)
     if(ci)
         ci->CI_GameStarted(*gw);
 
+    // Get standard settings before they get overwritten
+    GetLocalPlayer().FillVisualSettings(default_settings);
+
     if(mapinfo.savegame)
     {
         mapinfo.savegame->sgd.ReadSnapshot(*gw);
-        // Visuelle Einstellungen ableiten
-        ResetVisualSettings();
     }
     else
     {
@@ -305,6 +306,9 @@ void GameClient::StartGame(const unsigned int random_init)
             gw->ConvertMineResourceTypes(3, target);
     }
     gw->InitAfterLoad();
+
+    // Update visual settings
+    ResetVisualSettings();
 
     // Zeit setzen
     framesinfo.lastTime = VIDEODRIVER.GetTickCount();
@@ -352,7 +356,7 @@ void GameClient::ExitGame()
     gameCommands_.clear();
 }
 
-unsigned int GameClient::GetGFNumber() const
+unsigned GameClient::GetGFNumber() const
 {
     return em->GetCurrentGF();
 }
@@ -371,7 +375,7 @@ void GameClient::OnGameMessage(const GameMessage_Ping&  /*msg*/)
 void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
-    if(msg.playerid == 0xFFFFFFFF)
+    if(msg.playerId == 0xFFFFFFFF)
     {
         if(ci)
             ci->CI_Error(CE_SERVERFULL);
@@ -380,7 +384,7 @@ void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
         return;
     }
 
-    this->playerId_ = msg.playerid;
+    this->playerId_ = msg.playerId;
 
     // Server-Typ senden
     send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, GetWindowVersion()));
@@ -399,7 +403,7 @@ void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
     {
         JoinPlayerInfo& playerInfo = gameLobby->GetPlayer(i);
         playerInfo = msg.playerInfos[i];
-        if(playerInfo.ps == PS_KI)
+        if(playerInfo.ps == PS_AI)
             playerInfo.isReady = true;
     }
 
@@ -464,10 +468,10 @@ void GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
     playerInfo.ps = msg.ps;
     playerInfo.aiInfo = msg.aiInfo;
     playerInfo.InitRating();
-    if(playerInfo.ps == PS_KI)
+    if(playerInfo.ps == PS_AI)
         playerInfo.SetAIName(msg.player);
 
-    playerInfo.isReady = (playerInfo.ps == PS_KI);
+    playerInfo.isReady = (playerInfo.ps == PS_AI);
     if(ci)
     {
         ci->CI_PSChanged(msg.player, playerInfo.ps);
@@ -556,7 +560,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
     }else
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
-        gw->GetPlayer(msg.player).ps = PS_KI;
+        gw->GetPlayer(msg.player).ps = PS_AI;
     }
 
     if(ci)
@@ -730,7 +734,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 
     // Liste mit Namen und Checksummen erzeugen
     std::stringstream checksum_list;
-    for(unsigned int i = 0; i < msg.checksums.size(); ++i)
+    for(unsigned i = 0; i < msg.checksums.size(); ++i)
     {
         checksum_list << gw->GetPlayer(i).name << ": " << msg.checksums[i];
         if(i + 1 < msg.checksums.size())
@@ -1187,7 +1191,7 @@ void GameClient::StatisticStep()
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
     const unsigned curGF = GetGFNumber();
-    unsigned int currentTime = VIDEODRIVER.GetTickCount();
+    unsigned currentTime = VIDEODRIVER.GetTickCount();
     if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && curGF == framesinfo.pause_gf)
     {
         framesinfo.pause_gf = 0;
@@ -1443,7 +1447,7 @@ bool GameClient::StartReplay(const std::string& path)
         // If no human found, take the first AI
         for(unsigned char i = 0; i < gameLobby->GetPlayerCount(); ++i)
         {
-            if(gameLobby->GetPlayer(i).ps == PS_KI)
+            if(gameLobby->GetPlayer(i).ps == PS_AI)
             {
                 playerId_ = i;
                 break;
@@ -1509,7 +1513,7 @@ bool GameClient::StartReplay(const std::string& path)
     return true;
 }
 
-unsigned int GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned int offset)
+unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator, const unsigned offset)
 {
     // Unit for animations is 630ms (dividable by 2, 3, 5, 6, 7, 10, 15, ...)
     // But this also means: If framerate drops below approx. 15Hz, you won't see
@@ -1559,33 +1563,28 @@ void GameClient::ServerLost()
  *
  *  @param[in] dest_gf Zielgameframe
  */
-void GameClient::SkipGF(unsigned int gf, GameWorldView& gwv)
+void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 {
     if(gf <= GetGFNumber())
         return;
 
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
-    // Spiel entpausieren
-    if(replay_mode)
-        SetReplayPause(false);
     if(!replay_mode)
     {
         //unpause before skipping
         if(GAMESERVER.IsPaused())
-        {
             GAMESERVER.TogglePause();
-            //return;
-        }
-        GAMESERVER.skiptogf=gf;
-        skiptogf=gf;
+        GAMESERVER.skiptogf = gf;
+        skiptogf = gf;
         LOG.lprintf("jumping from gf %i to gf %i \n", GetGFNumber(), gf);
         return;
     }
     
+    SetReplayPause(false);
 
     // GFs überspringen
-    for(unsigned int i = GetGFNumber(); i < gf;++i)
+    for(unsigned i = GetGFNumber(); i < gf;++i)
     {
         if(i % 1000 == 0)
         {
@@ -1612,7 +1611,6 @@ void GameClient::SkipGF(unsigned int gf, GameWorldView& gwv)
     snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double) ticks / 1000.0);
     ci->CI_Chat(playerId_, CD_SYSTEM, text); 
     SetReplayPause(true);
-
 }
 
 void GameClient::SystemChat(const std::string& text, unsigned char player)
@@ -1660,77 +1658,8 @@ unsigned GameClient::SaveToFile(const std::string& filename)
 
 void GameClient::ResetVisualSettings()
 {
-    GameClientPlayer& player = GetLocalPlayer();
-    //visual_settings.transport_order[0] = player.transport[GD_COINS];
-    //visual_settings.transport_order[1] = player.transport[GD_SWORD];
-    //visual_settings.transport_order[2] = player.transport[GD_BEER];
-    //visual_settings.transport_order[3] = player.transport[GD_IRON];
-    //visual_settings.transport_order[4] = player.transport[GD_GOLD];
-    //visual_settings.transport_order[5] = player.transport[GD_IRONORE];
-    //visual_settings.transport_order[6] = player.transport[GD_COAL];
-    //visual_settings.transport_order[7] = player.transport[GD_BOARDS];
-    //visual_settings.transport_order[8] = player.transport[GD_STONES];
-    //visual_settings.transport_order[9] = player.transport[GD_WOOD];
-    //visual_settings.transport_order[10] = player.transport[GD_WATER];
-    //visual_settings.transport_order[11] = player.transport[GD_FISH];
-    //visual_settings.transport_order[12] = player.transport[GD_HAMMER];
-    //visual_settings.transport_order[13] = player.transport[GD_BOAT];
-
-    visual_settings.transport_order[player.transport[GD_COINS]] = 0;
-    visual_settings.transport_order[player.transport[GD_SWORD]] = 1;
-    visual_settings.transport_order[player.transport[GD_BEER]] = 2;
-    visual_settings.transport_order[player.transport[GD_IRON]] = 3;
-    visual_settings.transport_order[player.transport[GD_GOLD]] = 4;
-    visual_settings.transport_order[player.transport[GD_IRONORE]] = 5;
-    visual_settings.transport_order[player.transport[GD_COAL]] = 6;
-    visual_settings.transport_order[player.transport[GD_BOARDS]] = 7;
-    visual_settings.transport_order[player.transport[GD_STONES]] = 8;
-    visual_settings.transport_order[player.transport[GD_WOOD]] = 9;
-    visual_settings.transport_order[player.transport[GD_WATER]] = 10;
-    visual_settings.transport_order[player.transport[GD_FISH]] = 11;
-    visual_settings.transport_order[player.transport[GD_HAMMER]] = 12;
-    visual_settings.transport_order[player.transport[GD_BOAT]] = 13;
-
-
-
-    visual_settings.distribution[0] = player.distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE]; //-V807
-    visual_settings.distribution[1] = player.distribution[GD_FISH].percent_buildings[BLD_COALMINE];
-    visual_settings.distribution[2] = player.distribution[GD_FISH].percent_buildings[BLD_IRONMINE];
-    visual_settings.distribution[3] = player.distribution[GD_FISH].percent_buildings[BLD_GOLDMINE];
-
-    visual_settings.distribution[4] = player.distribution[GD_GRAIN].percent_buildings[BLD_MILL]; //-V807
-    visual_settings.distribution[5] = player.distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM];
-    visual_settings.distribution[6] = player.distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER];
-    visual_settings.distribution[7] = player.distribution[GD_GRAIN].percent_buildings[BLD_BREWERY];
-    visual_settings.distribution[8] = player.distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER];
-
-    visual_settings.distribution[9] = player.distribution[GD_IRON].percent_buildings[BLD_ARMORY];
-    visual_settings.distribution[10] = player.distribution[GD_IRON].percent_buildings[BLD_METALWORKS];
-
-    visual_settings.distribution[11] = player.distribution[GD_COAL].percent_buildings[BLD_ARMORY]; //-V807
-    visual_settings.distribution[12] = player.distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER];
-    visual_settings.distribution[13] = player.distribution[GD_COAL].percent_buildings[BLD_MINT];
-
-    visual_settings.distribution[14] = player.distribution[GD_WOOD].percent_buildings[BLD_SAWMILL];
-    visual_settings.distribution[15] = player.distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER];
-
-    visual_settings.distribution[16] = player.distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS]; //-V807
-    visual_settings.distribution[17] = player.distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS];
-    visual_settings.distribution[18] = player.distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD];
-
-    visual_settings.distribution[19] = player.distribution[GD_WATER].percent_buildings[BLD_BAKERY]; //-V807
-    visual_settings.distribution[20] = player.distribution[GD_WATER].percent_buildings[BLD_BREWERY];
-    visual_settings.distribution[21] = player.distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
-    visual_settings.distribution[22] = player.distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
-
-
-    visual_settings.military_settings = player.militarySettings_;
-    visual_settings.tools_settings = player.toolsSettings_;
-
-    visual_settings.order_type = player.orderType_;
-    visual_settings.build_order = player.build_order;
+    GetLocalPlayer().FillVisualSettings(visual_settings);
 }
-
 
 void GameClient::SetReplayPause(bool pause)
 {
@@ -1759,7 +1688,7 @@ unsigned GameClient::GetPlayerCount() const
     return gw->GetPlayerCount();
 }
 
-GameClientPlayer& GameClient::GetPlayer(const unsigned int id)
+GameClientPlayer& GameClient::GetPlayer(const unsigned id)
 {
     RTTR_Assert(state == CS_LOADING || state == CS_GAME);
     RTTR_Assert(id < GetPlayerCount());
@@ -1784,12 +1713,12 @@ bool GameClient::IsSinglePlayer() const
 }
 
 /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
-AIBase* GameClient::CreateAIPlayer(unsigned playerid, const AI::Info& aiInfo)
+AIBase* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 {
     if(aiInfo.type == AI::DEFAULT)
-        return new AIPlayerJH(playerid, *gw, aiInfo.level);
+        return new AIPlayerJH(playerId, *gw, aiInfo.level);
     else
-        return new AIPlayer(playerid, *gw, aiInfo.level);
+        return new AIPlayer(playerId, *gw, aiInfo.level);
 }
 
 const GlobalGameSettings& GameClient::GetGGS() const
@@ -1844,11 +1773,11 @@ void GameClient::RequestSwapToPlayer(const unsigned char newId)
     if(state != CS_GAME)
         return;
     GameClientPlayer& player = GetPlayer(newId);
-    if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
+    if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
         send_queue.push(new GameMessage_Player_Swap(playerId_, newId));
 }
 
-bool GameClient::IsLagging(const unsigned int id)
+bool GameClient::IsLagging(const unsigned id)
 {
     return GetPlayer(id).is_lagging;
 }

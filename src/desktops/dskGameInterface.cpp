@@ -77,7 +77,7 @@
 #include <sstream>
 
 dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
-    worldViewer(GAMECLIENT.GetPlayerID(), world),
+    worldViewer(GAMECLIENT.GetPlayerId(), world),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
@@ -118,13 +118,13 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
         NewPostMessage(postBox.GetNumMsgs());
 
     // Jump to players HQ if it exists
-    if(worldViewer.GetPlayer().hqPos.isValid())
-        gwv.MoveToMapPt(worldViewer.GetPlayer().hqPos);
+    if(worldViewer.GetPlayer().GetHQPos().isValid())
+        gwv.MoveToMapPt(worldViewer.GetPlayer().GetHQPos());
 }
 
 PostBox& dskGameInterface::GetPostBox()
 {
-    PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerID());
+    PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerId());
     RTTR_Assert(postBox != NULL);
     return *postBox;
 }
@@ -415,7 +415,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
-                enable_military_buildings = !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerID());
+                enable_military_buildings = !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
             }
             else if(bq == BQ_FLAG)
                 action_tabs.setflag = true;
@@ -589,18 +589,18 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             unsigned playerIdx = ke.c - '1';
             if(GAMECLIENT.IsReplayModeOn())
             {
-                GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerID(), playerIdx);
-                RTTR_Assert(worldViewer.GetPlayerID() == playerIdx);
+                GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
+                RTTR_Assert(worldViewer.GetPlayerId() == playerIdx);
                 // zum HQ hinscrollen
                 const GameClientPlayer& player = worldViewer.GetPlayer();
-                if(player.hqPos.isValid())
-                    gwv.MoveToMapPt(player.hqPos);
+                if(player.GetHQPos().isValid())
+                    gwv.MoveToMapPt(player.GetHQPos());
 
             }
             else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
             {
                 const GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
-                if(player.ps == PS_KI && player.aiInfo.type == AI::DUMMY)
+                if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
                     GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
         } return true;
@@ -626,8 +626,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         {
             const GameClientPlayer& player = worldViewer.GetPlayer();
             // Prüfen, ob dieses überhaupt noch existiert
-            if(player.hqPos.x != 0xFFFF)
-                gwv.MoveToMapPt(player.hqPos);
+            if(player.GetHQPos().isValid())
+                gwv.MoveToMapPt(player.GetHQPos());
         } return true;
         case 'i': // Show inventory
             WINDOWMANAGER.Show(new iwInventory);
@@ -836,7 +836,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        if(worldViewer.GetPlayer().IsPlayerAttackable(worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel)->GetPlayer()))
+        if(worldViewer.GetPlayer().IsAttackable(worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel)->GetPlayer()))
             params = worldViewer.GetAvailableSoldiersForAttack(cSel);
     }
 
@@ -988,10 +988,10 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
 
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
-    const unsigned localPlayerID = worldViewer.GetPlayerID();
-    if(player1 == localPlayerID || player2 == localPlayerID)
+    const unsigned localPlayerId = worldViewer.GetPlayerId();
+    if(player1 == localPlayerId || player2 == localPlayerId)
     {
-        worldViewer.ChangePlayer(player1 == localPlayerID ? player2 : player1);
+        worldViewer.ChangePlayer(player1 == localPlayerId ? player2 : player1);
         // Set visual settings back to the actual ones
         GAMECLIENT.ResetVisualSettings();
         minimap.UpdateAll();
@@ -1008,7 +1008,7 @@ void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
-    if(player_id == worldViewer.GetPlayerID())
+    if(player_id == worldViewer.GetPlayerId())
     {
         /// Sichtbarkeiten neu berechnen
         worldViewer.RecalcAllColors();

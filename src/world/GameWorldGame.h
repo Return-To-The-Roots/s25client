@@ -108,7 +108,7 @@ public:
     void SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type);
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
-    void BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
+    void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
     /// Reißt eine Straße ab
     void DestroyRoad(const MapPoint pt, const unsigned char dir);
     /// baut eine Straße aus

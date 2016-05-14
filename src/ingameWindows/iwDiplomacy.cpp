@@ -75,7 +75,7 @@ iwDiplomacy::iwDiplomacy()
                              FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);
 
             // An sich selber braucht man keine Bündnisse zu schließen
-            if(GAMECLIENT.GetPlayerID() != i)
+            if(GAMECLIENT.GetPlayerId() != i)
             {
                 // Bündnisvertrag-Button
                 glArchivItem_Bitmap* image = LOADER.GetImageN("io", 61);

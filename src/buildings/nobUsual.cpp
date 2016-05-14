@@ -545,7 +545,7 @@ void nobUsual::SetProductionEnabled(const bool enabled)
     // Umstellen
     disable_production = !enabled;
     // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
-    if(GAMECLIENT.GetPlayerID() != player || GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.GetPlayerId() != player || GAMECLIENT.IsReplayModeOn())
         disable_production_virtual = disable_production;
 
     if(disable_production)

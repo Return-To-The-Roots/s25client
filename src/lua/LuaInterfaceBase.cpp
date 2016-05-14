@@ -105,7 +105,7 @@ bool LuaInterfaceBase::IsHost() const
 
 unsigned LuaInterfaceBase::GetLocalPlayerIdx() const
 {
-    return GAMECLIENT.GetPlayerID();
+    return GAMECLIENT.GetPlayerId();
 }
 
 void LuaInterfaceBase::MsgBox(const std::string& title, const std::string& msg, bool isError)

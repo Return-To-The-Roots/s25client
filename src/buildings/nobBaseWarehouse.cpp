@@ -479,7 +479,7 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     max_recruits = std::min(inventory[JOB_HELPER], max_recruits);
 
     GameClientPlayer& owner = gwg->GetPlayer(player);
-    const unsigned recruiting_ratio = owner.militarySettings_[0];
+    const unsigned recruiting_ratio = owner.GetMilitarySetting(0);
     unsigned real_recruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
     // Wurde abgerundet?
     unsigned remainingRecruits = real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0];
@@ -915,7 +915,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
     // Soldaten durchgehen und count rausschicken
 
     // Ränge durchgehen, absteigend, starke zuerst
-    if (gwg->GetPlayer(player).militarySettings_[1] >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
+    if (gwg->GetPlayer(player).GetMilitarySetting(1) >= MILITARY_SETTINGS_SCALE[1] / 2 && !ignoresettingsendweakfirst)
     {
         for(unsigned i = SOLDIER_JOBS.size(); i && count; --i)
         {
@@ -1027,7 +1027,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     if(rank_count)
     {
         // Gewünschten Rang an Hand der Militäreinstellungen ausrechnen, je nachdem wie stark verteidigt werden soll
-        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player).militarySettings_[1] / MILITARY_SETTINGS_SCALE[1];
+        unsigned rank = (rank_count - 1) * gwg->GetPlayer(player).GetMilitarySetting(1) / MILITARY_SETTINGS_SCALE[1];
 
         // Gewünschten Rang suchen
         unsigned r = 0;
@@ -1095,7 +1095,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
 bool nobBaseWarehouse::AreRecruitingConditionsComply()
 {
     // Mindestanzahl der Gehilfen die vorhanden sein müssen anhand der 1. Militäreinstellung ausrechnen
-    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player).militarySettings_[0];
+    unsigned needed_helpers = 100 - 10 * gwg->GetPlayer(player).GetMilitarySetting(0);
 
     // einer muss natürlich mindestens vorhanden sein!
     if(!needed_helpers)
@@ -1245,7 +1245,7 @@ void nobBaseWarehouse::SetInventorySetting(const bool isJob, const unsigned char
 
     /// Bei anderen Spielern als dem lokalen, der das in Auftrag gegeben hat, müssen die visuellen ebenfalls
     /// geändert werden oder auch bei Replays
-    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerID() != player)
+    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerId() != player)
         SetInventorySettingVisual(isJob, type, state);
 
     if(oldState.IsSet(EInventorySetting::STOP) && !state.IsSet(EInventorySetting::STOP))
@@ -1355,7 +1355,7 @@ void nobBaseWarehouse::SetRealReserve(const unsigned rank, const unsigned count)
     reserve_soldiers_claimed_real[rank] = count;
 
     // Replay oder anderer Spieler? Dann die visuellen auch erhöhen
-    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerID() != player)
+    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerId() != player)
         reserve_soldiers_claimed_visual[rank] = count;
 
     // Geforderte Soldaten ggf. einbeziehen

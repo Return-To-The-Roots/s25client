@@ -25,9 +25,29 @@
 #define NUM_TRANSPORT_ORDERS 14
 #define NUM_TOOL_SETTINGS 12
 
+/// Custom mapping of (Ware, Receiver)-tuple to percentage of wares distributed to that building
 typedef boost::array<unsigned char, NUM_DISTRIBUTION> Distributions;
 typedef boost::array<unsigned char, NUM_BUILD_ORDERS> BuildOrders;
+/// Mapping transport priority -> standard transport priority of ware(group):
+/// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
+/// New prio of coints = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
 typedef boost::array<unsigned char, NUM_TRANSPORT_ORDERS> TransportOrders;
 typedef boost::array<unsigned char, NUM_TOOL_SETTINGS> ToolSettings;
+
+/// Anzahl an Militäreinstellungen
+const unsigned MILITARY_SETTINGS_COUNT = 8;
+
+/// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
+const boost::array<unsigned, MILITARY_SETTINGS_COUNT> SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE =
+{{
+    10,
+    5,
+    5,
+    5,
+    8,
+    8,
+    8,
+    8
+}};
 
 #endif // SettingsConst_h__

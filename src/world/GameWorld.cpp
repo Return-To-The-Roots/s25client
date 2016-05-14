@@ -76,9 +76,10 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
         GameClientPlayer& player = GetPlayer(i);
         if(player.isUsed())
         {
-            player.hqPos = loader.GetHQPos(i);
-            nobBaseWarehouse* wh = GetSpecObj<nobBaseWarehouse>(player.hqPos);
+            MapPoint hqPos = loader.GetHQPos(i);
+            nobBaseWarehouse* wh = GetSpecObj<nobBaseWarehouse>(hqPos);
             RTTR_Assert(wh);
+            player.SetHQ(*wh);
             player.AddWarehouse(wh);
         }
     }
@@ -161,6 +162,6 @@ void GameWorld::ImportantObjectDestroyed(const MapPoint pt)
 
 void GameWorld::MilitaryBuildingCaptured(const MapPoint  /*pt*/, const unsigned char player)
 {
-    if(player == GAMECLIENT.GetPlayerID())
+    if(player == GAMECLIENT.GetPlayerId())
         LOADER.GetSoundN("sound", 110)->Play(255, false);
 }

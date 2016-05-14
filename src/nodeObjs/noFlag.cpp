@@ -216,7 +216,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
         {
             if(best_ware)
             {
-                if(gwg->GetPlayer(player).transport[wares[i]->type] < gwg->GetPlayer(player).transport[best_ware->type])
+                if(gwg->GetPlayer(player).GetTransportPriority(wares[i]->type) < gwg->GetPlayer(player).GetTransportPriority(best_ware->type))
                 {
                     best_ware = wares[i];
                     best_ware_index = i;

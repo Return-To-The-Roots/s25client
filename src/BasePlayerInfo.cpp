@@ -29,7 +29,7 @@ BasePlayerInfo::BasePlayerInfo():
 
 BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData):
     ps(static_cast<PlayerState>(ser.PopUnsignedChar())),
-    aiInfo(!lightData || ps == PS_KI ? ser : AI::Info())
+    aiInfo(!lightData || ps == PS_AI ? ser : AI::Info())
 {
     if(lightData && !isUsed())
     {
@@ -50,7 +50,7 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     ser.PushUnsignedChar(static_cast<unsigned char>(ps));
     if(lightData && !isUsed())
         return;
-    if(!lightData || ps == PS_KI)
+    if(!lightData || ps == PS_AI)
         aiInfo.serialize(ser);
     ser.PushString(name);
     ser.PushUnsignedChar(static_cast<unsigned char>(nation));

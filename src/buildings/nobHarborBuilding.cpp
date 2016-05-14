@@ -100,7 +100,6 @@ void nobHarborBuilding::Destroy()
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GameClientPlayer& owner = gwg->GetPlayer(player);
-    owner.RemoveHarbor(this);
     // Remove also the warehouse so lost wares won't consider this one!
     owner.RemoveWarehouse(this);
     owner.HarborDestroyed(this);

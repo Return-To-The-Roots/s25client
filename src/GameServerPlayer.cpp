@@ -52,7 +52,7 @@ void GameServerPlayer::doPing()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// prüft auf Ping-Timeout beim verbinden
-void GameServerPlayer::doTimeout()
+void GameServerPlayer::checkConnectTimeout()
 {
     if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
     {

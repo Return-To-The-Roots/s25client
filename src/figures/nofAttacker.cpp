@@ -697,7 +697,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
         // und es muss natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
         // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
         if(gwg->GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer())  &&
-           gwg->GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
+           gwg->GetPlayer(player).IsAttackable((*it)->GetPlayer()))
         {
             // ggf. Verteidiger rufen
             huntingDefender = (*it)->SendDefender(this);

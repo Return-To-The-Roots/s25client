@@ -40,6 +40,7 @@
 #include "SerializedGameData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
+#include "notifications/ToolNote.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -51,8 +52,8 @@
 #include <stdint.h>
 #include <limits>
 
-// Standardbelegung der Transportreihenfolge festlegen
-const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT =
+// Standard priority of each ware
+const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
 {{
     2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
 }};
@@ -63,6 +64,96 @@ GameClientPlayer::GameClientPlayer(unsigned playerId, const PlayerInfo& playerIn
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
+    LoadStandardDistribution();
+    LoadStandardBuildOrder();
+    transportPrio = STD_TRANSPORT_PRIO;
+    LoadStandardMilitarySettings();
+    LoadStandardToolSettings();
+
+    defenders_pos = 0;
+    for(unsigned i = 0; i < 5; ++i)
+        defenders[i] = true;
+
+    // Inventur nullen
+    global_inventory.clear();
+
+    // Statistiken mit 0en füllen
+    memset(&statistic[STAT_15M], 0, sizeof(statistic[STAT_15M]));
+    memset(&statistic[STAT_1H], 0, sizeof(statistic[STAT_1H]));
+    memset(&statistic[STAT_4H], 0, sizeof(statistic[STAT_4H]));
+    memset(&statistic[STAT_16H], 0, sizeof(statistic[STAT_16H]));
+    memset(&statisticCurrentData, 0, sizeof(statisticCurrentData));
+    memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
+
+    RecalcDistribution();
+}
+
+
+void GameClientPlayer::LoadStandardToolSettings()
+{
+    // metalwork tool request
+
+    // manually
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    {
+        tools_ordered[i] = 0;
+        tools_ordered_delta[i] = 0;
+    }
+
+    // percentage (tool-settings-window-slider, in 10th percent)
+    toolsSettings_[0] = 1;
+    toolsSettings_[1] = 4;
+    toolsSettings_[2] = 2;
+    toolsSettings_[3] = 5;
+    toolsSettings_[4] = 7;
+    toolsSettings_[5] = 1;
+    toolsSettings_[6] = 3;
+    toolsSettings_[7] = 1;
+    toolsSettings_[8] = 2;
+    toolsSettings_[9] = 1;
+    toolsSettings_[10] = 2;
+    toolsSettings_[11] = 1;
+}
+
+void GameClientPlayer::LoadStandardMilitarySettings()
+{
+    // military settings (military-window-slider, in 10th percent)
+    militarySettings_[0] = MILITARY_SETTINGS_SCALE[0]; //-V525
+    militarySettings_[1] = 3;
+    militarySettings_[2] = MILITARY_SETTINGS_SCALE[2];
+    militarySettings_[3] = 3;
+    militarySettings_[4] = 2;
+    militarySettings_[5] = 4;
+    militarySettings_[6] = MILITARY_SETTINGS_SCALE[6];
+    militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
+}
+
+void GameClientPlayer::LoadStandardBuildOrder()
+{
+    orderType_ = 0;
+
+    // Baureihenfolge füllen (0 ist das HQ!)
+    for(unsigned char i = 1, j = 0; i < BLD_COUNT; ++i)
+    {
+        // Diese Ids sind noch nicht besetzt
+        if(
+            i == BLD_NOTHING2 ||
+            i == BLD_NOTHING3 ||
+            i == BLD_NOTHING4 ||
+            i == BLD_NOTHING5 ||
+            i == BLD_NOTHING6 ||
+            i == BLD_NOTHING7 ||
+            i == BLD_NOTHING9
+            )
+            continue;
+
+        build_order[j] = i;
+        ++j;
+    }
+}
+
+void GameClientPlayer::LoadStandardDistribution()
+{
     // Verteilung mit Standardwerten füllen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
     distribution[GD_FLOUR].client_buildings.push_back(BLD_BAKERY);
     distribution[GD_GOLD].client_buildings.push_back(BLD_MINT);
@@ -80,142 +171,46 @@ GameClientPlayer::GameClientPlayer(unsigned playerId, const PlayerInfo& playerIn
     }
 
     // Standardverteilung der Waren
-    Distributions& visDistribution = GAMECLIENT.visual_settings.distribution; //-V807
-    visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
-    visDistribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
-    visDistribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
-    visDistribution[3] = distribution[GD_FISH].percent_buildings[BLD_GOLDMINE] = 10;
+    distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
+    distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
+    distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
+    distribution[GD_FISH].percent_buildings[BLD_GOLDMINE] = 10;
 
-    visDistribution[4] = distribution[GD_GRAIN].percent_buildings[BLD_MILL] = 5;
-    visDistribution[5] = distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM] = 3;
-    visDistribution[6] = distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER] = 2;
-    visDistribution[7] = distribution[GD_GRAIN].percent_buildings[BLD_BREWERY] = 3;
-    visDistribution[8] = distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = 3;
+    distribution[GD_GRAIN].percent_buildings[BLD_MILL] = 5;
+    distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM] = 3;
+    distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER] = 2;
+    distribution[GD_GRAIN].percent_buildings[BLD_BREWERY] = 3;
+    distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = 3;
 
-    visDistribution[9] = distribution[GD_IRON].percent_buildings[BLD_ARMORY] = 8;
-    visDistribution[10] = distribution[GD_IRON].percent_buildings[BLD_METALWORKS] = 4;
+    distribution[GD_IRON].percent_buildings[BLD_ARMORY] = 8;
+    distribution[GD_IRON].percent_buildings[BLD_METALWORKS] = 4;
 
-    visDistribution[11] = distribution[GD_COAL].percent_buildings[BLD_ARMORY] = 8;
-    visDistribution[12] = distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = 7;
-    visDistribution[13] = distribution[GD_COAL].percent_buildings[BLD_MINT] = 10;
+    distribution[GD_COAL].percent_buildings[BLD_ARMORY] = 8;
+    distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = 7;
+    distribution[GD_COAL].percent_buildings[BLD_MINT] = 10;
 
-    visDistribution[14] = distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = 8;
-    visDistribution[15] = distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = 3;
+    distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = 8;
+    distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = 3;
 
-    visDistribution[16] = distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = 10;
-    visDistribution[17] = distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = 4;
-    visDistribution[18] = distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = 2;
+    distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = 10;
+    distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = 4;
+    distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = 2;
 
-    visDistribution[19] = distribution[GD_WATER].percent_buildings[BLD_BAKERY] = 6;
-    visDistribution[20] = distribution[GD_WATER].percent_buildings[BLD_BREWERY] = 3;
-    visDistribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = 2;
-    visDistribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = 3;
-
-    RecalcDistribution();
-
-    GAMECLIENT.visual_settings.order_type = orderType_ = 0;
-
-    // Baureihenfolge füllen (0 ist das HQ!)
-    for(unsigned char i = 1, j = 0; i < BLD_COUNT; ++i)
-    {
-        // Diese Ids sind noch nicht besetzt
-        if(
-              i == BLD_NOTHING2 ||
-              i == BLD_NOTHING3 ||
-              i == BLD_NOTHING4 ||
-              i == BLD_NOTHING5 ||
-              i == BLD_NOTHING6 ||
-              i == BLD_NOTHING7 ||
-              i == BLD_NOTHING9
-          )
-            continue;
-
-        GAMECLIENT.visual_settings.build_order[j] = build_order[j] = i;
-        ++j;
-    }
-
-    // Transportreihenfolge festlegen
-    transport = STD_TRANSPORT;
-
-    GAMECLIENT.visual_settings.transport_order[0] = STD_TRANSPORT[GD_COINS];
-    GAMECLIENT.visual_settings.transport_order[1] = STD_TRANSPORT[GD_SWORD];
-    GAMECLIENT.visual_settings.transport_order[2] = STD_TRANSPORT[GD_BEER];
-    GAMECLIENT.visual_settings.transport_order[3] = STD_TRANSPORT[GD_IRON];
-    GAMECLIENT.visual_settings.transport_order[4] = STD_TRANSPORT[GD_GOLD];
-    GAMECLIENT.visual_settings.transport_order[5] = STD_TRANSPORT[GD_IRONORE];
-    GAMECLIENT.visual_settings.transport_order[6] = STD_TRANSPORT[GD_COAL];
-    GAMECLIENT.visual_settings.transport_order[7] = STD_TRANSPORT[GD_BOARDS];
-    GAMECLIENT.visual_settings.transport_order[8] = STD_TRANSPORT[GD_STONES];
-    GAMECLIENT.visual_settings.transport_order[9] = STD_TRANSPORT[GD_WOOD];
-    GAMECLIENT.visual_settings.transport_order[10] = STD_TRANSPORT[GD_WATER];
-    GAMECLIENT.visual_settings.transport_order[11] = STD_TRANSPORT[GD_FISH];
-    GAMECLIENT.visual_settings.transport_order[12] = STD_TRANSPORT[GD_HAMMER];
-    GAMECLIENT.visual_settings.transport_order[13] = STD_TRANSPORT[GD_BOAT];
-
-    // military settings (military-window-slider, in 10th percent)
-    militarySettings_[0] = 10; //-V525
-    militarySettings_[1] = 3;
-    militarySettings_[2] = 5;
-    militarySettings_[3] = 3;
-    militarySettings_[4] = 2;
-    militarySettings_[5] = 4;
-    militarySettings_[6] = MILITARY_SETTINGS_SCALE[6];
-    militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
-    GAMECLIENT.visual_settings.military_settings = militarySettings_;
-
-    // metalwork tool request
-
-    // manually
-    for (unsigned i = 0; i < TOOL_COUNT; ++i)
-    {
-        tools_ordered[i] = 0;
-        tools_ordered_delta[i] = 0;
-    }
-
-    // percentage (tool-settings-window-slider, in 10th percent)
-    toolsSettings_[0]  = 1;
-    toolsSettings_[1]  = 4;
-    toolsSettings_[2]  = 2;
-    toolsSettings_[3]  = 5;
-    toolsSettings_[4]  = 7;
-    toolsSettings_[5]  = 1;
-    toolsSettings_[6]  = 3;
-    toolsSettings_[7]  = 1;
-    toolsSettings_[8]  = 2;
-    toolsSettings_[9]  = 1;
-    toolsSettings_[10] = 2;
-    toolsSettings_[11] = 1;
-    GAMECLIENT.visual_settings.tools_settings = toolsSettings_;
-
-    // Standardeinstellungen kopieren
-    GAMECLIENT.default_settings = GAMECLIENT.visual_settings;
-
-    defenders_pos = 0;
-    for(unsigned i = 0; i < 5; ++i)
-        defenders[i] = true;
-
-    // Inventur nullen
-    global_inventory.clear();
-
-    // Statistiken mit 0en füllen
-    memset(&statistic[STAT_15M], 0, sizeof(statistic[STAT_15M]));
-    memset(&statistic[STAT_1H], 0, sizeof(statistic[STAT_1H]));
-    memset(&statistic[STAT_4H], 0, sizeof(statistic[STAT_4H]));
-    memset(&statistic[STAT_16H], 0, sizeof(statistic[STAT_16H]));
-    memset(&statisticCurrentData, 0, sizeof(statisticCurrentData));
-    memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
+    distribution[GD_WATER].percent_buildings[BLD_BAKERY] = 6;
+    distribution[GD_WATER].percent_buildings[BLD_BREWERY] = 3;
+    distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = 2;
+    distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = 3;
 }
 
+GameClientPlayer::~GameClientPlayer(){}
 
-GameClientPlayer::~GameClientPlayer()
-{}
 void GameClientPlayer::Serialize(SerializedGameData& sgd)
 {
     // PlayerStatus speichern, ehemalig
     sgd.PushUnsignedChar(static_cast<unsigned char>(ps));
 
     // Nur richtige Spieler serialisieren
-    if(!(ps == PS_OCCUPIED || ps == PS_KI))
+    if(!(ps == PS_OCCUPIED || ps == PS_AI))
         return;
 
     sgd.PushObjectContainer(warehouses, false);
@@ -270,7 +265,7 @@ void GameClientPlayer::Serialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < build_order.size(); ++i)
         sgd.PushUnsignedChar(build_order[i]);
 
-    sgd.PushRawData(transport.elems, transport.size());
+    sgd.PushRawData(transportPrio.elems, transportPrio.size());
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
         sgd.PushUnsignedChar(militarySettings_[i]);
@@ -326,7 +321,7 @@ void GameClientPlayer::Deserialize(SerializedGameData& sgd)
     // Ehemaligen PS auslesen
     PlayerState origin_ps = PlayerState(sgd.PopUnsignedChar());
     // Nur richtige Spieler serialisieren
-    if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_KI))
+    if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
         return;
 
     sgd.PopObjectContainer(warehouses, GOT_UNKNOWN);
@@ -386,7 +381,7 @@ void GameClientPlayer::Deserialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < build_order.size(); ++i)
         build_order[i] = sgd.PopUnsignedChar();
 
-    sgd.PopRawData(transport.elems, transport.size());
+    sgd.PopRawData(transportPrio.elems, transportPrio.size());
 
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
         militarySettings_[i] = sgd.PopUnsignedChar();
@@ -485,7 +480,12 @@ nobBaseWarehouse* GameClientPlayer::FindWarehouse(const noRoadNode& start, const
     return best;
 }
 
-void GameClientPlayer::NewRoad(RoadSegment* const rs)
+void GameClientPlayer::SetHQ(const nobBaseWarehouse& hq)
+{
+    hqPos = hq.GetPos();
+}
+
+void GameClientPlayer::NewRoadConnection(RoadSegment* const rs)
 {
     // Zu den Straßen hinzufgen, da's ja ne neue ist
     roads.push_back(rs);
@@ -808,6 +808,46 @@ void GameClientPlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 void GameClientPlayer::SendPostMessage(PostMsg* msg)
 {
     gwg->GetPostMgr().SendMsg(GetPlayerId(), msg);
+}
+
+unsigned GameClientPlayer::GetToolsOrderedVisual(unsigned toolIdx) const
+{
+    RTTR_Assert(toolIdx < tools_ordered.size());
+    return std::max(0, int(tools_ordered[toolIdx] + tools_ordered_delta[toolIdx]));
+}
+
+unsigned GameClientPlayer::GetToolsOrdered(unsigned toolIdx) const
+{
+    RTTR_Assert(toolIdx < tools_ordered.size());
+    return tools_ordered[toolIdx];
+}
+
+bool GameClientPlayer::ChangeToolOrderVisual(unsigned toolIdx, int changeAmount)
+{
+    if(std::abs(changeAmount) > 100)
+        return false;
+    int newOrderAmount = int(GetToolsOrderedVisual(toolIdx)) + changeAmount;
+    if(newOrderAmount < 0 || newOrderAmount > 100)
+        return false;
+    tools_ordered_delta[toolIdx] += changeAmount;
+    gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
+    return true;
+}
+
+unsigned GameClientPlayer::GetToolPriority(unsigned toolIdx) const
+{
+    RTTR_Assert(toolIdx < toolsSettings_.size());
+    return toolsSettings_[toolIdx];
+}
+
+void GameClientPlayer::ToolOrderProcessed(unsigned toolIdx)
+{
+    RTTR_Assert(toolIdx < tools_ordered.size());
+    if(tools_ordered[toolIdx])
+    {
+        --tools_ordered[toolIdx];
+        gwg->GetNotifications().publish(ToolNote(ToolNote::OrderCompleted, GetPlayerId()));
+    }
 }
 
 bool GameClientPlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
@@ -1336,13 +1376,13 @@ void GameClientPlayer::ConvertTransportData(const TransportOrders& transport_dat
         GAMECLIENT.visual_settings.transport_order = transport_data;
 
     // Mit Hilfe der Standardbelegung lässt sich das recht einfach konvertieren:
-    for(unsigned i = 0; i < 35; ++i)
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        for(unsigned z = 0; z < 14; ++z)
+        for(unsigned z = 0; z < NUM_TRANSPORT_ORDERS; ++z)
         {
-            if(transport_data[z] == STD_TRANSPORT[i])
+            if(transport_data[z] == STD_TRANSPORT_PRIO[i])
             {
-                transport[i] = z;
+                transportPrio[i] = z;
                 break;
             }
         }
@@ -1350,24 +1390,23 @@ void GameClientPlayer::ConvertTransportData(const TransportOrders& transport_dat
     }
 }
 
-bool GameClientPlayer::IsAlly(const unsigned char player) const
+bool GameClientPlayer::IsAlly(const unsigned char playerId) const
 {
     // Der Spieler ist ja auch zu sich selber verbündet ;
-    if(GetPlayerId() == player)
+    if(GetPlayerId() == playerId)
         return true;
     else
-        return (GetPactState(TREATY_OF_ALLIANCE, player) == GameClientPlayer::ACCEPTED);
+        return (GetPactState(TREATY_OF_ALLIANCE, playerId) == GameClientPlayer::ACCEPTED);
 }
 
-/// Darf der andere Spieler von mir angegriffen werden?
-bool GameClientPlayer::IsPlayerAttackable(const unsigned char player) const
+bool GameClientPlayer::IsAttackable(const unsigned char playerId) const
 {
     // Verbündete dürfen nicht angegriffen werden
-    if(IsAlly(player))
+    if(IsAlly(playerId))
         return false;
     else
         // Ansonsten darf bei bestehendem Nichtangriffspakt ebenfalls nicht angegriffen werden
-        return (GetPactState(NON_AGGRESSION_PACT, player) != GameClientPlayer::ACCEPTED);
+        return (GetPactState(NON_AGGRESSION_PACT, playerId) != GameClientPlayer::ACCEPTED);
 }
 
 
@@ -1502,13 +1541,24 @@ void GameClientPlayer::ChangeMilitarySettings(const boost::array<unsigned char, 
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GameClientPlayer::ChangeToolsSettings(const ToolSettings& tools_settings)
+void GameClientPlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const signed char* orderChanges)
 {
     // Im Replay visulle Einstellungen auf die wirklichen setzen
     if(GAMECLIENT.IsReplayModeOn())
         GAMECLIENT.visual_settings.tools_settings = tools_settings;
 
     this->toolsSettings_ = tools_settings;
+
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    {
+        tools_ordered[i] = std::max(std::min(tools_ordered[i] + orderChanges[i], 99), 0);
+        tools_ordered_delta[i] -= orderChanges[i];
+
+        if(orderChanges[i] != 0){
+            LOG.lprintf(">> Committing an order of %d for tool #%d\n", (int)orderChanges[i], i);
+            gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
+        }
+    }
 }
 
 /// Setzt neue Verteilungseinstellungen
@@ -1589,48 +1639,6 @@ void GameClientPlayer::TestDefeat()
 			LOG.lprintf("Warning: Player %i defeated but could not find GameInterface (GameClientPlayer.cpp::TestDefeat()\n",GetPlayerId());
     }
 }
-
-//void GameClientPlayer::GetInventory(unsigned int *wares, unsigned int *figures)
-//{
-//  // todo: waren in richtige reihenfolge bringen...
-//  static GoodType ware_map[31] = {
-//      GD_WOOD, GD_BOARDS, GD_STONES, GD_HAM,
-//      GD_GRAIN, GD_FLOUR, GD_FISH, GD_MEAT, GD_BREAD,
-//      GD_WATER, GD_BEER, GD_COAL, GD_IRONORE,
-//      GD_GOLD, GD_IRON, GD_COINS, GD_TONGS, GD_AXE,
-//      GD_SAW, GD_PICKAXE, GD_HAMMER, GD_SHOVEL,
-//      GD_CRUCIBLE, GD_RODANDLINE, GD_SCYTHE, GD_CLEAVER, GD_ROLLINGPIN,
-//      GD_BOW, GD_SWORD, GD_SHIELDROMANS, GD_BOAT
-//  };
-//
-//  /*static Job figure_map[30] = {
-//      JOB_HELPER, JOB_BUILDER, JOB_PLANER, JOB_WOODCUTTER,
-//      JOB_FORESTER, JOB_STONEMASON, JOB_FISHER, JOB_HUNTER, JOB_CARPENTER,
-//      JOB_FARMER, JOB_PIGBREEDER, JOB_DONKEYBREEDER, JOB_MILLER,
-//      JOB_BAKER, JOB_BUTCHER, JOB_BREWER, JOB_MINER, JOB_IRONFOUNDER,
-//      JOB_ARMORER, JOB_MINTER, JOB_METALWORKER, JOB_SHIPWRIGHT,
-//      JOB_GEOLOGIST, JOB_SCOUT, JOB_PACKDONKEY, JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS,
-//      JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL
-//  };*/
-//
-//  // Warenlisten der Warenhäuser sammeln
-//  for(std::list<nobBaseWarehouse*>::iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-//      (*wh)->GetInventory(wares, figures);
-//
-//  if(wares)
-//  {
-//      // einzelne Waren sammeln
-//      for(std::list<Ware*>::iterator we = ware_list.begin(); we != ware_list.end(); ++we)
-//      {
-//          ++(wares[ware_map[(*we)->type]]);
-//      }
-//  }
-//
-//  // Todo: einzelne Figuren sammeln
-//  if(figures)
-//  {
-//  }
-//}
 
 void GameClientPlayer::Surrender()
 {
@@ -1777,7 +1785,7 @@ void GameClientPlayer::PactChanged(const PactType pt)
     RecalcMilitaryFlags();
 
     // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
-    if(pt == TREATY_OF_ALLIANCE && GAMECLIENT.GetPlayerID() == GetPlayerId())
+    if(pt == TREATY_OF_ALLIANCE && GAMECLIENT.GetPlayerId() == GetPlayerId())
     {
         if(gwg->GetGameInterface())
             gwg->GetGameInterface()->GI_TreatyOfAllianceChanged();
@@ -2198,6 +2206,8 @@ unsigned GameClientPlayer::GetShipsToHarbor(nobHarborBuilding* hb) const
 /// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstört wurde
 void GameClientPlayer::HarborDestroyed(nobHarborBuilding* hb)
 {
+    RTTR_Assert(helpers::contains(harbors, hb));
+    harbors.remove(hb);
     // Schiffen Bescheid sagen
     for(unsigned i = 0; i < ships.size(); ++i)
         ships[i]->HarborDestroyed(hb);
@@ -2456,7 +2466,51 @@ void GameClientPlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const 
                 return;
         }
     }
+}
 
+void GameClientPlayer::FillVisualSettings(VisualSettings& visualSettings)
+{
+    Distributions& visDistribution = visualSettings.distribution;
+    visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE]; //-V807
+    visDistribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE];
+    visDistribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE];
+    visDistribution[3] = distribution[GD_FISH].percent_buildings[BLD_GOLDMINE];
+
+    visDistribution[4] = distribution[GD_GRAIN].percent_buildings[BLD_MILL]; //-V807
+    visDistribution[5] = distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM];
+    visDistribution[6] = distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER];
+    visDistribution[7] = distribution[GD_GRAIN].percent_buildings[BLD_BREWERY];
+    visDistribution[8] = distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER];
+
+    visDistribution[9]  = distribution[GD_IRON].percent_buildings[BLD_ARMORY];
+    visDistribution[10] = distribution[GD_IRON].percent_buildings[BLD_METALWORKS];
+
+    visDistribution[11] = distribution[GD_COAL].percent_buildings[BLD_ARMORY]; //-V807
+    visDistribution[12] = distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER];
+    visDistribution[13] = distribution[GD_COAL].percent_buildings[BLD_MINT];
+
+    visDistribution[14] = distribution[GD_WOOD].percent_buildings[BLD_SAWMILL];
+    visDistribution[15] = distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER];
+
+    visDistribution[16] = distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS]; //-V807
+    visDistribution[17] = distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS];
+    visDistribution[18] = distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD];
+
+    visDistribution[19] = distribution[GD_WATER].percent_buildings[BLD_BAKERY]; //-V807
+    visDistribution[20] = distribution[GD_WATER].percent_buildings[BLD_BREWERY];
+    visDistribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
+    visDistribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
+
+    visualSettings.order_type  = orderType_;
+    visualSettings.build_order = build_order;
+
+    // Map prip of each ware to STD prio
+    // See declaration of TransportOrders for details
+    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ware++)
+        visualSettings.transport_order[transportPrio[ware]] = STD_TRANSPORT_PRIO[ware];
+
+    visualSettings.military_settings = militarySettings_;
+    visualSettings.tools_settings    = toolsSettings_;
 }
 
 #define INSTANTIATE_FINDWH(Cond) template nobBaseWarehouse* GameClientPlayer::FindWarehouse\

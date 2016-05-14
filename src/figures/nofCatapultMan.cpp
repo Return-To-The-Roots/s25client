@@ -148,7 +148,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if((*it)->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsPlayerAttackable((*it)->GetPlayer()))
+                if((*it)->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable((*it)->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(gwg->GetNode((*it)->GetPos()).fow[player].visibility == VIS_VISIBLE

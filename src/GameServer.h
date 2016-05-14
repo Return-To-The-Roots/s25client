@@ -63,10 +63,10 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         bool TogglePause();
 		bool IsPaused(){return framesinfo.isPaused;}
 
-        void TogglePlayerNation(unsigned char client);
-        void TogglePlayerTeam(unsigned char client);
-        void TogglePlayerColor(unsigned char client);
-        void TogglePlayerState(unsigned char client);
+        void ToggleAINation(unsigned char playerId);
+        void ToggleAITeam(unsigned char playerId);
+        void ToggleAIColor(unsigned char playerId);
+        void TogglePlayerState(unsigned char playerId);
         void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
         /// Removes the lua script for the currently loaded map (only valid in config mode)
         void RemoveLuaScript();
@@ -76,20 +76,20 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         void AIChat(const GameMessage& msg) { SendToAll(msg); }
 
-        std::string GetGameName() const { return serverconfig.gamename; }
-        bool HasPwd() const { return !serverconfig.password.empty(); }
-        unsigned short GetPort() const { return serverconfig.port; }
-        unsigned GetMaxPlayerCount() const { return serverconfig.playercount; }
+        std::string GetGameName() const { return config.gamename; }
+        bool HasPwd() const { return !config.password.empty(); }
+        unsigned short GetPort() const { return config.port; }
+        unsigned GetMaxPlayerCount() const { return config.playercount; }
         bool IsRunning() const { return status != SS_STOPPED; }
 
         const GlobalGameSettings& GetGGS(){ return ggs_; }
-    protected:
+    private:
 
         /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
         void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
         void SendToAll(const GameMessage& msg);
-        void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
+        void KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param);
 
         void ClientWatchDog();
 
@@ -102,7 +102,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         unsigned GetFilledSlots() const;
         /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
         void AnnounceStatusChange();
-    private:
+
         void OnGameMessage(const GameMessage_Pong& msg) override;
         void OnGameMessage(const GameMessage_Server_Type& msg) override;
         void OnGameMessage(const GameMessage_Server_Password& msg) override;
@@ -150,13 +150,13 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 void Clear();
 
                 ServerType servertype;
-                unsigned char playercount;
+                unsigned playercount;
                 std::string gamename;
                 std::string password;
                 unsigned short port;
                 bool ipv6;
                 bool use_upnp;
-        } serverconfig;
+        } config;
 
         MapInfo mapinfo;
 
@@ -169,7 +169,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         {
             public:
                 CountDown();
-                void Clear(int time = 2);
+                void Reset(int time = 2);
 
                 bool do_countdown;
                 int countdown;
@@ -189,7 +189,6 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
     public:
         AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
 		unsigned int skiptogf;
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////

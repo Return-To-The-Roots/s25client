@@ -364,29 +364,29 @@ public:
 class GameMessage_Player_Id : public GameMessage
 {
 public:
-    unsigned int playerid;
+    unsigned int playerId;
 
     GameMessage_Player_Id(): GameMessage(NMS_PLAYER_ID) { } //-V730
-    GameMessage_Player_Id(const unsigned int playerid): GameMessage(NMS_PLAYER_ID, 0xFF), playerid(playerid)
+    GameMessage_Player_Id(const unsigned int playerId): GameMessage(NMS_PLAYER_ID, 0xFF), playerId(playerId)
     {
-        LOG.write(">>> NMS_PLAYER_ID(%d)\n", playerid);
+        LOG.write(">>> NMS_PLAYER_ID(%d)\n", playerId);
     }
 
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(playerid);
+        ser.PushUnsignedInt(playerId);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
-        playerid = ser.PopUnsignedInt();
+        playerId = ser.PopUnsignedInt();
     }
 
     void Run(MessageInterface* callback) override
     {
-        LOG.write("<<< NMS_PLAYER_ID(%d)\n", playerid);
+        LOG.write("<<< NMS_PLAYER_ID(%d)\n", playerId);
         GetInterface(callback)->OnGameMessage(*this);
     }
 };

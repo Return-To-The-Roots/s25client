@@ -722,7 +722,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
             gwv.ToggleShowNamesAndProductivity();
             break;
         case 3: // zum HQ
-            gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().hqPos);
+            gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().GetHQPos());
             break;
 		case 4:
 			GAMECLIENT.NotifyAlliesOfLocation(selectedPt);

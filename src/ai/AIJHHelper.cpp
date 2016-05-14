@@ -90,11 +90,11 @@ void AIJH::BuildJob::ExecuteJob()
     if (status == AIJH::JOB_FAILED || status == AIJH::JOB_FINISHED)
         return;
 
-    if ((target.x != 0xFFFF) && aijh.GetInterface().IsMilitaryBuildingNearNode(target, aijh.GetPlayerID()) && type >= BLD_BARRACKS && type <= BLD_FORTRESS)
+    if ((target.x != 0xFFFF) && aijh.GetInterface().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()) && type >= BLD_BARRACKS && type <= BLD_FORTRESS)
     {
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Military building too near for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Military building too near for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
         return;
     }
@@ -255,14 +255,14 @@ void AIJH::BuildJob::TryToBuild()
     {
         status = JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: No Position found for " << BUILDING_NAMES[type] << " around " << bPos.x << "/" << bPos.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: No Position found for " << BUILDING_NAMES[type] << " around " << bPos.x << "/" << bPos.y << "." << std::endl;
 #endif
         return;
     }
 
 #ifdef DEBUG_AI
     if (type == BLD_FARM)
-        std::cout << " Player " << (unsigned)aijh.GetPlayerID() << " built farm at " << bPos.x << "/" << bPos.y << " on value of " << aijh.resourceMaps[AIJH::PLANTSPACE][bPos] << std::endl;
+        std::cout << " Player " << (unsigned)aijh.GetPlayerId() << " built farm at " << bPos.x << "/" << bPos.y << " on value of " << aijh.resourceMaps[AIJH::PLANTSPACE][bPos] << std::endl;
 #endif
 
     aijh.GetInterface().SetBuildingSite(bPos, type);
@@ -285,7 +285,7 @@ void AIJH::BuildJob::BuildMainRoad()
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-            std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
+            std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.nodes[aiInterface.GetIdx(target)].bq = bq;
             aijh.AddBuildJob(type, around);
@@ -297,7 +297,7 @@ void AIJH::BuildJob::BuildMainRoad()
     if (bld->GetBuildingType() != type)
     {
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Wrong Builingsite found for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Wrong Builingsite found for " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
         status = AIJH::JOB_FAILED;
         return;
@@ -312,7 +312,7 @@ void AIJH::BuildJob::BuildMainRoad()
         {
             status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
+std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.nodes[aiInterface.GetIdx(target)].reachable = false;
             // We thought this had be reachable, but it is not (might be blocked by building site itself): 
@@ -410,7 +410,7 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
         // Baustelle wurde wohl zerstört, oh schreck!
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
         aijh.AddBuildJob(type, around);
         return;
@@ -537,7 +537,7 @@ void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be 
 void AIJH::ConnectJob::ExecuteJob()
 {
 #ifdef DEBUG_AI
-    std::cout << "Player " << (unsigned)aijh.GetPlayerID() << ", ConnectJob executed..." << std::endl;
+    std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", ConnectJob executed..." << std::endl;
 #endif
 	
 	//can the ai still construct here? else return and try again later

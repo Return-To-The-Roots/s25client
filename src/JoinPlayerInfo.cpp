@@ -75,7 +75,7 @@ void JoinPlayerInfo::InitRating()
 {
     if(ps == PS_OCCUPIED)
         rating = 1000;
-    else if(ps == PS_KI)
+    else if(ps == PS_AI)
     {
         if(aiInfo.type == AI::DEFAULT)
         {
@@ -99,7 +99,7 @@ void JoinPlayerInfo::InitRating()
 
 void JoinPlayerInfo::SetAIName(unsigned playerId)
 {
-    RTTR_Assert(ps == PS_KI);
+    RTTR_Assert(ps == PS_AI);
     char str[128];
     if(aiInfo.type == AI::DUMMY)
         sprintf(str, _("Dummy %u"), playerId);

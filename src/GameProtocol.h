@@ -38,18 +38,18 @@ enum
     NMS_SERVER_COUNTDOWN,       // 4 countdown
     NMS_SERVER_CANCELCOUNTDOWN, // 0
 
-    NMS_PLAYER_ID = 0x0201, // 1 playerid
+    NMS_PLAYER_ID = 0x0201, // 1 playerId
     NMS_PLAYER_NAME, // x playername
     NMS_PLAYER_LIST, // 1 playercount | x GamePlayerInfo
-    NMS_PLAYER_SETSTATE, // 1 playerid
-    NMS_PLAYER_SET_NATION, // 0 | 1 playerid
-    NMS_PLAYER_SET_TEAM, // 0 | 1 playerid
-    NMS_PLAYER_SET_COLOR, // 0 | 1 playerid
+    NMS_PLAYER_SETSTATE, // 1 playerId
+    NMS_PLAYER_SET_NATION, // 0 | 1 playerId
+    NMS_PLAYER_SET_TEAM, // 0 | 1 playerId
+    NMS_PLAYER_SET_COLOR, // 0 | 1 playerId
     NMS_PLAYER_KICKED, // 12 npk
-    NMS_PLAYER_PING, // 1 playerid, 2 playerping
-    NMS_PLAYER_NEW, // 1 playerid, x playername
-    NMS_PLAYER_READY, // 1 status | 1 playerid, 1 status
-    NMS_PLAYER_SWAP, // 1 playerid1, 1 playerid2
+    NMS_PLAYER_PING, // 1 playerId, 2 playerping
+    NMS_PLAYER_NEW, // 1 playerId, x playername
+    NMS_PLAYER_READY, // 1 status | 1 playerId, 1 status
+    NMS_PLAYER_SWAP, // 1 playerId1, 1 playerId2
 
     NMS_MAP_NAME = 0x0301,  // x mapname
     NMS_MAP_INFO,           // 0 | 4 parts, 4 ziplength, 4 length
@@ -118,7 +118,7 @@ NMS_SERVER_PASSWORD     --> NMS_SERVER_PASSWORD, ( !ok ) ? kick
 NMS_SERVER_CHAT         --> toteam ? tc(NMS_SERVER_CHAT) : toenemy ? ec(NMS_SERVER_CHAT) : bc(NMS_SERVER_CHAT)
 
 NMS_PLAYER_NAME         --> NMS_MAP_NAME
-NMS_PLAYER_SETSTATE  --> (playerstate != KI) ? kick(playerid) : bc(NMS_PLAYER_SETSTATE)
+NMS_PLAYER_SETSTATE  --> (playerstate != KI) ? kick(playerId) : bc(NMS_PLAYER_SETSTATE)
 NMS_PLAYER_SET_NATION --> bc(NMS_PLAYER_SET_NATION)
 NMS_PLAYER_SET_TEAM   --> bc(NMS_PLAYER_SET_TEAM)
 NMS_PLAYER_SET_COLOR  --> bc(NMS_PLAYER_SET_COLOR)
@@ -135,16 +135,6 @@ kick                    --> bc(NMS_PLAYER_KICK), NMS_DEAD_MSG
 
  */
 ///////////////////////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////
-// Strukturen fr einzelne Messages
-struct NS_PlayerKicked
-{
-    unsigned char playerid;
-    unsigned char cause;
-    unsigned short param;
-};
 
 //////////////////////////////////////////
 // Sonstige Konstanten

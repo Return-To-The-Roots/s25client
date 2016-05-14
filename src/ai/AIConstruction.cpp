@@ -50,7 +50,7 @@ const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{ BLD_
 AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
     : aii(aii), aijh(aijh)
 {
-    playerID = aii.GetPlayerID();
+    playerID = aii.GetPlayerId();
     buildingsWanted.resize(BUILDING_TYPES_COUNT);
     RefreshBuildingCount();
     InitBuildingsWanted();
@@ -216,7 +216,7 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         for(list<nobBaseMilitary*>::iterator it = military.begin();it != military.end();++it)
         {
             unsigned distance = gwb->CalcDistance((*it)->GetPos(), pt);
-            if (distance < radius && (*it)->GetPlayer() == player->getPlayerID())
+            if (distance < radius && (*it)->GetPlayer() == player->getPlayerId())
             {
                 FindFlags(flags, (*it)->GetPos(), 10, pt, radius, false);
             }

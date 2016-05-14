@@ -19,7 +19,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayer.h"
 
-AIPlayer::AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const AI::Level level): AIBase(playerid, gwb, level)
+AIPlayer::AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level): AIBase(playerId, gwb, level)
 {
 }
 

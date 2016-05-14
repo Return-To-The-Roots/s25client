@@ -73,7 +73,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
             PMC_GENERAL,
             bld,
             player.nation,
-            player.hqPos));
+            player.GetHQPos()));
     }
 }
 
@@ -195,7 +195,7 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
 
 void LuaPlayer::ModifyHQ(bool isTent)
 {
-    const MapPoint hqPos = player.hqPos;
+    const MapPoint hqPos = player.GetHQPos();
     if(hqPos.isValid())
     {
         nobHQ* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
@@ -206,5 +206,5 @@ void LuaPlayer::ModifyHQ(bool isTent)
 
 kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
 {
-    return kaguya::standard::tuple<unsigned, unsigned>(player.hqPos.x, player.hqPos.y);
+    return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
 }

@@ -46,7 +46,7 @@ struct BasePlayerInfo
     /// Slot used by a human player (has socket etc)
     bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
     /// Slot filled (Used by human or AI, but excludes currently connecting humans)
-    bool isUsed() const { return (ps == PS_KI || ps == PS_OCCUPIED); }
+    bool isUsed() const { return (ps == PS_AI || ps == PS_OCCUPIED); }
 };
 
 #endif // BasePlayerInfo_h__

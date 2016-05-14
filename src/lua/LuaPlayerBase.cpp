@@ -90,7 +90,7 @@ bool LuaPlayerBase::IsHuman() const
 
 bool LuaPlayerBase::IsAI() const
 {
-    return GetPlayer().ps == PS_KI;
+    return GetPlayer().ps == PS_AI;
 }
 
 bool LuaPlayerBase::IsClosed() const
@@ -105,7 +105,7 @@ bool LuaPlayerBase::IsFree() const
 
 int LuaPlayerBase::GetAILevel() const
 {
-    if(GetPlayer().ps != PS_KI)
+    if(GetPlayer().ps != PS_AI)
         return -1;
     if(GetPlayer().aiInfo.type == AI::DUMMY)
         return 0;
