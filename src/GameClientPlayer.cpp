@@ -1371,10 +1371,6 @@ unsigned GameClientPlayer::GetBuidingSitePriority(const noBuildingSite* building
 
 void GameClientPlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
-    // Im Replay visulle Einstellungen auf die wirklichen setzen
-    if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.visual_settings.transport_order = transport_data;
-
     // Mit Hilfe der Standardbelegung lässt sich das recht einfach konvertieren:
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
@@ -1524,10 +1520,6 @@ void GameClientPlayer::RefreshDefenderList()
 
 void GameClientPlayer::ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings)
 {
-    // Im Replay visulle Einstellungen auf die wirklichen setzen
-    if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.visual_settings.military_settings = military_settings;
-
     for(unsigned i = 0; i < military_settings.size(); ++i)
     {
         // Sicherstellen, dass im validen Bereich
@@ -1543,11 +1535,8 @@ void GameClientPlayer::ChangeMilitarySettings(const boost::array<unsigned char, 
 /// Setzt neue Werkzeugeinstellungen
 void GameClientPlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const signed char* orderChanges)
 {
-    // Im Replay visulle Einstellungen auf die wirklichen setzen
-    if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.visual_settings.tools_settings = tools_settings;
-
     this->toolsSettings_ = tools_settings;
+    gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
 
     for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {
@@ -1564,10 +1553,6 @@ void GameClientPlayer::ChangeToolsSettings(const ToolSettings& tools_settings, c
 /// Setzt neue Verteilungseinstellungen
 void GameClientPlayer::ChangeDistribution(const Distributions& distribution_settings)
 {
-    // Im Replay visulle Einstellungen auf die wirklichen setzen
-    if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.visual_settings.distribution = distribution_settings;
-
     distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = distribution_settings[0];
     distribution[GD_FISH].percent_buildings[BLD_COALMINE] = distribution_settings[1];
     distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = distribution_settings[2];
@@ -1604,13 +1589,6 @@ void GameClientPlayer::ChangeDistribution(const Distributions& distribution_sett
 /// Setzt neue Baureihenfolge-Einstellungen
 void GameClientPlayer::ChangeBuildOrder(const unsigned char order_type, const BuildOrders& order_data)
 {
-    // Im Replay visulle Einstellungen auf die wirklichen setzen
-    if(GAMECLIENT.IsReplayModeOn())
-    {
-        GAMECLIENT.visual_settings.order_type = order_type;
-        GAMECLIENT.visual_settings.build_order = order_data;
-    }
-
     this->orderType_ = order_type;
     this->build_order = order_data;
 }

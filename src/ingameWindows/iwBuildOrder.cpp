@@ -74,6 +74,8 @@ iwBuildOrder::~iwBuildOrder()
 
 void iwBuildOrder::TransmitSettings()
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
     // Wurden Einstellungen geändert?
     if(settings_changed)
     {
@@ -96,6 +98,8 @@ void iwBuildOrder::Msg_Timer(const unsigned int  /*ctrl_id*/)
 
 void iwBuildOrder::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
     switch(ctrl_id)
     {
         default:
@@ -112,6 +116,8 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned int ctrl_id, const int sele
 
 void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
     ctrlList* list = GetCtrl<ctrlList>(0);
     unsigned short auswahl = list->GetSelection();
     unsigned short anzahl = list->GetLineCount();
@@ -127,8 +133,6 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
 
         case 1: // Nach ganz oben
         {
-            //Swap(GAMECLIENT.visual_settings.build_order[0], GAMECLIENT.visual_settings.build_order[auswahl]);
-            //list->Swap(0, auswahl);
             while(auswahl > 0)
             {
                 std::swap(GAMECLIENT.visual_settings.build_order[auswahl - 1], GAMECLIENT.visual_settings.build_order[auswahl]);
@@ -187,7 +191,9 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwBuildOrder::UpdateSettings()
 {
-    // Liste füllen
+    if(GAMECLIENT.IsReplayModeOn())
+        GAMECLIENT.GetLocalPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+    GetCtrl<ctrlComboBox>(6)->SetSelection(GAMECLIENT.visual_settings.order_type);
     for(unsigned char i = 0; i < 31; ++i)
         GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]), i);
 }

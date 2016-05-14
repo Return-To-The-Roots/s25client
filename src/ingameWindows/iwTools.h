@@ -21,6 +21,7 @@
 
 #include "IngameWindow.h"
 #include "notifications/Subscribtion.h"
+#include "gameTypes/GoodTypes.h"
 
 class GameWorldView;
 class GameWorldBase;
@@ -35,10 +36,12 @@ class iwTools : public IngameWindow
 
     private:
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
+        bool settings_changed, ordersChanged;
         bool shouldUpdateTexts;
+        bool isReplay;
         Subscribtion toolSubscription;
 
+        void AddToolSettingSlider(unsigned id, GoodType ware);
         /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
         void UpdateSettings();
         /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden

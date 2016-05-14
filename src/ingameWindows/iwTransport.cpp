@@ -20,9 +20,9 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "controls/ctrlOptionGroup.h"
 #include "gameData/const_gui_ids.h"
-class glArchivItem_Bitmap;
 
 const std::string TOOLTIPS[14] =
 {
@@ -120,6 +120,8 @@ iwTransport::~iwTransport()
 
 void iwTransport::TransmitSettings()
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
     if(settings_changed)
     {
         // Daten übertragen
@@ -132,6 +134,8 @@ void iwTransport::TransmitSettings()
 
 void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
     switch(ctrl_id)
     {
         case 1: // Standardbelegung
@@ -226,6 +230,8 @@ void iwTransport::Msg_Timer(const unsigned int  /*ctrl_id*/)
 
 void iwTransport::UpdateSettings()
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        GAMECLIENT.GetLocalPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
 
     // Einstellungen festlegen

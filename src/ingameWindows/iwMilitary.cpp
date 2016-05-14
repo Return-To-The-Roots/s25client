@@ -20,6 +20,7 @@
 #include "controls/ctrlProgress.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GameClientPlayer.h"
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary()
@@ -60,6 +61,9 @@ iwMilitary::~iwMilitary()
 /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
 void iwMilitary::TransmitSettings()
 {
+    if(GAMECLIENT.IsReplayModeOn())
+        return;
+
     // Wurden Einstellungen geändert?
     if(settings_changed)
     {
@@ -92,7 +96,8 @@ void iwMilitary::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsig
 
 void iwMilitary::UpdateSettings()
 {
-    // Einstellungen festlegen
+    if(GAMECLIENT.IsReplayModeOn())
+        GAMECLIENT.GetLocalPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
         GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.military_settings[i]);
 }
