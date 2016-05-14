@@ -24,7 +24,7 @@
 #include "EventManager.h"
 #include "noShip.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "notifications/ShipNote.h"
 #include "postSystem/ShipPostMsg.h"
 #include "ogl/glArchivItem_Bitmap.h"

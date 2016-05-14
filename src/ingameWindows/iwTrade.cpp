@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
@@ -176,7 +176,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 
 unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 {
-    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
     unsigned amount = 0;
     for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
     {
@@ -188,7 +188,7 @@ unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 
 unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
 {
-    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
     unsigned amount = 0;
     for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
     {

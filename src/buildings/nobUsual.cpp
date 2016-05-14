@@ -24,7 +24,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
@@ -48,7 +48,7 @@ nobUsual::nobUsual(BuildingType type,
         ordered_wares.clear();
 
     // Arbeiter bestellen
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     owner.AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
 
     // Tür aufmachen,bis Gebäude besetzt ist
@@ -438,7 +438,7 @@ void nobUsual::ConsumeWares()
             // 2 Waren verbrauchen
             --wares[0];
             --wares[1];
-            GameClientPlayer& owner = gwg->GetPlayer(player);
+            GamePlayer& owner = gwg->GetPlayer(player);
             owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], 1);
             owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], 1);
 

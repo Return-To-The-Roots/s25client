@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlPercent.h"

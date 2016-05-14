@@ -24,7 +24,7 @@
 #include "SoundManager.h"
 #include "GameServer.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "LobbyClient.h"
 #include "controls/ctrlButton.h"
 #include "GameManager.h"
@@ -260,7 +260,7 @@ void dskGameInterface::Msg_PaintAfter()
     // Laggende Spieler anzeigen in Form von Schnecken
     for(unsigned int i = 0; i < worldViewer.GetWorld().GetPlayerCount(); ++i)
     {
-        const GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(i);
+        const GamePlayer& player = worldViewer.GetWorld().GetPlayer(i);
         if(player.is_lagging)
             LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
     }
@@ -592,14 +592,14 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
                 RTTR_Assert(worldViewer.GetPlayerId() == playerIdx);
                 // zum HQ hinscrollen
-                const GameClientPlayer& player = worldViewer.GetPlayer();
+                const GamePlayer& player = worldViewer.GetPlayer();
                 if(player.GetHQPos().isValid())
                     gwv.MoveToMapPt(player.GetHQPos());
 
             }
             else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
             {
-                const GameClientPlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
+                const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
                 if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
                     GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
@@ -624,7 +624,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 'h': // Zum HQ springen
         {
-            const GameClientPlayer& player = worldViewer.GetPlayer();
+            const GamePlayer& player = worldViewer.GetPlayer();
             // Prüfen, ob dieses überhaupt noch existiert
             if(player.GetHQPos().isValid())
                 gwv.MoveToMapPt(player.GetHQPos());

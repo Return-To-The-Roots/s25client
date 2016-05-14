@@ -19,7 +19,7 @@
 #include "nofBuilder.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "Random.h"
@@ -158,7 +158,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
                 state = STATE_FIGUREWORK;
 
                 // Baustelle abmelden
-                GameClientPlayer& owner = gwg->GetPlayer(player);
+                GamePlayer& owner = gwg->GetPlayer(player);
                 owner.RemoveBuildingSite(building_site);
 
                 // ggf. Baustellenfenster schließen

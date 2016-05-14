@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "LuaPlayer.h"
 #include "EventManager.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"

@@ -20,7 +20,7 @@
 
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobMilitary.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/MilitaryConsts.h"
 #include "world/GameWorldBase.h"
 

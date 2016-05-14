@@ -19,7 +19,7 @@
 #include "world/GameWorldGame.h"
 
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "TradePathCache.h"
 #include "GameInterface.h"
 #include "postSystem/PostMsgWithBuilding.h"
@@ -45,12 +45,12 @@
 #include "helpers/containerUtils.h"
 #include <stdexcept>
 
-inline std::vector<GameClientPlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
+inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
 {
-    std::vector<GameClientPlayer> players;
+    std::vector<GamePlayer> players;
     players.reserve(playerInfos.size());
     for(unsigned i = 0; i < playerInfos.size(); ++i)
-        players.push_back(GameClientPlayer(i, playerInfos[i], gwg));
+        players.push_back(GamePlayer(i, playerInfos[i], gwg));
     return players;
 }
 

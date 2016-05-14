@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
 #include "SoundManager.h"

@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "controls/ctrlOptionGroup.h"
 #include "gameData/const_gui_ids.h"
 

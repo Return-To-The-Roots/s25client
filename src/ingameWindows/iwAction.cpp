@@ -28,7 +28,7 @@
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "WindowManager.h"
 #include "controls/ctrlBuildingIcon.h"
 #include "controls/ctrlGroup.h"
@@ -80,7 +80,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         TAB_ATTACK  10-14 = Direktauswahl Anzahl
     */
 
-    const GameClientPlayer& player = gwv.GetViewer().GetPlayer();
+    const GamePlayer& player = gwv.GetViewer().GetPlayer();
 
     /// Haupttab
     ctrlTab* main_tab = AddTabCtrl(0, 10, 20, 180);

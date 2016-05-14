@@ -12,7 +12,7 @@
 #include <vector>
 
 class GameWorldGame;
-class GameClientPlayer;
+class GamePlayer;
 
 namespace gc{
 
@@ -56,7 +56,7 @@ namespace gc{
         public:
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Flagge zerstören
@@ -70,7 +70,7 @@ namespace gc{
                 : Coords(DESTROYFLAG, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Straße bauen
@@ -105,7 +105,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Straße zerstören
@@ -129,7 +129,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Straße aufwerten
@@ -151,7 +151,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Warenverteilung ändern
@@ -179,7 +179,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Baureihenfolge ändern
@@ -208,7 +208,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 
@@ -233,7 +233,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Gebäude zerstören
@@ -247,7 +247,7 @@ namespace gc{
                 : Coords(DESTROYBUILDING, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -261,7 +261,7 @@ namespace gc{
                 : Coords(SENDSOLDIERSHOME, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -275,7 +275,7 @@ namespace gc{
                 : Coords(ORDERNEWSOLDIERS, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 
@@ -304,7 +304,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Transportreihenfolge ändern
@@ -332,7 +332,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Werkzeugeinstellungen ändern
@@ -383,7 +383,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Geologen rufen
@@ -397,7 +397,7 @@ namespace gc{
                 : Coords(CALLGEOLOGIST, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Späher rufen
@@ -411,7 +411,7 @@ namespace gc{
                 : Coords(CALLSCOUT, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Basisklasse für beide Angriffstypen
@@ -453,7 +453,7 @@ namespace gc{
                 : BaseAttack(ATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// See-Angriff starten
@@ -467,7 +467,7 @@ namespace gc{
                 : BaseAttack(SEAATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
@@ -485,7 +485,7 @@ namespace gc{
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -503,7 +503,7 @@ namespace gc{
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -517,7 +517,7 @@ namespace gc{
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
@@ -548,7 +548,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
@@ -581,7 +581,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Verändert die Reserve im HQ auf einen bestimmten Wert
@@ -610,7 +610,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Alle Fahnen zerstören
@@ -627,7 +627,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Aufgeben
@@ -644,7 +644,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Alle eigenen Fahnen zerstören
@@ -661,7 +661,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Unterbreitet anderen Spielern einen Bündnisvertrag
@@ -690,7 +690,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 
@@ -723,7 +723,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 
@@ -750,7 +750,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Zwischen Boote und Schiffen beim Schiffsbauer hin- und herschalten
@@ -764,7 +764,7 @@ namespace gc{
                 : Coords(TOGGLESHIPYARDMODE, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Expedition starten
@@ -778,7 +778,7 @@ namespace gc{
                 : Coords(STARTEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Expedition starten
@@ -792,7 +792,7 @@ namespace gc{
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 /// Wartendes Schiff einer Expedition Befehle geben
@@ -829,7 +829,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
 
         private:
             /// Die Aktion, die ausgeführt werden soll
@@ -872,7 +872,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
     };
 
 

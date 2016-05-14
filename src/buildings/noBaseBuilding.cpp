@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
 #include "notifications/BuildingNote.h"

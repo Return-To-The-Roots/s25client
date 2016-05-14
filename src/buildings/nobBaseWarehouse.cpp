@@ -21,7 +21,7 @@
 #include "nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "Ware.h"
 #include "nobMilitary.h"
 #include "Random.h"
@@ -478,7 +478,7 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     max_recruits = std::min(inventory[GD_BEER], max_recruits);
     max_recruits = std::min(inventory[JOB_HELPER], max_recruits);
 
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     const unsigned recruiting_ratio = owner.GetMilitarySetting(0);
     unsigned real_recruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
     // Wurde abgerundet?
@@ -524,7 +524,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
     {
         inventory.Add(JOB_HELPER);
 
-        GameClientPlayer& owner = gwg->GetPlayer(player);
+        GamePlayer& owner = gwg->GetPlayer(player);
         owner.IncreaseInventoryJob(JOB_HELPER, 1);
 
         if(inventory[JOB_HELPER] == 1)
@@ -816,7 +816,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
         else
         {
             // Evtl. Abnehmer für die Figur wieder finden
-            GameClientPlayer& owner = gwg->GetPlayer(player);
+            GamePlayer& owner = gwg->GetPlayer(player);
             owner.FindWarehouseForAllJobs(job);
             // Wenns ein Träger war, auch Wege prüfen
             if(job == JOB_HELPER && inventory[JOB_HELPER] == 1)
@@ -1463,7 +1463,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
         AddLeavingFigure(next);
     }
 
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     // Remove leader
     inventory.real.Remove(JOB_HELPER);
     owner.DecreaseInventoryJob(JOB_HELPER, 1);

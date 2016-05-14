@@ -19,7 +19,7 @@
 #include "GameWorld.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
 #include "lua/LuaInterfaceGame.h"
@@ -60,7 +60,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     std::vector<Nation> players;
     for(unsigned i = 0; i < GetPlayerCount(); i++)
     {
-        GameClientPlayer& player = GetPlayer(i);
+        GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
             players.push_back(player.nation);
         else
@@ -73,7 +73,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     for(unsigned i = 0; i < GetPlayerCount(); i++)
     {
-        GameClientPlayer& player = GetPlayer(i);
+        GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
         {
             MapPoint hqPos = loader.GetHQPos(i);

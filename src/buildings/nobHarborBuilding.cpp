@@ -19,7 +19,7 @@
 #include "nobHarborBuilding.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "Ware.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "nodeObjs/noShip.h"
@@ -99,7 +99,7 @@ void nobHarborBuilding::Destroy()
     GetEvMgr().RemoveEvent(orderware_ev);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     // Remove also the warehouse so lost wares won't consider this one!
     owner.RemoveWarehouse(this);
     owner.HarborDestroyed(this);
@@ -350,7 +350,7 @@ void nobHarborBuilding::StartExpedition()
         bool convert = true;
         expedition.builder = false;
         //got a builder in ANY storehouse?
-        GameClientPlayer& owner = gwg->GetPlayer(player);
+        GamePlayer& owner = gwg->GetPlayer(player);
         for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
         {
             if((*it)->GetRealFiguresCount(JOB_BUILDER))
@@ -424,7 +424,7 @@ void nobHarborBuilding::StartExplorationExpedition()
     {
         unsigned missing = gwg->GetGGS().GetNumScoutsExedition() - inventory[JOB_SCOUT];
         //got scouts in ANY storehouse?
-        GameClientPlayer& owner = gwg->GetPlayer(player);
+        GamePlayer& owner = gwg->GetPlayer(player);
         for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
         {
             const unsigned numScouts = (*it)->GetRealFiguresCount(JOB_SCOUT);
@@ -998,7 +998,7 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 void nobHarborBuilding::OrderShip()
 {
     unsigned needed = GetNeededShipsCount();
-    GameClientPlayer& owner = gwg->GetPlayer(player);    
+    GamePlayer& owner = gwg->GetPlayer(player);    
 
     // Order (possibly) remaining ships
     for(unsigned ordered = owner.GetShipsToHarbor(this); ordered < needed; ++ordered)

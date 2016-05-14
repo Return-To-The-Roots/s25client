@@ -22,7 +22,7 @@
 #include "EventManager.h"
 #include "Random.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "figures/nofPassiveWorker.h"
 

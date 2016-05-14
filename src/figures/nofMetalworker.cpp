@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobUsual.h"
 #include "Random.h"
 #include "SoundManager.h"
@@ -129,7 +129,7 @@ GoodType nofMetalworker::GetOrderedTool()
     int prio = -1;
     int tool = -1;
 
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
         if (owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > prio)

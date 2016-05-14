@@ -19,7 +19,7 @@
 #include "noRoadNode.h"
 
 #include "RoadSegment.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 

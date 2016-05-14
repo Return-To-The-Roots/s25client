@@ -41,7 +41,7 @@ class AIBase;
 class ClientInterface;
 class GameMessage_GameCommand;
 class SavedFile;
-class GameClientPlayer;
+class GamePlayer;
 class GameEvent;
 class GameLobby;
 class GameWorldView;
@@ -75,8 +75,8 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         unsigned GetPlayerId() const { return playerId_; }
         unsigned GetPlayerCount() const;
         /// Liefert einen Player zurück
-        GameClientPlayer& GetPlayer(const unsigned id);
-        GameClientPlayer& GetLocalPlayer() { return GetPlayer(playerId_); }
+        GamePlayer& GetPlayer(const unsigned id);
+        GamePlayer& GetLocalPlayer() { return GetPlayer(playerId_); }
         bool IsSinglePlayer() const;
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
         AIBase* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);

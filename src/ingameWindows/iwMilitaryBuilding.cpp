@@ -21,7 +21,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/MilitaryConsts.h"
 #include "WindowManager.h"
 #include "iwDemolishBuilding.h"

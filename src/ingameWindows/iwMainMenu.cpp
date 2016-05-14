@@ -39,7 +39,7 @@
 
 #include "GameClient.h"
 #include "GameServer.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/const_gui_ids.h"
 
 iwMainMenu::iwMainMenu(GameWorldView& gwv)

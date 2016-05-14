@@ -19,7 +19,7 @@
 #include "Ware.h"
 
 #include "world/GameWorldGame.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/noBaseBuilding.h"
 #include "buildings/noBuilding.h"

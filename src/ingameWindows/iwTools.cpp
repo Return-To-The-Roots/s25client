@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlProgress.h"
 #include "world/GameWorldView.h"
@@ -110,7 +110,7 @@ void iwTools::UpdateTexts()
 {
     if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
-        GameClientPlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+        GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
             ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + i);
@@ -136,7 +136,7 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
     if ( ctrl_id >= 100 && ctrl_id < (100 + 2 * TOOL_COUNT) )
     {
         unsigned int tool = (ctrl_id - 100) / 2;
-        GameClientPlayer& me = GAMECLIENT.GetLocalPlayer();
+        GamePlayer& me = GAMECLIENT.GetLocalPlayer();
 
         if (ctrl_id & 0x1)
             settings_changed |= me.ChangeToolOrderVisual(tool, -1);
@@ -179,7 +179,7 @@ void iwTools::UpdateSettings()
 {
     if(isReplay)
     {
-        GameClientPlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+        GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
         for(unsigned i = 0; i < 12; ++i)
             GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
     }else

@@ -22,7 +22,7 @@
 #include "Loader.h"
 #include "Random.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noSign.h"
 #include "notifications/ResourceNote.h"
 #include "gameData/GameConsts.h"

@@ -19,7 +19,7 @@
 #include "nofDonkeybreeder.h"
 
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobUsual.h"
 #include "nofCarrier.h"
 #include "Loader.h"

@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/noBuildingSite.h"
 #include "Random.h"

@@ -23,7 +23,7 @@
 #include "GameCommand.h"
 
 class GameWorldBase;
-class GameClientPlayer;
+class GamePlayer;
 class GlobalGameSettings;
 
 /// Basisklasse für sämtliche KI-Spieler
@@ -35,7 +35,7 @@ class AIBase
         /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
         const GameWorldBase& gwb;
         /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
-        const GameClientPlayer& player;
+        const GamePlayer& player;
         /// Queue der GameCommands, die noch bearbeitet werden müssen
         std::vector<gc::GameCommandPtr> gcs;
         /// Stärke der KI

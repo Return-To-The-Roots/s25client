@@ -24,7 +24,7 @@
 #include "notifications/BuildingNote.h"
 #include "Ware.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "SoundManager.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "SerializedGameData.h"

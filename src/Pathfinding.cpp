@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"

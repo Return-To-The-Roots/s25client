@@ -23,7 +23,7 @@
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "Random.h"
 #include "Loader.h"

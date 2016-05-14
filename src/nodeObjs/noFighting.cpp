@@ -21,7 +21,7 @@
 #include "figures/nofActiveSoldier.h"
 #include "Random.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "noSkeleton.h"
@@ -127,7 +127,7 @@ void noFighting::Draw(int x, int y)
 
             for(unsigned i = 0; i < 2; ++i)
             {
-                GameClientPlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
+                GamePlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
                 glSmartBitmap& bmp = LOADER.bob_jobs_cache[owner.nation][soldiers[i]->GetJobType()][(i == 0) ? 0 : 3][GAMECLIENT.Interpolate(8, current_ev)];
                 bmp.draw(x + ((i == 0) ? (-x_diff) : x_diff), y, COLOR_WHITE, owner.color);
             }

@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofTradeDonkey.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "SerializedGameData.h"
@@ -56,7 +56,7 @@ void nofTradeDonkey::GoalReached()
     RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
     successor = NULL;
     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
-    GameClientPlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
+    GamePlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
 
     if(gt != GD_NOTHING)
     {

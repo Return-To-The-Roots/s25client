@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 #include "ClientInterface.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "GameMessages.h"
 
 /**

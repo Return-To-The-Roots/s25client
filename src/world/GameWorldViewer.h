@@ -24,7 +24,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapTypes.h"
 
-class GameClientPlayer;
+class GamePlayer;
 class FOWObject;
 class GameWorldBase;
 struct MapNode;
@@ -46,7 +46,7 @@ public:
     GameWorldBase& GetWorldNonConst() { return gwb; }
     const TerrainRenderer& GetTerrainRenderer() const { return tr; }
     /// Get the player instance for this view
-    const GameClientPlayer& GetPlayer() const;
+    const GamePlayer& GetPlayer() const;
     /// Get the ID of the views player
     unsigned GetPlayerId() const { return playerId_; }
 

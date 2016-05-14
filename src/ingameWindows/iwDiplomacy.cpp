@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "iwMsgbox.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlComboBox.h"
@@ -61,7 +61,7 @@ iwDiplomacy::iwDiplomacy()
 
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GamePlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.isUsed())
         {
             // Einzelne Spielernamen
@@ -178,7 +178,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         unsigned char playerId = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
-        if(GAMECLIENT.GetLocalPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, playerId));
         else
@@ -190,7 +190,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         unsigned char playerId = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
-        if(GAMECLIENT.GetLocalPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, playerId));
         else

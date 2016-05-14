@@ -19,7 +19,7 @@
 #include "nofBaker.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"

@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
@@ -238,7 +238,7 @@ void iwStatistics::Msg_PaintAfter()
     unsigned pos = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GamePlayer& player = GAMECLIENT.GetPlayer(i);
         if (!player.isUsed())
             continue;
 
@@ -274,7 +274,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     {
         if (!activePlayers[p])
             continue;
-        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -315,7 +315,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     {
         if (!activePlayers[p])
             continue;
-        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)

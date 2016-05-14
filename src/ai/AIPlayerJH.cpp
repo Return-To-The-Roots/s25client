@@ -19,7 +19,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
 
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"

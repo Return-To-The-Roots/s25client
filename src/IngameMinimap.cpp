@@ -19,7 +19,7 @@
 #include "IngameMinimap.h"
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "FOWObjects.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"

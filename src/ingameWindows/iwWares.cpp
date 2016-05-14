@@ -19,7 +19,7 @@
 #include "iwWares.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
@@ -70,7 +70,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
     // Figurenseite hinzufügen
     ctrlGroup* figures = AddGroup(101);
 
-    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
     bool four = true;
     unsigned short ware_id = 0;
     for(int x = 0, y = 0; y < 7; ++x, ++ware_id)

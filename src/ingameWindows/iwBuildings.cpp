@@ -19,7 +19,7 @@
 #include "iwBuildings.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "WindowManager.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobMilitary.h"

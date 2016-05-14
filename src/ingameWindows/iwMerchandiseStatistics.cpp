@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwMerchandiseStatistics.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "controls/ctrlMultiSelectGroup.h"
 #include "controls/ctrlOptionGroup.h"
@@ -170,7 +170,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
 
     // Statistik holen
-    const GameClientPlayer::Statistic stat = GAMECLIENT.GetLocalPlayer().GetStatistic(currentTime);
+    const GamePlayer::Statistic stat = GAMECLIENT.GetLocalPlayer().GetStatistic(currentTime);
 
 
     // Maximalwert suchen

@@ -21,7 +21,7 @@
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"

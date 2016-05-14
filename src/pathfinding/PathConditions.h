@@ -19,7 +19,7 @@
 #define PathConditions_h__
 
 #include "world/GameWorldBase.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainData.h"
 
@@ -48,7 +48,7 @@ struct PathConditionHuman
 
 struct PathConditionTrade: public PathConditionHuman
 {
-    const GameClientPlayer& player;
+    const GamePlayer& player;
 
     PathConditionTrade(const GameWorldBase& gwb, const unsigned char player): PathConditionHuman(gwb), player(gwb.GetPlayer(player)){}
 

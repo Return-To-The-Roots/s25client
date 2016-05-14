@@ -22,7 +22,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
 #include "notifications/NodeNote.h"
@@ -80,7 +80,7 @@ void GameWorldViewer::InitTerrainRenderer()
     );
 }
 
-const GameClientPlayer& GameWorldViewer::GetPlayer() const
+const GamePlayer& GameWorldViewer::GetPlayer() const
 {
     return GetWorld().GetPlayer(playerId_);
 }

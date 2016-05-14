@@ -23,7 +23,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "buildings/nobUsual.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 
 noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
     noBuilding* bld;

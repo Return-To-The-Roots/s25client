@@ -28,7 +28,7 @@
 
 class EventManager;
 class FreePathFinder;
-class GameClientPlayer;
+class GamePlayer;
 class GameInterface;
 class GlobalGameSettings;
 class LuaInterfaceGame;
@@ -47,7 +47,7 @@ class GameWorldBase: public World
     PostManager postManager;
     NotificationManager notifications;
 
-    std::vector<GameClientPlayer> players;
+    std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
 protected:
@@ -58,7 +58,7 @@ protected:
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(const std::vector<GameClientPlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
@@ -138,8 +138,8 @@ public:
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
     /// Return the player with the given index
-    GameClientPlayer& GetPlayer(const unsigned id);
-    const GameClientPlayer& GetPlayer(const unsigned id) const;
+    GamePlayer& GetPlayer(const unsigned id);
+    const GamePlayer& GetPlayer(const unsigned id) const;
     unsigned GetPlayerCount() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }

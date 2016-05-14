@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "EventManager.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
@@ -157,7 +157,7 @@ void noFlag::Draw(int x, int y)
  */
 FOWObject* noFlag::CreateFOWObject() const
 {
-    const GameClientPlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = gwg->GetPlayer(player);
     return new fowFlag(owner.color, owner.nation, flagtype);
 }
 

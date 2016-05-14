@@ -19,7 +19,7 @@
 #define AIINTERFACE_H_
 
 #include "world/GameWorldBase.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "factories/GameCommandFactory.h"
 #include "GameCommand.h"
 #include "gameTypes/Direction.h"
@@ -51,7 +51,7 @@ class AIInterface: public GameCommandFactory
         /// Pointer to GameWorld, containing all information about the world
         const GameWorldBase& gwb;
         /// Pointer to this player, containing all information about his economoy, buildings, etc.
-        const GameClientPlayer& player_;
+        const GamePlayer& player_;
         /// Pointer to the game commands queue, to send commands to the game
         std::vector<gc::GameCommandPtr>& gcs;
         /// ID of AI player

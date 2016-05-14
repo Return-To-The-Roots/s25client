@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"

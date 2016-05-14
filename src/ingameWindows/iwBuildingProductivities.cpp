@@ -19,7 +19,7 @@
 #include "iwBuildingProductivities.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/const_gui_ids.h"
 #include "files.h"
 #include "libutil/src/colors.h"

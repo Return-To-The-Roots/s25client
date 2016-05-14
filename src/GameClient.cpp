@@ -701,7 +701,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
     /// Mit im Replay aufzeichnen
     replayinfo.replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
 
-    GameClientPlayer& player = gw->GetPlayer(msg.player);
+    GamePlayer& player = gw->GetPlayer(msg.player);
 
     // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
     if(player.IsDefeated() && msg.destination != CD_ALL)
@@ -1081,7 +1081,7 @@ bool GameClient::IsPlayerLagging()
 
     for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = gw->GetPlayer(i);
+        GamePlayer& player = gw->GetPlayer(i);
         if(player.isUsed())
         {
             if(player.gc_queue.empty())
@@ -1113,7 +1113,7 @@ void GameClient::StatisticStep()
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
     for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = gw->GetPlayer(i);
+        GamePlayer& player = gw->GetPlayer(i);
         if(GetGGS().lock_teams) //in games with locked team settings check for team victory
         {
             if(player.IsDefeated())
@@ -1124,7 +1124,7 @@ void GameClient::StatisticStep()
             {
                 if(i == j || !player.IsAlly(j))
                     continue;
-                GameClientPlayer& teamPlayer = gw->GetPlayer(j);
+                GamePlayer& teamPlayer = gw->GetPlayer(j);
                 if(!teamPlayer.IsDefeated())
                 {
                     curteam = curteam | (1 << j);
@@ -1325,7 +1325,7 @@ void GameClient::NextGF()
     // Notfallprogramm durchlaufen lassen
     for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = gw->GetPlayer(i);
+        GamePlayer& player = gw->GetPlayer(i);
         if(player.isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
@@ -1688,7 +1688,7 @@ unsigned GameClient::GetPlayerCount() const
     return gw->GetPlayerCount();
 }
 
-GameClientPlayer& GameClient::GetPlayer(const unsigned id)
+GamePlayer& GameClient::GetPlayer(const unsigned id)
 {
     RTTR_Assert(state == CS_LOADING || state == CS_GAME);
     RTTR_Assert(id < GetPlayerCount());
@@ -1772,7 +1772,7 @@ void GameClient::RequestSwapToPlayer(const unsigned char newId)
 {
     if(state != CS_GAME)
         return;
-    GameClientPlayer& player = GetPlayer(newId);
+    GamePlayer& player = GetPlayer(newId);
     if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
         send_queue.push(new GameMessage_Player_Swap(playerId_, newId));
 }

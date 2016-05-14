@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "Random.h"
 #include "GameMessage_GameCommand.h"
 #include "libutil/src/Log.h"
@@ -32,7 +32,7 @@ void GameClient::ExecuteNWF()
 
     for(unsigned i = 0; i < GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = GetPlayer(i);
+        GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
         {
             GameMessage_GameCommand& msg = player.gc_queue.front();

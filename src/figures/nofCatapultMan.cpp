@@ -19,7 +19,7 @@
 #include "nofCatapultMan.h"
 #include "Random.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "CatapultStone.h"

@@ -21,7 +21,7 @@
 
 #include "AIBase.h"
 #include "gameTypes/MapTypes.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "AIJHHelper.h"
 #include "AIEventManager.h"
 #include "AIResourceMap.h"

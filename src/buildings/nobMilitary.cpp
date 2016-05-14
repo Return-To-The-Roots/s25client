@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nobMilitary.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/MilitaryConsts.h"
 #include "Ware.h"
 #include "figures/nofPassiveSoldier.h"
@@ -419,7 +419,7 @@ void nobMilitary::RegulateTroops()
         // Zuerst die bestellten Soldaten wegschicken
         // Weak ones first
         std::vector<nofPassiveSoldier*> notNeededSoldiers;
-        GameClientPlayer& owner = gwg->GetPlayer(player);
+        GamePlayer& owner = gwg->GetPlayer(player);
         if (owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
         {
             for(SortedTroops::iterator it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)

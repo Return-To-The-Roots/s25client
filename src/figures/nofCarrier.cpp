@@ -21,7 +21,7 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "SoundManager.h"
 #include "EventManager.h"
 #include "Ware.h"

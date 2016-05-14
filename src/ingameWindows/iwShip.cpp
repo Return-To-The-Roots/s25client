@@ -19,7 +19,7 @@
 #include "iwShip.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
 #include "Ware.h"
@@ -180,7 +180,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwShip::DrawCargo()
 {
-    const GameClientPlayer& owner = gwv.GetWorld().GetPlayer(player);
+    const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     noShip* ship = owner.GetShipByID(ship_id);
 
     std::vector<unsigned short> orderedWares = std::vector<unsigned short>(WARE_TYPES_COUNT);

@@ -21,7 +21,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
