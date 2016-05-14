@@ -63,21 +63,21 @@ class ClientInterface
         virtual void CI_NextConnectState(const ConnectState cs){}
         virtual void CI_Error(const ClientError ce){}
 
-        virtual void CI_NewPlayer(const unsigned player_id){}
-        virtual void CI_PlayerLeft(const unsigned player_id){}
+        virtual void CI_NewPlayer(const unsigned playerId){}
+        virtual void CI_PlayerLeft(const unsigned playerId){}
 
         virtual void CI_GameStarted(GameWorldBase& world){}
 
-        virtual void CI_PSChanged(const unsigned player_id, const PlayerState ps){}
-        virtual void CI_NationChanged(const unsigned player_id, const Nation nation){}
-        virtual void CI_ColorChanged(const unsigned player_id, const unsigned color){}
-        virtual void CI_TeamChanged(const unsigned player_id, const unsigned char team){}
-        virtual void CI_PingChanged(const unsigned player_id, const unsigned short ping){}
-        virtual void CI_ReadyChanged(const unsigned player_id, const bool ready){}
+        virtual void CI_PSChanged(const unsigned playerId, const PlayerState ps){}
+        virtual void CI_NationChanged(const unsigned playerId, const Nation nation){}
+        virtual void CI_ColorChanged(const unsigned playerId, const unsigned color){}
+        virtual void CI_TeamChanged(const unsigned playerId, const unsigned char team){}
+        virtual void CI_PingChanged(const unsigned playerId, const unsigned short ping){}
+        virtual void CI_ReadyChanged(const unsigned playerId, const bool ready){}
         virtual void CI_PlayersSwapped(const unsigned player1, const unsigned player2){}
         virtual void CI_GGSChanged(const GlobalGameSettings& ggs){}
 
-        virtual void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg){}
+        virtual void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg){}
         virtual void CI_Countdown(int countdown){}
         virtual void CI_CancelCountdown(){}
 

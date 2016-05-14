@@ -72,21 +72,21 @@ class dskHostGame :
 
         void CI_Error(const ClientError ce) override;
 
-        void CI_NewPlayer(const unsigned player_id) override;
-        void CI_PlayerLeft(const unsigned player_id) override;
+        void CI_NewPlayer(const unsigned playerId) override;
+        void CI_PlayerLeft(const unsigned playerId) override;
 
         void CI_GameStarted(GameWorldBase& world) override;
 
-        void CI_PSChanged(const unsigned player_id, const PlayerState ps) override;
-        void CI_NationChanged(const unsigned player_id, const Nation nation) override;
-        void CI_TeamChanged(const unsigned player_id, const unsigned char team) override;
-        void CI_PingChanged(const unsigned player_id, const unsigned short ping) override;
-        void CI_ColorChanged(const unsigned player_id, const unsigned color) override;
-        void CI_ReadyChanged(const unsigned player_id, const bool ready) override;
+        void CI_PSChanged(const unsigned playerId, const PlayerState ps) override;
+        void CI_NationChanged(const unsigned playerId, const Nation nation) override;
+        void CI_TeamChanged(const unsigned playerId, const unsigned char team) override;
+        void CI_PingChanged(const unsigned playerId, const unsigned short ping) override;
+        void CI_ColorChanged(const unsigned playerId, const unsigned color) override;
+        void CI_ReadyChanged(const unsigned playerId, const bool ready) override;
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
         void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
-        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) override;
+        void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
         void CI_Countdown(int countdown) override;
         void CI_CancelCountdown() override;
 

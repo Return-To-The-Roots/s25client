@@ -85,9 +85,9 @@ class dskGameInterface :
 
         RoadBuildMode GetRoadMode() const { return road.mode; }
 
-        void CI_PlayerLeft(const unsigned player_id) override;
+        void CI_PlayerLeft(const unsigned playerId) override;
         void CI_GGSChanged(const GlobalGameSettings& ggs) override;
-        void CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg) override;
+        void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
         void CI_Async(const std::string& checksums_list) override;
         void CI_ReplayAsync(const std::string& msg) override;
         void CI_ReplayEndReached(const std::string& msg) override;
@@ -102,13 +102,13 @@ class dskGameInterface :
         /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
         void GI_FlagDestroyed(const MapPoint pt) override;
         /// Wenn ein Spieler verloren hat
-        void GI_PlayerDefeated(const unsigned player_id) override;
+        void GI_PlayerDefeated(unsigned playerId) override;
         /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
         void GI_UpdateMinimap(const MapPoint pt) override;
         /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
-        void GI_TreatyOfAllianceChanged() override;
-        void GI_Winner(const unsigned player_id) override;
-        void GI_TeamWinner(const unsigned player_id) override;
+        void GI_TreatyOfAllianceChanged(unsigned playerId) override;
+        void GI_Winner(const unsigned playerId) override;
+        void GI_TeamWinner(const unsigned playerId) override;
         void GI_SetRoadBuildMode(RoadBuildMode mode) override;
         /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
         void GI_BuildRoad() override;

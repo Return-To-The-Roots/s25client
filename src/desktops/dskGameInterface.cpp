@@ -878,11 +878,11 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     }
 }
 
-void dskGameInterface::CI_PlayerLeft(const unsigned player_id)
+void dskGameInterface::CI_PlayerLeft(const unsigned playerId)
 {
     // Info-Meldung ausgeben
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
@@ -897,11 +897,11 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
     messenger.AddMessage("", 0, CD_SYSTEM, text);
 }
 
-void dskGameInterface::CI_Chat(const unsigned player_id, const ChatDestination cd, const std::string& msg)
+void dskGameInterface::CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg)
 {
     char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
-    messenger.AddMessage(from, worldViewer.GetWorld().GetPlayer(player_id).color, cd, msg);
+    snprintf(from, sizeof(from), _("<%s> "), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
+    messenger.AddMessage(from, worldViewer.GetWorld().GetPlayer(playerId).color, cd, msg);
 }
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
@@ -1001,14 +1001,14 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 /**
  *  Wenn ein Spieler verloren hat
  */
-void dskGameInterface::GI_PlayerDefeated(const unsigned player_id)
+void dskGameInterface::GI_PlayerDefeated(const unsigned playerId)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
-    if(player_id == worldViewer.GetPlayerId())
+    if(playerId == worldViewer.GetPlayerId())
     {
         /// Sichtbarkeiten neu berechnen
         worldViewer.RecalcAllColors();
@@ -1026,10 +1026,10 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 /**
  *  Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
  */
-void dskGameInterface::GI_TreatyOfAllianceChanged()
+void dskGameInterface::GI_TreatyOfAllianceChanged(unsigned playerId)
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(worldViewer.GetWorld().GetGGS().team_view)
+    if(playerId == worldViewer.GetPlayerId() && worldViewer.GetWorld().GetGGS().team_view)
     {
         /// Sichtbarkeiten neu berechnen
         worldViewer.RecalcAllColors();
@@ -1100,16 +1100,16 @@ void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
 /**
  *  Ein Spieler hat das Spiel gewonnen.
  */
-void dskGameInterface::GI_Winner(const unsigned player_id)
+void dskGameInterface::GI_Winner(const unsigned playerId)
 {
     char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), worldViewer.GetWorld().GetPlayer(player_id).name.c_str());
+    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 }
 /**
  *  Ein Team hat das Spiel gewonnen.
  */
-void dskGameInterface::GI_TeamWinner(const unsigned player_id)
+void dskGameInterface::GI_TeamWinner(const unsigned playerId)
 {
     unsigned winnercount = 0;
     char winners[5];
@@ -1117,7 +1117,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned player_id)
     for(unsigned i = 0; i < world.GetPlayerCount() && winnercount < 5; i++)
     {
         winners[winnercount] = i;
-        winnercount += player_id & (1 << i) ? 1 : 0;
+        winnercount += playerId & (1 << i) ? 1 : 0;
     }
     char text[256];
     switch (winnercount)

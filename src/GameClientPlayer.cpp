@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClientPlayer.h"
-#include "GameClient.h"
 #include "Random.h"
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "RoadSegment.h"
@@ -37,10 +36,12 @@
 #include "GameMessage_GameCommand.h"
 #include "world/TradeRoute.h"
 #include "world/GameWorldGame.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
 #include "notifications/ToolNote.h"
+#include "gameTypes/VisualSettings.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -1763,10 +1764,10 @@ void GameClientPlayer::PactChanged(const PactType pt)
     RecalcMilitaryFlags();
 
     // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
-    if(pt == TREATY_OF_ALLIANCE && GAMECLIENT.GetPlayerId() == GetPlayerId())
+    if(pt == TREATY_OF_ALLIANCE)
     {
         if(gwg->GetGameInterface())
-            gwg->GetGameInterface()->GI_TreatyOfAllianceChanged();
+            gwg->GetGameInterface()->GI_TreatyOfAllianceChanged(GetPlayerId());
     }
 }
 
