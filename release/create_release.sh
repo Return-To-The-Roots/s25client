@@ -72,15 +72,16 @@ VERSION=$(grep WINDOW_VERSION build_version_defines.h | cut -d ' ' -f 3 | cut -d
 # get revision
 REVISION=$(grep WINDOW_REVISION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
-# get savegame version
-SAVEGAMEVERSION=$(grep Savegame::SAVE_VERSION $SRCDIR/src/GameSavegame.cpp | cut -d ' ' -f 6 | cut -d \; -f 1)
-
 if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
 	echo "error: revision is null"
 	error
 fi
 
-echo "current version is: $VERSION-$REVISION"
+# get savegame version
+SAVEGAMEVERSION=$(grep Savegame::SAVE_VERSION $SRCDIR/src/Savegame.cpp | cut -d ' ' -f 6 | cut -d \; -f 1)
+
+echo "Current version is: $VERSION-$REVISION"
+echo "Savegame version:   $SAVEGAMEVERSION"
 
 DESTDIR=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
 make install DESTDIR=$DESTDIR || error
