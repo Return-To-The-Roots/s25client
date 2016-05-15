@@ -23,7 +23,6 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameServer.h"
-#include "LobbyClient.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlChat.h"
 #include "controls/ctrlCheck.h"
@@ -40,17 +39,18 @@
 #include "desktops/dskLAN.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwAddons.h"
+#include "GameLobby.h"
 #include "ogl/glArchivItem_Font.h"
 #include "lua/LuaInterfaceSettings.h"
+#include "JoinPlayerInfo.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "Random.h"
-#include "Log.h"
-
-#include "../libsiedler2/src/prototypen.h"
+#include "liblobby/src/LobbyClient.h"
+#include "libutil/src/Log.h"
+#include "libsiedler2/src/prototypen.h"
 
 dskHostGame::dskHostGame(const ServerType serverType) :
-    Desktop(LOADER.GetImageN("setup015", 0)), hasCountdown_(false), serverType(serverType), wasActivated(false)
+    Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(GAMECLIENT.GetGameLobby()), hasCountdown_(false), wasActivated(false)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -195,34 +195,32 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     if (IsSinglePlayer() && !GAMECLIENT.IsSavegame())
     {
         // Setze initial auf KI
-        for (unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); i++)
+        for (unsigned char i = 0; i < gameLobby.GetPlayerCount(); i++)
         {
-            if (!GAMECLIENT.GetPlayer(i).is_host)
+            if (!gameLobby.GetPlayer(i).isHost)
                 GAMESERVER.TogglePlayerState(i);
         }
     }
 
     // Alle Spielercontrols erstellen
-    for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
+    for(unsigned char i = gameLobby.GetPlayerCount(); i; --i)
         UpdatePlayerRow(i - 1);
     //swap buttons erstellen
     if(GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() && (!lua || lua->IsChangeAllowed("swapping")))
     {
-        for(unsigned char i = GAMECLIENT.GetPlayerCount(); i; --i)
+        for(unsigned char i = gameLobby.GetPlayerCount(); i; --i)
             AddTextButton(80 + i, 5, 80 + (i - 1) * 30, 10, 22, TC_RED1, _("-"), NormalFont);;
     }
-    // GGS aktualisieren, zum ersten Mal
-    GAMECLIENT.LoadGGS();
-    this->CI_GGSChanged(GAMECLIENT.GetGGS());
+    CI_GGSChanged(gameLobby.GetSettings());
 
     LOBBYCLIENT.SetInterface(this);
     if(serverType == ServerType::LOBBY && LOBBYCLIENT.LoggedIn())
     {
         LOBBYCLIENT.SendServerJoinRequest();
-        LOBBYCLIENT.SendRankingInfoRequest(GAMECLIENT.GetPlayer(GAMECLIENT.GetPlayerID()).name);
-        for(unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+        LOBBYCLIENT.SendRankingInfoRequest(gameLobby.GetPlayer(GAMECLIENT.GetPlayerId()).name);
+        for(unsigned char i = 0; i < gameLobby.GetPlayerCount(); ++i)
         {
-            GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+            JoinPlayerInfo& player = gameLobby.GetPlayer(i);
             if(player.ps == PS_OCCUPIED)
                 LOBBYCLIENT.SendRankingInfoRequest(player.name);
         }
@@ -256,7 +254,7 @@ void dskHostGame::SetActive(bool activate /*= true*/)
 
 void dskHostGame::UpdatePlayerRow(const unsigned row)
 {
-    GameClientPlayer& player = GAMECLIENT.GetPlayer(row);
+    JoinPlayerInfo& player = gameLobby.GetPlayer(row);
 
     unsigned cy = 80 + row * 30;
     TextureColor tc = (row & 1 ? TC_GREY : TC_GREEN2);
@@ -274,7 +272,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
             name.clear();
             break;
         case PS_OCCUPIED:
-        case PS_KI:
+        case PS_AI:
         {
             name = player.name;
         } break;
@@ -303,29 +301,29 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
     ctrlBaseText* text;
-    if(GAMECLIENT.IsHost() && !player.is_host && (!lua || lua->IsChangeAllowed("playerState")))
+    if(GAMECLIENT.IsHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
         text = group->AddTextButton(1, 20, cy, 150, 22, tc, name, NormalFont);
     else
         text = group->AddDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
 
     // Is das der Host? Dann farblich markieren
-    if(player.is_host)
+    if(player.isHost)
         text->SetColor(0xFF00FF00);
 
     // Bei geschlossenem nicht sichtbar
     if(player.isUsed())
     {
         /// Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
-        group->AddVarDeepening(2, 180, cy, 50, 22, tc, (LOBBYCLIENT.LoggedIn() || player.ps == PS_KI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
+        group->AddVarDeepening(2, 180, cy, 50, 22, tc, (LOBBYCLIENT.LoggedIn() || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
 
         // If not in savegame -> Player can change own row and host can change AIs
-        const bool allowPlayerChange = ((GAMECLIENT.IsHost() && player.ps == PS_KI) || GAMECLIENT.GetPlayerID() == row) && !GAMECLIENT.IsSavegame();
+        const bool allowPlayerChange = ((GAMECLIENT.IsHost() && player.ps == PS_AI) || GAMECLIENT.GetPlayerId() == row) && !GAMECLIENT.IsSavegame();
         bool allowNationChange = allowPlayerChange;
         bool allowColorChange = allowPlayerChange;
         bool allowTeamChange = allowPlayerChange;
         if(lua)
         {
-            if(GAMECLIENT.GetPlayerID() == row)
+            if(GAMECLIENT.GetPlayerId() == row)
             {
                 allowNationChange &= lua->IsChangeAllowed("ownNation", true);
                 allowColorChange &= lua->IsChangeAllowed("ownColor", true);
@@ -354,8 +352,8 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
             group->AddDeepening(5, 380, cy, 50, 22, tc, _("-"), NormalFont, COLOR_YELLOW);
 
         // Bereit (nicht bei KIs und Host)
-        if(player.ps == PS_OCCUPIED && !player.is_host)
-            group->AddCheckBox(6, 450, cy, 22, 22, tc, EMPTY_STRING, NULL, (GAMECLIENT.GetPlayerID() != row) );
+        if(player.ps == PS_OCCUPIED && !player.isHost)
+            group->AddCheckBox(6, 450, cy, 22, 22, tc, EMPTY_STRING, NULL, (GAMECLIENT.GetPlayerId() != row) );
 
         // Ping ( "%d" )
         ctrlVarDeepening* ping = group->AddVarDeepening(7, 490, cy, 50, 22, tc, _("%d"), NormalFont, COLOR_YELLOW, 1, &player.ping); //-V111
@@ -366,11 +364,11 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
             ctrlComboBox* combo = group->AddComboBox(8, 570, cy, 150, 22, tc, NormalFont, 150, !GAMECLIENT.IsHost());
 
             // Mit den alten Namen füllen
-            for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+            for(unsigned i = 0; i < gameLobby.GetPlayerCount(); ++i)
             {
-                if(GAMECLIENT.GetPlayer(i).origin_name.length())
+                if(gameLobby.GetPlayer(i).originName.length())
                 {
-                    combo->AddString(GAMECLIENT.GetPlayer(i).origin_name);
+                    combo->AddString(gameLobby.GetPlayer(i).originName);
                     if(i == row)
                         combo->SetSelection(combo->GetCount() - 1);
                 }
@@ -378,14 +376,14 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         }
 
         // Ping bei KI und Host ausblenden
-        if(player.ps == PS_KI || player.is_host)
+        if(player.ps == PS_AI || player.isHost)
             ping->SetVisible(false);
 
         // Felder ausfüllen
         ChangeNation(row, player.nation);
         ChangeTeam(row, player.team);
         ChangePing(row);
-        ChangeReady(row, player.ready);
+        ChangeReady(row, player.isReady);
         ChangeColor(row, player.color);
     }
     group->SetActive(this->active_);
@@ -405,7 +403,7 @@ void dskHostGame::Msg_PaintBefore()
 
 void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    unsigned player_id = 8 - (group_id - 50);
+    unsigned playerId = 8 - (group_id - 50);
 
     switch(ctrl_id)
     {
@@ -413,55 +411,55 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
         case 1:
         {
             if(GAMECLIENT.IsHost())
-                GAMESERVER.TogglePlayerState(player_id);
+                GAMESERVER.TogglePlayerState(playerId);
         } break;
         // Volk
         case 3:
         {
-            TogglePlayerReady(player_id, false);
+            TogglePlayerReady(playerId, false);
 
             if(GAMECLIENT.IsHost())
-                GAMESERVER.TogglePlayerNation(player_id);
-            if(player_id == GAMECLIENT.GetPlayerID())
+                GAMESERVER.ToggleAINation(playerId);
+            if(playerId == GAMECLIENT.GetPlayerId())
             {
-                GAMECLIENT.Command_ToggleNation();
-                GameClientPlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+                JoinPlayerInfo& localPlayer = gameLobby.GetPlayer(playerId);
                 localPlayer.nation = Nation((unsigned(localPlayer.nation) + 1) % NAT_COUNT);
-                ChangeNation(GAMECLIENT.GetPlayerID(), localPlayer.nation);
+                GAMECLIENT.Command_SetNation(localPlayer.nation);
+                ChangeNation(playerId, localPlayer.nation);
             }
         } break;
 
         // Farbe
         case 4:
         {
-            TogglePlayerReady(player_id, false);
+            TogglePlayerReady(playerId, false);
 
-            if(player_id == GAMECLIENT.GetPlayerID())
+            if(playerId == GAMECLIENT.GetPlayerId())
             {
                 // Get colors used by other players
                 std::set<unsigned> takenColors;
-                for(unsigned p = 0; p < GAMECLIENT.GetPlayerCount(); ++p)
+                for(unsigned p = 0; p < gameLobby.GetPlayerCount(); ++p)
                 {
                     // Skip self
-                    if(p == GAMECLIENT.GetPlayerID())
+                    if(p == GAMECLIENT.GetPlayerId())
                         continue;
 
-                    GameClientPlayer& otherPlayer = GAMECLIENT.GetPlayer(p);
+                    JoinPlayerInfo& otherPlayer = gameLobby.GetPlayer(p);
                     if(otherPlayer.isUsed())
                         takenColors.insert(otherPlayer.color);
                 }
 
                 // Look for a unique color
-                GameClientPlayer& player = GAMECLIENT.GetLocalPlayer(); 
+                JoinPlayerInfo& player = gameLobby.GetPlayer(playerId); 
                 int newColorIdx = player.GetColorIdx(player.color);
                 do{
                     player.color = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
                 } while(helpers::contains(takenColors, player.color));
 
-                GAMECLIENT.Command_SetColor();
-                ChangeColor(GAMECLIENT.GetPlayerID(), player.color);
+                GAMECLIENT.Command_SetColor(player.color);
+                ChangeColor(playerId, player.color);
             } else if(GAMECLIENT.IsHost())
-                GAMESERVER.TogglePlayerColor(player_id);
+                GAMESERVER.ToggleAIColor(playerId);
 
             // Start-Farbe der Minimap ändern
         } break;
@@ -469,33 +467,34 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
         // Team
         case 5:
         {
-            TogglePlayerReady(player_id, false);
+            TogglePlayerReady(playerId, false);
 
             if(GAMECLIENT.IsHost())
-                GAMESERVER.TogglePlayerTeam(player_id);
-            if(player_id == GAMECLIENT.GetPlayerID())
+                GAMESERVER.ToggleAITeam(playerId);
+            if(playerId == GAMECLIENT.GetPlayerId())
             {
-                if(GAMECLIENT.GetLocalPlayer().team > TM_RANDOMTEAM && GAMECLIENT.GetLocalPlayer().team < Team(TEAM_COUNT)) // team: 1->2->3->4->0 //-V807
+                JoinPlayerInfo& player = gameLobby.GetPlayer(playerId);
+                if(player.team >= TM_TEAM1 && player.team < Team(TEAM_COUNT)) // team: 1->2->3->4->0 //-V807
                 {
-                    GAMECLIENT.GetLocalPlayer().team = Team((GAMECLIENT.GetLocalPlayer().team + 1) % TEAM_COUNT);
+                    player.team = Team((player.team + 1) % TEAM_COUNT);
                 }
                 else
                 {
-                    if(GAMECLIENT.GetLocalPlayer().team == TM_NOTEAM) // 0(noteam)->randomteam(1-4)
+                    if(player.team == TM_NOTEAM) // 0(noteam)->randomteam(1-4)
                     {
-                        int rnd = RANDOM.Rand(__FILE__, __LINE__, 0, 4);
+                        int rnd = rand() % 4;
                         if(!rnd)
-                            GAMECLIENT.GetLocalPlayer().team = TM_RANDOMTEAM;
+                            player.team = TM_RANDOMTEAM;
                         else
-                            GAMECLIENT.GetLocalPlayer().team = Team(rnd + 5);
+                            player.team = Team(TM_RANDOMTEAM2 + rnd - 1);
                     }
                     else //any randomteam -> team 1
                     {
-                        GAMECLIENT.GetLocalPlayer().team = TM_TEAM1;
+                        player.team = TM_TEAM1;
                     }
                 }
-                GAMECLIENT.Command_ToggleTeam(GAMECLIENT.GetLocalPlayer().team);
-                ChangeTeam(GAMECLIENT.GetPlayerID(), GAMECLIENT.GetLocalPlayer().team);
+                GAMECLIENT.Command_SetTeam(player.team);
+                ChangeTeam(GAMECLIENT.GetPlayerId(), player.team);
             }
         } break;
     }
@@ -503,36 +502,35 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
 
 void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const bool checked)
 {
-    unsigned player_id = 8 - (group_id - 50);
+    unsigned playerId = 8 - (group_id - 50);
 
     // Bereit
-    if(player_id < 8)
-        TogglePlayerReady(player_id, checked);
+    if(playerId < 8)
+        TogglePlayerReady(playerId, checked);
 }
 
 void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const int selection)
 {
-    unsigned player_id = 8 - (group_id - 50);
+    unsigned playerId = 8 - (group_id - 50);
 
     // Spieler wurden vertauscht
 
     // 2. Player herausfinden (Strings vergleichen
     unsigned player2;
-    for(player2 = 0; player2 < GAMECLIENT.GetPlayerCount(); ++player2)
+    for(player2 = 0; player2 < gameLobby.GetPlayerCount(); ++player2)
     {
-        if(GAMECLIENT.GetPlayer(player2).origin_name == GetCtrl<ctrlGroup>(group_id)->
-                GetCtrl<ctrlComboBox>(8)->GetText(selection))
+        if(gameLobby.GetPlayer(player2).originName == GetCtrl<ctrlGroup>(group_id)->GetCtrl<ctrlComboBox>(8)->GetText(selection))
             break;
     }
 
     // Keinen Namen gefunden?
-    if(player2 == GAMECLIENT.GetPlayerCount())
+    if(player2 == gameLobby.GetPlayerCount())
     {
         LOG.lprintf("dskHostGame: ERROR: No Origin Name found, stop swapping!\n");
         return;
     }
 
-    GAMESERVER.SwapPlayer(player_id, player2);
+    GAMESERVER.SwapPlayer(playerId, player2);
 }
 
 
@@ -566,7 +564,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
             unsigned char p = 0;
             while (true)
             {
-                if (GAMECLIENT.GetPlayer(p).is_host)
+                if (gameLobby.GetPlayer(p).isHost)
                 {
                     LOG.lprintf("dskHostGame: host detected\n");
                     break;
@@ -601,7 +599,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
             if(GAMECLIENT.IsHost())
             {
                 if(lua)
-                    lua->EventPlayerReady(GAMECLIENT.GetPlayerID());
+                    lua->EventPlayerReady(GAMECLIENT.GetPlayerId());
                 if(ready->GetText() == _("Start game"))
                 {
                     if(GAMESERVER.StartCountdown())
@@ -617,20 +615,20 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
             else
             {
                 if(ready->GetText() == _("Ready"))
-                    TogglePlayerReady(GAMECLIENT.GetPlayerID(), true);
+                    TogglePlayerReady(GAMECLIENT.GetPlayerId(), true);
                 else
-                    TogglePlayerReady(GAMECLIENT.GetPlayerID(), false);
+                    TogglePlayerReady(GAMECLIENT.GetPlayerId(), false);
             }
         } break;
         case 22: // Addons
         {
             iwAddons* w;
             if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                w = new iwAddons(ggs_, iwAddons::HOSTGAME);
+                w = new iwAddons(gameLobby.GetSettings(), iwAddons::HOSTGAME);
             else if(allowAddonChange)
-                w = new iwAddons(ggs_, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                w = new iwAddons(gameLobby.GetSettings(), iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
             else
-                w = new iwAddons(ggs_, iwAddons::READONLY);
+                w = new iwAddons(gameLobby.GetSettings(), iwAddons::READONLY);
             w->SetParent(this);
             WINDOWMANAGER.Show(w);
         } break;
@@ -677,7 +675,7 @@ void dskHostGame::CI_CancelCountdown()
     hasCountdown_ = false;
 
     if(GAMECLIENT.IsHost())
-        TogglePlayerReady(GAMECLIENT.GetPlayerID(), false);
+        TogglePlayerReady(GAMECLIENT.GetPlayerId(), false);
 }
 
 void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
@@ -735,23 +733,25 @@ void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool  /*c
 
 void dskHostGame::UpdateGGS()
 {
+    GlobalGameSettings& ggs = gameLobby.GetSettings();
+
     // Geschwindigkeit
-    ggs_.game_speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
+    ggs.game_speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
     // Spielziel
-    ggs_.game_objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
+    ggs.game_objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
     // Waren zu Beginn
-    ggs_.start_wares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
+    ggs.start_wares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
     // Aufklärung
-    ggs_.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
+    ggs.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
     // Teams gesperrt
-    ggs_.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
+    ggs.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
     // Team sicht
-    ggs_.team_view = GetCtrl<ctrlCheck>(19)->GetCheck();
+    ggs.team_view = GetCtrl<ctrlCheck>(19)->GetCheck();
     //random locations
-    ggs_.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
+    ggs.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
 
     // An Server übermitteln
-    GAMESERVER.ChangeGlobalGameSettings(ggs_);
+    GAMESERVER.ChangeGlobalGameSettings(ggs);
 }
 
 void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
@@ -769,7 +769,7 @@ void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
         check->SetCheck(ready);
 
     ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
-    if(player == GAMECLIENT.GetPlayerID())
+    if(player == GAMECLIENT.GetPlayerId())
     {
         if(GAMECLIENT.IsHost())
             start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
@@ -783,18 +783,18 @@ void dskHostGame::ChangeNation(const unsigned i, const Nation nation)
     GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlBaseText>(3)->SetText(_(NationNames[nation]));
 }
 
-void dskHostGame::ChangePing(const unsigned i)
+void dskHostGame::ChangePing(unsigned playerId)
 {
     unsigned int color = COLOR_RED;
 
     // Farbe bestimmen
-    if(GAMECLIENT.GetPlayer(id_).ping < 300)
+    if(gameLobby.GetPlayer(playerId).ping < 300)
         color = COLOR_GREEN;
-    else if(GAMECLIENT.GetPlayer(id_).ping < 800 )
+    else if(gameLobby.GetPlayer(playerId).ping < 800 )
         color = COLOR_YELLOW;
 
     // und setzen
-    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlVarDeepening>(7)->SetColor(color);
+    GetCtrl<ctrlGroup>(58 - playerId)->GetCtrl<ctrlVarDeepening>(7)->SetColor(color);
 }
 
 void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
@@ -808,86 +808,85 @@ void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
 
 void dskHostGame::TogglePlayerReady(unsigned char player, bool ready)
 {
-    if(player == GAMECLIENT.GetPlayerID())
+    if(player != GAMECLIENT.GetPlayerId())
+        return;
+    if(GAMECLIENT.IsHost())
+        ready = true;
+    if(gameLobby.GetPlayer(player).isReady != ready)
     {
-        if(GAMECLIENT.IsHost())
-            ready = true;
-        if(GAMECLIENT.GetLocalPlayer().ready != ready)
-        {
-            GAMECLIENT.GetLocalPlayer().ready = ready;
-            GAMECLIENT.Command_ToggleReady();
-        }
-        ChangeReady(GAMECLIENT.GetPlayerID(), GAMECLIENT.GetLocalPlayer().ready);
+        gameLobby.GetPlayer(player).isReady = ready;
+        GAMECLIENT.Command_SetReady(ready);
     }
+    ChangeReady(player, ready);
 }
 
-void dskHostGame::CI_NewPlayer(const unsigned player_id)
+void dskHostGame::CI_NewPlayer(const unsigned playerId)
 {
     // Spielername setzen
-    UpdatePlayerRow(player_id);
+    UpdatePlayerRow(playerId);
 
     // Rankinginfo abrufen
     if(LOBBYCLIENT.LoggedIn())
     {
-        for(unsigned char i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+        for(unsigned char i = 0; i < gameLobby.GetPlayerCount(); ++i)
         {
-            GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+            JoinPlayerInfo& player = gameLobby.GetPlayer(i);
             if(player.ps == PS_OCCUPIED)
                 LOBBYCLIENT.SendRankingInfoRequest(player.name);
         }
     }
     if(lua && GAMECLIENT.IsHost())
-        lua->EventPlayerJoined(player_id);
+        lua->EventPlayerJoined(playerId);
 }
 
-void dskHostGame::CI_PlayerLeft(const unsigned player_id)
+void dskHostGame::CI_PlayerLeft(const unsigned playerId)
 {
-    UpdatePlayerRow(player_id);
+    UpdatePlayerRow(playerId);
     if(lua && GAMECLIENT.IsHost())
-        lua->EventPlayerLeft(player_id);
+        lua->EventPlayerLeft(playerId);
 }
 
-void dskHostGame::CI_GameStarted(GameWorldViewer& worldViwer)
+void dskHostGame::CI_GameStarted(GameWorldBase& world)
 {
     // Desktop wechseln
-    WINDOWMANAGER.Switch(new dskGameLoader(worldViwer));
+    WINDOWMANAGER.Switch(new dskGameLoader(world));
 }
 
-void dskHostGame::CI_PSChanged(const unsigned player_id, const PlayerState ps)
+void dskHostGame::CI_PSChanged(const unsigned playerId, const PlayerState ps)
 {
     if (IsSinglePlayer() && (ps == PS_FREE))
-        GAMESERVER.TogglePlayerState(player_id);
+        GAMESERVER.TogglePlayerState(playerId);
 
-    UpdatePlayerRow(player_id);
+    UpdatePlayerRow(playerId);
 }
 
-void dskHostGame::CI_NationChanged(const unsigned player_id, const Nation nation)
+void dskHostGame::CI_NationChanged(const unsigned playerId, const Nation nation)
 {
-    ChangeNation(player_id, nation);
+    ChangeNation(playerId, nation);
 }
 
-void dskHostGame::CI_TeamChanged(const unsigned player_id, const unsigned char team)
+void dskHostGame::CI_TeamChanged(const unsigned playerId, const unsigned char team)
 {
-    ChangeTeam(player_id, team);
+    ChangeTeam(playerId, team);
 }
 
-void dskHostGame::CI_ColorChanged(const unsigned player_id, const unsigned color)
+void dskHostGame::CI_ColorChanged(const unsigned playerId, const unsigned color)
 {
-    ChangeColor(player_id, color);
+    ChangeColor(playerId, color);
 }
 
-void dskHostGame::CI_PingChanged(const unsigned player_id, const unsigned short  /*ping*/)
+void dskHostGame::CI_PingChanged(const unsigned playerId, const unsigned short  /*ping*/)
 {
-    ChangePing(player_id);
+    ChangePing(playerId);
 }
 
-void dskHostGame::CI_ReadyChanged(const unsigned player_id, const bool ready)
+void dskHostGame::CI_ReadyChanged(const unsigned playerId, const bool ready)
 {
-    ChangeReady(player_id, ready);
+    ChangeReady(playerId, ready);
     // Event only called for other players (host ready is done in start game)
     // Also only for host and non-savegames
-    if(ready && lua && GAMECLIENT.IsHost() && player_id != GAMECLIENT.GetPlayerID())
-        lua->EventPlayerReady(player_id);
+    if(ready && lua && GAMECLIENT.IsHost() && playerId != GAMECLIENT.GetPlayerId())
+        lua->EventPlayerReady(playerId);
 }
 
 void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
@@ -897,9 +896,9 @@ void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned playe
     UpdatePlayerRow(player2);
 }
 
-void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
+void dskHostGame::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
 {
-    this->ggs_ = ggs;
+    const GlobalGameSettings& ggs = gameLobby.GetSettings();
 
     // Geschwindigkeit
     GetCtrl<ctrlComboBox>(43)->SetSelection(static_cast<unsigned short>(ggs.game_speed));
@@ -916,17 +915,17 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& ggs)
     //random location
     GetCtrl<ctrlCheck>(23)->SetCheck(ggs.random_location);
 
-    TogglePlayerReady(GAMECLIENT.GetPlayerID(), false);
+    TogglePlayerReady(GAMECLIENT.GetPlayerId(), false);
 }
 
-void dskHostGame::CI_Chat(const unsigned player_id, const ChatDestination  /*cd*/, const std::string& msg)
+void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination  /*cd*/, const std::string& msg)
 {
-    if ((player_id != 0xFFFFFFFF) && !IsSinglePlayer())
+    if ((playerId != 0xFFFFFFFF) && !IsSinglePlayer())
     {
         std::string time = TIME.FormatTime("(%H:%i:%s)");
 
-        GetCtrl<ctrlChat>(1)->AddMessage(time, GAMECLIENT.GetPlayer(player_id).name,
-                                         GAMECLIENT.GetPlayer(player_id).color, msg, 0xFFFFFF00);
+        GetCtrl<ctrlChat>(1)->AddMessage(time, gameLobby.GetPlayer(playerId).name,
+                                         gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
     }
 }
 
@@ -949,10 +948,10 @@ void dskHostGame::CI_Error(const ClientError ce)
  */
 void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
 {
-    for(unsigned int i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gameLobby.GetPlayerCount(); ++i)
     {
-        if(GAMECLIENT.GetPlayer(i).name == player.getName())
-            GAMECLIENT.GetPlayer(i).rating = player.getPunkte();
+        if(gameLobby.GetPlayer(i).name == player.getName())
+            gameLobby.GetPlayer(i).rating = player.getPunkte();
     }
 }
 

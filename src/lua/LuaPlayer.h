@@ -25,15 +25,15 @@
 #include <kaguya/kaguya.hpp>
 #include <map>
 
-class GameClientPlayer;
+class GamePlayer;
 
 class LuaPlayer: public LuaPlayerBase
 {
-    GameClientPlayer& player;
+    GamePlayer& player;
 protected:
-    const GamePlayerInfo& GetPlayer() const override;
+    const BasePlayerInfo& GetPlayer() const override;
 public:
-    LuaPlayer(GameClientPlayer& player): player(player){}
+    LuaPlayer(GamePlayer& player): player(player){}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(BuildingType bld, bool notify);

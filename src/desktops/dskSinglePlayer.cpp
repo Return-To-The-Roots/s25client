@@ -23,7 +23,7 @@
 #include "Loader.h"
 #include "GameServer.h"
 #include "ListDir.h"
-#include "GameSavegame.h"
+#include "Savegame.h"
 
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"

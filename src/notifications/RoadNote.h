@@ -20,6 +20,7 @@
 
 #include "gameTypes/MapTypes.h"
 #include "notifications/notifications.h"
+#include <vector>
 
 struct RoadNote
 {
@@ -31,13 +32,13 @@ struct RoadNote
         ConstructionFailed
     };
 
-    RoadNote(Type type, unsigned player, const MapPoint& pos, unsigned char firstDir):
-        type(type), player(player), pos(pos), firstDir(firstDir){}
+    RoadNote(Type type, unsigned player, const MapPoint& pos, const std::vector<unsigned char>& route):
+        type(type), player(player), pos(pos), route(route){}
 
     const Type type;
     const unsigned player;
     const MapPoint pos;
-    const unsigned char firstDir;
+    const std::vector<unsigned char>& route;
 };
 
 #endif // RoadNote_h__

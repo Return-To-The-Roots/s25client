@@ -19,7 +19,7 @@
 #include "TradePathCache.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/GameConsts.h"
 
 bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player)
@@ -58,7 +58,7 @@ bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start,
 
 unsigned TradePathCache::FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player) const
 {
-    const GameClientPlayer& thisPlayer = gwg.GetPlayer(player);
+    const GamePlayer& thisPlayer = gwg.GetPlayer(player);
 
     for(unsigned i = 0; i < curSize; i++)
     {

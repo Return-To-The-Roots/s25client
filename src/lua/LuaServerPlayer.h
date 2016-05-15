@@ -25,11 +25,12 @@ class GameServerPlayer;
 
 class LuaServerPlayer: public LuaPlayerBase
 {
+    const unsigned playerId;
     GameServerPlayer& player;
 protected:
-    const GamePlayerInfo& GetPlayer() const override;
+    const BasePlayerInfo& GetPlayer() const override;
 public:
-    LuaServerPlayer(unsigned playerIdx);
+    LuaServerPlayer(unsigned playerId);
     static void Register(kaguya::State& state);
 
     void SetNation(Nation nat);

@@ -22,7 +22,7 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/MilitaryConsts.h"
 class RoadSegment;
 
@@ -157,7 +157,7 @@ void nofPassiveSoldier::Upgrade()
     job_ = Job(unsigned(job_) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     hitpoints = HITPOINTS[owner.nation][job_ - JOB_PRIVATE];
 
     // Inventur entsprechend erhöhen und verringern

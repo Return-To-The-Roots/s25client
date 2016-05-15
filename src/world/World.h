@@ -166,14 +166,12 @@ public:
 
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
 
-    /// Prüft, ob der Pkut zu dem Spieler gehört (wenn er der Besitzer ist und es false zurückliefert, ist es Grenzgebiet)
+    /// Check if the point completely belongs to a player (if false but point itself belongs to player then it is a border)
     bool IsPlayerTerritory(const MapPoint pt) const;
-    /// Ist eine Flagge irgendwo um x,y ?
-    bool FlagNear(const MapPoint pt) const;
-    /// Recalculates the BQ for the given point
-    void RecalcBQ(const MapPoint pt);
-    /// Returns the BQ for the given player
-    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player, const bool visual = true) const;
+    /// Return the BQ for the given player at the point (including ownership constraints)
+    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player) const;
+    /// Incooporates node ownership into the given BQ
+    BuildingQuality AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
     /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
@@ -210,20 +208,15 @@ public:
     /// Gibt die ID eines Hafenpunktes zurück
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
     const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const Direction dir) const { return harbor_pos[harborId].neighbors[dir.toUInt()]; }
-    /// Returns the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
+    /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     unsigned short IsCoastalPoint(const MapPoint pt) const;
 
-    /// liefert den Straßen-Wert an der Stelle X,Y
-    unsigned char GetRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
-    /// liefert den Straßen-Wert um den Punkt X,Y.
-    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir, bool all = false) const;
+    /// Return the road type of this point in the given direction (E, SE, SW) or 0 if no road
+    unsigned char GetRoad(const MapPoint pt, unsigned char dir) const;
+    /// Return the road type from this point in the given direction (Full circle direction)
+    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir) const;
     /// liefert FOW-Straßen-Wert um den punkt X,Y
     unsigned char GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const;
-
-    /// setzt den virtuellen Straßen-Wert an der Stelle X,Y (berichtigt).
-    void SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
-    /// setzt den virtuellen Straßen-Wert um den Punkt X,Y.
-    void SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type);
 
     /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
     void AddCatapultStone(CatapultStone* cs);
@@ -232,17 +225,15 @@ public:
 protected:
     /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
     virtual void AltitudeChanged(const MapPoint pt) = 0;
-    /// Sets the real road to whether a virtual road for this pt and direction exists
-    void ApplyRoad(const MapPoint pt, unsigned char dir);
+    virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
+    /// Sets the road for the given (road) direction
+    void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
     MapNode::BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
+    /// Set the BQ at the point and return true if it was changed
+    bool SetBQ(const MapPoint pt, BuildingQuality bq);
 
     /// Berechnet die Schattierung eines Punktes neu
     void RecalcShadow(const MapPoint pt);
-
-private:
-    /// Calculates BQ for a point. Visual affects used road state, flagOnly checks only if flag is possible
-    BuildingQuality CalcBQ(const MapPoint pt, const bool visual, const bool flagOnly = false) const;
-
 };
 
 //////////////////////////////////////////////////////////////////////////

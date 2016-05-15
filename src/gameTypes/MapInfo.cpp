@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MapInfo.h"
-#include "GameSavegame.h"
+#include "Savegame.h"
 
 MapInfo::MapInfo()
 {

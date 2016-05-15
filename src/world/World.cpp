@@ -326,6 +326,7 @@ void World::SetVisibility(const MapPoint pt, const unsigned char player, const V
         deletePtr(node.fow[player].object);
     else if(vis == VIS_FOW)
         SaveFOWNode(pt, player, curTime);
+    VisibilityChanged(pt, player);
 }
 
 void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
@@ -355,284 +356,20 @@ bool World::IsPlayerTerritory(const MapPoint pt) const
     return true;
 }
 
-bool World::FlagNear(const MapPoint pt) const
+BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
 {
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        if(GetNO(GetNeighbour(pt, i))->GetType() == NOP_FLAG)
-            return true;
-    }
-    return false;
+    return AdjustBQ(pt, player,  GetNode(pt).bq);
 }
 
-BuildingQuality World::CalcBQ(const MapPoint pt, const bool visual, const bool flagonly /*= false*/) const
-{
-
-    ///////////////////////
-    // 1. nach Terrain
-
-    unsigned building_hits = 0;
-    unsigned mine_hits = 0;
-    unsigned flag_hits = 0;
-
-    // bebaubar?
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
-        if(bq == TerrainBQ::CASTLE)
-            ++building_hits;
-        else if(bq == TerrainBQ::MINE)
-            ++mine_hits;
-        else if(bq == TerrainBQ::FLAG)
-            ++flag_hits;
-        else if(bq == TerrainBQ::DANGER)
-            return BQ_NOTHING;
-    }
-
-    BuildingQuality val;
-    if(flag_hits)
-        val = BQ_FLAG;
-    else if(mine_hits == 6)
-        val = BQ_MINE;
-    else if(mine_hits)
-        val = BQ_FLAG;
-    else if(building_hits == 6)
-        val = BQ_CASTLE;
-    else if(building_hits)
-        val = BQ_FLAG;
-    else
-        return BQ_NOTHING;
-
-
-    //////////////////////////////////////
-    // 2. nach Terrain
-
-    unsigned char ph = GetNode(pt).altitude, th;
-
-    // Bergwerke anders handhaben
-    if(val == BQ_CASTLE)
-    {
-
-        if((th = GetNeighbourNode(pt, 4).altitude) > ph)
-        {
-            if(th - ph > 1)
-                val = BQ_FLAG;
-        }
-
-        // Check radius-2 nodes (no huts above altiude diff of 2)
-        for(unsigned i = 0; i < 12; ++i)
-        {
-            if((th = GetNode(GetNeighbour2(pt, i)).altitude) > ph)
-            {
-                if(th - ph > 2)
-                {
-                    val = BQ_HUT;
-                    break;
-                }
-            }
-
-            if((th = GetNode(GetNeighbour2(pt, i)).altitude) < ph)
-            {
-                if(ph - th > 2)
-                {
-                    val = BQ_HUT;
-                    break;
-                }
-            }
-        }
-
-        // Direct neighbours (can become flags at altidude diff of 4)
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            if((th = GetNeighbourNode(pt, i).altitude) > ph)
-            {
-                if(th - ph > 3)
-                    val = BQ_FLAG;
-            }
-
-            if((th = GetNeighbourNode(pt, i).altitude) < ph)
-            {
-                if(ph - th > 3)
-                    val = BQ_FLAG;
-            }
-        }
-    } else if((th = GetNeighbourNode(pt, 4).altitude) > ph)
-    {
-        if(th - ph > 3)
-            val = BQ_FLAG;
-    }
-
-    //////////////////////////////////////////
-    // 3. nach Objekten
-
-    if(flagonly && FlagNear(pt))
-        return BQ_NOTHING;
-
-
-    // allgemein nix bauen auf folgenden Objekten:
-
-    if(GetNO(pt)->GetBM() != noBase::BM_NOTBLOCKING)
-        return BQ_NOTHING;
-
-    // Don't build anything around charburner piles
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_CHARBURNERPILE)
-            return BQ_NOTHING;
-    }
-
-    if(val > 2 && val != BQ_MINE)
-    {
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            // Baum --> around = hut
-            if(GetNO(GetNeighbour(pt, i))->GetType() == NOP_TREE)
-            {
-                val = BQ_HUT;
-                break;
-            }
-
-            /*// StaticObject --> rundrum flag/hut
-            else if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_OBJECT)
-            {
-            const noStaticObject *obj = GetSpecObj<noStaticObject>(GetXA(x, y, i), GetYA(x, y, i));
-            if(obj->GetSize() == 2)
-            val = BQ_FLAG;
-            else
-            val = BQ_HUT;
-
-            break;
-            }*/
-        }
-    }
-
-    // Stein, Feuer und Getreidefeld --> rundrum Flagge
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        const noBase* nob = GetNO(GetNeighbour(pt, i));
-        if(nob->GetBM() == noBase::BM_GRANITE)
-        {
-            val = BQ_FLAG;
-            break;
-        }
-    }
-
-    // Flagge
-    if(val == BQ_CASTLE)
-    {
-        for(unsigned char i = 0; i < 3; ++i)
-        {
-            if(GetNeighbourNode(pt, i).obj)
-            {
-                if(GetNeighbourNode(pt, i).obj->GetBM() == noBase::BM_FLAG)
-                    val = BQ_HOUSE;
-            }
-        }
-    }
-
-    if(GetNO(GetNeighbour(pt, 3))->GetBM() == noBase::BM_FLAG)
-        return BQ_NOTHING;
-    if(GetNO(GetNeighbour(pt, 5))->GetBM() == noBase::BM_FLAG)
-        return BQ_NOTHING;
-
-    // Buildings
-    if(val == BQ_CASTLE)
-    {
-        for(unsigned i = 0; i < 12; ++i)
-        {
-            noBase::BlockingManner bm = GetNO(GetNeighbour2(pt, i))->GetBM();
-
-            if(bm >= noBase::BM_HUT && bm <= noBase::BM_MINE)
-                val = BQ_HOUSE;
-        }
-    }
-
-    for(unsigned i = 0; i < 3; ++i)
-    {
-        if(val == BQ_CASTLE)
-        {
-            for(unsigned char c = 0; c < 6; ++c)
-            {
-                if(GetPointRoad(GetNeighbour(pt, i), c, visual))
-                {
-                    val = BQ_HOUSE;
-                    break;
-                }
-            }
-        }
-    }
-
-    for(unsigned char c = 0; c < 6; ++c)
-    {
-        if(GetPointRoad(pt, c, visual))
-        {
-            val = BQ_FLAG;
-            break;
-        }
-    }
-
-    if(val == BQ_FLAG)
-    {
-        for(unsigned char i = 0; i < 6; ++i)
-        {
-            if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
-                return BQ_NOTHING;
-        }
-    }
-
-
-    if(flagonly)
-        return BQ_FLAG;
-
-    if(val == BQ_FLAG)
-    {
-        for(unsigned char i = 0; i < 3; ++i)
-            if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
-                return BQ_NOTHING;
-    }
-
-
-    // Schloss bis hierhin und ist hier ein Hafenplatz?
-    if(val == BQ_CASTLE && GetNode(pt).harbor_id)
-        // Dann machen wir einen Hafen draus
-        val = BQ_HARBOR;
-
-    if(val >= BQ_HUT && val <= BQ_HARBOR)
-    {
-        if(GetNO(GetNeighbour(pt, 4))->GetBM() == noBase::BM_FLAG)
-            return val;
-
-        if(CalcBQ(GetNeighbour(pt, 4), visual, true))
-        {
-            return val;
-        } else
-        {
-
-            for(unsigned char i = 0; i < 3; ++i)
-                if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
-                    return BQ_NOTHING;
-            return BQ_FLAG;
-        }
-    }
-
-    return val;
-}
-
-void World::RecalcBQ(const MapPoint pt)
-{
-    GetNodeInt(pt).bq = CalcBQ(pt, false);
-    GetNodeInt(pt).bqVisual = CalcBQ(pt, true);
-}
-
-BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player, const bool visual /*= true*/) const
+BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
 {
     if(GetNode(pt).owner != player + 1 || !IsPlayerTerritory(pt))
         return BQ_NOTHING;
-    BuildingQuality bq = visual ?  GetNode(pt).bqVisual : GetNode(pt).bq;
     // If we could build a building, but the buildings flag point is at the border, we can only build a flag
-    if(bq != BQ_NOTHING && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
-        bq = BQ_FLAG;
-    return bq;
+    if(nodeBQ != BQ_NOTHING && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
+        return BQ_FLAG;
+    else
+        return nodeBQ;
 }
 
 /**
@@ -672,18 +409,12 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
     // FOW-Objekt erzeugen
     noBase* obj = GetNO(pt);
-    delete fow.object;
+    deletePtr(fow.object);
     fow.object = obj->CreateFOWObject();
-
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(unsigned i = 0; i < 3; ++i)
-    {
-        if(GetNode(pt).roads_real[i])
-            fow.roads[i] = GetNode(pt).roads[i];
-        else
-            fow.roads[i] = 0;
-    }
+        fow.roads[i] = GetNode(pt).roads_real[i];
 
     // Store ownership so FoW boundary stones can be drawn
     fow.owner = GetNode(pt).owner;
@@ -740,27 +471,21 @@ MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short s
     return MapPoint(0xFFFF, 0xFFFF);
 }
 
-unsigned char World::GetRoad(const MapPoint pt, unsigned char dir, bool all) const
+unsigned char World::GetRoad(const MapPoint pt, unsigned char dir) const
 {
-    RTTR_Assert(pt.x < width_ && pt.y < height_);
     RTTR_Assert(dir < 3);
 
-    const MapNode& node = GetNode(pt);
-    // It must be a real road or virtual roads must be allowed
-    if(all || node.roads_real[(unsigned)dir])
-        return node.roads[(unsigned)dir];
-
-    return 0;
+    return GetNode(pt).roads_real[dir];
 }
 
-unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir, bool all) const
+unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir) const
 {
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        return GetRoad(pt, dir - 3, all);
+        return GetRoad(pt, dir - 3);
     else
-        return GetRoad(GetNeighbour(pt, dir), dir, all);
+        return GetRoad(GetNeighbour(pt, dir), dir);
 }
 
 unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
@@ -768,28 +493,11 @@ unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsig
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        dir = dir - 3;
+        dir -= 3;
     else
         pt = GetNeighbour(pt, dir);
 
     return GetNode(pt).fow[viewing_player].roads[dir];
-}
-
-void World::SetVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
-{
-    RTTR_Assert(dir < 3);
-
-    GetNodeInt(pt).roads[dir] = type;
-}
-
-void World::SetPointVirtualRoad(const MapPoint pt, unsigned char dir, unsigned char type)
-{
-    RTTR_Assert(dir < 6);
-
-    if(dir >= 3)
-        SetVirtualRoad(pt, dir - 3, type);
-    else
-        SetVirtualRoad(GetNeighbour(pt, dir), dir, type);
 }
 
 void World::AddCatapultStone(CatapultStone* cs)
@@ -836,9 +544,17 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
     return 0;
 }
 
-void World::ApplyRoad(const MapPoint pt, unsigned char dir)
+void World::SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type)
 {
-    GetNodeInt(pt).roads_real[dir] = GetNode(pt).roads[dir] != 0;
+    RTTR_Assert(roadDir < 3);
+    GetNodeInt(pt).roads_real[roadDir] = type;
+}
+
+bool World::SetBQ(const MapPoint pt, BuildingQuality bq)
+{
+    BuildingQuality oldBQ = bq;
+    std::swap(GetNodeInt(pt).bq, oldBQ);
+    return oldBQ != bq;
 }
 
 void World::RecalcShadow(const MapPoint pt)

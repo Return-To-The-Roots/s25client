@@ -31,9 +31,8 @@ class SerializedGameData;
 /// Eigenschaften von einem Punkt auf der Map
 struct MapNode
 {
-    /// Roads
-    boost::array<unsigned char, 3> roads;
-    boost::array<bool, 3> roads_real;
+    /// Roads from this point: E, SE, SW
+    boost::array<unsigned char, 3> roads_real;
     /// Height
     unsigned char altitude;
     /// Schattierung
@@ -49,7 +48,7 @@ struct MapNode
     /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
     typedef boost::array<unsigned char, 4> BoundaryStones;
     BoundaryStones boundary_stones;
-    BuildingQuality bq, bqVisual;
+    BuildingQuality bq;
     /// How a player sees the point in FoW
     struct FoWData
     {

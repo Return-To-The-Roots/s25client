@@ -20,7 +20,6 @@
 #pragma once
 
 #include "AIBase.h"
-class GameClientPlayerList;
 class GameWorldBase;
 class GlobalGameSettings;
 
@@ -28,9 +27,7 @@ class GlobalGameSettings;
 class AIPlayer : public AIBase
 {
     public:
-        AIPlayer(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                 const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                 const AI::Level level);
+        AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
 
         /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
         /// gf ist die GF-Zahl vom Spiel

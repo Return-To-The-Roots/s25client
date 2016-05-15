@@ -31,6 +31,7 @@
 #include "iwMsgbox.h"
 #include "desktops/dskGameLoader.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "BasePlayerInfo.h"
 #include "gameData/const_gui_ids.h"
 #include "helpers/converters.h"
 #include <boost/filesystem.hpp>
@@ -47,9 +48,9 @@ public:
         GAMECLIENT.RemoveInterface(this);
     }
 
-    void CI_GameStarted(GameWorldViewer& worldViwer) override
+    void CI_GameStarted(GameWorldBase& world) override
     {
-        WINDOWMANAGER.Switch(new dskGameLoader(worldViwer));
+        WINDOWMANAGER.Switch(new dskGameLoader(world));
     }
 }; 
 
@@ -105,8 +106,8 @@ void iwPlayReplay::PopulateTable()
         for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
         {
             // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
-            const SavedFile::Player& curPlayer = replay.GetPlayer(i);
-            if(curPlayer.ps == PS_OCCUPIED || curPlayer.ps == PS_KI)
+            const BasePlayerInfo& curPlayer = replay.GetPlayer(i);
+            if(curPlayer.isUsed())
             {
                 // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
                 if(!tmp_players.empty())

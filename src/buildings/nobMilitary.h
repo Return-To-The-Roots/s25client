@@ -39,6 +39,8 @@ class nobMilitary : public nobBaseMilitary
 {
         /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
         bool new_built;
+        /// This building was captured by its current owner. This flag is set once and never to be changed again
+        bool captured_not_built;
         /// Anzahl der Goldmünzen im Gebäude
         unsigned char coins;
         /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
@@ -64,8 +66,6 @@ class nobMilitary : public nobBaseMilitary
         GameEvent* upgrade_event;
         /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
         bool is_regulating_troops;
-        /// This building was captured by its current owner. This flag is set once and never to be changed again
-        bool captured_not_built;
     public:
 
         /// Soldatenbesatzung

@@ -20,6 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
@@ -29,7 +30,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
-iwTrade::iwTrade(nobBaseWarehouse& wh)
+iwTrade::iwTrade(const nobBaseWarehouse& wh)
     : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
       wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))
 {
@@ -175,7 +176,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 
 unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 {
-    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
     unsigned amount = 0;
     for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
     {
@@ -187,7 +188,7 @@ unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 
 unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
 {
-    GameClientPlayer& player = GAMECLIENT.GetLocalPlayer();
+    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
     unsigned amount = 0;
     for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
     {

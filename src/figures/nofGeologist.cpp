@@ -22,6 +22,7 @@
 #include "Loader.h"
 #include "Random.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noSign.h"
 #include "notifications/ResourceNote.h"
 #include "gameData/GameConsts.h"
@@ -464,6 +465,7 @@ void nofGeologist::SetSign(const unsigned char resources)
             break;
         default:
             RTTR_Assert(false);
+            return;
         }
         SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PMC_GEOLOGIST, pos));
         gwg->GetNotifications().publish(ResourceNote(player, pos, type, quantity));

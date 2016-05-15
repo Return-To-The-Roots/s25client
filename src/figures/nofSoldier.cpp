@@ -20,7 +20,7 @@
 #include "world/GameWorldGame.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/MilitaryConsts.h"
 

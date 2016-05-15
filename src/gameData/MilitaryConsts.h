@@ -81,22 +81,6 @@ const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
     {{ -22, -37}, { -2, -51}, {20, -70}, { -46, -64}}
 };
 
-/// Anzahl an Militäreinstellungen
-const unsigned MILITARY_SETTINGS_COUNT = 8;
-
-/// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
-const boost::array<unsigned, MILITARY_SETTINGS_COUNT> SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE =
-{{
-    10,
-    5,
-    5,
-    5,
-    8,
-    8,
-    8,
-    8
-}};
-
 // Besatzungsflaggen für die HQs
 const signed char TROOPS_FLAGS_HQ[NAT_COUNT][2] =
 {

@@ -19,6 +19,7 @@
 #include "iwBuildings.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "WindowManager.h"
 #include "buildings/nobUsual.h"
 #include "buildings/nobMilitary.h"
@@ -32,6 +33,7 @@
 #include "iwHelp.h"
 #include "world/GameWorldView.h"
 #include "ogl/glArchivItem_Font.h"
+#include "gameTypes/BuildingCount.h"
 #include "gameData/const_gui_ids.h"
 #include "files.h"
 
@@ -108,9 +110,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv) : IngameWindow(CGI_BUILDINGS, 0xFFF
 void iwBuildings::Msg_PaintAfter()
 {
     // Anzahlen herausfinden
-    BuildingCount bc;
-
-    GAMECLIENT.GetLocalPlayer().GetBuildingCount(bc);
+    BuildingCount bc = GAMECLIENT.GetLocalPlayer().GetBuildingCount();
 
     // Anzahlen unter die Gebäude schreiben
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
@@ -118,7 +118,7 @@ void iwBuildings::Msg_PaintAfter()
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
             char txt[64];
-            sprintf(txt, "%u/%u", bc.building_counts[bts[y * 4 + x]], bc.building_site_counts[bts[y * 4 + x]]);
+            sprintf(txt, "%u/%u", bc.buildings[bts[y * 4 + x]], bc.buildingSites[bts[y * 4 + x]]);
             NormalFont->Draw(GetX() + first_x + icon_distance_x * x, GetY() + first_y + icon_distance_y * y + font_distance_y, txt,
                              glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
 
@@ -132,9 +132,8 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
         return; // TODO should show help text
 
 	//no buildings of type complete? -> do nothing
-	BuildingCount bc;
-	GAMECLIENT.GetLocalPlayer().GetBuildingCount(bc);//-V807
-	if(bc.building_counts[bts[ctrl_id]] < 1)
+	BuildingCount bc = GAMECLIENT.GetLocalPlayer().GetBuildingCount();//-V807
+	if(bc.buildings[bts[ctrl_id]] < 1)
 		return;
 
 	//military building open first of type if available

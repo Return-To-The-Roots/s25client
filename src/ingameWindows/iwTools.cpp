@@ -20,6 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlProgress.h"
 #include "world/GameWorldView.h"
@@ -27,27 +28,27 @@
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
 #include "gameData/const_gui_ids.h"
+#include "helpers/converters.h"
 #include "libutil/src/colors.h"
 #include <boost/lambda/lambda.hpp>
-#include <iostream>
 
 iwTools::iwTools(GameWorldView& gwv)
     : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
-      gwb(gwv.GetWorld()), settings_changed(false)
+      settings_changed(false), ordersChanged(false), shouldUpdateTexts(false), isReplay(GAMECLIENT.IsReplayModeOn())
 {
     // Einzelne Balken
-    AddProgress( 0, 17,  25, 132, 26, TC_GREY, 141, 140, 10, _("Tongs"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 1, 17,  53, 132, 26, TC_GREY, 145, 144, 10, _("Axe"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 2, 17,  81, 132, 26, TC_GREY, 147, 146, 10, _("Saw"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 3, 17, 109, 132, 26, TC_GREY, 149, 148, 10, _("Pick-axe"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 4, 17, 137, 132, 26, TC_GREY, 143, 142, 10, _("Hammer"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 5, 17, 165, 132, 26, TC_GREY, 151, 150, 10, _("Shovel"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 6, 17, 193, 132, 26, TC_GREY, 153, 152, 10, _("Crucible"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 7, 17, 221, 132, 26, TC_GREY, 155, 154, 10, _("Rod and line"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 8, 17, 249, 132, 26, TC_GREY, 157, 156, 10, _("Scythe"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress( 9, 17, 277, 132, 26, TC_GREY, 159, 158, 10, _("Cleaver"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress(10, 17, 305, 132, 26, TC_GREY, 161, 160, 10, _("Rolling pin"), 4, 4, 0, _("Less often"), _("More often"));
-    AddProgress(11, 17, 333, 132, 26, TC_GREY, 163, 162, 10, _("Bow"), 4, 4, 0, _("Less often"), _("More often"));
+    AddToolSettingSlider(0, GD_TONGS);
+    AddToolSettingSlider(1, GD_AXE);
+    AddToolSettingSlider(2, GD_SAW);
+    AddToolSettingSlider(3, GD_PICKAXE);
+    AddToolSettingSlider(4, GD_HAMMER);
+    AddToolSettingSlider(5, GD_SHOVEL);
+    AddToolSettingSlider(6, GD_CRUCIBLE);
+    AddToolSettingSlider(7, GD_RODANDLINE);
+    AddToolSettingSlider(8, GD_SCYTHE);
+    AddToolSettingSlider(9, GD_CLEAVER);
+    AddToolSettingSlider(10, GD_ROLLINGPIN);
+    AddToolSettingSlider(11, GD_BOW);
 
     if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
@@ -56,12 +57,10 @@ iwTools::iwTools(GameWorldView& gwv)
         {
             AddImageButton(100 + i * 2, 174, 25   + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  33), "+1");
             AddImageButton(101 + i * 2, 174, 25 + 13 + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  34), "-1");
-            std::stringstream str;
-            str << std::max(0, int( GAMECLIENT.GetLocalPlayer().tools_ordered[i] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[i] ));
-            AddDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, str.str(), NormalFont, COLOR_YELLOW);
+            AddDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, "", NormalFont, COLOR_YELLOW);
         }
+        UpdateTexts();
     }
-    shouldUpdateTexts = false;
 
     // Info
     AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
@@ -69,13 +68,19 @@ iwTools::iwTools(GameWorldView& gwv)
     AddImageButton(13, 118 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
-    for(unsigned char i = 0; i < TOOL_COUNT; ++i)
-        GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
+    UpdateSettings();
 
     // Netzwerk-Übertragungs-Timer
     AddTimer(14, 2000);
 
-    toolSubscription = gwb.GetNotifications().subscribe<ToolNote>(boost::lambda::var(shouldUpdateTexts) = true);
+    toolSubscription = gwv.GetWorld().GetNotifications().subscribe<ToolNote>(boost::lambda::var(shouldUpdateTexts) = true);
+}
+
+void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)
+{
+    ctrlProgress* el = AddProgress(id, 17, 25 + id * 28, 132, 26, TC_GREY, 140 + id * 2 + 1, 140 + id * 2, 10, _(WARE_NAMES[ware]), 4, 4, 0, _("Less often"), _("More often"));
+    if(isReplay)
+        el->ActivateControls(false);
 }
 
 iwTools::~iwTools()
@@ -85,16 +90,19 @@ iwTools::~iwTools()
 
 void iwTools::TransmitSettings()
 {
+    if(isReplay)
+        return;
     // Wurden Einstellungen verändert?
-    if(settings_changed)
+    if(settings_changed || ordersChanged)
     {
         // Einstellungen speichern
         for(unsigned char i = 0; i < TOOL_COUNT; ++i)
             GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, &GAMECLIENT.GetLocalPlayer().tools_ordered_delta[0]);
+        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, ordersChanged ? GAMECLIENT.GetLocalPlayer().GetToolOrderDelta() : NULL);
 
         settings_changed = false;
+        ordersChanged = false;
     }
 }
 
@@ -102,12 +110,11 @@ void iwTools::UpdateTexts()
 {
     if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
+        GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
             ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + i);
-            std::stringstream str;
-            str << std::max(0, int( GAMECLIENT.GetLocalPlayer().tools_ordered[i] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[i] ));
-            field->SetText(str.str());
+            field->SetText(helpers::toString(isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i)));
         }
     }
 }
@@ -123,35 +130,21 @@ void iwTools::Msg_PaintBefore()
 
 void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+    if(isReplay)
+        return;
     // qx:tools
     if ( ctrl_id >= 100 && ctrl_id < (100 + 2 * TOOL_COUNT) )
     {
         unsigned int tool = (ctrl_id - 100) / 2;
-        GameClientPlayer& me = GAMECLIENT.GetLocalPlayer();
+        GamePlayer& me = GAMECLIENT.GetLocalPlayer();
 
         if (ctrl_id & 0x1)
-        {
-            // dec
-            if ( (me.tools_ordered[tool] + me.tools_ordered_delta[tool]) > 0 )
-            {
-                --GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool];
-                settings_changed = true;
-            }
-        }
+            settings_changed |= me.ChangeToolOrderVisual(tool, -1);
         else
-        {
-            // inc
-            if ( (GAMECLIENT.GetLocalPlayer().tools_ordered[tool] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool]) < 100 ) //-V807
-            {
-                ++GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool];
-                settings_changed = true;
-            }
-        }
+            settings_changed |= me.ChangeToolOrderVisual(tool, +1);
 
         ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + tool);
-        std::stringstream txt;
-        txt << int(GAMECLIENT.GetLocalPlayer().tools_ordered[tool] + GAMECLIENT.GetLocalPlayer().tools_ordered_delta[tool]);
-        field->SetText(txt.str());
+        field->SetText(helpers::toString(me.GetToolsOrderedVisual(tool)));
     }
     else
         switch(ctrl_id)
@@ -174,7 +167,7 @@ void iwTools::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsigned
 
 void iwTools::Msg_Timer(const unsigned int  /*ctrl_id*/)
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(isReplay)
         // Im Replay aktualisieren wir die Werte
         UpdateSettings();
     else
@@ -184,7 +177,14 @@ void iwTools::Msg_Timer(const unsigned int  /*ctrl_id*/)
 
 void iwTools::UpdateSettings()
 {
-    // Einstellungen festlegen
-    for(unsigned i = 0; i < 12; ++i)
-        GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
+    if(isReplay)
+    {
+        GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+        for(unsigned i = 0; i < 12; ++i)
+            GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
+    }else
+    {
+        for(unsigned i = 0; i < 12; ++i)
+            GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
+    }
 }

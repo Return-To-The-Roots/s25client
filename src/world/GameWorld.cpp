@@ -19,7 +19,7 @@
 #include "GameWorld.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
 #include "lua/LuaInterfaceGame.h"
@@ -34,9 +34,8 @@
 #include "luaIncludes.h"
 #include <boost/filesystem.hpp>
 
-GameWorld::GameWorld(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em):
-    GameWorldBase(players, gameSettings, em), // Init virtual base class
-    GameWorldViewer(players, gameSettings, em), GameWorldGame(players, gameSettings, em)
+GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em):
+    GameWorldGame(playerInfos, gameSettings, em)
 {}
 
 /// Lädt eine Karte
@@ -61,7 +60,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     std::vector<Nation> players;
     for(unsigned i = 0; i < GetPlayerCount(); i++)
     {
-        GameClientPlayer& player = GetPlayer(i);
+        GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
             players.push_back(player.nation);
         else
@@ -74,20 +73,18 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     for(unsigned i = 0; i < GetPlayerCount(); i++)
     {
-        GameClientPlayer& player = GetPlayer(i);
+        GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
         {
-            player.hqPos = loader.GetHQPos(i);
-            nobBaseWarehouse* wh = GetSpecObj<nobBaseWarehouse>(player.hqPos);
+            MapPoint hqPos = loader.GetHQPos(i);
+            nobBaseWarehouse* wh = GetSpecObj<nobBaseWarehouse>(hqPos);
             RTTR_Assert(wh);
+            player.SetHQ(*wh);
             player.AddWarehouse(wh);
         }
     }
 
     CreateTradeGraphs();
-
-    GetTerrainRenderer().GenerateOpenGL(*this);
-
     return true;
 }
 
@@ -155,17 +152,6 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
         else
             lua->Deserialize(luaSaveState);
     }
-
-    // BQ neu berechnen
-    for(unsigned y = 0; y < GetHeight(); ++y)
-    {
-        for(unsigned x = 0; x < GetWidth(); ++x)
-        {
-            RecalcBQ(MapPoint(x, y));
-        }
-    }
-
-    GetTerrainRenderer().GenerateOpenGL(*this);
 }
 
 
@@ -176,6 +162,6 @@ void GameWorld::ImportantObjectDestroyed(const MapPoint pt)
 
 void GameWorld::MilitaryBuildingCaptured(const MapPoint  /*pt*/, const unsigned char player)
 {
-    if(player == GAMECLIENT.GetPlayerID())
+    if(player == GAMECLIENT.GetPlayerId())
         LOADER.GetSoundN("sound", 110)->Play(255, false);
 }

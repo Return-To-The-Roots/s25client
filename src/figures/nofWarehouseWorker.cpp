@@ -19,7 +19,7 @@
 #include "nofWarehouseWorker.h"
 #include "world/GameWorldGame.h"
 #include "Ware.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobBaseWarehouse.h"

@@ -48,7 +48,7 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             if (flag)
             {
                 // Flagge (mitsamt Gebäude) wegreißen
-                GAMECLIENT.DestroyFlag(gwv.GetViewer().GetNeighbour(building->GetPos(), 4));
+                GAMECLIENT.DestroyFlag(gwv.GetViewer().GetNeighbour(building->GetPos(), Direction::SOUTHEAST));
             }
             else
             {

@@ -20,10 +20,7 @@
 
 class Serializer;
 class GameWorldGame;
-class GameClientPlayer;
-class AIInterface;
-class GameClient;
-template<typename T>
+class GamePlayer;
 class GameCommandFactory;
 
 // fwd decl
@@ -36,8 +33,8 @@ void intrusive_ptr_release(gc::GameCommand* x);
 
 // Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
 // Only factory classes should be in here
-#define GC_FRIEND_DECL friend class GameCommand; friend class ::GameCommandFactory<GameClient>; friend class ::GameCommandFactory<AIInterface>
-
+#define GC_FRIEND_DECL friend class GameCommand;         \
+                       friend class ::GameCommandFactory
 
 namespace gc
 {
@@ -115,7 +112,7 @@ namespace gc
         virtual void Serialize(Serializer& ser) const = 0;
 
         /// Execute this GameCommand
-        virtual void Execute(GameWorldGame& gwg, GameClientPlayer& player, const unsigned char playerid) = 0;
+        virtual void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) = 0;
 
     protected:
         GameCommand(const Type gst) : gst(gst), refCounter_(0) {}

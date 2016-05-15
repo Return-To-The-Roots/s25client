@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
 #include "notifications/BuildingNote.h"
@@ -46,7 +46,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
     if(!gwg->GetPointRoad(pos, 4))
     {
-        gwg->SetPointRoad(pos, 4, 1);
+        gwg->SetPointRoad(pos, 4, RoadSegment::RT_NORMAL + 1);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)

@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
@@ -87,7 +88,7 @@ iwStatistics::iwStatistics()
             } break;
             case 2: // Nur man selber
             {
-                const bool visible = (GAMECLIENT.GetPlayerID() == i);
+                const bool visible = (GAMECLIENT.GetPlayerId() == i);
                 activePlayers[i] = visible;
                 GetCtrl<ctrlImageButton>(1 + i)->Enable(visible);
             } break;
@@ -237,7 +238,7 @@ void iwStatistics::Msg_PaintAfter()
     unsigned pos = 0;
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GamePlayer& player = GAMECLIENT.GetPlayer(i);
         if (!player.isUsed())
             continue;
 
@@ -273,7 +274,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     {
         if (!activePlayers[p])
             continue;
-        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -314,7 +315,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
     {
         if (!activePlayers[p])
             continue;
-        const GameClientPlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = GAMECLIENT.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)

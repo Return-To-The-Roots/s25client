@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,73 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GAMEPLAYERINFO_H_INCLUDED
-#define GAMEPLAYERINFO_H_INCLUDED
+#ifndef GamePlayerInfo_h__
+#define GamePlayerInfo_h__
 
-#include "gameTypes/AIInfo.h"
-#include "gameTypes/PlayerState.h"
-#include "gameData/NationConsts.h"
-#include "gameTypes/TeamTypes.h"
+#include "PlayerInfo.h"
 
-class Serializer;
-
-class GamePlayerInfo
+/// Holds information for players relevant during match-making
+struct GamePlayerInfo: public PlayerInfo
 {
-    public:
-        GamePlayerInfo(const unsigned playerid);
-        GamePlayerInfo(const unsigned playerid, Serializer& ser);
+    GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo);
 
-        virtual ~GamePlayerInfo();
+    unsigned GetPlayerId() const { return id; }
+    bool IsDefeated() const { return isDefeated; }
 
-        void clear();
-
-        /// Slot used by a human player (has socket etc)
-        bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
-        /// Slot filled (Used by human or AI, but excludes currently connecting humans)
-        bool isUsed() const { return (ps == PS_KI || ps == PS_OCCUPIED); }
-
-        /// Ist Spieler besiegt?
-        bool isDefeated() const { return defeated; }
-
-        /// serialisiert die Daten.
-        void serialize(Serializer& ser) const;
-
-        unsigned getPlayerID() const { return playerid; }
-
-        /// Wechselt Spieler
-        void SwapInfo(GamePlayerInfo& two);
-        /// Returns index of color in PLAYER_COLORS array or -1 if not found
-        int GetColorIdx() const;
-        static int GetColorIdx(unsigned color);
-
-    protected:
-        /// Player-ID
-        unsigned playerid;
-        /// Besiegt?
-        bool defeated;
-
-    public:
-        /// Spielertyp (Mensch, KI oder geschlossen..?)
-        PlayerState ps;
-        /// Wenn KI, was für eine?
-        AI::Info aiInfo;
-
-        /// Spielername
-        std::string name;
-        /// ehemaliger Spielername bei einem geladenen Spiel
-        std::string origin_name;
-
-        bool is_host;
-
-        Nation nation;
-        Team team;
-        /// Actual color (ARGB)
-        unsigned color;
-
-        unsigned ping;
-        unsigned int rating;
-
-        bool ready;
+private:
+    unsigned id;
+protected:
+    bool isDefeated;
 };
 
-#endif // GAMEPLAYERINFO_H_INCLUDED
+#endif // GamePlayerInfo_h__

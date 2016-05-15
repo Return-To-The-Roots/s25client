@@ -20,12 +20,12 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "Random.h"
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class nobUsual;
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)

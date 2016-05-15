@@ -19,7 +19,7 @@
 #include "SerializedGameData.h"
 
 #include "GameObject.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 
 #include "buildings/nobHQ.h"
 #include "buildings/nobMilitary.h"

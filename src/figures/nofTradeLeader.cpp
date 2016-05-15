@@ -21,7 +21,7 @@
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "SerializedGameData.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "gameData/GameConsts.h"
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos)

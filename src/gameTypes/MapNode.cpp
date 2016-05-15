@@ -22,13 +22,8 @@
 
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) const
 {
-    for(unsigned z = 0; z < roads.size(); ++z)
-    {
-        if(roads_real[z])
-            sgd.PushUnsignedChar(roads[z]);
-        else
-            sgd.PushUnsignedChar(0);
-    }
+    for(unsigned z = 0; z < roads_real.size(); ++z)
+        sgd.PushUnsignedChar(roads_real[z]);
 
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
@@ -40,7 +35,6 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
         sgd.PushUnsignedChar(boundary_stones[b]);
     sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
-    sgd.PushUnsignedChar(static_cast<unsigned char>(bqVisual));
     RTTR_Assert(numPlayers < fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
     {
@@ -66,11 +60,10 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
 
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
 {
-    for(unsigned z = 0; z < roads.size(); ++z)
+    for(unsigned z = 0; z < roads_real.size(); ++z)
     {
-        roads[z] = sgd.PopUnsignedChar();
-        RTTR_Assert(roads[z] < 4);
-        roads_real[z] = roads[z] != 0;
+        roads_real[z] = sgd.PopUnsignedChar();
+        RTTR_Assert(roads_real[z] < 4);
     }
 
     altitude = sgd.PopUnsignedChar();
@@ -85,7 +78,6 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
         boundary_stones[b] = sgd.PopUnsignedChar();
     bq = BuildingQuality(sgd.PopUnsignedChar());
-    bqVisual = BuildingQuality(sgd.PopUnsignedChar());
     RTTR_Assert(numPlayers < fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
     {

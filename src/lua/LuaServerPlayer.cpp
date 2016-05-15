@@ -31,12 +31,12 @@ inline void check(bool testValue, const std::string& error)
         throw std::runtime_error(error);
 }
 
-const GamePlayerInfo& LuaServerPlayer::GetPlayer() const
+const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
 {
     return player;
 }
 
-LuaServerPlayer::LuaServerPlayer(unsigned playerIdx): player(*GAMESERVER.players.getElement(playerIdx))
+LuaServerPlayer::LuaServerPlayer(unsigned playerId): playerId(playerId), player(GAMESERVER.players.at(playerId))
 {}
 
 void LuaServerPlayer::Register(kaguya::State& state)
@@ -55,14 +55,14 @@ void LuaServerPlayer::SetNation(Nation nat)
 {
     check(unsigned(nat) < NAT_COUNT, "Invalid Nation");
     player.nation = nat;
-    GAMESERVER.SendToAll(GameMessage_Player_Set_Nation(player.getPlayerID(), nat));
+    GAMESERVER.SendToAll(GameMessage_Player_Set_Nation(playerId, nat));
 }
 
 void LuaServerPlayer::SetTeam(Team team)
 {
     check(unsigned(team) < TEAM_COUNT, "Invalid team");
     player.team = team;
-    GAMESERVER.SendToAll(GameMessage_Player_Set_Team(player.getPlayerID(), team));
+    GAMESERVER.SendToAll(GameMessage_Player_Set_Team(playerId, team));
 }
 
 void LuaServerPlayer::SetColor(unsigned colorOrIdx)
@@ -73,7 +73,7 @@ void LuaServerPlayer::SetColor(unsigned colorOrIdx)
         player.color = PLAYER_COLORS[colorOrIdx];
     } else
         player.color = colorOrIdx;
-    GAMESERVER.SendToAll(GameMessage_Player_Set_Color(player.getPlayerID(), player.color));
+    GAMESERVER.SendToAll(GameMessage_Player_Set_Color(playerId, player.color));
 }
 
 void LuaServerPlayer::Close()
@@ -82,13 +82,13 @@ void LuaServerPlayer::Close()
         return;
     if(player.ps == PS_OCCUPIED)
     {
-        GAMESERVER.KickPlayer(player.getPlayerID(), NP_NOCAUSE, 0);
+        GAMESERVER.KickPlayer(playerId, NP_NOCAUSE, 0);
         return;
     }
     player.ps = PS_LOCKED;
-    player.ready = false;
+    player.isReady = false;
 
-    GAMESERVER.SendToAll(GameMessage_Player_Set_State(player.getPlayerID(), player.ps, player.aiInfo));
+    GAMESERVER.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
     GAMESERVER.AnnounceStatusChange();
 }
 
@@ -104,16 +104,16 @@ void LuaServerPlayer::SetAI(unsigned level)
     default: check(false, "Invalid AI level");
     }
     if(player.ps == PS_OCCUPIED)
-        GAMESERVER.KickPlayer(player.getPlayerID(), NP_NOCAUSE, 0);
+        GAMESERVER.KickPlayer(playerId, NP_NOCAUSE, 0);
     bool wasUsed = player.isUsed();
-    player.ps = PS_KI;
+    player.ps = PS_AI;
     player.aiInfo = info;
-    player.ready = true;
-    GAMESERVER.SetAIName(player.getPlayerID());
-    GAMESERVER.SendToAll(GameMessage_Player_Set_State(player.getPlayerID(), player.ps, player.aiInfo));
+    player.isReady = true;
+    player.SetAIName(playerId);
+    GAMESERVER.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
     // If we added a new AI, set an initial color
     // Do this after(!) the player state was set
     if(!wasUsed)
-        GAMESERVER.CheckAndSetColor(player.getPlayerID(), player.color);
+        GAMESERVER.CheckAndSetColor(playerId, player.color);
     GAMESERVER.AnnounceStatusChange();
 }

@@ -21,10 +21,10 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
-class SerializedGameData;
 
 nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_IRONFOUNDER, pos, player, workplace)

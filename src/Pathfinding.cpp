@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GameClient.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
@@ -58,7 +58,7 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
     // Feld bebaubar?
     if(!gwb.RoadAvailable(prp->boat_road, pt))
         return false;
-    if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1, false) == BQ_NOTHING)
+    if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) == BQ_NOTHING)
         return false;
 
     return true;

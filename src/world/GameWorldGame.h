@@ -22,22 +22,23 @@
 #include "gameTypes/MapTypes.h"
 #include <vector>
 
-class TerritoryRegion;
 class CatapultStone;
 class GameInterface;
 class MilitarySquares;
-class RoadSegment;
 class noBaseBuilding;
 class noBuildingSite;
 class noRoadNode;
 class nofActiveSoldier;
 class nofAttacker;
+struct PlayerInfo;
+class RoadSegment;
+class TerritoryRegion;
 
 /// "Interface-Klasse" für das Spiel
-class GameWorldGame : public virtual GameWorldBase
+class GameWorldGame: public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
-    void DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
+    void DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception, bool allowdestructionofmilbuildings=true);
 
     /// Return if there are deco-objects that can be removed when building roads
     bool IsObjectionableForRoad(const MapPoint pt);
@@ -64,7 +65,7 @@ protected:
 
 public:
 
-    GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldGame(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
@@ -103,14 +104,11 @@ public:
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns destination pt
     bool CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, unsigned startRouteIdx, unsigned char player, MapPoint* dest = NULL) const;
 
-    /// setzt den Straßen-Wert an der Stelle X,Y (berichtigt).
-    void SetRoad(const MapPoint pt, unsigned char dir, unsigned char type);
-
     /// setzt den Straßen-Wert um den Punkt X,Y.
-    void SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type);
+    void SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type);
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
-    void BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
+    void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
     /// Reißt eine Straße ab
     void DestroyRoad(const MapPoint pt, const unsigned char dir);
     /// baut eine Straße aus
@@ -175,6 +173,8 @@ public:
 
     /// Returns true, if the given (map)-resource is available at that node
     bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
+protected:
+    void VisibilityChanged(const MapPoint pt, unsigned player) override;
 };
 
 #endif // GameWorldGame_h__

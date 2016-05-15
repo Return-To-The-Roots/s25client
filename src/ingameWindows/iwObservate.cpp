@@ -17,11 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
-#include "world/GameWorldViewer.h"
 #include "Loader.h"
 #include "driver/src/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldBase.h"
 #include "Settings.h"
 #include "controls/ctrlButton.h"
 #include "gameTypes/RoadBuildState.h"
@@ -29,7 +29,7 @@
 // 260x190, 300x250, 340x310
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
-    IngameWindow(gwv.GetViewer().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
+    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
     selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)

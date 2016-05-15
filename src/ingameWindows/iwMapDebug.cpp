@@ -22,7 +22,7 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
-#include "world/GameWorldViewer.h"
+#include "world/GameWorldBase.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
 #include "helpers/converters.h"
@@ -30,7 +30,7 @@
 class iwMapDebug::DebugPrinter: public IDebugNodePrinter
 {
 public:
-    DebugPrinter(World& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
+    DebugPrinter(const World& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
 
     void print(const MapPoint& pt, const Point<int>& displayPt) override
     {
@@ -69,13 +69,13 @@ public:
 
     bool showCoords;
     unsigned showDataIdx;
-    World& gw;
+    const World& gw;
     glArchivItem_Font* font;
 };
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv):
     IngameWindow(CGI_MAP_DEBUG, 0xFFFF, 0xFFFF, 300, 200, _("Map Debug"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), printer(new DebugPrinter(gwv.GetViewer()))
+    gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
 {
     gwv.SetDebugNodePrinter(printer);
 

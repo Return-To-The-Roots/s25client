@@ -21,22 +21,22 @@
 #pragma once
 
 #include "Singleton.h"
-
 #include "GameMessageInterface.h"
-
 #include "GlobalGameSettings.h"
-#include "GamePlayerList.h"
 #include "gameTypes/MapInfo.h"
+#include "gameTypes/ServerType.h"
 #include "FramesInfo.h"
 #include "Random.h"
 #include "helpers/Deleter.h"
-#include <LANDiscoveryService.h>
+#include "libutil/src/LANDiscoveryService.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <vector>
 
+class AIBase;
 struct CreateServerInfo;
 class GameMessage;
-class AIBase;
 class GameMessage_GameCommand;
+class GameServerPlayer;
 namespace AIEvent { class Base; }
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
@@ -63,10 +63,10 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         bool TogglePause();
 		bool IsPaused(){return framesinfo.isPaused;}
 
-        void TogglePlayerNation(unsigned char client);
-        void TogglePlayerTeam(unsigned char client);
-        void TogglePlayerColor(unsigned char client);
-        void TogglePlayerState(unsigned char client);
+        void ToggleAINation(unsigned char playerId);
+        void ToggleAITeam(unsigned char playerId);
+        void ToggleAIColor(unsigned char playerId);
+        void TogglePlayerState(unsigned char playerId);
         void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
         /// Removes the lua script for the currently loaded map (only valid in config mode)
         void RemoveLuaScript();
@@ -76,21 +76,20 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         void AIChat(const GameMessage& msg) { SendToAll(msg); }
 
-        std::string GetGameName() const { return serverconfig.gamename; }
-        bool HasPwd() const { return !serverconfig.password.empty(); }
-        unsigned short GetPort() const { return serverconfig.port; }
-        unsigned GetMaxPlayerCount() const { return serverconfig.playercount; }
+        std::string GetGameName() const { return config.gamename; }
+        bool HasPwd() const { return !config.password.empty(); }
+        unsigned short GetPort() const { return config.port; }
+        unsigned GetMaxPlayerCount() const { return config.playercount; }
         bool IsRunning() const { return status != SS_STOPPED; }
 
         const GlobalGameSettings& GetGGS(){ return ggs_; }
-    protected:
+    private:
 
         /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
         void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
         void SendToAll(const GameMessage& msg);
-        void KickPlayer(unsigned char playerid, unsigned char cause, unsigned short param);
-        void KickPlayer(NS_PlayerKicked npk);
+        void KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param);
 
         void ClientWatchDog();
 
@@ -100,13 +99,10 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         /// Sendet ein NC-Paket ohne Befehle
         void SendNothingNC(const unsigned int& id);
 
-        /// Generiert einen KI-Namen
-        void SetAIName(const unsigned player_id);
-
         unsigned GetFilledSlots() const;
         /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
         void AnnounceStatusChange();
-    private:
+
         void OnGameMessage(const GameMessage_Pong& msg) override;
         void OnGameMessage(const GameMessage_Server_Type& msg) override;
         void OnGameMessage(const GameMessage_Server_Password& msg) override;
@@ -138,6 +134,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         enum ServerState
         {
             SS_STOPPED = 0,
+            SS_CREATING_LOBBY, // Creating game lobby (Call Start() next)
             SS_CONFIG,
             SS_GAME
         } status;
@@ -153,18 +150,18 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
                 void Clear();
 
                 ServerType servertype;
-                unsigned char playercount;
+                unsigned playercount;
                 std::string gamename;
                 std::string password;
                 unsigned short port;
                 bool ipv6;
                 bool use_upnp;
-        } serverconfig;
+        } config;
 
         MapInfo mapinfo;
 
         Socket serversocket;
-        GameServerPlayerList players;
+        std::vector<GameServerPlayer> players;
         GlobalGameSettings ggs_;
 
         /// der Spielstartcountdown
@@ -172,7 +169,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         {
             public:
                 CountDown();
-                void Clear(int time = 2);
+                void Reset(int time = 2);
 
                 bool do_countdown;
                 int countdown;
@@ -192,7 +189,6 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
     public:
         AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
 		unsigned int skiptogf;
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////

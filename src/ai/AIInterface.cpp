@@ -26,6 +26,7 @@
 #include "buildings/noBuilding.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
+#include "gameTypes/BuildingCount.h"
 #include "gameData/TerrainData.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
@@ -189,6 +190,16 @@ bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
     return gwb.GetBQ(pt2, playerID_) < gwb.GetBQ(pt1, playerID_);
 }
 
+BuildingQuality AIInterface::GetBuildingQuality(const MapPoint pt) const
+{
+    return gwb.GetBQ(pt, playerID_);
+}
+
+BuildingQuality AIInterface::GetBuildingQualityAnyOwner(const MapPoint pt) const
+{
+    return gwb.GetNode(pt).bq;
+}
+
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
     if(length)
@@ -199,7 +210,12 @@ bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& tar
 
 const nobHQ* AIInterface::GetHeadquarter() const
 {
-    return gwb.GetSpecObj<nobHQ>(player_.hqPos);
+    return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
+}
+
+BuildingCount AIInterface::GetBuildingCount() const
+{
+    return player_.GetBuildingCount();
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const

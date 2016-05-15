@@ -24,13 +24,12 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Loader.h"
 #include <numeric>
-class noFigure;
-class noRoadNode;
 
 nobUsual::nobUsual(BuildingType type,
                    MapPoint pos,
@@ -49,7 +48,7 @@ nobUsual::nobUsual(BuildingType type,
         ordered_wares.clear();
 
     // Arbeiter bestellen
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     owner.AddJobWanted(USUAL_BUILDING_CONSTS[type_ - 10].job, this);
 
     // Tür aufmachen,bis Gebäude besetzt ist
@@ -74,16 +73,16 @@ nobUsual::nobUsual(BuildingType type,
     owner.AddUsualBuilding(this);
 }
 
-nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
-    : noBuilding(sgd, obj_id),
-      worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
-      productivity(sgd.PopUnsignedShort()),
-      disable_production(sgd.PopBool()),
-      disable_production_virtual(sgd.PopBool()),
-      last_ordered_ware(sgd.PopUnsignedChar()),
-      orderware_ev(sgd.PopEvent()),
-      productivity_ev(sgd.PopEvent()),
-      is_working(sgd.PopBool())
+nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id):
+    noBuilding(sgd, obj_id),
+    worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
+    productivity(sgd.PopUnsignedShort()),
+    disable_production(sgd.PopBool()),
+    disable_production_virtual(disable_production),
+    last_ordered_ware(sgd.PopUnsignedChar()),
+    orderware_ev(sgd.PopEvent()),
+    productivity_ev(sgd.PopEvent()),
+    is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)
         wares[i] = sgd.PopUnsignedChar();
@@ -97,9 +96,26 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id)
         sgd.PopObjectContainer(ordered_wares[i], GOT_WARE);
     for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
         last_productivities[i] = sgd.PopUnsignedShort();
+}
 
-    // Visuellen Produktionszustand dem realen anpassen
-    disable_production_virtual = disable_production;
+void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
+{
+    Serialize_noBuilding(sgd);
+
+    sgd.PushObject(worker, false);
+    sgd.PushUnsignedShort(productivity);
+    sgd.PushBool(disable_production);
+    sgd.PushUnsignedChar(last_ordered_ware);
+    sgd.PushObject(orderware_ev, true);
+    sgd.PushObject(productivity_ev, true);
+    sgd.PushBool(is_working);
+
+    for(unsigned i = 0; i < 3; ++i)
+        sgd.PushUnsignedChar(wares[i]);
+    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
+        sgd.PushObjectContainer(ordered_wares[i], true);
+    for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
+        sgd.PushUnsignedShort(last_productivities[i]);
 }
 
 nobUsual::~nobUsual()
@@ -137,27 +153,6 @@ void nobUsual::Destroy_nobUsual()
         gwg->GetPlayer(player).DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[i], wares[i]);
 
     Destroy_noBuilding();
-}
-
-void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
-{
-    Serialize_noBuilding(sgd);
-
-    sgd.PushObject(worker, false);
-    sgd.PushUnsignedShort(productivity);
-    sgd.PushBool(disable_production);
-    sgd.PushBool(disable_production_virtual);
-    sgd.PushUnsignedChar(last_ordered_ware);
-    sgd.PushObject(orderware_ev, true);
-    sgd.PushObject(productivity_ev, true);
-    sgd.PushBool(is_working);
-
-    for(unsigned i = 0; i < 3; ++i)
-        sgd.PushUnsignedChar(wares[i]);
-    for(unsigned i = 0; i < USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count; ++i)
-        sgd.PushObjectContainer(ordered_wares[i], true);
-    for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
-        sgd.PushUnsignedShort(last_productivities[i]);
 }
 
 void nobUsual::Draw(int x, int y)
@@ -443,7 +438,7 @@ void nobUsual::ConsumeWares()
             // 2 Waren verbrauchen
             --wares[0];
             --wares[1];
-            GameClientPlayer& owner = gwg->GetPlayer(player);
+            GamePlayer& owner = gwg->GetPlayer(player);
             owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0], 1);
             owner.DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[1], 1);
 
@@ -550,7 +545,7 @@ void nobUsual::SetProductionEnabled(const bool enabled)
     // Umstellen
     disable_production = !enabled;
     // Wenn das von einem fremden Spieler umgestellt wurde (oder vom Replay), muss auch das visuelle umgestellt werden
-    if(GAMECLIENT.GetPlayerID() != player || GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.GetPlayerId() != player || GAMECLIENT.IsReplayModeOn())
         disable_production_virtual = disable_production;
 
     if(disable_production)

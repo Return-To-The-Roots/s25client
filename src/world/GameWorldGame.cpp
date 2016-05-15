@@ -19,7 +19,7 @@
 #include "world/GameWorldGame.h"
 
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "TradePathCache.h"
 #include "GameInterface.h"
 #include "postSystem/PostMsgWithBuilding.h"
@@ -43,10 +43,19 @@
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
 #include "helpers/containerUtils.h"
-
 #include <stdexcept>
 
-GameWorldGame::GameWorldGame(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em): GameWorldBase(players, gameSettings, em)
+inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
+{
+    std::vector<GamePlayer> players;
+    players.reserve(playerInfos.size());
+    for(unsigned i = 0; i < playerInfos.size(); ++i)
+        players.push_back(GamePlayer(i, playerInfos[i], gwg));
+    return players;
+}
+
+GameWorldGame::GameWorldGame(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em):
+    GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
 {
     TradePathCache::inst().Clear();
 }
@@ -61,7 +70,10 @@ MilitarySquares& GameWorldGame::GetMilitarySquares()
 
 void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir)
 {
-    if(GetBQ(pt, player, false) == BQ_NOTHING)
+    if(GetBQ(pt, player) == BQ_NOTHING)
+        return;
+    // There must be no other flag around that point
+    if(IsFlagAround(pt))
         return;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
@@ -100,32 +112,19 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
     gi->GI_FlagDestroyed(pt);
 }
 
-/**
- *  setzt den echten Straßen-Wert an der Stelle X, Y (berichtigt).
- */
-void GameWorldGame::SetRoad(const MapPoint pt, unsigned char dir, unsigned char type)
-{
-    RTTR_Assert(dir < 6);
-
-    // Virtuelle Straße setzen
-    SetVirtualRoad(pt, dir, type);
-    ApplyRoad(pt, dir);
-
-    if(gi)
-        gi->GI_UpdateMinimap(pt);
-}
-
-/**
- *  setzt den Straßen-Wert um den Punkt X, Y.
- */
-void GameWorldGame::SetPointRoad(const MapPoint pt, unsigned char dir, unsigned char type)
+void GameWorldGame::SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type)
 {
     RTTR_Assert(dir < 6);
 
     if(dir >= 3)
-        SetRoad(pt, dir - 3, type);
+        dir -= 3;
     else
-        SetRoad(GetNeighbour(pt, dir), dir, type);
+        pt = GetNeighbour(pt, dir);
+
+    SetRoad(pt, dir, type);
+
+    if(gi)
+        gi->GI_UpdateMinimap(pt);
 }
 
 void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player)
@@ -134,7 +133,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
         return;
 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    const BuildingQuality bq = GetBQ(pt, player, false);
+    const BuildingQuality bq = GetBQ(pt, player);
 
     switch(BUILDING_SIZE[type])
     {
@@ -193,7 +192,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
 }
 
 
-void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
+void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
 {
     // No routes with less than 2 parts. Actually invalid!
     if(route.size() < 2)
@@ -202,11 +201,9 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         return;
     }
 
-    if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerid)
+    if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerId)
     {
-        // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-        RemoveVisualRoad(start, route);
-        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
+        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
         return;
     }
 
@@ -217,14 +214,11 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
         curPt = GetNeighbour(curPt, route[i]);
 
         // Feld bebaubar und auf unserem Gebiet
-        if(!RoadAvailable(boat_road, curPt, false) || !IsPlayerTerritory(curPt))
+        if(!RoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
         {
-            // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist und ansonsten den visuellen wieder zurückbauen
+            // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
             if (!RoadAlreadyBuilt(boat_road, start, route))
-            {
-                RemoveVisualRoad(start, route);
-                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
-            }
+                GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
     }
@@ -235,11 +229,9 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     if(GetNO(curPt)->GetGOT() == GOT_FLAG)
     {
         // Falscher Spieler?
-        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerid)
+        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
         {
-            // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-            RemoveVisualRoad(start, route);
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
     }
@@ -247,15 +239,13 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     {
         // Check if we can build a flag there, also check for trees at that point.
         // TODO: Probably safe to remove the tree check as BQ checks for trees already
-        if(GetBQ(curPt, playerid, false) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
+        if(GetBQ(curPt, playerId) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
         {
-            // Dann Weg nicht bauen und ggf. das visuelle wieder zurückbauen
-            RemoveVisualRoad(start, route);
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerid, start, route.front()));
+            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
         }
         //keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
-        SetFlag(curPt, playerid, (route[route.size() - 1] + 3) % 6);
+        SetFlag(curPt, playerId, (route[route.size() - 1] + 3) % 6);
     }
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)
@@ -281,8 +271,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerid, const bool boat_road
     GetSpecObj<noFlag>(end)->routes[(route.back() + 3) % 6] = rs;
 
     // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
-    GetPlayer(playerid).NewRoad(rs);
-    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerid, start, route.front()));
+    GetPlayer(playerId).NewRoadConnection(rs);
+    GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
 }
 
 bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
@@ -666,7 +656,7 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     return region;
 }
 
-void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char new_player, const noBaseBuilding* exception, bool allowdestructionofmilbuildings)
+void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception, bool allowDestructionOfMilBuildings)
 {
     noBase* no = GetNO(pt);
 
@@ -674,29 +664,23 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
     if((no->GetType() == NOP_FLAG || no->GetType() == NOP_BUILDING || no->GetType() == NOP_BUILDINGSITE) && exception != no)
     {
         // Wurde das Objekt auch nicht vom Gegner übernommen?
-        if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != new_player)
+        if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != newOwner)
         {
 			//maybe buildings that push territory should not be destroyed right now?- can happen with improved alliances addon or in rare cases even without the addon so allow those buildings & their flag to survive.
-			if(!allowdestructionofmilbuildings)
+			if(!allowDestructionOfMilBuildings)
 			{
-				if(no->GetGOT() == GOT_NOB_HQ || no->GetGOT() == GOT_NOB_HARBORBUILDING || (no->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(pt)->IsNewBuilt()) || (no->GetType()==NOP_BUILDINGSITE && GetSpecObj<noBuildingSite>(pt)->IsHarborBuildingSiteFromSea()))
+                const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, 1)) : no;
+				if(noCheckMil->GetGOT() == GOT_NOB_HQ ||
+                    noCheckMil->GetGOT() == GOT_NOB_HARBORBUILDING ||
+                    (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !dynamic_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt()) ||
+                    (noCheckMil->GetType() == NOP_BUILDINGSITE && dynamic_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
 				{
 					//LOG.lprintf("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type, %i \n", x, y, no->GetType());
 					return;
 				}
-				//flag of such a building?				
-				if(no->GetType()==NOP_FLAG)
-				{
-					noBase* no2=GetNO(GetNeighbour(pt, 1));
-					if(no2->GetGOT() == GOT_NOB_HQ || no2->GetGOT() == GOT_NOB_HARBORBUILDING || (no2->GetGOT() == GOT_NOB_MILITARY && !GetSpecObj<nobMilitary>(GetNeighbour(pt, 1))->IsNewBuilt()) || (no2->GetType()==NOP_BUILDINGSITE && GetSpecObj<noBuildingSite>(GetNeighbour(pt, 1))->IsHarborBuildingSiteFromSea()))
-					{
-						//LOG.lprintf("DestroyPlayerRests of a flag of a hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type, %i \n", GetXA(x, y, 1), GetYA(x, y, 1), no2->GetType());
-						return;
-					}
-				}
 			}				
             // vorher Bescheid sagen
-            if(no->GetType() == NOP_FLAG && no != (exception ? exception->GetFlag() : NULL))
+            if(no->GetType() == NOP_FLAG && (!exception || no != exception->GetFlag()))
                 static_cast<noFlag*>(no)->DestroyAttachedBuilding();
 
             no->Destroy();
@@ -704,6 +688,8 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             return;
         }
     }
+
+    // TODO: This might not be required. Roads are destroyed when their flags are destroyed
 
     // ggf. Weg kappen
     unsigned char dir;
@@ -792,7 +778,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         return;
 
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
@@ -827,7 +813,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         // Militäreinstellungen zum Angriff eingestellt wurden
         unsigned soldiers_count =
             (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
-            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker).militarySettings_[3] / MILITARY_SETTINGS_SCALE[3]) : 0;
+            ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) : 0;
 
         unsigned int distance = CalcDistance(pt, (*it)->GetPos());
 
@@ -930,7 +916,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsPlayerAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
@@ -1328,16 +1314,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
             default:
                 throw std::logic_error("Invalid exploration value");
         }
-
     }
-
-    // Minimap Bescheid sagen
-    if(gi && visibility_before != GetNode(pt).fow[player].visibility)
-        gi->GI_UpdateMinimap(pt);
-
-    // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GAMECLIENT.GetPlayerID() || (GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
-        VisibilityChanged(pt);
 }
 
 void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
@@ -1347,14 +1324,6 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 
     if (visibility_before != VIS_VISIBLE && HasLua())
         GetLua().EventExplored(player, pt);
-
-    // Minimap Bescheid sagen
-    if(gi && visibility_before != GetNode(pt).fow[player].visibility)
-        gi->GI_UpdateMinimap(pt);
-
-    // Lokaler Spieler oder Verbündeter (wenn Team-Sicht an ist)? --> Terrain updaten
-    if(player == GAMECLIENT.GetPlayerID() || (GetGGS().team_view && GAMECLIENT.GetLocalPlayer().IsAlly(player)))
-        VisibilityChanged(pt);
 }
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception)
@@ -1418,7 +1387,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }
@@ -1442,7 +1411,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         if(current_owner && (old_vis == VIS_INVISIBLE ||
                              (old_vis == VIS_FOW && old_owner != current_owner)))
         {
-            if(GetPlayer(player).IsPlayerAttackable(current_owner - 1) && enemy_territory)
+            if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
                 *enemy_territory = tt;
             }
@@ -1573,6 +1542,14 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
 
     // Gibts Ressourcen von dem Typ an diesem Punkt?
     return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
+}
+
+void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player)
+{
+    GameWorldBase::VisibilityChanged(pt, player);
+    // Minimap Bescheid sagen
+    if(gi)
+        gi->GI_UpdateMinimap(pt);
 }
 
 /// Create Trade graphs

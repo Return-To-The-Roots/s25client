@@ -21,7 +21,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
@@ -352,7 +352,7 @@ nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(
     gwg->GetMilitarySquares().Add(this);
 
     // Startpos setzen
-    gwg->GetPlayer(player).hqPos = this->pos;
+    gwg->GetPlayer(player).SetHQ(*this);
 }
 
 void nobHQ::Draw(int x, int y)

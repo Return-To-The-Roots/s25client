@@ -19,15 +19,15 @@
 #define AIINTERFACE_H_
 
 #include "world/GameWorldBase.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "factories/GameCommandFactory.h"
+#include "GameCommand.h"
 #include "gameTypes/Direction.h"
 #include "ai/Resource.h"
 #include "NodalObjectTypes.h"
 
 class nobHQ;
 class nobShipYard;
-class GameClientPlayerList;
 class RoadSegment;
 class noBuilding;
 class noBuildingSite;
@@ -40,29 +40,24 @@ class nobMilitary;
 class nobUsual;
 struct Inventory;
 
-class AIInterface: public GameCommandFactory<AIInterface>
+class AIInterface: public GameCommandFactory
 {
     public:
-        AIInterface(const GameWorldBase& gwb, const GameClientPlayer& player,
-                    const GameClientPlayerList& players, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID) :
-            gwb(gwb), player_(player), players(players), gcs(gcs), playerID_(playerID) {}
+        AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID) :
+            gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID) {}
 
     private:
-        typedef GameCommandFactory<AIInterface> GC_Factory;
-        friend class GameCommandFactory<AIInterface>;
 
         /// Pointer to GameWorld, containing all information about the world
         const GameWorldBase& gwb;
         /// Pointer to this player, containing all information about his economoy, buildings, etc.
-        const GameClientPlayer& player_;
-        /// Pointer to list with all other players, for alliances, etc
-        const GameClientPlayerList& players;
+        const GamePlayer& player_;
         /// Pointer to the game commands queue, to send commands to the game
         std::vector<gc::GameCommandPtr>& gcs;
         /// ID of AI player
         const unsigned char playerID_;
 
-        bool AddGC(gc::GameCommand* gc)
+        bool AddGC(gc::GameCommand* gc) override
         {
             gcs.push_back(gc);
             return true;
@@ -111,10 +106,10 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Get Distance between to points (wraps around at end of world)
         unsigned GetDistance(MapPoint p1, MapPoint p2) const { return gwb.CalcDistance(p1, p2); }
 
-        unsigned char GetPlayerID() const { return playerID_; }
+        unsigned char GetPlayerId() const { return playerID_; }
         unsigned GetPlayerCount() const { return gwb.GetPlayerCount(); }
 
-		bool IsDefeated() const {return player_.isDefeated();}
+		bool IsDefeated() const {return player_.IsDefeated();}
 
         /// Returns a specific object from a position on the map (const version)
         template<typename T> const T* GetSpecObj(const MapPoint pt) const { return gwb.GetSpecObj<T>(pt); }
@@ -144,7 +139,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         /// Checks whether there is a road on a point or not
         bool IsRoadPoint(const MapPoint pt) const;
 
-        bool GetPointRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt()) > 0; }
+        bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir.toUInt()) > 0; }
 
         /// Returns the terrain around a given point in a given direction
         TerrainType GetTerrainAround(const MapPoint pt, Direction direction) const { return gwb.GetTerrainAround(pt, direction.toUInt()); }
@@ -169,14 +164,14 @@ class AIInterface: public GameCommandFactory<AIInterface>
 
         bool IsMilitaryBuildingNearNode(const MapPoint pt, const unsigned char player) const { return gwb.IsMilitaryBuildingNearNode(pt, player); }
 
-        bool RoadAvailable(const MapPoint pt, bool boat_road = false) {return gwb.RoadAvailable(boat_road, pt, false);}
+        bool RoadAvailable(const MapPoint pt, bool boat_road = false) {return gwb.RoadAvailable(boat_road, pt);}
 
         ///returns true when the buildingqulity at the 2nd point is lower than the bq on the first point
         bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
 
         /// Returns building quality on a given spot
-        BuildingQuality GetBuildingQuality(const MapPoint pt) const { return gwb.GetBQ(pt, playerID_); }
-		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const { return gwb.GetNode(pt).bqVisual; }
+        BuildingQuality GetBuildingQuality(const MapPoint pt) const;
+		BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const;
 
         // Tries to find a free path for a road and return length and the route
         bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route = NULL,
@@ -192,7 +187,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
 		bool CanBuildBuildingtype(BuildingType bt) const { return player_.IsBuildingEnabled(bt); }
 
         /// Tests whether a player is attackable or not (alliances, etc)
-        bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsPlayerAttackable(playerID); }
+        bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsAttackable(playerID); }
 
 		/// player.FindWarehouse
         template<class T_IsWarehouseGood>
@@ -226,7 +221,7 @@ class AIInterface: public GameCommandFactory<AIInterface>
         const std::list<nobBaseWarehouse*>& GetStorehouses() const {return player_.GetStorehouses();}
 
         // Retrieves the current counts of all buildings
-        void GetBuildingCount(BuildingCount& counts) const { player_.GetBuildingCount(counts); }
+        BuildingCount GetBuildingCount() const;
 
         // Returns the inventory of the ai player
         const Inventory& GetInventory() const { return player_.GetInventory(); }
@@ -251,38 +246,35 @@ class AIInterface: public GameCommandFactory<AIInterface>
         bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const;
 
         void SetCoinsAllowed(const nobMilitary* building, const bool enabled);
-        using GC_Factory::SetCoinsAllowed;
+        using GameCommandFactory::SetCoinsAllowed;
 
 		///getnation
 		unsigned GetNation() {return player_.nation;}
 
         void StartExpedition(const nobHarborBuilding* harbor);
-        using GC_Factory::StartExpedition;
+        using GameCommandFactory::StartExpedition;
 
         /// Lets a ship found a colony
-        void FoundColony(const noShip* ship) { FoundColony(player_.GetShipID(ship)); }
-        using GC_Factory::FoundColony;
+        void FoundColony(const noShip* ship) { FoundColony(GetShipID(ship)); }
+        using GameCommandFactory::FoundColony;
 
-        void TravelToNextSpot(ShipDirection direction, const noShip* ship) { TravelToNextSpot(direction, player_.GetShipID(ship)); }
-        using GC_Factory::TravelToNextSpot;
+        void TravelToNextSpot(ShipDirection direction, const noShip* ship) { TravelToNextSpot(direction, GetShipID(ship)); }
+        using GameCommandFactory::TravelToNextSpot;
 
-        void CancelExpedition(const noShip* ship) { CancelExpedition(player_.GetShipID(ship)); }
-        using GC_Factory::CancelExpedition;
+        void CancelExpedition(const noShip* ship) { CancelExpedition(GetShipID(ship)); }
+        using GameCommandFactory::CancelExpedition;
 
         void ToggleShipYardMode(const nobShipYard* yard);
-        using GC_Factory::ToggleShipYardMode;
+        using GameCommandFactory::ToggleShipYardMode;
 
         void DestroyBuilding(const noBuilding* building);
-        using GC_Factory::DestroyBuilding;
+        using GameCommandFactory::DestroyBuilding;
 
         void DestroyFlag(const noFlag* flag);
-        using GC_Factory::DestroyFlag;
+        using GameCommandFactory::DestroyFlag;
 
         void CallGeologist(const noFlag* flag);
-        using GC_Factory::CallGeologist;
-
-        /// Sends a chat message to all players TODO: enemy/ally-chat
-        void Chat(std::string& message);
+        using GameCommandFactory::CallGeologist;
 };
 
 

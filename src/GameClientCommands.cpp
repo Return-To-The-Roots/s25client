@@ -17,10 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
-
-#include "GameClientPlayer.h"
-
 #include "ClientInterface.h"
+#include "GamePlayer.h"
 #include "GameMessages.h"
 
 /**
@@ -38,28 +36,27 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
     send_queue.push(new GameMessage_Server_Chat(playerId_, cd, text));
 }
 
-void GameClient::Command_ToggleNation()
+void GameClient::Command_SetNation(Nation newNation)
 {
-    send_queue.push(new GameMessage_Player_Set_Nation
-                    (0xff, Nation((this->GetLocalPlayer().nation + 1) % NAT_COUNT)));
+    send_queue.push(new GameMessage_Player_Set_Nation(0xff, newNation));
 }
 
-void GameClient::Command_ToggleTeam(Team newteam)
+void GameClient::Command_SetTeam(Team newTeam)
 {
-    send_queue.push(new GameMessage_Player_Set_Team(0xff, newteam));
+    send_queue.push(new GameMessage_Player_Set_Team(0xff, newTeam));
 }
 
 /**
  *  sendet den "Bereit"-Status.
  */
-void GameClient::Command_ToggleReady()
+void GameClient::Command_SetReady(bool isReady)
 {
-    send_queue.push(new GameMessage_Player_Ready(0xFF, GetLocalPlayer().ready));
+    send_queue.push(new GameMessage_Player_Ready(0xFF, isReady));
 }
 
-void GameClient::Command_SetColor()
+void GameClient::Command_SetColor(unsigned newColor)
 {
-    send_queue.push(new GameMessage_Player_Set_Color(0xFF, GetLocalPlayer().color));
+    send_queue.push(new GameMessage_Player_Set_Color(0xFF, newColor));
 }
 
 /**
@@ -70,29 +67,37 @@ void GameClient::Command_SetColor()
  */
 void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned char player2)
 {
+    RTTR_Assert(state == CS_GAME); // Must be ingame
+
 	LOG.lprintf("GameClient::ChangePlayer %i - %i \n",player1, player2); 
     // Gleiche ID - wäre unsinnig zu wechseln
     if(player1 == player2)
         return;
 
     // ID auch innerhalb der Spielerzahl?
-    if(player2 >= players.getCount() || player1 >= players.getCount())
+    if(player2 >= GetPlayerCount() || player1 >= GetPlayerCount())
         return;
 
-    // old_id must be a player unless its a replay
-    if(players[player1].ps != PS_OCCUPIED && !IsReplayModeOn())
-        return;
-    // new_id must be an AI. For replays it can also be another player
-    if(players[player2].ps != PS_KI && (!IsReplayModeOn() || players[player2].ps != PS_OCCUPIED))
-        return;
-
-    // In replay mode we don't touch the player
-    if(!IsReplayModeOn())
+    if(IsReplayModeOn())
     {
-        players[player1].ps = PS_KI;
-        players[player2].ps = PS_OCCUPIED;
-    }else
         RTTR_Assert(player1 == playerId_);
+        // There must be someone at this slot
+        if(GetPlayer(player2).isUsed())
+            return;
+
+        // In replay mode we don't touch the player
+    } else
+    {
+        // old_id must be a player
+        if(GetPlayer(player1).ps != PS_OCCUPIED)
+            return;
+        // new_id must be an AI
+        if(GetPlayer(player2).ps != PS_AI)
+            return;
+
+        GetPlayer(player1).ps = PS_AI;
+        GetPlayer(player2).ps = PS_OCCUPIED;
+    }
 
     // Wenn wir betroffen waren, unsere ID neu setzen
     if(playerId_ == player1)
@@ -107,7 +112,7 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
     }
 
     using std::swap;
-    swap(players[player1].gc_queue, players[player2].gc_queue);
+    swap(GetPlayer(player1).gc_queue, GetPlayer(player2).gc_queue);
 
     if(ci)
         ci->CI_PlayersSwapped(player1, player2);

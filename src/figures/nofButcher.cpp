@@ -19,11 +19,11 @@
 #include "nofButcher.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "buildings/nobUsual.h"
 #include "SoundManager.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
 
 nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_BUTCHER, pos, player, workplace)

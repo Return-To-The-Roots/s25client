@@ -109,7 +109,7 @@ void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
 void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
 {
     RTTR_Assert(GAMESERVER.IsRunning());
-    SetAddon(id, 1);
+    SetAddon(id, value ? 1 : 0);
 }
 
 void LuaInterfaceSettings::ResetAddons()

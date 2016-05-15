@@ -20,6 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "SoundManager.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"

@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "buildings/noBuildingSite.h"
-#include "GameClient.h"
+#include "GamePlayer.h"
 #include "Ware.h"
 #include "figures/nofBuilder.h"
 #include "figures/nofPlaner.h"
@@ -76,7 +76,7 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
       build_progress(0)
 {
     builder = new nofBuilder(pos, player, this);
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     owner.AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
@@ -171,7 +171,7 @@ void noBuildingSite::OrderConstructionMaterial()
         return;
 
     // Bretter
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][type_].boards; ++i)
     {
         Ware* w = owner.OrderWare(GD_BOARDS, this);

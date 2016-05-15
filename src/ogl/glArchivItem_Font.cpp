@@ -320,12 +320,6 @@ void glArchivItem_Font::Draw(short x,
     if(texList.empty())
         return;
 
-    if (SETTINGS.video.vbo)
-    {
-        // unbind VBO
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-    }
-
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glVertexPointer(3, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].x);

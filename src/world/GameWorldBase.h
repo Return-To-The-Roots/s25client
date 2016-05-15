@@ -24,20 +24,20 @@
 #include "notifications/NotificationManager.h"
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <vector>
 
-class RoadPathFinder;
-class FreePathFinder;
-class GameInterface;
-class noBuildingSite;
-class GameClientPlayerList;
-class GlobalGameSettings;
-class GameClientPlayer;
-class nofPassiveSoldier;
-class nobHarborBuilding;
-class noFlag;
-class noBase;
-class LuaInterfaceGame;
 class EventManager;
+class FreePathFinder;
+class GamePlayer;
+class GameInterface;
+class GlobalGameSettings;
+class LuaInterfaceGame;
+class noBase;
+class noBuildingSite;
+class noFlag;
+class nobHarborBuilding;
+class nofPassiveSoldier;
+class RoadPathFinder;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase: public World
@@ -47,7 +47,7 @@ class GameWorldBase: public World
     PostManager postManager;
     NotificationManager notifications;
 
-    GameClientPlayerList& players;
+    std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
 protected:
@@ -58,11 +58,13 @@ protected:
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
     void Init(const unsigned short width, const unsigned short height, LandscapeType lt) override;
+    // Remaining initialization after loading (BQ...)
+    void InitAfterLoad();
 
     /// Setzt GameInterface
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
@@ -71,11 +73,14 @@ public:
     /// die sich dort befinden, zur�ck
     std::vector<noBase*> GetDynamicObjectsFrom(const MapPoint pt) const;
 
-    /// Kann a node be used for a road (no flag/bld, no other road, no danger...)
+    /// Can a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road
-    bool RoadAvailable(const bool boat_road, const MapPoint pt, const bool visual = true) const;
-    /// Pr�ft ob exakt die gleiche Stra�e schon gebaut wurde
+    bool RoadAvailable(const bool boat_road, const MapPoint pt) const;
+    /// Check if this road already exists completely
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
+    bool IsOnRoad(const MapPoint& pt) const;
+    /// Check if a flag is at a neighbour node
+    bool IsFlagAround(const MapPoint& pt) const;
 
     /// Berechnet BQ bei einer gebauten Stra�e
     void RecalcBQForRoad(const MapPoint pt);
@@ -98,20 +103,16 @@ public:
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
-    /// Baut eine (bisher noch visuell gebaute) Stra�e wieder zur�ck
-    void RemoveVisualRoad(const MapPoint start, const std::vector<unsigned char>& route);
-
-    /// x,y ist ein Punkt auf irgendeinem Wegstck, gibt die Flagge zur�ck
-    noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned last_i = 255);
+    /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
+    /// prevDir (if set) will be skipped when searching for the road points
+    noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255);
+    const noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255) const;
 
     /// Erzeugt eine GUI-ID f�r die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Point<int> GetNodePos(const MapPoint pt) const;
-
-    /// Ver�ndert die H�he eines Punktes und die damit verbundenen Schatten
-    void AltitudeChanged(const MapPoint pt) override;
 
     /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
     void RecalcBQAroundPoint(const MapPoint pt);
@@ -137,7 +138,8 @@ public:
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
     /// Return the player with the given index
-    GameClientPlayer& GetPlayer(const unsigned id) const;
+    GamePlayer& GetPlayer(const unsigned id);
+    const GamePlayer& GetPlayer(const unsigned id) const;
     unsigned GetPlayerCount() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
@@ -184,12 +186,16 @@ public:
     /// Gibt Anzahl oder gesch�tzte St�rke(rang summe + anzahl) der verf�gbaren Soldaten die zu einem Schiffsangriff starten k�nnen von einer bestimmten sea id aus
     unsigned int GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count = true) const;
 
+    /// Recalculates the BQ for the given point
+    void RecalcBQ(const MapPoint pt);
+
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
 protected:
-
-    /// F�r abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
-    virtual void VisibilityChanged(const MapPoint pt) = 0;
+    /// Called when the visibility of point changed for a player
+    void VisibilityChanged(const MapPoint pt, unsigned player) override;
+    /// Called, when the altitude of a point was changed
+    void AltitudeChanged(const MapPoint pt) override;
 
     /// Gibt n�chsten Hafenpunkt in einer bestimmten Richtung zur�ck, bzw. 0, wenn es keinen gibt
     unsigned GetNextHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir,

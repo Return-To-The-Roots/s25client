@@ -17,25 +17,82 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
+#include "world/GameWorldBase.h"
+#include "world/BQCalculator.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "gameTypes/MapTypes.h"
 #include "nodeObjs/noShip.h"
-class FOWObject;
+#include "notifications/NodeNote.h"
+#include "notifications/RoadNote.h"
+#include "notifications/PlayerNodeNote.h"
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/if.hpp>
+#include <boost/lambda/bind.hpp>
 
-GameWorldViewer::GameWorldViewer(GameClientPlayerList& players, const GlobalGameSettings& gameSettings, EventManager& em): GameWorldBase(players, gameSettings, em)
+GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb): playerId_(playerId), gwb(gwb)
 {
+    InitTerrainRenderer();
+    InitVisualData();
 }
 
-unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char player_attacker, const MapPoint pt)
+void GameWorldViewer::InitVisualData()
+{
+    visualNodes.resize(gwb.GetWidth() * gwb.GetHeight());
+    for(MapPoint pt(0, 0); pt.y < gwb.GetHeight(); ++pt.y)
+    {
+        for(pt.x = 0; pt.x < gwb.GetWidth(); ++pt.x)
+        {
+            VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
+            const MapNode& node = gwb.GetNode(pt);
+            vNode.bq = node.bq;
+            for(unsigned i = 0; i < 3; ++i)
+                vNode.roads[i] = node.roads_real[i];
+        }
+    }
+    namespace bl = boost::lambda;
+    using bl::_1;
+    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(
+        bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1)
+        );
+    evBQChanged = gwb.GetNotifications().subscribe<NodeNote>(
+        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)
+        [bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pt, _1))]
+    );
+}
+
+void GameWorldViewer::InitTerrainRenderer()
+{
+    tr.GenerateOpenGL(*this);
+    namespace bl = boost::lambda;
+    using bl::_1;
+    // Notify renderer about altitude changes
+    evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>(
+        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::Altitude)
+        [bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pt, _1), boost::cref(*this))]
+    );
+    // And visibility changes
+    evVisibilityChanged = gwb.GetNotifications().subscribe<PlayerNodeNote>(
+        bl::if_(bl::bind(&PlayerNodeNote::type, _1) == PlayerNodeNote::Visibility)
+        [bl::bind(&GameWorldViewer::VisibilityChanged, this, bl::bind(&PlayerNodeNote::pt, _1), bl::bind(&PlayerNodeNote::player, _1))]
+    );
+}
+
+const GamePlayer& GameWorldViewer::GetPlayer() const
+{
+    return GetWorld().GetPlayer(playerId_);
+}
+
+unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 {
     // Ist das angegriffenne ein normales Gebäude?
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
         // Wird es gerade eingenommen?
-        if(static_cast<nobMilitary*>(attacked_building)->IsCaptured())
+        if(static_cast<const nobMilitary*>(attacked_building)->IsCaptured())
             // Dann darf es nicht angegriffen werden
             return 0;
     }
@@ -43,28 +100,21 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const unsigned char play
     // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
 
-    sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
+    sortedMilitaryBlds buildings = GetWorld().LookForMilitaryBuildings(pt, 3);
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == player_attacker && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
-            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, player_attacker);
+        if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, playerId_);
     }
 
     return total_count;
 }
 
-// Höhe wurde Verändert: TerrainRenderer Bescheid sagen, damit es entsprechend verändert werden kann
-void GameWorldViewer::AltitudeChanged(const MapPoint pt)
+BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 {
-    GameWorldBase::AltitudeChanged(pt);
+    return GetWorld().AdjustBQ(pt, playerId_, visualNodes[GetWorld().GetIdx(pt)].bq);
 }
-
-void GameWorldViewer::VisibilityChanged(const MapPoint pt)
-{
-    tr.VisibilityChanged(pt, *this);
-}
-
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 {
@@ -73,12 +123,26 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
         return VIS_VISIBLE;
 
     // Spieler schon tot? Dann auch alles sichtbar?
-    if(GAMECLIENT.GetLocalPlayer().isDefeated())
+    if(GetPlayer().IsDefeated())
         return VIS_VISIBLE;
 
-    return CalcWithAllyVisiblity(pt, GAMECLIENT.GetPlayerID());
+    return GetWorld().CalcWithAllyVisiblity(pt, playerId_);
 }
 
+bool GameWorldViewer::IsOwner(const MapPoint& pt) const
+{
+    return GetWorld().GetNode(pt).owner == playerId_ + 1;
+}
+
+const MapNode& GameWorldViewer::GetNode(const MapPoint& pt) const
+{
+    return GetWorld().GetNode(pt);
+}
+
+MapPoint GameWorldViewer::GetNeighbour(const MapPoint pt, const Direction dir) const
+{
+    return GetWorld().GetNeighbour(pt, dir);
+}
 
 void GameWorldViewer::RecalcAllColors()
 {
@@ -86,100 +150,172 @@ void GameWorldViewer::RecalcAllColors()
 }
 
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
-unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char dir, const Visibility visibility) const
+unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char roadDir, const Visibility visibility) const
 {
     if(visibility == VIS_VISIBLE)
-        // Normal die sichtbaren Straßen zurückliefern
-        return GetRoad(pt, dir, true);
-//      return GetPointRoad(x,y,dir,true);
+        return GetVisibleRoad(pt, roadDir);
     else if(visibility == VIS_FOW)
-        // entsprechende FoW-Straße liefern
-//      return GetPointFOWRoad(x,y,dir,GetYoungestFOWNodePlayer(MapPoint(x,y)));
-        return GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[dir];
+        return GetWorld().GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[roadDir];
     else
-        // Unsichtbar -> keine Straße zeichnen
-        return 0;
+        return 0; // No road
 }
 
+unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char roadDir) const
+{
+    unsigned char visualResult = visualNodes[GetWorld().GetIdx(pt)].roads[roadDir];
+    if(visualResult)
+        return visualResult;
+    else
+        return GetWorld().GetRoad(pt, roadDir);
+}
+
+unsigned char GameWorldViewer::GetVisiblePointRoad(const MapPoint pt, Direction dir) const
+{
+    if(dir.toUInt() >= 3)
+        return GetVisibleRoad(pt, dir.toUInt() - 3);
+    else
+        return GetVisibleRoad(GetNeighbour(pt, dir), dir.toUInt());
+}
+
+void GameWorldViewer::SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type)
+{
+    MapPoint nodePt;
+    if(dir.toUInt() >= 3)
+    {
+        nodePt = pt;
+        dir = Direction::fromInt(dir.toUInt() - 3);
+    }else
+        nodePt = GetNeighbour(pt, dir);
+    visualNodes[GetWorld().GetIdx(nodePt)].roads[dir.toUInt()] = type;
+}
+
+bool GameWorldViewer::IsOnRoad(const MapPoint& pt) const
+{
+    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
+        if(GetVisibleRoad(pt, roadDir))
+            return true;
+    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
+        if(GetVisibleRoad(GetNeighbour(pt, Direction::fromInt(roadDir)), roadDir))
+            return true;
+    return false;
+}
 
 /// Return a ship at this position owned by the given player. Prefers ships that need instructions.
-noShip* GameWorldViewer::GetShip(const MapPoint pt, const unsigned char player) const
+noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 {
-    noShip* ship = NULL;
+    noShip* resultShip = NULL;
 
     for (unsigned i = 0; i < 7; ++i)
     {
-        MapPoint pa;
+        MapPoint curPt;
 
         if (i == 6)
-        {
-            pa = pt;
-        }
+            curPt = pt;
         else
-        {
-            pa = GetNeighbour(pt, i);
-        }
+            curPt = GetWorld().GetNeighbour(pt, i);
 
-        const std::list<noBase*>& figures = GetFigures(pa);
+        const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
-            if((*it)->GetGOT() == GOT_SHIP)
+            if((*it)->GetGOT() != GOT_SHIP)
+                continue;
+            noShip* curShip = static_cast<noShip*>(*it);
+
+            if (curShip->GetPlayer() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
             {
-                noShip* tmp = static_cast<noShip*>(*it);
-
-                if (tmp->GetPlayer() == player)
-                {
-                    if ((tmp->GetPos() == pt) || (tmp->GetDestinationForCurrentMove() == pt))
-                    {
-                        if (tmp->IsWaitingForExpeditionInstructions())
-                        {
-                            return(tmp);
-                        }
-
-                        ship = tmp;
-                    }
-                }
+                if(curShip->IsWaitingForExpeditionInstructions())
+                    return curShip;
+                resultShip = curShip;
             }
         }
     }
 
-    return(ship);
+    return resultShip;
 }
 
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
-unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const unsigned char player_attacker,
-        const MapPoint pt) const
+unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const
 {
-    if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
+    if(GetWorld().GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
-    return unsigned(GetAvailableSoldiersForSeaAttack(player_attacker, pt).size());
+    return unsigned(GetWorld().GetAvailableSoldiersForSeaAttack(playerId_, pt).size());
+}
+
+void GameWorldViewer::ChangePlayer(unsigned player)
+{
+    if(player == playerId_)
+        return;
+    playerId_ = player;
+    RecalcAllColors();
+}
+
+void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
+{
+    // If visibility changed for us, or our team mate if shared view is on -> Update renderer
+    if(player == playerId_ || (GetWorld().GetGGS().team_view && GetWorld().GetPlayer(playerId_).IsAlly(player)))
+        tr.VisibilityChanged(pt, *this);
+}
+
+void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
+{
+    if(note.player != playerId_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed))
+        return;
+    // Road construction command ended -> Remove visual overlay
+    RemoveVisualRoad(note.pos, note.route);
+}
+
+void GameWorldViewer::RecalcBQ(const MapPoint& pt)
+{
+    BQCalculator calcBQ(GetWorld());
+    visualNodes[GetWorld().GetIdx(pt)].bq = calcBQ(pt, boost::lambda::bind(&GameWorldViewer::IsOnRoad, this, boost::lambda::_1));
+}
+
+void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
+{
+    RecalcBQ(pt);
+
+    for(unsigned i = 3; i < 6; ++i)
+        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
+}
+
+void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route)
+{
+    MapPoint curPt = start;
+    for(unsigned i = 0; i < route.size(); ++i)
+    {
+        SetVisiblePointRoad(curPt, Direction::fromInt(route[i]), 0);
+        curPt = GetWorld().GetNeighbour(curPt, route[i]);
+    }
+}
+
+bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const
+{
+    return !IsOnRoad(pt) && GetWorld().RoadAvailable(isWaterRoad, pt);
 }
 
 /// Get the "youngest" FOWObject of all players who share the view with the local player
 const FOWObject* GameWorldViewer::GetYoungestFOWObject(const MapPoint pos) const
 {
-    return GetNode(pos).fow[GetYoungestFOWNodePlayer(pos)].object;
+    return GetWorld().GetNode(pos).fow[GetYoungestFOWNodePlayer(pos)].object;
 }
-
 
 /// Gets the youngest fow node of all visible objects of all players who are connected
 /// with the local player via team view
 unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) const
 {
-    unsigned char local_player = GAMECLIENT.GetPlayerID();
-    unsigned char youngest_player = local_player;
-    unsigned youngest_time = GetNode(pos).fow[local_player].last_update_time;
+    unsigned char youngest_player = playerId_;
+    unsigned youngest_time = GetWorld().GetNode(pos).fow[playerId_].last_update_time;
 
     // Shared team view enabled?
-    if(GetGGS().team_view)
+    if(GetWorld().GetGGS().team_view)
     {
         // Then check if team members have a better (="younger", see our economy) fow object
-        for(unsigned i = 0; i < GetPlayerCount(); ++i)
+        for(unsigned i = 0; i <  GetWorld().GetPlayerCount(); ++i)
         {
-            if(!GetPlayer(i).IsAlly(local_player))
+            if(!GetWorld().GetPlayer(i).IsAlly(playerId_))
                 continue;
             // Has the player FOW at this point at all?
-            const MapNode::FoWData& name = GetNode(pos).fow[i];
+            const MapNode::FoWData& name = GetWorld().GetNode(pos).fow[i];
             if(name.visibility == VIS_FOW)
             {
                 // Younger than the youngest or no object at all?
@@ -196,4 +332,3 @@ unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) cons
 
     return youngest_player;
 }
-

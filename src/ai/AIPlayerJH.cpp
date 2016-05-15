@@ -19,7 +19,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
 
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 
 #include "buildings/nobMilitary.h"
 #include "buildings/nobHQ.h"
@@ -103,10 +103,10 @@ namespace{
         switch(note.type)
         {
         case RoadNote::Constructed:
-            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, note.pos, note.firstDir));
+            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, note.pos, note.route.front()));
             break;
         case RoadNote::ConstructionFailed:
-            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, note.pos, note.firstDir));
+            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, note.pos, note.route.front()));
             break;
         }
     }
@@ -117,9 +117,7 @@ namespace{
     }
 }
 
-AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, const GameClientPlayer& player,
-                       const GameClientPlayerList& players, const GlobalGameSettings& ggs,
-                       const AI::Level level) : AIBase(playerid, gwb, player, players, ggs, level),
+AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerId, gwb, level),
                         UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false), UpgradeBldPos(MapPoint::Invalid())
 {
     construction = new AIConstruction(aii, *this);
@@ -149,23 +147,23 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerid, const GameWorldBase& gwb, c
     namespace bl = boost::lambda;
     using bl::_1;
     subBuilding = gwb.GetNotifications().subscribe<BuildingNote>(
-        bl::if_(bl::bind(&BuildingNote::player, _1) == playerid)[
+        bl::if_(bl::bind(&BuildingNote::player, _1) == playerId)[
             bl::bind(&HandleBuildingNote, boost::ref(eventManager), _1)
         ]);
     subExpedition = gwb.GetNotifications().subscribe<ExpeditionNote>(
-        bl::if_(bl::bind(&ExpeditionNote::player, _1) == playerid)[
+        bl::if_(bl::bind(&ExpeditionNote::player, _1) == playerId)[
             bl::bind(&HandleExpeditionNote, boost::ref(eventManager), _1)
         ]);
     subResource = gwb.GetNotifications().subscribe<ResourceNote>(
-        bl::if_(bl::bind(&ResourceNote::player, _1) == playerid)[
+        bl::if_(bl::bind(&ResourceNote::player, _1) == playerId)[
             bl::bind(&HandleResourceNote, boost::ref(eventManager), _1)
         ]);
     subRoad = gwb.GetNotifications().subscribe<RoadNote>(
-        bl::if_(bl::bind(&RoadNote::player, _1) == playerid)[
+        bl::if_(bl::bind(&RoadNote::player, _1) == playerId)[
             bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)
         ]);
     subShip = gwb.GetNotifications().subscribe<ShipNote>(
-        bl::if_(bl::bind(&ShipNote::player, _1) == playerid)[
+        bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[
             bl::bind(&HandleShipNote, boost::ref(eventManager), _1)
         ]);
 }
@@ -213,36 +211,36 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if (!gfisnwf) //try to complete a job on the list
     {
-		//LOG.lprintf("ai doing stuff %i \n",playerid);
+		//LOG.lprintf("ai doing stuff %i \n",playerId);
         if (gf % 100 == 0)
             construction->RefreshBuildingCount();
         ExecuteAIJob();
     }
 
-    if ((gf + playerid * 17) % attack_interval == 0)
+    if ((gf + playerId * 17) % attack_interval == 0)
     {
         //CheckExistingMilitaryBuildings();
         TryToAttack();
     }
-	if (((gf + playerid * 17) % 73 == 0) && (level != AI::EASY))
+	if (((gf + playerId * 17) % 73 == 0) && (level != AI::EASY))
     {
         MilUpgradeOptim();
     }
 
-    if ((gf + 41 + playerid * 17) % attack_interval == 0)
+    if ((gf + 41 + playerId * 17) % attack_interval == 0)
     {
         if(ggs.getSelection(AddonId::SEA_ATTACK) < 2) //not deactivated by addon? -> go ahead
             TrySeaAttack();
     }
 
-    if ((gf + playerid * 13) % 1500 == 0) 
+    if ((gf + playerId * 13) % 1500 == 0) 
     {
         CheckExpeditions();
         CheckForester();
         CheckGranitMine();
     }
 
-    if((gf + playerid * 11) % 150 == 0)
+    if((gf + playerId * 11) % 150 == 0)
     {
         AdjustSettings();
         //check for useless sawmills
@@ -262,7 +260,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         }
     }
 
-    if((gf + playerid * 7) % build_interval == 0) // plan new buildings
+    if((gf + playerId * 7) % build_interval == 0) // plan new buildings
     {
         PlanNewBuildings(gf);
     }	
@@ -302,7 +300,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
     }};
     const unsigned resGatherBldCount = 14; /* The first n buildings in the above list, that gather resources */
 
-    //LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerid);
+    //LOG.lprintf("new buildorders %i whs and %i mil for player %i \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
 
     const std::list<nobBaseWarehouse*>& storehouses = aii.GetStorehouses();
     if(!storehouses.empty())
@@ -361,7 +359,7 @@ bool AIPlayerJH::TestDefeat()
 {		
     if (isInitGfCompleted>=10 && aii.GetStorehouses().empty())
     {
-		//LOG.lprintf("ai defeated player %i \n",playerid);
+		//LOG.lprintf("ai defeated player %i \n",playerId);
         defeated = true;
         aii.Surrender();
         Chat(_("You win"));
@@ -527,7 +525,7 @@ void AIPlayerJH::InitReachableNodes()
             const noFlag* myFlag = aii.GetSpecObj<noFlag>(pt);
             if (myFlag)
             {
-                if (myFlag->GetPlayer() == playerid)
+                if (myFlag->GetPlayer() == playerId)
                 {
                     nodes[i].reachable = true;
                     toCheck.push(pt);
@@ -588,7 +586,7 @@ void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
     {
         const unsigned idx = aii.GetIdx(*it);
         const noFlag* flag = aii.GetSpecObj<noFlag>(*it);
-        if (flag && flag->GetPlayer() == playerid)
+        if (flag && flag->GetPlayer() == playerId)
         {
             nodes[idx].reachable = true;
             toCheck.push(*it);
@@ -1125,7 +1123,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	//have frontier warehouses?
 	if(!frontierWhs.empty())
 	{
-		//LOG.lprintf("distribute maxranks - got frontierwhs for player %i \n",playerid);
+		//LOG.lprintf("distribute maxranks - got frontierwhs for player %i \n",playerId);
 		bool hasUnderstaffedWh=false;
 		//try to gather limit maxranks in each - if we have that many unblock for all frontier whs, 
 		//check if there is at least one with less than limit first
@@ -1161,7 +1159,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	}
 	else //there are no frontier whs!
 	{
-		//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i \n",playerid);
+		//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i \n",playerId);
 		bool hasUnderstaffedWh=false;
 		//try to gather limit maxranks in each - if we have that many unblock for all  whs, 
 		//check if there is at least one with less than limit first
@@ -1179,7 +1177,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
             bool shouldBlock;
 			if(wh.GetPos() == upwh->GetPos()) // warehouse next to upgradebuilding should block when there is more than 1 wh
 			{
-				//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerid);
+				//LOG.lprintf("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerId);
                 shouldBlock = true;
             } else if(hasUnderstaffedWh)
             {
@@ -1413,7 +1411,7 @@ void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char  
     if(!(flag = aii.GetSpecObj<noFlag>(pt)))
         return;
     //is it our flag?
-    if(flag->GetPlayer() != playerid)
+    if(flag->GetPlayer() != playerId)
     {
         return;
     }
@@ -1499,7 +1497,7 @@ void AIPlayerJH::HandleExpedition(const MapPoint pt)
     {
         if((*it)->GetGOT() == GOT_SHIP)
         {
-            if(static_cast<noShip*>(*it)->GetPlayer() == playerid)
+            if(static_cast<noShip*>(*it)->GetPlayer() == playerId)
             {
                 if (static_cast<noShip*>(*it)->IsWaitingForExpeditionInstructions())
                 {
@@ -1688,7 +1686,7 @@ void AIPlayerJH::MilUpgradeOptim()
 
 void AIPlayerJH::Chat(const std::string& message)
 {
-    GameMessage_Server_Chat chat = GameMessage_Server_Chat(playerid, CD_ALL, message);
+    GameMessage_Server_Chat chat = GameMessage_Server_Chat(playerId, CD_ALL, message);
     GAMESERVER.AIChat(chat);
 }
 
@@ -1821,14 +1819,14 @@ void AIPlayerJH::TryToAttack()
         sortedMilitaryBlds myBuildings = aii.GetMilitaryBuildings(dest, 2);
         for(sortedMilitaryBlds::iterator it3 = myBuildings.begin(); it3 != myBuildings.end(); ++it3)
         {
-            if ((*it3)->GetPlayer() == playerid)
+            if ((*it3)->GetPlayer() == playerId)
             {
                 const nobMilitary* myMil = dynamic_cast<const nobMilitary*>(*it3);
                 if (!myMil || myMil->IsUnderAttack())
                     continue;
 
                 unsigned newAttackers;
-                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, playerid, newAttackers);
+                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, playerId, newAttackers);
                 attackersCount += newAttackers;
             }
         }
@@ -1866,7 +1864,7 @@ void AIPlayerJH::TrySeaAttack()
         //sea id not already listed as valid or invalid?
         if(!helpers::contains(seaidswithattackers, (*it)->GetSeaID()) && !helpers::contains(invalidseas, (*it)->GetSeaID()))
         {
-            unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerid, (*it)->GetSeaID(), false);
+            unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
             {
                 seaidswithattackers.push_back((*it)->GetSeaID());
@@ -1883,7 +1881,7 @@ void AIPlayerJH::TrySeaAttack()
     /*else
     {
         for(unsigned i=0;i<seaidswithattackers.size();i++)
-            LOG.lprintf("attackers at sea ids for player %i, sea id %i, count %i \n",playerid, seaidswithattackers[i], attackersatseaid[i]);
+            LOG.lprintf("attackers at sea ids for player %i, sea id %i, count %i \n",playerId, seaidswithattackers[i], attackersatseaid[i]);
     }*/
     //first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
     for(unsigned i = 1; i < gwb.GetHarborPointCount(); i++)
@@ -1897,7 +1895,7 @@ void AIPlayerJH::TrySeaAttack()
                 {
                     //attackers for this building?
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), testseaidswithattackers, playerid);
+                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), testseaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty()) //harbor can be attacked?
                     {
                         if(!hb->DefendersAvailable()) //no defenders?
@@ -1926,7 +1924,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos());
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii.SeaAttack((*it)->GetPos(), 1, true);
@@ -1955,7 +1953,7 @@ void AIPlayerJH::TrySeaAttack()
                 if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable())) //undefended headquarter(or unlikely as it is a harbor...) - priority list!
                 {
                     std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerid);
+                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(*it);
@@ -1975,7 +1973,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos());
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii.SeaAttack((*it)->GetPos(), 1, true);
@@ -1987,10 +1985,10 @@ void AIPlayerJH::TrySeaAttack()
     for(std::deque<const nobBaseMilitary*>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); ++it)
     {
         std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
-        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerid); //test only if we should have attackers from one of our valid sea ids
+        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId); //test only if we should have attackers from one of our valid sea ids
         if(!testseaidswithattackers.empty()) //only do the final check if it will probably be a good result
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerid, (*it)->GetPos()); //now get a final list of attackers and attack it
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos()); //now get a final list of attackers and attack it
             if(!attackers.empty())
             {
                 aii.SeaAttack((*it)->GetPos(), attackers.size(), true);
@@ -2273,7 +2271,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 			{
 				if (construction->IsConnectedToRoadSystem((*it)->GetFlag()))
 				{
-					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerid, count);
+					//LOG.lprintf("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerId, count);
                     UpgradeBldPos = (*it)->GetPos();
 					UpgradeBldListNumber=count;
 					return count;
@@ -2497,7 +2495,7 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
             {
                 if(onlyempty) //check if the spot is actually free for colonization?
                 {
-                    if(gwb.IsHarborPointFree(i, playerid, seaId))
+                    if(gwb.IsHarborPointFree(i, playerId, seaId))
                         return true;
                 }
                 else
@@ -2601,19 +2599,36 @@ void AIPlayerJH::AdjustSettings()
 	//update tool creation settings
     ToolSettings toolsettings;
     const Inventory& inventory = aii.GetInventory();
-    toolsettings[2] = (inventory.goods[GD_SAW] + inventory.people[JOB_CARPENTER] < 2) ? 4 : inventory.goods[GD_SAW] < 1 ? 1 : 0;                                                                       //saw
-    toolsettings[3] = (inventory.goods[GD_PICKAXE] < 1) ? 1 : 0;                                                                                                                     //pickaxe
-    toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;                                                                                                                      //hammer
-    toolsettings[6] = (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < construction->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;;                   //crucible
-    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SCYTHE] < 1)) ? 1 : 0;                        //scythe
-    toolsettings[10] = (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < construction->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;                            //rollingpin
-    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SHOVEL] < 1)) ? 1 : 0 ;                       //shovel
-    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER] < 12) && inventory.goods[GD_AXE] < 1) ? 1 : 0; //axe
-    toolsettings[0] = 0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GD_TONGS]<1))?1:0;                                                //Tongs(metalworks)
-    toolsettings[9] = 0; //(aii.GetInventory().goods[GD_CLEAVER]+aii.GetInventory().people[JOB_BUTCHER]<construction->GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;                                //cleaver
-    toolsettings[7] = 0;                                                                                                                                                                        //rod & line
-    toolsettings[11] = 0;                                                                                                                                                                       //bow
-    aii.ChangeTools(toolsettings);
+    // Saw
+    toolsettings[2] = (inventory.goods[GD_SAW] + inventory.people[JOB_CARPENTER] < 2) ? 4 : inventory.goods[GD_SAW] < 1 ? 1 : 0;
+    // Pickaxe
+    toolsettings[3] = (inventory.goods[GD_PICKAXE] < 1) ? 1 : 0;
+    // Hammer
+    toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;
+    // Crucible
+    toolsettings[6] = (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < construction->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;
+    // Scythe
+    toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SCYTHE] < 1)) ? 1 : 0;
+    // Rollingpin
+    toolsettings[10] = (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < construction->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;
+    // Shovel
+    toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SHOVEL] < 1)) ? 1 : 0 ;
+    // Axe
+    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER] < 12) && inventory.goods[GD_AXE] < 1) ? 1 : 0;
+    // Tongs(metalworks)
+    toolsettings[0] = 0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GD_TONGS]<1))?1:0;
+    // cleaver
+    toolsettings[9] = 0; //(aii.GetInventory().goods[GD_CLEAVER]+aii.GetInventory().people[JOB_BUTCHER]<construction->GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;
+    // rod & line
+    toolsettings[7] = 0;
+    // bow
+    toolsettings[11] = 0;
+    for(unsigned i = 0; i < toolsettings.size(); i++)
+        if(toolsettings[i] != player.GetToolPriority(i))
+        {
+            aii.ChangeTools(toolsettings);
+            break;
+        }
 
     // Set military settings to some currently required values
     boost::array<unsigned char, MILITARY_SETTINGS_COUNT> milSettings;
@@ -2626,7 +2641,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[6] = ggs.getSelection(AddonId::SEA_ATTACK)==2 ? 0 : 8; //harbor flag: no sea attacks?->no soldiers else 50% to 100%
 	milSettings[5] = CalcMilSettings(); //inland 1bar min 50% max 100% depending on how many soldiers are available
 	milSettings[7] = 8;                                                     //front: 100%
-	if(player.militarySettings_[5] != milSettings[5] || player.militarySettings_[6] != milSettings[6] || player.militarySettings_[4]!=milSettings[4] || player.militarySettings_[1]!=milSettings[1]) //only send the command if we want to change something
+	if(player.GetMilitarySetting(5) != milSettings[5] || player.GetMilitarySetting(6) != milSettings[6] || player.GetMilitarySetting(4)!=milSettings[4] || player.GetMilitarySetting(1)!=milSettings[1]) //only send the command if we want to change something
 		aii.ChangeMilitary(milSettings);
 }
 
@@ -2685,10 +2700,10 @@ unsigned AIPlayerJH::CalcMilSettings()
 	while (returnValue > 4)
 	{
         //have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next lower setting down to 4 (50%)
-		if(soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount*10/11 || (player.militarySettings_[5]>=returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount))
+		if(soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount*10/11 || (player.GetMilitarySetting(5)>=returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount))
 			break;
 		returnValue--;
 	}
-	//LOG.lprintf("player %i inland milsetting %i \n",playerid,returnvalue);
+	//LOG.lprintf("player %i inland milsetting %i \n",playerId,returnvalue);
 	return returnValue;
 }

@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "figures/nofCarrier.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "EventManager.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
@@ -52,13 +52,8 @@ noFlag::noFlag(const MapPoint pos,
     unsigned char dir;
     noFlag* flag = gwg->GetRoadFlag(pos, dir, dis_dir);
 
-    if(flag)
-    {
-        if (flag->routes[dir])
-        {
-            flag->routes[dir]->SplitRoad(this);
-        }
-    }
+    if(flag && flag->routes[dir])
+        flag->routes[dir]->SplitRoad(this);
 
     // auf Wasseranteile prüfen
     for(unsigned i = 0; i < 6; ++i)
@@ -162,7 +157,7 @@ void noFlag::Draw(int x, int y)
  */
 FOWObject* noFlag::CreateFOWObject() const
 {
-    const GameClientPlayer& owner = gwg->GetPlayer(player);
+    const GamePlayer& owner = gwg->GetPlayer(player);
     return new fowFlag(owner.color, owner.nation, flagtype);
 }
 
@@ -221,7 +216,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
         {
             if(best_ware)
             {
-                if(gwg->GetPlayer(player).transport[wares[i]->type] < gwg->GetPlayer(player).transport[best_ware->type])
+                if(gwg->GetPlayer(player).GetTransportPriority(wares[i]->type) < gwg->GetPlayer(player).GetTransportPriority(best_ware->type))
                 {
                     best_ware = wares[i];
                     best_ware_index = i;

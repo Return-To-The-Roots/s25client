@@ -21,7 +21,7 @@
 #include "postSystem/PostMsg.h"
 #include "gameTypes/PactTypes.h"
 
-class GamePlayerInfo;
+struct GamePlayerInfo;
 
 /// Post message asking for a change in the diplomacy contracts. Includes Yes/No buttons
 class DiplomacyPostQuestion : public PostMsg

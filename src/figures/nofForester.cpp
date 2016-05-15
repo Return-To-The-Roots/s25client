@@ -20,6 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "Random.h"
 #include "nodeObjs/noTree.h"
 #include "SoundManager.h"
@@ -27,8 +28,6 @@
 #include "world/GameWorldGame.h"
 #include "gameData/TerrainData.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
-class nobUsual;
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)

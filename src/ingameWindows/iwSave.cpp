@@ -28,7 +28,7 @@
 #include "GameServer.h"
 #include "LobbyClient.h"
 #include "desktops/dskLobby.h"
-#include "GameSavegame.h"
+#include "Savegame.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"

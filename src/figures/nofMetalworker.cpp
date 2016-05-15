@@ -20,7 +20,7 @@
 
 #include "Loader.h"
 #include "GameClient.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "buildings/nobUsual.h"
 #include "Random.h"
 #include "SoundManager.h"
@@ -29,7 +29,6 @@
 #include "GameEvent.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
-#include "notifications/ToolNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameTypes/MessageTypes.h"
 #include "Log.h"
@@ -120,7 +119,7 @@ unsigned nofMetalworker::ToolsOrderedTotal() const
 {
     unsigned sum = 0;
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
-        sum += gwg->GetPlayer(player).tools_ordered[i];
+        sum += gwg->GetPlayer(player).GetToolsOrdered(i);
     return sum;
 }
 
@@ -130,24 +129,23 @@ GoodType nofMetalworker::GetOrderedTool()
     int prio = -1;
     int tool = -1;
 
-    GameClientPlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        if (owner.tools_ordered[i] > 0 && (owner.toolsSettings_[i] > prio) )
+        if (owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > prio)
         {
-            prio = owner.toolsSettings_[i];
+            prio = owner.GetToolPriority(i);
             tool = i;
         }
     }
 
     if (tool != -1)
     {
-        --owner.tools_ordered[tool];
+        owner.ToolOrderProcessed(tool);
 
         if (ToolsOrderedTotal() == 0)
             SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PMC_GENERAL));
 
-        gwg->GetNotifications().publish(ToolNote(ToolNote::OrderCompleted, player));
         return TOOLS_SETTINGS_IDS[tool];
     }
     return GD_NOTHING;
@@ -160,7 +158,7 @@ GoodType nofMetalworker::GetRandomTool()
     unsigned short all_size = 0;
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
-        all_size += gwg->GetPlayer(player).toolsSettings_[i];
+        all_size += gwg->GetPlayer(player).GetToolPriority(i);
 
 	// if they're all zero
     if(all_size == 0)
@@ -179,7 +177,7 @@ GoodType nofMetalworker::GetRandomTool()
 
     for(unsigned int i = 0; i < TOOL_COUNT; ++i)
     {
-        for(unsigned g = 0; g < gwg->GetPlayer(player).toolsSettings_[i]; ++g)
+        for(unsigned g = 0; g < gwg->GetPlayer(player).GetToolPriority(i); ++g)
             random_array[curIdx++] = i;
     }
 

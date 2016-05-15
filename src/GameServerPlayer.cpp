@@ -17,38 +17,23 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameServerPlayer.h"
-#include "GameMessage.h"
 #include "GameMessages.h"
+#include "GameMessage_GameCommand.h"
 #include "drivers/VideoDriverWrapper.h"
 
 #include <algorithm>
 
-GameServerPlayer::GameServerPlayer(const unsigned playerid)
-    : GamePlayerInfo(playerid),
-      connecttime(0),
-      last_command_timeout(0),
-      pinging(false),
-      send_queue(&GameMessage::create_game),
-      recv_queue(&GameMessage::create_game),
-      lastping(0)
-{
-}
-
-GameServerPlayer::GameServerPlayer(const unsigned playerid, Serializer& ser)
-    : GamePlayerInfo(playerid, ser),
-      connecttime(0),
-      last_command_timeout(0),
-      pinging(false),
-      send_queue(&GameMessage::create_game),
-      recv_queue(&GameMessage::create_game),
-      lastping(0)
-{
-}
+GameServerPlayer::GameServerPlayer():
+    connecttime(0),
+    last_command_timeout(0),
+    pinging(false),
+    send_queue(&GameMessage::create_game),
+    recv_queue(&GameMessage::create_game),
+    lastping(0)
+{}
 
 GameServerPlayer::~GameServerPlayer()
-{
-    so.Close();
-}
+{}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// pingt ggf den Spieler
@@ -67,45 +52,32 @@ void GameServerPlayer::doPing()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// prüft auf Ping-Timeout beim verbinden
-void GameServerPlayer::doTimeout()
+void GameServerPlayer::checkConnectTimeout()
 {
     if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
     {
-        LOG.lprintf("SERVER: Reserved slot %d freed due to ping timeout\n", playerid);
-
-        /*// Todesnachricht absetzen
-        Message_Dead dm();
-        dm.send(&so);*/
-
-        // und aufräumen
-        clear();
+        LOG.lprintf("SERVER: Reserved slot freed due to ping timeout\n");
+        CloseConnections();
     }
 }
 
-/** /////////////////////////////////////////////////////////////////////////////
-// setzt den Player auf "reserviert"
-// @param sock Socket
-// @param id Spieler-ID                                                        */
-void GameServerPlayer::reserve(const Socket& sock, unsigned char id)
+void GameServerPlayer::reserve(const Socket& sock)
 {
-    clear();
-    playerid = id;
-    connecttime = VIDEODRIVER.GetTickCount();
-    so = sock;
     ps = PS_RESERVED;
+    so = sock;
+    connecttime = VIDEODRIVER.GetTickCount();
+    pinging = false;
 }
 
-void GameServerPlayer::clear()
+void GameServerPlayer::CloseConnections()
 {
-    GamePlayerInfo::clear();
-
-    connecttime = 0;
-    last_command_timeout = 0;
-    pinging = false;
+    // Free slot
+    ps = PS_FREE;
+    // Close socket and clear queues
+    so.Close();
     send_queue.clear();
     recv_queue.clear();
-    lastping = 0;
-    so.Close();
+    gc_queue.clear();
 }
 
 unsigned GameServerPlayer::GetTimeOut() const
@@ -113,25 +85,6 @@ unsigned GameServerPlayer::GetTimeOut() const
     // Nach 35 Sekunden kicken
     const int timeout = 35 - int(TIME.CurrentTime() - last_command_timeout) / 1000;
     return (timeout >= 0 ? timeout : 0);
-}
-
-/// Tauscht Spieler
-void GameServerPlayer::SwapInfo(GameServerPlayer& two)
-{
-    using std::swap;
-    GamePlayerInfo::SwapInfo(two);
-
-    swap(this->connecttime, two.connecttime);
-    swap(this->last_command_timeout, two.last_command_timeout);
-
-    swap(this->so, two.so);
-    swap(this->pinging, two.pinging);
-
-    swap(this->send_queue, two.send_queue);
-    swap(this->recv_queue, two.recv_queue);
-    swap(this->gc_queue, two.gc_queue);
-
-    swap(this->lastping, two.lastping);
 }
 
 /// Spieler laggt

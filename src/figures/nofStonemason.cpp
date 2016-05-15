@@ -21,12 +21,11 @@
 #include "nodeObjs/noGranite.h"
 #include "Loader.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "SoundManager.h"
 #include "GameInterface.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
-class nobUsual;
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_STONEMASON, pos, player, workplace)

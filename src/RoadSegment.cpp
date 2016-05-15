@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "RoadSegment.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "figures/nofCarrier.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"

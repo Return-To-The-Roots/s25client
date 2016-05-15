@@ -18,14 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "IngameMinimap.h"
 #include "world/GameWorldViewer.h"
-#include "GameClient.h"
+#include "world/GameWorldBase.h"
+#include "GamePlayer.h"
 #include "FOWObjects.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
-    Minimap(gwv.GetWidth(), gwv.GetHeight()), gwv(gwv), nodes_updated(gwv.GetWidth()*gwv.GetHeight(), false),
-    dos(gwv.GetWidth()*gwv.GetHeight(), DO_INVALID), territory(true), houses(true), roads(true)
+    Minimap(gwv.GetWorld().GetWidth(), gwv.GetWorld().GetHeight()), gwv(gwv), nodes_updated(map_width*map_height, false),
+    dos(map_width*map_height, DO_INVALID), territory(true), houses(true), roads(true)
 {
     CreateMapTexture();
 }
@@ -33,9 +34,6 @@ IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
 unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
-
-    // Beobeachtender Spieler
-    unsigned char viewing_player = GAMECLIENT.GetPlayerID();
 
     Visibility visibility = gwv.GetVisibility(pt);
 
@@ -48,16 +46,24 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     {
         DrawnObject drawn_object = DO_INVALID;
 
-        bool fow = (visibility == VIS_FOW);
+        const bool fow = (visibility == VIS_FOW);
 
         unsigned char owner;
+        NodalObjectType got = NOP_NOTHING;
+        FOW_Type fot = FOW_NOTHING;
         if(!fow)
+        {
             owner = gwv.GetNode(pt).owner;
-        else
-            owner = gwv.GetNode(pt).fow[GAMECLIENT.GetPlayerID()].owner;
+            got = gwv.GetWorld().GetNO(pt)->GetType();
+        } else
+        {
+            const unsigned char fowPlayerId = gwv.GetYoungestFOWNodePlayer(pt);
+            owner = gwv.GetNode(pt).fow[fowPlayerId].owner;
+            fot = gwv.GetNode(pt).fow[fowPlayerId].object->GetType();
+        }
 
-        // Baum an dieser Stelle?
-        if((!fow && gwv.GetNO(pt)->GetGOT() == GOT_TREE) || (fow && gwv.GetFOWObject(pt, viewing_player)->GetType() == FOW_TREE)) //-V807
+       // Baum an dieser Stelle?
+        if((!fow && got == NOP_TREE) || (fow && fot == FOW_TREE)) //-V807
         {
             color = VaryBrightness(TREE_COLOR, VARY_TREE_COLOR);
             drawn_object = DO_TERRAIN;
@@ -70,7 +76,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             }
         }
         // Granit an dieser Stelle?
-        else if((!fow && gwv.GetNO(pt)->GetGOT() == GOT_GRANITE) || (fow && gwv.GetFOWObject(pt, viewing_player)->GetType() == FOW_GRANITE))
+        else if((!fow && got == NOP_GRANITE) || (fow && fot == FOW_GRANITE))
         {
             color = VaryBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
             drawn_object = DO_TERRAIN;
@@ -89,12 +95,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             if(owner)
             {
                 // Building?
-                GO_Type got = gwv.GetNO(pt)->GetGOT();
-                FOW_Type fot = gwv.GetFOWObject(pt, viewing_player)->GetType();
-
-                if(((!fow && (got == GOT_NOB_USUAL || got == GOT_NOB_MILITARY ||
-                    got == GOT_NOB_STOREHOUSE || got == GOT_NOB_SHIPYARD || got == GOT_NOB_HARBORBUILDING ||
-                    got == GOT_NOB_HQ || got == GOT_BUILDINGSITE)) || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
+                if(((!fow && (got == NOP_BUILDING || got == NOP_BUILDINGSITE)) || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
                     drawn_object = DO_BUILDING;
                 /// Roads?
                 else if(IsRoad(pt, visibility))
@@ -138,7 +139,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
  */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
-    unsigned color = TerrainData::GetColor(gwv.GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2); //-V807
+    unsigned color = TerrainData::GetColor(gwv.GetWorld().GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2); //-V807
 
     // Schattierung
     int shadow = gwv.GetNode(pt).shadow;
@@ -177,7 +178,7 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
     // Spielerfarbe mit einberechnen
-    unsigned player_color = GAMECLIENT.GetPlayer(player - 1).color;
+    unsigned player_color = gwv.GetWorld().GetPlayer(player - 1).color;
 
     return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2,
         (GetGreen(color) + GetGreen(player_color)) / 2,

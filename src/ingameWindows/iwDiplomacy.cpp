@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "WindowManager.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "iwMsgbox.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlComboBox.h"
@@ -61,7 +61,7 @@ iwDiplomacy::iwDiplomacy()
 
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
-        GameClientPlayer& player = GAMECLIENT.GetPlayer(i);
+        GamePlayer& player = GAMECLIENT.GetPlayer(i);
         if(player.isUsed())
         {
             // Einzelne Spielernamen
@@ -75,7 +75,7 @@ iwDiplomacy::iwDiplomacy()
                              FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);
 
             // An sich selber braucht man keine Bündnisse zu schließen
-            if(GAMECLIENT.GetPlayerID() != i)
+            if(GAMECLIENT.GetPlayerId() != i)
             {
                 // Bündnisvertrag-Button
                 glArchivItem_Bitmap* image = LOADER.GetImageN("io", 61);
@@ -176,26 +176,26 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
     // Bündnisverträge
     if(ctrl_id >= 300 && ctrl_id < 400)
     {
-        unsigned char player_id = static_cast<unsigned char>(ctrl_id - 300);
+        unsigned char playerId = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
-        if(GAMECLIENT.GetLocalPlayer().GetPactState(TREATY_OF_ALLIANCE, player_id) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, player_id));
+            WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, playerId));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            GAMECLIENT.CancelPact(TREATY_OF_ALLIANCE, player_id);
+            GAMECLIENT.CancelPact(TREATY_OF_ALLIANCE, playerId);
     }
     // Nichtangriffspakte
     if(ctrl_id >= 400 && ctrl_id < 500)
     {
-        unsigned char player_id = static_cast<unsigned char>(ctrl_id - 400);
+        unsigned char playerId = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
-        if(GAMECLIENT.GetLocalPlayer().GetPactState(NON_AGGRESSION_PACT, player_id) == GameClientPlayer::NO_PACT)
+        if(GAMECLIENT.GetLocalPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, player_id));
+            WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, playerId));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            GAMECLIENT.CancelPact(NON_AGGRESSION_PACT, player_id);
+            GAMECLIENT.CancelPact(NON_AGGRESSION_PACT, playerId);
     }
 
 }

@@ -18,10 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "LuaPlayer.h"
 #include "EventManager.h"
-#include "GameClientPlayer.h"
+#include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
+#include "gameTypes/BuildingCount.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "notifications/BuildingNote.h"
 #include "helpers/converters.h"
@@ -34,7 +35,7 @@ inline void check(bool testValue, const std::string& error)
         throw std::runtime_error(error);
 }
 
-const GamePlayerInfo& LuaPlayer::GetPlayer() const
+const BasePlayerInfo& LuaPlayer::GetPlayer() const
 {
     return player;
 }
@@ -67,12 +68,12 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     if(notify)
     {
         player.SendPostMessage(new PostMsgWithBuilding(
-            player.GetGameWorld()->GetEvMgr().GetCurrentGF(),
+            player.GetGameWorld().GetEvMgr().GetCurrentGF(),
             _(BUILDING_NAMES[bld]),
             PMC_GENERAL,
             bld,
             player.nation,
-            player.hqPos));
+            player.GetHQPos()));
     }
 }
 
@@ -168,9 +169,7 @@ unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
-    BuildingCount bc;
-    player.GetBuildingCount(bc);
-    return bc.building_counts[bld];
+    return player.GetBuildingCount().buildings[bld];
 }
 
 unsigned LuaPlayer::GetWareCount(GoodType ware)
@@ -188,18 +187,18 @@ unsigned LuaPlayer::GetPeopleCount(Job job)
 bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
-    check(x < player.GetGameWorld()->GetWidth(), "x coordinate to large");
-    check(y < player.GetGameWorld()->GetHeight(), "y coordinate to large");
-    player.GetGameWorld()->GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.getPlayerID(), MapPoint(x, y), bld));
+    check(x < player.GetGameWorld().GetWidth(), "x coordinate to large");
+    check(y < player.GetGameWorld().GetHeight(), "y coordinate to large");
+    player.GetGameWorld().GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));
     return true;
 }
 
 void LuaPlayer::ModifyHQ(bool isTent)
 {
-    const MapPoint hqPos = player.hqPos;
+    const MapPoint hqPos = player.GetHQPos();
     if(hqPos.isValid())
     {
-        nobHQ* hq = player.GetGameWorld()->GetSpecObj<nobHQ>(hqPos);
+        nobHQ* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
         if(hq)
             hq->SetIsTent(isTent);
     }
@@ -207,5 +206,5 @@ void LuaPlayer::ModifyHQ(bool isTent)
 
 kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
 {
-    return kaguya::standard::tuple<unsigned, unsigned>(player.hqPos.x, player.hqPos.y);
+    return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
 }
