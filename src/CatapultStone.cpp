@@ -31,11 +31,10 @@
 #include "gameData/MapConsts.h"
 
 #include <cmath>
-class noBase;
 
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
-                             const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :
-    dest_building(dest_building), dest_map(dest_map), startPos(start_x, start_y), destPos(dest_x, dest_y), explode(false)
+                             const DrawPoint start, const DrawPoint dest, const unsigned fly_duration) :
+    dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
 {
     event = GetEvMgr().AddEvent(this, fly_duration);
 }
@@ -102,7 +101,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;
-        LOADER.GetMapPlayerImage(3100)->Draw(drawOffset);
+        LOADER.GetMapPlayerImage(3100)->Draw(drawPos);
     }
 }
 
