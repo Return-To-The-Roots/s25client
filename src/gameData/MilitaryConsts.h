@@ -19,6 +19,7 @@
 #define MILITARY_CONSTS_H_
 
 #include "gameData/NationConsts.h"
+#include "Point.h"
 #include <boost/array.hpp>
 
 /// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
@@ -69,10 +70,8 @@ const boost::array<unsigned, 6> SUPPRESS_UNUSED MILITARY_RADIUS = {{ 8, 9, 10, 1
 const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;
 
-/// Fahnenpositionen bei den Militärgebäuden
-
-// Besatzungsflaggen (4 Völker x 4 Größen x 2 X+Y) - ab 3162
-const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
+/// Offset of the troop flag per nation and type from the buildings origin
+const Point<int> TROOPS_FLAG_OFFSET[NAT_COUNT][4] =
 {
     {{24, -41}, {19, -41}, {31, -88}, {35, -67}},
     {{ -9, -49}, {14, -59}, {16, -63}, {0, -44}},
@@ -81,14 +80,14 @@ const signed char TROOPS_FLAGS[NAT_COUNT][4][2] =
     {{ -22, -37}, { -2, -51}, {20, -70}, { -46, -64}}
 };
 
-// Besatzungsflaggen für die HQs
-const signed char TROOPS_FLAGS_HQ[NAT_COUNT][2] =
+/// Offset of the troop flag per nation from the HQs origin
+const Point<int> TROOPS_FLAG_HQ_OFFSET[NAT_COUNT] =
 {
     { -12, -102}, { -19, -94}, { -18, -112}, {20, -54}, { -33, -81}
 };
 
-/// Grenzflaggen (4 Völker x 4 Größen x 2 X+Y) - ab 3162
-const signed char BORDER_FLAGS[NAT_COUNT][4][2] =
+/// Offset of the border indicator flag per nation from the buildings origin
+const Point<int> BORDER_FLAG_OFFSET[NAT_COUNT][4] =
 {
     {{ -6, -36}, {7, -48}, { -18, -28}, { -47, -64}},
     {{17, -45}, { -3, -49}, { -30, -25}, {22, -53}},

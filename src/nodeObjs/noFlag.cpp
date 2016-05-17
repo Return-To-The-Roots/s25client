@@ -124,30 +124,30 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
     }
 }
 
-void noFlag::Draw(int x, int y)
+void noFlag::Draw(DrawPoint drawPt)
 {
     // Positionen der Waren an der Flagge relativ zur Flagge
-    static const signed char WARES_POS[8][2] =
+    static const DrawPoint WARES_POS[8] =
     {
-        {  0,  0},
-        { -4,  0},
-        {  3, -1},
-        { -7, -1},
-        {  6, -2},
-        { -10, -2},
-        {  9, -5},
-        { -13, -5}
+        { 0,  0},
+        {-4,  0},
+        { 3, -1},
+        {-7, -1},
+        { 6, -2},
+        {-10, -2},
+        { 9, -5},
+        {-13, -5}
     };
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
-    LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(x, y, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+    LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = 8; i; --i)
     {
         if(wares[i - 1])
-            LOADER.GetMapImageN(2200 + wares[i - 1]->type)->Draw(x + WARES_POS[i - 1][0], y + WARES_POS[i - 1][1], 0, 0, 0, 0, 0, 0);
+            LOADER.GetMapImageN(2200 + wares[i - 1]->type)->Draw(drawPt + WARES_POS[i - 1]);
     }
 }
 

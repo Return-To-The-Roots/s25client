@@ -179,7 +179,7 @@ void iwPlayReplay::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 void iwPlayReplay::StartReplay()
 {
     // Mond malen
-    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
+    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMousePos() - DrawPoint(0, 40));
     VIDEODRIVER.SwapBuffers();
 
     ctrlTable* table = GetCtrl<ctrlTable>(0);

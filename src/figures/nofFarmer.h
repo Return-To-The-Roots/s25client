@@ -31,7 +31,7 @@ class nofFarmer : public nofFarmhand
     private:
 
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const override;
 

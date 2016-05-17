@@ -63,7 +63,7 @@ class nofPassiveSoldier : public nofSoldier
         GO_Type GetGOT() const override { return GOT_NOF_PASSIVESOLDIER; }
 
         // Zeichnet den Soldaten
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
         void InBuildingDestroyed();

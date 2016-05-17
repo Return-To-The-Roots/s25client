@@ -29,7 +29,7 @@ class nofWellguy : public nofWorkman
 {
     protected:
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         // TODO:der Brunnentyphat keine ID in JOBS.BOB
         unsigned short GetCarryID() const override { return 111; }

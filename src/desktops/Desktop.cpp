@@ -44,7 +44,7 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
 bool Desktop::Draw_()
 {
     if(background)
-        background->Draw(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), 0, 0, 0, 0);
+        background->Draw(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 
     DrawControls();
 

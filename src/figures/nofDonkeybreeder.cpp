@@ -42,35 +42,31 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
 /**
  *  Zeichnet ihn beim Arbeiten.
  */
-void nofDonkeybreeder::DrawWorking(int x, int y)
+void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 {
-    /// @todo KA was da gemacht werden muss
     const Nation nation = workplace->GetNation();
-    const signed char walk_start[NAT_COUNT][2] = { {2, 2}, { -6, -6}, { -7, -7}, { -7, -7}, { -6, -6} };
+    const DrawPoint walk_start[NAT_COUNT] = { {2, 2}, { -6, -6}, { -7, -7}, { -7, -7}, { -6, -6} };
     const signed char walk_length[NAT_COUNT] = { 22, 19, 19, 23, 19 };
-    const unsigned int color = gwg->GetPlayer(player).color;
+    const unsigned color = gwg->GetPlayer(player).color;
 
     unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
+    DrawPoint walkBasePos = drawPt + walk_start[nation];
 
     if(now_id < 400)
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(x, y);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][4][(now_id / 70) % 8].draw(x + walk_start[nation][0] + now_id / 100, y + walk_start[nation][1] + now_id / 100, COLOR_WHITE, gwg->GetPlayer(player).color);
-//      LOADER.GetBobN("jobs")->Draw(24,4,false,(now_id/70)%8,x+walk_start[nation][0]+now_id/100,y+walk_start[nation][1]+now_id/100,color);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(drawPt);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][4][(now_id / 70) % 8].draw(walkBasePos + DrawPoint(now_id / 100, now_id / 100), COLOR_WHITE, color);
     }
     else if(now_id < 1200)
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][3][((now_id - 400) / 70) % 8].draw(x + walk_start[nation][0] + 4 + walk_length[nation] * (now_id - 400) / 800, y + walk_start[nation][1] + 4, COLOR_WHITE, gwg->GetPlayer(player).color);
-//      LOADER.GetBobN("jobs")->Draw(24,3,false,((now_id-400)/70)%8,x+walk_start[nation][0]+4+walk_length[nation]*(now_id-400)/800,y+walk_start[nation][1]+4,color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][3][((now_id - 400) / 70) % 8].draw(walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 2000)
-        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)->Draw(x + walk_start[nation][0] + 4 + walk_length[nation], y + walk_start[nation][1] + 4, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)->Draw(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
     else if(now_id < 2800)
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][0][((now_id - 2000) / 70) % 8].draw(x + walk_start[nation][0] + 4 + walk_length[nation] * (800 - (now_id - 2000)) / 800, y + walk_start[nation][1] + 4, COLOR_WHITE, gwg->GetPlayer(player).color);
-//      LOADER.GetBobN("jobs")->Draw(24,0,false,((now_id-2000)/70)%8,x+walk_start[nation][0]+4+walk_length[nation]*(800-(now_id-2000))/800,y+walk_start[nation][1]+4,color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][0][((now_id - 2000) / 70) % 8].draw(walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - now_id) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 3200)
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(x, y);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][1][((now_id - 2800) / 70) % 8].draw(x + walk_start[nation][0] + (400 - (now_id - 2800)) / 100, y + walk_start[nation][1] + (400 - (now_id - 2800)) / 100, COLOR_WHITE, gwg->GetPlayer(player).color);
-//      LOADER.GetBobN("jobs")->Draw(24,1,false,((now_id-2800)/70)%8,x+walk_start[nation][0]+(400-(now_id-2800))/100,y+walk_start[nation][1]+(400-(now_id-2800))/100,color);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(drawPt);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][1][((now_id - 2800) / 70) % 8].draw(walkBasePos + DrawPoint((3200 - now_id) / 100, (3200 - now_id) / 100), COLOR_WHITE, color);
     }
 }
 

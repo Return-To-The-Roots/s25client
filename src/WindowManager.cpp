@@ -872,12 +872,12 @@ void WindowManager::DrawToolTip()
     {
         const unsigned spacing = 30;
         unsigned text_width = NormalFont->getWidth(curTooltip);
-        unsigned x = mouseCoords->x + spacing;
-        unsigned right_edge = x + text_width + 2;
+        DrawPoint ttPos = DrawPoint(mouseCoords->x + spacing, mouseCoords->y);
+        unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
-            x = mouseCoords->x - spacing - text_width;
+            ttPos.x = mouseCoords->x - spacing - text_width;
 
         unsigned int numLines = 1;
         size_t pos = curTooltip.find('\n');
@@ -887,7 +887,7 @@ void WindowManager::DrawToolTip()
             pos = curTooltip.find('\n', pos + 1);
         }
 
-        Window::DrawRectangle(x - 2 , mouseCoords->y - 2, text_width + 4, 4 + numLines * NormalFont->getDy(), 0x9F000000);
-        NormalFont->Draw(x, mouseCoords->y , curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
+        Window::DrawRectangle(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy(), 0x9F000000);
+        NormalFont->Draw(ttPos, curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
     }
 }

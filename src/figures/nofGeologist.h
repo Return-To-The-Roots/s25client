@@ -77,7 +77,7 @@ class nofGeologist : public nofFlagWorker
 
         GO_Type GetGOT() const override { return GOT_NOF_GEOLOGIST; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Wird aufgerufen, wenn die Flagge abgerissen wurde
         void LostWork() override;

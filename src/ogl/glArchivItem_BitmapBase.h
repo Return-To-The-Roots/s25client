@@ -20,6 +20,7 @@
 #pragma once
 
 #include "ArchivItem_Bitmap.h"
+#include "DrawPoint.h"
 
 class glArchivItem_BitmapBase: public virtual libsiedler2::ArchivItem_BitmapBase
 {
@@ -37,8 +38,10 @@ public:
     /// Setzt den Texturfilter auf einen bestimmten Wert.
     virtual void setFilter(unsigned int filter);
 
-    unsigned short GetTexWidth() {return(tex_width_);}
-    unsigned short GetTexHeight() {return(tex_height_);}
+    unsigned short GetTexWidth() const { return tex_width_; }
+    unsigned short GetTexHeight() const { return tex_height_; }
+    DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
+    DrawPoint GetSize() const { return DrawPoint(getWidth(), getHeight()); }
 
 private:
     /// Erzeugt die Textur.

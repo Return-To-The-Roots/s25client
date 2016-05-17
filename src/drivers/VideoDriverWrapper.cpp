@@ -449,7 +449,7 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
     return videodriver->GetFunction(extension.c_str());
 }
 
-int VideoDriverWrapper::GetMouseX()
+int VideoDriverWrapper::GetMouseX() const
 {
     if(!videodriver)
         return 0;
@@ -457,12 +457,21 @@ int VideoDriverWrapper::GetMouseX()
     return videodriver->GetMousePosX();
 }
 
-int VideoDriverWrapper::GetMouseY()
+int VideoDriverWrapper::GetMouseY() const
 {
     if(!videodriver)
         return 0;
 
     return videodriver->GetMousePosY();
+}
+
+Point<int> VideoDriverWrapper::GetMousePos() const
+{
+    if(!videodriver)
+        return Point<int>::Invalid();
+    Point<int> result;
+    videodriver->GetMousePos(result.x, result.y);
+    return result;
 }
 
 bool VideoDriverWrapper::IsLeftDown()

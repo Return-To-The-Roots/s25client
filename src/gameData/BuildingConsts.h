@@ -20,6 +20,7 @@
 
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
+#include "Point.h"
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
 const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =
@@ -313,7 +314,8 @@ const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][30] =
     }
 };
 
-const BuildingSignConst BUILDING_SIGN_CONSTS[NAT_COUNT][40] =
+/// Offset of the production-/gold- stop signs per building
+const Point<int> BUILDING_SIGN_CONSTS[NAT_COUNT][BLD_COUNT] =
 {
     // Nubier
     {
@@ -354,7 +356,7 @@ const BuildingSignConst BUILDING_SIGN_CONSTS[NAT_COUNT][40] =
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
-const int NUBIAN_MINE_FIRE[4][2] =
+const Point<int> NUBIAN_MINE_FIRE[4] =
 {
     {31, -18}, {34, -10}, {30, -11}, {32, -10},
 };

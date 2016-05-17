@@ -74,8 +74,10 @@ void nofCatapultMan::WalkedDerived()
 }
 
 
-void nofCatapultMan::DrawWorking(int x, int y)
+void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 {
+    // Offset of the catapult
+    drawPt -= DrawPoint(7, 19);
     switch(state)
     {
         default: return;
@@ -90,7 +92,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
-                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->Draw(drawPt);
             }
             //else
             //  // Katapult schießend zeichnen
@@ -103,7 +105,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
-                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->Draw(drawPt);
             else
             {
                 step = (step - 6) / 2;
@@ -112,24 +114,13 @@ void nofCatapultMan::DrawWorking(int x, int y)
                     step = -(step);
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
-                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->Draw(drawPt);
             }
 
         } break;
 
     }
 }
-
-
-//void nofCatapultMan::HandleStateTargetBuilding()
-//{
-//}
-//
-//void nofCatapultMan::HandleStateBackOff()
-//{
-//}
-
-
 
 void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
 {

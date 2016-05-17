@@ -355,21 +355,22 @@ nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(
     gwg->GetPlayer(player).SetHQ(*this);
 }
 
-void nobHQ::Draw(int x, int y)
+void nobHQ::Draw(DrawPoint drawPt)
 {
     if(isTent_)
-        LOADER.building_cache[nation][BLD_HEADQUARTERS][1].draw(x, y);
+        LOADER.building_cache[nation][BLD_HEADQUARTERS][1].draw(drawPt);
     else
     {
-        DrawBaseBuilding(x, y);
+        DrawBaseBuilding(drawPt);
 
         // Draw at most 4 flags
         const unsigned numSoldiers = std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetSoldiersCount());
+        DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
         for(unsigned i = min<unsigned>(numSoldiers, 4); i; --i)
         {
             glArchivItem_Bitmap_Player* bitmap = LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
             if(bitmap)
-                bitmap->Draw(x + TROOPS_FLAGS_HQ[nation][0], y + TROOPS_FLAGS_HQ[nation][1] + (i - 1) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                bitmap->Draw(flagsPos + DrawPoint(0, (i - 1) * 3), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
         }
     }
 }

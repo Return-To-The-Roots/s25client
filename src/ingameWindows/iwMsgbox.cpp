@@ -111,9 +111,13 @@ void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwMsgbox::Msg_PaintAfter()
 {
+    DrawPoint curPos = GetDrawPos() + DrawPoint(80, 30);
     // Text zeichnen
     for(unsigned i = 0; i < strings.size(); ++i)
-        NormalFont->Draw(GetX() + 80, GetY() + 30 + NormalFont->getHeight()*i, strings[i], glArchivItem_Font::DF_LEFT, COLOR_YELLOW);
+    {
+        NormalFont->Draw(curPos, strings[i], glArchivItem_Font::DF_LEFT, COLOR_YELLOW);
+        curPos.y += NormalFont->getHeight();
+    }
 }
 
 void iwMsgbox::AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc)

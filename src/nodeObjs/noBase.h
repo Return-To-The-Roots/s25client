@@ -21,6 +21,7 @@
 
 #include "GameObject.h"
 #include "NodalObjectTypes.h"
+#include "DrawPoint.h"
 
 class FOWObject;
 class SerializedGameData;
@@ -32,7 +33,7 @@ class noBase : public GameObject
         noBase(SerializedGameData& sgd, const unsigned obj_id);
 
         /// An x,y zeichnen.
-        virtual void Draw(int x, int y) = 0;
+        virtual void Draw(DrawPoint drawPt) = 0;
 
         /// Type zurückgeben.
         NodalObjectType GetType() const { return nop; }

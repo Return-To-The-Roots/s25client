@@ -245,6 +245,12 @@ void GameClient::StartGame(const unsigned random_init)
 {
     RTTR_Assert(state == CS_CONFIG || (state == CS_STOPPED && replay_mode));
 
+    // Mond malen
+    Point<int> moonPos = VIDEODRIVER.GetMousePos();
+    moonPos.y -= 40;
+    LOADER.GetImageN("resource", 33)->Draw(moonPos);
+    VIDEODRIVER.SwapBuffers();
+
     // Daten zurücksetzen
     randcheckinfo.Clear();
 
@@ -1597,7 +1603,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             char nwf_string[256];
             snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );
-            LargeFont->Draw(VIDEODRIVER.GetScreenWidth() / 2, VIDEODRIVER.GetScreenHeight() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
+            LargeFont->Draw(VIDEODRIVER.GetScreenSize() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }
@@ -1626,7 +1632,9 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     send_queue.sendMessage(socket, saveAnnouncement);
 
     // Mond malen
-    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
+    Point<int> moonPos = VIDEODRIVER.GetMousePos();
+    moonPos.y -= 40;
+    LOADER.GetImageN("resource", 33)->Draw(moonPos);
     VIDEODRIVER.SwapBuffers();
 
     Savegame save;

@@ -112,18 +112,18 @@ bool ctrlButton::Draw_()
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();
 
-    Rect buttonrect(GetX(), GetY(), width_, height_);
-
     if(tc != TC_INVISIBLE)
     {
         if(border)
-            Draw3D(buttonrect.left, buttonrect.top, width_, height_, tc, (unsigned short)((check) ? 2 : state), illuminated);
+            Draw3D(GetDrawPos(), width_, height_, tc, (unsigned short)((check) ? 2 : state), illuminated);
         else
         {
+            unsigned texture;
             if(state == BUTTON_UP || state == BUTTON_PRESSED)
-                LOADER.GetImageN("io", tc * 2 + 1)->Draw(buttonrect.left, buttonrect.top, 0, 0, 0, 0, width_, height_);
+                texture = tc * 2 + 1;
             else
-                LOADER.GetImageN("io", tc * 2)->Draw(buttonrect.left, buttonrect.top,  0, 0, 0, 0, width_, height_);
+                texture = tc * 2;
+            LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_);
         }
     }
 
@@ -162,8 +162,7 @@ void ctrlTextButton::DrawContent() const
     }
 
     const unsigned short offset = isHighlighted ? 2 : 0;
-    font->Draw(GetX() + width_ / 2 + offset,
-               GetY() + height_ / 2 + offset,
+    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset),
                text,
                glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
                color,
@@ -185,7 +184,7 @@ void ctrlImageButton::DrawContent() const
     if(image)
     {
         const unsigned short offset = (state == BUTTON_PRESSED || check) ? 2 : 0;
-        image->Draw(GetX() + width_ / 2 + offset, GetY() + height_ / 2 + offset, 0, 0, 0, 0, 0, 0, modulation_color);
+        image->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset), 0, 0, 0, 0, 0, 0, modulation_color);
     }
 }
 
@@ -203,7 +202,7 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
 void ctrlColorButton::DrawContent() const
 {
-    DrawRectangle(x_ + 3, y_ + 3, width_ - 6, height_ - 6, fillColor);
+    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, fillColor);
 }
 
 

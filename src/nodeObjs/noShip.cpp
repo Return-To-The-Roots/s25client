@@ -61,7 +61,7 @@ const std::string ship_names[NAT_COUNT][ship_count] =
 //{"FloSoftius", "Demophobius", "Olivianus", "Spikeonius", "Nastius"};
 
 /// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils#
-const Point<int> SHIPS_FLAG_POS[12] =
+const DrawPoint SHIPS_FLAG_POS[12] =
 {
     // Und wenn das Schiff steht und Segel nicht gehisst hat
     Point<int>(-3, -77),
@@ -152,25 +152,14 @@ void noShip::Destroy()
     gwg->GetPlayer(player).RemoveShip(this);
 }
 
-/// Zeichnet das Schiff stehend mit oder ohne Waren
-void noShip::DrawFixed(const int x, const int y, const bool draw_wares)
-{
-    LOADER.GetImageN("boot_z",  ((GetCurMoveDir() + 3) % 6) * 2 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z",  ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
-
-    if(draw_wares)
-        /// Waren zeichnen
-        LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
-}
-
-void noShip::Draw(int x, int y)
+void noShip::Draw(DrawPoint drawPt)
 {
     unsigned flag_drawing_type = 1;
 
     // Sind wir verloren? Dann immer stehend zeichnen
     if(lost)
     {
-        DrawFixed(x, y, true);
+        DrawFixed(drawPt, true);
         return;
     }
 
@@ -181,13 +170,13 @@ void noShip::Draw(int x, int y)
         case STATE_IDLE:
         case STATE_SEAATTACK_WAITING:
         {
-            DrawFixed(x, y, false);
+            DrawFixed(drawPt, false);
             flag_drawing_type = 0;
         } break;
 
         case STATE_GOTOHARBOR:
         {
-            DrawDriving(x, y);
+            DrawDriving(drawPt);
         } break;
         case STATE_EXPEDITION_LOADING:
         case STATE_EXPEDITION_UNLOADING:
@@ -198,13 +187,13 @@ void noShip::Draw(int x, int y)
         case STATE_EXPLORATIONEXPEDITION_LOADING:
         case STATE_EXPLORATIONEXPEDITION_UNLOADING:
         {
-            DrawFixed(x, y, false);
+            DrawFixed(drawPt, false);
         } break;
         case STATE_EXPLORATIONEXPEDITION_WAITING:
         case STATE_EXPEDITION_WAITING:
 
         {
-            DrawFixed(x, y, true);
+            DrawFixed(drawPt, true);
         } break;
         case STATE_EXPEDITION_DRIVING:
         case STATE_TRANSPORT_DRIVING:
@@ -212,50 +201,53 @@ void noShip::Draw(int x, int y)
         case STATE_EXPLORATIONEXPEDITION_DRIVING:
 
         {
-            DrawDrivingWithWares(x, y);
+            DrawDrivingWithWares(drawPt);
         } break;
         case STATE_SEAATTACK_RETURN_DRIVING:
         {
             if(!figures.empty() || !wares.empty())
-                DrawDrivingWithWares(x, y);
+                DrawDrivingWithWares(drawPt);
             else
-                DrawDriving(x, y);
+                DrawDriving(drawPt);
         } break;
     }
 
     LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))->
-    Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    Draw(drawPt + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
         LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))->
-        Draw(x + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].x, y + 4 + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6].y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+        Draw(drawPt + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6]);
 
+}
+
+/// Zeichnet das Schiff stehend mit oder ohne Waren
+void noShip::DrawFixed(DrawPoint drawPt, const bool draw_wares)
+{
+    LOADER.GetImageN("boot_z", ((GetCurMoveDir() + 3) % 6) * 2 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", ((GetCurMoveDir() + 3) % 6) * 2)->Draw(drawPt);
+
+    if(draw_wares)
+        /// Waren zeichnen
+        LOADER.GetImageN("boot_z", 30 + ((GetCurMoveDir() + 3) % 6))->Draw(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
-void noShip::DrawDriving(int& x, int& y)
+void noShip::DrawDriving(DrawPoint& drawPt)
 {
     // Interpolieren zwischen beiden Knotenpunkten
-    Point<int> offset = CalcWalkingRelative();
-    x += offset.x;
-    y += offset.y;
+    drawPt += CalcWalkingRelative();
 
-    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
+    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
-void noShip::DrawDrivingWithWares(int& x, int& y)
+void noShip::DrawDrivingWithWares(DrawPoint& drawPt)
 {
-    // Interpolieren zwischen beiden Knotenpunkten
-    Point<int> offset = CalcWalkingRelative();
-    x += offset.x;
-    y += offset.y;
-
-    LOADER.GetImageN("boot_z", 13 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + ((GetCurMoveDir() + 3) % 6) * 2)->Draw(x, y);
+    DrawDriving(drawPt);
     /// Waren zeichnen
-    LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(x, y);
+    LOADER.GetImageN("boot_z",  30 + ((GetCurMoveDir() + 3) % 6))->Draw(drawPt);
 }
 
 void noShip::HandleEvent(const unsigned int id)

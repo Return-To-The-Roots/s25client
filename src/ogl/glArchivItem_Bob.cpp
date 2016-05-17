@@ -24,7 +24,7 @@
 /**
  *  Zeichnet einen Animationsstep.
  */
-void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color)
+void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, DrawPoint drawPt, unsigned int color)
 {
     unsigned int good = item * 96 + animationstep * 12 + ( (direction + 3) % 6 ) + fat * 6;
     unsigned int body = fat * 48 + ( (direction + 3) % 6 ) * 8 + animationstep;
@@ -36,8 +36,8 @@ void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat,
 
     glArchivItem_Bitmap_Player* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
     if(koerper)
-        koerper->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        koerper->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
     glArchivItem_Bitmap_Player* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
     if(ware)
-        ware->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        ware->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
 }

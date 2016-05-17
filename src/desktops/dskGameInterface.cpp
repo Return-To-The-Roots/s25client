@@ -75,6 +75,7 @@
 #include "Loader.h"
 #include <boost/bind.hpp>
 #include <sstream>
+#include <algorithm>
 
 dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     worldViewer(GAMECLIENT.GetPlayerId(), world),
@@ -107,8 +108,9 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     GAMECLIENT.SetInterface(this);
     world.SetGameInterface(this);
 
+    std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
     cbb.loadEdges( LOADER.GetInfoN("resource") );
-    cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), &borders);
+    cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), borders);
 
     PostBox& postBox = GetPostBox();
     postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1));
@@ -130,7 +132,10 @@ PostBox& dskGameInterface::GetPostBox()
 }
 
 dskGameInterface::~dskGameInterface()
-{}
+{
+    for(unsigned i = 0; i < borders.size(); i++)
+        deletePtr(borders[i]);
+}
 
 void dskGameInterface::SetActive(bool activate)
 {
@@ -149,7 +154,9 @@ void dskGameInterface::SettingsChanged()
 void dskGameInterface::Resize_(unsigned short width, unsigned short height)
 {
     // recreate borders
-    cbb.buildBorder(width, height, &borders);
+    for(unsigned i = 0; i < borders.size(); i++)
+        deletePtr(borders[i]);
+    cbb.buildBorder(width, height, borders);
 
     // move buttons
     int barx = (width - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44;
@@ -198,23 +205,27 @@ void dskGameInterface::Msg_PaintBefore()
     // Spiel ausführen
     Run();
 
+    /// Padding of the figures
+    const DrawPoint figPadding(12, 12);
+    const DrawPoint screenSize = VIDEODRIVER.GetScreenSize();
     // Rahmen zeichnen
-    dynamic_cast<glArchivItem_Bitmap*>(borders.get(0))->Draw(0, 0); // oben (mit Ecken)
-    dynamic_cast<glArchivItem_Bitmap*>(borders.get(1))->Draw(0, VIDEODRIVER.GetScreenHeight() - 12); // unten (mit Ecken)
-    dynamic_cast<glArchivItem_Bitmap*>(borders.get(2))->Draw(0, 12); // links
-    dynamic_cast<glArchivItem_Bitmap*>(borders.get(3))->Draw(VIDEODRIVER.GetScreenWidth() - 12, 12); // rechts
+    borders[0]->Draw(DrawPoint(0, 0)); // oben (mit Ecken)
+    borders[1]->Draw(DrawPoint(0, screenSize.y - figPadding.y)); // unten (mit Ecken)
+    borders[2]->Draw(DrawPoint(0, figPadding.y)); // links
+    borders[3]->Draw(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
 
     // The figure/statues and the button bar
     glArchivItem_Bitmap& imgFigLeftTop  = *LOADER.GetImageN("resource", 17);
     glArchivItem_Bitmap& imgFigRightTop = *LOADER.GetImageN("resource", 18);
     glArchivItem_Bitmap& imgFigLeftBot  = *LOADER.GetImageN("resource", 19);
     glArchivItem_Bitmap& imgFigRightBot = *LOADER.GetImageN("resource", 20);
-    glArchivItem_Bitmap& imgButtonBar   = *LOADER.GetImageN("resource", 29);
-    imgFigLeftTop.Draw(12, 12, 0, 0, 0, 0, 0, 0);
-    imgFigRightTop.Draw(VIDEODRIVER.GetScreenWidth() - 12 - imgFigRightTop.getWidth(), 12, 0, 0, 0, 0, 0, 0);
-    imgFigLeftBot.Draw(12, VIDEODRIVER.GetScreenHeight() - 12 - imgFigLeftBot.getHeight(), 0, 0, 0, 0, 0, 0);
-    imgFigRightBot.Draw(VIDEODRIVER.GetScreenWidth() - 12 - imgFigRightBot.getWidth(), VIDEODRIVER.GetScreenHeight() - 12 - imgFigRightBot.getHeight(), 0, 0, 0, 0, 0, 0);
-    imgButtonBar.Draw(VIDEODRIVER.GetScreenWidth() / 2 - imgButtonBar.getWidth() / 2, VIDEODRIVER.GetScreenHeight() - imgButtonBar.getHeight(), 0, 0, 0, 0, 0, 0);
+    imgFigLeftTop.Draw(figPadding);
+    imgFigRightTop.Draw(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
+    imgFigLeftBot.Draw(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
+    imgFigRightBot.Draw(screenSize - figPadding - imgFigRightBot.GetSize());
+
+    glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
+    imgButtonBar.Draw(DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
 }
 
 void dskGameInterface::Msg_PaintAfter()
@@ -238,11 +249,11 @@ void dskGameInterface::Msg_PaintAfter()
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }
 
-    NormalFont->Draw(30, 1, nwf_string, 0, 0xFFFFFF00);
+    NormalFont->Draw(DrawPoint(30, 1), nwf_string, 0, 0xFFFFFF00);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(0, VIDEODRIVER.GetScreenHeight(), GAMECLIENT.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM, 0xFFFFFF00);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenHeight()), GAMECLIENT.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM, 0xFFFFFF00);
 
     // Mauszeiger
     if(road.mode != RM_DISABLED)
@@ -258,11 +269,13 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Laggende Spieler anzeigen in Form von Schnecken
+    DrawPoint snailPos(VIDEODRIVER.GetScreenWidth() - 70, 35);
     for(unsigned int i = 0; i < worldViewer.GetWorld().GetPlayerCount(); ++i)
     {
         const GamePlayer& player = worldViewer.GetWorld().GetPlayer(i);
         if(player.is_lagging)
-            LOADER.GetPlayerImage("rttr", 0)->Draw(VIDEODRIVER.GetScreenWidth() - 70 - i * 40, 35, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
+            LOADER.GetPlayerImage("rttr", 0)->Draw(snailPos, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
+        snailPos.x -= 40;
     }
 }
 

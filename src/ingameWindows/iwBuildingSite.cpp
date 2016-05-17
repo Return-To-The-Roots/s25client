@@ -74,12 +74,13 @@ void iwBuildingSite::Msg_PaintBefore()
     glArchivItem_Bitmap* bitmap = buildingsite->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetX() + 113, GetY() + 130, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->Draw(GetDrawPos() + DrawPoint(113, 130), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 void iwBuildingSite::Msg_PaintAfter()
 {
     // Baukosten zeichnen
+    DrawPoint curPos = GetDrawPos() + DrawPoint(width_ / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
         unsigned int wares_count = 0;
@@ -103,17 +104,21 @@ void iwBuildingSite::Msg_PaintAfter()
             break;
 
         // "Schwarzer Rahmen"
-        DrawRectangle(GetX() + width_ / 2 - 24 * wares_count / 2, GetY() + 60 + i * 29, 24 * wares_count, 24, 0x80000000);
+        DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
+        DrawRectangle(waresPos, 24 * wares_count, 24, 0x80000000);
+        waresPos += DrawPoint(12, 12);
 
         // Die Waren
         for(unsigned char z = 0; z < wares_count; ++z)
         {
             glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + (i == 0 ? GD_BOARDS : GD_STONES));
-            bitmap->Draw(GetX() + width_ / 2 - 24 * wares_count / 2 + 24 * z + 12, GetY() + 72 + i * 28, 0, 0, 0, 0, 0, 0, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040) );
+            bitmap->Draw(waresPos, 0, 0, 0, 0, 0, 0, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040) );
 
             // Hammer wenn Ware verbaut
             if(z < wares_used)
-                LOADER.GetMapImageN(2250 + GD_HAMMER)->Draw(GetX() + width_ / 2 - 24 * wares_count / 2 + 24 * z + 12, GetY() + 72 + i * 28);
+                LOADER.GetMapImageN(2250 + GD_HAMMER)->Draw(waresPos);
+            waresPos.x += 24;
         }
+        curPos.y += 29;
     }
 }

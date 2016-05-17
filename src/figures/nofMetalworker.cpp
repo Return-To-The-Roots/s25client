@@ -55,14 +55,14 @@ void nofMetalworker::Serialize(SerializedGameData& sgd) const
 }
 
 
-void nofMetalworker::DrawWorking(int x, int y)
+void nofMetalworker::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { { -11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5} };
+    const DrawPoint offsets[NAT_COUNT] = { { -11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5} };
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
     LOADER.GetPlayerImage("rom_bobs", 190 + (now_id % 23))
-    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+    ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)

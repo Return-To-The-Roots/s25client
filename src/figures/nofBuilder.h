@@ -51,8 +51,7 @@ class nofBuilder : public noFigure
 
         /// X,Y relativ zur Baustelle in Pixeln
         /// next ist der angesteuerte Punkt
-        short rel_x, rel_y;
-        short next_rel_x, next_rel_y;
+        Point<short> offsetSite, nextOffsetSite;
 
         /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
         unsigned char building_steps_available;
@@ -82,7 +81,7 @@ class nofBuilder : public noFigure
 
         GO_Type GetGOT() const override { return GOT_NOF_BUILDER; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
         void LostWork();

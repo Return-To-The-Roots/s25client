@@ -198,13 +198,12 @@ bool GameManager::Run()
             if(speedStep != 0)
             {
                 glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
-                const short x = VIDEODRIVER.GetScreenWidth() - 55;
-                const short y = 35;
-                runnerImg->Draw(x, y, 0, 0, 0, 0);
+                const DrawPoint drawPos(VIDEODRIVER.GetScreenWidth() - 55, 35);
+                runnerImg->Draw(drawPos, 0, 0, 0, 0);
                 if(speedStep != 1)
                 {
                     std::string multiplier = helpers::toString(std::abs(speedStep));
-                    NormalFont->Draw(x - runnerImg->getNx() + 19, y - runnerImg->getNy() + 6, multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
+                    NormalFont->Draw(drawPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
                 }
             }
         }
@@ -262,7 +261,7 @@ bool GameManager::Run()
 		char frame_str[64];
 		sprintf(frame_str, "%u fps", framerate);
 
-		SmallFont->Draw( VIDEODRIVER.GetScreenWidth(), 0, frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
+		SmallFont->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth(), 0), frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
 
 		// Zeichenpuffer wechseln
 		VIDEODRIVER.SwapBuffers();
@@ -343,16 +342,16 @@ void GameManager::DrawCursor()
         case CURSOR_HAND:
         {
             if(VIDEODRIVER.IsLeftDown())
-                LOADER.GetImageN("resource", 31)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), 0, 0, 0, 0, 0, 0);
+                LOADER.GetImageN("resource", 31)->Draw(VIDEODRIVER.GetMousePos());
             else
-                LOADER.GetImageN("resource", 30)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), 0, 0, 0, 0, 0, 0);
+                LOADER.GetImageN("resource", 30)->Draw(VIDEODRIVER.GetMousePos());
         } break;
         case CURSOR_SCROLL:
         case CURSOR_MOON:
         case CURSOR_RM:
         case CURSOR_RM_PRESSED:
         {
-            LOADER.GetImageN("resource", cursor_next)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), 0, 0, 0, 0, 0, 0);
+            LOADER.GetImageN("resource", cursor_next)->Draw(VIDEODRIVER.GetMousePos());
         } break;
         case CURSOR_NONE:
         default:

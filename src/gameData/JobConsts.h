@@ -20,6 +20,7 @@
 
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/GoodTypes.h"
+#include "DrawPoint.h"
 #include <boost/array.hpp>
 
 extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;
@@ -77,21 +78,21 @@ const JobConst JOB_CONSTS[JOB_TYPES_COUNT] =
 /// Katapultmann-Wartezeit
 const unsigned CATAPULT_WAIT1_LENGTH = 1300; //eigenlich 310 - aber hochgestellt wegen zu schneller Warenverteilung
 
-/// Positionen der Ware für jede Richtung beim Zeichnen für Esel und Boot
-const int WARE_POS_DONKEY[96] =
+/// Position of the ware on a donkey per direction and animation step
+const DrawPoint WARE_POS_DONKEY[6][8] =
 {
-    0, -13, 0, -12, 0, -12, 1, -13, 2, -13, 2, -12, 2, -12, 1, -13,
-    3, -12, 3, -11, 3, -11, 3, -12, 4, -12, 5, -11, 5, -11, 5, -12,
-    2, -9, 1, -8, 0, -7, 1, -8, 2, -9, 3, -8, 4, -8, 3, -9,
-    -1, -8, -2, -7, -3, -7, -2, -8, -1, -8, 0, -7, 1, -7, 0, -8,
-    -3, -7, -2, -6, -1, -6, -1, -7, -2, -7, -3, -6, -4, -6, -3, -7,
-    -3, -10, -3, -9, -3, -9, -2, -10, -1, -10, -1, -10, -1, -9, -1, -10,
+    {{0, -13},  {0, -12}, {0, -12}, {1, -13},  {2, -13},  {2, -12},  {2, -12}, {1, -13}},
+    {{3, -12},  {3, -11}, {3, -11}, {3, -12},  {4, -12},  {5, -11},  {5, -11}, {5, -12}},
+    {{2, -9},   {1, -8},  {0, -7},  {1, -8},   {2, -9},   {3, -8},   {4, -8},  {3, -9}},
+    {{-1, -8},  {-2, -7}, {-3, -7}, {-2, -8},  {-1, -8},  {0, -7},   {1, -7},  {0, -8}},
+    {{-3, -7},  {-2, -6}, {-1, -6}, {-1, -7},  {-2, -7},  {-3, -6},  {-4, -6}, {-3, -7}},
+    {{-3, -10}, {-3, -9}, {-3, -9}, {-2, -10}, {-1, -10}, {-1, -10}, {-1, -9}, {-1, -10}}
 };
 
 /// Positionen der Ware im Boat für jede Richtung
-const int WARE_POS_BOAT[12] =
+const DrawPoint WARE_POS_BOAT[6] =
 {
-    11, -4, 11, 0, -7, -1, -8, -5, -7, -7, 6, -7
+    {11, -4}, {11, 0}, {-7, -1}, {-8, -5}, {-7, -7}, {6, -7}
 };
 
 #endif

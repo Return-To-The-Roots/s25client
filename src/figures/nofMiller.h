@@ -34,7 +34,7 @@ class nofMiller : public nofWorkman
     private:
 
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const override { return 75; }
         /// Der Arbeiter erzeugt eine Ware

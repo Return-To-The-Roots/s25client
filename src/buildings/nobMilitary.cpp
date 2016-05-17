@@ -181,16 +181,19 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
 }
 
 
-void nobMilitary::Draw(int x, int y)
+void nobMilitary::Draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
-    DrawBaseBuilding(x, y);
+    DrawBaseBuilding(drawPt);
 
     // (max 4) Besatzungs-Fähnchen zeichnen
     unsigned flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
-        LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i))->Draw(x + TROOPS_FLAGS[nation][size][0], y + TROOPS_FLAGS[nation][size][1] + (i) * 3, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    {
+        const unsigned flagTexture = 3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i);
+        LOADER.GetMapPlayerImage(flagTexture)->Draw(drawPt + TROOPS_FLAG_OFFSET[nation][size] + DrawPoint(0, i*3), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    }
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     unsigned frontier_distance_tmp = frontier_distance;
@@ -207,11 +210,11 @@ void nobMilitary::Draw(int x, int y)
         bitmap = LOADER.GetMapPlayerImage(3150 + frontier_distance_tmp * 4 + animationFrame);
     }
     if(bitmap)
-        bitmap->Draw(x + BORDER_FLAGS[nation][size][0], y + BORDER_FLAGS[nation][size][1], 0, 0, 0, 0, 0, 0);
+        bitmap->Draw(drawPt + BORDER_FLAG_OFFSET[nation][size]);
 
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(coinsDisabledVirtual)
-        LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(46)->Draw(drawPt + BUILDING_SIGN_CONSTS[nation][type_]);
 }
 
 void nobMilitary::HandleEvent(const unsigned int id)

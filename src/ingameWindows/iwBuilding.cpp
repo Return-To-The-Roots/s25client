@@ -104,7 +104,7 @@ void iwBuilding::Msg_PaintBefore()
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
     // Haus unbesetzt ggf ausblenden
     GetCtrl<ctrlText>(10)->SetVisible(!building->HasWorker());
@@ -117,19 +117,21 @@ void iwBuilding::Msg_PaintAfter()
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)
 
         // "Schwarzer Rahmen"
-        DrawRectangle(GetX() + 40, GetY() + 60, 144, 24, 0x80000000);
-
+        DrawRectangle(GetDrawPos() + DrawPoint(40, 60), 144, 24, 0x80000000);
+        DrawPoint curPos = GetDrawPos() + DrawPoint(52, 72);
         for(unsigned char i = 0; i < 3; ++i)
         {
             for(unsigned char z = 0; z < 2; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(GetX() + 52 + 24 * (i * 2 + z), GetY() + 72, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
+                bitmap->Draw(curPos, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
+                curPos.x += 24;
             }
         }
     }
     else
     {
+        DrawPoint curPos = GetDrawPos() + DrawPoint(width_ / 2, 60);
         for(unsigned char i = 0; i < 2; ++i)
         {
             if(USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i] == GD_NOTHING)
@@ -139,18 +141,21 @@ void iwBuilding::Msg_PaintAfter()
             unsigned wares_count = (building->GetBuildingType() == BLD_CATAPULT) ? 4 : 6;
 
             // "Schwarzer Rahmen"
-            DrawRectangle(GetX() + width_ / 2 - 24 * wares_count / 2, GetY() + 60 + i * 29, 24 * wares_count, 24, 0x80000000);
+            DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
+            DrawRectangle(waresPos, 24 * wares_count, 24, 0x80000000);
+            waresPos += DrawPoint(12, 12);
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(GetX() + width_ / 2 - 24 * wares_count / 2 + 24 * z + 12, GetY() + 72 + i * 28, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
-
+                bitmap->Draw(waresPos, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? COLOR_WHITE : 0xFF404040) );
+                waresPos.x += 24;
             }
 
             std::stringstream text;
             text << (unsigned int)building->GetWares(i) << "/" << wares_count;
-            NormalFont->Draw(GetX() + width_ / 2, GetY() + 60 + 12 + i * 29, text.str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+            NormalFont->Draw(curPos + DrawPoint(0, 12), text.str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+            curPos.y += 29;
         }
     }
 }

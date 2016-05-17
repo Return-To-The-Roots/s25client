@@ -20,7 +20,7 @@
 #pragma once
 
 #include "glArchivItem_BitmapBase.h"
-#include "../libsiedler2/src/ArchivItem_Bitmap.h"
+#include "libsiedler2/src/ArchivItem_Bitmap.h"
 #include "libutil/src/colors.h"
 
 /// Basisklasse für GL-Bitmapitems.
@@ -31,7 +31,7 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, p
         glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
         /// Erzeugt und zeichnet die Textur.
-        void Draw(short dst_x, short dst_y, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE);
+        void Draw(DrawPoint dst, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE);
 
     protected:
         void FillTexture() override;

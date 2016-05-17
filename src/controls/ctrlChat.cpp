@@ -130,7 +130,7 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
 bool ctrlChat::Draw_()
 {
     // Box malen
-    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
+    Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
     // Scrolleiste zeichnen
     DrawControls();
@@ -139,45 +139,41 @@ bool ctrlChat::Draw_()
     unsigned show_lines = (page_size > unsigned(chat_lines.size()) ? unsigned(chat_lines.size()) : page_size);
 
     // Listeneinträge zeichnen
+    // Add margin
+    DrawPoint textPos = GetDrawPos() + DrawPoint(2, 2);
     unsigned int pos = GetCtrl<ctrlScrollBar>(0)->GetPos();
     for(unsigned int i = 0; i < show_lines; ++i)
     {
         // eine zweite oder n-nte Zeile?
         if(chat_lines[i + pos].secondary)
-        {
-            // dann etwas Platz lassen davor und den entsprechenden Text hinschreiben
-            font->Draw(GetX() + 2, GetY() + 2 + i * (font->getHeight() + 2), chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
-        }
+            font->Draw(textPos, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
         else
         {
-            // Breite von Zeitangabe und Spielername ausrechnen
-            unsigned short time_width = (chat_lines[i + pos].time_string.length()) ? font->getWidth(chat_lines[i + pos].time_string) : 0;
-            unsigned short player_width = (chat_lines[i + pos].player.length()) ? font->getWidth(chat_lines[i + pos].player) : 0;
-            unsigned short x_position = GetX() + 2, y_position = GetY() + 2 + i * (font->getHeight() + 2);
+            DrawPoint curTextPos = textPos;
 
             // Zeit, Spieler und danach Textnachricht
-            if(time_width)
+            if(!chat_lines[i + pos].time_string.empty())
             {
-                font->Draw(x_position, y_position, chat_lines[i + pos].time_string, 0, time_color);
-                x_position +=  time_width;
+                font->Draw(curTextPos, chat_lines[i + pos].time_string, 0, time_color);
+                curTextPos.x += font->getWidth(chat_lines[i + pos].time_string);
             }
 
-            if(player_width)
+            if(!chat_lines[i + pos].player.empty())
             {
                 // Klammer 1 (<)
-                font->Draw(x_position, y_position, "<", 0, chat_lines[i + pos].player_color);
-                x_position += bracket1_size;
+                font->Draw(curTextPos, "<", 0, chat_lines[i + pos].player_color);
+                curTextPos.x += bracket1_size;
                 // Spielername
-                font->Draw(x_position, y_position, chat_lines[i + pos].player, 0, chat_lines[i + pos].player_color);
-                x_position += player_width;
+                font->Draw(curTextPos, chat_lines[i + pos].player, 0, chat_lines[i + pos].player_color);
+                curTextPos.x += font->getWidth(chat_lines[i + pos].player);
                 // Klammer 2 (>)
-                font->Draw(x_position, y_position, "> ", 0, chat_lines[i + pos].player_color);
-                x_position += bracket2_size;
+                font->Draw(curTextPos, "> ", 0, chat_lines[i + pos].player_color);
+                curTextPos.x += bracket2_size;
             }
 
-            font->Draw(x_position, y_position, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
-
+            font->Draw(curTextPos, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
         }
+        textPos.y += font->getHeight() + 2;
     }
 
     return true;

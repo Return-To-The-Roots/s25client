@@ -19,6 +19,7 @@
 
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "gameTypes/MapTypes.h"
+#include "DrawPoint.h"
 #include <vector>
 
 class glArchivItem_Map;
@@ -41,7 +42,7 @@ public:
 
     /// Zeichnet die Minimap zentriert in die entsprechende Bounding-Box
     /// (x und y bezieht sich auf obere linke Ecke der Bounding Box)
-    void Draw(const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+    void Draw(DrawPoint drawPt, const unsigned short width, const unsigned short height);
 
     /// Gibt Größe der Map zurück
     unsigned short GetMapWidth() const { return map_width; }

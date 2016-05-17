@@ -61,18 +61,18 @@ void fowBuilding::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(static_cast<unsigned char>(nation));
 }
 
-void fowBuilding::Draw(int x, int y) const
+void fowBuilding::Draw(DrawPoint drawPt) const
 {
     if (type == BLD_CHARBURNER)
     {
-        LOADER.GetImageN("charburner", nation * 8 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetImageN("charburner", nation * 8 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
     }
     else
     {
-        LOADER.GetNationImage(nation, 250 + 5 * type)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 250 + 5 * type)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
         // ACHTUNG nicht jedes Gebäude hat einen Schatten !!
         if(LOADER.GetNationImage(nation, 250 + 5 * type + 1))
-            LOADER.GetNationImage(nation, 250 + 5 * type + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetNationImage(nation, 250 + 5 * type + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
 }
 
@@ -99,19 +99,19 @@ void fowBuildingSite::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(build_progress);
 }
 
-void fowBuildingSite::Draw(int x, int y) const
+void fowBuildingSite::Draw(DrawPoint drawPt) const
 {
     if(planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(nation, 450)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(nation, 450)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 451)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(nation, 455)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(nation, 455)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 456)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
 
         // bis dahin gebautes Haus zeichnen
@@ -134,28 +134,7 @@ void fowBuildingSite::Draw(int x, int y) const
             p2 = BUILDING_COSTS[nation][type].boards * 4;
         }
 
-        glArchivItem_Bitmap* image;
-        unsigned short progress, build_height;
-
-        // Normal
-        image = LOADER.GetNationImage(nation, 250 + 5 * type + 2);
-        if(image)
-        {
-            progress = p1 * image->getHeight() / p2;
-            build_height = image->getHeight() - progress;
-            if(progress != 0)
-                image->Draw(x, y + build_height, 0, 0, 0, build_height, 0, progress, FOW_DRAW_COLOR);
-        }
-
-        // Schatten
-        image = LOADER.GetNationImage(nation, 250 + 5 * type + 3);
-        if(image)
-        {
-            progress = p1 * image->getHeight() / p2;
-            build_height = image->getHeight() - progress;
-            if(progress != 0)
-                image->Draw(x, y + build_height, 0, 0, 0, build_height, 0, progress, COLOR_SHADOW);
-        }
+        LOADER.building_cache[nation][type][1].drawPercent(drawPt, p1 * 100 / p2);
 
         // Das richtige Haus
         if(BUILDING_COSTS[nation][type].stones)
@@ -171,25 +150,7 @@ void fowBuildingSite::Draw(int x, int y) const
             p2 = BUILDING_COSTS[nation][type].boards * 4;
         }
 
-        // Normal
-        image = LOADER.GetNationImage(nation, 250 + 5 * type);
-        if(image)
-        {
-            progress = p1 * image->getHeight() / p2;
-            build_height = image->getHeight() - progress;
-            if(progress != 0)
-                image->Draw(x, y + build_height, 0, 0, 0, build_height, 0, progress, FOW_DRAW_COLOR);
-        }
-
-
-        image = LOADER.GetNationImage(nation, 250 + 5 * type + 1);
-        if(image)
-        {
-            progress = p1 * image->getHeight() / p2;
-            build_height = image->getHeight() - progress;
-            if(progress != 0)
-                image->Draw(x, y + build_height, 0, 0, 0, build_height, 0, progress, COLOR_SHADOW);
-        }
+        LOADER.building_cache[nation][type][0].drawPercent(drawPt, p1 * 100 / p2);
     }
 }
 
@@ -215,9 +176,9 @@ void fowFlag::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(static_cast<unsigned char>(flag_type));
 }
 
-void fowFlag::Draw(int x, int y) const
+void fowFlag::Draw(DrawPoint drawPt) const
 {
-    LOADER.flag_cache[nation][flag_type][0].draw(x, y, FOW_DRAW_COLOR, color);
+    LOADER.flag_cache[nation][flag_type][0].draw(drawPt, FOW_DRAW_COLOR, color);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -237,18 +198,18 @@ void fowTree::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
 }
 
-void fowTree::Draw(int x, int y) const
+void fowTree::Draw(DrawPoint drawPt) const
 {
     if(size == 3)
     {
         // Ausgewachsen
-        LOADER.GetMapImageN(200 + type * 15)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetMapImageN(350 + type * 15)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(200 + type * 15)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetMapImageN(350 + type * 15)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     else
     {
-        LOADER.GetMapImageN(208 + type * 15 + size)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetMapImageN(358 + type * 15 + size)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(208 + type * 15 + size)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetMapImageN(358 + type * 15 + size)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
 }
 
@@ -269,8 +230,8 @@ void fowGranite::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(state);
 }
 
-void fowGranite::Draw(int x, int y) const
+void fowGranite::Draw(DrawPoint drawPt) const
 {
-    LOADER.GetMapImageN(516 + type * 6 + state)->Draw(x, y, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-    LOADER.GetMapImageN(616 + type * 6 + state)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetMapImageN(516 + type * 6 + state)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+    LOADER.GetMapImageN(616 + type * 6 + state)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }

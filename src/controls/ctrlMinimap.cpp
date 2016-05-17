@@ -30,7 +30,7 @@ ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned short padding_y,
                           const unsigned short map_width,
                           const unsigned short map_height)
-    : Window(x, y, id, parent, width, height), padding_x(padding_x), padding_y(padding_y), mapWidth_(map_width), mapHeight_(map_height)
+    : Window(x, y, id, parent, width, height), padding(padding_x, padding_y), mapWidth_(map_width), mapHeight_(map_height)
 {
     SetDisplaySize(width, height, map_width, map_height);
 }
@@ -52,8 +52,8 @@ void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned shor
     this->mapHeight_ = map_height;
 
     unsigned short scaled_map_width = static_cast<unsigned short>(map_width * MINIMAP_SCALE_X);
-    double x_scale = double(scaled_map_width) / double(width - padding_x * 2);
-    double y_scale = double(map_height) / double(height - padding_y * 2);
+    double x_scale = double(scaled_map_width) / double(width - padding.x * 2);
+    double y_scale = double(map_height) / double(height - padding.y * 2);
 
     bool scale_width = false;
 
@@ -64,24 +64,33 @@ void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned shor
 
     if(scale_width)
     {
-        height_show = height - padding_y * 2;
-        width_show  = (scaled_map_width * height_show / map_height) & 0xFFFF; // to mask unsigned to unsigned short (VS debugger crying)
+        height_show = height - padding.y * 2;
+        width_show = (scaled_map_width * height_show / map_height);
     }
     else
     {
-        width_show  = width - padding_x * 2;
+        width_show  = width - padding.x * 2;
         height_show = map_height * width_show / scaled_map_width;
     }
+}
+
+DrawPoint ctrlMinimap::CalcMapCoord(MapPoint pt) const
+{
+    DrawPoint result = GetBBOffset();
+    result.x += width_show  * pt.x / mapWidth_;
+    result.y += height_show * pt.y / mapHeight_;
+
+    return result;
 }
 
 void ctrlMinimap::DrawMap(Minimap& map)
 {
     // Map ansich zeichnen
-    map.Draw(GetX() + GetLeft(), GetY() + GetTop(), width_show, height_show);
+    map.Draw(GetDrawPos() + GetBBOffset(), width_show, height_show);
 }
 
 void ctrlMinimap::RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min)
 {
-    width_  = max<unsigned short>( width_show + padding_x * 2,  width_min);
-    height_ = max<unsigned short>(height_show + padding_y * 2, height_min);
+    width_  = max<unsigned short>( width_show + padding.x * 2,  width_min);
+    height_ = max<unsigned short>(height_show + padding.y * 2, height_min);
 }

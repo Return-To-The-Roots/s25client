@@ -42,7 +42,7 @@ class noShipBuildingSite: public noCoordBase
 
     protected:
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
     private:
 

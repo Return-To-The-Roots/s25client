@@ -37,13 +37,13 @@ nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : n
 }
 
 /// Malt den Arbeiter beim Arbeiten
-void nofStonemason::DrawWorking(int x, int y)
+void nofStonemason::DrawWorking(DrawPoint drawPt)
 {
     unsigned now_id;
 
     // Stein hauen
     LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-    ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     if(now_id % 8 == 5)
     {

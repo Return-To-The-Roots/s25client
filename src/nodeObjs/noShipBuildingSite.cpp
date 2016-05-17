@@ -66,18 +66,18 @@ const unsigned PROGRESS_PARTS[3] =
 
 //const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
 
-void noShipBuildingSite::Draw(int x, int y)
+void noShipBuildingSite::Draw(DrawPoint drawPt)
 {
     if(progress < PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
         glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 24);
         unsigned height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
                               unsigned(image->getHeight()));
-        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
         image =  LOADER.GetImageN("boot_z", 25);
         height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
                      unsigned(image->getHeight()));
-        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0])
     {
@@ -85,21 +85,21 @@ void noShipBuildingSite::Draw(int x, int y)
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 26);
         unsigned height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
                               unsigned(image->getHeight()));
-        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
         image =  LOADER.GetImageN("boot_z", 27);
         height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
                      unsigned(image->getHeight()));
-        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
         unsigned real_progress = progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1];
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 28);
         unsigned height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
         image =  LOADER.GetImageN("boot_z", 29);
         height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-        image->Draw(x, y + (image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
 
     }
 }

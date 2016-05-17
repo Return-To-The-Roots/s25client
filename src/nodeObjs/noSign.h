@@ -37,7 +37,7 @@ class noSign : public noDisappearingEnvObject
         GO_Type GetGOT() const override { return GOT_SIGN; }
 
         /// An x,y zeichnen.
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         void HandleEvent(const unsigned int id) override;
 

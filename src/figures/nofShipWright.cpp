@@ -342,7 +342,7 @@ const unsigned ANIMATION[42] =
     308, 309, 310, 311, 312, 313
 };
 
-void nofShipWright::DrawWorking(int x, int y)
+void nofShipWright::DrawWorking(DrawPoint drawPt)
 {
     // Nicht mich zeichnen wenn ich im Haus arbeite
     if(this->pos == workplace->GetPos())
@@ -356,7 +356,7 @@ void nofShipWright::DrawWorking(int x, int y)
         {
             unsigned id = GAMECLIENT.Interpolate(42, current_ev);
             unsigned graphics_id = ANIMATION[id];
-            LOADER.GetPlayerImage("rom_bobs", graphics_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+            LOADER.GetPlayerImage("rom_bobs", graphics_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
             // Steh-Hammer-Sound
             if(graphics_id == 300)
@@ -376,14 +376,14 @@ void nofShipWright::DrawWorking(int x, int y)
 
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofShipWright::DrawOtherStates(const int x, const int y)
+void nofShipWright::DrawOtherStates(DrawPoint drawPt)
 {
     switch(state)
     {
         case STATE_WALKTOWORKPOINT:
         {
             // Schiffsbauer mit Brett zeichnen
-            DrawWalking(x, y, LOADER.GetBobN("jobs"), 92, false);
+            DrawWalking(drawPt, LOADER.GetBobN("jobs"), 92, false);
         } break;
         default: return;
     }

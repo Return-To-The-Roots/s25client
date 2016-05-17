@@ -72,31 +72,31 @@ noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id) : noC
 {
 }
 
-void noGrainfield::Draw( int x, int y)
+void noGrainfield::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case STATE_GROWING_WAITING:
         case STATE_NORMAL:
         {
-            LOADER.grainfield_cache[type][size].draw(x, y);
+            LOADER.grainfield_cache[type][size].draw(drawPt);
         } break;
         case STATE_GROWING:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // altes Feld ausblenden
-            LOADER.grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // neues Feld einblenden
-            LOADER.grainfield_cache[type][size + 1].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+            LOADER.grainfield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
         } break;
         case STATE_WITHERING:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // Feld ausblenden
-            LOADER.grainfield_cache[type][size].draw(x, y, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
         } break;
     }
 

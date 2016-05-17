@@ -60,7 +60,7 @@ class noFighting : public noBase
 
         GO_Type GetGOT() const override { return GOT_FIGHTING; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
         void HandleEvent(const unsigned int id) override;
 
         /// Dürfen andern Figuren diesen Kampf schon durchqueren?

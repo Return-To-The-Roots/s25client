@@ -43,7 +43,7 @@ class noGranite : public noBase
 
         GO_Type GetGOT() const override { return GOT_GRANITE; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         BlockingManner GetBM() const override { return BM_GRANITE; }
 

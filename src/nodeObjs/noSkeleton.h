@@ -45,7 +45,7 @@ class noSkeleton: public noCoordBase
     protected:
         void Destroy_noSkeleton();
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
         void HandleEvent(const unsigned int id) override;
 
     private:

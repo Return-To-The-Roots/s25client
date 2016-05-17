@@ -45,14 +45,14 @@ bool ctrlBuildingIcon::Draw_()
     TestMouseOver();
 
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
-        LOADER.GetImageN("io", 0)->Draw(GetX(), GetY(), size, size, size, size, 0, 0);
+        LOADER.GetImageN("io", 0)->Draw(GetDrawPos(), size, size, size, size, 0, 0);
 	glArchivItem_Bitmap* image;
 	if(type!=BLD_CHARBURNER)
 		image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
 	else
 		image = LOADER.GetImageN("charburner", nation*8+8);
     if(image)
-        image->Draw(GetX() + size / 2, GetY() + size / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
+        image->Draw(GetDrawPos() + DrawPoint(size, size) / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
 
     return true;
 }

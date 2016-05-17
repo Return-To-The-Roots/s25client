@@ -93,7 +93,7 @@ void nofBuildingWorker::AbrogateWorkplace()
     }
 }
 
-void nofBuildingWorker::Draw(int x, int y)
+void nofBuildingWorker::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -103,32 +103,32 @@ void nofBuildingWorker::Draw(int x, int y)
         case STATE_HUNTER_WALKINGTOCADAVER:
         case STATE_HUNTER_FINDINGSHOOTINGPOINT:
         {
-            DrawWalking(x, y);
+            DrawWalking(drawPt);
         } break;
         case STATE_WORK:
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
         case STATE_CATAPULT_TARGETBUILDING:
         case STATE_CATAPULT_BACKOFF:
-            DrawWorking(x, y); break;
+            DrawWorking(drawPt); break;
         case STATE_CARRYOUTWARE:
         {
             unsigned short id = GetCarryID();
 
             // Über 100 bedeutet aus der carrier.bob nehmen, ansonsten aus der jobs.bob!
             if(id >= 100)
-                DrawWalking(x, y, LOADER.GetBobN("carrier"), GetCarryID() - 100, JOB_CONSTS[job_].fat);
+                DrawWalking(drawPt, LOADER.GetBobN("carrier"), GetCarryID() - 100, JOB_CONSTS[job_].fat);
             else
-                DrawWalking(x, y, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
+                DrawWalking(drawPt, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
         } break;
         case STATE_WALKINGHOME:
         case STATE_ENTERBUILDING:
         {
-            DrawReturnStates(x, y);
+            DrawReturnStates(drawPt);
 
         } break;
         default:
-            DrawOtherStates(x, y);
+            DrawOtherStates(drawPt);
             break;
     }
 }
@@ -471,18 +471,18 @@ void nofBuildingWorker::WorkplaceReached()
 }
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofBuildingWorker::DrawOtherStates(const int  /*x*/, const int  /*y*/)
+void nofBuildingWorker::DrawOtherStates(DrawPoint)
 {
 }
 
 
 /// Zeichnet Figur beim Hereinlaufen/nach Hause laufen mit evtl. getragenen Waren
-void nofBuildingWorker::DrawReturnStates(const int x, const int y)
+void nofBuildingWorker::DrawReturnStates(DrawPoint drawPt)
 {
     // Beim Nachhausegehen (Landarbeiter) und beim Reingehen kann entweder eine Ware getragen werden oder nicht
     if(ware != GD_NOTHING)
-        DrawWalking(x, y, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
+        DrawWalking(drawPt, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
     else
-        DrawWalking(x, y);
+        DrawWalking(drawPt);
 }
 

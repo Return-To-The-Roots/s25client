@@ -42,7 +42,7 @@ ctrlText::ctrlText(Window* parent,
 bool ctrlText::Draw_()
 {
     if(!text.empty())
-        font->Draw(GetX(), GetY(), text, format, color_);
+        font->Draw(GetDrawPos(), text, format, color_);
 
     return true;
 }

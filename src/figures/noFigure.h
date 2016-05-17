@@ -108,7 +108,7 @@ class noFigure : public noMovable
         /// In aktueller Richtung ein Stück zurcklegen
         void WalkFigure();
         /// Schatten der Figur malen
-        void DrawShadow(const int x, const int y, const unsigned char anistep, unsigned char dir);
+        void DrawShadow(DrawPoint drawPt, const unsigned char anistep, unsigned char dir);
 
         /// Herumirren
         void Wander();
@@ -156,17 +156,17 @@ class noFigure : public noMovable
         /// Returns true if this is a soldier (they get some special handling at some points)
         bool IsSoldier() const;
         /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
-        void DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat);
+        void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned int ware, bool fat);
         /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
-        void DrawWalkingBobJobs(int x, int y, unsigned int id);
+        void DrawWalkingBobJobs(DrawPoint drawPt, unsigned int id);
         /// Zeichnet standardmäßig die Figur, wenn sie läuft
-        void DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int item, bool fat, bool waitingsoldier = false);
+        void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned int item, bool fat, bool waitingsoldier = false);
         /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-        void DrawWalking(int x, int y, const char* const file, unsigned int id);
+        void DrawWalking(DrawPoint drawPt, const char* const file, unsigned int id);
         /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
-        void DrawWalking(int x, int y);
+        void DrawWalking(DrawPoint drawPt);
         /// Interpoliert die Positon zwischen zwei Knotenpunkten
-        Point<int> CalcFigurRelative() const;
+        DrawPoint CalcFigurRelative() const;
         /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
         void StartWalking(const unsigned char dir);
         /// Starts walking in a random dir and returns whether this was possible

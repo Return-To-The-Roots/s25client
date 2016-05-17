@@ -49,12 +49,12 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 /**
  *  An x,y zeichnen.
  */
-void noDisappearingMapEnvObject::Draw(int x, int y)
+void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
 {
     // Bild
-    LOADER.GetMapImageN(map_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawColor());
+    LOADER.GetMapImageN(map_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawColor());
     // Schatten
-    LOADER.GetMapImageN(map_id + 100)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    LOADER.GetMapImageN(map_id + 100)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
 }
 
 void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)

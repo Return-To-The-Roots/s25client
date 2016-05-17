@@ -189,29 +189,30 @@ void noBuildingSite::OrderConstructionMaterial()
     }
 }
 
-void noBuildingSite::Draw(int x, int y)
+void noBuildingSite::Draw(DrawPoint drawPt)
 {
     if(state == STATE_PLANING)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->Draw(x, y);
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 451)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->Draw(drawPt);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 451)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 455)->Draw(x, y);
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 456)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 455)->Draw(drawPt);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 456)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
 
         // Waren auf der Baustelle
 
         // Bretter
+        DrawPoint doorPos = drawPt + DrawPoint(GetDoorPointX(), GetDoorPointY());
         for(unsigned char i = 0; i < boards; ++i)
-            LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(x + GetDoorPointX() - 5, y + GetDoorPointY() - 10 - i * 4, 0, 0, 0, 0, 0, 0);
+            LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(doorPos - DrawPoint(5, 10 + i * 4));
         // Steine
         for(unsigned char i = 0; i < stones; ++i)
-            LOADER.GetMapImageN(2200 + GD_STONES)->Draw(x + GetDoorPointX() + 8, y + GetDoorPointY() - 12 - i * 4, 0, 0, 0, 0, 0, 0);
+            LOADER.GetMapImageN(2200 + GD_STONES)->Draw(doorPos + DrawPoint(8, -12 - i * 4));
 
         // bis dahin gebautes Haus zeichnen
 
@@ -233,7 +234,7 @@ void noBuildingSite::Draw(int x, int y)
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 
-        LOADER.building_cache[nation][type_][1].drawPercent(x, y, p1 * 100 / p2);
+        LOADER.building_cache[nation][type_][1].drawPercent(drawPt, p1 * 100 / p2);
 
         // Das richtige Haus
         if(BUILDING_COSTS[nation][GetBuildingType()].stones)
@@ -249,7 +250,7 @@ void noBuildingSite::Draw(int x, int y)
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 
-        LOADER.building_cache[nation][type_][0].drawPercent(x, y, p1 * 100 / p2);
+        LOADER.building_cache[nation][type_][0].drawPercent(drawPt, p1 * 100 / p2);
     }
 
     //char number[256];

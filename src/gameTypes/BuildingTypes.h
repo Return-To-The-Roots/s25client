@@ -60,10 +60,6 @@ struct SmokeConst
 	signed char x, y;
 };
 
-/// Konstanten der "Produktions-Stopp"- und der "Gold-Stopp"-Schilder bei normalen und Militärgebäuden
-struct BuildingSignConst
-{ signed char x, y; };
-
 enum BuildingType
 {
 	BLD_HEADQUARTERS   =  0, // ----

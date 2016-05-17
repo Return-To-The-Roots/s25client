@@ -42,10 +42,10 @@ nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id) : n
 {
 }
 
-void nofScout_Free::Draw(int x, int y)
+void nofScout_Free::Draw(DrawPoint drawPt)
 {
     // normales Laufen zeichnen
-    DrawWalking(x, y);
+    DrawWalking(drawPt);
 }
 
 

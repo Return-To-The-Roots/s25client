@@ -60,7 +60,7 @@ void noAnimal::StartLiving()
     StandardWalking();
 }
 
-void noAnimal::Draw(int x, int y)
+void noAnimal::Draw(DrawPoint drawPt)
 {
     // Tier zeichnen
 
@@ -74,12 +74,12 @@ void noAnimal::Draw(int x, int y)
             // Laufend (bzw. Ente schwimmend zeichnen)
 
             // Interpolieren zwischen beiden Knotenpunkten
-            Point<int> realPos = Point<int>(x, y) + CalcWalkingRelative();
+            drawPt += CalcWalkingRelative();
 
             unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y);
+            LOADER.animal_cache[species][GetCurMoveDir()][ani_step].draw(drawPt);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
@@ -102,13 +102,13 @@ void noAnimal::Draw(int x, int y)
         case STATE_PAUSED:
         {
             // Stehend zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir()][0].draw(x, y);
+            LOADER.animal_cache[species][GetCurMoveDir()][0].draw(drawPt);
         } break;
         case STATE_DEAD:
         {
             if (!LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].empty())
             {
-                LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y);
+                LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(drawPt);
             }
         } break;
         case STATE_DISAPPEARING:
@@ -119,12 +119,12 @@ void noAnimal::Draw(int x, int y)
             // Gibts ein Leichenbild?
             if (!LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].empty())
             {
-                LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
             }
             else
             {
                 // Stehend zeichnen
-                LOADER.animal_cache[species][GetCurMoveDir()][0].draw(x, y, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.animal_cache[species][GetCurMoveDir()][0].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
             }
 
         } break;

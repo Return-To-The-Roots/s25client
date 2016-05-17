@@ -36,7 +36,7 @@ class noNothing : public noBase
         GO_Type GetGOT() const override { return GOT_UNKNOWN; }
 
         /// An x,y zeichnen.
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 };
 
 #endif // !NONOTHING_H_INCLUDED

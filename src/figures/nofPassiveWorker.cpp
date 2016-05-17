@@ -54,9 +54,9 @@ void nofPassiveWorker::AbrogateWorkplace()
 
 
 /// Zeichnen
-void nofPassiveWorker::Draw(int x, int y)
+void nofPassiveWorker::Draw(DrawPoint drawPt)
 {
-    DrawWalking(x, y);
+    DrawWalking(drawPt);
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden

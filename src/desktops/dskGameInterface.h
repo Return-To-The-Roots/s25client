@@ -31,9 +31,10 @@
 #include "world/GameWorldViewer.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/RoadBuildState.h"
-#include "libsiedler2/src/ArchivInfo.h"
+#include <boost/array.hpp>
 
 class iwRoadWindow;
+class glArchivItem_Bitmap;
 class GlobalGameSettings;
 class MouseCoords;
 class GameWorldBase;
@@ -53,7 +54,7 @@ class dskGameInterface :
 
         CustomBorderBuilder cbb;
 
-        libsiedler2::ArchivInfo borders;
+        boost::array<glArchivItem_Bitmap*, 4> borders;
 
         /// Straßenbauzeug
         RoadBuildState road;

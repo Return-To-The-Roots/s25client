@@ -66,7 +66,7 @@ ctrlVarText::~ctrlVarText()
  */
 bool ctrlVarText::Draw_()
 {
-    font->Draw( GetX(), GetY(), GetFormatedText(), format, color_);
+    font->Draw(GetDrawPos(), GetFormatedText(), format, color_);
 
     return true;
 }

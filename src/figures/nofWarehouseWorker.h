@@ -76,7 +76,7 @@ class nofWarehouseWorker : public noFigure
 
         GO_Type GetGOT() const override { return GOT_NOF_WAREHOUSEWORKER; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         // Ware nach draußen bringen (von Lagerhaus aus aufgerufen)
         void CarryWare(Ware* ware);

@@ -40,7 +40,7 @@ class nobHQ : public nobBaseWarehouse
 
         GO_Type GetGOT() const override { return GOT_NOB_HQ; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
 

@@ -18,6 +18,7 @@
 #define CATAPULT_STONE_H_
 
 #include "GameObject.h"
+#include "DrawPoint.h"
 #include "gameTypes/MapTypes.h"
 
 class SerializedGameData;
@@ -27,41 +28,41 @@ class GameEvent;
 class CatapultStone : public GameObject
 {
 public:
-        /// Target which was aimed for
-        const MapPoint dest_building;
-        /// Actual point this is going to hit (if equal dest_building -> Hit!)
-        const MapPoint dest_map;
+    /// Target which was aimed for
+    const MapPoint dest_building;
+    /// Actual point this is going to hit (if equal dest_building -> Hit!)
+    const MapPoint dest_map;
 private:
     /// Koordinaten der Startposition des Steins
-        const int start_x, start_y;
-        /// Koordinaten der Zielposition des Steins
-        const int dest_x, dest_y;
-        /// Explodiert der Stein schon? (false = fliegt)
-        bool explode;
-        /// Flieg-/Explodier-Event
-        GameEvent* event;
+    const Point<int> startPos;
+    /// Koordinaten der Zielposition des Steins
+    const Point<int> destPos;
+    /// Explodiert der Stein schon? (false = fliegt)
+    bool explode;
+    /// Flieg-/Explodier-Event
+    GameEvent* event;
 
-    public:
+public:
 
-        CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
-                      const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration);
+    CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
+                    const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration);
 
-        CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
+    CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Zerstören
-        void Destroy() override;
+    /// Zerstören
+    void Destroy() override;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_CatapultStone(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
+    /// Serialisierungsfunktionen
+protected:  void Serialize_CatapultStone(SerializedGameData& sgd) const;
+public:     void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
 
-        // Zeichnet den fliegenden Stein
-        void Draw(const int xoffset, const int yoffset);
+    // Zeichnet den fliegenden Stein
+    void Draw(DrawPoint drawOffset);
 
-        /// Event-Handler
-        void HandleEvent(const unsigned int id) override;
+    /// Event-Handler
+    void HandleEvent(const unsigned int id) override;
 
-        GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
+    GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
 };
 
 #endif // !CATAPULT_STONE_H_

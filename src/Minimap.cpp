@@ -65,12 +65,12 @@ void Minimap::CreateMapTexture()
     delete [] buffer;
 }
 
-void Minimap::Draw(const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+void Minimap::Draw(DrawPoint drawPt, const unsigned short width, const unsigned short height)
 {
     BeforeDrawing();
 
     // Map ansich zeichnen
-    map.Draw(x, y, width, height, 0, 0, 0, 0, COLOR_WHITE);
+    map.Draw(drawPt, width, height, 0, 0, 0, 0, COLOR_WHITE);
 }
 
 void Minimap::BeforeDrawing()

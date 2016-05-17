@@ -121,6 +121,22 @@ unsigned short Window::GetY(bool absolute) const
 }
 
 
+DrawPoint Window::GetDrawPos() const
+{
+    DrawPoint result(x_, y_);
+    const Window* temp = this;
+
+    // Relative Koordinaten in absolute umrechnen
+    // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
+    while(temp->parent_)
+    {
+        temp = temp->parent_;
+        result += DrawPoint(temp->x_, temp->y_);
+    }
+
+    return result;
+}
+
 /**
  *  Sendet eine Fensternachricht an die Steuerelemente.
  *
@@ -828,8 +844,7 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
 /**
  *  Zeichnet einen 3D-Rahmen.
  */
-void Window::Draw3D(const unsigned short x,
-                    const unsigned short y,
+void Window::Draw3D(DrawPoint drawPt,
                     const unsigned short width,
                     const unsigned short height,
                     const TextureColor tc,
@@ -843,8 +858,8 @@ void Window::Draw3D(const unsigned short x,
     if(type <= 1)
     {
         // äußerer Rahmen
-        LOADER.GetImageN("io", 12 + tc)->Draw(x, y, width, 2,      0, 0, width, 2);
-        LOADER.GetImageN("io", 12 + tc)->Draw(x, y, 2,     height, 0, 0, 2,     height);
+        LOADER.GetImageN("io", 12 + tc)->Draw(drawPt, width, 2,      0, 0, width, 2);
+        LOADER.GetImageN("io", 12 + tc)->Draw(drawPt, 2,     height, 0, 0, 2,     height);
 
         if(illuminated)
         {
@@ -856,10 +871,9 @@ void Window::Draw3D(const unsigned short x,
         // Inhalt der Box
         if(draw_content)
         {
-            if(type)
-                LOADER.GetImageN("io", tc * 2)->Draw(x + 2, y + 2, width - 4, height - 4, 0, 0, width - 4, height - 4);
-            else
-                LOADER.GetImageN("io", tc * 2 + 1)->Draw(x + 2, y + 2, width - 4, height - 4, 0, 0, width - 4, height - 4);
+            DrawPoint contentPos = drawPt + DrawPoint(2, 2);
+            unsigned texture = (type) ? tc * 2 : tc * 2 + 1;
+            LOADER.GetImageN("io", texture)->Draw(contentPos, width - 4, height - 4, 0, 0, width - 4, height - 4);
         }
 
         if(illuminated)
@@ -874,32 +888,36 @@ void Window::Draw3D(const unsigned short x,
 
         glBegin(GL_QUADS);
 
-        glVertex2i(x + width - 1, y);
-        glVertex2i(x + width - 1, y + height);
-        glVertex2i(x + width, y + height);
-        glVertex2i(x + width, y);
+        glVertex2i(drawPt.x + width - 1, drawPt.y);
+        glVertex2i(drawPt.x + width - 1, drawPt.y + height);
+        glVertex2i(drawPt.x + width, drawPt.y + height);
+        glVertex2i(drawPt.x + width, drawPt.y);
 
-        glVertex2i(x + width - 2, y + 1);
-        glVertex2i(x + width - 2, y + height);
-        glVertex2i(x + width - 1, y + height);
-        glVertex2i(x + width - 1, y + 1);
+        glVertex2i(drawPt.x + width - 2, drawPt.y + 1);
+        glVertex2i(drawPt.x + width - 2, drawPt.y + height);
+        glVertex2i(drawPt.x + width - 1, drawPt.y + height);
+        glVertex2i(drawPt.x + width - 1, drawPt.y + 1);
 
-        glVertex2i(x, y + height - 1);
-        glVertex2i(x, y + height);
-        glVertex2i(x + width - 2, y + height);
-        glVertex2i(x + width - 2, y + height - 1);
+        glVertex2i(drawPt.x, drawPt.y + height - 1);
+        glVertex2i(drawPt.x, drawPt.y + height);
+        glVertex2i(drawPt.x + width - 2, drawPt.y + height);
+        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 1);
 
-        glVertex2i(x + 1, y + height - 2);
-        glVertex2i(x + 1, y + height - 1);
-        glVertex2i(x + width - 2, y + height - 1);
-        glVertex2i(x + width - 2, y + height - 2);
+        glVertex2i(drawPt.x + 1, drawPt.y + height - 2);
+        glVertex2i(drawPt.x + 1, drawPt.y + height - 1);
+        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 1);
+        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 2);
 
         glEnd();
     }
     else
     {
-        LOADER.GetImageN("io", 12 + tc)->Draw(x, y + height - 2, width, 2, 0, 0, width, 2);
-        LOADER.GetImageN("io", 12 + tc)->Draw(x + width - 2, y, 2, height, 0, 0, 2, height);
+        DrawPoint botBorderPos = drawPt;
+        botBorderPos.y += height - 2;
+        LOADER.GetImageN("io", 12 + tc)->Draw(botBorderPos, width, 2, 0, 0, width, 2);
+        DrawPoint rightBorderPos = drawPt;
+        rightBorderPos.x += width - 2;
+        LOADER.GetImageN("io", 12 + tc)->Draw(rightBorderPos, 2, height, 0, 0, 2, height);
 
         if(illuminated)
         {
@@ -909,10 +927,14 @@ void Window::Draw3D(const unsigned short x,
         }
 
         glArchivItem_Bitmap* img = LOADER.GetImageN("io", tc * 2 + 1);
-        img->Draw(x + 2, y + 2, width - 4, 2, 0, 0, width - 4, 2);
-        img->Draw(x + 2, y + 2, 2, height - 4, 0, 0, 2, height - 4);
-
-        img->Draw(x + 4, y + 4, width - 6, height - 6, 0, 0, width - 6, height - 6);
+        DrawPoint curDrawPos = drawPt + DrawPoint(2, 2);
+        // Top border part
+        img->Draw(curDrawPos, width - 4, 2, 0, 0, width - 4, 2);
+        // Left border part
+        img->Draw(curDrawPos, 2, height - 4, 0, 0, 2, height - 4);
+        curDrawPos += DrawPoint(2, 2);
+        // Filler
+        img->Draw(curDrawPos, width - 6, height - 6, 0, 0, width - 6, height - 6);
 
         if(illuminated)
         {
@@ -920,31 +942,32 @@ void Window::Draw3D(const unsigned short x,
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         }
 
+        // Black lines
         glDisable(GL_TEXTURE_2D);
 
         glColor3f(0.0f, 0.0f, 0.0f);
 
         glBegin(GL_QUADS);
-
-        glVertex2i(x, y);
-        glVertex2i(x, y + 1);
-        glVertex2i(x + width, y + 1);
-        glVertex2i(x + width, y);
-
-        glVertex2i(x, y + 1);
-        glVertex2i(x, y + 2);
-        glVertex2i(x + width - 1, y + 2);
-        glVertex2i(x + width - 1, y + 1);
-
-        glVertex2i(x, y + 2);
-        glVertex2i(x, y + height);
-        glVertex2i(x + 1, y + height); //-V525
-        glVertex2i(x + 1, y + 2);
-
-        glVertex2i(x + 1, y + 2);
-        glVertex2i(x + 1, y + height - 1);
-        glVertex2i(x + 2, y + height - 1);
-        glVertex2i(x + 2, y + 2);
+        // Top
+        glVertex2i(drawPt.x,         drawPt.y);
+        glVertex2i(drawPt.x,         drawPt.y + 1);
+        glVertex2i(drawPt.x + width, drawPt.y + 1);
+        glVertex2i(drawPt.x + width, drawPt.y);
+        // Top inner
+        glVertex2i(drawPt.x,             drawPt.y + 1);
+        glVertex2i(drawPt.x,             drawPt.y + 2);
+        glVertex2i(drawPt.x + width - 1, drawPt.y + 2);
+        glVertex2i(drawPt.x + width - 1, drawPt.y + 1);
+        // Left
+        glVertex2i(drawPt.x,     drawPt.y + 2);
+        glVertex2i(drawPt.x,     drawPt.y + height);
+        glVertex2i(drawPt.x + 1, drawPt.y + height); //-V525
+        glVertex2i(drawPt.x + 1, drawPt.y + 2);
+        // Left inner
+        glVertex2i(drawPt.x + 1, drawPt.y + 2);
+        glVertex2i(drawPt.x + 1, drawPt.y + height - 1);
+        glVertex2i(drawPt.x + 2, drawPt.y + height - 1);
+        glVertex2i(drawPt.x + 2, drawPt.y + 2);
 
         glEnd();
     }
@@ -957,17 +980,17 @@ void Window::Draw3D(const unsigned short x,
  *
  *  @param[in] x X-Koordinate
  */
-void Window::DrawRectangle(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned int color)
+void Window::DrawRectangle(DrawPoint drawPt, unsigned short width, unsigned short height, unsigned int color)
 {
     glDisable(GL_TEXTURE_2D);
 
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
     glBegin(GL_QUADS);
-    glVertex2i(x, y);
-    glVertex2i(x, y + height);
-    glVertex2i(x + width, y + height);
-    glVertex2i(x + width, y);
+    glVertex2i(drawPt.x,         drawPt.y);
+    glVertex2i(drawPt.x,         drawPt.y + height);
+    glVertex2i(drawPt.x + width, drawPt.y + height);
+    glVertex2i(drawPt.x + width, drawPt.y);
     glEnd();
 
     glEnable(GL_TEXTURE_2D);

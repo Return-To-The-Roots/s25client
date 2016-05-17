@@ -71,7 +71,7 @@ class nofFarmhand : public nofBuildingWorker
         virtual void WorkFinished() = 0;
 
         /// Zeichnen der Figur in sonstigen Arbeitslagen
-        void DrawOtherStates(const int x, const int y) override;
+        void DrawOtherStates(DrawPoint drawPt) override;
 
     public:
 

@@ -166,10 +166,8 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
  */
 bool ctrlList::Draw_()
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-
     // Box malen
-    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
+    Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
     // Scrolleiste zeichnen
     DrawControls();
@@ -177,15 +175,18 @@ bool ctrlList::Draw_()
     // Wieviele Linien anzeigen?
     unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
 
+    int scrollbarPos = GetCtrl<ctrlScrollBar>(0)->GetPos();
+    DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2);
     // Listeneinträge zeichnen
     for(unsigned short i = 0; i < show_lines; ++i)
     {
         // Schwarze Markierung, wenn die Maus drauf ist
         if(i == mouseover)
-            DrawRectangle(GetX() + 2, GetY() + 2 + i * font->getHeight(), width_ - 22, font->getHeight(), 0x80000000);
+            DrawRectangle(curPos, width_ - 22, font->getHeight(), 0x80000000);
 
         // Text an sich
-        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()], 0, (selection_ == i + scrollbar->GetPos() ? 0xFFFFAA00 : 0xFFFFFF00), 0, width_ - 22);
+        font->Draw(curPos, lines[i + scrollbarPos], 0, (selection_ == i + scrollbarPos ? 0xFFFFAA00 : 0xFFFFFF00), 0, width_ - 22);
+        curPos.y += font->getHeight();
     }
 
     return true;

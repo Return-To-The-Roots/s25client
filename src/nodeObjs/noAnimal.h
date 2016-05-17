@@ -77,7 +77,7 @@ class noAnimal : public noMovable
         GO_Type GetGOT() const override { return GOT_ANIMAL; }
 
         // An x,y zeichnen
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
         // Benachrichtigen, wenn neuer gf erreicht wurde
         void HandleEvent(const unsigned int id) override;
 

@@ -17,10 +17,10 @@
 #ifndef VIDEODRIVERWRAPPER_H_INCLUDED
 #define VIDEODRIVERWRAPPER_H_INCLUDED
 
-
-#include "Singleton.h"
 #include "DriverWrapper.h"
 #include "driver/src/VideoInterface.h"
+#include "Point.h"
+#include "libutil/src/Singleton.h"
 #include <string>
 #include <boost/array.hpp>
 
@@ -57,8 +57,9 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         bool SwapBuffers();
         // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
         // benutzen!!!)
-        int GetMouseX();
-        int GetMouseY();
+        int GetMouseX() const;
+        int GetMouseY() const;
+        Point<int> GetMousePos() const;
 
         /// Listet verfügbare Videomodi auf
         void ListVideoModes(std::vector<VideoMode>& video_modes) const;
@@ -68,6 +69,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
 
         unsigned short GetScreenWidth()  const { const unsigned short w = videodriver->GetScreenWidth(); return (w < 800 ? 800 : w); }
         unsigned short GetScreenHeight() const { const unsigned short h = videodriver->GetScreenHeight(); return (h < 600 ? 600 : h); }
+        Point<int> GetScreenSize() const { return Point<int>(GetScreenWidth(), GetScreenHeight()); }
         bool IsFullscreen() const { return videodriver->IsFullscreen(); }
 
         bool IsLeftDown();

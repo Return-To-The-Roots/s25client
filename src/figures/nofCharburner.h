@@ -35,7 +35,7 @@ class nofCharburner : public nofFarmhand
     private:
 
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const override;
 
@@ -51,10 +51,10 @@ class nofCharburner : public nofFarmhand
         void WalkingStarted() override;
 
         /// Draws the figure while returning home / entering the building (often carrying wares)
-        void DrawReturnStates(const int x, const int y) override;
+        void DrawReturnStates(DrawPoint drawPt) override;
         /// Draws the charburner while walking
         /// (overriding standard method of nofFarmhand)
-        void DrawOtherStates(const int x, const int y) override;
+        void DrawOtherStates(DrawPoint drawPt) override;
 
     protected:
         bool AreWaresAvailable() override;

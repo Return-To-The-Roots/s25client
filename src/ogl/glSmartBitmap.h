@@ -21,7 +21,7 @@
 #pragma once
 
 #include "ogl/glBitmapItem.h"
-#include "Point.h"
+#include "DrawPoint.h"
 #include <vector>
 #include <stdint.h>
 
@@ -35,7 +35,7 @@ class glSmartBitmap
 {
     private:
         int w, h;
-        int nx, ny;
+        DrawPoint origin;
 
         bool sharedTexture;
         unsigned int texture;
@@ -47,7 +47,7 @@ class glSmartBitmap
     public:
         Point<float> texCoords[8];
 
-        glSmartBitmap() : w(0), h(0), nx(0), ny(0), sharedTexture(false), texture(0), hasPlayer(false) {}
+        glSmartBitmap() : w(0), h(0), origin(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
         ~glSmartBitmap();
         void reset();
 
@@ -66,8 +66,8 @@ class glSmartBitmap
         void calcDimensions();
 
         void generateTexture();
-        void draw(int x, int y, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
-        void drawPercent(int x, int y, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
+        void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
+        void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
 
         void drawTo(std::vector<uint32_t>& buffer, const unsigned stride, const unsigned height, const int x_offset = 0, const int y_offset = 0);
 

@@ -78,11 +78,9 @@ const BuildingType bts[BUILDINGS_COUNT] =
 
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
-const unsigned short first_x = 30;
-const unsigned short first_y = 40;
+const DrawPoint iconPadding(30, 40);
 // Abstand der einzelnen Symbole untereinander
-const unsigned short icon_distance_x = 40;
-const unsigned short icon_distance_y = 48;
+const DrawPoint iconSpacing(40, 48);
 // Abstand der Schriften unter den Icons
 const unsigned short font_distance_y = 20;
 
@@ -95,9 +93,9 @@ iwBuildings::iwBuildings(GameWorldView& gwv) : IngameWindow(CGI_BUILDINGS, 0xFFF
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
 			if(bts[y*4+x] != BLD_CHARBURNER)
-				AddImageButton(y * 4 + x, first_x - 16 + icon_distance_x * x, first_y - 16 + icon_distance_y * y,32,32,TC_GREY,LOADER.GetImageN(NATION_ICON_IDS[GAMECLIENT.GetLocalPlayer().nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+				AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16 + iconSpacing.y * y,32,32,TC_GREY,LOADER.GetImageN(NATION_ICON_IDS[GAMECLIENT.GetLocalPlayer().nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
 			else
-				AddImageButton(y * 4 + x, first_x - 16 + icon_distance_x * x, first_y - 16  + icon_distance_y * y,32,32,TC_GREY,LOADER.GetImageN("charburner", GAMECLIENT.GetLocalPlayer().nation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
+				AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16  + iconSpacing.y * y,32,32,TC_GREY,LOADER.GetImageN("charburner", GAMECLIENT.GetLocalPlayer().nation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
@@ -113,16 +111,18 @@ void iwBuildings::Msg_PaintAfter()
     BuildingCount bc = GAMECLIENT.GetLocalPlayer().GetBuildingCount();
 
     // Anzahlen unter die Gebäude schreiben
+    DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
     {
+        DrawPoint curPos = rowPos;
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
             char txt[64];
             sprintf(txt, "%u/%u", bc.buildings[bts[y * 4 + x]], bc.buildingSites[bts[y * 4 + x]]);
-            NormalFont->Draw(GetX() + first_x + icon_distance_x * x, GetY() + first_y + icon_distance_y * y + font_distance_y, txt,
-                             glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
-
+            NormalFont->Draw(curPos, txt, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            curPos.x += iconSpacing.x;
         }
+        rowPos.y += iconSpacing.y;
     }
 }
 

@@ -37,7 +37,7 @@ class nofSoldier : public noFigure
     protected:
 
         /// Zeichnet den Soldaten beim ganz normalen Laufen
-        void DrawSoldierWalking(int x, int y, bool waitingsoldier = false);
+        void DrawSoldierWalking(DrawPoint drawPt, bool waitingsoldier = false);
 
         /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
         void AbrogateWorkplace() override;

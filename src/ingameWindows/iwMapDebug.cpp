@@ -32,11 +32,11 @@ class iwMapDebug::DebugPrinter: public IDebugNodePrinter
 public:
     DebugPrinter(const World& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
 
-    void print(const MapPoint& pt, const Point<int>& displayPt) override
+    void print(const MapPoint& pt, const DrawPoint& displayPt) override
     {
         if(showCoords){
             std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
-            font->Draw(displayPt.x, displayPt.y, coord, 0, 0xFFFFFF00);
+            font->Draw(displayPt, coord, 0, 0xFFFFFF00);
         }
         std::string data;
         unsigned color = 0xFFFF0000;
@@ -64,7 +64,7 @@ public:
         }        
 
         if(!data.empty())
-            font->Draw(displayPt.x, displayPt.y, data, 0, color);
+            font->Draw(displayPt, data, 0, color);
     }
 
     bool showCoords;

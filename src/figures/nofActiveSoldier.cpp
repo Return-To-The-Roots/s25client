@@ -144,7 +144,7 @@ void nofActiveSoldier::WalkingHome()
 }
 
 
-void nofActiveSoldier::Draw(int x, int y)
+void nofActiveSoldier::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -156,7 +156,7 @@ void nofActiveSoldier::Draw(int x, int y)
         case STATE_DEFENDING_WAITING:
         {
             // Draw waiting states
-            DrawSoldierWalking(x, y, true); //cannot draw from Soldiers & Scouts from Loader::bob_jobs_cache v9102
+            DrawSoldierWalking(drawPt, true); //cannot draw from Soldiers & Scouts from Loader::bob_jobs_cache v9102
         } break;
         case STATE_FIGUREWORK:
         case STATE_MEETENEMY:
@@ -172,7 +172,7 @@ void nofActiveSoldier::Draw(int x, int y)
         case STATE_SEAATTACKING_RETURNTOSHIP:
         {
             // Draw walking states
-            DrawSoldierWalking(x, y);
+            DrawSoldierWalking(drawPt);
         } break;
     }
 }

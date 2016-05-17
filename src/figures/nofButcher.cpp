@@ -34,14 +34,14 @@ nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 {
 }
 
-void nofButcher::DrawWorking(int x, int y)
+void nofButcher::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
+    static const DrawPoint offsets[NAT_COUNT] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
 
     unsigned now_id;
 
     LOADER.GetPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
-    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+    ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id % 6 == 5)
     {

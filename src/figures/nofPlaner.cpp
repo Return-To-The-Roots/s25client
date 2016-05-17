@@ -125,14 +125,14 @@ void nofPlaner::LostWork()
     }
 }
 
-void nofPlaner::Draw(int x, int y)
+void nofPlaner::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case STATE_FIGUREWORK:
         case STATE_WALKING:
         {
-            DrawWalkingBobJobs(x, y, JOB_PLANER);
+            DrawWalkingBobJobs(drawPt, JOB_PLANER);
 //          DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
         } break;
         case STATE_PLANING:
@@ -178,7 +178,7 @@ void nofPlaner::Draw(int x, int y)
                 bobId = 253 + now_id - 41;
             else
                 bobId = 253 + now_id - 55;
-            LOADER.GetPlayerImage("rom_bobs", bobId)->Draw(x, y, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.GetPlayerImage("rom_bobs", bobId)->Draw(drawPt, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)

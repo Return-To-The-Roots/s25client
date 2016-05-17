@@ -40,16 +40,16 @@ nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 {
 }
 
-void nofMinter::DrawWorking(int x, int y)
+void nofMinter::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12} };
+    const DrawPoint offsets[NAT_COUNT] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12} };
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 
     if(now_id < 91)
     {
         LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)

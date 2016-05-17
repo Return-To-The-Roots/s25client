@@ -72,16 +72,13 @@ nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned o
 }
 
 
-void nofWarehouseWorker::Draw(int x, int y)
+void nofWarehouseWorker::Draw(DrawPoint drawPt)
 {
     // Trage ich ne Ware oder nicht?
     if(carried_ware)
-        DrawWalkingBobCarrier(x, y, carried_ware->type, fat);
-//      // Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
-//      DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE) ? GD_SHIELDROMANS:carried_ware->type,fat);
+        DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
     else
-        DrawWalkingBobJobs(x, y, fat ? JOB_TYPES_COUNT : 0);
-//      DrawWalking(x,y,LOADER.GetBobN("jobs"),0,fat);
+        DrawWalkingBobJobs(drawPt, fat ? JOB_TYPES_COUNT : 0);
 }
 
 void nofWarehouseWorker::GoalReached()

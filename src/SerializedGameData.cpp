@@ -373,20 +373,6 @@ unsigned short SerializedGameData::GetSafetyCode(const GameObject& go)
     return 0xFFFF ^ go.GetGOT() ^ go.GetObjId();
 }
 
-void SerializedGameData::PushMapPoint(const MapPoint p)
-{
-    PushUnsignedShort(p.x);
-    PushUnsignedShort(p.y);
-}
-
-MapPoint SerializedGameData::PopMapPoint()
-{
-    MapPoint p;
-    p.x = PopUnsignedShort();
-    p.y = PopUnsignedShort();
-    return p;
-}
-
 void SerializedGameData::AddObject(GameObject* go)
 {
     RTTR_Assert(isReading);
