@@ -235,7 +235,7 @@ void iwStatistics::Msg_PaintAfter()
 {
     // Die farbigen Boxen unter den Spielerportraits malen
     unsigned short startX = 126 - numPlayingPlayers * 17;
-    unsigned pos = 0;
+    DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);
     for (unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         GamePlayer& player = GAMECLIENT.GetPlayer(i);
@@ -243,10 +243,8 @@ void iwStatistics::Msg_PaintAfter()
             continue;
 
         if (activePlayers[i])
-        {
-            DrawRectangle(this->x_ + startX + pos * 34, this->y_ + 68, 34, 12, player.color);
-        }
-        pos++;
+            DrawRectangle(drawPt, 34, 12, player.color);
+        drawPt.x += 34;
     }
 
     // Koordinatenachsen malen

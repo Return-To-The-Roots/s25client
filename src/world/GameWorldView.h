@@ -20,6 +20,7 @@
 
 #include "gameTypes/MapTypes.h"
 #include "Point.h"
+#include "DrawPoint.h"
 #include <vector>
 
 class GameWorldViewer;
@@ -33,7 +34,7 @@ public:
     virtual ~IDebugNodePrinter(){}
     /// Called when a node is going to be printed at displayPt
     /// Can e.g. print coordinates
-    virtual void print(const MapPoint& pt, const Point<int>& displayPt) = 0;
+    virtual void print(const MapPoint& pt, const DrawPoint& displayPt) = 0;
 };
 
 struct ObjectBetweenLines;
@@ -56,13 +57,13 @@ class GameWorldView
     bool show_productivity;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
-    Point<int> offset;
+    DrawPoint offset;
     /// Last scroll position (before jump)
-    Point<int> lastOffset;
+    DrawPoint lastOffset;
     /// First drawn map point (might be slightly outside map -> Wrapping)
-    Point<int> firstPt;
+    DrawPoint firstPt;
     /// Last drawn map point
-    Point<int> lastPt;
+    DrawPoint lastPt;
 
     const GameWorldViewer& gwv;
 
@@ -131,13 +132,13 @@ public:
 
 private:
     void CalcFxLx();
-    void DrawAIDebug(const MapPoint& pt, const Point<int>& curPos);
-    void DrawBoundaryStone(const MapPoint& pt, const Point<int> pos, Visibility vis);
-    void DrawObject(const MapPoint& pt, const Point<int>& curPos);
-    void DrawConstructionAid(const MapPoint& pt, const Point<int>& curPos);
-    void DrawFigures(const MapPoint& pt, const Point<int>&curPos, std::vector<ObjectBetweenLines>& between_lines);
+    void DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos);
+    void DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis);
+    void DrawObject(const MapPoint& pt, const DrawPoint& curPos);
+    void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
+    void DrawFigures(const MapPoint& pt, const DrawPoint&curPos, std::vector<ObjectBetweenLines>& between_lines);
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
-    void DrawProductivity(const noBaseBuilding& no, const Point<int>& curPos);
+    void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt);
 
 };

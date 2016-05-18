@@ -56,7 +56,7 @@ class noFire : public noCoordBase
         BlockingManner GetBM() const override { return BM_GRANITE; }
 
         /// Zeichnen
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
         /// Benachrichtigen, wenn neuer gf erreicht wurde
         void HandleEvent(const unsigned int id) override;
 };

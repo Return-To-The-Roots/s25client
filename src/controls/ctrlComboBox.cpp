@@ -240,11 +240,11 @@ bool ctrlComboBox::Draw_()
     ctrlList* liste = GetCtrl<ctrlList>(0);
 
     // Box
-    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
+    Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetLineCount() > 0)
-        font->Draw(GetX() + 2, GetY() + height_ / 2, liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0, width_ - 2 - height_, "");
+        font->Draw(GetDrawPos() + DrawPoint(2, height_ / 2), liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0, width_ - 2 - height_, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.

@@ -43,10 +43,11 @@ Messenger::~Messenger()
 /// Zeit, die
 void Messenger::Draw()
 {
-    unsigned y = 100;
-    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); y += LargeFont->getHeight())
+    const unsigned curTime = VIDEODRIVER.GetTickCount();
+    DrawPoint textPos(20, 100);
+    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); textPos.y += LargeFont->getHeight())
     {
-        unsigned diff = VIDEODRIVER.GetTickCount() - it->starttime;
+        unsigned diff = curTime - it->starttime;
         if(diff > 20000)
         {
             it = messages.erase(it);
@@ -65,11 +66,12 @@ void Messenger::Draw()
         std::string cd_str = (it->cd == CD_SYSTEM) ? "" : _(CD_STRINGS[it->cd]);
 
 
-        LargeFont->Draw(20, y, it->author, 0, (it->color_author & 0x00FFFFFF) | transparency);
-        LargeFont->Draw(20 + LargeFont->getWidth(it->author, static_cast<unsigned>(it->author.length())), y, cd_str, 0, (CD_COLORS[it->cd] & 0x00FFFFFF) | transparency);
-        LargeFont->Draw(20 + LargeFont->getWidth(it->author, static_cast<unsigned>(it->author.length())) +
-                        +LargeFont->getWidth(cd_str, static_cast<unsigned>(cd_str.length())), y,
-                        it->msg, 0, (it->color_msg & 0x00FFFFFF) | transparency);
+        DrawPoint curTextPos(textPos);
+        LargeFont->Draw(curTextPos, it->author, glArchivItem_Font::DF_LEFT, SetAlpha(it->color_author, transparency));
+        curTextPos.x += LargeFont->getWidth(it->author);
+        LargeFont->Draw(curTextPos, cd_str, glArchivItem_Font::DF_LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
+        curTextPos.x += LargeFont->getWidth(cd_str);
+        LargeFont->Draw(curTextPos, it->msg, glArchivItem_Font::DF_LEFT, SetAlpha(it->color_msg, transparency));
         ++it;
     }
 }

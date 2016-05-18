@@ -29,7 +29,7 @@ class nofShipWright : public nofWorkman
         MapPoint dest;
     private:
         /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const override { return 90; }
         /// Der Arbeiter erzeugt eine Ware
@@ -51,7 +51,7 @@ class nofShipWright : public nofWorkman
         void WalkedDerived() override;
 
         /// Zeichnen der Figur in sonstigen Arbeitslagen
-        void DrawOtherStates(const int x, const int y) override;
+        void DrawOtherStates(DrawPoint drawPt) override;
 
     public:
 

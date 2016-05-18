@@ -85,8 +85,11 @@ public:
     /// FoW-Objekt
     void PushFOWObject(const FOWObject* fowobj);
 
+    template<typename T>
+    void PushPoint(const Point<T> pt);
+
     /// Point of map coords
-    void PushMapPoint(const MapPoint p);
+    void PushMapPoint(const MapPoint pt){ PushPoint(pt); }
 
     //////////////////////////////////////////////////////////////////////////
     // Read methods
@@ -109,8 +112,11 @@ public:
     template <typename T>
     T PopContainer(const T& = T());
 
+    template<typename T>
+    Point<T> PopPoint();
+
     /// Point of map coords
-    MapPoint PopMapPoint();
+    MapPoint PopMapPoint() { return PopPoint<MapPoint::ElementType>(); }
 
     /// Adds a deserialized object to the storage. Must be called exactly once per read GameObject
     void AddObject(GameObject* go);
@@ -237,5 +243,23 @@ T SerializedGameData::PopContainer(const T&)
     }
     return result;
 }
+
+template<typename T>
+void SerializedGameData::PushPoint(const Point<T> pt)
+{
+    Push(pt.x);
+    Push(pt.y);
+}
+
+template<typename T>
+Point<T> SerializedGameData::PopPoint()
+{
+    Point<T> pt;
+    pt.x = Pop<T>();
+    pt.y = Pop<T>();
+    return pt;
+}
+
+
 
 #endif // !SERIALIZED_GAME_DATA_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,17 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "noNothing.h"
+#ifndef DrawPoint_h__
+#define DrawPoint_h__
 
-noNothing::noNothing() : noBase(NOP_NOTHING)
-{
-}
+#include "Point.h"
 
-/**
- *  An x,y zeichnen.
- */
-void noNothing::Draw(DrawPoint /*drawPt*/)
-{
-}
+/// Type used for specifying drawing offsets and coordinates. Signed base type!
+typedef Point<int> DrawPoint;
 
+#endif // DrawPoint_h__

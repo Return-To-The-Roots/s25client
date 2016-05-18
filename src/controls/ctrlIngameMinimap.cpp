@@ -57,37 +57,41 @@ bool ctrlIngameMinimap::Draw_()
     glArchivItem_Bitmap* image = LOADER.GetMapImageN(23);
 
     // Position (relativ zum angezeigten Anfang der Karte) berechnen
-    short xpos = middle_corrected.x * width_show / minimap.GetMapWidth() + 2;
-    short ypos = middle_corrected.y * height_show / minimap.GetMapHeight() + 2;
+    DrawPoint pos;
+    pos.x = middle_corrected.x * width_show / minimap.GetMapWidth() + 2;
+    pos.y = middle_corrected.y * height_show / minimap.GetMapHeight() + 2;
 
     // Scroll-Auswahl-Bild an den Rändern verkleinern, damit es nicht über die Karte "überlappt"
     short src_x = 0, src_y = 0;
     short draw_width = image->getWidth();
     short draw_height = image->getHeight();
 
+    DrawPoint originOffset = pos - image->GetOrigin();
+
     // überlappung am linken Rand?
-    if(xpos - image->getNx() < 0)
+    if(originOffset.x < 0)
     {
-        src_x = -(xpos - image->getNx());
-        draw_width += (xpos - image->getNx());
-        xpos = image->getNx();
+        src_x = -originOffset.x;
+        draw_width += originOffset.x;
+        pos.x = image->getNx();
     }
     // überlappung am oberen Rand?
-    if(ypos - image->getNy() < 0)
+    if(originOffset.y < 0)
     {
-        src_y = -(ypos - image->getNy());
-        draw_height += (ypos - image->getNy());
-        ypos = image->getNy();
+        src_y = -originOffset.y;
+        draw_height += originOffset.y;
+        pos.y = image->getNy();
     }
     // überlappung am rechten Rand?
-    if(xpos - image->getNx() + image->getWidth() >= width_show)
-        draw_width -= (xpos - image->getNx() + image->getWidth() - width_show);
+    DrawPoint overDrawSize = pos - image->GetOrigin() + image->GetSize() - DrawPoint(width_show, height_show);
+    if(overDrawSize.x >= 0)
+        draw_width -= overDrawSize.x;
     // überlappung am unteren Rand?
-    if(ypos - image->getNy() + image->getHeight() >= height_show)
-        draw_height -= (ypos - image->getNy() + image->getHeight() - height_show);
+    if(overDrawSize.y >= 0)
+        draw_height -= overDrawSize.y;
 
     // Zeichnen
-    image->Draw(GetX() + GetLeft() + xpos, GetY() + GetTop() + ypos, 0, 0, src_x, src_y, draw_width, draw_height);
+    image->Draw(GetDrawPos() + GetBBOffset() + pos, 0, 0, src_x, src_y, draw_width, draw_height);
 
     return true;
 }

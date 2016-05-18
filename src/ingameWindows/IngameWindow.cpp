@@ -206,12 +206,14 @@ bool IngameWindow::Draw_()
         Close(false);
     }
 
+    DrawPoint pos(x_, y_);
+
     // Linkes oberes Teil
     glArchivItem_Bitmap* leftUpperImg = LOADER.GetImageN("resource", 36);
-    leftUpperImg->Draw(x_, y_, 0, 0, 0, 0, 0, 0);
+    leftUpperImg->Draw(pos);
     // Rechtes oberes Teil
     glArchivItem_Bitmap* rightUpperImg = LOADER.GetImageN("resource", 37);
-    rightUpperImg->Draw(x_ + width_ - rightUpperImg->getWidth(), y_, 0, 0, 0, 0, 0, 0);
+    rightUpperImg->Draw(pos + DrawPoint(width_ - rightUpperImg->getWidth(), 0));
 
     // Die beiden Buttons oben
     static const unsigned short ids[2][3] =
@@ -222,9 +224,9 @@ bool IngameWindow::Draw_()
 
     // Titelleiste
     if(!modal)
-        LOADER.GetImageN("resource", ids[0][button_state[0]])->Draw(x_, y_, 0, 0, 0, 0, 0, 0);
+        LOADER.GetImageN("resource", ids[0][button_state[0]])->Draw(pos);
 
-    LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(x_ + width_ - 16, y_, 0, 0, 0, 0, 0, 0);
+    LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(pos + DrawPoint(width_ - 16, 0));
 
 
     // Breite berechnen
@@ -243,35 +245,41 @@ bool IngameWindow::Draw_()
     }
 
     glArchivItem_Bitmap& titleImg = *LOADER.GetImageN("resource", title_index);
+    DrawPoint titleImgPos = pos + DrawPoint(leftUpperImg->getWidth(), 0);
     for(unsigned short i = 0; i < title_count; ++i)
-        titleImg.Draw(x_ + leftUpperImg->getWidth() + i * titleImg.getWidth(), y_, 0, 0, 0, 0, 0, 0);
+    {
+        titleImg.Draw(titleImgPos);
+        titleImgPos.x += titleImg.getWidth();
+    }
 
     // Rest zeichnen
     unsigned short rest = title_width % titleImg.getWidth();
 
     if(rest)
-        titleImg.Draw(x_ + leftUpperImg->getWidth() + title_count * titleImg.getWidth(), y_, rest, 0, 0, 0, rest, 0);
+        titleImg.Draw(titleImgPos, rest, 0, 0, 0, rest, 0);
 
     // Text auf die Leiste
-    NormalFont->Draw( x_ + width_ / 2, y_ + titleImg.getHeight() / 2, title_, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
+    NormalFont->Draw(pos + DrawPoint(width_, titleImg.getHeight()) / 2, title_, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
 
     if(!isMinimized_)
     {
         // Seitenleisten
 
         // Höhe
-        glArchivItem_Bitmap* leftLowerImg = LOADER.GetImageN("resource", 45);
-        unsigned side_height = height_ - leftUpperImg->getHeight() - leftLowerImg->getHeight();
+        glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
+        unsigned side_height = height_ - leftUpperImg->getHeight() - bottomBorderSideImg->getHeight();
 
         // Wieviel mal nebeneinanderzeichnen?
         glArchivItem_Bitmap* leftSideImg = LOADER.GetImageN("resource", 38);
+        glArchivItem_Bitmap* rightSideImg = LOADER.GetImageN("resource", 39);
         title_count = side_height / leftSideImg->getHeight();
-
+        DrawPoint leftImgPos = pos + DrawPoint(0, leftUpperImg->getHeight());
+        DrawPoint rightImgPos = leftImgPos + DrawPoint(width_ - leftSideImg->getWidth(), 0);
         for(unsigned short i = 0; i < title_count; ++i)
         {
-            leftSideImg->Draw(x_, y_ + leftUpperImg->getHeight() + i * leftSideImg->getHeight(), 0, 0, 0, 0, 0, 0);
-            LOADER.GetImageN("resource", 39)->Draw(x_ + width_ - leftSideImg->getWidth(), y_ + leftUpperImg->getHeight() + i * leftSideImg->getHeight(), 0, 0, 0, 0, 0, 0);
-            //LOADER.GetImageN("resource", 43)->Draw(x+width-LOADER.GetImageN("resource", 38)->getWidth(),y);
+            leftSideImg->Draw(leftImgPos);
+            rightSideImg->Draw(rightImgPos);
+            rightImgPos.y = leftImgPos.y += leftSideImg->getHeight();    
         }
 
         // Rest zeichnen
@@ -279,25 +287,28 @@ bool IngameWindow::Draw_()
 
         if(rest)
         {
-            leftSideImg->Draw(x_, y_ + height_ - rest - leftLowerImg->getHeight(), 0, rest, 0, 0, 0, rest);
-            LOADER.GetImageN("resource", 39)->Draw(x_ + width_ - leftSideImg->getWidth(), y_ + leftUpperImg->getHeight() + title_count * leftSideImg->getHeight(), 0, rest, 0, 0, 0, rest);
+            leftSideImg->Draw(leftImgPos, 0, rest, 0, 0, 0, rest);
+            rightSideImg->Draw(rightImgPos, 0, rest, 0, 0, 0, rest);
         }
 
         // Untere Leiste
 
-        unsigned side_width = width_ - leftLowerImg->getWidth() * 2;
+        unsigned side_width = width_ - bottomBorderSideImg->getWidth() * 2;
 
         // Wieviel mal nebeneinanderzeichnen?
         glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
         title_count = side_width / bottomBarImg->getWidth();
-
+        DrawPoint bottomImgPos = pos + DrawPoint(bottomBorderSideImg->getWidth(), iwHeight - bottomBarImg->getHeight());
         for(unsigned short i = 0; i < title_count; ++i)
-            bottomBarImg->Draw(x_ + leftLowerImg->getWidth() + i * bottomBarImg->getWidth(), y_ + iwHeight - bottomBarImg->getHeight(), 0, 0, 0, 0, 0, 0);
+        {
+            bottomBarImg->Draw(bottomImgPos);
+            bottomImgPos.x += bottomBarImg->getWidth();
+        }
 
         rest = side_width % bottomBarImg->getWidth();
 
         if(rest)
-            bottomBarImg->Draw(x_ + leftLowerImg->getWidth() + title_count * bottomBarImg->getWidth(), y_ + iwHeight - bottomBarImg->getHeight(), rest, 0, 0, 0, rest, 0);
+            bottomBarImg->Draw(bottomImgPos, rest, 0, 0, 0, rest, 0);
 
         // Clientbereich
 
@@ -308,12 +319,12 @@ bool IngameWindow::Draw_()
             unsigned client_width = width_ - 20;
             unsigned client_height = iwHeight - 31;
 
-            background->Draw(this->x_ + leftSideImg->getWidth(), this->y_ + leftUpperImg->getHeight(), client_width, client_height, 0, 0, client_width, client_height);
+            background->Draw(pos + DrawPoint(leftSideImg->getWidth(), leftUpperImg->getHeight()), client_width, client_height, 0, 0, client_width, client_height);
         }
 
         // Links und rechts unten die 2 kleinen Knäufe
-        leftLowerImg->Draw(x_, y_ + iwHeight - leftLowerImg->getHeight(), 0, 0, 0, 0, 0, 0);
-        leftLowerImg->Draw(x_ + width_ - leftLowerImg->getWidth(), y_ + iwHeight - leftLowerImg->getHeight(), 0, 0, 0, 0, 0, 0);
+        bottomBorderSideImg->Draw(pos + DrawPoint(0, iwHeight - bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos + DrawPoint(width_ - bottomBorderSideImg->getWidth(), iwHeight - bottomBorderSideImg->getHeight()));
 
         // Msg_PaintBefore aufrufen vor den Controls
         Msg_PaintBefore();
@@ -322,21 +333,25 @@ bool IngameWindow::Draw_()
     }
     else
     {
-        glArchivItem_Bitmap& imgBorderSide = *LOADER.GetImageN("resource", 45);
-        glArchivItem_Bitmap& imgTitleBar = *LOADER.GetImageN("resource", 40);
-        unsigned side_width = width_ - imgBorderSide.getWidth() * 2;
-        title_count = side_width / imgTitleBar.getWidth();
+        glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
+        glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
+        unsigned side_width = width_ - bottomBorderSideImg->getWidth() * 2;
+        title_count = side_width / bottomBarImg->getWidth();
 
+        DrawPoint bottomImgPos = pos + DrawPoint(bottomBorderSideImg->getWidth(), 20);
         for(unsigned short i = 0; i < title_count; ++i)
-            imgTitleBar.Draw(x_ + imgBorderSide.getWidth() + i * imgTitleBar.getWidth(), y_ + 20, 0, 0, 0, 0, 0, 0);
+        {
+            bottomBarImg->Draw(bottomImgPos);
+            bottomImgPos.x += bottomBarImg->getWidth();
+        }
 
-        rest = side_width % imgTitleBar.getWidth();
+        rest = side_width % bottomBarImg->getWidth();
 
         if(rest)
-            imgTitleBar.Draw(x_ + imgBorderSide.getWidth() + title_count * imgTitleBar.getWidth(), y_ + 20, rest, 0, 0, 0, rest, 0);
+            bottomBarImg->Draw(bottomImgPos, rest, 0, 0, 0, rest, 0);
 
-        imgBorderSide.Draw(x_, y_ + 16, 0, 0, 0, 0, 0, 0);
-        imgBorderSide.Draw(x_ + width_ - 16, y_ + 16, 0, 0, 0, 0, 0, 0);
+        bottomBorderSideImg->Draw(pos + DrawPoint(0, bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos + DrawPoint(width_ - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
     }
 
     return true;

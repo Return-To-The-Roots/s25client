@@ -120,7 +120,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
     }
 }
 
-Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& nextPt) const
+DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextPt) const
 {
     if(current_ev)
     {
@@ -163,7 +163,7 @@ Point<int> noMovable::CalcRelative(const Point<int>& curPt, const Point<int>& ne
 }
 
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-Point<int> noMovable::CalcWalkingRelative() const
+DrawPoint noMovable::CalcWalkingRelative() const
 {
     Point<int> curPt  = gwg->GetNodePos(pos);
     Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));

@@ -20,6 +20,7 @@
 #include "ctrlMinimap.h"
 #include "PreviewMinimap.h"
 #include "gameData/MaxPlayers.h"
+#include "gameTypes/MapTypes.h"
 #include "ogl/glArchivItem_Map.h"
 class Window;
 
@@ -33,7 +34,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
         {
             Player();
             /// Map-Koordinaten der Startposition
-            unsigned short x, y;
+            MapPoint pos;
             /// Farbe
             unsigned color;
         } players[MAX_PLAYERS];

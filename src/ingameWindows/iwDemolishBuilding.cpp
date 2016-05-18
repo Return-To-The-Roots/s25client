@@ -77,6 +77,6 @@ void iwDemolishBuilding::Msg_PaintBefore()
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetX() + 104, GetY() + 109, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->Draw(GetDrawPos() + DrawPoint(104, 109), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 

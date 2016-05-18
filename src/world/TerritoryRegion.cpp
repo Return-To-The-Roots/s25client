@@ -24,13 +24,13 @@
 #include "gameData/MilitaryConsts.h"
 #include "world/GameWorldBase.h"
 
-TerritoryRegion::TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb)
-    : x1(x1), y1(y1), x2(x2), y2(y2), width(x2 - x1), height(y2 - y1), world(gwb)
+TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb)
+    : startPt(startPt), endPt(endPt), size(endPt - startPt), world(gwb)
 {
-    RTTR_Assert(x1 <= x2);
-    RTTR_Assert(y1 <= y2);
+    RTTR_Assert(startPt.x <= endPt.x);
+    RTTR_Assert(startPt.y <= endPt.y);
     // Feld erzeugen
-    nodes.resize(width * height);
+    nodes.resize(size.x * size.y);
 }
 
 TerritoryRegion::~TerritoryRegion()
@@ -73,25 +73,25 @@ bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<M
 
 void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
 {
-    int x = static_cast<int>(pt.x), y = static_cast<int>(pt.y);
+    PointI realPt(pt);
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
-    if(x < x1)
-        x += world.GetWidth();
-    else if(x >= x2)
-        x -= world.GetWidth();
+    if(realPt.x < startPt.x)
+        realPt.x += world.GetWidth();
+    else if(realPt.x >= endPt.x)
+        realPt.x -= world.GetWidth();
     // Check the (possibly) adjusted point
-    if(x < x1 || x >= x2)
+    if(realPt.x < startPt.x || realPt.x >= endPt.x)
         return;
 
     // Apply wrap-around if on either side
-    if(y < y1)
-        y += world.GetHeight();
-    else if(y >= y2)
-        y -= world.GetHeight();
+    if(realPt.y < startPt.y)
+        realPt.y += world.GetHeight();
+    else if(realPt.y >= endPt.y)
+        realPt.y -= world.GetHeight();
     // Check the (possibly) adjusted point
-    if(y < y1 || y >= y2)
+    if(realPt.y < startPt.y || realPt.y >= endPt.y)
         return;
 
     // check whether this node is within the area we may have territory in
@@ -100,7 +100,7 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
 
     /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
     /// oder wenn es halt gar nicht besetzt ist
-    TRNode& node = GetNode(x, y);
+    TRNode& node = GetNode(realPt);
 
     if(radius < node.radius || !node.owner)
     {

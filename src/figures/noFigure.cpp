@@ -203,7 +203,7 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
     this->rs_dir = rs_dir;
 }
 
-Point<int> noFigure::CalcFigurRelative() const
+DrawPoint noFigure::CalcFigurRelative() const
 {
     Point<int> curPt  = gwg->GetNodePos(pos);
     Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir()));
@@ -288,11 +288,11 @@ void noFigure::StartWalking(const unsigned char newDir)
     }
 }
 
-void noFigure::DrawShadow(const int x, const int y, const unsigned char anistep, unsigned char dir)
+void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, unsigned char dir)
 {
     glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + anistep);
     if(bitmap)
-        bitmap->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 void noFigure::WalkFigure()
@@ -828,26 +828,24 @@ void noFigure::CorrectSplitData_Derived()
 {
 }
 
-void noFigure::DrawWalkingBobCarrier(int x, int y, unsigned int ware, bool fat)
+void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned int ware, bool fat)
 {
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    Point<int> realPos = Point<int>(x, y);
     if(!waiting_for_free_node || pause_walked_gf)
-        realPos += CalcFigurRelative();
+        drawPt += CalcFigurRelative();
 
-    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(realPos.x, realPos.y, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 }
 
 
-
-void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
+void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned int job)
 {
     if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
     {
-        DrawWalking(x, y, LOADER.GetBobN("jobs"), JOB_CONSTS[job].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6, false);
+        DrawWalking(drawPt, LOADER.GetBobN("jobs"), JOB_CONSTS[job].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6, false);
         return;
     }
 
@@ -855,44 +853,40 @@ void noFigure::DrawWalkingBobJobs(int x, int y, unsigned int job)
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    Point<int> realPos = Point<int>(x, y);
     if(!waiting_for_free_node || pause_walked_gf)
-        realPos += CalcFigurRelative();
+        drawPt += CalcFigurRelative();
 
-    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 }
 
-
-void noFigure::DrawWalking(int x, int y, glArchivItem_Bob* file, unsigned int id, bool fat, bool waitingsoldier)
+void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned int id, bool fat, bool waitingsoldier)
 {
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
     unsigned ani_step = waiting_for_free_node || waitingsoldier ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    Point<int> realPos = Point<int>(x, y);
     if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
-        realPos += CalcFigurRelative();
+        drawPt += CalcFigurRelative();
     if(file)
-        file->Draw(id, GetCurMoveDir(), fat, ani_step, realPos.x, realPos.y, gwg->GetPlayer(player).color);
-    DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
+        file->Draw(id, GetCurMoveDir(), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
+    DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
 /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-void noFigure::DrawWalking(int x, int y, const char* const file, unsigned int id)
+void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned int id)
 {
     // Wenn wir warten, ani-step 2 benutzen
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    Point<int> realPos = Point<int>(x, y);
     if(!waiting_for_free_node || pause_walked_gf)
-        realPos += CalcFigurRelative();
+        drawPt += CalcFigurRelative();
 
-    LOADER.GetPlayerImage(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-    DrawShadow(realPos.x, realPos.y, ani_step, GetCurMoveDir());
+    LOADER.GetPlayerImage(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
-void noFigure::DrawWalking(int x, int y)
+void noFigure::DrawWalking(DrawPoint drawPt)
 {
     // Figurentyp unterscheiden
     switch(job_)
@@ -903,26 +897,23 @@ void noFigure::DrawWalking(int x, int y)
             unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
             // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-            Point<int> realPos = Point<int>(x, y);
             if(!waiting_for_free_node || pause_walked_gf)
-                realPos += CalcFigurRelative();
+                drawPt += CalcFigurRelative();
 
             // Esel
-            LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(realPos.x, realPos.y);
+            LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(drawPt);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(realPos.x, realPos.y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         } return;
         case JOB_CHARBURNER:
         {
-            DrawWalking(x, y, "charburner_bobs", 53);
+            DrawWalking(drawPt, "charburner_bobs", 53);
         } return;
         default:
         {
-            DrawWalkingBobJobs(x, y, job_);
+            DrawWalkingBobJobs(drawPt, job_);
         } return;
     }
-
-
 }
 
 void noFigure::Die()

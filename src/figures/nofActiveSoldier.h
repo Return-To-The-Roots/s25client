@@ -125,7 +125,7 @@ class nofActiveSoldier : public nofSoldier
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofActiveSoldier(sgd); }
 
         /// Draw soldier (for all types of soldiers done by this base class!)
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Event handling
         void HandleDerivedEvent(const unsigned int id) override;

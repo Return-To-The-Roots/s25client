@@ -32,7 +32,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
 
-const int STONE_STARTS[12] = { -4, -48, -3, -47, -13, -47, -11, -48, -13, -47, -2, -47};
+const DrawPoint STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
 {}
@@ -74,8 +74,10 @@ void nofCatapultMan::WalkedDerived()
 }
 
 
-void nofCatapultMan::DrawWorking(int x, int y)
+void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 {
+    // Offset of the catapult
+    drawPt -= DrawPoint(7, 19);
     switch(state)
     {
         default: return;
@@ -90,7 +92,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
-                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->Draw(drawPt);
             }
             //else
             //  // Katapult schießend zeichnen
@@ -103,7 +105,7 @@ void nofCatapultMan::DrawWorking(int x, int y)
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
-                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->Draw(drawPt);
             else
             {
                 step = (step - 6) / 2;
@@ -112,24 +114,13 @@ void nofCatapultMan::DrawWorking(int x, int y)
                     step = -(step);
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
-                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->Draw(drawPt);
             }
 
         } break;
 
     }
 }
-
-
-//void nofCatapultMan::HandleStateTargetBuilding()
-//{
-//}
-//
-//void nofCatapultMan::HandleStateBackOff()
-//{
-//}
-
-
 
 void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
 {
@@ -281,7 +272,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             int worldHeight = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Point<int> start = gwg->GetNodePos(pos) + Point<int>(STONE_STARTS[shooting_dir * 2], STONE_STARTS[shooting_dir * 2 + 1]);
+            Point<int> start = gwg->GetNodePos(pos) + STONE_STARTS[shooting_dir];
             // (Visuellen) Aufschlagpunkt bestimmen
             Point<int> dest = gwg->GetNodePos(destMap);
 
@@ -306,7 +297,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             }
 
             // Stein erzeugen
-            gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start.x, start.y, dest.x, dest.y, 80));
+            gwg->AddCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
             current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);

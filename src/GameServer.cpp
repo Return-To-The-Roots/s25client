@@ -508,10 +508,6 @@ bool GameServer::StartGame()
 
     framesinfo.nwf_length = i;
 
-    // Mond malen
-    LOADER.GetImageN("resource", 33)->Draw(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY() - 40, 0, 0, 0, 0, 0, 0);
-    VIDEODRIVER.SwapBuffers();
-
     GameMessage_Server_Start start_msg(random_init, framesinfo.nwf_length);
 
     LOG.lprintf("SERVER: Using gameframe length of %dms\n", framesinfo.gf_length);

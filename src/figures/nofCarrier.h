@@ -131,7 +131,7 @@ class nofCarrier : public noFigure
         /// Gibt Träger-Produktivität in % zurück
         unsigned GetProductivity() const { return productivity; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
         void LostWork();

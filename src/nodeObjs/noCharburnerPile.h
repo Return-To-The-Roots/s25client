@@ -66,7 +66,7 @@ class noCharburnerPile : public noCoordBase
 
         GO_Type GetGOT() const override { return GOT_CHARBURNERPILE; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
         void HandleEvent(const unsigned int id) override;
 
         BlockingManner GetBM() const override { return BM_CHARBURNERPILE; }

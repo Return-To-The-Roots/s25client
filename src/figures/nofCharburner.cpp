@@ -41,7 +41,7 @@ nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id) : n
 }
 
 /// Malt den Arbeiter beim Arbeiten
-void nofCharburner::DrawWorking(int x, int y)
+void nofCharburner::DrawWorking(DrawPoint drawPt)
 {
     if(harvest)
     {
@@ -61,10 +61,10 @@ void nofCharburner::DrawWorking(int x, int y)
             draw_id = 9 + 12 + (now_id - 36);
 
 
-        LOADER.GetPlayerImage("charburner_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetPlayerImage("charburner_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     else
-        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
 }
 
@@ -227,20 +227,20 @@ void nofCharburner::WalkingStarted()
 }
 
 /// Draws the figure while returning home / entering the building (often carrying wares)
-void nofCharburner::DrawReturnStates(const int x, const int y)
+void nofCharburner::DrawReturnStates(DrawPoint drawPt)
 {
     // Carry coal?
     if(ware == GD_COAL)
-        DrawWalking(x, y, "charburner_bobs", 200);
+        DrawWalking(drawPt, "charburner_bobs", 200);
     else
         // Draw normal walking otherwise
-        DrawWalking(x, y);
+        DrawWalking(drawPt);
 }
 
 
 /// Draws the charburner while walking
 /// (overriding standard method of nofFarmhand)
-void nofCharburner::DrawOtherStates(const int x, const int y)
+void nofCharburner::DrawOtherStates(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -250,13 +250,13 @@ void nofCharburner::DrawOtherStates(const int x, const int y)
             if(!harvest)
             {
                 if(wt == WT_WOOD)
-                    DrawWalking(x, y, "charburner_bobs", 102);
+                    DrawWalking(drawPt, "charburner_bobs", 102);
                 else
-                    DrawWalking(x, y, "charburner_bobs", 151);
+                    DrawWalking(drawPt, "charburner_bobs", 151);
             }
             else
                 // Draw normal walking
-                DrawWalking(x, y);
+                DrawWalking(drawPt);
         } break;
         default: return;
     }

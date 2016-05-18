@@ -80,14 +80,14 @@ noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_i
 {
 }
 
-void noCharburnerPile::Draw( int x, int y)
+void noCharburnerPile::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case STATE_WOOD:
         {
             // Draw sand on which the wood stack is constructed
-            LOADER.GetImageN("charburner_bobs", 25)->Draw(x, y);
+            LOADER.GetImageN("charburner_bobs", 25)->Draw(drawPt);
 
             glArchivItem_Bitmap* image;
             if(step == 0)
@@ -97,32 +97,32 @@ void noCharburnerPile::Draw( int x, int y)
                 image = LOADER.GetImageN("charburner_bobs", 28);
 
                 // Draw wood pile beneath the cover
-                LOADER.GetImageN("charburner_bobs", 26)->Draw(x, y);
+                LOADER.GetImageN("charburner_bobs", 26)->Draw(drawPt);
             }
 
             unsigned short progress = sub_step * image->getHeight() / CONSTRUCTION_WORKING_STEPS[step];
             unsigned short height = image->getHeight() - progress;
             if(progress != 0)
-                image->Draw(x, y + height, 0, 0, 0, height, 0, progress);
+                image->Draw(drawPt + DrawPoint(0, height), 0, 0, 0, height, 0, progress);
         } return;
         case STATE_SMOLDERING:
         {
-            LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))->Draw(x, y);
+            LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))->Draw(drawPt);
 
             // Dann Qualm zeichnen
             unsigned int globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
-            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x + 21, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE); //-V525
-            LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->Draw(x - 02, y - 06, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(x - 25, y - 11, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->Draw(x - 02, y - 35, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(drawPt + DrawPoint(21, -11), 0, 0, 0, 0, 0, 0, 0x99EEEEEE); //-V525
+            LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->Draw(drawPt - DrawPoint(2,   06), 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->Draw(drawPt - DrawPoint(25,  11), 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->Draw(drawPt - DrawPoint(2,   35), 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
         } return;
         case STATE_REMOVECOVER:
         {
-            LOADER.GetImageN("charburner_bobs", 28 + step)->Draw(x, y);
+            LOADER.GetImageN("charburner_bobs", 28 + step)->Draw(drawPt);
         } return;
         case STATE_HARVEST:
         {
-            LOADER.GetImageN("charburner_bobs", 34 + step)->Draw(x, y);
+            LOADER.GetImageN("charburner_bobs", 34 + step)->Draw(drawPt);
 
         } return;
         default: return;

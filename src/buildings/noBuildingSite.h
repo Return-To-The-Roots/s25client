@@ -82,7 +82,7 @@ class noBuildingSite : public noBaseBuilding
 
         GO_Type GetGOT() const override { return GOT_BUILDINGSITE; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         FOWObject* CreateFOWObject() const override;

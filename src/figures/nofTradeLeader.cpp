@@ -109,9 +109,9 @@ void nofTradeLeader::AbrogateWorkplace()
 {
 }
 
-void nofTradeLeader::Draw(int x, int y)
+void nofTradeLeader::Draw(DrawPoint drawPt)
 {
-    DrawWalking(x, y);
+    DrawWalking(drawPt);
 }
 
 void nofTradeLeader::LostWork()

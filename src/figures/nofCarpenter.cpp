@@ -34,14 +34,14 @@ nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nof
 {
 }
 
-void nofCarpenter::DrawWorking(int x, int y)
+void nofCarpenter::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { {30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3} };
+    static const DrawPoint offsets[NAT_COUNT] = { {30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3} };
 
     unsigned now_id;
 
     LOADER.GetPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
-    ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+    ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)

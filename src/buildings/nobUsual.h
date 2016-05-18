@@ -75,7 +75,7 @@ protected:
 
         GO_Type GetGOT() const override { return GOT_NOB_USUAL; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         bool HasWorker() const;
 

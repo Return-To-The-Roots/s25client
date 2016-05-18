@@ -17,6 +17,7 @@
 #ifndef FOWOBJECT_H_INCLUDED
 #define FOWOBJECT_H_INCLUDED
 
+#include "DrawPoint.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
@@ -50,7 +51,7 @@ class FOWObject
 
         virtual ~FOWObject();
         /// An x,y zeichnen.
-        virtual void Draw(int x, int y) const = 0;
+        virtual void Draw(DrawPoint drawPt) const = 0;
         /// Serialisierungsfunktion.
         virtual void Serialize(SerializedGameData& sgd) const = 0;
         /// Gibt Typ zurück
@@ -65,7 +66,7 @@ class fowNothing : public FOWObject
         fowNothing(){}
         fowNothing(SerializedGameData&  /*sgd*/){}
         void Serialize(SerializedGameData&  /*sgd*/) const override{}
-        void Draw(int  /*x*/, int  /*y*/) const override{}
+        void Draw(DrawPoint) const override{}
         FOW_Type GetType() const override { return FOW_NOTHING; }
 };
 
@@ -84,7 +85,7 @@ class fowBuilding : public FOWObject
         fowBuilding(const BuildingType type, const Nation nation);
         fowBuilding(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const override;
-        void Draw(int x, int y) const override;
+        void Draw(DrawPoint drawPt) const override;
         FOW_Type GetType() const override { return FOW_BUILDING; }
 };
 
@@ -105,7 +106,7 @@ class fowBuildingSite : public FOWObject
         fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
         fowBuildingSite(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const override;
-        void Draw(int x, int y) const override;
+        void Draw(DrawPoint drawPt) const override;
         FOW_Type GetType() const override { return FOW_BUILDINGSITE; }
 };
 
@@ -124,7 +125,7 @@ class fowFlag : public FOWObject
         fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type);
         fowFlag(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const override;
-        void Draw(int x, int y) const override;
+        void Draw(DrawPoint drawPt) const override;
         FOW_Type GetType() const override { return FOW_FLAG; }
 };
 
@@ -143,7 +144,7 @@ class fowTree : public FOWObject
         fowTree(const unsigned char type, const unsigned char size);
         fowTree(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const override;
-        void Draw(int x, int y) const override;
+        void Draw(DrawPoint drawPt) const override;
         FOW_Type GetType() const override { return FOW_TREE; }
 };
 
@@ -160,7 +161,7 @@ class fowGranite : public FOWObject
         fowGranite(const GraniteType type, const unsigned char state);
         fowGranite(SerializedGameData& sgd);
         void Serialize(SerializedGameData& sgd) const override;
-        void Draw(int x, int y) const override;
+        void Draw(DrawPoint drawPt) const override;
         FOW_Type GetType() const override { return FOW_GRANITE; }
 };
 

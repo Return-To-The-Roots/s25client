@@ -19,14 +19,16 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Bob.h"
+#include "DrawPoint.h"
+#include "libsiedler2/src/ArchivItem_Bob.h"
+
 
 /// Klasse für GL-Bobfiles.
 class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {
     public:
         /// Zeichnet einen Animationsstep.
-        void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, short x, short y, unsigned int color);
+        void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, DrawPoint drawPt, unsigned int color);
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED

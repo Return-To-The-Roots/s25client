@@ -249,13 +249,13 @@ void ctrlTable::SortRows(int column, bool* direction)
  */
 bool ctrlTable::Draw_()
 {
-    Draw3D(GetX(), GetY(), width_, height_, tc, 2);
+    Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
     DrawControls();
 
     int lines = static_cast<int>(line_count > rows.size() ? rows.size() : line_count);
     ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);
-
+    DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2 + header_height);
     for(int i = 0; i < lines; ++i)
     {
         const int curRow = i + scroll->GetPos();
@@ -264,19 +264,20 @@ bool ctrlTable::Draw_()
         if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
-            DrawRectangle(GetX() + 2, GetY() + 2 + header_height + i * font->getHeight(), width_ - 4 - (scroll->GetVisible() ? 24 : 0), font->getHeight(), 0x80000000);
+            DrawRectangle(curPos, width_ - 4 - (scroll->GetVisible() ? 24 : 0), font->getHeight(), 0x80000000);
         }
 
-        unsigned short pos = 0;
+        DrawPoint colPos = curPos;
         for(unsigned short c = 0; c < columns.size(); ++c)
         {
             if(columns[c].width == 0)
                 continue;
 
             ctrlButton* bt = GetCtrl<ctrlButton>(c + 1);
-            font->Draw(GetX() + 2 + pos, GetY() + 2 + header_height + i * font->getHeight(), rows[curRow].columns[c], 0, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetWidth(), "");
-            pos += bt->GetWidth();
+            font->Draw(colPos, rows[curRow].columns[c], 0, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetWidth(), "");
+            colPos.x += bt->GetWidth();
         }
+        curPos.y += font->getHeight();
     }
 
     return true;

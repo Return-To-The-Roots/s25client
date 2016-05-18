@@ -23,7 +23,7 @@
 #include "oglIncludes.h"
 #include <vector>
 
-void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color, const unsigned int player_color)
+void glArchivItem_Bitmap_Player::Draw(DrawPoint dst, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color, const unsigned int player_color)
 {
     if(GetTexture() == 0)
         return;
@@ -39,8 +39,8 @@ void glArchivItem_Bitmap_Player::Draw(short dst_x, short dst_y, short dst_w, sho
 
     Point<GLfloat> texCoords[8], vertices[8];
 
-    int x = -nx_ + dst_x;
-    int y = -ny_ + dst_y;
+    int x = -nx_ + dst.x;
+    int y = -ny_ + dst.y;
 
     vertices[0].x = vertices[1].x = GLfloat(x);
     vertices[2].x = vertices[3].x = GLfloat(x + dst_w);

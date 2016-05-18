@@ -86,7 +86,7 @@ std::string ctrlEdit::GetText() const
 bool ctrlEdit::Draw_()
 {
     // Box malen
-    Draw3D(GetX(), GetY(), width_, height_, texColor_, 2);
+    Draw3D(GetDrawPos(), width_, height_, texColor_, 2);
 
     ucString dtext;
 
@@ -122,7 +122,7 @@ bool ctrlEdit::Draw_()
         start = cursorPos_ - 5;
     if(cursorPos_ <= 5)
         start = 0;
-    font_->Draw(GetX() + 4, GetY() + height_ / 2, dtext.substr(start), glArchivItem_Font::DF_VCENTER,
+    font_->Draw(GetDrawPos() + DrawPoint(4, height_ / 2), dtext.substr(start), glArchivItem_Font::DF_VCENTER,
                (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, width_ - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
@@ -133,7 +133,7 @@ bool ctrlEdit::Draw_()
         if(cursorPos_ > start)
             cwidth = font_->getWidth(&dtext[start], cursorPos_ - start) + 4;
 
-        DrawRectangle(GetX() + cwidth , GetY() + ( height_ - (font_->getHeight() + 2) ) / 2, 1, font_->getHeight() + 2, 0xFFFFA000);
+        DrawRectangle(GetDrawPos() + DrawPoint(cwidth, (height_ - (font_->getHeight() + 2)) / 2), 1, font_->getHeight() + 2, 0xFFFFA000);
     }
 
     return true;

@@ -46,9 +46,9 @@ nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 {
 }
 
-void nofArmorer::DrawWorking(int x, int y)
+void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
+    DrawPoint offsets[NAT_COUNT] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
 
     unsigned int max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
@@ -58,7 +58,7 @@ void nofArmorer::DrawWorking(int x, int y)
         unsigned int plColor = gwg->GetPlayer(player).color;
 
         LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[wpNation][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, plColor);
+        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, plColor);
 
         if((now_id % 8) == 5)
         {

@@ -24,59 +24,92 @@
 template <typename T>
 struct Point
 {
+    typedef T ElementType;
+
     T x, y;
     Point() {} //-V730
     Point(const T x, const T y): x(x), y(y) {}
     Point(const Point& other): x(other.x), y(other.y){}
     template<typename U>
     explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
-    bool operator==(const Point& second) const
-    { return (x == second.x && y == second.y); }
-    bool operator!=(const Point& second) const
-    { return !(*this == second); }
 
-    static const Point Invalid()
-    { return Point(std::numeric_limits<T>::max(), std::numeric_limits<T>::max()); }
+    static const Point Invalid();
+    inline bool isValid() const;
 
-    bool isValid() const
-    {
-        return *this != Invalid();
-    }
-
-    Point operator+(const Point& right) const
-    {
-        return Point(x + right.x, y + right.y);
-    }
-
-    Point& operator+=(const Point& right)
-    {
-        x += right.x;
-        y += right.y;
-        return *this;
-    }
-
-    Point operator-(const Point& right) const
-    {
-        return Point(x - right.x, y - right.y);
-    }
-
-    Point& operator-=(const Point& right)
-    {
-        x -= right.x;
-        y -= right.y;
-        return *this;
-    }
-
-    Point operator*(const T div) const
-    {
-        return Point(x * div, y * div);
-    }
-
-    Point operator/(const T div) const
-    {
-        return Point(x / div, y / div);
-    }
-
+    inline bool operator==(const Point& second) const;
+    inline bool operator!=(const Point& second) const;
+    inline Point& operator+=(const Point& right);
+    inline Point& operator-=(const Point& right);
+    inline Point operator+(const Point& right) const;
+    inline Point operator-(const Point& right) const;
+    inline Point operator*(const T div) const;
+    inline Point operator/(const T div) const;
 };
+
+template <typename T>
+const Point<T> Point<T>::Invalid()
+{
+    return Point(std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+}
+
+template <typename T>
+bool Point<T>::isValid() const
+{
+    return *this != Invalid();
+}
+
+template <typename T>
+bool Point<T>::operator==(const Point<T>& second) const
+{
+    return (x == second.x && y == second.y);
+}
+
+template <typename T>
+bool Point<T>::operator!=(const Point<T>& second) const
+{
+    return !(*this == second);
+}
+
+template <typename T>
+Point<T>& Point<T>::operator+=(const Point<T>& right)
+{
+    x += right.x;
+    y += right.y;
+    return *this;
+}
+
+template <typename T>
+Point<T>& Point<T>::operator-=(const Point<T>& right)
+{
+    x -= right.x;
+    y -= right.y;
+    return *this;
+}
+
+template <typename T>
+Point<T> Point<T>::operator+(const Point<T>& right) const
+{
+    Point result(*this);
+    return result += right;
+}
+
+template <typename T>
+Point<T> Point<T>::operator-(const Point<T>& right) const
+{
+    Point result(*this);
+    return result -= right;
+}
+
+template <typename T>
+Point<T> Point<T>::operator/(const T div) const
+{
+    return Point(x / div, y / div);
+}
+
+template <typename T>
+Point<T> Point<T>::operator*(const T div) const
+{
+    return Point(x * div, y * div);
+}
 
 #endif // Point_h__

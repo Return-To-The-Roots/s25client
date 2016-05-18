@@ -315,14 +315,14 @@ void nofFarmhand::WorkAborted_Farmhand()
 
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofFarmhand::DrawOtherStates(const int x, const int y)
+void nofFarmhand::DrawOtherStates(DrawPoint drawPt)
 {
     switch(state)
     {
         case STATE_WALKTOWORKPOINT:
         {
             // Normales Laufen zeichnen
-            DrawWalking(x, y);
+            DrawWalking(drawPt);
         } break;
         default: return;
     }

@@ -205,14 +205,15 @@ void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
  */
 bool ctrlScrollBar::Draw_()
 {
+    DrawPoint pos = GetDrawPos();
     // Leiste
-    Draw3D(GetX(), GetY() + button_height - 2, width_, height_ - button_height * 2 + 4, tc, 2);
+    Draw3D(pos + DrawPoint(0, button_height - 2), width_, height_ - button_height * 2 + 4, tc, 2);
 
     // Buttons
     DrawControls();
 
     // Scrollbar
-    Draw3D(GetX(), GetY() + button_height + scrollbar_pos, width_, scrollbar_height, tc, 0);
+    Draw3D(pos + DrawPoint(0, button_height + scrollbar_pos), width_, scrollbar_height, tc, 0);
 
     return true;
 }

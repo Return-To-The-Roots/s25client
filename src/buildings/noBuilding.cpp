@@ -60,19 +60,19 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseB
     }
 }
 
-void noBuilding::DrawBaseBuilding(int x, int y)
+void noBuilding::DrawBaseBuilding(DrawPoint drawPt)
 {
-    LOADER.building_cache[nation][type_][0].draw(x, y);
-    DrawDoor(x, y);
+    LOADER.building_cache[nation][type_][0].draw(drawPt);
+    DrawDoor(drawPt);
 }
 
-void noBuilding::DrawDoor(int x, int y)
+void noBuilding::DrawDoor(DrawPoint drawPt)
 {
     if(!opendoor)
         return;
     glArchivItem_Bitmap* doorImg = GetDoorImage();
     if(doorImg)
-        doorImg->Draw(x, y, 0, 0, 0, 0, 0, 0);
+        doorImg->Draw(drawPt);
 }
 
 void noBuilding::GotWorker(Job  /*job*/, noFigure*  /*worker*/)

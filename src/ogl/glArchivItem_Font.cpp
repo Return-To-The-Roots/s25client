@@ -172,8 +172,7 @@ inline void glArchivItem_Font::DrawChar(const unsigned c,
 /**
  *  @brief
  */
-void glArchivItem_Font::Draw(short x,
-                             short y,
+void glArchivItem_Font::Draw(DrawPoint pos,
                              const ucString& wtext,
                              unsigned int format,
                              unsigned int color,
@@ -185,7 +184,7 @@ void glArchivItem_Font::Draw(short x,
     // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
     std::string text = cvUnicodeToUTF8(wtext);
     std::string end = cvUnicodeToUTF8(wend);
-    Draw(x, y, text, format, color, length, max, end);
+    Draw(pos, text, format, color, length, max, end);
 }
 
 /**
@@ -206,8 +205,7 @@ void glArchivItem_Font::Draw(short x,
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(short x,
-                             short y,
+void glArchivItem_Font::Draw(DrawPoint pos,
                              const std::string& textIn,
                              unsigned int format,
                              unsigned int color,
@@ -259,13 +257,13 @@ void glArchivItem_Font::Draw(short x,
     std::advance(itEnd, maxNumChars);
 
     if( (format & 3) == DF_RIGHT)
-        x -= textWidth;
+        pos.x -= textWidth;
     if( (format & 12) == DF_BOTTOM)
-        y -= dy;
-    if( (format & 12) == DF_VCENTER)
-        y -= dy / 2;
+        pos.y -= dy;
+    else if( (format & 12) == DF_VCENTER)
+        pos.y -= dy / 2;
 
-    short cx = x, cy = y;
+    short cx = pos.x, cy = pos.y;
     if( (format & 3) == DF_CENTER)
     {
         unsigned short line_width;
@@ -274,7 +272,7 @@ void glArchivItem_Font::Draw(short x,
             line_width = getWidthInternal(text.begin(), itNl);
         else
             line_width = textWidth;
-        cx = x - line_width / 2;
+        cx = pos.x - line_width / 2;
     }
 
     std::vector<GL_T2F_V3F_Struct> texList;
@@ -294,10 +292,10 @@ void glArchivItem_Font::Draw(short x,
                 std::string::iterator itNext = nextIt(it);
                 std::string::iterator itNl = std::find(itNext, itEnd, '\n');
                 line_width = getWidthInternal(itNext, itNl);
-                cx = x - line_width / 2;
+                cx = pos.x - line_width / 2;
             }
             else
-                cx = x;
+                cx = pos.x;
         }
         else
             DrawChar(curChar, texList, cx, cy, tw, th);
@@ -311,7 +309,7 @@ void glArchivItem_Font::Draw(short x,
             if(curChar == '\n')
             {
                 cy += dy;
-                cx = x;
+                cx = pos.x;
             } else
                 DrawChar(curChar, texList, cx, cy, tw, th);
         }

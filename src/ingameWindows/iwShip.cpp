@@ -82,20 +82,20 @@ void iwShip::Msg_PaintAfter()
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
-            NormalFont->Draw(GetX() + width_ / 2, GetY() + 60, _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+            NormalFont->Draw(GetDrawPos() + DrawPoint(width_ / 2, 60), _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
 
 
     // Schiffsname
-    NormalFont->Draw(GetX() + 42, GetY() + 42, ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
     sprintf(str, "%u/%u", ship_id + 1, gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount());
-    NormalFont->Draw(GetX() + 208, GetY() + 42, str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
-    LOADER.GetImageN("boot_z", 12)->Draw(GetX() + 138, GetY() + 117);
+    LOADER.GetImageN("boot_z", 12)->Draw(GetDrawPos() + DrawPoint(138, 117));
 
     // Expeditions-Buttons malen?
     if(ship->IsWaitingForExpeditionInstructions())
@@ -213,20 +213,17 @@ void iwShip::DrawCargo()
     }
 
     // Start Offset zum malen
-    const int xStart = 40 + this->x_;
-    const int yStart = 130 + this->y_;
+    const DrawPoint startPt = GetDrawPos() + DrawPoint(40, 130);
 
     // Step pro Ware/Figur
     const int xStep = 10;
-
     // Step pro Zeile
     const int yStep = 15;
 
     // Elemente pro Zeile
     const unsigned elementsPerLine = 17;
 
-    int x = xStart;
-    int y = yStart;
+    DrawPoint drawPt = startPt;
 
     unsigned lineCounter = 0;
 
@@ -237,8 +234,8 @@ void iwShip::DrawCargo()
         {
             if (lineCounter > elementsPerLine)
             {
-                x = xStart;
-                y += yStep;
+                drawPt.x = startPt.x;
+                drawPt.y += yStep;
                 lineCounter = 0;
             }
             orderedFigures[i]--;
@@ -248,13 +245,13 @@ void iwShip::DrawCargo()
                 job_bobs_id += NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player).nation] * 6;
 
             if (i == JOB_PACKDONKEY)
-                LOADER.GetMapImageN(2016)->Draw(x, y);
+                LOADER.GetMapImageN(2016)->Draw(drawPt);
             else if(i == JOB_BOATCARRIER)
-                LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, x, y, owner.color);
+                LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, drawPt, owner.color);
             else
-                LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, x, y, owner.color);
+                LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, drawPt, owner.color);
 
-            x += xStep;
+            drawPt.x += xStep;
             lineCounter++;
         }
     }
@@ -266,26 +263,21 @@ void iwShip::DrawCargo()
         {
             if (lineCounter > elementsPerLine)
             {
-                x = xStart;
-                y += yStep;
+                drawPt.x = startPt.x;
+                drawPt.y += yStep;
                 lineCounter = 0;
             }
             orderedWares[i]--;
 
-            unsigned draw_id =i;
+            unsigned draw_id = i;
 
             // Schilder? Dann das  Schild der jeweiligen Nationalität nehmen
             if(draw_id == GD_SHIELDROMANS)
                 draw_id = SHIELD_TYPES[owner.nation];
 
-
-            LOADER.GetMapImageN(2200 + draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0);
-            x += xStep;
+            LOADER.GetMapImageN(2200 + draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0);
+            drawPt.x += xStep;
             lineCounter++;
         }
     }
-
-
-
-
 }

@@ -19,11 +19,12 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "colors.h"
 #include "ogl/oglIncludes.h"
+#include "DrawPoint.h"
 #include "helpers/containerUtils.h"
+#include "libsiedler2/src/ArchivItem_Font.h"
 #include "libutil/src/ucString.h"
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
@@ -40,8 +41,8 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         glArchivItem_Font& operator=(const glArchivItem_Font& obj);
 
         /// Zeichnet einen Text.
-        void Draw(short x, short y, const ucString& wtext,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
-        void Draw(short x, short y, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
+        void Draw(DrawPoint pos, const ucString& wtext,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
+        void Draw(DrawPoint pos, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
 
         /// liefert die Länge einer Zeichenkette.
         unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* max = NULL) const;

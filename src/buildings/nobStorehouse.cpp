@@ -49,10 +49,10 @@ nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : n
 }
 
 
-void nobStorehouse::Draw(int x, int y)
+void nobStorehouse::Draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
-    DrawBaseBuilding(x, y);
+    DrawBaseBuilding(drawPt);
 }
 
 

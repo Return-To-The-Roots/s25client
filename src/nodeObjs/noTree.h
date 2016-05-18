@@ -102,7 +102,7 @@ class noTree : public noCoordBase
         GO_Type GetGOT() const override { return GOT_TREE; }
 
 
-        void Draw( int x,   int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         void HandleEvent(const unsigned int id) override;
 

@@ -21,6 +21,7 @@
 #include <boost/array.hpp>
 #include <vector>
 
+class glArchivItem_Bitmap;
 class glArchivItem_Bitmap_RLE;
 
 namespace libsiedler2{
@@ -34,7 +35,7 @@ class CustomBorderBuilder
         CustomBorderBuilder(const libsiedler2::ArchivItem_Palette* const palette);
         ~CustomBorderBuilder();
         int loadEdges(const libsiedler2::ArchivInfo* archiveInfo);
-        int buildBorder(const unsigned int width, const unsigned int height, libsiedler2::ArchivInfo* borderInfo);
+        int buildBorder(const unsigned int width, const unsigned int height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo);
         const libsiedler2::ArchivItem_Palette* palette;
 
     private:

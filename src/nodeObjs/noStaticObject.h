@@ -40,7 +40,7 @@ class noStaticObject : public noCoordBase
         BlockingManner GetBM() const override { return BlockingManner(unsigned(BM_HUT) + size); }
 
         /// zeichnet das Objekt.
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noStaticObject(SerializedGameData& sgd) const;

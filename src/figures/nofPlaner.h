@@ -63,7 +63,7 @@ class nofPlaner : public noFigure
 
         GO_Type GetGOT() const override { return GOT_NOF_PLANER; }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
         void LostWork();

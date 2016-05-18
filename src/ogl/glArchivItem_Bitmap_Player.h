@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "glArchivItem_BitmapBase.h"
 #include "libutil/src/colors.h"
 
@@ -31,7 +31,7 @@ class glArchivItem_Bitmap_Player : public libsiedler2::ArchivItem_Bitmap_Player,
 
         glArchivItem_Bitmap_Player(const glArchivItem_Bitmap_Player& item) : ArchivItem_BitmapBase(item), ArchivItem_Bitmap_Player(item), glArchivItem_BitmapBase(item) {}
 
-        void Draw(short dst_x, short dst_y, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y  = 0, short src_w  = 0, short src_h  = 0, const unsigned int color = COLOR_WHITE, const unsigned int player_color = COLOR_WHITE);
+        void Draw(DrawPoint dst, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y  = 0, short src_w  = 0, short src_h  = 0, const unsigned int color = COLOR_WHITE, const unsigned int player_color = COLOR_WHITE);
 
     protected:
         void FillTexture() override;

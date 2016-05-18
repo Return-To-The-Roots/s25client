@@ -91,7 +91,7 @@ noTree::noTree(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd
 }
 
 
-void noTree::Draw( int x,   int y)
+void noTree::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -99,7 +99,7 @@ void noTree::Draw( int x,   int y)
         case STATE_FALLING_WAIT:
         {
             // Wenn er ausgewachsen ist, dann animiert zeichnen
-            LOADER.tree_cache[type][GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX()*GetY() * 10 * type)].draw(x, y);
+            LOADER.tree_cache[type][GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX()*GetY() * 10 * type)].draw(drawPt);
 
             // je mehr Bäume gezeichnet, desto mehr Vogelgezwitscher
             ++DRAW_COUNTER;
@@ -107,22 +107,22 @@ void noTree::Draw( int x,   int y)
         case STATE_GROWING_WAIT:
         {
             // normal zeichnen, wächst nicht
-            LOADER.tree_cache[type][8 + size].draw(x, y);
+            LOADER.tree_cache[type][8 + size].draw(drawPt);
         } break;
         case STATE_GROWING_GROW:
         {
             // alten Baum ausblenden
             unsigned transparency = (GAMECLIENT.Interpolate(0xFF, event)) << 24;
 
-            LOADER.tree_cache[type][8 + size].draw(x, y, 0xFFFFFFFF - transparency);
+            LOADER.tree_cache[type][8 + size].draw(drawPt, 0xFFFFFFFF - transparency);
 
             if (size == 2)
             {
-                LOADER.tree_cache[type][0].draw(x, y, transparency | 0xFFFFFF);
+                LOADER.tree_cache[type][0].draw(drawPt, transparency | 0xFFFFFF);
             }
             else
             {
-                LOADER.tree_cache[type][8 + size + 1].draw(x, y, transparency | 0xFFFFFF);
+                LOADER.tree_cache[type][8 + size + 1].draw(drawPt, transparency | 0xFFFFFF);
             }
         } break;
         case STATE_FALLING_FALL:
@@ -137,11 +137,11 @@ void noTree::Draw( int x,   int y)
             else
                 i = 2;
 
-            LOADER.tree_cache[type][11 + i].draw(x, y);
+            LOADER.tree_cache[type][11 + i].draw(drawPt);
         } break;
         case STATE_FALLING_FALLEN:
         {
-            LOADER.tree_cache[type][14].draw(x, y);
+            LOADER.tree_cache[type][14].draw(drawPt);
         } break;
     }
 }

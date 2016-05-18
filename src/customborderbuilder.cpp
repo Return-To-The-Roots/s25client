@@ -167,7 +167,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo* archiveInfo)
     return 0;
 }
 
-int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned int height, libsiedler2::ArchivInfo* borderInfo)
+int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned int height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo)
 {
     // simples Fehlerabfangen
     if (width < 640 || height < 480)
@@ -248,13 +248,12 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
     }
 
     // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap_RLE kovertieren
-    borderInfo->alloc(4);
     for(unsigned int i = 0; i < 4; i++)
     {
         glArchivItem_Bitmap_RLE* customEdgeRLE = new glArchivItem_Bitmap_RLE;
         customEdgeRLE->setWidth(customEdge[i]->w); customEdgeRLE->setHeight(customEdge[i]->h); customEdgeRLE->tex_alloc();
         BdrBitmap2BitmapRLE2(customEdge[i], customEdgeRLE);
-        borderInfo->set(i, customEdgeRLE);
+        borderInfo[i] = customEdgeRLE;
     }
     // Speicher der BdrBitmap's wieder freigeben
     for(unsigned char i = 0; i < 4; i++)

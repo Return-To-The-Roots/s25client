@@ -227,35 +227,35 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
 }
 
 // Relative Position des Bauarbeiters
-const Point<int> BUILDER_POS[NAT_COUNT] = { Point<int>(0, 18), Point<int>(-8, 17), Point<int>(0, 15), Point<int>(-18, 17), Point<int>(-18, 17) };
+const Point<int> BUILDER_POS[NAT_COUNT] = { Point<int>(-20, 18), Point<int>(-28, 17), Point<int>(-20, 15), Point<int>(-38, 17), Point<int>(-38, 17) };
 /// Relative Position der Brettertürme
-const Point<int> BOARDS_POS[NAT_COUNT] = { Point<int>(-70, -5), Point<int>(-55, -5), Point<int>(-50, -5), Point<int>(-60, -5), Point<int>(-60, -5) };
+const Point<int> BOARDS_POS[NAT_COUNT] = { Point<int>(-75, -5), Point<int>(-60, -5), Point<int>(-55, -5), Point<int>(-65, -5), Point<int>(-65, -5) };
 /// Relative Position der Steintürme
-const Point<int> STONES_POS[NAT_COUNT] = { Point<int>(-73, 10), Point<int>(-60, 10), Point<int>(-50, 10), Point<int>(-60, 10), Point<int>(-60, 10) };
+const Point<int> STONES_POS[NAT_COUNT] = { Point<int>(-65, 10), Point<int>(-52, 10), Point<int>(-42, 10), Point<int>(-52, 10), Point<int>(-52, 10) };
 /// Relative Postion der inneren Hafenfeuer
 const Point<int> FIRE_POS[NAT_COUNT] = { Point<int>(36, -51), Point<int>(0, 0), Point<int>(0, 0), Point<int>(5, -80), Point<int>(0, 0) };
 /// Relative Postion der äußeren Hafenfeuer
 const Point<int> EXTRAFIRE_POS[NAT_COUNT] = { Point<int>(0, 0), Point<int>(0, 0), Point<int>(8, -115), Point<int>(0, 0), Point<int>(0, 0) };
 
-void nobHarborBuilding::Draw(int x, int y)
+void nobHarborBuilding::Draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
-    DrawBaseBuilding(x, y);
+    DrawBaseBuilding(drawPt);
 
     // Hafenfeuer zeichnen // TODO auch für nicht-römer machen
     if (nation == NAT_ROMANS || nation == NAT_JAPANESE || nation == NAT_BABYLONIANS)
     {
-        LOADER.GetNationImage(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetNationImage(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))->Draw(drawPt + FIRE_POS[nation]);
     }
     else if (nation == NAT_AFRICANS || nation == NAT_VIKINGS)
     {
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(x + FIRE_POS[nation].x, y + FIRE_POS[nation].y);
+        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(drawPt + FIRE_POS[nation]);
     }
 
     if (nation == NAT_ROMANS)
     {
         // Zusätzliches Feuer
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(x + EXTRAFIRE_POS[nation].x, y + EXTRAFIRE_POS[nation].y);
+        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(drawPt + EXTRAFIRE_POS[nation]);
     }
 
     // Läuft gerade eine Expedition?
@@ -264,11 +264,13 @@ void nobHarborBuilding::Draw(int x, int y)
         // Waren für die Expedition zeichnen
 
         // Bretter
+        DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(x + BOARDS_POS[nation].x - 5, y + BOARDS_POS[nation].y - i * 4, 0, 0, 0, 0, 0, 0);
+            LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(boardsPos - DrawPoint(0, i * 4));
+        DrawPoint stonesPos = drawPt + BOARDS_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetMapImageN(2200 + GD_STONES)->Draw(x + STONES_POS[nation].x + 8, y + STONES_POS[nation].y - i * 4, 0, 0, 0, 0, 0, 0);
+            LOADER.GetMapImageN(2200 + GD_STONES)->Draw(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist
         if(expedition.builder)
@@ -282,23 +284,11 @@ void nobHarborBuilding::Draw(int x, int y)
             // Id vom laufen
             unsigned walking_id = (id / 32) % 8;
 
-            int right_point = x - 20 + BUILDER_POS[nation].x;
-
+            DrawPoint builderPos = drawPt + BUILDER_POS[nation];
             if(id < 500)
-            {
-                LOADER.bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(right_point - walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, gwg->GetPlayer(player).color);
-//              LOADER.GetBobN("jobs")->Draw(23,0,false,walking_id,right_point-walking_distance,
-//                  y+BUILDER_POS[nation].y,gwg->GetPlayer(player).color);
-                //DrawShadow(right_point-walking_distance,y,walking_id,0);
-            }
+                LOADER.bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(builderPos - DrawPoint(walking_distance, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
             else
-            {
-                LOADER.bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(right_point - WALKING_DISTANCE + walking_distance, y + BUILDER_POS[nation].y, COLOR_WHITE, gwg->GetPlayer(player).color);
-//              LOADER.GetBobN("jobs")->Draw(23,3,false,walking_id,
-//                  right_point-WALKING_DISTANCE+walking_distance,y+BUILDER_POS[nation].y,
-//                  gwg->GetPlayer(player).color);
-                //DrawShadow(right_point-WALKING_DISTANCE+walking_distance,y,walking_id,0);
-            }
+                LOADER.bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(builderPos + DrawPoint(walking_distance - WALKING_DISTANCE, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
         }
 
     }

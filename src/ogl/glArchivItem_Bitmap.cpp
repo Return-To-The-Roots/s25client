@@ -31,12 +31,10 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
 {
 }
 
-#include <iostream>
-
 /**
  *  Zeichnet die Textur.
  */
-void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color)
+void glArchivItem_Bitmap::Draw(DrawPoint dst, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color)
 {
     if(GetTexture() == 0)
         return;
@@ -54,8 +52,8 @@ void glArchivItem_Bitmap::Draw(short dst_x, short dst_y, short dst_w, short dst_
 
     Point<GLfloat> texCoords[4], vertices[4];
 
-    int x = -nx_ + dst_x;
-    int y = -ny_ + dst_y;
+    int x = -nx_ + dst.x;
+    int y = -ny_ + dst.y;
 
     vertices[0].x = vertices[1].x = GLfloat(x);
     vertices[2].x = vertices[3].x = GLfloat(x + dst_w);

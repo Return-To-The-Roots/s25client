@@ -206,12 +206,12 @@ void dskCredits::Msg_PaintAfter()
         // links oder rechts spawnen
         if(rand() % 2 == 0)
         {
-            b.x = 0;
+            b.pos.x = 0;
             b.direction = 3;
         }
         else
         {
-            b.x = VIDEODRIVER.GetScreenWidth();
+            b.pos.x = VIDEODRIVER.GetScreenWidth();
             b.direction = 6;
         }
 
@@ -236,7 +236,7 @@ void dskCredits::Msg_PaintAfter()
         }
 
         b.id = job;
-        b.y = GetCtrl<ctrlButton>(0)->GetY() - 20 - rand() % 150;
+        b.pos.y = GetCtrl<ctrlButton>(0)->GetY() - 20 - rand() % 150;
         bobs.push_back(b);
     }
 
@@ -244,9 +244,9 @@ void dskCredits::Msg_PaintAfter()
     for (std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
     {
         if (!bob->hasWare)
-            LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
+            LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
         else
-            LOADER.GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->x, bob->y, bob->color);
+            LOADER.GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
 
         if( bob_time > (1000 / bob_prosec) )
         {
@@ -257,14 +257,14 @@ void dskCredits::Msg_PaintAfter()
                 bob->animationStep = 0;
             if (bob->direction == 3)
             {
-                bob->x += bob->speed;
-                if (bob->x > VIDEODRIVER.GetScreenWidth())
+                bob->pos.x += bob->speed;
+                if (bob->pos.x > VIDEODRIVER.GetScreenWidth())
                     bob->direction = 6;
             }
             else if (bob->direction == 6)
             {
-                bob->x -= bob->speed;
-                if (bob->x < 0)
+                bob->pos.x -= bob->speed;
+                if (bob->pos.x < 0)
                     bob->direction = 3;
             }
         }
@@ -288,20 +288,20 @@ void dskCredits::Msg_PaintAfter()
     transparency = transparency << 24;
 
     // draw text
-    LargeFont->Draw(40, 100, itCurEntry->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
 
     boost::array<unsigned int, 2> columnToY = {{150, 150}};
 
     for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
-        LargeFont->Draw(60 + line->column * 350, columnToY[line->column], line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
         columnToY[line->column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(40, columnToY[0] + 20, itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
 
     if (itCurEntry->pic)
-        itCurEntry->pic->Draw(VIDEODRIVER.GetScreenWidth() - 300, 70, 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
+        itCurEntry->pic->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
 }
 
 bool dskCredits::Close()

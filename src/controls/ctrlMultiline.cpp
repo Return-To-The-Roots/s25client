@@ -61,16 +61,19 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
 bool ctrlMultiline::Draw_()
 {
     if(draw_box)
-        Draw3D(GetX(), GetY(), width_, height_, tc, 2);
+        Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
     DrawControls();
 
     unsigned show_lines = std::min(lines_in_control, unsigned(lines.size()));
 
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-
-    for(unsigned short i = 0; i < show_lines; ++i)
-        font->Draw(GetX() + 2, GetY() + 2 + i * font->getHeight(), lines[i + scrollbar->GetPos()].str, format, lines[i + scrollbar->GetPos()].color);
+    unsigned scrollbarPos = GetCtrl<ctrlScrollBar>(0)->GetPos();
+    DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2);
+    for(unsigned i = 0; i < show_lines; ++i)
+    {
+        font->Draw(curPos, lines[i + scrollbarPos].str, format, lines[i + scrollbarPos].color);
+        curPos.y += font->getHeight();
+    }
 
     return true;
 }

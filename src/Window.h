@@ -24,6 +24,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/TextureColor.h"
 #include "Rect.h"
+#include "DrawPoint.h"
 #include <map>
 #include <vector>
 
@@ -77,6 +78,8 @@ class Window
         unsigned short GetX(bool absolute = true) const;
         /// liefert die Y-Koordinate.
         unsigned short GetY(bool absolute = true) const;
+        // Gets the absolute (X,Y) position as when calling GetX/GetY for drawing
+        DrawPoint GetDrawPos() const;
         /// liefert die Breite des Fensters.
         unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width_) : width_; }
         /// liefert die Höhe des Fensters.
@@ -212,9 +215,9 @@ class Window
                                               glArchivItem_Map* const map);
 
         /// Zeichnet einen 3D-Rahmen.
-        static void Draw3D(const unsigned short x, const unsigned short y, const unsigned short width, unsigned short height, const TextureColor tc, const unsigned short type, const bool illuminated = false, const bool draw_content = true);
+        static void Draw3D(DrawPoint drawPt, const unsigned short width, unsigned short height, const TextureColor tc, const unsigned short type, const bool illuminated = false, const bool draw_content = true);
         /// Zeichnet ein Rechteck
-        static void DrawRectangle(unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned int color);
+        static void DrawRectangle(DrawPoint drawPt, unsigned short width, unsigned short height, unsigned int color);
         /// Zeichnet eine Linie
         static void DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, unsigned short by, unsigned short width, unsigned int color);
 

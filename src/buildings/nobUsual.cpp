@@ -155,23 +155,24 @@ void nobUsual::Destroy_nobUsual()
     Destroy_noBuilding();
 }
 
-void nobUsual::Draw(int x, int y)
+void nobUsual::Draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
-    DrawBaseBuilding(x, y);
+    DrawBaseBuilding(drawPt);
 
     // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(disable_production_virtual)
-        LOADER.GetMapImageN(46)->Draw(x + BUILDING_SIGN_CONSTS[nation][type_].x, y + BUILDING_SIGN_CONSTS[nation][type_].y, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(46)->Draw(drawPt + BUILDING_SIGN_CONSTS[nation][type_]);
 
     // Rauch zeichnen
 
     // Raucht dieses Gebäude und ist es in Betrieb? (nur arbeitende Gebäude rauchen schließlich)
-    if(BUILDING_SMOKE_CONSTS[nation][type_ - 10].type && is_working)
+    if(is_working && BUILDING_SMOKE_CONSTS[nation][type_ - 10].type)
     {
+        DrawPoint smokeOffset(BUILDING_SMOKE_CONSTS[nation][type_ - 10].x, BUILDING_SMOKE_CONSTS[nation][type_ - 10].y);
         // Dann Qualm zeichnen (damit Qualm nicht synchron ist, x- und y- Koordinate als Unterscheidung
         LOADER.GetMapImageN(692 + BUILDING_SMOKE_CONSTS[nation][type_ - 10].type * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
-        ->Draw(x + BUILDING_SMOKE_CONSTS[nation][type_ - 10].x, y + BUILDING_SMOKE_CONSTS[nation][type_ - 10].y, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
+        ->Draw(drawPt + smokeOffset, 0, 0, 0, 0, 0, 0, 0x99EEEEEE);
     }
 
     // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
@@ -180,21 +181,25 @@ void nobUsual::Draw(int x, int y)
     if(type_ == BLD_MILL && !is_working)
     {
         // Flügel der Mühle
-        LOADER.GetNationImage(nation, 250 + 5 * 49)->Draw(x, y);
+        LOADER.GetNationImage(nation, 250 + 5 * 49)->Draw(drawPt);
         // Schatten der Flügel
-        LOADER.GetNationImage(nation, 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(nation, 250 + 5 * 49 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
     else if(type_ == BLD_DONKEYBREEDER)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const int DONKEY_X[NAT_COUNT][3] = {{13, 26, 39}, {3, 16, 30}, {2, 15, 29}, {7, 18, 30}, {3, 16, 30}};
-        // Y-Position
-        const int DONKEY_Y[NAT_COUNT] = { -9, -17, -21, -17, -22};
+        const DrawPoint DONKEY_OFFSETS[NAT_COUNT][3] = {
+            {{13, -9}, {26, -9},  {39, -9}},
+            {{3, -17}, {16, -17}, {30, -17}},
+            {{2, -21}, {15, -21}, {29, -21}},
+            {{7, -17}, {18, -17}, {30, -17}},
+            {{3, -22}, {16, -22}, {30, -22}}
+        };
         // Animations-IDS des Esels
-        const unsigned char DONKEY_ANIMATION[] =
-        { 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0 };
+        const boost::array<unsigned char, 25> DONKEY_ANIMATION =
+        {{ 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0 }};
 
         // Die drei Esel zeichnen mithilfe von Globalanimation
         // Anzahl hängt von Produktivität der Eselzucht ab:
@@ -202,34 +207,37 @@ void nobUsual::Draw(int x, int y)
         // 30-60 - 1 Esel
         // 60-90 - 2 Esel
         // 90-100 - 3 Esel
-        if(productivity >= 30) LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(sizeof(DONKEY_ANIMATION), 5, 2, GetX() * (player + 2))])->Draw(x + DONKEY_X[nation][0], y + DONKEY_Y[nation]);
-        if(productivity >= 60) LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(sizeof(DONKEY_ANIMATION), 5, 2, GetY())])->Draw(x + DONKEY_X[nation][1], y + DONKEY_Y[nation]);
-        if(productivity >= 90) LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(sizeof(DONKEY_ANIMATION), 5, 2, GetX() + GetY() * (nation + 1))])->Draw(x + DONKEY_X[nation][2], y + DONKEY_Y[nation]);
+        if(productivity >= 30)
+            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2))])->Draw(drawPt + DONKEY_OFFSETS[nation][0]);
+        if(productivity >= 60)
+            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetY())])->Draw(drawPt + DONKEY_OFFSETS[nation][1]);
+        if(productivity >= 90)
+            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() + GetY() * (nation + 1))])->Draw(drawPt + DONKEY_OFFSETS[nation][2]);
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
     else if(type_ == BLD_CATAPULT && !is_working)
     {
-        LOADER.GetPlayerImage("rom_bobs", 1776)->Draw(x - 7, y - 19, 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+        LOADER.GetPlayerImage("rom_bobs", 1776)->Draw(drawPt - DrawPoint(7, 19));
     }
 
     // Bei Schweinefarm Schweinchen auf dem Hof zeichnen
     else if(type_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const int PIG_POSITIONS[NAT_COUNT][5][2] =
+        const DrawPoint PIG_POSITIONS[NAT_COUNT][5] =
         {
             //  gr. S. 1.klS 2. klS usw
-            { {3, -8}, {17, 3}, { -12, 4}, { -2, 10}, { -22, 11} }, // Afrikaner
-            { { -16, 0}, { -37, 0}, { -32, 8}, { -16, 10}, { -22, 18} }, // Japaner
-            { { -15, 0}, { -4, 9}, { -22, 10}, {2, 19}, { -15, 20} }, // Römer
-            { {5, -5}, {25, -12}, { -7, 7}, { -23, 11}, { -10, 14} }, // Wikinger
-            { { -16, 5}, { -37, 5}, { -32, -1}, { -16, 15}, { -27, 18} } // Babylonier
+            { {  3, -8}, { 17,   3}, {-12,  4}, { -2, 10}, {-22, 11} }, // Afrikaner
+            { {-16,  0}, {-37,   0}, {-32,  8}, {-16, 10}, {-22, 18} }, // Japaner
+            { {-15,  0}, { -4,   9}, {-22, 10}, {  2, 19}, {-15, 20} }, // Römer
+            { {  5, -5}, { 25, -12}, { -7,  7}, {-23, 11}, {-10, 14} }, // Wikinger
+            { {-16,  5}, {-37,   5}, {-32, -1}, {-16, 15}, {-27, 18} } // Babylonier
         };
 
 
         /// Großes Schwein zeichnen
-        LOADER.GetMapImageN(2160)->Draw(x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))->Draw(x + PIG_POSITIONS[nation][0][0], y + PIG_POSITIONS[nation][0][1]);
+        LOADER.GetMapImageN(2160)->Draw(drawPt + PIG_POSITIONS[nation][0], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))->Draw(drawPt + PIG_POSITIONS[nation][0]);
 
         // Die 4 kleinen Schweinchen, je nach Produktivität
         for(unsigned i = 1; i < min<unsigned>(unsigned(productivity) / 20 + 1, 5); ++i)
@@ -244,8 +252,8 @@ void nobUsual::Draw(int x, int y)
                 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0
             };
             const unsigned short animpos = GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
-            LOADER.GetMapImageN(2160)->Draw(x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->Draw(x + PIG_POSITIONS[nation][i][0], y + PIG_POSITIONS[nation][i][1]);
+            LOADER.GetMapImageN(2160)->Draw(drawPt + PIG_POSITIONS[nation][i], 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->Draw(drawPt + PIG_POSITIONS[nation][i]);
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
@@ -254,7 +262,7 @@ void nobUsual::Draw(int x, int y)
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(IsMine() && worker && nation == NAT_AFRICANS)
         LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
-        Draw(x + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][0], y + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE][1]);
+        Draw(drawPt + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE]);
 }
 
 void nobUsual::HandleEvent(const unsigned int id)

@@ -40,7 +40,7 @@ class noFlag : public noRoadNode
         /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
         inline bool IsSpaceForWare() const { return GetWareCount() < wares.size(); }
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         BlockingManner GetBM() const override { return BM_FLAG; }
 

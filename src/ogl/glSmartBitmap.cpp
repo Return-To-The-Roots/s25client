@@ -64,7 +64,7 @@ void glSmartBitmap::calcDimensions()
 {
     if (items.empty())
     {
-        nx = ny = 0;
+        origin = DrawPoint(0, 0);
         w = h = 0;
         return;
     }
@@ -72,7 +72,7 @@ void glSmartBitmap::calcDimensions()
     int max_x = 0;
     int max_y = 0;
 
-    nx = ny = std::numeric_limits<int>::min();
+    origin.x = origin.y = std::numeric_limits<int>::min();
 
     hasPlayer = false;
 
@@ -81,10 +81,10 @@ void glSmartBitmap::calcDimensions()
         if (it->type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             hasPlayer = true;
 
-        if (nx < it->nx)
-            nx = it->nx;
-        if (ny < it->ny)
-            ny = it->ny;
+        if (origin.x < it->nx)
+            origin.x = it->nx;
+        if (origin.y < it->ny)
+            origin.y = it->ny;
 
         if (max_x < it->w - it->nx)
             max_x = it->w - it->nx;
@@ -92,8 +92,8 @@ void glSmartBitmap::calcDimensions()
             max_y = it->h - it->ny;
     }
 
-    w = nx + max_x;
-    h = ny + max_y;
+    w = origin.x + max_x;
+    h = origin.y + max_y;
 }
 
 void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride, unsigned const height, int const x_offset, int const y_offset)
@@ -106,8 +106,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride,
         if ((it->w == 0) || (it->h == 0))
             continue;
 
-        const unsigned xo = (nx - it->nx);
-        const unsigned yo = (ny - it->ny);
+        DrawPoint offset = origin - DrawPoint(it->nx, it->ny);
 
         if(it->type == TYPE_ARCHIVITEM_BITMAP_SHADOW)
         {
@@ -115,7 +114,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride,
 
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
                 ->print(reinterpret_cast<unsigned char*>(&tmp.front()), w, h, libsiedler2::FORMAT_RGBA, p_5,
-                    xo, yo, it->x, it->y, it->w, it->h);
+                    offset.x, offset.y, it->x, it->y, it->w, it->h);
 
             unsigned tmpIdx = 0;
 
@@ -140,7 +139,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride,
             RTTR_Assert(it->type == TYPE_ARCHIVITEM_BITMAP);
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
                 ->print(reinterpret_cast<unsigned char*>(&buffer.front()), stride, height, libsiedler2::FORMAT_RGBA, p_5,
-                    xo + x_offset, yo + y_offset, it->x, it->y, it->w, it->h);
+                    offset.x + x_offset, offset.y + y_offset, it->x, it->y, it->w, it->h);
         } else
         {
             // There is a player bitmap -> First write to temp buffer
@@ -149,19 +148,19 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride,
             {
                 dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(it->bmp)
                     ->print(reinterpret_cast<unsigned char*>(&tmp.front()), w, h, libsiedler2::FORMAT_RGBA, p_5,
-                        xo, yo, it->x, it->y, it->w, it->h);
+                        offset.x, offset.y, it->x, it->y, it->w, it->h);
             } else
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp)
                     ->print(reinterpret_cast<unsigned char*>(&tmp.front()), w, h, libsiedler2::FORMAT_RGBA, p_colors, 128,
-                        xo, yo, it->x, it->y, it->w, it->h, false);
+                        offset.x, offset.y, it->x, it->y, it->w, it->h, false);
             }
             // Now copy temp buffer to real buffer, but we need to reset all player colors that would be overwritten
             // so it looks like, the first bitmap is fully drawn (including player colors) and then the next
             // overwrites it
-            for(int y = yo; y < h; y++)
+            for(int y = offset.y; y < h; y++)
             {
-                for(int x = xo; x < w; x++)
+                for(int x = offset.x; x < w; x++)
                 {
                     // Check for non-transparent pixels
                     if(tmp[y * w + x])
@@ -178,7 +177,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, unsigned const stride,
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(it->bmp)
                     ->print(reinterpret_cast<unsigned char*>(&buffer.front()), stride, height, libsiedler2::FORMAT_RGBA, p_colors, 128,
-                        xo + w + x_offset, yo + y_offset, it->x, it->y, it->w, it->h, true);
+                        offset.x + w + x_offset, offset.y + y_offset, it->x, it->y, it->w, it->h, true);
             }
         }
     }
@@ -225,12 +224,12 @@ void glSmartBitmap::generateTexture()
     texCoords[6].x = texCoords[7].x = 1.0f;
 }
 
-void glSmartBitmap::draw(int x, int y, unsigned color, unsigned player_color)
+void glSmartBitmap::draw(DrawPoint drawPt, unsigned color, unsigned player_color)
 {
-    drawPercent(x, y, 100, color, player_color);
+    drawPercent(drawPt, 100, color, player_color);
 }
 
-void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, unsigned player_color)
+void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned color, unsigned player_color)
 {
     if (!texture)
     {
@@ -252,11 +251,13 @@ void glSmartBitmap::drawPercent(int x, int y, unsigned percent, unsigned color, 
         GLbyte r, g, b, a;
     } colors[8];
 
-    vertices[0].x = vertices[1].x = GLfloat(x - nx);
-    vertices[2].x = vertices[3].x = GLfloat(x - nx + w);
+    drawPt -= origin;
 
-    vertices[0].y = vertices[3].y = GLfloat(y - ny + h - h * partDrawn);
-    vertices[1].y = vertices[2].y = GLfloat(y - ny + h);
+    vertices[0].x = vertices[1].x = GLfloat(drawPt.x);
+    vertices[2].x = vertices[3].x = GLfloat(drawPt.x + w);
+
+    vertices[0].y = vertices[3].y = GLfloat(drawPt.y + h - h * partDrawn);
+    vertices[1].y = vertices[2].y = GLfloat(drawPt.y + h);
 
     colors[0].r = GetRed(color);
     colors[0].g = GetGreen(color);

@@ -19,9 +19,8 @@
 #include "ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
-class Window;
 
-ctrlPreviewMinimap::Player::Player() : x(0), y(0), color(0)
+ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0)
 {
 }
 
@@ -42,8 +41,9 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
  */
 bool ctrlPreviewMinimap::Draw_()
 {
+    const DrawPoint basePos = GetDrawPos() - padding;
     // Button drumrum zeichnen
-    Draw3D(GetX() + GetLeft() - 2, GetY() + GetTop() - 2, GetWidthShow() + 4, GetHeightShow() + 4, TC_GREY, 0, false, false);
+    Draw3D(basePos + GetBBOffset(), GetWidthShow() + padding.x * 2, GetHeightShow() + padding.y * 2, TC_GREY, 0, false, false);
 
     // Map ansich zeichnen
     DrawMap(minimap);
@@ -53,11 +53,7 @@ bool ctrlPreviewMinimap::Draw_()
     {
         // Spieler anwesend?
         if(players[i].color)
-        {
-            // Zeichnen
-            DrawRectangle(GetX() + CalcMapCoordX(players[i].x) - 2,
-                          GetY() + CalcMapCoordY(players[i].y) - 2, 4, 4, players[i].color);
-        }
+            DrawRectangle(basePos + CalcMapCoord(players[i].pos), 4, 4, players[i].color);
     }
 
     return true;
@@ -86,8 +82,7 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
             unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
             if(player < MAX_PLAYERS)
             {
-                players[player].x = x;
-                players[player].y = y;
+                players[player].pos = MapPoint(x, y);
                 players[player].color = PLAYER_COLORS[player % PLAYER_COLORS.size()];
             }
         }

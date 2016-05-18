@@ -106,11 +106,12 @@ iwDiplomacy::iwDiplomacy()
 void iwDiplomacy::Msg_PaintBefore()
 {
     // Die farbigen Zeilen malen
+    DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
     for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        Window::DrawRectangle(GetX() + LINE_DISTANCE_TO_MARGINS, GetY() + FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT), width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT,
-                              (GAMECLIENT.GetPlayer(i).color & 0x00FFFFFF) | 0x40000000);
+        DrawRectangle(curPos, width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT, SetAlpha(GAMECLIENT.GetPlayer(i).color, 0x40));
+        curPos.y += CELL_HEIGHT + SPACE_HEIGHT;
     }
 }
 

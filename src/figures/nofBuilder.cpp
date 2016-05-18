@@ -53,20 +53,16 @@ void nofBuilder::Serialize_nofBuilder(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
     sgd.PushObject(building_site, true);
-    sgd.PushSignedShort(rel_x);
-    sgd.PushSignedShort(rel_y);
-    sgd.PushSignedShort(next_rel_x);
-    sgd.PushSignedShort(next_rel_y);
+    sgd.PushPoint(offsetSite);
+    sgd.PushPoint(nextOffsetSite);
     sgd.PushUnsignedChar(building_steps_available);
 }
 
 nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
     state(BuilderState(sgd.PopUnsignedChar())),
     building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-    rel_x(sgd.PopSignedShort()),
-    rel_y(sgd.PopSignedShort()),
-    next_rel_x(sgd.PopSignedShort()),
-    next_rel_y(sgd.PopSignedShort()),
+    offsetSite(sgd.PopPoint<short>()),
+    nextOffsetSite(sgd.PopPoint<short>()),
     building_steps_available(sgd.PopUnsignedChar())
 {
 }
@@ -78,7 +74,7 @@ void nofBuilder::GoalReached()
     state = STATE_WAITINGFREEWALK;
 
     // Sind jetzt an der Baustelle
-    rel_x = rel_y = 0;
+    offsetSite = Point<short>(0, 0);
 
     // Anfangen um die Baustelle herumzulaufen
     StartFreewalk();
@@ -122,8 +118,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
         case STATE_WAITINGFREEWALK:
         {
             // Platz einnehmen
-            rel_x = next_rel_x;
-            rel_y = next_rel_y;
+            offsetSite = nextOffsetSite;
 
             // Ware aufnehmen, falls es eine gibt
             if(ChooseWare())
@@ -135,8 +130,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
         case STATE_BUILDFREEWALK:
         {
             // Platz einnehmen
-            rel_x = next_rel_x;
-            rel_y = next_rel_y;
+            offsetSite = nextOffsetSite;
 
             // Gibts noch was zu bauen?
             if(building_steps_available)
@@ -238,22 +232,22 @@ void nofBuilder::StartFreewalk()
     // Wohin kann der Bauarbeiter noch laufen?
 
     // Nach links
-    if(rel_x - FREEWALK_LENGTH[waiting_walk] >= LEFT_MAX)
+    if(offsetSite.x - FREEWALK_LENGTH[waiting_walk] >= LEFT_MAX)
         possible_directions.push_back(0);
     // Nach rechts
-    if(rel_x + FREEWALK_LENGTH[waiting_walk] <= RIGHT_MAX)
+    if(offsetSite.x + FREEWALK_LENGTH[waiting_walk] <= RIGHT_MAX)
         possible_directions.push_back(3);
     // Nach links/oben
-    if(rel_x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX && rel_y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
+    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
         possible_directions.push_back(1);
     // Nach links/unten
-    if(rel_x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX && rel_y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
+    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(5);
     // Nach rechts/oben
-    if(rel_x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && rel_y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
+    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
         possible_directions.push_back(2);
     // Nach rechts/unten
-    if(rel_x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && rel_y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
+    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
         possible_directions.push_back(4);
 
     RTTR_Assert(!possible_directions.empty());
@@ -264,94 +258,72 @@ void nofBuilder::StartFreewalk()
     current_ev = GetEvMgr().AddEvent(this, (state == STATE_WAITINGFREEWALK) ? 24 : 17, 1);
 
     // Zukünftigen Platz berechnen
-    next_rel_x = rel_x;
-    next_rel_y = rel_y;
+    nextOffsetSite = offsetSite;
 
     switch(GetCurMoveDir())
     {
-        case 0: next_rel_x -= FREEWALK_LENGTH[waiting_walk]; break;
-        case 1: next_rel_x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; next_rel_y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
-        case 2: next_rel_x += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; next_rel_y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
-        case 3: next_rel_x += FREEWALK_LENGTH[waiting_walk]; break;
-        case 4: next_rel_x += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; next_rel_y += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
-        case 5: next_rel_x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; next_rel_y += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
+        case 0: nextOffsetSite.x -= FREEWALK_LENGTH[waiting_walk]; break;
+        case 1: nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
+        case 2: nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
+        case 3: nextOffsetSite.x += FREEWALK_LENGTH[waiting_walk]; break;
+        case 4: nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
+        case 5: nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk]; nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waiting_walk]; break;
     }
 }
 
 
-void nofBuilder::Draw(int x, int y)
+void nofBuilder::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case STATE_FIGUREWORK:
         {
-            DrawWalkingBobJobs(x, y, JOB_BUILDER);
+            DrawWalkingBobJobs(drawPt, JOB_BUILDER);
         } break;
         case STATE_BUILDFREEWALK:
         case STATE_WAITINGFREEWALK:
         {
             // Interpolieren und Door-Point von Baustelle draufaddieren
-            x += (GAMECLIENT.Interpolate(rel_x, next_rel_x, current_ev) + building_site->GetDoorPointX());
-            y += (GAMECLIENT.Interpolate(rel_y, next_rel_y, current_ev) + building_site->GetDoorPointY());
+            drawPt.x += GAMECLIENT.Interpolate(offsetSite.x, nextOffsetSite.x, current_ev);
+            drawPt.y += GAMECLIENT.Interpolate(offsetSite.y, nextOffsetSite.y, current_ev);
+            drawPt += building_site->GetDoorPoint();
 
-            LOADER.bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][GetCurMoveDir()][GAMECLIENT.Interpolate(12, current_ev) % 8].draw(x, y, COLOR_WHITE, gwg->GetPlayer(player).color);
-//          LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate(12,current_ev)%8,x,y,gwg->GetPlayer(player).color);
-//          DrawShadow(x,y,GAMECLIENT.Interpolate(12,current_ev)%8,dir);
-
-            /*LOADER.GetBobN("jobs")->Draw(23,dir,false,GAMECLIENT.Interpolate((state==STATE_WAITINGFREEWALK)?8:5,current_ev),x,y,gwg->GetPlayer(player).color);
-            DrawShadow(x,y,GAMECLIENT.Interpolate(16,current_ev)%8);*/
+            LOADER.bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][GetCurMoveDir()][GAMECLIENT.Interpolate(12, current_ev) % 8].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
         } break;
         case STATE_BUILD:
         {
-            unsigned index = GAMECLIENT.Interpolate(28, current_ev);
+            const unsigned index = GAMECLIENT.Interpolate(28, current_ev);
+            unsigned texture;
+            unsigned soundId = 0;
 
             // Je nachdem, wie weit der Bauarbeiter links bzw rechts oder in der Mitte steht, so wird auch die Animation angezeigt
-            if(rel_x < -5)
+            if(std::abs(offsetSite.x) > 5)
             {
-                // von links mit Hammer
+                // With hammer
                 if(index < 12 || index > 19)
                 {
-                    // Bauarbeiter steht
-                    LOADER.GetPlayerImage("rom_bobs", 353 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
-
-                    if(index % 4 == 2)
-                        SOUNDMANAGER.PlayNOSound(78, this, index, 160 - rand() % 60);
-                }
-                else
+                    // standing
+                    if(offsetSite.x < 0)
+                        texture = 353; // From left
+                    else
+                        texture = 279; // From right
+                    texture += index % 4;
+                    soundId = 78;
+                } else
                 {
                     // er kniet
-                    LOADER.GetPlayerImage("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
-
-                    if(index % 4 == 2)
-                        SOUNDMANAGER.PlayNOSound(72, this, index, 160 - rand() % 60);
+                    texture = 283 + index % 4;
+                    soundId = 72;
                 }
-
-            }
-            else if(rel_x < 5)
+            } else
             {
                 // in der Mitte mit "Händen"
-                LOADER.GetPlayerImage("rom_bobs", 287 + (index / 2) % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+                texture = 287 + (index / 2) % 4;
             }
-            else
-            {
-                // von rechts mit Hammer
-                if(index < 12 || index > 19)
-                {
-                    // Bauarbeiter steht
-                    LOADER.GetPlayerImage("rom_bobs", 279 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
-
-                    if(index % 4 == 2)
-                        SOUNDMANAGER.PlayNOSound(78, this, index, 160 - rand() % 60);
-                }
-                else
-                {
-                    // er kniet
-                    LOADER.GetPlayerImage("rom_bobs", 283 + index % 4)->Draw(x + building_site->GetDoorPointX() + rel_x, y + building_site->GetDoorPointY() + rel_y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
-
-                    if(index % 4 == 2)
-                        SOUNDMANAGER.PlayNOSound(72, this, index, 160 - rand() % 60);
-                }
-            }
+            drawPt += building_site->GetDoorPoint() + DrawPoint(offsetSite);
+            LOADER.GetPlayerImage("rom_bobs", texture)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            if(soundId && index % 4 == 2)
+                SOUNDMANAGER.PlayNOSound(soundId, this, index, 160 - rand() % 60);
 
         } break;
 

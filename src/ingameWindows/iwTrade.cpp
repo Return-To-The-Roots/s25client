@@ -88,7 +88,7 @@ void iwTrade::Msg_PaintBefore()
     if(bitmap)
     {
         ctrlImage* img = GetCtrl<ctrlImage>(0);
-        bitmap->Draw(img->GetX(), img->GetY(), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->Draw(img->GetDrawPos(), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
 }
 

@@ -29,7 +29,7 @@ class nofScout_LookoutTower : public nofBuildingWorker
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
         void WalkedDerived() override;
         /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
         unsigned short GetCarryID() const override { return 0; }
         /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden

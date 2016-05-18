@@ -65,10 +65,10 @@ nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj
 {
 }
 
-void nofPassiveSoldier::Draw(int x, int y)
+void nofPassiveSoldier::Draw(DrawPoint drawPt)
 {
     // Soldat normal laufend zeichnen
-    DrawSoldierWalking(x, y);
+    DrawSoldierWalking(drawPt);
 }
 
 void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)

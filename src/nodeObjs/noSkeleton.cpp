@@ -61,9 +61,9 @@ noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id) : noCoord
 
 }
 
-void noSkeleton::Draw(int x, int y)
+void noSkeleton::Draw(DrawPoint drawPt)
 {
-    LOADER.GetMapImageN(547 + type)->Draw(x, y, 0, 0, 0, 0, 0, 0);
+    LOADER.GetMapImageN(547 + type)->Draw(drawPt, 0, 0, 0, 0, 0, 0);
 }
 
 void noSkeleton::HandleEvent(const unsigned int  /*id*/)

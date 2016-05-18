@@ -73,13 +73,13 @@ noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) :
  *  @param[in] id Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
  */
-void noStaticObject::Draw(int x, int y)
+void noStaticObject::Draw(DrawPoint drawPt)
 {
     glArchivItem_Bitmap* bitmap = NULL, *shadow = NULL;
 
     if ((file == 0xFFFF) && (id == 561))
     {
-        LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(x, y);
+        LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(drawPt);
         return;
     }
     else  if (file == 0xFFFF)
@@ -103,11 +103,11 @@ void noStaticObject::Draw(int x, int y)
     RTTR_Assert(bitmap);
 
     // Bild zeichnen
-    bitmap->Draw(x, y, 0, 0, 0, 0, 0, 0);
+    bitmap->Draw(drawPt, 0, 0, 0, 0, 0, 0);
 
     // Schatten zeichnen
     if(shadow)
-        shadow->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        shadow->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 /**

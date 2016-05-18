@@ -35,17 +35,16 @@ nofIronfounder::nofIronfounder(SerializedGameData& sgd, const unsigned obj_id) :
 {
 }
 
-void nofIronfounder::DrawWorking(int x, int y)
+void nofIronfounder::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[5][2] = { { -22, 12}, { -23, 3}, { -19, 8}, { -18, 4}, { -33, 7} };
+    const DrawPoint offsets[5] = { { -22, 12}, { -23, 3}, { -19, 8}, { -18, 4}, { -33, 7} };
 
     unsigned now_id = GAMECLIENT.Interpolate(272, current_ev);
-
 
     if(now_id < 182)
     {
         LOADER.GetPlayerImage("rom_bobs", 100 + (now_id % 8))
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 16 == 3)

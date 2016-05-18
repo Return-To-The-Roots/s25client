@@ -34,26 +34,24 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 {
 }
 
-void nofMiner::DrawWorking(int x, int y)
+void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const signed char offsets[40] = //work animation offset in x,y granite, coal, iron, gold 
+    const DrawPoint offsets[NAT_COUNT][4] = //work animation offset per nation and (granite, coal, iron, gold)
     {
-        5, 3, 5, 3, 5, 3, 5, 3,		//africans
-        4, 1, 4, 1, 4, 1, 4, 1,		//japanese
-        9, 4, 9, 4, 9, 4, 9, 4,		//romans
-        10, 3, 10, 3, 10, 3, 10, 3, //vikings
-        8, 3, 8, 3, 8, 3, 8, 3		//babylonians
+        {{5, 3},  {5, 3},  {5, 3},  {5, 3}},  //africans
+        {{4, 1},  {4, 1},  {4, 1},  {4, 1}},  //japanese
+        {{9, 4},  {9, 4},  {9, 4},  {9, 4}},  //romans
+        {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, //vikings
+        {{8, 3},  {8, 3},  {8, 3},  {8, 3}}   //babylonians
     };
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
-    if(workplace->GetNation() == 2)
-        LOADER.GetPlayerImage("rom_bobs", 92 + now_id % 8)->Draw(x + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2],
-                y + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2 + 1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
+    unsigned texture;
+    if(workplace->GetNation() == NAT_ROMANS)
+        texture = 92 + now_id % 8;
     else
-        LOADER.GetPlayerImage("rom_bobs", 1799 + now_id % 4)
-        ->Draw(x + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2],
-               y + offsets[workplace->GetNation() * 8 + (workplace->GetBuildingType() - BLD_GRANITEMINE) * 2 + 1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, COLOR_WHITE);
-    // 1799
+        texture = 1799 + now_id % 4;
+    LOADER.GetPlayerImage("rom_bobs", texture)->Draw(drawPt + offsets[workplace->GetNation()][(workplace->GetBuildingType() - BLD_GRANITEMINE) * 2]);
 
     if(now_id % 8 == 3)
     {

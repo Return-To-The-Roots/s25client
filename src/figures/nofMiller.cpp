@@ -43,11 +43,11 @@ nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 {
 }
 
-void nofMiller::DrawWorking(int x, int y)
+void nofMiller::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { {20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8} };
-    signed char offsets_sitdown[NAT_COUNT][2] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
-    signed char walkoffsets[8][2] = { {8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8} };
+    const DrawPoint offsets[NAT_COUNT] = { {20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8} };
+    const DrawPoint offsets_sitdown[NAT_COUNT] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
+    const DrawPoint walkoffsets[8] = { {8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8} };
 
     unsigned int max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
@@ -55,50 +55,46 @@ void nofMiller::DrawWorking(int x, int y)
 
     if(now_id < 4) //hinauslaufen teil 1
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(x, y);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][4][now_id % 8].draw(x + walkoffsets[now_id % 8][0], y + walkoffsets[now_id % 8][1], COLOR_WHITE, gwg->GetPlayer(player).color);
-//        LOADER.GetBobN("jobs")->Draw(16,4,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],gwg->GetPlayer(player).color);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(drawPt);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][4][now_id % 8].draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
     if( (now_id >= 4) && (now_id < 8) ) //hinauslaufen teil 2
     {
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][3][now_id % 8].draw(x + walkoffsets[now_id % 8][0], y + walkoffsets[now_id % 8][1], COLOR_WHITE, gwg->GetPlayer(player).color);
-//        LOADER.GetBobN("jobs")->Draw(16,3,true,now_id%8,x+walkoffsets[now_id%8][0],y+walkoffsets[now_id%8][1],gwg->GetPlayer(player).color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][3][now_id % 8].draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     if( (now_id >= 8) && (now_id < 16)) //hinsetzen
     {
         LOADER.GetPlayerImage("rom_bobs", 166 + (now_id % 8))
-        ->Draw(x + offsets_sitdown[workplace->GetNation()][0], y + offsets_sitdown[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->Draw(drawPt + offsets_sitdown[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
     }
     if( (now_id >= 16) && (now_id < max_id - 16)) //schlafen
     {
         LOADER.GetPlayerImage("rom_bobs", 174 + (now_id % 8))
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
     }
     if( (now_id >= max_id - 16) && (now_id < max_id - 8)) //aufstehn
     {
         LOADER.GetPlayerImage("rom_bobs", 166 + 7 - (now_id % 8))
-        ->Draw(x + offsets_sitdown[workplace->GetNation()][0], y + offsets_sitdown[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->Draw(drawPt + offsets_sitdown[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
     }
     if( (now_id >= max_id - 8) && (now_id < max_id - 4)) //zurücklaufen teil 1
     {
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][0][now_id % 8].draw(x + walkoffsets[7 - (now_id % 8)][0], y + walkoffsets[7 - (now_id % 8)][1], COLOR_WHITE, gwg->GetPlayer(player).color);
-//        LOADER.GetBobN("jobs")->Draw(16,0,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],gwg->GetPlayer(player).color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][0][now_id % 8].draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     if( (now_id >= max_id - 4) && (now_id < max_id)) //zurücklaufen teil 2
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(x, y);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][1][now_id % 8].draw(x + walkoffsets[7 - (now_id % 8)][0], y + walkoffsets[7 - (now_id % 8)][1], COLOR_WHITE, gwg->GetPlayer(player).color);
-//        LOADER.GetBobN("jobs")->Draw(16,1,true,now_id%8,x+walkoffsets[7-(now_id%8)][0],y+walkoffsets[7-(now_id%8)][1],gwg->GetPlayer(player).color);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(drawPt);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][1][now_id % 8].draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
 
     if (rotate_sails)
     {
         // Flügel der Mühle
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * (42 + ((now_id + 4) % 8)))->Draw(x, y);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * (42 + ((now_id + 4) % 8)))->Draw(drawPt);
         // Schatten der Flügel
-        LOADER.GetNationImage(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
         // Mühlensound abspielen in zufälligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
@@ -109,15 +105,13 @@ void nofMiller::DrawWorking(int x, int y)
             last_sound = VIDEODRIVER.GetTickCount();
             next_interval = 500 + rand() % 1400;
         }
-
-
     }
     else
     {
         // Flügel der Mühle
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49)->Draw(x, y);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49)->Draw(drawPt);
         // Schatten der Flügel
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49 + 1)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
     }
 
 }

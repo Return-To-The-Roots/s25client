@@ -31,12 +31,10 @@
 #include "gameData/MapConsts.h"
 
 #include <cmath>
-class noBase;
 
 CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
-                             const int start_x, const int start_y, const int dest_x, const int dest_y, const unsigned fly_duration) :
-    dest_building(dest_building), dest_map(dest_map), start_x(start_x),
-    start_y(start_y), dest_x(dest_x), dest_y(dest_y), explode(false)
+                             const DrawPoint start, const DrawPoint dest, const unsigned fly_duration) :
+    dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
 {
     event = GetEvMgr().AddEvent(this, fly_duration);
 }
@@ -44,10 +42,8 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
     dest_building(sgd.PopMapPoint()),
     dest_map(sgd.PopMapPoint()),
-    start_x(sgd.PopSignedInt()),
-    start_y(sgd.PopSignedInt()),
-    dest_x(sgd.PopSignedInt()),
-    dest_y(sgd.PopSignedInt()),
+    startPos(sgd.PopPoint<int>()),
+    destPos(sgd.PopPoint<int>()),
     explode(sgd.PopBool()),
     event(sgd.PopEvent())
 {
@@ -59,10 +55,8 @@ void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
 {
     sgd.PushMapPoint(dest_building);
     sgd.PushMapPoint(dest_map);
-    sgd.PushSignedInt(start_x);
-    sgd.PushSignedInt(start_y);
-    sgd.PushSignedInt(dest_x);
-    sgd.PushSignedInt(dest_y);
+    sgd.PushPoint<int>(startPos);
+    sgd.PushPoint<int>(destPos);
     sgd.PushBool(explode);
     sgd.PushObject(event, true);
 }
@@ -71,24 +65,30 @@ void CatapultStone::Destroy()
 {
 }
 
-void CatapultStone::Draw(const int xoffset, const int yoffset)
+void CatapultStone::Draw(DrawPoint drawOffset)
 {
-    int world_width = gwg->GetWidth() * TR_W;
-    int world_height = gwg->GetHeight() * TR_H;
+    const DrawPoint worldSize = DrawPoint(gwg->GetWidth() * TR_W, gwg->GetHeight() * TR_H);
 
     if(explode)
     {
         // Stein explodierend am Ziel zeichnen
-        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->
-        Draw((dest_x - xoffset + world_width) % world_width, (dest_y - yoffset + world_height) % world_height);
+        DrawPoint drawPos = destPos - drawOffset + worldSize;
+        drawPos.x %= worldSize.x;
+        drawPos.y %= worldSize.y;
+        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->Draw(drawPos);
     }
     else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        int x = GAMECLIENT.Interpolate(start_x, dest_x, event);
-        int y = GAMECLIENT.Interpolate(start_y, dest_y, event);
+        Point<int> curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event), GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
+        DrawPoint drawPos = curPos - drawOffset + worldSize;
+        drawPos.x %= worldSize.x;
+        drawPos.y %= worldSize.y;
+        // Schatten auf linearer Linie zeichnen
+        LOADER.GetMapImageN(3101)->Draw(drawPos, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
-        double whole = std::sqrt(double((dest_x - start_x) * (dest_x - start_x) + (dest_y - start_y) * (dest_y - start_y)));
+        Point<int> distance = destPos - startPos;
+        double whole = std::sqrt(double(distance.x * distance.x + distance.y * distance.y));
         unsigned s = GAMECLIENT.Interpolate(static_cast<unsigned>(whole), event);
 
         double dx = double(s) / whole - 0.5;
@@ -99,10 +99,9 @@ void CatapultStone::Draw(const int xoffset, const int yoffset)
         // Verschiebung ausrechnen von Y
         int diff = int((dx * dx - y_diff) * 200);
 
-        // Schatten auf linearer Linie zeichnen
-        LOADER.GetMapImageN(3101)->Draw((x - xoffset + world_width) % world_width, (y - yoffset + world_height) % world_height, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         // Stein auf Parabel zeichnen
-        LOADER.GetMapPlayerImage(3100)->Draw((x - xoffset + world_width) % world_width, (y - yoffset + world_height + diff) % world_height);
+        drawPos.y = (drawPos.y + diff) % worldSize.y;
+        LOADER.GetMapPlayerImage(3100)->Draw(drawPos);
     }
 }
 

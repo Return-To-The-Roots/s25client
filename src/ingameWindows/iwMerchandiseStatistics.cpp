@@ -221,24 +221,23 @@ void iwMerchandiseStatistics::DrawStatistic()
 // Lustige bunte Kästchen über den Buttons malen
 void iwMerchandiseStatistics::DrawRectangles()
 {
-
     const unsigned sizeX = 30;
     const unsigned sizeY = 4;
     const unsigned stepX = 31;
     const unsigned stepY = 35;
 
-    unsigned posX = 17;
-    unsigned posY = 187;
+    const DrawPoint pos = GetDrawPos();
+    DrawPoint curOffset(17, 187);
 
     for (unsigned i = 0; i < 14; ++i)
     {
-        DrawRectangle(this->x_ + posX, this->y_ + posY, sizeX, sizeY, BarColors[i]);
-        posX += stepX;
+        DrawRectangle(pos + curOffset, sizeX, sizeY, BarColors[i]);
         if (i == 6)
         {
-            posX = 17;
-            posY += stepY;
-        }
+            curOffset.x = 17;
+            curOffset.y += stepY;
+        } else
+            curOffset.x += stepX;
     }
 }
 

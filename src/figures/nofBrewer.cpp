@@ -34,15 +34,15 @@ nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 {
 }
 
-void nofBrewer::DrawWorking(int x, int y)
+void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    signed char offsets[NAT_COUNT][2] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
+    static const DrawPoint offsets[NAT_COUNT] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 
     if(now_id < 16)
         LOADER.GetPlayerImage("rom_bobs", now_id)
-        ->Draw(x + offsets[workplace->GetNation()][0], y + offsets[workplace->GetNation()][1], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id == 5)
     {

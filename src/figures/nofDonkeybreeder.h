@@ -35,7 +35,7 @@ class nofDonkeybreeder : public nofWorkman
 
     private:
         /// Zeichnet ihn beim Arbeiten.
-        void DrawWorking(int x, int y) override;
+        void DrawWorking(DrawPoint drawPt) override;
         /// Der Arbeiter erzeugt eine Ware.
         GoodType ProduceWare() override;
         /// Wird aufgerufen, wenn er fertig mit arbeiten ist

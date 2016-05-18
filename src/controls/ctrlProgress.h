@@ -55,6 +55,7 @@ class ctrlProgress : public Window
 
     protected:
         bool Draw_() override;
+        void Resize_(unsigned short width, unsigned short height) override;
 
     private:
         TextureColor tc;
@@ -63,12 +64,12 @@ class ctrlProgress : public Window
         unsigned short maximum;
 
         // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
-        unsigned short x_padding, y_padding;
+        DrawPoint padding;
 
         /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
         unsigned int force_color;
 
-        /// Optionaler Pointer auf eine Variable,
+        unsigned CalcBarWidth() const;
 };
 
 #endif // !CTRLPROGRESS_H_INCLUDED

@@ -41,7 +41,7 @@ class nofPassiveWorker : public noFigure
         nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id);
 
         /// Zeichnen
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         GO_Type GetGOT() const override
         {

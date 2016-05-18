@@ -43,7 +43,7 @@ ctrlProgress::ctrlProgress(Window* parent,
                            const std::string& button_plus_tooltip,
                            unsigned short* const  /*write_val*/)
     : Window(x, y, id, parent, width, height, tooltip),
-      tc(tc), position(0), maximum(maximum), x_padding(x_padding), y_padding(y_padding), force_color(force_color)
+      tc(tc), position(0), maximum(maximum), padding(x_padding, y_padding), force_color(force_color)
 {
     const char* str1 = "io", * str2 = "io";
     if(button_minus >= 1000)
@@ -59,6 +59,9 @@ ctrlProgress::ctrlProgress(Window* parent,
 
     AddImageButton(0, 0,              0, height, height, tc, LOADER.GetImageN(str1, button_minus), (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")) );
     AddImageButton(1, width - height, 0, height, height, tc, LOADER.GetImageN(str2, button_plus),  (button_plus_tooltip.length( ) ? button_plus_tooltip  : _("More")) );
+
+    // Hide left and right 3D border by making the buttons overlap the bar
+    padding.x -= 2;
 }
 
 /**
@@ -76,13 +79,17 @@ void ctrlProgress::SetPosition(unsigned short position)
  */
 bool ctrlProgress::Draw_()
 {
-    Draw3D(GetX() + height_ - 2 + x_padding, GetY() + y_padding, width_ - (height_ * 2) + 4 - 2 * x_padding, height_ - 2 * y_padding, tc, 2);
+    DrawPoint barPos = GetDrawPos() + padding;
+    // Offset by button size
+    barPos.x += height_;
+    Draw3D(barPos, CalcBarWidth(), height_ - 2 * padding.y, tc, 2);
 
     // Buttons
     DrawControls();
 
+    const DrawPoint innerPadding(4, 4);
     unsigned int percentage = position * 100 / maximum;
-    unsigned int progress = (width_ - height_ * 2 - 4 - 2 * x_padding) * position / maximum;
+    unsigned int progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
 
     // Farbe herausfinden
     unsigned int color = 0xFFFF0000;
@@ -102,14 +109,28 @@ bool ctrlProgress::Draw_()
     }
 
     // Leiste
-    DrawRectangle(GetX() + height_ + 2 + x_padding, GetY() + 4 + y_padding, progress, height_ - 8 - 2 * y_padding, color);
+    DrawRectangle(barPos + innerPadding, progress, height_ - 2 * (innerPadding.y + padding.y), color);
 
     // Prozentzahlen zeichnen
     std::stringstream percent;
     percent << percentage << "%";
-    SmallFont->Draw(GetX() + (width_ / 2), GetY() + height_ / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+    SmallFont->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
 
     return true;
+}
+
+void ctrlProgress::Resize_(unsigned short width, unsigned short height)
+{
+    Window* lessBt = GetCtrl<Window>(0);
+    Window* moreBt = GetCtrl<Window>(1);
+    lessBt->Resize(height, height);
+    moreBt->Resize(height, height);
+    moreBt->Move(width - height, 0);
+}
+
+unsigned ctrlProgress::CalcBarWidth() const
+{
+    return width_ - 2 * (padding.x + height_);
 }
 
 void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -137,15 +158,15 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
 {
     // Test if clicked on progress bar
     if(Coll(mc.x, mc.y,
-            GetX() + height_ + 2 + x_padding, GetY() + 4 + y_padding,
-            width_ - height_ * 2 - 4 - 2 * x_padding, height_ - 8 - 2 * y_padding))
+            GetX() + height_ + 2 + padding.x, GetY() + 4 + padding.y,
+            width_ - height_ * 2 - 4 - 2 * padding.x, height_ - 8 - 2 * padding.y))
     {
         // The additional check for (position > maximum) is
         // mathematically redundant here; if there was more code than
         // it in SetPosition() we had to call it here instead of simply:
-        position = ( mc.x - (GetX() + height_ + 2 + x_padding)
-                     + /*rounding:*/ (width_ - height_ * 2 - 4 - 2 * x_padding) / maximum / 2)
-                   * maximum / (width_ - height_ * 2 - 4 - 2 * x_padding);
+        position = ( mc.x - (GetX() + height_ + 2 + padding.x)
+                     + /*rounding:*/ (width_ - height_ * 2 - 4 - 2 * padding.x) / maximum / 2)
+                   * maximum / (width_ - height_ * 2 - 4 - 2 * padding.x);
 
         if(parent_) parent_->Msg_ProgressChange(GetID(), position);
         return true;
@@ -186,7 +207,7 @@ bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
     // an Buttons weiterleiten
     RelayMouseMessage(&Window::Msg_MouseMove, mc);
 
-    if(Coll(mc.x, mc.y, GetX() + height_ + x_padding, GetY(), width_ - height_ * 2 - x_padding * 2, height_))
+    if(Coll(mc.x, mc.y, GetX() + height_ + padding.x, GetY(), width_ - height_ * 2 - padding.x * 2, height_))
     {
         WINDOWMANAGER.SetToolTip(this, tooltip_);
         return true;

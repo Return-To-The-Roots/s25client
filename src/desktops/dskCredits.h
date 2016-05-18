@@ -68,8 +68,7 @@ class dskCredits : public Desktop
             unsigned direction;
             unsigned animationStep;
             unsigned color;
-            short x;
-            short y;
+            DrawPoint pos;
             unsigned char speed;
             bool hasWare;
             bool isFat;

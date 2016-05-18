@@ -117,11 +117,11 @@ class noShip : public noMovable
         Result DriveToHarbourPlace();
 
         /// Zeichnet das Schiff stehend mit oder ohne Waren
-        void DrawFixed(const int x, const int y, const bool draw_wares);
+        void DrawFixed(DrawPoint drawPt, const bool draw_wares);
         /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
-        void DrawDriving(int& x, int& y);
+        void DrawDriving(DrawPoint& drawPt);
         /// Zeichnet normales Fahren auf dem Meer mit Gütern
-        void DrawDrivingWithWares(int& x, int& y);
+        void DrawDrivingWithWares(DrawPoint& drawPt);
 
         /// Startet die eigentliche Transportaktion, nachdem das Schiff beladen wurde
         void StartTransport();
@@ -153,7 +153,7 @@ class noShip : public noMovable
         GO_Type GetGOT() const override { return GOT_SHIP; }
 
         // An x,y zeichnen
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
         // Benachrichtigen, wenn neuer gf erreicht wurde
         void HandleEvent(const unsigned int id) override;
 

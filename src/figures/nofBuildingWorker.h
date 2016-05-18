@@ -98,7 +98,7 @@ class nofBuildingWorker : public noFigure
         void GoalReached() override; // wenn das Ziel erreicht wurde
 
         /// Malt den Arbeiter beim Arbeiten
-        virtual void DrawWorking(int x, int y) = 0;
+        virtual void DrawWorking(DrawPoint drawPt) = 0;
         /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
         virtual unsigned short GetCarryID() const = 0;
         /// Laufen an abgeleitete Klassen weiterleiten
@@ -109,9 +109,9 @@ class nofBuildingWorker : public noFigure
         virtual void WorkplaceReached();
 
         /// Draws the figure while returning home / entering the building (often carrying wares)
-        virtual void DrawReturnStates(const int x, const int y);
+        virtual void DrawReturnStates(DrawPoint drawPt);
         /// Zeichnen der Figur in sonstigen Arbeitslagen
-        virtual void DrawOtherStates(const int x, const int y);
+        virtual void DrawOtherStates(DrawPoint drawPt);
 
     protected:
         /// nur für Bergarbeiter!
@@ -134,7 +134,7 @@ class nofBuildingWorker : public noFigure
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuildingWorker(sgd); }
 
 
-        void Draw(int x, int y) override;
+        void Draw(DrawPoint drawPt) override;
 
         /// Wenn eine neue Ware kommt oder die Produktion wieder erlaubt wurde, wird das aufgerufen
         void GotWareOrProductionAllowed();

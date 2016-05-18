@@ -47,7 +47,7 @@ nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id) : nofFarmha
 }
 
 /// Malt den Arbeiter beim Arbeiten
-void nofFisher::DrawWorking(int x, int y)
+void nofFisher::DrawWorking(DrawPoint drawPt)
 {
     unsigned short id = GAMECLIENT.Interpolate(232, current_ev);
     unsigned short draw_id;
@@ -93,8 +93,8 @@ void nofFisher::DrawWorking(int x, int y)
         }
     }
 
-    LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-    DrawShadow(x, y, 0, fishing_dir);
+    LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    DrawShadow(drawPt, 0, fishing_dir);
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)

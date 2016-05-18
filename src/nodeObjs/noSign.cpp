@@ -54,20 +54,20 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingE
 /**
  *  An x,y zeichnen.
  */
-void noSign::Draw(int x, int y)
+void noSign::Draw(DrawPoint drawPt)
 {
     // Wenns verschwindet, muss es immer transparenter werden
     unsigned color = GetDrawColor();
 
     // Schild selbst
     if(type != 5)
-        LOADER.GetMapPlayerImage(680 + type * 3 + quantity)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+        LOADER.GetMapPlayerImage(680 + type * 3 + quantity)->Draw(drawPt, 0, 0, 0, 0, 0, 0, color);
     else
         // leeres Schild
-        LOADER.GetMapPlayerImage(695)->Draw(x, y, 0, 0, 0, 0, 0, 0, color);
+        LOADER.GetMapPlayerImage(695)->Draw(drawPt, 0, 0, 0, 0, 0, 0, color);
 
     // Schatten des Schildes
-    LOADER.GetMapImageN(700)->Draw(x, y, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    LOADER.GetMapImageN(700)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
 }
 
 void noSign::HandleEvent(const unsigned int id)

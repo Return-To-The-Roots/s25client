@@ -32,7 +32,7 @@ class noExtension : public noBase
 
         void Destroy() override { Destroy_noExtension(); }
         noBase* GetBaseObject() const { return base; }
-        void Draw(int  /*x*/, int  /*y*/) override {}
+        void Draw(DrawPoint /*drawPt*/) override {}
 
         /// Serialisierungsfunktionen
     protected:  void Serialize_noExtension(SerializedGameData& sgd) const;

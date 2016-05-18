@@ -186,7 +186,7 @@ void nofCarrier::Destroy_nofCarrier()
 }
 
 
-void nofCarrier::Draw(int x, int y)
+void nofCarrier::Draw(DrawPoint drawPt)
 {
     // Unterscheiden, um was für eine Art von Träger es sich handelt
     switch(ct)
@@ -232,16 +232,14 @@ void nofCarrier::Draw(int x, int y)
                         {
                             // Nein, dann Animation abspielen
                             LOADER.GetPlayerImage("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
-                            ->Draw(x, y, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                            ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
                         }
                         else     // Silvesteregg
                         {
                             glArchivItem_Bitmap_Player* bmp = LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
 
                             if (bmp)
-                            {
-                                bmp->Draw(x - 26, y - 104, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                            }
+                                bmp->Draw(drawPt - DrawPoint(26, 104), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
                             else
                             {
                                 SetNewAnimationMoment();
@@ -253,31 +251,24 @@ void nofCarrier::Draw(int x, int y)
 
                 if(!animation)
                 {
-                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(x, y, COLOR_WHITE, gwg->GetPlayer(player).color);
+                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 }
                 else
                     // Steht und wartet (ohne Ware)
-//                  LOADER.GetBobN("jobs")->Draw(0,dir,fat,2,x,y,gwg->GetPlayer(player).color);
-                    DrawShadow(x, y, 0, GetCurMoveDir());
+                    DrawShadow(drawPt, 0, GetCurMoveDir());
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 // Steht und wartet (mit Ware)
-                LOADER.carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(x, y, COLOR_WHITE, gwg->GetPlayer(player).color);
-
-                // Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
-//              LOADER.GetBobN("carrier")->Draw((carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,
-//                  dir,fat,2,x,y,gwg->GetPlayer(player).color);
-//              DrawShadow(x,y,0,dir);
+                LOADER.carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             }
             else
             {
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
-                    DrawWalkingBobCarrier(x, y, carried_ware->type, fat);
-//                  DrawWalking(x,y,LOADER.GetBobN("carrier"),(carried_ware->type==GD_SHIELDJAPANESE)?GD_SHIELDROMANS:carried_ware->type,fat);
+                    DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
                 else
-                    DrawWalkingBobJobs(x, y, fat ? JOB_TYPES_COUNT : 0);
+                    DrawWalkingBobJobs(drawPt, fat ? JOB_TYPES_COUNT : 0);
             }
         } break;
         case CT_DONKEY:
@@ -288,7 +279,7 @@ void nofCarrier::Draw(int x, int y)
                 // Steht und wartet (ohne Ware)
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][0].draw(x, y);
+                LOADER.donkey_cache[GetCurMoveDir()][0].draw(drawPt);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
@@ -296,10 +287,10 @@ void nofCarrier::Draw(int x, int y)
                 //// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][0].draw(x, y);
+                LOADER.donkey_cache[GetCurMoveDir()][0].draw(drawPt);
 
                 // Ware im Korb zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_DONKEY[GetCurMoveDir() * 16], y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + 1]);
+                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][0]);
             }
             else
             {
@@ -307,17 +298,17 @@ void nofCarrier::Draw(int x, int y)
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
                 unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
-                Point<int> realPos = Point<int>(x, y) + CalcFigurRelative();
+                drawPt += CalcFigurRelative();
 
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y);
+                LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(drawPt);
 
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(realPos.x + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2], realPos.y + WARE_POS_DONKEY[GetCurMoveDir() * 16 + ani_step * 2 + 1]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
                 }
             }
 
@@ -327,19 +318,18 @@ void nofCarrier::Draw(int x, int y)
             if(state == CARRS_FIGUREWORK)
             {
                 // Beim normalen Laufen Träger mit Boot über den Schultern zeichnen
-                DrawWalkingBobCarrier(x, y, GD_BOAT, fat);
-//              DrawWalking(x,y,LOADER.GetBobN("carrier"),GD_BOAT,fat);
+                DrawWalkingBobCarrier(drawPt, GD_BOAT, fat);
             }
             else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
             {
-                LOADER.boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.boat_cache[GetCurMoveDir()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
             }
             else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
-                LOADER.boat_cache[GetCurMoveDir()][0].draw(x, y, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.boat_cache[GetCurMoveDir()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
                 // Ware im Boot zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(x + WARE_POS_BOAT[GetCurMoveDir() * 2], y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
+                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
             }
             else
             {
@@ -347,15 +337,15 @@ void nofCarrier::Draw(int x, int y)
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
                 unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
 
-                Point<int> realPos = Point<int>(x, y) + CalcFigurRelative();
+                drawPt += CalcFigurRelative();
 
                 // ruderndes Boot zeichnen
-                LOADER.boat_cache[GetCurMoveDir()][ani_step].draw(realPos.x, realPos.y, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.boat_cache[GetCurMoveDir()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(realPos.x + WARE_POS_BOAT[GetCurMoveDir() * 2], realPos.y + WARE_POS_BOAT[GetCurMoveDir() * 2 + 1]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)

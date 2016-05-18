@@ -44,7 +44,7 @@ bool ctrlImage::Draw_()
 {
     // gültiges Bild?
     if(image)
-        image->Draw(GetX(), GetY(), 0, 0, 0, 0, 0, 0);
+        image->Draw(GetDrawPos());
 
     return true;
 }

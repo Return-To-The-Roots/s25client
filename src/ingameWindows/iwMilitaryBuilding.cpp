@@ -69,16 +69,18 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const bu
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetX() + 117, GetY() + 114, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
-    DrawRectangle(GetX() + width_ / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2, GetY() + 60, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);
+    DrawPoint goldPos = GetDrawPos() + DrawPoint((width_ - 22 * GOLD_COUNT[building->nation][building->size]) / 2, 60);
+    DrawRectangle(goldPos, 22 * GOLD_COUNT[building->nation][building->size], 24, 0x96000000);
     // Gold
+    goldPos += DrawPoint(12, 12);
     for(unsigned short i = 0; i < GOLD_COUNT[building->nation][building->size]; ++i)
-        LOADER.GetMapImageN(2278)->Draw(GetX() + width_ / 2 - 22 * GOLD_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 72, 0, 0, 0, 0, 0, 0, ( i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF) );
-
-    // Schwarzer Untergrund für Soldatenanzeige
-    DrawRectangle(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2, GetY() + 98 , 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
+    {
+        LOADER.GetMapImageN(2278)->Draw(goldPos, 0, 0, 0, 0, 0, 0, (i >= building->coins ? 0xFFA0A0A0 : 0xFFFFFFFF));
+        goldPos.x += 22;
+    }
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
     std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> > soldiers;
@@ -96,20 +98,27 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         }
     }
 
+    DrawPoint troopsPos = GetDrawPos() + DrawPoint((width_ - 22 * TROOPS_COUNT[building->nation][building->size]) / 2, 98);
+    // Schwarzer Untergrund für Soldatenanzeige
+    DrawRectangle(troopsPos, 22 * TROOPS_COUNT[building->nation][building->size], 24, 0x96000000);
+
     // Soldaten zeichnen
-    unsigned short i = 0;
-    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i)
-        LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2 + 12 + i * 22, GetY() + 110, 0, 0, 0, 0, 0, 0);
+    DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
+    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
+    {
+        LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(curTroopsPos);
+        curTroopsPos.x += 22;
+    }
 
     // Draw health above soldiers
     if (gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS)) {
-        unsigned short leftXCoordinate = GetX() + width_ / 2 - 22 * TROOPS_COUNT[building->nation][building->size] / 2;
+        DrawPoint healthPos = troopsPos - DrawPoint(0, 14);
 
         // black background for hitpoints
-        DrawRectangle(leftXCoordinate, GetY() + 84, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
+        DrawRectangle(healthPos, 22 * TROOPS_COUNT[building->nation][building->size], 14, 0x96000000);
 
-        i = 0;
-        for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it, ++i) {
+        healthPos += DrawPoint(12, 2);
+        for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it) {
             int hitpoints = static_cast<int>((*it)->GetHitpoints());
             int maxHitpoints = static_cast<int>(HITPOINTS[building->nation][(*it)->GetRank()]);
             unsigned int hitpointsColour;
@@ -124,8 +133,8 @@ void iwMilitaryBuilding::Msg_PaintAfter()
             }  
             std::stringstream hitpointsText;
             hitpointsText << hitpoints;
-            unsigned short x = leftXCoordinate + 12 + i * 22;
-            NormalFont->Draw(x, GetY() + 86, hitpointsText.str(), glArchivItem_Font::DF_CENTER, hitpointsColour);
+            NormalFont->Draw(healthPos, hitpointsText.str(), glArchivItem_Font::DF_CENTER, hitpointsColour);
+            healthPos.x += 22;
         }
     }
 }
