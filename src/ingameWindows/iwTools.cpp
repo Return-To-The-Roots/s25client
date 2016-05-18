@@ -139,9 +139,9 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         GamePlayer& me = GAMECLIENT.GetLocalPlayer();
 
         if (ctrl_id & 0x1)
-            settings_changed |= me.ChangeToolOrderVisual(tool, -1);
+            ordersChanged |= me.ChangeToolOrderVisual(tool, -1);
         else
-            settings_changed |= me.ChangeToolOrderVisual(tool, +1);
+            ordersChanged |= me.ChangeToolOrderVisual(tool, +1);
 
         ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + tool);
         field->SetText(helpers::toString(me.GetToolsOrderedVisual(tool)));
