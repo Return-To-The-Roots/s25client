@@ -507,14 +507,9 @@ void GameWorldView::ToggleShowNamesAndProductivity()
 void GameWorldView::MoveTo(int x, int y, bool absolute)
 {
     if(absolute)
-    {
-        offset = Point<int>(x, y);
-    }
+        offset = DrawPoint(x, y);
     else
-    {
-    	offset.x += x;
-    	offset.y += y;
-    }
+    	offset += DrawPoint(x, y);
 
     Point<int> size(GetWorld().GetWidth() * TR_W, GetWorld().GetHeight() * TR_H);
     if(size.x && size.y)

@@ -19,6 +19,7 @@
 #define TERRITORY_REGION_H_
 
 #include "gameTypes/MapTypes.h"
+#include "Point.h"
 #include <vector>
 
 /// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die für die Berechnung bei Militärgebäuden-
@@ -41,24 +42,26 @@ class TerritoryRegion
     };
 
 public:
-    /// Position of the region on the map
-    const int x1, y1, x2, y2;
+    typedef Point<int> PointI;
+
+    /// Start position(inclusive) and end position(exclusive)
+    const PointI startPt, endPt;
     /// Size of the region (calculated from x2-x1, y2-y1)
-    const unsigned width, height;
+    const PointI size;
 
 private:
     const GameWorldBase& world;
     std::vector<TRNode> nodes;
 
-    /// Check whether the point x, y is part of the polygon
+    /// Check whether the point is part of the polygon
     static bool IsPointInPolygon(const std::vector<MapPoint>& polygon, const MapPoint pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
     void AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
-    TRNode& GetNode(const int x, const int y) { return nodes[GetIdx(x, y)]; }
-    const TRNode& GetNode(const int x, const int y) const { return nodes[GetIdx(x, y)]; }
+    TRNode& GetNode(const PointI pt) { return nodes[GetIdx(pt)]; }
+    const TRNode& GetNode(const PointI pt) const { return nodes[GetIdx(pt)]; }
 
 public:
-    TerritoryRegion(const int x1, const int y1, const int x2, const int y2, const GameWorldBase& gwb);
+    TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
     static bool IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt);
@@ -66,11 +69,11 @@ public:
     /// Berechnet ein Militärgebäude mit ein
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
-    unsigned GetIdx(const int x, const int y) const { return (y - y1) * width + (x - x1); }
+    unsigned GetIdx(PointI pt) const { PointI offset(pt - startPt); return offset.y * size.x + offset.x; }
     /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
-    unsigned char GetOwner(const int x, const int y) const { return GetNode(x, y).owner; }
+    unsigned char GetOwner(PointI pt) const { return GetNode(pt).owner; }
     /// Liefert Radius mit dem der Punkt besetzt wurde
-    unsigned char GetRadius(const int x, const int y) const { return GetNode(x, y).radius; }
+    unsigned char GetRadius(PointI pt) const { return GetNode(pt).radius; }
 };
 
 #endif

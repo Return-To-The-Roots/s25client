@@ -358,23 +358,23 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
     TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, destroyed);
 
     // Set to true, where owner has changed (initially all false)
-    std::vector<bool> ownerChanged(region.height * region.width, false);
+    std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
 
     std::vector<int> sizeChanges(GetPlayerCount());
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
 	
     const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
-    const unsigned char newOwnerOfTriggerBld = region.GetOwner(building.GetPos().x, building.GetPos().y);
+    const unsigned char newOwnerOfTriggerBld = region.GetOwner(Point<int>(building.GetPos()));
     const bool noAlliedBorderPush = GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
 
-    for(int y = region.y1; y < region.y2; ++y)
+    for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
     {
-        for(int x = region.x1; x < region.x2; ++x)
+        for(pt.x = region.startPt.x; pt.x < region.endPt.x; ++pt.x)
         {
-            const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
-            const unsigned char oldOwner = GetNode(curPt).owner;
-            const unsigned char newOwner = region.GetOwner(x, y);
+            const MapPoint curMapPt = MakeMapPoint(pt);
+            const unsigned char oldOwner = GetNode(curMapPt).owner;
+            const unsigned char newOwner = region.GetOwner(pt);
 
             // If nothing changed, there is nothing to do (ownerChanged was already initialized)
             if(oldOwner == newOwner)
@@ -393,8 +393,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                 if((ownerOfTriggerBld == oldOwner && oldOwner > 0 && newBuilt) || (newOwnerOfTriggerBld == oldOwner && !destroyed && !newBuilt))
 					continue;
 			}
-            SetOwner(curPt, newOwner);
-            ownerChanged[region.GetIdx(x, y)] = true;
+            SetOwner(curMapPt, newOwner);
+            ownerChanged[region.GetIdx(pt)] = true;
             if (newOwner != 0)
                 sizeChanges[newOwner - 1]++;
             if (oldOwner != 0)
@@ -402,7 +402,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
             // Event for map scripting
             if(newOwner != 0 && HasLua())
-                GetLua().EventOccupied(newOwner - 1, curPt);
+                GetLua().EventOccupied(newOwner - 1, curMapPt);
         }
     }
 
@@ -415,18 +415,18 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
             GetPostMgr().SendMsg(i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PMC_MILITARY, building));
     }
 
-    for(int y = region.y1; y < region.y2; ++y)
+    for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
     {
-        for(int x = region.x1; x < region.x2; ++x)
+        for(pt.x = region.startPt.x; pt.x < region.endPt.x; ++pt.x)
         {
-            MapPoint curPt = MakeMapPoint(Point<int>(x, y));
-            if(GetNode(curPt).owner != 0)
+            MapPoint curMapPt = MakeMapPoint(pt);
+            if(GetNode(curMapPt).owner != 0)
             {
                 /// Grenzsteine, die alleine "rausragen" und nicht mit einem richtigen Territorium verbunden sind, raushauen
                 bool isPlayerTerritoryNear = false;
                 for(unsigned d = 0; d < 6; ++d)
                 {
-                    if(IsPlayerTerritory(GetNeighbour(curPt, d)))
+                    if(IsPlayerTerritory(GetNeighbour(curMapPt, d)))
                     {
                         isPlayerTerritoryNear = true;
                         break;
@@ -435,18 +435,18 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
                 // Wenn kein Land angrenzt, dann nicht nehmen
                 if(!isPlayerTerritoryNear)
-                    SetOwner(curPt, 0);
+                    SetOwner(curMapPt, 0);
             }
 
             // Drumherum (da ja Grenzen mit einberechnet werden ins Gebiet, da darf trotzdem nichts stehen) alles vom Spieler zerstören
             // nicht das Militärgebäude oder dessen Flagge nochmal abreißen
-            if(ownerChanged[region.GetIdx(x, y)])
+            if(ownerChanged[region.GetIdx(pt)])
             {
                 for(unsigned char i = 0; i < 6; ++i)
                 {
-                    MapPoint neighbourPt = GetNeighbour(curPt, i);
+                    MapPoint neighbourPt = GetNeighbour(curMapPt, i);
 
-                    DestroyPlayerRests(neighbourPt, GetNode(curPt).owner, &building, false);
+                    DestroyPlayerRests(neighbourPt, GetNode(curMapPt).owner, &building, false);
 
                     // BQ neu berechnen
                     RecalcBQ(neighbourPt);
@@ -456,7 +456,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                 }
 
                 if(gi)
-                    gi->GI_UpdateMinimap(curPt);
+                    gi->GI_UpdateMinimap(curMapPt);
             }
         }
     }
@@ -475,42 +475,41 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
         SetVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }
 
+// When defined the game tries to remove "blocks" of border stones that look ugly
 #define PREVENT_BORDER_STONE_BLOCKING
 
 void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 {
     // Add a bit extra space as this influences also border stones around the region
-    static const int EXTRA_SPACE = 3;
+    static const Point<int> EXTRA_SPACE(3, 3);
 
-    const int x1 = region.x1 - EXTRA_SPACE;
-    const int x2 = region.x2 + EXTRA_SPACE;
-    const int y1 = region.y1 - EXTRA_SPACE;
-    const int y2 = region.y2 + EXTRA_SPACE;
+    const Point<int> startPt(region.startPt - EXTRA_SPACE);
+    const Point<int> endPt(region.endPt + EXTRA_SPACE);
 #ifdef PREVENT_BORDER_STONE_BLOCKING
-    const int width = x2 - x1;
+    const int width = endPt.x - startPt.x;
     // In diesem Array merken, wie wieviele Nachbarn ein Grenzstein hat
-    std::vector<unsigned> neighbors(width * (y2 - y1), 0);
+    std::vector<unsigned> neighbors(width * (endPt.y - startPt.y), 0);
 #endif
 
 
-    for(int y = y1; y < y2; ++y)
+    for(Point<int> pt(startPt); pt.y < endPt.y; ++pt.y)
     {
-        for(int x = x1; x < x2; ++x)
+        for(pt.x = startPt.x; pt.x < endPt.x; ++pt.x)
         {
             // Korrigierte X-Koordinaten
-            const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
-            const unsigned char owner = GetNode(curPt).owner;
-            MapNode::BoundaryStones& boundaryStones = GetBoundaryStones(curPt);
+            const MapPoint curMapPt = MakeMapPoint(pt);
+            const unsigned char owner = GetNode(curMapPt).owner;
+            MapNode::BoundaryStones& boundaryStones = GetBoundaryStones(curMapPt);
 
             // Grenzstein direkt auf diesem Punkt?
-            if(owner && IsBorderNode(curPt, owner))
+            if(owner && IsBorderNode(curMapPt, owner))
             {
                 boundaryStones[0] = owner;
 
                 // Grenzsteine prüfen auf den Zwischenstücken in die 3 Richtungen nach unten und nach rechts
                 for(unsigned i = 0; i < 3; ++i)
                 {
-                    if(IsBorderNode(GetNeighbour(curPt, 3 + i), owner))
+                    if(IsBorderNode(GetNeighbour(curMapPt, 3 + i), owner))
                         boundaryStones[i + 1] = owner;
                     else
                         boundaryStones[i + 1] = 0;
@@ -519,11 +518,12 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
                 // Zählen
+                Point<int> offset(pt - startPt);
+                int idx = offset.y * width + offset.x;
                 for(unsigned i = 0; i < 6; ++i)
                 {
-                    neighbors[(y - y1)*width + (x - x1)] = 0;
-                    if(GetNeighbourNode(curPt, i).boundary_stones[0] == owner)
-                        ++neighbors[(y - y1)*width + (x - x1)];
+                    if(GetNeighbourNode(curMapPt, i).boundary_stones[0] == owner)
+                        ++neighbors[idx];
                 }
 #endif
             } else
@@ -541,38 +541,42 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 #ifdef PREVENT_BORDER_STONE_BLOCKING
     // Nochmal durchgehen und bei Grenzsteinen mit mehr als 3 Nachbarn welche löschen
     // da sich sonst gelegentlich solche "Klötzchen" bilden können
-    for(int y = y1; y < y2; ++y)
+    for(Point<int> pt(startPt); pt.y < endPt.y; ++pt.y)
     {
-        for(int x = x1; x < x2; ++x)
+        for(pt.x = startPt.x; pt.x < endPt.x; ++pt.x)
         {
-            const MapPoint curPt = MakeMapPoint(Point<int>(x, y));
+            const MapPoint curMapPt = MakeMapPoint(pt);
 
             // Steht auch hier ein Grenzstein?
-            unsigned char owner = GetNode(curPt).boundary_stones[0];
+            unsigned char owner = GetNode(curMapPt).boundary_stones[0];
             if(!owner)
                 continue;
 
-            if(neighbors[(y - y1)*width + (x - x1)] < 3)
+            Point<int> offset(pt - startPt);
+            int idx = offset.y * width + offset.x;
+            if(neighbors[idx] < 3)
                 continue;
 
-            for(unsigned dir = 0; dir < 3 && neighbors[(y - y1)*width + (x - x1)] > 2; ++dir)
+            for(unsigned dir = 0; dir < 3 && neighbors[idx] > 2; ++dir)
             {
                 // Da ein Grenzstein vom selben Besitzer?
-                MapNode::BoundaryStones& nbBoundStones = GetBoundaryStones(GetNeighbour(curPt, dir + 3));
+                MapNode::BoundaryStones& nbBoundStones = GetBoundaryStones(GetNeighbour(curMapPt, dir + 3));
 
                 if(nbBoundStones[0] != owner)
                     continue;
 
-                Point<int> pa = ::GetNeighbour(Point<int>(x, y), Direction(dir + 3));
-                if(pa.x < x1 || pa.x >= x2 || pa.y < y1 || pa.y >= y2)
+                Point<int> pa = ::GetNeighbour(pt, Direction(dir + 3));
+                if(pa.x < startPt.x || pa.x >= endPt.x || pa.y < startPt.y || pa.y >= endPt.y)
                     continue;
                 // Hat der auch zu viele Nachbarn?
-                if(neighbors[(pa.y - y1)*width + (pa.x - x1)] > 2)
+                Point<int> offset(pa - startPt);
+                int idxNb = offset.y * width + offset.x;
+                if(neighbors[idxNb] > 2)
                 {
                     // Dann löschen wir hier einfach die Verbindung
                     nbBoundStones[dir + 1] = 0;
-                    --neighbors[(y - y1)*width + (x - x1)];
-                    --neighbors[(pa.y - y1)*width + (pa.x - x1)];
+                    --neighbors[idx];
+                    --neighbors[idxNb];
                 }
             }
         }
@@ -589,27 +593,26 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
     TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius, destroyed);
 
     // schaun ob sich was ändern würd im berechneten gebiet
-    for(int y = region.y1; y < region.y2; ++y)
+    for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
     {
-        for(int x = region.x1; x < region.x2; ++x)
+        for(pt.x = region.startPt.x; pt.x < region.endPt.x; ++pt.x)
         {
-            MapPoint curPt = MakeMapPoint(Point<int>(x, y));
-            if(GetNode(curPt).owner != region.GetOwner(x, y))
+            MapPoint curMapPt = MakeMapPoint(pt);
+            if(GetNode(curMapPt).owner == region.GetOwner(pt))
+                continue;
+            // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
+            if(GetGGS().game_objective == GO_CONQUER3_4)
+                return true;
+            TerrainType t1 = GetNode(curMapPt).t1, t2 = GetNode(curMapPt).t2;
+            if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
+                return true;
+            //also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
+            for(int dir = 0; dir < 6; dir++)
             {
-                // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-                if(GetGGS().game_objective == GO_CONQUER3_4)
+                t1 = GetNeighbourNode(curMapPt, dir).t1;
+                t2 = GetNeighbourNode(curMapPt, dir).t2;
+                if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
                     return true;
-                TerrainType t1 = GetNode(curPt).t1, t2 = GetNode(curPt).t2;
-                if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
-                    return true;
-                //also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
-                for(int dir = 0; dir < 6; dir++)
-                {
-                    t1 = GetNeighbourNode(curPt, dir).t1;
-                    t2 = GetNeighbourNode(curPt, dir).t2;
-                    if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
-                        return true;
-                }
             }
         }
     }
@@ -622,13 +625,9 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
 
     // Koordinaten erzeugen für TerritoryRegion
-    int x1 = int(bldPos.x) - radius;
-    int y1 = int(bldPos.y) - radius;
-    int x2 = int(bldPos.x) + radius + 1;
-    int y2 = int(bldPos.y) + radius + 1;
-
-
-    TerritoryRegion region(x1, y1, x2, y2, *this);
+    const Point<int> startPt = Point<int>(bldPos) - Point<int>(radius, radius);
+    const Point<int> endPt   = Point<int>(bldPos) + Point<int>(radius + 1, radius + 1);
+    TerritoryRegion region(startPt, endPt, *this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)

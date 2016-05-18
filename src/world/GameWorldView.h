@@ -57,13 +57,13 @@ class GameWorldView
     bool show_productivity;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
-    Point<int> offset;
+    DrawPoint offset;
     /// Last scroll position (before jump)
-    Point<int> lastOffset;
+    DrawPoint lastOffset;
     /// First drawn map point (might be slightly outside map -> Wrapping)
-    Point<int> firstPt;
+    DrawPoint firstPt;
     /// Last drawn map point
-    Point<int> lastPt;
+    DrawPoint lastPt;
 
     const GameWorldViewer& gwv;
 

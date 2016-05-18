@@ -583,8 +583,8 @@ void GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const M
 				}
 			}
 		}			
-		//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
-		else //if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)				
+		//so our target building is in range of a free or allied harbor pos but not the harborspot
+		else
 		{
             for(unsigned z = 0; z < 6; ++z)
 			{
@@ -675,8 +675,8 @@ std::vector<unsigned> GameWorldBase::GetValidSeaIDsAroundMilitaryBuildingForAtta
 				}
 			}
 		}			
-		//so our target building is in range of a free or allied harbor pos but not the harborspot - now lets see if we can findhumanpath
-		else //if(FindHumanPath(x, y, harbor_x, harbor_y, SEAATTACK_DISTANCE) != 0xff)				
+		//so our target building is in range of a free or allied harbor pos but not the harborspot
+		else
 		{	//first get sea ids around currently tested harbor, then for each sea id try to find a human path between the coastal point and the goal
 			bool harborinlist=false;
 			for(unsigned z = 0;z<6;++z) //for all directions check the sea ids
