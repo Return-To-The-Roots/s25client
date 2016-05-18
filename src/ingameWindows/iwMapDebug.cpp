@@ -59,6 +59,9 @@ public:
             else if(gw.IsCoastalPoint(pt))
                 data = "C";
             break;
+        case 5:
+            data = helpers::toString(static_cast<unsigned>(node.owner));
+            break;
         default:
             return;
         }        
@@ -87,6 +90,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv):
     data->AddString(_("Altitude"));
     data->AddString(_("Resources"));
     data->AddString(_("Sea Id"));
+    data->AddString(_("Owner"));
     data->SetSelection(1);
 
     printer->showCoords = cbShowCoords->GetCheck();
