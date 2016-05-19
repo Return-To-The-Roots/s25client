@@ -38,8 +38,8 @@ nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofBaker::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPoint workOffset[NAT_COUNT] = { {40, -4}, { -16, 8}, { -5, 9}, { -8, 7}, { -16, 8} };
-    static const DrawPoint walkOffsets[NAT_COUNT][8] =   //nation, schrit, x-y
+    static const DrawPointInit workOffset[NAT_COUNT] = { {40, -4}, { -16, 8}, { -5, 9}, { -8, 7}, { -16, 8} };
+    static const DrawPointInit walkOffsets[NAT_COUNT][8] =   //nation, schrit, x-y
     {
         { {10, 10}, {17, 12}, {24, 14}, {32, 14}, {34, 9}, {36, 4}, {38, -1}, {40, -4} },
         { {9, 11}, {11, 13}, {7, 17}, {3, 20}, { -1, 17}, { -5, 14}, { -9, 12}, { -13, 10} },

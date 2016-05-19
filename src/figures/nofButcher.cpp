@@ -36,7 +36,7 @@ nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofButcher::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPoint offsets[NAT_COUNT] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
+    static const DrawPointInit offsets[NAT_COUNT] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
 
     unsigned now_id;
 

@@ -60,7 +60,7 @@ const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
 }};
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg):
-		GamePlayerInfo(playerId, playerInfo), gwg(&gwg), is_lagging(false),
+		GamePlayerInfo(playerId, playerInfo), is_lagging(false), gwg(&gwg),
 		hqPos(MapPoint::Invalid()), emergency(false)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);

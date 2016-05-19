@@ -22,5 +22,24 @@
 
 /// Type used for specifying drawing offsets and coordinates. Signed base type!
 typedef Point<int> DrawPoint;
+/// Helper struct to allow use in array initializers till C++11.
+/// Implicitly convertible to DrawPoint
+struct DrawPointInit
+{
+    typedef typename DrawPoint::ElementType ElementType;
+    const ElementType x;
+    const ElementType y;
+    operator DrawPoint() const { return DrawPoint(x, y); }
+};
+// Workaround for +/- if both arguments are DrawPointInit (DrawPoint::+ is not found via ADL)
+inline DrawPoint operator+(const DrawPointInit& lhs, const DrawPointInit& rhs)
+{
+    return DrawPoint(lhs) + rhs;
+}
+
+inline DrawPoint operator-(const DrawPointInit& lhs, const DrawPointInit& rhs)
+{
+    return DrawPoint(lhs) - rhs;
+}
 
 #endif // DrawPoint_h__

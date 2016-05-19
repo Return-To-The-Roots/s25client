@@ -127,7 +127,7 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
 void noFlag::Draw(DrawPoint drawPt)
 {
     // Positionen der Waren an der Flagge relativ zur Flagge
-    static const DrawPoint WARES_POS[8] =
+    static const DrawPointInit WARES_POS[8] =
     {
         { 0,  0},
         {-4,  0},

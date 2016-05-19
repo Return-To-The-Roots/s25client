@@ -40,8 +40,8 @@ struct Point
     inline bool operator!=(const Point& second) const;
     inline Point& operator+=(const Point& right);
     inline Point& operator-=(const Point& right);
-    inline Point operator+(const Point& right) const;
-    inline Point operator-(const Point& right) const;
+    inline friend Point operator+(Point left, const Point& right) { return (left+=right); }
+    inline friend Point operator-(Point left, const Point& right) { return (left-=right); }
     inline Point operator*(const T div) const;
     inline Point operator/(const T div) const;
 };
@@ -84,20 +84,6 @@ Point<T>& Point<T>::operator-=(const Point<T>& right)
     x -= right.x;
     y -= right.y;
     return *this;
-}
-
-template <typename T>
-Point<T> Point<T>::operator+(const Point<T>& right) const
-{
-    Point result(*this);
-    return result += right;
-}
-
-template <typename T>
-Point<T> Point<T>::operator-(const Point<T>& right) const
-{
-    Point result(*this);
-    return result -= right;
 }
 
 template <typename T>

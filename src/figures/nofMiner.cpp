@@ -36,7 +36,7 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPoint offsets[NAT_COUNT][4] = //work animation offset per nation and (granite, coal, iron, gold)
+    const DrawPointInit offsets[NAT_COUNT][4] = //work animation offset per nation and (granite, coal, iron, gold)
     {
         {{5, 3},  {5, 3},  {5, 3},  {5, 3}},  //africans
         {{4, 1},  {4, 1},  {4, 1},  {4, 1}},  //japanese

@@ -79,7 +79,7 @@ const JobConst JOB_CONSTS[JOB_TYPES_COUNT] =
 const unsigned CATAPULT_WAIT1_LENGTH = 1300; //eigenlich 310 - aber hochgestellt wegen zu schneller Warenverteilung
 
 /// Position of the ware on a donkey per direction and animation step
-const DrawPoint WARE_POS_DONKEY[6][8] =
+const DrawPointInit WARE_POS_DONKEY[6][8] =
 {
     {{0, -13},  {0, -12}, {0, -12}, {1, -13},  {2, -13},  {2, -12},  {2, -12}, {1, -13}},
     {{3, -12},  {3, -11}, {3, -11}, {3, -12},  {4, -12},  {5, -11},  {5, -11}, {5, -12}},
@@ -90,7 +90,7 @@ const DrawPoint WARE_POS_DONKEY[6][8] =
 };
 
 /// Positionen der Ware im Boat für jede Richtung
-const DrawPoint WARE_POS_BOAT[6] =
+const DrawPointInit WARE_POS_BOAT[6] =
 {
     {11, -4}, {11, 0}, {-7, -1}, {-8, -5}, {-7, -7}, {6, -7}
 };

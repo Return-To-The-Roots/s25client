@@ -45,9 +45,9 @@ nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofMiller::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPoint offsets[NAT_COUNT] = { {20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8} };
-    const DrawPoint offsets_sitdown[NAT_COUNT] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
-    const DrawPoint walkoffsets[8] = { {8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8} };
+    const DrawPointInit offsets[NAT_COUNT] = { {20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8} };
+    const DrawPointInit offsets_sitdown[NAT_COUNT] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
+    const DrawPointInit walkoffsets[8] = { {8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8} };
 
     unsigned int max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
