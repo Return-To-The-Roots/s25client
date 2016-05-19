@@ -1534,7 +1534,7 @@ void GamePlayer::ChangeMilitarySettings(const boost::array<unsigned char, MILITA
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const signed char* orderChanges)
+void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges)
 {
     this->toolsSettings_ = tools_settings;
     gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
@@ -1545,7 +1545,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const s
         tools_ordered_delta[i] -= orderChanges[i];
 
         if(orderChanges[i] != 0){
-            LOG.lprintf(">> Committing an order of %d for tool #%d\n", (int)orderChanges[i], i);
+            LOG.lprintf(">> Committing an order of %d for tool #%d(%s)\n", (int)orderChanges[i], i, _(WARE_NAMES[TOOLS[i]]));
             gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
         }
     }

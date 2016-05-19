@@ -7,7 +7,7 @@ class AddonMetalworksBehaviorOnZero : public AddonList
 {
 public:
 	AddonMetalworksBehaviorOnZero() : AddonList(AddonId::METALWORKSBEHAVIORONZERO,
-		ADDONGROUP_GAMEPLAY,
+		ADDONGROUP_GAMEPLAY | ADDONGROUP_ECONOMY,
 		_("Change metalworks behavior on zero"),
 		_("Change the working behavior of metalworks if all sliders in the tools window are set to zero.\n"
 		             "Produce random ware: S2-Default\n"

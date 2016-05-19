@@ -9,6 +9,7 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameData/ToolConsts.h"
 #include <vector>
 
 class GameWorldGame;
@@ -344,7 +345,7 @@ namespace gc{
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             ToolSettings data;
 
-            signed char orders[TOOL_COUNT];
+            boost::array<signed char, TOOL_COUNT> orders;
         protected:
             ChangeTools(const ToolSettings& data, const signed char* order_delta = 0)
                 : GameCommand(CHANGETOOLS), data(data)
@@ -370,7 +371,7 @@ namespace gc{
                     data[i] = ser.PopUnsignedChar();
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
-                    orders[i] = (signed char)ser.PopSignedChar();
+                    orders[i] = ser.PopSignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override

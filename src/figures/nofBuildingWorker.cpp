@@ -117,9 +117,9 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
 
             // Über 100 bedeutet aus der carrier.bob nehmen, ansonsten aus der jobs.bob!
             if(id >= 100)
-                DrawWalking(drawPt, LOADER.GetBobN("carrier"), GetCarryID() - 100, JOB_CONSTS[job_].fat);
+                DrawWalking(drawPt, LOADER.GetBobN("carrier"), id - 100, JOB_CONSTS[job_].fat);
             else
-                DrawWalking(drawPt, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
+                DrawWalking(drawPt, LOADER.GetBobN("jobs"), id, JOB_CONSTS[job_].fat);
         } break;
         case STATE_WALKINGHOME:
         case STATE_ENTERBUILDING:

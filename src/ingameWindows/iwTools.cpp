@@ -28,6 +28,7 @@
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
 #include "gameData/const_gui_ids.h"
+#include "gameData/ToolConsts.h"
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"
 #include <boost/lambda/lambda.hpp>
@@ -37,18 +38,8 @@ iwTools::iwTools(GameWorldView& gwv)
       settings_changed(false), ordersChanged(false), shouldUpdateTexts(false), isReplay(GAMECLIENT.IsReplayModeOn())
 {
     // Einzelne Balken
-    AddToolSettingSlider(0, GD_TONGS);
-    AddToolSettingSlider(1, GD_AXE);
-    AddToolSettingSlider(2, GD_SAW);
-    AddToolSettingSlider(3, GD_PICKAXE);
-    AddToolSettingSlider(4, GD_HAMMER);
-    AddToolSettingSlider(5, GD_SHOVEL);
-    AddToolSettingSlider(6, GD_CRUCIBLE);
-    AddToolSettingSlider(7, GD_RODANDLINE);
-    AddToolSettingSlider(8, GD_SCYTHE);
-    AddToolSettingSlider(9, GD_CLEAVER);
-    AddToolSettingSlider(10, GD_ROLLINGPIN);
-    AddToolSettingSlider(11, GD_BOW);
+    for(unsigned i = 0; i < TOOL_COUNT; i++)
+        AddToolSettingSlider(i, TOOLS[i]);
 
     if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
@@ -64,6 +55,8 @@ iwTools::iwTools(GameWorldView& gwv)
 
     // Info
     AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
+    if(GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+        AddImageButton(15, 130, 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
     // Standard
     AddImageButton(13, 118 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
@@ -96,7 +89,7 @@ void iwTools::TransmitSettings()
     if(settings_changed || ordersChanged)
     {
         // Einstellungen speichern
-        for(unsigned char i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < TOOL_COUNT; ++i)
             GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
         GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, ordersChanged ? GAMECLIENT.GetLocalPlayer().GetToolOrderDelta() : NULL);
@@ -151,11 +144,15 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             default: return;
             case 13: // Standard
-            {
                 GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
                 UpdateSettings();
                 settings_changed = true;
-            } break;
+                break;
+            case 15: // Zero all
+                std::fill(GAMECLIENT.visual_settings.tools_settings.begin(), GAMECLIENT.visual_settings.tools_settings.end(), 0);
+                UpdateSettings();
+                settings_changed = true;
+                break;
         }
 }
 
@@ -180,11 +177,11 @@ void iwTools::UpdateSettings()
     if(isReplay)
     {
         GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
-        for(unsigned i = 0; i < 12; ++i)
+        for(unsigned i = 0; i < TOOL_COUNT; ++i)
             GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
     }else
     {
-        for(unsigned i = 0; i < 12; ++i)
+        for(unsigned i = 0; i < TOOL_COUNT; ++i)
             GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
     }
 }

@@ -31,6 +31,7 @@
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "gameTypes/MessageTypes.h"
+#include "gameData/ToolConsts.h"
 #include "Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -85,35 +86,19 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-
-
 // Zuordnungnen Richtige IDs - Trage-IDs in der JOBS.BOB
-const unsigned short CARRYTOOLS_IDS[14] =
+const unsigned short CARRYTOOLS_IDS[TOOL_COUNT] =
 {
-    78, 79, 80, 91, 81, 82, 83, 84, 85, 86, 0, 87, 88, 88
+    78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90
 };
 
 unsigned short nofMetalworker::GetCarryID() const
 {
-    return CARRYTOOLS_IDS[ware - GD_TONGS];
+    for(unsigned i = 0; i < TOOL_COUNT; i++)
+        if(TOOLS[i] == ware)
+            return CARRYTOOLS_IDS[i];
+    return 0;
 }
-
-/// Zuordnungen Werkzeugeinstellungs-ID - Richtige IDs
-const GoodType TOOLS_SETTINGS_IDS[TOOL_COUNT] =
-{
-    GD_TONGS,       // Zange
-    GD_AXE,         // Axt,
-    GD_SAW,         // Säge
-    GD_PICKAXE,     // Spitzhacke
-    GD_HAMMER,      // Hammer
-    GD_SHOVEL,      // Schaufel
-    GD_CRUCIBLE,    // Schmelztiegel
-    GD_RODANDLINE,  // Angel
-    GD_SCYTHE,      // Sense
-    GD_CLEAVER,     // Beil
-    GD_ROLLINGPIN,  // Nudelholz
-    GD_BOW          // Bogen
-};
 
 unsigned nofMetalworker::ToolsOrderedTotal() const
 {
@@ -126,15 +111,15 @@ unsigned nofMetalworker::ToolsOrderedTotal() const
 GoodType nofMetalworker::GetOrderedTool()
 {
     // qx:tools
-    int prio = -1;
+    int maxPrio = -1;
     int tool = -1;
 
     GamePlayer& owner = gwg->GetPlayer(player);
     for (unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        if (owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > prio)
+        if (owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > maxPrio)
         {
-            prio = owner.GetToolPriority(i);
+            maxPrio = owner.GetToolPriority(i);
             tool = i;
         }
     }
@@ -146,7 +131,7 @@ GoodType nofMetalworker::GetOrderedTool()
         if (ToolsOrderedTotal() == 0)
             SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PMC_GENERAL));
 
-        return TOOLS_SETTINGS_IDS[tool];
+        return TOOLS[tool];
     }
     return GD_NOTHING;
 }
@@ -164,10 +149,10 @@ GoodType nofMetalworker::GetRandomTool()
     if(all_size == 0)
 	{
 	    // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
-		if (gwg->GetGGS().isEnabled(AddonId::METALWORKSBEHAVIORONZERO) && gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
+		if (gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
 			return GD_NOTHING;
 		else
-			return TOOLS_SETTINGS_IDS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 12)];
+			return TOOLS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), TOOLS.size())];
 	}
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
@@ -181,7 +166,7 @@ GoodType nofMetalworker::GetRandomTool()
             random_array[curIdx++] = i;
     }
 
-    GoodType tool = TOOLS_SETTINGS_IDS[random_array[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), all_size)]];
+    GoodType tool = TOOLS[random_array[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), all_size)]];
 
     return tool;
 }
@@ -200,8 +185,8 @@ bool nofMetalworker::ReadyForWork()
     if(nextProducedTool != GD_NOTHING)
         return true;
 
-    // Try again in some time (3000GF ~= 2min at 40ms/GF)
-    current_ev = GetEvMgr().AddEvent(this, 3000, 2);
+    // Try again in some time (200GF ~= 8s at 40ms/GF)
+    current_ev = GetEvMgr().AddEvent(this, 200, 2);
     return false;
 }
 

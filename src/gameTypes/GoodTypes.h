@@ -63,10 +63,8 @@ enum GoodType
 };
 // Anzahl an unterschiedlichen Warentypen
 const unsigned WARE_TYPES_COUNT = GD_NOTHING;
-// qx:tools
-const unsigned TOOL_COUNT = 12;
 
-const std::string WARE_NAMES[36] =
+const std::string WARE_NAMES[GD_INVALID] =
 {
 	/*  0 */gettext_noop("Beer"),       // Bier
 	/*  1 */gettext_noop("Tongs"),      // Zange

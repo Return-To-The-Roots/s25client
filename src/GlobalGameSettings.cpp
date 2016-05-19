@@ -180,7 +180,7 @@ const Addon* GlobalGameSettings::getAddon(unsigned int nr, unsigned int& status)
 
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
-   AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
     return it != addons.end() && it->status != it->addon->getDefaultStatus();
 }
 

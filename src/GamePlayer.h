@@ -28,6 +28,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/MaxPlayers.h"
+#include "gameData/ToolConsts.h"
 #include "helpers/containerUtils.h"
 #include <boost/array.hpp>
 #include <list>
@@ -211,7 +212,7 @@ class GamePlayer: public GamePlayerInfo
         /// Setzt neue Militäreinstellungen
         void ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings);
         /// Setzt neue Werkzeugeinstellungen
-        void ChangeToolsSettings(const ToolSettings& tools_settings, const signed char* orderChanges);
+        void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges);
         /// Setzt neue Verteilungseinstellungen
         void ChangeDistribution(const Distributions& distribution_settings);
         /// Setzt neue Baureihenfolge-Einstellungen
