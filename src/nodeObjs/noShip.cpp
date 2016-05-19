@@ -60,24 +60,13 @@ const std::string ship_names[NAT_COUNT][ship_count] =
 
 //{"FloSoftius", "Demophobius", "Olivianus", "Spikeonius", "Nastius"};
 
-/// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils#
-const DrawPoint SHIPS_FLAG_POS[12] =
+/// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils
+const DrawPointInit SHIPS_FLAG_POS[2][6] =
 {
-    // Und wenn das Schiff steht und Segel nicht gehisst hat
-    Point<int>(-3, -77),
-    Point<int>(-6, -71),
-    Point<int>(-3, -71),
-    Point<int>(-1, -71),
-    Point<int>(5, -63),
-    Point<int>(-1, -70),
-
-    // Und wenn es fährt
-    Point<int>(3, -70),
-    Point<int>(0, -64),
-    Point<int>(3, -64),
-    Point<int>(-1, -70),
-    Point<int>(5, -63),
-    Point<int>(5, -63)
+    // Standing (sails down)
+    { {-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70} },
+    // Driving
+    { { 3, -70}, { 0, -64}, { 3, -64}, {-1, -70}, {5, -63}, { 5, -63} }
 };
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
@@ -213,11 +202,11 @@ void noShip::Draw(DrawPoint drawPt)
     }
 
     LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))->
-    Draw(drawPt + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    Draw(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
         LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))->
-        Draw(drawPt + SHIPS_FLAG_POS[GetCurMoveDir() + flag_drawing_type * 6]);
+        Draw(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()]);
 
 }
 

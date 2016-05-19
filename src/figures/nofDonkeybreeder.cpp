@@ -45,7 +45,7 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
 void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 {
     const Nation nation = workplace->GetNation();
-    const DrawPoint walk_start[NAT_COUNT] = { {2, 2}, { -6, -6}, { -7, -7}, { -7, -7}, { -6, -6} };
+    const DrawPointInit walk_start[NAT_COUNT] = { {2, 2}, { -6, -6}, { -7, -7}, { -7, -7}, { -6, -6} };
     const signed char walk_length[NAT_COUNT] = { 22, 19, 19, 23, 19 };
     const unsigned color = gwg->GetPlayer(player).color;
 

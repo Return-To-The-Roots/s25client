@@ -32,7 +32,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "libutil/src/colors.h"
 
-const DrawPoint STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
+const DrawPointInit STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
 {}

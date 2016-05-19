@@ -190,7 +190,7 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const DrawPoint DONKEY_OFFSETS[NAT_COUNT][3] = {
+        const DrawPointInit DONKEY_OFFSETS[NAT_COUNT][3] = {
             {{13, -9}, {26, -9},  {39, -9}},
             {{3, -17}, {16, -17}, {30, -17}},
             {{2, -21}, {15, -21}, {29, -21}},
@@ -224,7 +224,7 @@ void nobUsual::Draw(DrawPoint drawPt)
     else if(type_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const DrawPoint PIG_POSITIONS[NAT_COUNT][5] =
+        const DrawPointInit PIG_POSITIONS[NAT_COUNT][5] =
         {
             //  gr. S. 1.klS 2. klS usw
             { {  3, -8}, { 17,   3}, {-12,  4}, { -2, 10}, {-22, 11} }, // Afrikaner
