@@ -22,6 +22,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "controls/ctrlOptionGroup.h"
+#include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 
 const std::string TOOLTIPS[14] =
@@ -42,9 +43,9 @@ const std::string TOOLTIPS[14] =
     gettext_noop("Boats")
 };
 
-iwTransport::iwTransport()
-    : IngameWindow(CGI_TRANSPORT, 0xFFFF, 0xFFFF, 166, 333, _("Transport"), LOADER.GetImageN("io", 5)),
-      settings_changed(false)
+iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
+    IngameWindow(CGI_TRANSPORT, 0xFFFF, 0xFFFF, 166, 333, _("Transport"), LOADER.GetImageN("io", 5)),
+    gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     AddImageButton(0, 18, 285, 30, 30, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
 
@@ -77,11 +78,6 @@ iwTransport::iwTransport()
     TRANSPORT_SPRITES[11] = LOADER.GetImageN("io", 80);
     TRANSPORT_SPRITES[12] = LOADER.GetMapImageN(2250 + GD_HAMMER);
     TRANSPORT_SPRITES[13] = LOADER.GetMapImageN(2250 + GD_BOAT);
-
-    //// Tooltips festlegen
-    //for(unsigned i = 0;i<14;++i)
-    //  tooltip_indices[i] = STD_TOOLTIP_INDICES[GAMECLIENT.visual_settings.transport_order[i]];
-
 
     // Positionen der einzelnen Buttons
     const unsigned short BUTTON_POS[14][2] =
@@ -125,7 +121,7 @@ void iwTransport::TransmitSettings()
     if(settings_changed)
     {
         // Daten übertragen
-        GAMECLIENT.ChangeTransport(GAMECLIENT.visual_settings.transport_order);
+        gcFactory.ChangeTransport(GAMECLIENT.visual_settings.transport_order);
 
         settings_changed = false;
     }
@@ -231,7 +227,7 @@ void iwTransport::Msg_Timer(const unsigned int  /*ctrl_id*/)
 void iwTransport::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.GetLocalPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
 
     // Einstellungen festlegen

@@ -18,7 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildingProductivities.h"
 #include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "gameData/const_gui_ids.h"
 #include "files.h"
@@ -77,12 +76,13 @@ const unsigned short percent_height = 18;
 
 
 
-iwBuildingProductivities::iwBuildingProductivities()
+iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, 0xFFFE, 0xFFFE,
                    left_x + 2 * percent_width + 2 * image_percent_x + percent_image_x + right_x,
                    top_y + (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1), _("Productivity"), LOADER.GetImageN("resource", 41)),
-    percents(40, 0)
+    player(player), percents(BLD_COUNT, 0)
 {
+    const Nation playerNation = player.nation;
     for(unsigned y = 0; y < BUILDINGS_COUNT / 2 + BUILDINGS_COUNT % 2; ++y)
     {
         for(unsigned x = 0; x < 2; ++x)
@@ -90,9 +90,11 @@ iwBuildingProductivities::iwBuildingProductivities()
             if(y * 2 + x < BUILDINGS_COUNT)
             {
 				if(bts[y*2+x]!=BLD_CHARBURNER)
-					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN(NATION_ICON_IDS[GAMECLIENT.GetLocalPlayer().nation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
+                {
+                    AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2, LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
+                }
 				else
-					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN("charburner", GAMECLIENT.GetLocalPlayer().nation * 8 + 8), _(BUILDING_NAMES[bts[y * 2 + x]]));
+					AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN("charburner", playerNation * 8 + 8), _(BUILDING_NAMES[bts[y * 2 + x]]));
 
                 AddPercent((y * 2 + x) * 2 + 1, left_x + image_percent_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y,
                            percent_width, percent_height, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
@@ -109,7 +111,7 @@ iwBuildingProductivities::iwBuildingProductivities()
 /// Aktualisieren der Prozente
 void iwBuildingProductivities::UpdatePercents()
 {
-    GAMECLIENT.GetLocalPlayer().CalcProductivities(percents);
+    player.CalcProductivities(percents);
 }
 
 /// Produktivitäts-percentbars aktualisieren

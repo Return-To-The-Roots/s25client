@@ -187,7 +187,7 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             break;
         case 1: // Optionen
-            WINDOWMANAGER.Show(new iwMainMenu(gwv));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv, GAMECLIENT));
             break;
         case 2: // Baukosten
             if(WINDOWMANAGER.IsDesktopActive())
@@ -236,7 +236,7 @@ void dskGameInterface::Msg_PaintAfter()
     if(GAMECLIENT.IsReplayModeOn())
         snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
     else
-        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), GAMECLIENT.GetLocalPlayer().ping);
+        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), worldViewer.GetPlayer().ping);
 
     // tournament mode?
     unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
@@ -461,7 +461,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     if(worldViewer.GetPlayer().IsAlly(building->GetPlayer())
                             && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
                     {
-                        WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building)));
+                        WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, GAMECLIENT));
                         return true;
                     }
                 }
@@ -643,7 +643,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 gwv.MoveToMapPt(player.GetHQPos());
         } return true;
         case 'i': // Show inventory
-            WINDOWMANAGER.Show(new iwInventory);
+            WINDOWMANAGER.Show(new iwInventory(worldViewer.GetPlayer()));
             return true;
         case 'j': // GFs überspringen
             if(GAMECLIENT.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
@@ -653,7 +653,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             return true;
         case 'm': // Hauptauswahl
-            WINDOWMANAGER.Show(new iwMainMenu(gwv));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv, GAMECLIENT));
             return true;
         case 'n': // Show Post window
             WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));

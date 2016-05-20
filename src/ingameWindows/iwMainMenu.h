@@ -21,14 +21,16 @@
 
 #include "IngameWindow.h"
 
+class GameCommandFactory;
 class GameWorldView;
 
 class iwMainMenu : public IngameWindow
 {
     public:
-        iwMainMenu(GameWorldView& gwv);
+        iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory);
     private:
         GameWorldView& gwv;
+        GameCommandFactory& gcFactory;
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };

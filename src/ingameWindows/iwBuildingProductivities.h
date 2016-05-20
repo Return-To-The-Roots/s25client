@@ -19,15 +19,18 @@
 
 #include "IngameWindow.h"
 
-/// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
+class GamePlayer;
+
+/// Fenster, welches die Anzahl aller Gebäude und der Baustellen auflistet
 class iwBuildingProductivities : public IngameWindow
 {
+        const GamePlayer& player;
         /// Prozentzahlen der einzelnen Gebäude
         std::vector<unsigned short> percents;
 
     public:
 
-        iwBuildingProductivities();
+        iwBuildingProductivities(const GamePlayer& player);
 
     private:
 

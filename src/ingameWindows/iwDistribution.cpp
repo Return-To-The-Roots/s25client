@@ -24,6 +24,7 @@
 #include "controls/ctrlTab.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "world/GameWorldViewer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
@@ -38,9 +39,9 @@ const unsigned GROUP_SIZES[7] =
 /// Dertermines width of the progress bars: distance to the window borders
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
-iwDistribution::iwDistribution()
+iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_DISTRIBUTION, 0xFFFF, 0xFFFF, 290, 312, _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
-      settings_changed(false)
+      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     ctrlGroup* group;
 
@@ -181,7 +182,7 @@ void iwDistribution::TransmitSettings()
         }
 
         // und übermitteln
-        GAMECLIENT.ChangeDistribution(GAMECLIENT.visual_settings.distribution);
+        gcFactory.ChangeDistribution(GAMECLIENT.visual_settings.distribution);
 
         settings_changed = false;
     }
@@ -205,7 +206,7 @@ void iwDistribution::Msg_Timer(const unsigned int  /*ctrl_id*/)
 void iwDistribution::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.GetLocalPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     // Globale Id für alle Gruppen für die visual_settings
     unsigned vsi = 0;
     // Alle Gruppen durchgehen und Einstellungen festlegen

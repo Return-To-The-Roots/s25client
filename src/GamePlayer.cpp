@@ -823,7 +823,7 @@ unsigned GamePlayer::GetToolsOrdered(unsigned toolIdx) const
     return tools_ordered[toolIdx];
 }
 
-bool GamePlayer::ChangeToolOrderVisual(unsigned toolIdx, int changeAmount)
+bool GamePlayer::ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const
 {
     if(std::abs(changeAmount) > 100)
         return false;
@@ -1296,19 +1296,17 @@ BuildingCount GamePlayer::GetBuildingCount() const
 }
 
 
-/// Berechnet die durschnittlichen Produktivität eines jeden Gebäudetyps
-/// (erwartet als Argument ein 40-er Array!)
-void GamePlayer::CalcProductivities(std::vector<unsigned short>& productivities)
+void GamePlayer::CalcProductivities(std::vector<unsigned short>& productivities) const
 {
-    RTTR_Assert(productivities.size() == 40);
+    RTTR_Assert(productivities.size() == BLD_COUNT);
 
-    for(unsigned i = 0; i < 30; ++i)
+    for(unsigned i = 0; i < BLD_COUNT - 10; ++i)
     {
         // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
         // und den Mittelwert bildet
         unsigned total_productivity = 0;
 
-        for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
+        for(std::list<nobUsual*>::const_iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
             total_productivity += (*it)->GetProductivity();
 
         if(!buildings[i].empty())
@@ -2447,7 +2445,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
     }
 }
 
-void GamePlayer::FillVisualSettings(VisualSettings& visualSettings)
+void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 {
     Distributions& visDistribution = visualSettings.distribution;
     visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE]; //-V807

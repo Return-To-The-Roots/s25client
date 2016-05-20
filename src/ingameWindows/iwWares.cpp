@@ -18,7 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwWares.h"
 #include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
@@ -32,9 +31,9 @@
 iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
                  const unsigned short width, const unsigned short height,
                  const std::string& title, unsigned char page_count,
-                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory)
+                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player)
     : IngameWindow(id, x, y, width, height, title, LOADER.GetImageN("io", 5)),
-      inventory(inventory), page(0), page_count(page_count)
+      inventory(inventory), player(player), page(0), page_count(page_count)
 {
     if(!font)
         font = SmallFont;
@@ -70,7 +69,6 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
     // Figurenseite hinzufügen
     ctrlGroup* figures = AddGroup(101);
 
-    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
     bool four = true;
     unsigned short ware_id = 0;
     for(int x = 0, y = 0; y < 7; ++x, ++ware_id)

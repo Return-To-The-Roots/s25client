@@ -23,18 +23,20 @@
 #include "notifications/Subscribtion.h"
 #include "gameTypes/GoodTypes.h"
 
-class GameWorldView;
-class GameWorldBase;
+class GameCommandFactory;
+class GameWorldViewer;
 
 /// Fenster mit den Militäreinstellungen.
 class iwTools : public IngameWindow
 {
     public:
 
-        iwTools(GameWorldView& gwv);
+        iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
         ~iwTools() override;
 
     private:
+        const GameWorldViewer& gwv;
+        GameCommandFactory& gcFactory;
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
         bool settings_changed, ordersChanged;
         bool shouldUpdateTexts;

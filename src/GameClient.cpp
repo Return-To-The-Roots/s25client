@@ -283,7 +283,7 @@ void GameClient::StartGame(const unsigned random_init)
         ci->CI_GameStarted(*gw);
 
     // Get standard settings before they get overwritten
-    GetLocalPlayer().FillVisualSettings(default_settings);
+    GetPlayer(playerId_).FillVisualSettings(default_settings);
 
     if(mapinfo.savegame)
     {
@@ -1666,7 +1666,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
 
 void GameClient::ResetVisualSettings()
 {
-    GetLocalPlayer().FillVisualSettings(visual_settings);
+    GetPlayer(playerId_).FillVisualSettings(visual_settings);
 }
 
 void GameClient::SetReplayPause(bool pause)
@@ -1682,7 +1682,7 @@ void GameClient::SetReplayPause(bool pause)
 bool GameClient::AddGC(gc::GameCommand* gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.isPaused || GetLocalPlayer().IsDefeated())
+    if(framesinfo.isPaused || GetPlayer(playerId_).IsDefeated())
         return false;
 
     gameCommands_.push_back(gc);

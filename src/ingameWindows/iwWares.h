@@ -20,19 +20,22 @@
 #pragma once
 
 #include "IngameWindow.h"
+
 class glArchivItem_Font;
 struct Inventory;
+class GamePlayer;
 
 class iwWares : public IngameWindow
 {
     protected:
         const Inventory& inventory;     /// Warenbestand
+        const GamePlayer& player;
         unsigned char page;       /// aktuelle Seite des Inventurfensters.
         unsigned char page_count; /// maximale Seite des Inventurfensters.
 
     public:
         iwWares(unsigned int id, unsigned short x, unsigned short y, const unsigned short width, const unsigned short height, const std::string& title, unsigned char page_count,
-                bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory);
+                bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player);
         /// bestimmte Inventurseite zeigen.
         void SetPage(unsigned char page);
         /// setzt die maximale Seitenzahl.

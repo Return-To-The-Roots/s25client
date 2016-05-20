@@ -18,12 +18,9 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwInventory.h"
 #include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "gameData/const_gui_ids.h"
 
-iwInventory::iwInventory()
-    : iwWares(CGI_INVENTORY, 0xFFFF, 0xFFFF, 167, 376, _("Stock"), 2, false, SmallFont, GAMECLIENT.GetLocalPlayer().GetInventory())
-
-{
-}
+iwInventory::iwInventory(const GamePlayer& player)
+    : iwWares(CGI_INVENTORY, 0xFFFF, 0xFFFF, 167, 376, _("Stock"), 2, false, SmallFont, player.GetInventory(), player)
+{}

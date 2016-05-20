@@ -31,6 +31,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobStorehouse.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
@@ -40,7 +41,7 @@
 #include <stdexcept>
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh):
-    iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory()),
+    iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
     gwv(gwv), wh(wh)
 {
     wh->AddListener(this);

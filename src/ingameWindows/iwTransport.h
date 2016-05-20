@@ -20,12 +20,17 @@
 #pragma once
 
 #include "IngameWindow.h"
+
 class glArchivItem_Bitmap;
+class GameWorldViewer;
+class GameCommandFactory;
 
 class iwTransport : public IngameWindow
 {
     private:
 
+        const GameWorldViewer& gwv;
+        GameCommandFactory& gcFactory;
         glArchivItem_Bitmap* TRANSPORT_SPRITES[14]; /// Einzelne Bilder für die Waren.
 
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
@@ -33,7 +38,7 @@ class iwTransport : public IngameWindow
 
     public:
 
-        iwTransport();
+        iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
         ~iwTransport() override;
 
     private:

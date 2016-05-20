@@ -21,13 +21,16 @@
 
 #include "IngameWindow.h"
 
+class GameWorldViewer;
+
 class iwBuildOrder : public IngameWindow
 {
+        const GameWorldViewer& gwv;
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
         bool settings_changed;
     public:
 
-        iwBuildOrder();
+        iwBuildOrder(const GameWorldViewer& gwv);
         ~iwBuildOrder() override;
 
     private:

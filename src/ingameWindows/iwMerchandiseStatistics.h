@@ -21,13 +21,15 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/StatisticTypes.h"
+
 class ctrlText;
+class GamePlayer;
 
 /// Fenster mit den Warenstatistiken.
 class iwMerchandiseStatistics : public IngameWindow
 {
     public:
-        iwMerchandiseStatistics();
+        iwMerchandiseStatistics(const GamePlayer& player);
         ~iwMerchandiseStatistics() override;
 
     private:
@@ -40,6 +42,7 @@ class iwMerchandiseStatistics : public IngameWindow
 
         // Die Farben für die einzelnen Warenlinien
         static const unsigned int BarColors[14];
+        const GamePlayer& player;
 
         // Aktueller Zeitbereich
         StatisticTime currentTime;

@@ -20,15 +20,20 @@
 #include "IngameWindow.h"
 #include "gameTypes/PactTypes.h"
 
+class GameCommandFactory;
+class GamePlayer;
+class GameWorldViewer;
+
 /// Diplomatiefenster: Übersicht über alle Spieler im Spiel und Schmieden von Bündnissen
 class iwDiplomacy : public IngameWindow
 {
     public:
 
-        iwDiplomacy();
+        iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
 
     private:
-
+        const GameWorldViewer& gwv;
+        GameCommandFactory& gcFactory;
         void Msg_PaintBefore() override;
         void Msg_PaintAfter() override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
@@ -37,14 +42,13 @@ class iwDiplomacy : public IngameWindow
 /// Kleines Fenster, über das einem Spieler ein neues Bündnis angeboten werden kann
 class iwSuggestPact : public IngameWindow
 {
-        const PactType pt;
-        const unsigned char player;
-    public:
-        iwSuggestPact(const PactType pt, const unsigned char player);
+    const PactType pt;
+    const GamePlayer& player;
+    GameCommandFactory& gcFactory;
+public:
+    iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory);
 
-    public:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+    void Msg_ButtonClick(const unsigned int ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

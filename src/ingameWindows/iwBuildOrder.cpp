@@ -23,11 +23,12 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 
-iwBuildOrder::iwBuildOrder()
+iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     : IngameWindow(CGI_BUILDORDER, (unsigned short) - 1, (unsigned short) - 1, 320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),
-      settings_changed(false)
+      gwv(gwv), settings_changed(false)
 {
     ctrlList* list = AddList(0, 15, 60, 150, 220, TC_GREY, NormalFont);
 
@@ -46,7 +47,7 @@ iwBuildOrder::iwBuildOrder()
     AddImageButton(4, 250, 260, 48, 20, TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, 240, 150, LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 250 + buildOrders[0] * 5));
+    AddImage(5, 240, 150, LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + buildOrders[0] * 5));
 
     ctrlComboBox* combo = AddComboBox(6, 15, 30, 290, 20, TC_GREY, NormalFont, 100);
     combo->AddString(_("Sequence of given order")); // "Reihenfolge der Auftraggebung"
@@ -108,7 +109,7 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned int ctrl_id, const int sele
         case 0:
         {
             GetCtrl<ctrlImage>(5)->SetImage(
-                LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation,
+                LOADER.GetNationImage(gwv.GetPlayer().nation,
                                        250 + GAMECLIENT.visual_settings.build_order[selection] * 5));
         } break;
     }
@@ -182,7 +183,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
                 list->AddString(_(BUILDING_NAMES[GAMECLIENT.default_settings.build_order[i]]));
             list->SetSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationImage(GAMECLIENT.GetLocalPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
 
             settings_changed = true;
         } break;
@@ -192,7 +193,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwBuildOrder::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
-        GAMECLIENT.GetLocalPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
     GetCtrl<ctrlComboBox>(6)->SetSelection(GAMECLIENT.visual_settings.order_type);
     for(unsigned char i = 0; i < 31; ++i)
         GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]), i);

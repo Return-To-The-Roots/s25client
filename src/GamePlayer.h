@@ -175,9 +175,8 @@ class GamePlayer: public GamePlayerInfo
         const std::list<nobUsual*>& GetBuildings(const BuildingType type) const;
         /// Liefert die Anzahl aller Gebäude einzeln
         BuildingCount GetBuildingCount() const;
-        /// Berechnet die durschnittlichen Produktivität eines jeden Gebäudetyps
-        /// (erwartet als Argument ein 40-er Array!)
-        void CalcProductivities(std::vector<unsigned short>& productivities);
+        /// Calculate and fill the average productivies for all buildings. Vector must hold 1 entry per building type
+        void CalcProductivities(std::vector<unsigned short>& productivities) const;
 
         /// Berechnet die durschnittlichen Produktivität aller Gebäude
         unsigned short CalcAverageProductivitiy();
@@ -324,7 +323,7 @@ class GamePlayer: public GamePlayerInfo
         unsigned GetToolsOrderedVisual(unsigned toolIdx) const;
         unsigned GetToolsOrdered(unsigned toolIdx) const;
         /// Changes the current visual tool order by the given amount. Return true if anything was changed (tool order is clamped to [0,100])
-        bool ChangeToolOrderVisual(unsigned toolIdx, int changeAmount);
+        bool ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const;
         const signed char* GetToolOrderDelta() const { return &tools_ordered_delta.front(); }
         unsigned GetToolPriority(unsigned toolIdx) const;
         /// Called when a ordered tool was finished
@@ -346,8 +345,8 @@ class GamePlayer: public GamePlayerInfo
         void CalcStatistics();
         void StatisticStep();
 
-        const Statistic& GetStatistic(StatisticTime time) { return statistic[time]; };
-        const unsigned int GetStatisticCurrentValue(unsigned int idx)  { RTTR_Assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
+        const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
+        const unsigned int GetStatisticCurrentValue(unsigned int idx) const { RTTR_Assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
 
         // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
         void TestForEmergencyProgramm();
@@ -357,7 +356,7 @@ class GamePlayer: public GamePlayerInfo
         /// For debug only
         bool IsDependentFigure(noFigure* fig);
 
-        void FillVisualSettings(VisualSettings& visualSettings);
+        void FillVisualSettings(VisualSettings& visualSettings) const;
 
         /// Laggt der Spieler?
         bool is_lagging;
@@ -441,7 +440,8 @@ class GamePlayer: public GamePlayerInfo
         ToolSettings toolsSettings_;
         // qx:tools
         boost::array<unsigned char, TOOL_COUNT> tools_ordered;
-        boost::array<signed char, TOOL_COUNT> tools_ordered_delta;
+        // TODO: Move to viewer. Mutable as a work-around
+        mutable boost::array<signed char, TOOL_COUNT> tools_ordered_delta;
 
         /// Bündnisse mit anderen Spielern
         struct Pact

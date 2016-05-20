@@ -4,10 +4,14 @@
 #include "IngameWindow.h"
 
 class nobBaseWarehouse;
+class GameWorldViewer;
+class GameCommandFactory;
 
 class iwTrade : public IngameWindow
 {
         const nobBaseWarehouse& wh;              /// Das zugehörige Gebäudeobjekt
+        const GameWorldViewer& gwv;
+        GameCommandFactory& gcFactory;
         /// Possible wares
         std::vector<GoodType> wares;
         /// Possible figures
@@ -16,7 +20,7 @@ class iwTrade : public IngameWindow
         std::vector<nobBaseWarehouse*> possibleSrcWarehouses;
 
     public:
-        iwTrade(const nobBaseWarehouse& wh);
+        iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
 
     private:
 

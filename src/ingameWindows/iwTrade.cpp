@@ -19,23 +19,25 @@
 #include "iwTrade.h"
 
 #include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldViewer.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
+#include "factories/GameCommandFactory.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
-iwTrade::iwTrade(const nobBaseWarehouse& wh)
+iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
-      wh(wh), possibleSrcWarehouses(GAMECLIENT.GetLocalPlayer().GetWarehousesForTrading(wh))
+      wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
-    SetTitle(_("Trade with %s") + GAMECLIENT.GetPlayer(wh.GetPlayer()).name);
+    SetTitle(_("Trade with %s") + gwv.GetWorld().GetPlayer(wh.GetPlayer()).name);
     // Gebäudebild und dessen Schatten
     AddImage( 0, 100, 144, LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType()));
 
@@ -109,7 +111,7 @@ void iwTrade::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
     // Start trading
     if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->GetVisible() && atoi(number_str.c_str()) > 0)
     {
-        GAMECLIENT.TradeOverLand(wh.GetPos(), ware_figure, gt, job, atoi(number_str.c_str()));
+        gcFactory.TradeOverLand(wh.GetPos(), ware_figure, gt, job, atoi(number_str.c_str()));
         this->Close();
     }
 }
@@ -176,7 +178,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 
 unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 {
-    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
+    const GamePlayer& player = gwv.GetPlayer();
     unsigned amount = 0;
     for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
     {
@@ -188,7 +190,7 @@ unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 
 unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
 {
-    GamePlayer& player = GAMECLIENT.GetLocalPlayer();
+    const GamePlayer& player = gwv.GetPlayer();
     unsigned amount = 0;
     for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
     {

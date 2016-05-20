@@ -85,6 +85,11 @@ const GamePlayer& GameWorldViewer::GetPlayer() const
     return GetWorld().GetPlayer(playerId_);
 }
 
+unsigned GameWorldViewer::GetPlayerCount() const
+{
+    return GetWorld().GetPlayerCount();
+}
+
 unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 {
     // Ist das angegriffenne ein normales Gebäude?

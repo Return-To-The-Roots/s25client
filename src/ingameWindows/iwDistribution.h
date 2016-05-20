@@ -21,6 +21,9 @@
 
 #include "IngameWindow.h"
 
+class GameCommandFactory;
+class GameWorldViewer;
+
 class iwDistribution : public IngameWindow
 {
     private:
@@ -36,11 +39,13 @@ class iwDistribution : public IngameWindow
             TAB_WATER
         };
 
+        const GameWorldViewer& gwv;
+        GameCommandFactory& gcFactory;
         /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
         bool settings_changed;
     public:
 
-        iwDistribution();
+        iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
         ~iwDistribution() override;
 
     private:

@@ -36,15 +36,16 @@
 #include "iwShip.h"
 #include "iwAIDebug.h"
 #include "iwMerchandiseStatistics.h"
-
-#include "GameClient.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "GameServer.h"
 #include "GamePlayer.h"
 #include "gameData/const_gui_ids.h"
 
-iwMainMenu::iwMainMenu(GameWorldView& gwv)
+iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_MAINSELECTION, 0xFFFF, 0xFFFF, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
-      gwv(gwv)
+      gwv(gwv), gcFactory(gcFactory)
 {
     // Verteilung
     AddImageButton( 0,  12,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
@@ -69,14 +70,14 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv)
     AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
 
     // Baureihenfolge
-    if(GAMECLIENT.GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
         AddImageButton( 10,  12, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
 
     // Diplomatie (todo: besseres Bild suchen)
     AddImageButton( 11,  68, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
     // AI-Debug
-    if(GAMECLIENT.IsHost() && GAMECLIENT.GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW))
+    if(gwv.GetViewer().GetPlayer().isHost && gwv.GetWorld().GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW))
         AddImageButton( 13,  80, 210,  20, 20, TC_GREY, NULL, _("AI Debug Window"));
 
     // Optionen
@@ -92,23 +93,23 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // Verteilung
         {
-            WINDOWMANAGER.Show(new iwDistribution);
+            WINDOWMANAGER.Show(new iwDistribution(gwv.GetViewer(), gcFactory));
         } break;
         case 1: // Transport
         {
-            WINDOWMANAGER.Show(new iwTransport);
+            WINDOWMANAGER.Show(new iwTransport(gwv.GetViewer(), gcFactory));
         } break;
         case 2: // Werkzeugproduktion
         {
-            WINDOWMANAGER.Show(new iwTools(gwv));
+            WINDOWMANAGER.Show(new iwTools(gwv.GetViewer(), gcFactory));
         } break;
         case 3: // Statistik
         {
-            WINDOWMANAGER.Show(new iwStatistics);
+            WINDOWMANAGER.Show(new iwStatistics(gwv.GetViewer()));
         } break;
         case 4: // Warenstatistik
         {
-            WINDOWMANAGER.Show(new iwMerchandiseStatistics);
+            WINDOWMANAGER.Show(new iwMerchandiseStatistics(gwv.GetViewer().GetPlayer()));
         } break;
         case 5: // Gebäudestatistik
         {
@@ -116,34 +117,34 @@ void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 6: // Inventur
         {
-            WINDOWMANAGER.Show(new iwInventory);
+            WINDOWMANAGER.Show(new iwInventory(gwv.GetViewer().GetPlayer()));
         } break;
         case 7: // Produktivitäten
         {
-            WINDOWMANAGER.Show(new iwBuildingProductivities);
+            WINDOWMANAGER.Show(new iwBuildingProductivities(gwv.GetViewer().GetPlayer()));
         } break;
         case 8: // Militär
         {
-            WINDOWMANAGER.Show(new iwMilitary);
+            WINDOWMANAGER.Show(new iwMilitary(gwv.GetViewer(), gcFactory));
         } break;
         case 9: // Schiffe
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, GAMECLIENT.GetLocalPlayer().GetShipByID(0)));
+            WINDOWMANAGER.Show(new iwShip(gwv, gwv.GetViewer().GetPlayer().GetShipByID(0)));
         } break;
         case 10: // Baureihenfolge
         {
-            WINDOWMANAGER.Show(new iwBuildOrder);
+            WINDOWMANAGER.Show(new iwBuildOrder(gwv.GetViewer()));
         } break;
         case 11: // Diplomatie
         {
-            WINDOWMANAGER.Show(new iwDiplomacy);
+            WINDOWMANAGER.Show(new iwDiplomacy(gwv.GetViewer(), gcFactory));
         } break;
         case 13: // AI Debug
         {
-            if(GAMECLIENT.IsHost())
+            if(gwv.GetViewer().GetPlayer().isHost)
             {             
                 std::vector<AIBase*> ais;
-                for(unsigned i = 0; i < GAMECLIENT.GetPlayerCount(); ++i)
+                for(unsigned i = 0; i < gwv.GetViewer().GetPlayerCount(); ++i)
                 {
                     AIBase* ai = GAMESERVER.GetAIPlayer(i);
                     if(ai)

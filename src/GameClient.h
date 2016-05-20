@@ -76,7 +76,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         unsigned GetPlayerCount() const;
         /// Liefert einen Player zurück
         GamePlayer& GetPlayer(const unsigned id);
-        GamePlayer& GetLocalPlayer() { return GetPlayer(playerId_); }
         bool IsSinglePlayer() const;
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
         AIBase* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
@@ -239,6 +238,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
 
     public:
         /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu verstecken
+        // TODO: Move to viewer
         VisualSettings visual_settings, default_settings; //-V730_NOINIT
 		/// skip ahead how many gf?
 		unsigned skiptogf;

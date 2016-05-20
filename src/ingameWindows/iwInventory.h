@@ -21,11 +21,12 @@
 
 #include "iwWares.h"
 
+class GamePlayer;
 
 class iwInventory : public iwWares
 {
     public:
-        iwInventory();
+        iwInventory(const GamePlayer& player);
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

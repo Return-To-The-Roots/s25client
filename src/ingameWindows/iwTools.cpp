@@ -23,7 +23,7 @@
 #include "GamePlayer.h"
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlProgress.h"
-#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
@@ -33,15 +33,16 @@
 #include "libutil/src/colors.h"
 #include <boost/lambda/lambda.hpp>
 
-iwTools::iwTools(GameWorldView& gwv)
-    : IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
-      settings_changed(false), ordersChanged(false), shouldUpdateTexts(false), isReplay(GAMECLIENT.IsReplayModeOn())
+iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
+    IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
+      settings_changed(false), ordersChanged(false), shouldUpdateTexts(false), isReplay(GAMECLIENT.IsReplayModeOn()),
+    gwv(gwv), gcFactory(gcFactory)
 {
     // Einzelne Balken
     for(unsigned i = 0; i < TOOL_COUNT; i++)
         AddToolSettingSlider(i, TOOLS[i]);
 
-    if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+    if (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
         // qx:tools
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -55,10 +56,10 @@ iwTools::iwTools(GameWorldView& gwv)
 
     // Info
     AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
-    if(GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
         AddImageButton(15, 130, 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
     // Standard
-    AddImageButton(13, 118 + (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(13, 118 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
     UpdateSettings();
@@ -92,7 +93,7 @@ void iwTools::TransmitSettings()
         for(unsigned i = 0; i < TOOL_COUNT; ++i)
             GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        GAMECLIENT.ChangeTools(GAMECLIENT.visual_settings.tools_settings, ordersChanged ? GAMECLIENT.GetLocalPlayer().GetToolOrderDelta() : NULL);
+        gcFactory.ChangeTools(GAMECLIENT.visual_settings.tools_settings, ordersChanged ? gwv.GetPlayer().GetToolOrderDelta() : NULL);
 
         settings_changed = false;
         ordersChanged = false;
@@ -101,9 +102,9 @@ void iwTools::TransmitSettings()
 
 void iwTools::UpdateTexts()
 {
-    if (GAMECLIENT.GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+    if (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
-        GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+        const GamePlayer& localPlayer = gwv.GetPlayer();
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
             ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + i);
@@ -129,7 +130,7 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
     if ( ctrl_id >= 100 && ctrl_id < (100 + 2 * TOOL_COUNT) )
     {
         unsigned int tool = (ctrl_id - 100) / 2;
-        GamePlayer& me = GAMECLIENT.GetLocalPlayer();
+        const GamePlayer& me = gwv.GetPlayer();
 
         if (ctrl_id & 0x1)
             ordersChanged |= me.ChangeToolOrderVisual(tool, -1);
@@ -176,7 +177,7 @@ void iwTools::UpdateSettings()
 {
     if(isReplay)
     {
-        GamePlayer& localPlayer = GAMECLIENT.GetLocalPlayer();
+        const GamePlayer& localPlayer = gwv.GetPlayer();
         for(unsigned i = 0; i < TOOL_COUNT; ++i)
             GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
     }else

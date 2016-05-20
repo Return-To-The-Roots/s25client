@@ -21,7 +21,9 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/StatisticTypes.h"
+
 class ctrlText;
+class GameWorldViewer;
 
 /// Fenster mit den Statistiken.
 class iwStatistics : public IngameWindow
@@ -29,11 +31,11 @@ class iwStatistics : public IngameWindow
 
     public:
 
-        iwStatistics();
+        iwStatistics(const GameWorldViewer& gwv);
         ~iwStatistics() override;
 
     private:
-
+        const GameWorldViewer& gwv;
         StatisticType currentView;
         StatisticTime currentTime;
         ctrlText* headline;

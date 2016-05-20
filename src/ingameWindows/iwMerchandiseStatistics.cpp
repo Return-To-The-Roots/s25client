@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwMerchandiseStatistics.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "controls/ctrlMultiSelectGroup.h"
@@ -45,8 +44,9 @@ const unsigned int iwMerchandiseStatistics::BarColors[14] =
     0xFF202420  // schwarz
 };
 
-iwMerchandiseStatistics::iwMerchandiseStatistics()
-    : IngameWindow(CGI_MERCHANDISE_STATISTICS, 0xFFFE, 0xFFFE, 252, 310, _("Merchandise"), LOADER.GetImageN("resource", 41)), currentTime(STAT_1H)
+iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player):
+    IngameWindow(CGI_MERCHANDISE_STATISTICS, 0xFFFE, 0xFFFE, 252, 310, _("Merchandise"), LOADER.GetImageN("resource", 41)),
+    player(player), currentTime(STAT_1H)
 {
     // Statistikfeld
     AddImage(0, 10 + 115, 23 + 81, LOADER.GetImageN("io", 228));
@@ -170,7 +170,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
 
     // Statistik holen
-    const GamePlayer::Statistic stat = GAMECLIENT.GetLocalPlayer().GetStatistic(currentTime);
+    const GamePlayer::Statistic stat = player.GetStatistic(currentTime);
 
 
     // Maximalwert suchen

@@ -18,7 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildings.h"
 #include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "WindowManager.h"
 #include "buildings/nobUsual.h"
@@ -32,6 +31,7 @@
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/const_gui_ids.h"
@@ -87,15 +87,18 @@ const unsigned short font_distance_y = 20;
 
 iwBuildings::iwBuildings(GameWorldView& gwv) : IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),gwv(gwv)
 {
+    const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
     for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
     {
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
 			if(bts[y*4+x] != BLD_CHARBURNER)
-				AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16 + iconSpacing.y * y,32,32,TC_GREY,LOADER.GetImageN(NATION_ICON_IDS[GAMECLIENT.GetLocalPlayer().nation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+            {
+                AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16 + iconSpacing.y * y, 32, 32, TC_GREY, LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+            }
 			else
-				AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16  + iconSpacing.y * y,32,32,TC_GREY,LOADER.GetImageN("charburner", GAMECLIENT.GetLocalPlayer().nation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
+				AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16  + iconSpacing.y * y,32,32,TC_GREY,LOADER.GetImageN("charburner", playerNation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
@@ -108,7 +111,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv) : IngameWindow(CGI_BUILDINGS, 0xFFF
 void iwBuildings::Msg_PaintAfter()
 {
     // Anzahlen herausfinden
-    BuildingCount bc = GAMECLIENT.GetLocalPlayer().GetBuildingCount();
+    BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingCount();
 
     // Anzahlen unter die Gebäude schreiben
     DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
@@ -132,14 +135,15 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
         return; // TODO should show help text
 
 	//no buildings of type complete? -> do nothing
-	BuildingCount bc = GAMECLIENT.GetLocalPlayer().GetBuildingCount();//-V807
+    const GamePlayer& localPlayer = gwv.GetViewer().GetPlayer();
+	BuildingCount bc = localPlayer.GetBuildingCount();//-V807
 	if(bc.buildings[bts[ctrl_id]] < 1)
 		return;
 
 	//military building open first of type if available
 	if(ctrl_id < 4)
 	{
-		for(std::list<nobMilitary*>::const_iterator it=GAMECLIENT.GetLocalPlayer().GetMilitaryBuildings().begin(); it != GAMECLIENT.GetLocalPlayer().GetMilitaryBuildings().end(); ++it)
+		for(std::list<nobMilitary*>::const_iterator it=localPlayer.GetMilitaryBuildings().begin(); it != localPlayer.GetMilitaryBuildings().end(); ++it)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id]) // got first of type -> open building window (military)
 			{
@@ -154,7 +158,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	//not warehouse, harbor (military excluded) -> so it is a nobusual!
 	if(ctrl_id != 21 && ctrl_id != 31)
 	{
-		nobUsual* it=*GAMECLIENT.GetLocalPlayer().GetBuildings(bts[ctrl_id]).begin();
+		nobUsual* it=*localPlayer.GetBuildings(bts[ctrl_id]).begin();
 		gwv.MoveToMapPt(it->GetPos());
 		iwBuilding* nextscrn=new iwBuilding(gwv, it);
 		WINDOWMANAGER.Show(nextscrn);
@@ -163,7 +167,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	else if(ctrl_id == 21)//warehouse?
 	{
 		//go through list until we get to a warehouse
-		for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetLocalPlayer().GetStorehouses().begin(); it != GAMECLIENT.GetLocalPlayer().GetStorehouses().end(); ++it)
+		for(std::list<nobBaseWarehouse*>::const_iterator it=localPlayer.GetStorehouses().begin(); it != localPlayer.GetStorehouses().end(); ++it)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
@@ -178,7 +182,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 	else if(ctrl_id==31)//harbor
 	{
 		//go through list until we get to a harbor
-		for(std::list<nobBaseWarehouse*>::const_iterator it=GAMECLIENT.GetLocalPlayer().GetStorehouses().begin(); it != GAMECLIENT.GetLocalPlayer().GetStorehouses().end(); ++it)
+		for(std::list<nobBaseWarehouse*>::const_iterator it=localPlayer.GetStorehouses().begin(); it != localPlayer.GetStorehouses().end(); ++it)
 		{
 			if((*it)->GetBuildingType()==bts[ctrl_id])
 			{
