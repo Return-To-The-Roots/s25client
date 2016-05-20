@@ -40,9 +40,9 @@
 
 #include <stdexcept>
 
-iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh):
+iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh):
     iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
-    gwv(gwv), wh(wh)
+    gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
 
@@ -114,7 +114,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
             }
             InventorySetting state = page == 0 ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) : wh->GetInventorySettingVisual(Job(ctrl_id - 100));
             state.Toggle(setting);
-            if(GAMECLIENT.SetInventorySetting(wh->GetPos(), page != 0, ctrl_id - 100, state))
+            if(gcFactory.SetInventorySetting(wh->GetPos(), page != 0, ctrl_id - 100, state))
             {
                 // optisch schonmal setzen
                 wh->SetInventorySettingVisual(page != 0, ctrl_id - 100, state);
@@ -179,7 +179,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
                     states[i].Toggle(data);
             }
 
-            if(GAMECLIENT.SetAllInventorySettings(wh->GetPos(), page != 0, states))
+            if(gcFactory.SetAllInventorySettings(wh->GetPos(), page != 0, states))
             {
                 // optisch setzen
                 for(unsigned char i = 0; i < count; ++i)
@@ -201,7 +201,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 		case 14: //go to next of same type
 		{
 			//is there at least 1 other building of the same type?
-            const std::list<nobBaseWarehouse*>& storehouses = GAMECLIENT.GetPlayer(wh->GetPlayer()).GetStorehouses();
+            const std::list<nobBaseWarehouse*>& storehouses = gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetStorehouses();
 			//go through list once we get to current building -> open window for the next one and go to next location
 			for(std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin(); it != storehouses.end(); ++it)
 			{
@@ -215,19 +215,19 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					gwv.MoveToMapPt((*it)->GetPos());
 					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
-						iwHQ* nextscrn=new iwHQ(gwv, (*it),_("Headquarters"), 3);
+						iwHQ* nextscrn=new iwHQ(gwv, gcFactory, (*it),_("Headquarters"), 3);
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 					{
-						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, dynamic_cast<nobHarborBuilding*>(*it));
+						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 					{
-						iwStorehouse* nextscrn=new iwStorehouse(gwv, dynamic_cast<nobStorehouse*>(*it));
+						iwStorehouse* nextscrn=new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
 						nextscrn->Move(x_,y_);
 						WINDOWMANAGER.Show(nextscrn);
 					}

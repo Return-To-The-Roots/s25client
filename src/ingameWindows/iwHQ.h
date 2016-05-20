@@ -27,7 +27,7 @@ class nobBaseWarehouse;
 class iwHQ : public iwBaseWarehouse
 {
     public:
-        iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
+        iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
 
     protected:
 

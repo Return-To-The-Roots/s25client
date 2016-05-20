@@ -27,14 +27,17 @@
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
 #include "gameData/JobConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "gameData/ShieldConsts.h"
 
-iwShip::iwShip(GameWorldView& gwv, noShip* const ship)
-    : IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), ship_id(ship ? gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipID(ship) : 0), player(ship ? ship->GetPlayer() : GAMECLIENT.GetPlayerId())
+iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship):
+    IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
+    gwv(gwv), gcFactory(gcFactory),
+    player(ship ? ship->GetPlayer() : gwv.GetViewer().GetPlayerId()),
+    ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
 {
     AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
     AddImageButton( 2, 18, 192, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
@@ -129,11 +132,11 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
     if(ctrl_id >= 10 && ctrl_id <= 17)
     {
         if(ctrl_id == 10)
-            GAMECLIENT.FoundColony(ship_id);
+            gcFactory.FoundColony(ship_id);
         else if(ctrl_id == 11)
-            GAMECLIENT.CancelExpedition(ship_id);
+            gcFactory.CancelExpedition(ship_id);
         else
-            GAMECLIENT.TravelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
+            gcFactory.TravelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
         Close();
     }
 
@@ -242,7 +245,7 @@ void iwShip::DrawCargo()
 
             unsigned job_bobs_id = JOB_CONSTS[i].jobs_bob_id;
             if((i >= JOB_PRIVATE && i <= JOB_GENERAL) || (i == JOB_SCOUT))
-                job_bobs_id += NATION_RTTR_TO_S2[GAMECLIENT.GetPlayer(player).nation] * 6;
+                job_bobs_id += NATION_RTTR_TO_S2[gwv.GetWorld().GetPlayer(player).nation] * 6;
 
             if (i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->Draw(drawPt);

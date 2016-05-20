@@ -18,15 +18,18 @@
 #define iwBUILDINGS_H_
 
 #include "IngameWindow.h"
+
+class GameCommandFactory;
 class GameWorldView;
 
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
 class iwBuildings : public IngameWindow
 {
 	GameWorldView& gwv;
+    GameCommandFactory& gcFactory;
     public:
 
-        iwBuildings(GameWorldView& gwv);
+        iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory);
 
     private:
 

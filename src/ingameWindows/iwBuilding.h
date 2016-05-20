@@ -23,14 +23,16 @@
 
 class nobUsual;
 class GameWorldView;
+class GameCommandFactory;
 
 class iwBuilding : public IngameWindow
 {
         GameWorldView& gwv;
+        GameCommandFactory& gcFactory;
         nobUsual* const building;              /// Das zugehörige Gebäudeobjekt
 
     public:
-        iwBuilding(GameWorldView& gwv, nobUsual* const building);
+        iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building);
 
     private:
 

@@ -23,16 +23,18 @@
 
 class nobMilitary;
 class GameWorldView;
+class GameCommandFactory;
 class GlobalGameSettings;
 
 class iwMilitaryBuilding : public IngameWindow
 {
     private:
         GameWorldView& gwv;
+        GameCommandFactory& gcFactory;
         nobMilitary* const building;
 
     public:
-        iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building);
+        iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building);
 
         /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
         static void DemolitionNotAllowed(const GlobalGameSettings& ggs);

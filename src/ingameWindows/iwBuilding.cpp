@@ -26,6 +26,7 @@
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
 #include "buildings/nobShipYard.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
@@ -36,9 +37,9 @@
 const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
-iwBuilding::iwBuilding(GameWorldView& gwv, nobUsual* const building)
+iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), building(building)
+      gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -180,7 +181,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             // Produktion einstellen/fortführen
             // NC senden
-            if(GAMECLIENT.SetProductionEnabled(building->GetPos(), building->IsProductionDisabledVirtual()))
+            if(gcFactory.SetProductionEnabled(building->GetPos(), building->IsProductionDisabledVirtual()))
             {
                 // visuell anzeigen, falls erfolgreich
                 building->ToggleProductionVirtual();
@@ -205,7 +206,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
-            if(GAMECLIENT.ToggleShipYardMode(building->GetPos()))
+            if(gcFactory.ToggleShipYardMode(building->GetPos()))
             {
                 // Auch optisch den Button umstellen
                 ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);
@@ -218,7 +219,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
 		case 12: //go to next of same type
 		{
-            const std::list<nobUsual*>& buildings = GAMECLIENT.GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType());
+            const std::list<nobUsual*>& buildings = gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType());
 			//go through list once we get to current building -> open window for the next one and go to next location
 			for(std::list<nobUsual*>::const_iterator it=buildings.begin(); it != buildings.end(); ++it)
 			{
@@ -230,7 +231,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 					if(it == buildings.end()) //was last entry in list -> goto first
 						it=buildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
-					iwBuilding* nextscrn=new iwBuilding(gwv, *it);
+					iwBuilding* nextscrn=new iwBuilding(gwv, gcFactory, *it);
 					nextscrn->Move(x_,y_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;

@@ -33,6 +33,7 @@
 #include "gameTypes/RoadBuildState.h"
 #include <boost/array.hpp>
 
+class GameClient;
 class iwRoadWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
@@ -48,7 +49,7 @@ class dskGameInterface :
     public LobbyInterface
 {
     private:
-
+        GameClient& gameClient;
         GameWorldViewer worldViewer;
         GameWorldView gwv;
 

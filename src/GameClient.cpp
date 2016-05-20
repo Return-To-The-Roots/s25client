@@ -1682,8 +1682,11 @@ void GameClient::SetReplayPause(bool pause)
 bool GameClient::AddGC(gc::GameCommand* gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.isPaused || GetPlayer(playerId_).IsDefeated())
+    if(framesinfo.isPaused || GetPlayer(playerId_).IsDefeated() || IsReplayModeOn())
+    {
+        delete gc;
         return false;
+    }
 
     gameCommands_.push_back(gc);
     return true;

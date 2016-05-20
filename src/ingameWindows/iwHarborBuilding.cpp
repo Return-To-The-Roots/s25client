@@ -25,8 +25,8 @@
 #include "controls/ctrlButton.h"
 #include "ogl/glArchivItem_Font.h"
 
-iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb)
-    : iwHQ(gwv, hb, _("Harbor building"), 4)
+iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
+    : iwHQ(gwv, gcFactory, hb, _("Harbor building"), 4)
 {
     // Zusätzliche Hafenseite
     ctrlGroup* harbor_page = AddGroup(103);

@@ -23,8 +23,8 @@
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
 
-iwHQ::iwHQ(GameWorldView& gwv, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
-    : iwBaseWarehouse(gwv, title, pages_count, wh)
+iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
+    : iwBaseWarehouse(gwv, gcFactory, title, pages_count, wh)
 {
     // Soldaten Reservierungsseite
     ctrlGroup* reserve = AddGroup(102);

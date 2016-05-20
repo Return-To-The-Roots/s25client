@@ -23,15 +23,17 @@
 
 class noShip;
 class GameWorldView;
+class GameCommandFactory;
 
 class iwShip : public IngameWindow
 {
         GameWorldView& gwv;
-        unsigned ship_id; /// ID des Schiffes, welches gerade angezeigt wird
+        GameCommandFactory& gcFactory;
         unsigned char player; /// Besitzer des Schiffes, den wir für die Umwandlung ID->richtiges Schiff brauchen
+        unsigned ship_id; /// ID des Schiffes, welches gerade angezeigt wird
 
     public:
-        iwShip(GameWorldView& gwv, noShip* const ship);
+        iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship);
 
     private:
 

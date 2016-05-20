@@ -73,9 +73,6 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         std::string GetGameName() const { return clientconfig.gameName; }
 
         unsigned GetPlayerId() const { return playerId_; }
-        unsigned GetPlayerCount() const;
-        /// Liefert einen Player zurück
-        GamePlayer& GetPlayer(const unsigned id);
         bool IsSinglePlayer() const;
         /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
         AIBase* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
@@ -168,6 +165,10 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
     private:
         /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt ist)
         bool AddGC(gc::GameCommand* gc) override;
+
+        unsigned GetPlayerCount() const;
+        /// Liefert einen Player zurück
+        GamePlayer& GetPlayer(const unsigned id);
 
         /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
         void ExecuteGameFrame(const bool skipping = false);

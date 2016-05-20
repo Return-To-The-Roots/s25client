@@ -25,7 +25,7 @@ class GameWorldView;
 class iwHarborBuilding : public iwHQ
 {
     public:
-        iwHarborBuilding(GameWorldView& gwv, nobHarborBuilding* hb);
+        iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb);
 
     protected:
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;

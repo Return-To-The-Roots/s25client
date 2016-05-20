@@ -36,9 +36,9 @@
 #include "controls/ctrlButton.h"
 #include <set>
 
-iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, nobMilitary* const building)
+iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), building(building)
+    gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
     AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
@@ -166,10 +166,10 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 6: // Gold einstellen/erlauben
         {
-            if(!GAMECLIENT.IsReplayModeOn() && !GAMECLIENT.IsPaused())
+            if(!GAMECLIENT.IsReplayModeOn())
             {
                 // NC senden
-                if(GAMECLIENT.SetCoinsAllowed(building->GetPos(), building->IsGoldDisabledVirtual()))
+                if(gcFactory.SetCoinsAllowed(building->GetPos(), building->IsGoldDisabledVirtual()))
                 {
                     // visuell anzeigen
                     building->ToggleCoinsVirtual();
@@ -187,7 +187,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
 		case 9: //go to next of same type
 		{
-            const std::list<nobMilitary*>& militaryBuildings = GAMECLIENT.GetPlayer(building->GetPlayer()).GetMilitaryBuildings();
+            const std::list<nobMilitary*>& militaryBuildings = gwv.GetWorld().GetPlayer(building->GetPlayer()).GetMilitaryBuildings();
 			//go through list once we get to current building -> open window for the next one and go to next location
 			for(std::list<nobMilitary*>::const_iterator it=militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
 			{
@@ -196,10 +196,10 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 					//close old window, open new window (todo: only open if it isnt already open), move to location of next building
 					Close();
 					++it;
-					if(it == militaryBuildings.end()) //was last entry in list -> goto first												{
+					if(it == militaryBuildings.end()) //was last entry in list -> goto first
 						it=militaryBuildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
-					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, *it);
+					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gcFactory, *it);
 					nextscrn->Move(x_,y_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;
@@ -208,7 +208,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 		} break;
 		case 10: //send home button (addon)
 		{
-			GAMECLIENT.SendSoldiersHome(building->GetPos());
+			gcFactory.SendSoldiersHome(building->GetPos());
 		}
 		break;
     }

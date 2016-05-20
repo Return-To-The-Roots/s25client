@@ -27,7 +27,7 @@ class GameWorldView;
 class iwStorehouse : public iwBaseWarehouse
 {
     public:
-        iwStorehouse(GameWorldView& gwv, nobStorehouse* sh);
+        iwStorehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobStorehouse* sh);
 };
 
 #endif // !iwHQ_H_INCLUDED
