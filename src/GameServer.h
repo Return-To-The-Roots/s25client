@@ -167,13 +167,18 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         /// der Spielstartcountdown
         class CountDown
         {
-            public:
-                CountDown();
-                void Reset(int time = 2);
-
-                bool do_countdown;
-                int countdown;
-                unsigned int lasttime;
+            bool isActive;
+            unsigned remainingSecs;
+            unsigned lasttime;
+        public:
+            CountDown();
+            /// Starts a countdown at curTime of timeInSec seconds
+            void Start(unsigned timeInSec, unsigned curTime);
+            void Stop();
+            /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
+            bool Update(unsigned curTime);
+            bool IsActive() const { return isActive; }
+            unsigned GetRemainingSecs() const { return remainingSecs; }
         } countdown;
 
         /// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)

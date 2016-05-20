@@ -87,7 +87,7 @@ class dskHostGame :
         void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
         void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
-        void CI_Countdown(int countdown) override;
+        void CI_Countdown(unsigned remainingTimeInSec) override;
         void CI_CancelCountdown() override;
 
         void LC_Status_Error(const std::string& error) override;

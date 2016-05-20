@@ -225,10 +225,10 @@ public:
 class GameMessage_Server_Countdown : public GameMessage
 {
 public:
-	int countdown;
+    unsigned countdown;
 
 	GameMessage_Server_Countdown(): GameMessage(NMS_SERVER_COUNTDOWN) { } //-V730
-	GameMessage_Server_Countdown(int countdown): GameMessage(NMS_SERVER_COUNTDOWN, 0xFF), countdown(countdown){}
+	GameMessage_Server_Countdown(unsigned countdown): GameMessage(NMS_SERVER_COUNTDOWN, 0xFF), countdown(countdown){}
 
 	void Serialize(Serializer& ser) const override
     {

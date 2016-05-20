@@ -641,24 +641,24 @@ void dskHostGame::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
     GetCtrl<ctrlEdit>(4)->SetText("");
 }
 
-void dskHostGame::CI_Countdown(int countdown)
+void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
 {
-    hasCountdown_ = true;
-
     if (IsSinglePlayer())
         return;
 
-    std::stringstream message;
-
-    if (countdown == 10)
+    if (!hasCountdown_)
     {
-        GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, _("You have 10 seconds until game starts"), COLOR_RED);
+        char startMsg[100];
+        sprintf(startMsg, _("You have %u seconds until game starts"), remainingTimeInSec);
+        GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, startMsg, COLOR_RED);
         GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
         GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, "", 0xFFFFCC00);
+        hasCountdown_ = true;
     }
 
-    if(countdown > 0)
-        message << " " << countdown;
+    std::stringstream message;
+    if(remainingTimeInSec > 0)
+        message << " " << remainingTimeInSec;
     else
         message << _("Starting game, please wait");
 

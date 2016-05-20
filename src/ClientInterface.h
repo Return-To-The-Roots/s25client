@@ -78,7 +78,7 @@ class ClientInterface
         virtual void CI_GGSChanged(const GlobalGameSettings& ggs){}
 
         virtual void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg){}
-        virtual void CI_Countdown(int countdown){}
+        virtual void CI_Countdown(unsigned remainingTimeInSec){}
         virtual void CI_CancelCountdown(){}
 
         virtual void CI_Async(const std::string& checksums_list){}
