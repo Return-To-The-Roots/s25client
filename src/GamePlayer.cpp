@@ -240,7 +240,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
 
     sgd.PushObjectContainer(ships, true);
 
-    for(unsigned i = 0; i < 5; ++i)
+    for(unsigned i = 0; i < defenders.size(); ++i)
         sgd.PushBool(defenders[i]);
     sgd.PushUnsignedShort(defenders_pos);
 
@@ -253,7 +253,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
             sgd.PushUnsignedChar(distribution[i].percent_buildings[bldType]);
         }
         sgd.PushUnsignedInt(distribution[i].client_buildings.size());
-        for(std::list<BuildingType>::iterator it = distribution[i].client_buildings.begin(); it != distribution[i].client_buildings.end(); ++it)
+        for(std::vector<BuildingType>::iterator it = distribution[i].client_buildings.begin(); it != distribution[i].client_buildings.end(); ++it)
             sgd.PushUnsignedChar(*it);
         sgd.PushUnsignedInt(unsigned(distribution[i].goals.size()));
         for(unsigned z = 0; z < distribution[i].goals.size(); ++z)
@@ -271,7 +271,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
         sgd.PushUnsignedChar(militarySettings_[i]);
 
-    for(unsigned i = 0; i < 12; ++i)
+    for(unsigned i = 0; i < toolsSettings_.size(); ++i)
         sgd.PushUnsignedChar(toolsSettings_[i]);
 
     //qx:tools
@@ -355,7 +355,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     sgd.PopObjectContainer(ships, GOT_SHIP);
 
-    for(unsigned i = 0; i < 5; ++i)
+    for(unsigned i = 0; i < defenders.size(); ++i)
         defenders[i] = sgd.PopBool();
     defenders_pos = sgd.PopUnsignedShort();
 
@@ -373,7 +373,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         unsigned goal_count = sgd.PopUnsignedInt();
         distribution[i].goals.resize(goal_count);
         for(unsigned z = 0; z < goal_count; ++z)
-            distribution[i].goals[z] = sgd.PopUnsignedChar();
+            distribution[i].goals[z] = BuildingType(sgd.PopUnsignedChar());
         distribution[i].selected_goal = sgd.PopUnsignedInt();
     }
 
@@ -384,10 +384,10 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     sgd.PopRawData(transportPrio.elems, transportPrio.size());
 
-    for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+    for(unsigned i = 0; i < militarySettings_.size(); ++i)
         militarySettings_[i] = sgd.PopUnsignedChar();
 
-    for(unsigned i = 0; i < 12; ++i)
+    for(unsigned i = 0; i < toolsSettings_.size(); ++i)
         toolsSettings_[i] = sgd.PopUnsignedChar();
 
     // qx:tools
@@ -671,19 +671,19 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
     // 1. Anteile der einzelnen Waren ausrechnen
 
-    // Liste von Gebäudetypen, die die Waren wollen
-    std::list<BuildingWhichWantWare> bwww_list;
+    /// Mapping of buildings that want the current ware to its percentage
+    std::vector<std::pair<BuildingType, unsigned char> > bldPercentageMap;
 
     unsigned goal_count = 0;
 
-    for(unsigned char i = 0; i < 40; ++i)
+    for(unsigned char i = 0; i < BLD_COUNT; ++i)
     {
-        if(distribution[ware].percent_buildings[i])
+        unsigned char percentForCurBld = distribution[ware].percent_buildings[i];
+        if(percentForCurBld)
         {
             distribution[ware].client_buildings.push_back(static_cast<BuildingType>(i));
-            goal_count += distribution[ware].percent_buildings[i];
-            BuildingWhichWantWare bwww = {distribution[ware].percent_buildings[i], i};
-            bwww_list.push_back(bwww);
+            goal_count += percentForCurBld;
+            bldPercentageMap.push_back(std::make_pair(static_cast<BuildingType>(i), percentForCurBld));
         }
     }
 
@@ -694,61 +694,15 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
     distribution[ware].goals.clear();
     distribution[ware].goals.resize(goal_count);
 
-//  LOG.lprintf("goal_count[%u] = %u\n", ware, goal_count);
-
     unsigned pos = 0;
 
     // just drop them in the list, the distribution will be handled by going through this list using a prime as step (see GameClientPlayer::FindClientForWare)
-    for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin(); it != bwww_list.end(); ++it)
+    for(std::vector<std::pair<BuildingType, unsigned char> >::iterator it = bldPercentageMap.begin(); it != bldPercentageMap.end(); ++it)
     {
-        for (unsigned char i = 0; i < it->count; ++i)
-        {
-            distribution[ware].goals[pos++] = it->building;
-        }
-
-//      LOG.lprintf("\t[%u] = %u\n", it->building, it->count);
+        for (unsigned char i = 0; i < it->second; ++i)
+            distribution[ware].goals[pos++] = it->first;
     }
 
-    /*
-        for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
-        {
-            it->count = 0;
-        }
-
-        distribution[ware].selected_goal = 0;
-
-        LOG.lprintf("distribution\n");
-        for (unsigned i = 0; i < distribution[ware].goals.size(); i++)
-        {
-            distribution[ware].selected_goal = (distribution[ware].selected_goal + 907) % unsigned(distribution[ware].goals.size());
-
-            for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
-            {
-                if (it->building == distribution[ware].goals[distribution[ware].selected_goal])
-                {
-                    it->count++;
-                }
-            }
-            LOG.lprintf("\t[%u] %u\n", i, distribution[ware].goals[distribution[ware].selected_goal]);
-        }
-
-        LOG.lprintf("TEST\n");
-        for(std::list<BuildingWhichWantWare>::iterator it = bwww_list.begin();it!=bwww_list.end();++it)
-        {
-
-            LOG.lprintf("\t[%u] = %u\n", it->building, it->count);
-        }*/
-
-    // Und ordentlich schütteln ;)
-    //RandomShuffle(distribution[ware].goals,distribution[ware].goal_count);
-
-
-    //for(unsigned char i = 0;i<distribution[ware].goal_count;++i)
-    //  LOG.lprintf("%u ",distribution[ware].goals[i]);
-    //LOG.lprintf("\n");
-
-
-    // Alles fängt wieder von vorne an...
     distribution[ware].selected_goal = 0;
 }
 
@@ -1005,34 +959,21 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
 
 struct ClientForWare
 {
-    noBaseBuilding* bb;
+    noBaseBuilding* bld;
     unsigned estimate;  // points minus half the optimal distance
     unsigned points;
 
-    ClientForWare(noBaseBuilding* bb, unsigned estimate, unsigned points) : bb(bb), estimate(estimate), points(points) {}
+    ClientForWare(noBaseBuilding* bld, unsigned estimate, unsigned points) : bld(bld), estimate(estimate), points(points) {}
 
     bool operator<(const ClientForWare& b) const
     {
-		// use estimate, points and absolute location (in that order) for sorting
-		// absolute location must be different -> tiebreaker in case everything else is the same
-        if (estimate != b.estimate)
-        {
-			return(estimate > b.estimate);
-        }
-		else
-		{
-			if (points != b.points)
-			{
-				return(points > b.points);
-			}
-			else
-			{
-				if (bb->GetX() != b.bb->GetX())
-					return bb->GetX() < b.bb->GetX();
-				else
-					return bb->GetY() < b.bb->GetY();
-			}
-		}
+		// use estimate, points and object id (as tie breaker) for sorting
+        if(estimate != b.estimate)
+            return estimate > b.estimate;
+        else if(points != b.points)
+            return points > b.points;
+        else
+            return bld->GetObjId() > b.bld->GetObjId();
     }
 };
 
@@ -1041,8 +982,6 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     // Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
     if(ware->type == GD_COINS)
         return FindClientForCoin(ware);
-
-    unsigned points;
 
     // Warentyp herausfinden
     GoodType gt = ware->type;
@@ -1053,7 +992,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     if(gt_clients == GD_BREAD || gt_clients == GD_MEAT)
         gt_clients = GD_FISH;
 
-    std::vector<ClientForWare> cfw;
+    std::vector<ClientForWare> possibleClients;
 
     noRoadNode* start = ware->GetLocation();
 
@@ -1062,19 +1001,17 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     {
         for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
         {
-            points = (*it)->CalcDistributionPoints(gt);
+            unsigned points = (*it)->CalcDistributionPoints(gt);
+            if(!points)
+                continue;
 
-            if (points)
-            {
-                points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
-
-                unsigned distance = gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2;
-                cfw.push_back(ClientForWare(*it, points > distance ? points - distance : 0, points));
-            }
+            points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
+            unsigned distance = gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2;
+            possibleClients.push_back(ClientForWare(*it, points > distance ? points - distance : 0, points));
         }
     }
 
-    for(std::list<BuildingType>::const_iterator it = distribution[gt_clients].client_buildings.begin(); it != distribution[gt_clients].client_buildings.end(); ++it)
+    for(std::vector<BuildingType>::const_iterator it = distribution[gt_clients].client_buildings.begin(); it != distribution[gt_clients].client_buildings.end(); ++it)
     {
         // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
         if(*it == BLD_HEADQUARTERS)
@@ -1082,15 +1019,13 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
             // Bei Baustellen die Extraliste abfragen
             for(std::list<noBuildingSite*>::const_iterator i = building_sites.begin(); i != building_sites.end(); ++i)
             {
-                points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
+                unsigned points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
+                if(!points)
+                    continue;
 
-                if (points)
-                {
-                    points += distribution[gt].percent_buildings[BLD_HEADQUARTERS] * 30;
-
-                    unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
-                    cfw.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
-                }
+                points += distribution[gt].percent_buildings[BLD_HEADQUARTERS] * 30;
+                unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
+                possibleClients.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
             }
         }
         else
@@ -1098,35 +1033,33 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
             // Für übrige Gebäude
             for(std::list<nobUsual*>::const_iterator i = buildings[*it - 10].begin(); i != buildings[*it - 10].end(); ++i)
             {
-                points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
+                unsigned points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
+                if(!points)
+                    continue; // Ware not needed
 
-                // Wenn 0, dann braucht er die Ware nicht
-                if (points)
+                if (!distribution[gt].goals.empty())
                 {
-                    if (!distribution[gt].goals.empty())
-                    {
-                        if ((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
-                            points += 300;
-                        else if (points >= 300)   // avoid overflows (async!)
-                            points -= 300;
-                        else
-                            points = 0;
-                    }
-
-                    unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
-                    cfw.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
+                    if ((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
+                        points += 300;
+                    else if (points >= 300)   // avoid overflows (async!)
+                        points -= 300;
+                    else
+                        points = 0;
                 }
+
+                unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
+                possibleClients.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
             }
         }
     }
 
     // sort our clients, highest score first
-    std::sort(cfw.begin(), cfw.end());
+    std::sort(possibleClients.begin(), possibleClients.end());
 
-    noBaseBuilding* last_bb = NULL;
-    noBaseBuilding* bb = NULL;
+    noBaseBuilding* lastBld = NULL;
+    noBaseBuilding* bestBld = NULL;
     unsigned best_points = 0;
-    for (std::vector<ClientForWare>::iterator it = cfw.begin(); it != cfw.end(); ++it)
+    for (std::vector<ClientForWare>::iterator it = possibleClients.begin(); it != possibleClients.end(); ++it)
     {
         unsigned path_length;
 
@@ -1136,10 +1069,10 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
             break;
 
         // get rid of double building entries. TODO: why are there double entries!?
-        if (it->bb == last_bb)
+        if (it->bld == lastBld)
             continue;
 
-        last_bb = it->bb;
+        lastBld = it->bld;
 
         // Just to be sure no underflow happens...
         if(it->points < best_points + 1)
@@ -1148,7 +1081,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
-        if (gwg->FindPathForWareOnRoads(*start, *it->bb, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
+        if (gwg->FindPathForWareOnRoads(*start, *it->bld, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
         {
             unsigned score = it->points - (path_length / 2);
 
@@ -1157,18 +1090,18 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
             RTTR_Assert(score > best_points);
 
             best_points = score;
-            bb = it->bb;
+            bestBld = it->bld;
         }
     }
 
-    if(bb && !distribution[gt].goals.empty())
+    if(bestBld && !distribution[gt].goals.empty())
         distribution[gt].selected_goal = (distribution[gt].selected_goal + 907) % unsigned(distribution[gt].goals.size());
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
-    if(!bb)
-        bb = FindWarehouseForWare(*ware);
+    if(!bestBld)
+        bestBld = FindWarehouseForWare(*ware);
 
-    return bb;
+    return bestBld;
 }
 
 nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const

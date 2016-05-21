@@ -74,9 +74,13 @@ class GamePlayer: public GamePlayerInfo
         // Informationen über die Verteilung
         struct Distribution
         {
+            /// Mapping of Building to percentage of ware the building gets
             boost::array<unsigned char, BUILDING_TYPES_COUNT> percent_buildings;
-            std::list<BuildingType> client_buildings; // alle Gebäude, die diese Ware bekommen, zusammengefasst
-            std::vector<unsigned char> goals;
+            /// Buildings that get this ware
+            std::vector<BuildingType> client_buildings;
+            /// Possible preferred buildings (each building is n times in here with n=percentage)
+            std::vector<BuildingType> goals;
+            /// Index into goals: Preferred building
             unsigned selected_goal;
         };
 
@@ -379,12 +383,6 @@ class GamePlayer: public GamePlayerInfo
         {
             Job job;
             noRoadNode* workplace;
-        };
-
-        struct BuildingWhichWantWare
-        {
-            unsigned char count;
-            unsigned char building;
         };
 
         /// Liste von Baustellen/Gebäuden, die bestimmten Beruf wollen
