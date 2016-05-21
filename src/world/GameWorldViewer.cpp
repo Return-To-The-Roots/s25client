@@ -49,7 +49,7 @@ void GameWorldViewer::InitVisualData()
             const MapNode& node = gwb.GetNode(pt);
             vNode.bq = node.bq;
             for(unsigned i = 0; i < 3; ++i)
-                vNode.roads[i] = node.roads_real[i];
+                vNode.roads[i] = node.roads[i];
         }
     }
     namespace bl = boost::lambda;

@@ -22,8 +22,8 @@
 
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) const
 {
-    for(unsigned z = 0; z < roads_real.size(); ++z)
-        sgd.PushUnsignedChar(roads_real[z]);
+    for(unsigned z = 0; z < roads.size(); ++z)
+        sgd.PushUnsignedChar(roads[z]);
 
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
@@ -46,10 +46,10 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
 
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
 {
-    for(unsigned z = 0; z < roads_real.size(); ++z)
+    for(unsigned z = 0; z < roads.size(); ++z)
     {
-        roads_real[z] = sgd.PopUnsignedChar();
-        RTTR_Assert(roads_real[z] < 4);
+        roads[z] = sgd.PopUnsignedChar();
+        RTTR_Assert(roads[z] < 4);
     }
 
     altitude = sgd.PopUnsignedChar();

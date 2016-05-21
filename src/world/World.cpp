@@ -405,7 +405,7 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(unsigned i = 0; i < 3; ++i)
-        fow.roads[i] = GetNode(pt).roads_real[i];
+        fow.roads[i] = GetNode(pt).roads[i];
 
     // Store ownership so FoW boundary stones can be drawn
     fow.owner = GetNode(pt).owner;
@@ -466,7 +466,7 @@ unsigned char World::GetRoad(const MapPoint pt, unsigned char dir) const
 {
     RTTR_Assert(dir < 3);
 
-    return GetNode(pt).roads_real[dir];
+    return GetNode(pt).roads[dir];
 }
 
 unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir) const
@@ -538,7 +538,7 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
 void World::SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type)
 {
     RTTR_Assert(roadDir < 3);
-    GetNodeInt(pt).roads_real[roadDir] = type;
+    GetNodeInt(pt).roads[roadDir] = type;
 }
 
 bool World::SetBQ(const MapPoint pt, BuildingQuality bq)

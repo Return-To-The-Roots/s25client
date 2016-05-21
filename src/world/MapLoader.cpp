@@ -87,7 +87,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         {
             MapNode& node = world.GetNodeInt(pt);
 
-            std::fill(node.roads_real.begin(), node.roads_real.end(), 0);
+            std::fill(node.roads.begin(), node.roads.end(), 0);
             node.altitude = map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y);
             unsigned char t1 = map.GetMapDataAt(MAP_TERRAIN1, pt.x, pt.y), t2 = map.GetMapDataAt(MAP_TERRAIN2, pt.x, pt.y);
 
