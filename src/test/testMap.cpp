@@ -17,9 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
-#include "world/World.h"
+#include "world/GameWorldGame.h"
 #include "GameObject.h"
 #include "EventManager.h"
+#include "GlobalGameSettings.h"
+#include "PlayerInfo.h"
 #include "ogl/glArchivItem_Map.h"
 #include "FileChecksum.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
@@ -28,11 +30,6 @@
 #include <fstream>
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
-
-class TestWorld: public World
-{
-    void AltitudeChanged(const MapPoint pt) override {}
-};
 
 BOOST_AUTO_TEST_CASE(LoadSaveMap)
 {
@@ -57,14 +54,17 @@ BOOST_AUTO_TEST_CASE(LoadWorld)
     BOOST_CHECK_EQUAL(map.getHeader().getHeight(), 80);
     BOOST_CHECK_EQUAL(map.getHeader().getPlayer(), 4);
 
-    /*std::vector<Nation> players(4, NAT_ROMANS);
-    TestWorld world;
-    EventManager evMgr;
-    InitEventMgr::GetEvMgr() = &evMgr;
-    MapLoader loader(world, players);
+    std::vector<PlayerInfo> players(0);
+    std::vector<Nation> nations(0);
+    EventManager em(0);
+    GameWorldGame world(players, GlobalGameSettings(), em);
+    GameObject::SetPointers(&world);
+    MapLoader loader(world, nations);
     BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
-    BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());*/
+    BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
+    // Reset to allow assertions on GameObject destruction to pass
+    GameObject::SetPointers(NULL);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
