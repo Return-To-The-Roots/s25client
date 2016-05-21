@@ -676,7 +676,6 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 {
     // NWF-Länge bekommen wir vom Server
     framesinfo.nwf_length = msg.nwf_length;
-    state = CS_LOADING;
 
     /// Beim Host muss das Spiel nicht nochmal gestartet werden, das hat der Server schon erledigt
     if(IsHost())
