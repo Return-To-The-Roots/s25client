@@ -22,12 +22,17 @@
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
+#include "world/BQCalculator.h"
 #include "ogl/glArchivItem_Map.h"
 #include "FileChecksum.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libutil/src/tmpFile.h"
 #include <boost/test/unit_test.hpp>
 #include <fstream>
+
+#define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)        \
+        for(TYPE pt(0, 0); pt.y < (HEIGHT); ++pt.y) \
+            for(pt.x = 0; pt.x < (WIDTH); ++pt.x)
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
 
@@ -45,7 +50,27 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
     BOOST_REQUIRE_EQUAL(CalcChecksumOfFile("RTTR/MAPS/NEW/Bergruft.swd"), CalcChecksumOfFile(outMap.filePath.c_str()));
 };
 
-BOOST_AUTO_TEST_CASE(LoadWorld)
+struct WorldFixture
+{
+    EventManager em;
+    GlobalGameSettings ggs;
+    GameWorldGame world;
+    WorldFixture(): em(0), world(std::vector<PlayerInfo>(0), ggs, em)
+    {
+        GameObject::SetPointers(&world);
+    }
+    ~WorldFixture()
+    {
+        // Reset to allow assertions on GameObject destruction to pass
+        GameObject::SetPointers(NULL);
+    }
+};
+
+bool RetFalse(MapPoint pt){
+    return false;
+}
+
+BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture)
 {
     glArchivItem_Map map;
     std::ifstream mapFile("RTTR/MAPS/NEW/Bergruft.swd", std::ios::binary);
@@ -54,17 +79,29 @@ BOOST_AUTO_TEST_CASE(LoadWorld)
     BOOST_CHECK_EQUAL(map.getHeader().getHeight(), 80);
     BOOST_CHECK_EQUAL(map.getHeader().getPlayer(), 4);
 
-    std::vector<PlayerInfo> players(0);
     std::vector<Nation> nations(0);
-    EventManager em(0);
-    GameWorldGame world(players, GlobalGameSettings(), em);
-    GameObject::SetPointers(&world);
     MapLoader loader(world, nations);
     BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
-    // Reset to allow assertions on GameObject destruction to pass
-    GameObject::SetPointers(NULL);
+
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y));
+    }
+
+    const char* bqNames[] = {"Nothing", "Flag", "Hut", "House", "Castle", "Mine"};
+
+    BQCalculator bqCalculator(world);
+    bqCalculator(MapPoint(41, 9), RetFalse);
+
+
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        BuildingQuality s2BQ = BuildingQuality(map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
+        BuildingQuality bq = bqCalculator(pt, RetFalse);
+        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt.x << "," << pt.y << " original:" << map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
