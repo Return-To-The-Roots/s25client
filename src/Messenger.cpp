@@ -59,12 +59,7 @@ void Messenger::Draw()
         if(diff > 18000)
             transparency = (transparency - transparency * (diff - 18000) / 2000);
 
-
-        // Auf Alphaposition verschieben (höchstes Byte)
-        transparency = transparency << 24;
-
         std::string cd_str = (it->cd == CD_SYSTEM) ? "" : _(CD_STRINGS[it->cd]);
-
 
         DrawPoint curTextPos(textPos);
         LargeFont->Draw(curTextPos, it->author, glArchivItem_Font::DF_LEFT, SetAlpha(it->color_author, transparency));

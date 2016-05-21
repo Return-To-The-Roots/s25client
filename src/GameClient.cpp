@@ -697,27 +697,34 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
 {
-    if(state != CS_GAME)
-        return;
+    if(state == CS_GAME)
+    {
+        // Ingame message: Do some checking and logging
+        if(msg.player >= gw->GetPlayerCount())
+            return;
 
-    if(msg.player >= gw->GetPlayerCount())
-        return;
+        /// Mit im Replay aufzeichnen
+        replayinfo.replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
 
-    /// Mit im Replay aufzeichnen
-    replayinfo.replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
+        GamePlayer& player = gw->GetPlayer(msg.player);
 
-    GamePlayer& player = gw->GetPlayer(msg.player);
+        // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
+        if(player.IsDefeated() && msg.destination != CD_ALL)
+            return;
+        // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
+        bool ally = player.IsAlly(playerId_);
 
-    // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-    if(player.IsDefeated() && msg.destination != CD_ALL)
-        return;
-    // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
-    bool ally = player.IsAlly(playerId_);
-
-    // Chatziel unerscheiden und ggf. nicht senden
-    if(!ally && msg.destination == CD_ALLIES)
-        return;
-    if(ally && msg.destination == CD_ENEMIES && msg.player != playerId_)
+        // Chatziel unerscheiden und ggf. nicht senden
+        if(!ally && msg.destination == CD_ALLIES)
+            return;
+        if(ally && msg.destination == CD_ENEMIES && msg.player != playerId_)
+            return;
+    } else if(state == CS_CONFIG)
+    {
+        // GameLobby message: Just check for valid player
+        if(msg.player >= gameLobby->GetPlayerCount())
+            return;
+    } else
         return;
 
     if(ci)
