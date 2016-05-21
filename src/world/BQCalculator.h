@@ -80,24 +80,16 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // Bergwerke anders handhaben
     if(curBQ == BQ_CASTLE)
     {
+        // First check the height of the (possible) buildings flag
         unsigned char otherAltitude = world.GetNeighbourNode(pt, 4).altitude;
-        if(otherAltitude > curAltitude)
-        {
-            if(otherAltitude - curAltitude > 1)
-                curBQ = BQ_FLAG;
-        }
+        if(otherAltitude > curAltitude + 1) // flag point more than 1 higher?
+            curBQ = BQ_FLAG;
 
-        // Check radius-2 nodes (no huts above altiude diff of 2)
+        // Check radius-2 nodes (no huts above altitude diff of 2)
         for(unsigned i = 0; i < 12; ++i)
         {
             otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
-            if(otherAltitude > curAltitude + 2)
-            {
-                curBQ = BQ_HUT;
-                break;
-            }
-
-            if(otherAltitude + 2 < curAltitude)
+            if(SafeDiff(curAltitude, otherAltitude) > 2)
             {
                 curBQ = BQ_HUT;
                 break;
@@ -108,13 +100,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         for(unsigned i = 0; i < 6; ++i)
         {
             otherAltitude = world.GetNeighbourNode(pt, i).altitude;
-            if(otherAltitude > curAltitude + 3)
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-
-            if(otherAltitude + 3 < curAltitude)
+            if(SafeDiff(curAltitude, otherAltitude) > 3)
             {
                 curBQ = BQ_FLAG;
                 break;
