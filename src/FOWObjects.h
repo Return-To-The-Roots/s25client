@@ -58,20 +58,6 @@ class FOWObject
         virtual FOW_Type GetType() const = 0;
 };
 
-/// Platzhalter-Objekt, falls dort kein Objekt existiert
-class fowNothing : public FOWObject
-{
-    public:
-
-        fowNothing(){}
-        fowNothing(SerializedGameData&  /*sgd*/){}
-        void Serialize(SerializedGameData&  /*sgd*/) const override{}
-        void Draw(DrawPoint) const override{}
-        FOW_Type GetType() const override { return FOW_NOTHING; }
-};
-
-
-
 /// Gebäude im Nebel
 class fowBuilding : public FOWObject
 {

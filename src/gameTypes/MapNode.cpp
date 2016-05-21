@@ -37,21 +37,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
     sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
     RTTR_Assert(numPlayers < fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
-    {
-        const MapNode::FoWData& curFoW = fow[z];
-        sgd.PushUnsignedChar(static_cast<unsigned char>(curFoW.visibility));
-        // Only in FoW can be FoW objects
-        if(curFoW.visibility == VIS_FOW)
-        {
-            sgd.PushUnsignedInt(curFoW.last_update_time);
-            sgd.PushFOWObject(curFoW.object);
-            for(unsigned r = 0; r < curFoW.roads.size(); ++r)
-                sgd.PushUnsignedChar(curFoW.roads[r]);
-            sgd.PushUnsignedChar(curFoW.owner);
-            for(unsigned b = 0; b < curFoW.boundary_stones.size(); ++b)
-                sgd.PushUnsignedChar(curFoW.boundary_stones[b]);
-        }
-    }
+        fow[z].Serialize(sgd);
     sgd.PushObject(obj, false);
     sgd.PushObjectContainer(figures, false);
     sgd.PushUnsignedShort(sea_id);
@@ -80,31 +66,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
     bq = BuildingQuality(sgd.PopUnsignedChar());
     RTTR_Assert(numPlayers < fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
-    {
-        MapNode::FoWData& curFoW = fow[z];
-        curFoW.visibility = Visibility(sgd.PopUnsignedChar());
-        // Only in FoW can be FoW objects
-        if(curFoW.visibility == VIS_FOW)
-        {
-            curFoW.last_update_time = sgd.PopUnsignedInt();
-            curFoW.object = sgd.PopFOWObject();
-            for(unsigned r = 0; r < curFoW.roads.size(); ++r)
-                curFoW.roads[r] = sgd.PopUnsignedChar();
-            curFoW.owner = sgd.PopUnsignedChar();
-            for(unsigned b = 0; b < curFoW.boundary_stones.size(); ++b)
-                curFoW.boundary_stones[b] = sgd.PopUnsignedChar();
-        }
-        else
-        {
-            curFoW.last_update_time = 0;
-            curFoW.object = NULL;
-            for(unsigned r = 0; r < curFoW.roads.size(); ++r)
-                curFoW.roads[r] = 0;
-            curFoW.owner = 0;
-            for(unsigned b = 0; b < curFoW.boundary_stones.size(); ++b)
-                curFoW.boundary_stones[b] = 0;
-        }
-    }
+        fow[z].Deserialize(sgd);
     obj = sgd.PopObject<noBase>(GOT_UNKNOWN);
     sgd.PopObjectContainer(figures, GOT_UNKNOWN);
     sea_id = sgd.PopUnsignedShort();

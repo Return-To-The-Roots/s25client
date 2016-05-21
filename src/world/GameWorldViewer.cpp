@@ -160,7 +160,7 @@ unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char r
     if(visibility == VIS_VISIBLE)
         return GetVisibleRoad(pt, roadDir);
     else if(visibility == VIS_FOW)
-        return GetWorld().GetNode(pt).fow[GetYoungestFOWNodePlayer(pt)].roads[roadDir];
+        return GetYoungestFOWNode(pt).roads[roadDir];
     else
         return 0; // No road
 }
@@ -301,39 +301,41 @@ bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) cons
 /// Get the "youngest" FOWObject of all players who share the view with the local player
 const FOWObject* GameWorldViewer::GetYoungestFOWObject(const MapPoint pos) const
 {
-    return GetWorld().GetNode(pos).fow[GetYoungestFOWNodePlayer(pos)].object;
+    return GetYoungestFOWNode(pos).object;
 }
 
 /// Gets the youngest fow node of all visible objects of all players who are connected
 /// with the local player via team view
-unsigned char GameWorldViewer::GetYoungestFOWNodePlayer(const MapPoint pos) const
+const FoWNode& GameWorldViewer::GetYoungestFOWNode(const MapPoint pos) const
 {
-    unsigned char youngest_player = playerId_;
-    unsigned youngest_time = GetWorld().GetNode(pos).fow[playerId_].last_update_time;
+    const MapNode& node = GetWorld().GetNode(pos);
+    const FoWNode* bestNode = &node.fow[playerId_];
+    unsigned youngest_time = bestNode->last_update_time;
 
     // Shared team view enabled?
     if(GetWorld().GetGGS().team_view)
     {
+        const GamePlayer& player = GetWorld().GetPlayer(playerId_);
         // Then check if team members have a better (="younger", see our economy) fow object
         for(unsigned i = 0; i <  GetWorld().GetPlayerCount(); ++i)
         {
-            if(!GetWorld().GetPlayer(i).IsAlly(playerId_))
+            if(!player.IsAlly(i))
                 continue;
             // Has the player FOW at this point at all?
-            const MapNode::FoWData& name = GetWorld().GetNode(pos).fow[i];
-            if(name.visibility == VIS_FOW)
+            const FoWNode* curNode = &node.fow[i];
+            if(curNode->visibility == VIS_FOW)
             {
                 // Younger than the youngest or no object at all?
-                if(name.last_update_time > youngest_time)
+                if(curNode->last_update_time > youngest_time)
                 {
                     // Then take it
-                    youngest_time = name.last_update_time;
+                    youngest_time = curNode->last_update_time;
                     // And remember its owner
-                    youngest_player = i;
+                    bestNode = curNode;
                 }
             }
         }
     }
 
-    return youngest_player;
+    return *bestNode;
 }

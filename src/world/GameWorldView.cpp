@@ -465,7 +465,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
 
     bool isFoW = vis == VIS_FOW;
 
-    const MapNode::BoundaryStones& boundary_stones = isFoW ? GetWorld().GetNode(pt).fow[gwv.GetYoungestFOWNodePlayer(pt)].boundary_stones : GetWorld().GetNode(pt).boundary_stones;
+    const BoundaryStones& boundary_stones = isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;
     unsigned char owner = boundary_stones[0];
 
     if(!owner)

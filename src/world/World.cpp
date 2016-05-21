@@ -30,7 +30,7 @@
 #include "helpers/containerUtils.h"
 #include <set>
 
-World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing()), noFowObj(new fowNothing())
+World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing())
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -40,7 +40,6 @@ World::~World()
 {
     Unload();
     delete noNodeObj;
-    delete noFowObj;
 }
 
 void World::Init(const unsigned short width, const unsigned short height, LandscapeType lt)
@@ -285,14 +284,6 @@ void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
         RTTR_Assert(!checkExists);
 }
 
-const FOWObject* World::GetFOWObject(const MapPoint pt, const unsigned spectator_player) const
-{
-    if(GetNode(pt).fow[spectator_player].object)
-        return GetNode(pt).fow[spectator_player].object;
-    else
-        return noFowObj;
-}
-
 /// Returns the GOT if an object or GOT_NOTHING if none
 GO_Type World::GetGOT(const MapPoint pt) const
 {
@@ -404,7 +395,7 @@ TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  con
 
 void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
 {
-    MapNode::FoWData& fow = GetNodeInt(pt).fow[player];
+    FoWNode& fow = GetNodeInt(pt).fow[player];
     fow.last_update_time = curTime;
 
     // FOW-Objekt erzeugen

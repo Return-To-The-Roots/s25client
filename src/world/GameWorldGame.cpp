@@ -499,7 +499,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
             // Korrigierte X-Koordinaten
             const MapPoint curMapPt = MakeMapPoint(pt);
             const unsigned char owner = GetNode(curMapPt).owner;
-            MapNode::BoundaryStones& boundaryStones = GetBoundaryStones(curMapPt);
+            BoundaryStones& boundaryStones = GetBoundaryStones(curMapPt);
 
             // Grenzstein direkt auf diesem Punkt?
             if(owner && IsBorderNode(curMapPt, owner))
@@ -560,7 +560,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
             for(unsigned dir = 0; dir < 3 && neighbors[idx] > 2; ++dir)
             {
                 // Da ein Grenzstein vom selben Besitzer?
-                MapNode::BoundaryStones& nbBoundStones = GetBoundaryStones(GetNeighbour(curMapPt, dir + 3));
+                BoundaryStones& nbBoundStones = GetBoundaryStones(GetNeighbour(curMapPt, dir + 3));
 
                 if(nbBoundStones[0] != owner)
                     continue;

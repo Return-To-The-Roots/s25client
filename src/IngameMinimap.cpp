@@ -53,13 +53,16 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         FOW_Type fot = FOW_NOTHING;
         if(!fow)
         {
-            owner = gwv.GetNode(pt).owner;
-            got = gwv.GetWorld().GetNO(pt)->GetType();
+            const MapNode& node = gwv.GetNode(pt);
+            owner = node.owner;
+            if(node.obj)
+                got = node.obj->GetType();
         } else
         {
-            const unsigned char fowPlayerId = gwv.GetYoungestFOWNodePlayer(pt);
-            owner = gwv.GetNode(pt).fow[fowPlayerId].owner;
-            fot = gwv.GetNode(pt).fow[fowPlayerId].object->GetType();
+            const FoWNode& node = gwv.GetYoungestFOWNode(pt);
+            owner = node.owner;
+            if(node.object)
+                fot = node.object->GetType();
         }
 
        // Baum an dieser Stelle?

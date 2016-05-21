@@ -20,11 +20,11 @@
 
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingQuality.h"
+#include "gameTypes/FoWNode.h"
 #include "gameData/MaxPlayers.h"
 #include <boost/array.hpp>
 #include <list>
 
-class FOWObject;
 class noBase;
 class SerializedGameData;
 
@@ -45,27 +45,10 @@ struct MapNode
     bool reserved;
     /// Owner (playerIdx - 1)
     unsigned char owner;
-    /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
-    typedef boost::array<unsigned char, 4> BoundaryStones;
     BoundaryStones boundary_stones;
     BuildingQuality bq;
-    /// How a player sees the point in FoW
-    struct FoWData
-    {
-        /// Zeit (GF-Zeitpunkt), zu der, der Punkt zuletzt aktualisiert wurde
-        unsigned last_update_time;
-        /// Sichtbarkeit des Punktes
-        Visibility visibility;
-        /// FOW-Objekt
-        FOWObject* object;
-        boost::array<unsigned char, 3> roads;
-        /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
-        unsigned char owner;
-        /// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
-        boost::array<unsigned char, 4> boundary_stones;
-        FoWData(): object(NULL){}
-    };
-    boost::array<FoWData, MAX_PLAYERS> fow;
+    /// How the players see the point in FoW
+    boost::array<FoWNode, MAX_PLAYERS> fow;
 
     /// To which sea this belongs to (0=None)
     unsigned short sea_id;

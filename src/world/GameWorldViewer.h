@@ -29,6 +29,7 @@ class FOWObject;
 class GameWorldBase;
 struct MapNode;
 struct NodeNote;
+struct FoWNode;
 class noShip;
 class TerrainRenderer;
 struct RoadNote;
@@ -84,7 +85,7 @@ public:
 
     /// Gets the youngest fow node of all visible objects of all players who are connected
     /// with the local player via team view
-    unsigned char GetYoungestFOWNodePlayer(const MapPoint pos) const;
+    const FoWNode& GetYoungestFOWNode(const MapPoint pos) const;
 
     /// Get first found ship of this player at that point or NULL of none
     noShip* GetShip(const MapPoint pt) const;

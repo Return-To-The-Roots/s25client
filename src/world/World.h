@@ -31,7 +31,6 @@
 #include <list>
 
 class noNothing;
-class fowNothing;
 class CatapultStone;
 class FOWObject;
 class noBase;
@@ -67,7 +66,6 @@ class World
     std::vector<HarborPos> harbor_pos;
 
     noNothing* noNodeObj;
-    fowNothing* noFowObj;
 
     /// Internal method for access to nodes with write access
     inline MapNode& GetNodeInt(const MapPoint pt);
@@ -154,8 +152,6 @@ public:
     void SetNO(const MapPoint pt, noBase* obj, const bool replace = false);
     /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if there is no obj
     void DestroyNO(const MapPoint pt, const bool checkExists = true);
-    /// Gibt ein FOW-Objekt zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
-    const FOWObject* GetFOWObject(const MapPoint pt, const unsigned spectator_player) const;
     /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
@@ -228,7 +224,7 @@ protected:
     virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
     /// Sets the road for the given (road) direction
     void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
-    MapNode::BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
+    BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
     /// Set the BQ at the point and return true if it was changed
     bool SetBQ(const MapPoint pt, BuildingQuality bq);
 
