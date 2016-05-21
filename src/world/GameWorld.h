@@ -37,13 +37,6 @@ class GameWorld: public GameWorldGame
         /// Serialisiert den gesamten GameWorld
         void Serialize(SerializedGameData& sgd) const;
         void Deserialize(SerializedGameData& sgd);
-
-        /// Sagt der GW Bescheid, dass ein Objekt von Bedeutung an x,y vernichtet wurde, damit dieser
-        /// dass ggf. an den WindowManager weiterleiten kann, damit auch ein Fenster wieder geschlossen wird
-        void ImportantObjectDestroyed(const MapPoint pt) override;
-        /// Sagt, dass ein Militärgebäude eingenommen wurde und ggf. ein entsprechender "Fanfarensound" abgespielt werden sollte
-        void MilitaryBuildingCaptured(const MapPoint pt, const unsigned char player) override;
-
 };
 
 #endif // GameWorld_h__

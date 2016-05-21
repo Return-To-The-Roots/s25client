@@ -64,6 +64,8 @@
 #include "world/GameWorldViewer.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
+#include "notifications/BuildingNote.h"
+#include "notifications/NotificationManager.h"
 #include "gameData/TerrainData.h"
 #include "gameData/const_gui_ids.h"
 #include "ogl/glArchivItem_Font.h"
@@ -74,6 +76,9 @@
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
 #include <boost/bind.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/if.hpp>
+#include <boost/lambda/bind.hpp>
 #include <sstream>
 #include <algorithm>
 
@@ -120,9 +125,21 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     if (postBox.GetNumMsgs() > 0)
         NewPostMessage(postBox.GetNumMsgs());
 
+    InitPlayer();
+}
+
+void dskGameInterface::InitPlayer()
+{
     // Jump to players HQ if it exists
     if(worldViewer.GetPlayer().GetHQPos().isValid())
         gwv.MoveToMapPt(worldViewer.GetPlayer().GetHQPos());
+
+    namespace bl = boost::lambda;
+    using bl::_1;
+    evBld = worldViewer.GetWorld().GetNotifications().subscribe<BuildingNote>(
+        bl::if_(bl::bind(&BuildingNote::player, _1) == worldViewer.GetPlayerId())
+        [bl::bind(&dskGameInterface::OnBuildingNote, this, _1)]
+    );
 }
 
 PostBox& dskGameInterface::GetPostBox()
@@ -704,6 +721,26 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     return false;
 }
 
+void dskGameInterface::OnBuildingNote(const BuildingNote& note)
+{
+    switch(note.type)
+    {
+    case BuildingNote::Constructed:
+    case BuildingNote::Destroyed:
+    case BuildingNote::Lost:
+        // Close the related window as the building does not exist anymore
+        // In "Constructed" this means the buildingsite
+        WINDOWMANAGER.Close(worldViewer.GetWorld().CreateGUIID(note.pos));
+        break;
+    case BuildingNote::Captured:
+        // Fanfaren
+        LOADER.GetSoundN("sound", 110)->Play(255, false);
+        break;
+    default:
+        break;
+    }
+}
+
 void dskGameInterface::Run()
 {
     // Reset draw counter of the trees before drawing
@@ -1009,6 +1046,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
         // Set visual settings back to the actual ones
         gameClient.ResetVisualSettings();
         minimap.UpdateAll();
+        InitPlayer();
     }
 }
 

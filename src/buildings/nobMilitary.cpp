@@ -677,8 +677,6 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         gwg->RecalcTerritory(*this, false, true);
         // Tür zumachen
         CloseDoor();
-        // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
-        gwg->MilitaryBuildingCaptured(pos, player);
         gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, type_));
     }
     else
@@ -978,15 +976,10 @@ void nobMilitary::Capture(const unsigned char new_owner)
             ++it;
     }
 
-    // Fanfarensound abspieln, falls das Militärgebäude im Sichtbereich ist und unseres ist
-    gwg->MilitaryBuildingCaptured(pos, player);
-
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
     SendPostMessage(old_player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building lost"), PMC_MILITARY, *this));
     SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building captured"), PMC_MILITARY, *this));
 
-    // ggf. Fenster schließen vom alten Spieler
-    gwg->ImportantObjectDestroyed(pos);
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, type_));
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, type_));
 }

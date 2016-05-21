@@ -93,9 +93,6 @@ void noBaseBuilding::Destroy_noBaseBuilding()
     // evtl Anbauten wieder abreißen
     DestroyBuildingExtensions();
 
-    // ggf. Fenster schließen
-    gwg->ImportantObjectDestroyed(pos);
-
     // Baukosten zurückerstatten (nicht bei Baustellen)
     const GlobalGameSettings& settings = gwg->GetGGS();
     if( (GetGOT() != GOT_BUILDINGSITE) &&

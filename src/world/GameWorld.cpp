@@ -25,10 +25,8 @@
 #include "lua/LuaInterfaceGame.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
-#include "ogl/glArchivItem_Sound.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "WindowManager.h"
 
 #include "libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
@@ -152,16 +150,4 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
         else
             lua->Deserialize(luaSaveState);
     }
-}
-
-
-void GameWorld::ImportantObjectDestroyed(const MapPoint pt)
-{
-    WINDOWMANAGER.Close(CreateGUIID(pt));
-}
-
-void GameWorld::MilitaryBuildingCaptured(const MapPoint  /*pt*/, const unsigned char player)
-{
-    if(player == GAMECLIENT.GetPlayerId())
-        LOADER.GetSoundN("sound", 110)->Play(255, false);
 }

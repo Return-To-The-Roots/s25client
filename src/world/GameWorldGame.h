@@ -134,12 +134,6 @@ public:
     /// Lässt alles spielerische eines Spielers abbrennen, indem es alle Flaggen eines Spieler zerstört
     void Armageddon(const unsigned char player);
 
-    /// Sagt der GW Bescheid, dass ein Objekt von Bedeutung an x,y vernichtet wurde, damit dieser
-    /// dass ggf. an den WindowManager weiterleiten kann, damit auch ein Fenster wieder geschlossen wird
-    virtual void ImportantObjectDestroyed(const MapPoint pt) = 0;
-    /// Sagt, dass ein Militärgebäude eingenommen wurde und ggf. ein entsprechender "Fanfarensound" abgespielt werden sollte
-    virtual void MilitaryBuildingCaptured(const MapPoint pt, const unsigned char player) = 0;
-
     /// Ist der Punkt ein geeigneter Platz zum Warten vor dem Militärgebäude
     bool ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center);
     /// Geeigneter Punkt für Kämpfe?

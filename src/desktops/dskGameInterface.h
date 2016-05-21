@@ -29,6 +29,7 @@
 #include "LobbyInterface.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
+#include "notifications/Subscribtion.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/RoadBuildState.h"
 #include <boost/array.hpp>
@@ -40,6 +41,7 @@ class GlobalGameSettings;
 class MouseCoords;
 class GameWorldBase;
 class PostBox;
+struct BuildingNote;
 struct KeyEvent;
 
 class dskGameInterface :
@@ -131,6 +133,9 @@ class dskGameInterface :
         void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
 
     private:
+        /// Initializes player specific stuff after start or player swap
+        void InitPlayer();
+
         /// Lässt das Spiel laufen (zeichnen)
         void Run();
 
@@ -152,7 +157,10 @@ class dskGameInterface :
         bool Msg_RightUp(const MouseCoords& mc) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
 
+        void OnBuildingNote(const BuildingNote& note);
+
         PostBox& GetPostBox();
+        Subscribtion evBld;
 };
 
 #endif // !dskGAMEINTERFACE_H_INCLUDED

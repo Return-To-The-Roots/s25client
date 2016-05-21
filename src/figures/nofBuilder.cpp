@@ -155,9 +155,6 @@ void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
                 GamePlayer& owner = gwg->GetPlayer(player);
                 owner.RemoveBuildingSite(building_site);
 
-                // ggf. Baustellenfenster schließen
-                gwg->ImportantObjectDestroyed(building_site->GetPos());
-
                 // Remove buildingsite, but don't destroy!
                 gwg->SetNO(building_site->GetPos(), NULL);
                 deletePtr(building_site);
