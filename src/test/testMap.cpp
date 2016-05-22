@@ -117,8 +117,6 @@ BOOST_FIXTURE_TEST_CASE(CheckBQs, WorldLoadedFixture)
     const char* bqNames[] = {"Nothing", "Flag", "Hut", "House", "Castle", "Mine"};
 
     BQCalculator bqCalculator(world);
-    bqCalculator(MapPoint(41, 9), RetFalse);
-
 
     RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
     {

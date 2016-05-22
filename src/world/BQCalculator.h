@@ -81,31 +81,38 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     if(curBQ == BQ_CASTLE)
     {
         // First check the height of the (possible) buildings flag
+        // flag point more than 1 higher? -> Flag
         unsigned char otherAltitude = world.GetNeighbourNode(pt, 4).altitude;
-        if(otherAltitude > curAltitude + 1) // flag point more than 1 higher?
+        if(otherAltitude > curAltitude + 1)
             curBQ = BQ_FLAG;
-
-        // Check radius-2 nodes (no huts above altitude diff of 2)
-        for(unsigned i = 0; i < 12; ++i)
+        else
         {
-            otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
-            if(SafeDiff(curAltitude, otherAltitude) > 2)
+            // Direct neighbours: Flag for altitude diff > 3
+            for(unsigned i = 0; i < 6; ++i)
             {
-                curBQ = BQ_HUT;
-                break;
+                otherAltitude = world.GetNeighbourNode(pt, i).altitude;
+                if(SafeDiff(curAltitude, otherAltitude) > 3)
+                {
+                    curBQ = BQ_FLAG;
+                    break;
+                }
+            }
+
+            if(curBQ == BQ_CASTLE)
+            {
+                // Radius-2 neighbours: Hut for altitude diff > 2
+                for(unsigned i = 0; i < 12; ++i)
+                {
+                    otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
+                    if(SafeDiff(curAltitude, otherAltitude) > 2)
+                    {
+                        curBQ = BQ_HUT;
+                        break;
+                    }
+                }
             }
         }
 
-        // Direct neighbours (can become flags above altitude diff of 3)
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            otherAltitude = world.GetNeighbourNode(pt, i).altitude;
-            if(SafeDiff(curAltitude, otherAltitude) > 3)
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-        }
     } else if(curBQ == BQ_MINE && world.GetNeighbourNode(pt, 4).altitude > curAltitude + 3)
     {
         // Mines only possible till altitude diff of 3
