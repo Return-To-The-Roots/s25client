@@ -48,8 +48,8 @@ void GameWorldViewer::InitVisualData()
             VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
             const MapNode& node = gwb.GetNode(pt);
             vNode.bq = node.bq;
-            for(unsigned i = 0; i < 3; ++i)
-                vNode.roads[i] = node.roads[i];
+            // Roads are only overlays. At first we don't have any -> 0=use real road
+            std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
         }
     }
     namespace bl = boost::lambda;
