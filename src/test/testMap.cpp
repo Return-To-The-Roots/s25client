@@ -21,7 +21,9 @@
 #include "GameObject.h"
 #include "EventManager.h"
 #include "ogl/glArchivItem_Map.h"
+#include "FileChecksum.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libutil/src/tmpFile.h"
 #include <boost/test/unit_test.hpp>
 #include <fstream>
 
@@ -30,6 +32,20 @@ BOOST_AUTO_TEST_SUITE(MapTestSuite)
 class TestWorld: public World
 {
     void AltitudeChanged(const MapPoint pt) override {}
+};
+
+BOOST_AUTO_TEST_CASE(LoadSaveMap)
+{
+    // Check that loading and saving a map does not alter it
+    glArchivItem_Map map;
+    std::ifstream mapFile("RTTR/MAPS/NEW/Bergruft.swd", std::ios::binary);
+    BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+    TmpFile outMap(".swd");
+    BOOST_REQUIRE(outMap.IsValid());
+    BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
+    mapFile.close();
+    outMap.GetStream().close();
+    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile("RTTR/MAPS/NEW/Bergruft.swd"), CalcChecksumOfFile(outMap.filePath.c_str()));
 };
 
 BOOST_AUTO_TEST_CASE(LoadWorld)
