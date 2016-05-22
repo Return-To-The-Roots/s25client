@@ -36,20 +36,23 @@
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
 
+const char* testMapPath = "RTTR/MAPS/NEW/Bergruft.swd";
+
 BOOST_AUTO_TEST_CASE(LoadSaveMap)
 {
     // Check that loading and saving a map does not alter it
     glArchivItem_Map map;
-    std::ifstream mapFile("RTTR/MAPS/NEW/Bergruft.swd", std::ios::binary);
+    std::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     TmpFile outMap(".swd");
     BOOST_REQUIRE(outMap.IsValid());
     BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
     mapFile.close();
     outMap.GetStream().close();
-    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile("RTTR/MAPS/NEW/Bergruft.swd"), CalcChecksumOfFile(outMap.filePath.c_str()));
+    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath.c_str()));
 };
 
+// Provides a world object with default settings and no players
 struct WorldFixture
 {
     EventManager em;
@@ -73,7 +76,7 @@ bool RetFalse(MapPoint pt){
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture)
 {
     glArchivItem_Map map;
-    std::ifstream mapFile("RTTR/MAPS/NEW/Bergruft.swd", std::ios::binary);
+    std::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     BOOST_CHECK_EQUAL(map.getHeader().getWidth(), 176);
     BOOST_CHECK_EQUAL(map.getHeader().getHeight(), 80);
@@ -84,12 +87,33 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture)
     BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
+}
 
+// Additionally loads the map to the world
+struct WorldLoadedFixture: public WorldFixture
+{
+    glArchivItem_Map map;
+
+    WorldLoadedFixture()
+    {
+        std::ifstream mapFile(testMapPath, std::ios::binary);
+        BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+        std::vector<Nation> nations(0);
+        MapLoader loader(world, nations);
+        BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
+    }
+};
+
+BOOST_FIXTURE_TEST_CASE(CheckHeight, WorldLoadedFixture)
+{
     RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
     {
         BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y));
     }
+}
 
+BOOST_FIXTURE_TEST_CASE(CheckBQs, WorldLoadedFixture)
+{
     const char* bqNames[] = {"Nothing", "Flag", "Hut", "House", "Castle", "Mine"};
 
     BQCalculator bqCalculator(world);
