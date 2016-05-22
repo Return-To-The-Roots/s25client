@@ -82,7 +82,7 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
     {
         RTTR_Assert(player1 == playerId_);
         // There must be someone at this slot
-        if(GetPlayer(player2).isUsed())
+        if(!GetPlayer(player2).isUsed())
             return;
 
         // In replay mode we don't touch the player

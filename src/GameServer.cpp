@@ -868,7 +868,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         // Befehle der KI senden
         if(player.ps == PS_AI)
         {
-            LOG.write("SERVER >>> GC %u\n", playerId);
+            //LOG.write("SERVER >>> GC %u\n", playerId);
             SendToAll(GameMessage_GameCommand(playerId, AsyncChecksum(0), ai_players[playerId]->GetGameCommands()));
             ai_players[playerId]->FetchGameCommands();
             RTTR_Assert(player.gc_queue.empty());
@@ -1311,7 +1311,7 @@ void GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
         return;
 
     GameServerPlayer& player = players[msg.player];
-    LOG.write("SERVER <<< GC %u\n", msg.player);
+    //LOG.write("SERVER <<< GC %u\n", msg.player);
 
     // Only valid from humans (for now)
     if(player.ps != PS_OCCUPIED)

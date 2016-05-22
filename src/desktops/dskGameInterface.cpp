@@ -620,13 +620,9 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             unsigned playerIdx = ke.c - '1';
             if(gameClient.IsReplayModeOn())
             {
+                unsigned oldPlayerId = worldViewer.GetPlayerId();
                 gameClient.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
-                RTTR_Assert(worldViewer.GetPlayerId() == playerIdx);
-                // zum HQ hinscrollen
-                const GamePlayer& player = worldViewer.GetPlayer();
-                if(player.GetHQPos().isValid())
-                    gwv.MoveToMapPt(player.GetHQPos());
-
+                RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
             }
             else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
             {
