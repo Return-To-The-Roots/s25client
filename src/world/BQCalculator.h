@@ -221,7 +221,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         {
             if(isOnRoad(world.GetNeighbour(pt, i)))
             {
-                curBQ = BQ_HUT;
+                curBQ = BQ_HOUSE;
                 break;
             }
         }
