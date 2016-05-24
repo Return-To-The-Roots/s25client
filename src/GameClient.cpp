@@ -1222,7 +1222,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     }
 
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
-    if(skipping || skiptogf > curGF || (currentTime - framesinfo.lastTime) > framesinfo.gf_length)
+    if(skipping || skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
         if(replay_mode)
         {
@@ -1294,7 +1294,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     {
         // Next GF not yet reached, just update the time in the current one for drawing
         framesinfo.frameTime = currentTime - framesinfo.lastTime;
-        RTTR_Assert(framesinfo.frameTime <= framesinfo.gf_length);
+        RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
     }
 }
 
@@ -1544,7 +1544,8 @@ unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
     unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
     unsigned duration = ev->length * framesinfo.gf_length;
     unsigned result = (max_val * elapsedTime) / duration;
-    RTTR_Assert(result < max_val);
+    if(result >= max_val)
+        RTTR_Assert(result < max_val);
     return result;
 }
 

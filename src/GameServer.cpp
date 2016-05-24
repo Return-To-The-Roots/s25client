@@ -813,7 +813,7 @@ void GameServer::ExecuteGameFrame()
     unsigned int currentTime = VIDEODRIVER.GetTickCount();
 
     // prüfen ob GF vergangen
-    if(currentTime - framesinfo.lastTime > framesinfo.gf_length || skiptogf > currentGF)
+    if(currentTime - framesinfo.lastTime >= framesinfo.gf_length || skiptogf > currentGF)
     {
         // NWF vergangen?
         if(currentGF % framesinfo.nwf_length==0)
