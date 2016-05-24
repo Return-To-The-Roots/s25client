@@ -53,9 +53,9 @@ MACRO(DetectOsXArchs)
 		SET(DETECTED_OSX_ARCHS ${DETECTED_OSX_ARCHS} ppc)
 	ENDIF()
 	
-	IF ( "${DETECTED_OSX_ARCHS}" STREQUAL "" )
+	IF("${DETECTED_OSX_ARCHS}" STREQUAL "")
 		MESSAGE(FATAL_ERROR "woooops: this should not happen! your system has no known architecture!")
-	ENDIF ( "${DETECTED_OSX_ARCHS}" STREQUAL "" )
+	ENDIF()
 
 	MESSAGE(STATUS "Possible architectures:${DETECTED_OSX_ARCHS}")
 ENDMACRO(DetectOsXArchs)
