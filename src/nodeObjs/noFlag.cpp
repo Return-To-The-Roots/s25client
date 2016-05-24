@@ -31,7 +31,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "gameData/TerrainData.h"
 #include "world/GameWorldGame.h"
-class noFigure;
 
 noFlag::noFlag(const MapPoint pos,
                const unsigned char player, const unsigned char dis_dir)

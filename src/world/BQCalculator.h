@@ -25,6 +25,8 @@ struct BQCalculator
 {
     BQCalculator(const World& world): world(world){}
 
+    typedef BuildingQuality result_type;
+    
     template<typename T_IsOnRoad>
     inline BuildingQuality operator()(const MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly = false) const;
 
@@ -80,46 +82,39 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // Bergwerke anders handhaben
     if(curBQ == BQ_CASTLE)
     {
+        // First check the height of the (possible) buildings flag
+        // flag point more than 1 higher? -> Flag
         unsigned char otherAltitude = world.GetNeighbourNode(pt, 4).altitude;
-        if(otherAltitude > curAltitude)
+        if(otherAltitude > curAltitude + 1)
+            curBQ = BQ_FLAG;
+        else
         {
-            if(otherAltitude - curAltitude > 1)
-                curBQ = BQ_FLAG;
+            // Direct neighbours: Flag for altitude diff > 3
+            for(unsigned i = 0; i < 6; ++i)
+            {
+                otherAltitude = world.GetNeighbourNode(pt, i).altitude;
+                if(SafeDiff(curAltitude, otherAltitude) > 3)
+                {
+                    curBQ = BQ_FLAG;
+                    break;
+                }
+            }
+
+            if(curBQ == BQ_CASTLE)
+            {
+                // Radius-2 neighbours: Hut for altitude diff > 2
+                for(unsigned i = 0; i < 12; ++i)
+                {
+                    otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
+                    if(SafeDiff(curAltitude, otherAltitude) > 2)
+                    {
+                        curBQ = BQ_HUT;
+                        break;
+                    }
+                }
+            }
         }
 
-        // Check radius-2 nodes (no huts above altiude diff of 2)
-        for(unsigned i = 0; i < 12; ++i)
-        {
-            otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
-            if(otherAltitude > curAltitude + 2)
-            {
-                curBQ = BQ_HUT;
-                break;
-            }
-
-            if(otherAltitude + 2 < curAltitude)
-            {
-                curBQ = BQ_HUT;
-                break;
-            }
-        }
-
-        // Direct neighbours (can become flags above altitude diff of 3)
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            otherAltitude = world.GetNeighbourNode(pt, i).altitude;
-            if(otherAltitude > curAltitude + 3)
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-
-            if(otherAltitude + 3 < curAltitude)
-            {
-                curBQ = BQ_FLAG;
-                break;
-            }
-        }
     } else if(curBQ == BQ_MINE && world.GetNeighbourNode(pt, 4).altitude > curAltitude + 3)
     {
         // Mines only possible till altitude diff of 3
@@ -228,7 +223,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         {
             if(isOnRoad(world.GetNeighbour(pt, i)))
             {
-                curBQ = BQ_HUT;
+                curBQ = BQ_HOUSE;
                 break;
             }
         }
