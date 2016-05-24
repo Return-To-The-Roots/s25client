@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
     mapFile.close();
     outMap.GetStream().close();
     BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath.c_str()));
-};
+}
 
 // Provides a world object with default settings and no players
 struct WorldFixture
@@ -204,6 +204,6 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoadedPlayerFixture)
     BOOST_REQUIRE(player.isUsed());
     BOOST_REQUIRE(hqs[0].isValid());
     BOOST_REQUIRE_EQUAL(world.GetNO(hqs[0])->GetGOT(), GOT_NOB_HQ);
-};
+}
 
 BOOST_AUTO_TEST_SUITE_END()
