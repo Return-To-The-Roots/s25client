@@ -271,7 +271,7 @@ void nofAttacker::Walked()
                 {
                     // Inform the owner of the building
                     const std::string msg = (attacked_goal->GetGOT() == GOT_NOB_HQ) ? _("Our headquarters was destroyed!") : _("This harbor building was destroyed");
-                    SendPostMessage(attacked_goal->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), msg, PMC_MILITARY, *attacked_goal));
+                    SendPostMessage(attacked_goal->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), msg, PostCategory::Military, *attacked_goal));
 
                     // abreißen
                     nobBaseMilitary* tmp_goal = attacked_goal;  // attacked_goal wird evtl auf 0 gesetzt!
@@ -598,7 +598,7 @@ void nofAttacker::ReachedDestination()
         }
 
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
-        SendPostMessage(attacked_goal->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("We are under attack!"), PMC_MILITARY, *attacked_goal));
+        SendPostMessage(attacked_goal->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("We are under attack!"), PostCategory::Military, *attacked_goal));
 
         // Dann Verteidiger rufen
         if(attacked_goal->CallDefender(this))

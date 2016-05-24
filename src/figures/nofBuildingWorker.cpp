@@ -404,7 +404,7 @@ bool nofBuildingWorker::GetResources(unsigned char type)
         workplace->SetProductivityToZero();
 
         const char* const error = (workplace->GetBuildingType() == BLD_WELL) ? _("This well has dried out") : _("This mine is exhausted");
-        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), error, PMC_GENERAL, *workplace));
+        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *workplace));
         gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
     }
 

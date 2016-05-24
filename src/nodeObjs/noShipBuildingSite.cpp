@@ -127,7 +127,7 @@ void noShipBuildingSite::MakeBuildStep()
         gwg->RecalcBQAroundPointBig(pos);
 
         // Spieler über Fertigstellung benachrichtigen
-        SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A new ship is ready"), PMC_GENERAL, *ship));
+        SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A new ship is ready"), PostCategory::Economy, *ship));
         gwg->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
 

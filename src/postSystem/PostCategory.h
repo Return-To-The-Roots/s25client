@@ -18,14 +18,16 @@
 #ifndef MessageTypes_h__
 #define MessageTypes_h__
 
-enum PostMessageCategory
+#include <boost/detail/scoped_enum_emulation.hpp>
+
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory)
 {
-    PMC_MILITARY,
-    PMC_GEOLOGIST,
-    PMC_GENERAL,
-    PMC_SAVEWARNING,
-    PMC_DIPLOMACY,
-    PMC_OTHER
-};
+    General,
+    Military,
+    Geologist,
+    Economy,
+    Diplomacy
+}
+BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
 
 #endif // MessageTypes_h__

@@ -28,7 +28,7 @@ class ShipPostMsg: public PostMsg
 public:
     /// Creates the message.
     /// Note: Ship object might get invalidated after this call so do not store!
-    ShipPostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const noShip& ship);
+    ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship);
     glArchivItem_Bitmap* GetImage_() const override;
 };
 

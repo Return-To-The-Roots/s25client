@@ -36,7 +36,7 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
     gwg->GetPlayer(player).AddWarehouse(this);
 
     // Post versenden
-    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New storehouse finished"), PMC_GENERAL, *this));
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
 }
 
 void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const

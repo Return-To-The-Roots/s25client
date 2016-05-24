@@ -70,7 +70,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
         player.SendPostMessage(new PostMsgWithBuilding(
             player.GetGameWorld().GetEvMgr().GetCurrentGF(),
             _(BUILDING_NAMES[bld]),
-            PMC_GENERAL,
+            PostCategory::General,
             bld,
             player.nation,
             player.GetHQPos()));

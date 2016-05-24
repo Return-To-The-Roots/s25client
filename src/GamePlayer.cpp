@@ -46,7 +46,6 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
-#include "gameTypes/MessageTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/src/Log.h"
@@ -1760,7 +1759,7 @@ void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
 	for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
 		if(i != GetPlayerId() && IsAlly(i))
-            gwg->GetPlayer(i).SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PMC_DIPLOMACY, pt));
+            gwg->GetPlayer(i).SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PostCategory::Diplomacy, pt));
 	}
 }
 
@@ -2195,7 +2194,7 @@ void GamePlayer::TestForEmergencyProgramm()
         if (!emergency)
         {
             emergency = true;
-            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
         }
     }
     else
@@ -2204,7 +2203,7 @@ void GamePlayer::TestForEmergencyProgramm()
         if (emergency)
         {
             emergency = false;
-            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PMC_GENERAL));
+            SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PostCategory::Economy));
             FindMaterialForBuildingSites();
         }
     }

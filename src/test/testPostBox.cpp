@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*) NULL);
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
     {
-        PostMsg* msg = new PostMsg(0, "Test", PMC_GENERAL);
+        PostMsg* msg = new PostMsg(0, "Test", PostCategory::General);
         box.AddMsg(msg);
         BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), i + 1);
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msg);
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msgs[i]);
     // Overfill
-    PostMsg* msg = new PostMsg(0, "Test2", PMC_GENERAL);
+    PostMsg* msg = new PostMsg(0, "Test2", PostCategory::General);
     box.AddMsg(msg);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 1), msg);
@@ -58,20 +58,20 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), false);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(box.GetMaxMsgs()), false);
     // Add 1 msg
-    box.AddMsg(new PostMsg(0, "", PMC_OTHER));
+    box.AddMsg(new PostMsg(0, "", PostCategory::General));
     // Deleting only this msg should succeed
     for(unsigned i = 1; i < box.GetMaxMsgs(); i++)
         BOOST_REQUIRE_EQUAL(box.DeleteMsg(i), false);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 1u);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), true);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
-    PostMsg* msg = new PostMsg(0, "", PMC_GENERAL);
+    PostMsg* msg = new PostMsg(0, "", PostCategory::General);
     box.AddMsg(msg);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(msg), true);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
     // Now fill it
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
-        box.AddMsg(new PostMsg(i, "Test", PMC_GENERAL));
+        box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), true);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(5u), true);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(box.GetMaxMsgs() - 3), true);
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
     box.ObserveNewMsg(boost::bind(&CallbackChecker::OnNew, &cb, _1));
     box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
-        box.AddMsg(new PostMsg(i, "Test", PMC_GENERAL));
+        box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(cb.delCalls, 0u);
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)

@@ -467,7 +467,7 @@ void nofGeologist::SetSign(const unsigned char resources)
             RTTR_Assert(false);
             return;
         }
-        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PMC_GEOLOGIST, pos));
+        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
         gwg->GetNotifications().publish(ResourceNote(player, pos, type, quantity));
         if(gwg->HasLua())
             gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);

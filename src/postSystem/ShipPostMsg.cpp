@@ -20,7 +20,7 @@
 #include "nodeObjs/noShip.h"
 #include "Loader.h"
 
-ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const noShip& ship):
+ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship):
     PostMsg(sendFrame, text, cat, ship.GetPos())
 {}
 

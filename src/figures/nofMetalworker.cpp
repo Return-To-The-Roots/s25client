@@ -30,7 +30,6 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "gameTypes/MessageTypes.h"
 #include "gameData/ToolConsts.h"
 #include "Log.h"
 
@@ -129,7 +128,7 @@ GoodType nofMetalworker::GetOrderedTool()
         owner.ToolOrderProcessed(tool);
 
         if (ToolsOrderedTotal() == 0)
-            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PMC_GENERAL));
+            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
 
         return TOOLS[tool];
     }

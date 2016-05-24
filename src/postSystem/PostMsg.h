@@ -18,8 +18,8 @@
 #ifndef POSTMSG_H_
 #define POSTMSG_H_
 
+#include "PostCategory.h"
 #include "gameTypes/MapTypes.h"
-#include "gameTypes/MessageTypes.h"
 #include "gameTypes/PactTypes.h"
 #include <string>
 
@@ -30,14 +30,14 @@ class PostMsg
 {
 public:
     /// Create a simple message
-    PostMsg(unsigned sendFrame, const std::string& text, PostMessageCategory cat, const MapPoint& pt = MapPoint::Invalid());
+    PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt = MapPoint::Invalid());
     /// Reponse to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
     PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled);
     virtual ~PostMsg(){}
 
     unsigned GetSendFrame() const { return sendFrame_; }
     const std::string& GetText() const { return text_; }
-    PostMessageCategory GetCategory() const { return cat_; }
+    PostCategory GetCategory() const { return cat_; }
     /// Get position related to this message (optional, defaults to invalid)
     MapPoint GetPos() const { return pt_; }
     /// Get Associated image or NULL if none exists
@@ -49,7 +49,7 @@ protected:
 private:
     unsigned sendFrame_;
     std::string text_;
-    PostMessageCategory cat_;
+    PostCategory cat_;
     MapPoint pt_;
 };
 

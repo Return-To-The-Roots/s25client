@@ -19,13 +19,12 @@
 #define WP_POSTOFFICE_H_
 
 #include "IngameWindow.h"
+#include "postSystem/PostCategory.h"
+#include <vector>
 
 class GameWorldView;
-class PostMsg;
-class ctrlImage;
-class ctrlImageButton;
-class ctrlText;
 class PostBox;
+class PostMsg;
 struct KeyEvent;
 
 class iwPostWindow : public IngameWindow
@@ -39,14 +38,21 @@ class iwPostWindow : public IngameWindow
     private:
         GameWorldView& gwv;
         PostBox& postBox;
-        const PostMsg* curMsg; // To detect changes
-        unsigned curMsgIdx;
+        bool showAll;
+        PostCategory curCategory;
+        std::vector<unsigned> curMsgIdxs;
+        unsigned curMsgId;
         unsigned lastMsgCt;
+        const PostMsg* curMsg;
 
         /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
         void DisplayPostMessage();
         /// Setzt den Text mehrzeilig in das Postfenster
         void SetMessageText(const std::string& message);
+        void FilterMessages();
+        bool ValidateMessages();
+        const PostMsg* GetMsg(unsigned id) const;
+        void SwitchCategory(PostCategory cat);
 };
 
 #endif

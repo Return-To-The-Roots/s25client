@@ -37,7 +37,13 @@
 namespace{
     // Enum is auto-numbering once we set a start value
     enum ButtonIds{
-        ID_FIRST_FREE = 14,
+        ID_FIRST_FREE = 2,
+        ID_SHOW_ALL,
+        ID_SHOW_GEN,
+        ID_SHOW_MIL,
+        ID_SHOW_GEO,
+        ID_SHOW_ECO,
+        ID_SHOW_DIPLO,
         ID_GO_START,
         ID_GO_BACK,
         ID_GO_FWD,
@@ -52,19 +58,20 @@ namespace{
     };
 }
 
-iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
-    : IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)), gwv(gwv), postBox(postBox)
+iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
+    IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)),
+    gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL)
 {
-    AddImageButton( 0, 18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190));   // Viewer: 191 - Papier
-    AddImageButton( 1, 56, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 30));    // Viewer:  31 - Soldat
-    AddImageButton( 2, 91, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 20));    // Viewer:  21 - Geologe
-    AddImageButton( 3, 126, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 28));   // Viewer:  29 - Wage
-    AddImageButton( 4, 161, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 189));  // Viewer: 190 - Neue Nachricht
-    AddImageButton( 5, 199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));   // Viewer:  80 - Notiz
-    AddImage(  6, 126, 151, LOADER.GetImageN("io", 228));
-    AddImageButton( 7, 18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton(ID_GO_START, 51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK, 81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
+    AddImageButton(ID_SHOW_ALL,    18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
+    AddImageButton(ID_SHOW_MIL,    56, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 30));  // Viewer:  31 - Soldat
+    AddImageButton(ID_SHOW_GEO,    91, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 20));  // Viewer:  21 - Geologe
+    AddImageButton(ID_SHOW_ECO,   126, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
+    AddImageButton(ID_SHOW_DIPLO, 161, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
+    AddImageButton(ID_SHOW_GEN,   199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
+    AddImage(0, 126, 151, LOADER.GetImageN("io", 228));
+    AddImageButton(1, 18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
+    AddImageButton(ID_GO_START, 51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));// Viewer: 103 - Schnell zurück
+    AddImageButton(ID_GO_BACK, 81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
     AddImageButton(ID_GO_FWD, 111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
     AddImageButton(ID_GO_END, 141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
@@ -88,8 +95,8 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
     AddImageButton(ID_DENY, 137, 185, 30, 26, TC_RED1, LOADER.GetImageN("io", 40))->SetVisible(false);
 
-    lastMsgCt = postBox.GetNumMsgs();
-    curMsgIdx = postBox.GetNumMsgs();
+    FilterMessages();
+    curMsgId = curMsgIdxs.size();
     DisplayPostMessage();
 }
 
@@ -97,30 +104,53 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
+        case ID_SHOW_ALL:
+            showAll = true;
+            FilterMessages();
+            curMsgId = curMsgIdxs.size();
+            DisplayPostMessage();
+            break;
+        case ID_SHOW_GEN:
+            SwitchCategory(PostCategory::General);
+            break;
+        case ID_SHOW_MIL:
+            SwitchCategory(PostCategory::Military);
+            break;
+        case ID_SHOW_GEO:
+            SwitchCategory(PostCategory::Geologist);
+            break;
+        case ID_SHOW_ECO:
+            SwitchCategory(PostCategory::Economy);
+            break;
+        case ID_SHOW_DIPLO:
+            SwitchCategory(PostCategory::Diplomacy);
+            break;
         case ID_GO_START:
             // To oldest
-            curMsgIdx = 0;
+            curMsgId = 0;
             DisplayPostMessage();
             break;
         case ID_GO_BACK:
             // Back
-            curMsgIdx = (curMsgIdx > 0) ? curMsgIdx - 1 : 0;
+            curMsgId = (curMsgId > 0) ? curMsgId - 1 : 0;
             DisplayPostMessage();
             break;
         case ID_GO_FWD:
             // Forward
-            ++curMsgIdx;
+            ++curMsgId;
             DisplayPostMessage();
             break;
         case ID_GO_END:
             // To newest
-            curMsgIdx = postBox.GetNumMsgs();
+            curMsgId = postBox.GetNumMsgs();
             DisplayPostMessage();
             break;
         case ID_GOTO:
         {
             // Goto
-            PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
+            if(!ValidateMessages())
+                return;
+            const PostMsg* curMsg = GetMsg(curMsgId);
             if (curMsg && curMsg->GetPos().isValid())
                 gwv.MoveToMapPt(curMsg->GetPos());
         }
@@ -130,8 +160,10 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         case ID_DELETE: // Delete
         case ID_DENY: // Cross (Deny)
         {
-            PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
-            DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(curMsg);
+            if(!ValidateMessages())
+                return;
+            const PostMsg* curMsg = GetMsg(curMsgId);
+            const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
             if(dcurMsg)
             {
                 // If it is a question about a new contract, tell the other player we denied it
@@ -145,7 +177,9 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         // Haken-Button ("Ja")
         case ID_ACCEPT:
         {
-            DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(postBox.GetMsg(curMsgIdx));
+            if(!ValidateMessages())
+                return;
+            const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
             if (dcurMsg)
             {
                 // New contract?
@@ -161,26 +195,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwPostWindow::Msg_PaintBefore()
 {
-    if(curMsg && curMsg != postBox.GetMsg(curMsgIdx))
-    {
-        // Message was either deleted or others were added and message was shifted
-        // So first search it, if not found we will display the next (newer) message
-        for(unsigned i = curMsgIdx; curMsgIdx > 0; curMsgIdx--)
-        {
-            if(postBox.GetMsg(i - 1))
-            {
-                curMsgIdx = i - 1;
-                break;
-            }
-        }
-        
-        DisplayPostMessage();
-    } else if(lastMsgCt != postBox.GetNumMsgs())
-    {
-        // At least update message count in status bar
-        DisplayPostMessage();
-        lastMsgCt = postBox.GetNumMsgs();
-    }
+    ValidateMessages();
 }
 
 /**
@@ -234,7 +249,7 @@ void iwPostWindow::DisplayPostMessage()
     GetCtrl<Window>(ID_DENY)->SetVisible(false);
     GetCtrl<Window>(ID_INFO)->SetVisible(false);
 
-    unsigned size = postBox.GetNumMsgs();
+    unsigned size = curMsgIdxs.size();
 
     // Keine Nachrichten, alles ausblenden, bis auf zentrierten Text
     if (size == 0)
@@ -245,14 +260,14 @@ void iwPostWindow::DisplayPostMessage()
     }
 
     // Falls currentMessage außerhalb der aktuellen Nachrichtenmenge liegt: korrigieren
-    if (curMsgIdx >= size)
-        curMsgIdx = size - 1;
+    if (curMsgId >= size)
+        curMsgId = size - 1;
 
-    curMsg = postBox.GetMsg(curMsgIdx);
+    curMsg = GetMsg(curMsgId);
 
     // We have a message, display its status...
     std::stringstream ss;
-    ss << _("Message") << " " << curMsgIdx + 1 << " " << _("of") << " " << size << " - GF: " << curMsg->GetSendFrame();
+    ss << _("Message") << " " << curMsgId + 1 << " " << _("of") << " " << size << " - GF: " << curMsg->GetSendFrame();
     GetCtrl<ctrlText>(ID_INFO)->SetText(ss.str());
     GetCtrl<ctrlText>(ID_INFO)->SetVisible(true);
     // ...and delete button
@@ -297,4 +312,63 @@ void iwPostWindow::SetMessageText(const std::string& message)
         else
             text->SetLine(i, "", COLOR_WINDOWBROWN);
     }
+}
+
+void iwPostWindow::FilterMessages()
+{
+    curMsgIdxs.clear();
+    lastMsgCt = postBox.GetNumMsgs();
+    for(unsigned i=0; i<lastMsgCt; i++)
+    {
+        if(showAll || postBox.GetMsg(i)->GetCategory() == curCategory)
+            curMsgIdxs.push_back(i);
+    }
+}
+
+bool iwPostWindow::ValidateMessages()
+{
+    if(lastMsgCt == postBox.GetNumMsgs() && GetMsg(curMsgId) == curMsg)
+        return true;
+    // Messages have changed -> Update filter
+    FilterMessages();
+    if(!curMsg)
+    {
+        // No last message? Display oldest
+        curMsgId = 0;
+        DisplayPostMessage();
+        return false;
+    }else
+    {
+        // Message was either deleted or others were added and message was shifted
+        // So first search it, if not found we will display the next (newer) message
+        for(unsigned i = curMsgId; i > 0; i--)
+        {
+            if(postBox.GetMsg(i - 1) == curMsg)
+            {
+                curMsgId = i - 1;
+                DisplayPostMessage();
+                return true;
+            }
+        }
+        // Display next valid one
+        DisplayPostMessage();
+        return false;
+    }
+}
+
+const PostMsg* iwPostWindow::GetMsg(unsigned id) const
+{
+    if(id < curMsgIdxs.size())
+        return postBox.GetMsg(curMsgIdxs[id]);
+    else
+        return NULL;
+}
+
+void iwPostWindow::SwitchCategory(PostCategory cat)
+{
+    showAll = false;
+    curCategory = cat;
+    FilterMessages();
+    curMsgId = curMsgIdxs.size();
+    DisplayPostMessage();
 }

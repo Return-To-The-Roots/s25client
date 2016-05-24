@@ -31,7 +31,7 @@ PostBox::~PostBox()
         delete messages[i];
 }
 
-void PostBox::AddMsg(PostMsg* msg)
+void PostBox::AddMsg(const PostMsg* msg)
 {
     if(numMessages == MAX_MESSAGES)
         DeleteMsg(0, false);
@@ -41,7 +41,7 @@ void PostBox::AddMsg(PostMsg* msg)
         evNewMsg(numMessages);
 }
 
-bool PostBox::DeleteMsg(PostMsg* msg)
+bool PostBox::DeleteMsg(const PostMsg* msg)
 {
     if(!msg)
         return false;
@@ -72,7 +72,7 @@ bool PostBox::DeleteMsg(unsigned idx, bool notify)
     return true;
 }
 
-PostMsg* PostBox::GetMsg(unsigned idx) const
+const PostMsg* PostBox::GetMsg(unsigned idx) const
 {
     if(idx >= numMessages)
         return NULL;

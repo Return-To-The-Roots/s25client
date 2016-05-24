@@ -32,9 +32,9 @@ public:
     ~PostBox();
 
     /// Add the message, possibly deleting the oldest message
-    void AddMsg(PostMsg* msg);
+    void AddMsg(const PostMsg* msg);
     /// Delete the message. Return true, when it existed
-    bool DeleteMsg(PostMsg* msg);
+    bool DeleteMsg(const PostMsg* msg);
     /// Delete the message by its index. Return true, if it was valid
     /// Oldest message is at index 0
     bool DeleteMsg(unsigned idx);
@@ -42,7 +42,7 @@ public:
     static BOOST_CONSTEXPR unsigned GetMaxMsgs() { return MAX_MESSAGES; }
     /// Get message by index or NULL if invalid index
     /// Oldest message is at index 0
-    PostMsg* GetMsg(unsigned idx) const;
+    const PostMsg* GetMsg(unsigned idx) const;
     /// Set callback that receives new message count everytime a message is added
     void ObserveNewMsg(const Callback& callback) { evNewMsg = callback; }
     /// Set callback that receives new message count everytime a message is deleted
@@ -50,7 +50,7 @@ public:
 private:
     BOOST_STATIC_CONSTEXPR unsigned MAX_MESSAGES = 20;
     bool DeleteMsg(unsigned idx, bool notify);
-    boost::array<PostMsg*, MAX_MESSAGES> messages;
+    boost::array<const PostMsg*, MAX_MESSAGES> messages;
     unsigned numMessages;
     Callback evNewMsg, evDelMsg;
 };
