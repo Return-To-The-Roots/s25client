@@ -37,7 +37,12 @@
 namespace{
     // Enum is auto-numbering once we set a start value
     enum ButtonIds{
-        ID_GOTO = 14,
+        ID_FIRST_FREE = 14,
+        ID_GO_START,
+        ID_GO_BACK,
+        ID_GO_FWD,
+        ID_GO_END,
+        ID_GOTO,
         ID_DELETE,
         ID_IMG,
         ID_TEXT,
@@ -58,10 +63,10 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     AddImageButton( 5, 199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));   // Viewer:  80 - Notiz
     AddImage(  6, 126, 151, LOADER.GetImageN("io", 228));
     AddImageButton( 7, 18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton( 8, 51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
-    AddImageButton( 9, 81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
-    AddImageButton(10, 111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(11, 141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton(ID_GO_START, 51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
+    AddImageButton(ID_GO_BACK, 81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
+    AddImageButton(ID_GO_FWD, 111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton(ID_GO_END, 141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
     AddImageButton(ID_GOTO, 181, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
@@ -92,27 +97,27 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 8:
+        case ID_GO_START:
             // To oldest
             curMsgIdx = 0;
             DisplayPostMessage();
             break;
-        case 9:
+        case ID_GO_BACK:
             // Back
             curMsgIdx = (curMsgIdx > 0) ? curMsgIdx - 1 : 0;
             DisplayPostMessage();
             break;
-        case 10:
+        case ID_GO_FWD:
             // Forward
             ++curMsgIdx;
             DisplayPostMessage();
             break;
-        case 11:
+        case ID_GO_END:
             // To newest
             curMsgIdx = postBox.GetNumMsgs();
             DisplayPostMessage();
             break;
-        case 14:
+        case ID_GOTO:
         {
             // Goto
             PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
@@ -122,8 +127,8 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         break;
 
         
-        case 15: // Delete
-        case 17: // Cross (Deny)
+        case ID_DELETE: // Delete
+        case ID_DENY: // Cross (Deny)
         {
             PostMsg* curMsg = postBox.GetMsg(curMsgIdx);
             DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(curMsg);
@@ -138,7 +143,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         break;
 
         // Haken-Button ("Ja")
-        case 16:
+        case ID_ACCEPT:
         {
             DiplomacyPostQuestion* dcurMsg = dynamic_cast<DiplomacyPostQuestion*>(postBox.GetMsg(curMsgIdx));
             if (dcurMsg)
@@ -151,9 +156,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
                 postBox.DeleteMsg(dcurMsg);
             }
         } break;
-
     }
-
 }
 
 void iwPostWindow::Msg_PaintBefore()
@@ -190,20 +193,20 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
         default:
             break;
         case KT_DELETE: // Delete current message
-            Msg_ButtonClick(15);
+            Msg_ButtonClick(ID_DELETE);
             return true;
     }
 
     switch(ke.c)
     {
         case '+': // Next message
-            Msg_ButtonClick(10);
+            Msg_ButtonClick(ID_GO_FWD);
             return true;
         case '-': // Previous message
-            Msg_ButtonClick(9);
+            Msg_ButtonClick(ID_GO_BACK);
             return true;
         case 'g': // Go to site of event
-            Msg_ButtonClick(14);
+            Msg_ButtonClick(ID_GOTO);
             return true;
     }
 
