@@ -90,6 +90,7 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     text->AddString("", COLOR_WINDOWBROWN, false);
     text->AddString("", COLOR_WINDOWBROWN, false);
     text->AddString("", COLOR_WINDOWBROWN, false);
+    text->AddString("", COLOR_WINDOWBROWN, false);
 
     // Button with OK and deny sign (tick and cross) for contracts
     AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
@@ -305,7 +306,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
 
     glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(message, 190, 190);
     std::vector<std::string> lines = wi.CreateSingleStrings(message);
-    for(unsigned i = 0; i < 3; ++i)
+    for(unsigned i = 0; i < 4; ++i)
     {
         if (i < lines.size())
             text->SetLine(i, lines[i], COLOR_WINDOWBROWN);

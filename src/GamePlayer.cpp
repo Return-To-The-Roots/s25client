@@ -1715,7 +1715,7 @@ void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned
     if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].start == id)
     {
         MakePact(pt, targetPlayer, pacts[targetPlayer][pt].duration);
-        gwg->GetPlayer(targetPlayer).MakePact(pt, id, pacts[targetPlayer][pt].duration);
+        gwg->GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
         PactChanged(pt);
         gwg->GetPlayer(targetPlayer).PactChanged(pt);
     }
