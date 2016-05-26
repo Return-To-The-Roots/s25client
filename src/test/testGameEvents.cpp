@@ -163,7 +163,7 @@ class TestRemoveEvent: public TestEventHandler
 public:
     EventManager& em;
     GameEvent* ev2Remove;
-    TestRemoveEvent(EventManager& em): em(em){}
+    TestRemoveEvent(EventManager& em): em(em), ev2Remove(NULL){}
 
     void HandleEvent(const unsigned evId) override
     {

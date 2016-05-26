@@ -19,6 +19,7 @@
 #include "EmptyWorldFixture.h"
 #include "GamePlayer.h"
 #include "nodeObjs/noBase.h"
+#include "factories/GameCommandFactory.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 
@@ -26,29 +27,38 @@
     for(TYPE pt(0, 0); pt.y < (HEIGHT); ++pt.y) \
         for(pt.x = 0; pt.x < (WIDTH); ++pt.x)
 
-BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
-
-BOOST_FIXTURE_TEST_CASE(HQPlacement, EmptyWorldFixture<1>)
+template<typename T>
+std::ostream& operator<<(std::ostream &out, const Point<T>& point)
 {
-    GamePlayer& player = world.GetPlayer(0);
-    BOOST_REQUIRE(player.isUsed());
-    const MapPoint hqPos = player.GetHQPos();
-    BOOST_REQUIRE(hqPos.isValid());
-    BOOST_REQUIRE_EQUAL(world.GetNO(player.GetHQPos())->GetGOT(), GOT_NOB_HQ);
-    // Check ownership of points
-    std::vector<MapPoint> ownerPts = world.GetPointsInRadius(hqPos, HQ_RADIUS);
-    BOOST_FOREACH(MapPoint pt, ownerPts)
+    return out << "(" << point.x << ", " << point.y << ")";
+}
+
+BOOST_AUTO_TEST_SUITE(GameCommandSuite)
+
+template<unsigned T_numPlayers>
+class WorldWithGCExecution: public EmptyWorldFixture<T_numPlayers>, public GameCommandFactory
+{
+public:
+    unsigned curPlayer;
+    MapPoint hqPos;
+    WorldWithGCExecution(): curPlayer(0), hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
+protected:
+    virtual bool AddGC(gc::GameCommand* gc) override
     {
-        // This should be ensured by `GetPointsInRadius`
-        BOOST_REQUIRE_LE(world.CalcDistance(pt, hqPos), HQ_RADIUS);
-        // We must own this point
-        BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, 1);
-        // Points at radius are border nodes, others player territory
-        if(world.CalcDistance(pt, hqPos) == HQ_RADIUS)
-            BOOST_REQUIRE(world.IsBorderNode(pt, 1));
-        else
-            BOOST_REQUIRE(world.IsPlayerTerritory(pt));
+        gc->Execute(world, world.GetPlayer(curPlayer), curPlayer);
+        deletePtr(gc);
+        return true;
     }
+};
+
+BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution<1>)
+{
+    MapPoint flagPt = hqPos + MapPoint(3, 0);
+    this->SetFlag(flagPt);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NOP_FLAG);
+    BOOST_REQUIRE(world.GetSpecObj<noRoadNode>(flagPt));
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noRoadNode>(flagPt)->GetPos(), flagPt);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noRoadNode>(flagPt)->GetPlayer(), 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
