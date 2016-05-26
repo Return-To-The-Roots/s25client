@@ -167,6 +167,9 @@ public:
 
     /// Returns true, if the given (map)-resource is available at that node
     bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
+
+    /// Writeable access to node. Use only for initial map setup!
+    MapNode& GetNodeWriteable(const MapPoint pt);
 protected:
     void VisibilityChanged(const MapPoint pt, unsigned player) override;
 };

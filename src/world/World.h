@@ -69,6 +69,7 @@ class World
 
     boost::interprocess::unique_ptr<noBase, Deleter<noBase> > noNodeObj;
 
+protected:
     /// Internal method for access to nodes with write access
     inline MapNode& GetNodeInt(const MapPoint pt);
     inline MapNode& GetNeighbourNodeInt(const MapPoint pt, const unsigned i);

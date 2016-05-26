@@ -1509,6 +1509,12 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
     return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
 }
 
+
+MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)
+{
+    return GetNodeInt(pt);
+}
+
 void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player)
 {
     GameWorldBase::VisibilityChanged(pt, player);
