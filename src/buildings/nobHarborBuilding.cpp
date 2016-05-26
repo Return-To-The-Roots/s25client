@@ -410,9 +410,10 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // Look for missing scouts
-    if(inventory[JOB_SCOUT] < gwg->GetGGS().GetNumScoutsExedition())
+    const unsigned numScoutsRequired = gwg->GetGGS().GetNumScoutsExedition();
+    if(inventory[JOB_SCOUT] < numScoutsRequired)
     {
-        unsigned missing = gwg->GetGGS().GetNumScoutsExedition() - inventory[JOB_SCOUT];
+        unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
         //got scouts in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
         for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
@@ -429,12 +430,12 @@ void nobHarborBuilding::StartExplorationExpedition()
         while(missing > 0 && TryRecruitJob(JOB_SCOUT))
             missing--;
         // Order scouts, we still requires
-        for(unsigned i = inventory[JOB_SCOUT]; i < gwg->GetGGS().GetNumScoutsExedition(); ++i)
+        for(unsigned i = inventory[JOB_SCOUT]; i < numScoutsRequired; ++i)
             owner.AddJobWanted(JOB_SCOUT, this);
     }
     if(inventory[JOB_SCOUT])
     {
-        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], gwg->GetGGS().GetNumScoutsExedition());
+        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], numScoutsRequired);
         inventory.real.Remove(JOB_SCOUT, exploration_expedition.scouts);
     }
 

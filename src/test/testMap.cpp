@@ -86,9 +86,10 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture)
     glArchivItem_Map map;
     std::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
-    BOOST_CHECK_EQUAL(map.getHeader().getWidth(), 176);
-    BOOST_CHECK_EQUAL(map.getHeader().getHeight(), 80);
-    BOOST_CHECK_EQUAL(map.getHeader().getPlayer(), 4);
+    const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
+    BOOST_CHECK_EQUAL(header.getWidth(), 176);
+    BOOST_CHECK_EQUAL(header.getHeight(), 80);
+    BOOST_CHECK_EQUAL(header.getPlayer(), 4);
 
     std::vector<Nation> nations(0);
     MapLoader loader(world, nations);

@@ -314,13 +314,13 @@ void World::SetReserved(const MapPoint pt, const bool reserved)
 
 void World::SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime)
 {
-    MapNode& node = GetNodeInt(pt);
-    if(node.fow[player].visibility == vis)
+    FoWNode& node = GetNodeInt(pt).fow[player];
+    if(node.visibility == vis)
         return;
 
-    node.fow[player].visibility = vis;
+    node.visibility = vis;
     if(vis == VIS_VISIBLE)
-        deletePtr(node.fow[player].object);
+        deletePtr(node.object);
     else if(vis == VIS_FOW)
         SaveFOWNode(pt, player, curTime);
     VisibilityChanged(pt, player);

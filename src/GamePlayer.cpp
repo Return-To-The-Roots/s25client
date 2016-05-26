@@ -49,6 +49,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/src/Log.h"
+#include <boost/foreach.hpp>
 #include <stdint.h>
 #include <limits>
 
@@ -245,19 +246,17 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
 
     sgd.PushMapPoint(hqPos);
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    BOOST_FOREACH(const Distribution& dist, distribution)
     {
-        for (unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
-        {
-            sgd.PushUnsignedChar(distribution[i].percent_buildings[bldType]);
-        }
-        sgd.PushUnsignedInt(distribution[i].client_buildings.size());
-        for(std::vector<BuildingType>::iterator it = distribution[i].client_buildings.begin(); it != distribution[i].client_buildings.end(); ++it)
-            sgd.PushUnsignedChar(*it);
-        sgd.PushUnsignedInt(unsigned(distribution[i].goals.size()));
-        for(unsigned z = 0; z < distribution[i].goals.size(); ++z)
-            sgd.PushUnsignedChar(distribution[i].goals[z]);
-        sgd.PushUnsignedInt(distribution[i].selected_goal);
+        BOOST_FOREACH(unsigned char p, dist.percent_buildings)
+            sgd.PushUnsignedChar(p);
+        sgd.PushUnsignedInt(dist.client_buildings.size());
+        BOOST_FOREACH(unsigned char bld, dist.client_buildings)
+            sgd.PushUnsignedChar(bld);
+        sgd.PushUnsignedInt(unsigned(dist.goals.size()));
+        BOOST_FOREACH(BuildingType goal, dist.goals)
+            sgd.PushUnsignedChar(goal);
+        sgd.PushUnsignedInt(dist.selected_goal);
     }
 
     sgd.PushUnsignedChar(orderType_);
@@ -2226,11 +2225,12 @@ void GamePlayer::TestPacts()
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pactId].duration = 0;
-                RTTR_Assert(gwg->GetPlayer(i).pacts[GetPlayerId()][pactId].duration);
-                gwg->GetPlayer(i).pacts[GetPlayerId()][pactId].duration = 0;
+                GamePlayer& otherPlayer = gwg->GetPlayer(i);
+                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pactId].duration);
+                otherPlayer.pacts[GetPlayerId()][pactId].duration = 0;
                 // And notify
                 PactChanged(PactType(pactId));
-                gwg->GetPlayer(i).PactChanged(PactType(pactId));
+                otherPlayer.PactChanged(PactType(pactId));
             }
         }
     }

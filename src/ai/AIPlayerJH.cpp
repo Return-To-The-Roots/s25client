@@ -146,23 +146,24 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
     namespace bl = boost::lambda;
     using bl::_1;
-    subBuilding = gwb.GetNotifications().subscribe<BuildingNote>(
+    NotificationManager& notifications = gwb.GetNotifications();
+    subBuilding = notifications.subscribe<BuildingNote>(
         bl::if_(bl::bind(&BuildingNote::player, _1) == playerId)[
             bl::bind(&HandleBuildingNote, boost::ref(eventManager), _1)
         ]);
-    subExpedition = gwb.GetNotifications().subscribe<ExpeditionNote>(
+    subExpedition = notifications.subscribe<ExpeditionNote>(
         bl::if_(bl::bind(&ExpeditionNote::player, _1) == playerId)[
             bl::bind(&HandleExpeditionNote, boost::ref(eventManager), _1)
         ]);
-    subResource = gwb.GetNotifications().subscribe<ResourceNote>(
+    subResource = notifications.subscribe<ResourceNote>(
         bl::if_(bl::bind(&ResourceNote::player, _1) == playerId)[
             bl::bind(&HandleResourceNote, boost::ref(eventManager), _1)
         ]);
-    subRoad = gwb.GetNotifications().subscribe<RoadNote>(
+    subRoad = notifications.subscribe<RoadNote>(
         bl::if_(bl::bind(&RoadNote::player, _1) == playerId)[
             bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)
         ]);
-    subShip = gwb.GetNotifications().subscribe<ShipNote>(
+    subShip = notifications.subscribe<ShipNote>(
         bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[
             bl::bind(&HandleShipNote, boost::ref(eventManager), _1)
         ]);

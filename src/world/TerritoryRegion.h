@@ -57,8 +57,8 @@ private:
     static bool IsPointInPolygon(const std::vector<MapPoint>& polygon, const MapPoint pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
     void AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
-    TRNode& GetNode(const PointI pt) { return nodes[GetIdx(pt)]; }
-    const TRNode& GetNode(const PointI pt) const { return nodes[GetIdx(pt)]; }
+    TRNode& GetNode(const PointI& pt) { return nodes[GetIdx(pt)]; }
+    const TRNode& GetNode(const PointI& pt) const { return nodes[GetIdx(pt)]; }
 
 public:
     TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb);
@@ -69,11 +69,11 @@ public:
     /// Berechnet ein Militärgebäude mit ein
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
-    unsigned GetIdx(PointI pt) const { PointI offset(pt - startPt); return offset.y * size.x + offset.x; }
+    unsigned GetIdx(const PointI& pt) const { PointI offset(pt - startPt); return offset.y * size.x + offset.x; }
     /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
-    unsigned char GetOwner(PointI pt) const { return GetNode(pt).owner; }
+    unsigned char GetOwner(const PointI& pt) const { return GetNode(pt).owner; }
     /// Liefert Radius mit dem der Punkt besetzt wurde
-    unsigned char GetRadius(PointI pt) const { return GetNode(pt).radius; }
+    unsigned char GetRadius(const PointI& pt) const { return GetNode(pt).radius; }
 };
 
 #endif

@@ -92,6 +92,7 @@ ENUM_WITH_STRING(AddonId,
 
     NUM_SCOUTS_EXPLORATION     = 0x00C00000
 )
+//-V:AddonId:801 
 
 enum AddonGroup
 {

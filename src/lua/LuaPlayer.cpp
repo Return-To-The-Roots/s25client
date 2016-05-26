@@ -187,9 +187,10 @@ unsigned LuaPlayer::GetPeopleCount(Job job)
 bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
-    check(x < player.GetGameWorld().GetWidth(), "x coordinate to large");
-    check(y < player.GetGameWorld().GetHeight(), "y coordinate to large");
-    player.GetGameWorld().GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));
+    GameWorldGame& world = player.GetGameWorld();
+    check(x < world.GetWidth(), "x coordinate to large");
+    check(y < world.GetHeight(), "y coordinate to large");
+    world.GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));
     return true;
 }
 

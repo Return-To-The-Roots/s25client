@@ -38,9 +38,10 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
 
     // Spieler zählen
     numPlayingPlayers = 0;
-    for (unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    const GameWorldBase& world = gwv.GetWorld();
+    for (unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
-        if (gwv.GetWorld().GetPlayer(i).isUsed())
+        if (world.GetPlayer(i).isUsed())
             numPlayingPlayers++;
     }
 
@@ -48,25 +49,24 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
     unsigned short startX = 126 - (numPlayingPlayers - 1) * 17;
     unsigned pos = 0;
 
-    for (unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for (unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
         // nicht belegte Spielplätze rauswerfen
-        if (!gwv.GetWorld().GetPlayer(i).isUsed())
-        {
-            activePlayers[i] = false;
+        const GamePlayer& curPlayer = world.GetPlayer(i);
+        if (!curPlayer.isUsed())
             continue;
-        }
-        switch(gwv.GetWorld().GetPlayer(i).nation)
+
+        switch(curPlayer.nation)
         {
-            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), gwv.GetWorld().GetPlayer(i).name)->SetBorder(false);
+            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_JAPANESE: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), gwv.GetWorld().GetPlayer(i).name)->SetBorder(false);
+            case NAT_JAPANESE: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), gwv.GetWorld().GetPlayer(i).name)->SetBorder(false);
+            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), gwv.GetWorld().GetPlayer(i).name)->SetBorder(false);
+            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), gwv.GetWorld().GetPlayer(i).name)->SetBorder(false);
+            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), curPlayer.name)->SetBorder(false);
                 break;
             case NAT_COUNT:
             case NAT_INVALID:
@@ -74,7 +74,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
         }
 
         // Statistik-Sichtbarkeit abhängig von Auswahl
-        switch (GAMECLIENT.IsReplayModeOn() ? 0 : gwv.GetWorld().GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
+        switch (GAMECLIENT.IsReplayModeOn() ? 0 : world.GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
         {
             default: // Passiert eh nicht, nur zur Sicherheit
                 activePlayers[i] = false;
@@ -271,11 +271,12 @@ void iwStatistics::DrawStatistic(StatisticType type)
     unsigned int min = 65000;
 
     // Maximal- und Minimalwert suchen
-    for (unsigned int p = 0; p < gwv.GetWorld().GetPlayerCount(); ++p)
+    const GameWorldBase& world = gwv.GetWorld();
+    for (unsigned int p = 0; p < world.GetPlayerCount(); ++p)
     {
         if (!activePlayers[p])
             continue;
-        const GamePlayer::Statistic& stat = gwv.GetWorld().GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -312,11 +313,11 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
     // Statistiklinien zeichnen
     unsigned short previousX = 0, previousY = 0;
-    for (unsigned p = 0; p < gwv.GetWorld().GetPlayerCount(); ++p)
+    for (unsigned p = 0; p < world.GetPlayerCount(); ++p)
     {
         if (!activePlayers[p])
             continue;
-        const GamePlayer::Statistic& stat = gwv.GetWorld().GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -327,13 +328,13 @@ void iwStatistics::DrawStatistic(StatisticType type)
                 {
                     DrawLine(topLeftX + (STAT_STEP_COUNT - i) * stepX,
                              topLeftY + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)] - min)*sizeY) / (max - min),
-                             previousX, previousY, 2, gwv.GetWorld().GetPlayer(p).color);
+                             previousX, previousY, 2, world.GetPlayer(p).color);
                 }
                 else
                 {
                     DrawLine(topLeftX + (STAT_STEP_COUNT - i) * stepX,
                              topLeftY + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])*sizeY) / max,
-                             previousX, previousY, 2, gwv.GetWorld().GetPlayer(p).color);
+                             previousX, previousY, 2, world.GetPlayer(p).color);
                 }
             }
             previousX = topLeftX + (STAT_STEP_COUNT - i) * stepX;

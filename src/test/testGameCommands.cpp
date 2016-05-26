@@ -39,6 +39,8 @@ template<unsigned T_numPlayers>
 class WorldWithGCExecution: public EmptyWorldFixture<T_numPlayers>, public GameCommandFactory
 {
 public:
+    using EmptyWorldFixture<T_numPlayers>::world;
+
     unsigned curPlayer;
     MapPoint hqPos;
     WorldWithGCExecution(): curPlayer(0), hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
@@ -51,9 +53,18 @@ protected:
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution<1>)
+// Avoid having to use "this->" to access those
+class WorldWithGCExecution1P: public WorldWithGCExecution<1>
 {
-    MapPoint flagPt = hqPos + MapPoint(3, 0);
+public:
+    using WorldWithGCExecution<1>::world;
+    using WorldWithGCExecution<1>::curPlayer;
+    using WorldWithGCExecution<1>::hqPos;
+};
+
+BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution1P)
+{
+    MapPoint flagPt = this->hqPos + MapPoint(3, 0);
     this->SetFlag(flagPt);
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NOP_FLAG);
     BOOST_REQUIRE(world.GetSpecObj<noRoadNode>(flagPt));

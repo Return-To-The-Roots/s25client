@@ -86,7 +86,7 @@ public:
     void PushFOWObject(const FOWObject* fowobj);
 
     template<typename T>
-    void PushPoint(const Point<T> pt);
+    void PushPoint(const Point<T>& pt);
 
     /// Point of map coords
     void PushMapPoint(const MapPoint pt){ PushPoint(pt); }
@@ -245,7 +245,7 @@ T SerializedGameData::PopContainer(const T&)
 }
 
 template<typename T>
-void SerializedGameData::PushPoint(const Point<T> pt)
+void SerializedGameData::PushPoint(const Point<T>& pt)
 {
     Push(pt.x);
     Push(pt.y);
