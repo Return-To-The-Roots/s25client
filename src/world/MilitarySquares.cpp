@@ -26,10 +26,11 @@ MilitarySquares::MilitarySquares(): width(0), height(0)
 
 void MilitarySquares::Init(const unsigned short mapWidth, const unsigned short mapHeight)
 {
+    RTTR_Assert(width == 0 && height == 0); // Already initialized
+    RTTR_Assert(mapWidth > 0 && mapHeight > 0); // No empty map
     // Calculate size (rounding up)
     width  = (mapWidth + MILITARY_SQUARE_SIZE - 1) / MILITARY_SQUARE_SIZE;
     height = (mapHeight + MILITARY_SQUARE_SIZE - 1) / MILITARY_SQUARE_SIZE;
-    squares.clear();
     squares.resize(width * height);
 }
 

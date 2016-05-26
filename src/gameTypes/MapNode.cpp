@@ -19,6 +19,15 @@
 #include "gameTypes/MapNode.h"
 #include "SerializedGameData.h"
 #include "nodeObjs/noBase.h"
+#include <algorithm>
+
+MapNode::MapNode():
+    altitude(10), shadow(64), t1(TT_SNOW), t2(TT_SNOW), resources(0), reserved(false), owner(0), bq(BQ_NOTHING),
+    sea_id(0), harbor_id(0), obj(NULL)
+{
+    std::fill(roads.begin(), roads.end(), 0);
+    std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
+}
 
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) const
 {

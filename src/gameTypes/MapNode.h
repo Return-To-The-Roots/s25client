@@ -60,7 +60,7 @@ struct MapNode
     /// Figures or fights on this node
     std::list<noBase*> figures;
 
-    MapNode(): obj(NULL){}
+    MapNode();
     void Serialize(SerializedGameData& sgd, const unsigned numPlayers) const;
     void Deserialize(SerializedGameData& sgd, const unsigned numPlayers);
 };
