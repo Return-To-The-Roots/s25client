@@ -30,10 +30,6 @@
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
     : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation), isTent_(isTent)
 {
-    // ins Militärquadrat einfügen
-    gwg->GetMilitarySquares().Add(this);
-    gwg->RecalcTerritory(*this, false, true);
-
     // StartWaren setzen
     switch(gwg->GetGGS().start_wares)
     {
@@ -327,18 +323,26 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
     // Evtl. liegen am Anfang Waffen im HQ, sodass rekrutiert werden muss
     TryRecruiting();
+
+    // ins Militärquadrat einfügen
+    gwg->GetMilitarySquares().Add(this);
+    gwg->RecalcTerritory(*this, false, true);
+
+    GamePlayer& owner = gwg->GetPlayer(player);
+    owner.SetHQ(*this);
+    owner.AddWarehouse(this);
+
 }
 
 void nobHQ::Destroy_nobHQ()
 {
     Destroy_nobBaseWarehouse();
 
-    // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
-    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
-    gwg->RecalcTerritory(*this, true, false);
-
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetMilitarySquares().Remove(this);
+    // Land drumherum neu berechnen
+    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
+    gwg->RecalcTerritory(*this, true, false);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
@@ -350,9 +354,6 @@ void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
 nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.PopBool())
 {
     gwg->GetMilitarySquares().Add(this);
-
-    // Startpos setzen
-    gwg->GetPlayer(player).SetHQ(*this);
 }
 
 void nobHQ::Draw(DrawPoint drawPt)

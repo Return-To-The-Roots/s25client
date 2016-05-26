@@ -1157,11 +1157,12 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods)
 
 void nobBaseWarehouse::AddToInventory()
 {
+    GamePlayer& owner = gwg->GetPlayer(player);
     for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
-        gwg->GetPlayer(player).IncreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
+        owner.IncreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     for(unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
-        gwg->GetPlayer(player).IncreaseInventoryJob(Job(i), inventory[Job(i)]);
+        owner.IncreaseInventoryJob(Job(i), inventory[Job(i)]);
 }
 
 bool nobBaseWarehouse::CanRecruit(const Job job) const

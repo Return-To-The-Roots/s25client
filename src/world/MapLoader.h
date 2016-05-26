@@ -32,27 +32,32 @@ class MapLoader
     const std::vector<Nation> playerNations;
     std::vector<MapPoint> hqPositions;
 
-    /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
-    /// Wasserpunkte mit der gleichen sea_id belegt und die Anzahl zurückgibt
-    unsigned MeasureSea(const MapPoint pt, const unsigned short sea_id);
-
-    void InitSeasAndHarbors();
-
     /// Inititalize the nodes according to the map data
     void InitNodes(const glArchivItem_Map& map, Exploration exploration);
     /// Place all objects on the nodes according to the map data.
     void PlaceObjects(const glArchivItem_Map& map);
-    bool PlaceHQs(bool randomStartPos);
     void PlaceAnimals(const glArchivItem_Map& map);
-    void CalcHarborPosNeighbors();
+
+    /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
+    /// Wasserpunkte mit der gleichen sea_id belegt und die Anzahl zurückgibt
+    static unsigned MeasureSea(World& world, const MapPoint pt, unsigned short sea_id);
+    static void CalcHarborPosNeighbors(World& world);
+
 public:
     /// Construct a loader for the given world.
     /// Size of @playerNations must be the player count and unused player spots must be set to NAT_INVALID
     MapLoader(World& world, const std::vector<Nation>& playerNations);
     /// Load the map from the given archive, resetting previous state. Return false on error
     bool Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration);
+
     /// Return the position of the players HQ (only valid after successful load)
     MapPoint GetHQPos(unsigned player) const { return hqPositions[player]; }
+
+    static void InitShadows(World& world);
+    static void SetMapExplored(World& world, unsigned numPlayers);
+    static void InitSeasAndHarbors(World& world);
+    static bool PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos);
+
 };
 
 #endif // MapLoader_h__
