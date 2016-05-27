@@ -189,7 +189,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             {
                 if(lc < MAX_PLAYERS)
                 {
-                    while(hqPositions.size() < lc)
+                    while(hqPositions.size() <= lc)
                         hqPositions.push_back(MapPoint::Invalid());
                     hqPositions[lc] = pt;
                 }
