@@ -85,7 +85,7 @@ public:
     /// kann ansonsten auf 255 gesetzt werden
     void SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 255);
     /// Flagge soll zerstrört werden
-    void DestroyFlag(const MapPoint pt);
+    void DestroyFlag(const MapPoint pt, unsigned char playerId);
     /// Baustelle setzen
     void SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
     /// Gebäude bzw Baustelle abreißen
@@ -109,10 +109,6 @@ public:
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
-    /// Reißt eine Straße ab
-    void DestroyRoad(const MapPoint pt, const unsigned char dir);
-    /// baut eine Straße aus
-    void UpgradeRoad(const MapPoint pt, const unsigned char dir);
 
     /// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
     /// Militärgebäude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll

@@ -86,11 +86,15 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const
     }
 }
 
-void GameWorldGame::DestroyFlag(const MapPoint pt)
+void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
 {
     // Let's see if there is a flag
     if(GetNO(pt)->GetType() == NOP_FLAG)
     {
+        noFlag* flag = GetSpecObj<noFlag>(pt);
+        if(flag->GetPlayer() != playerId)
+            return;
+
         // Get the attached building if existing
         noBase* building = GetNO(GetNeighbour(pt, 1));
 
@@ -103,7 +107,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
         }
 
         // Demolish, also the building
-        GetSpecObj<noFlag>(pt)->DestroyAttachedBuilding();
+        flag->DestroyAttachedBuilding();
 
         DestroyNO(pt, false);
         RecalcBQAroundPointBig(pt);
@@ -325,23 +329,6 @@ bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
     }
 
     return false;
-}
-
-void GameWorldGame::DestroyRoad(const MapPoint pt, const unsigned char dir)
-{
-    // TODO: Verzögerungsbugabfrage, kann später ggf. weg
-    if(!GetSpecObj<noFlag>(pt))
-        return;
-
-    GetSpecObj<noFlag>(pt)->DestroyRoad(dir);
-}
-
-void GameWorldGame::UpgradeRoad(const MapPoint pt, const unsigned char dir)
-{
-    if(!GetSpecObj<noFlag>(pt))
-        return;
-
-    GetSpecObj<noFlag>(pt)->UpgradeRoad(dir);
 }
 
 void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool destroyed, const bool newBuilt)

@@ -47,7 +47,7 @@ public:
 protected:
     virtual bool AddGC(gc::GameCommand* gc) override
     {
-        gc->Execute(world, world.GetPlayer(curPlayer), curPlayer);
+        gc->Execute(world, curPlayer);
         deletePtr(gc);
         return true;
     }

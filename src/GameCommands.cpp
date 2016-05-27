@@ -23,218 +23,221 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
+#include "nodeObjs/noFlag.h"
 #include "world/GameWorldGame.h"
 #include <iostream>
 
 namespace gc{
 
-    void SetFlag::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void SetFlag::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.SetFlag(pt_, playerId);
     }
 
-    void DestroyFlag::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void DestroyFlag::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        gwg.DestroyFlag(pt_);
+        gwg.DestroyFlag(pt_, playerId);
     }
 
-    void BuildRoad::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void BuildRoad::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.BuildRoad(playerId, boat_road, pt_, route);
     }
 
-    void DestroyRoad::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void DestroyRoad::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        gwg.DestroyRoad(pt_, start_dir);
+        noFlag* flag = gwg.GetSpecObj<noFlag>(pt_);
+        if(flag && flag->GetPlayer() == playerId)
+            flag->DestroyRoad(start_dir);
     }
 
-    void UpgradeRoad::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void UpgradeRoad::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        gwg.UpgradeRoad(pt_, start_dir);
+        noFlag* flag = gwg.GetSpecObj<noFlag>(pt_);
+        if(flag && flag->GetPlayer() == playerId)
+            flag->UpgradeRoad(start_dir);
     }
 
-    void ChangeDistribution::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void ChangeDistribution::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.ChangeDistribution(data);
+        gwg.GetPlayer(playerId).ChangeDistribution(data);
     }
 
-    void ChangeBuildOrder::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void ChangeBuildOrder::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.ChangeBuildOrder(order_type, data);
+        gwg.GetPlayer(playerId).ChangeBuildOrder(order_type, data);
     }
 
-    void SetBuildingSite::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void SetBuildingSite::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.SetBuildingSite(bt, pt_, playerId);
     }
 
-    void DestroyBuilding::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void DestroyBuilding::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.DestroyBuilding(pt_, playerId);
     }
 
-    void ChangeTransport::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void ChangeTransport::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.ConvertTransportData(data);
+        gwg.GetPlayer(playerId).ConvertTransportData(data);
     }
 
-    void ChangeMilitary::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void ChangeMilitary::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.ChangeMilitarySettings(data);
+        gwg.GetPlayer(playerId).ChangeMilitarySettings(data);
     }
 
-    void ChangeTools::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void ChangeTools::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.ChangeToolsSettings(data, orders);
+        gwg.GetPlayer(playerId).ChangeToolsSettings(data, orders);
     }
 
-    void CallGeologist::Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char  /*playerId*/)
+    void CallGeologist::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        if(gwg.GetNO(pt_)->GetGOT() == GOT_FLAG)
-            player.CallFlagWorker(pt_, JOB_GEOLOGIST);
+        gwg.GetPlayer(playerId).CallFlagWorker(pt_, JOB_GEOLOGIST);
     }
 
-    void CallScout::Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char  /*playerId*/)
+    void CallScout::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        if(gwg.GetNO(pt_)->GetGOT() == GOT_FLAG)
-            player.CallFlagWorker(pt_, JOB_SCOUT);
+        gwg.GetPlayer(playerId).CallFlagWorker(pt_, JOB_SCOUT);
     }
 
-    void Attack::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void Attack::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.Attack(playerId, pt_, soldiers_count, strong_soldiers);
     }
 
-    void SeaAttack::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void SeaAttack::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.AttackViaSea(playerId, pt_, soldiers_count, strong_soldiers);
     }
 
-    void SetCoinsAllowed::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void SetCoinsAllowed::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobMilitary* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
         if(bld && bld->GetPlayer() == playerId)
             bld->SetCoinsAllowed(enabled);
     }
 
-    void SendSoldiersHome::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void SendSoldiersHome::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobMilitary* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
         if(bld && bld->GetPlayer() == playerId)
             bld->SendSoldiersHome();
     }
 
-    void OrderNewSoldiers::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void OrderNewSoldiers::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobMilitary* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
         if(bld && bld->GetPlayer() == playerId)
             bld->OrderNewSoldiers();
     }
 
-    void SetProductionEnabled::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void SetProductionEnabled::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobUsual* const bld = gwg.GetSpecObj<nobUsual>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->SetProductionEnabled(enabled);
     }
 
-    void SetInventorySetting::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void SetInventorySetting::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->SetInventorySetting(isJob, type, state);
     }
 
-    void SetAllInventorySettings::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void SetAllInventorySettings::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->SetAllInventorySettings(isJob, states);
     }
 
-    void ChangeReserve::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void ChangeReserve::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->SetRealReserve(rank, count);
     }
 
-    void Surrender::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void Surrender::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.Surrender();
+        gwg.GetPlayer(playerId).Surrender();
     }
 
-    void CheatArmageddon::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void CheatArmageddon::Execute(GameWorldGame& gwg, unsigned char  /*playerId*/)
     {
         gwg.Armageddon();
     }
 
-    void DestroyAll::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char playerId)
+    void DestroyAll::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.Armageddon(playerId);
     }
 
-    void SuggestPact::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void SuggestPact::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.SuggestPact(targetPlayer, pt, duration);
+        gwg.GetPlayer(playerId).SuggestPact(targetPlayer, pt, duration);
     }
 
-    void AcceptPact::Execute(GameWorldGame& gwg, GamePlayer&  player, const unsigned char playerId)
+    void AcceptPact::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         gwg.GetPlayer(fromPlayer).AcceptPact(id, pt, playerId);
     }
 
-    void CancelPact::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void CancelPact::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        player.CancelPact(pt, this->player);
+        gwg.GetPlayer(playerId).CancelPact(pt, player);
     }
 
-    void NotifyAlliesOfLocation::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char playerId)
+    void NotifyAlliesOfLocation::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-	    player.NotifyAlliesOfLocation(pt_);
+        gwg.GetPlayer(playerId).NotifyAlliesOfLocation(pt_);
     }
 
-    void ToggleShipYardMode::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void ToggleShipYardMode::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobShipYard* const bld = gwg.GetSpecObj<nobShipYard>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->ToggleMode();
     }
 
-    void StartExpedition::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void StartExpedition::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobHarborBuilding* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
         if(bld)
             bld->StartExpedition();
     }
 
-    void StartExplorationExpedition::Execute(GameWorldGame& gwg, GamePlayer&  /*player*/, const unsigned char  /*playerId*/)
+    void StartExplorationExpedition::Execute(GameWorldGame& gwg, unsigned char  /*playerId*/)
     {
         nobHarborBuilding* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
         if(bld)
             bld->StartExplorationExpedition();
     }
 
-    void ExpeditionCommand::Execute(GameWorldGame&  /*gwg*/, GamePlayer& player, const unsigned char  /*playerId*/)
+    void ExpeditionCommand::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        noShip* ship = player.GetShipByID(this->ship_id);
+        noShip* ship = gwg.GetPlayer(playerId).GetShipByID(this->ship_id);
         if(!ship)
             return;
 
-        if(this->action == FOUNDCOLONY)
+        if(action == FOUNDCOLONY)
             ship->FoundColony();
-        else if(this->action == CANCELEXPEDITION)
+        else if(action == CANCELEXPEDITION)
             ship->CancelExpedition();
         else
             ship->ContinueExpedition(action - 2);
     }
 
     /// Fuehrt das GameCommand aus
-    void TradeOverLand::Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char  /*playerId*/)
+    void TradeOverLand::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
         if(bld)
-            player.Trade(bld, gt, job, count);
+            gwg.GetPlayer(playerId).Trade(bld, gt, job, count);
     }
 
 }

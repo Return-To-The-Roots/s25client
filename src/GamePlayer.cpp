@@ -1413,6 +1413,8 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
     noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
+    if(!flag)
+        return;
     /// Find wh with given job type (e.g. geologist, scout, ...)
     nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job, true), false, false);
 
