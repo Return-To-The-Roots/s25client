@@ -24,8 +24,8 @@ struct VisualSettings
 {
     /// Verteilung
     Distributions distribution;
-    /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
-    unsigned char order_type;
+    /// Art der Reihenfolge (false = nach Auftraggebung, ansonsten nach build_order)
+    bool useCustomBuildOrder;
     /// Baureihenfolge
     BuildOrders build_order;
     /// Transport-Reihenfolge

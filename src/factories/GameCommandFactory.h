@@ -46,7 +46,7 @@ public:
     bool UpgradeRoad(const MapPoint pt, unsigned char start_dir);
     /// Sets new distribution of goods
     bool ChangeDistribution(const Distributions& data);
-    bool ChangeBuildOrder(unsigned char order_type, const BuildOrders& data);
+    bool ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data);
     /// Sets a building site (new building)
     bool SetBuildingSite(const MapPoint pt, BuildingType bt);
     /// Destroys a building on a spot

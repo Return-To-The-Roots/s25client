@@ -50,9 +50,9 @@ bool GameCommandFactory::ChangeDistribution(const Distributions& data)
     return AddGC( new gc::ChangeDistribution(data) );
 }
 
-bool GameCommandFactory::ChangeBuildOrder(unsigned char order_type, const BuildOrders& data)
+bool GameCommandFactory::ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data)
 {
-    return AddGC( new gc::ChangeBuildOrder(order_type, data) );
+    return AddGC( new gc::ChangeBuildOrder(useCustomBuildOrder, data) );
 }
 
 bool GameCommandFactory::SetBuildingSite(const MapPoint pt, BuildingType bt)

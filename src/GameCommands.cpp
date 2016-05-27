@@ -65,7 +65,7 @@ namespace gc{
 
     void ChangeBuildOrder::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
-        gwg.GetPlayer(playerId).ChangeBuildOrder(order_type, data);
+        gwg.GetPlayer(playerId).ChangeBuildOrder(useCustomBuildOrder, data);
     }
 
     void SetBuildingSite::Execute(GameWorldGame& gwg, unsigned char playerId)

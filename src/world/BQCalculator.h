@@ -213,7 +213,10 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
             noBase::BlockingManner bm = world.GetNO(world.GetNeighbour2(pt, i))->GetBM();
 
             if(bm >= noBase::BM_HUT && bm <= noBase::BM_MINE)
+            {
                 curBQ = BQ_HOUSE;
+                break;
+            }
         }
     }
 

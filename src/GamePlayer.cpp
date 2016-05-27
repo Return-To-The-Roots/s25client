@@ -131,7 +131,7 @@ void GamePlayer::LoadStandardMilitarySettings()
 
 void GamePlayer::LoadStandardBuildOrder()
 {
-    orderType_ = 0;
+    useCustomBuildOrder_ = false;
 
     // Baureihenfolge füllen (0 ist das HQ!)
     for(unsigned char i = 1, j = 0; i < BLD_COUNT; ++i)
@@ -259,7 +259,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
         sgd.PushUnsignedInt(dist.selected_goal);
     }
 
-    sgd.PushUnsignedChar(orderType_);
+    sgd.PushBool(useCustomBuildOrder_);
 
     for(unsigned i = 0; i < build_order.size(); ++i)
         sgd.PushUnsignedChar(build_order[i]);
@@ -375,7 +375,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         distribution[i].selected_goal = sgd.PopUnsignedInt();
     }
 
-    orderType_ = sgd.PopUnsignedChar();
+    useCustomBuildOrder_ = sgd.PopBool();
 
     for(unsigned i = 0; i < build_order.size(); ++i)
         build_order[i] = sgd.PopUnsignedChar();
@@ -1271,7 +1271,7 @@ unsigned short GamePlayer::CalcAverageProductivitiy()
 
 unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 {
-    if(orderType_)
+    if(useCustomBuildOrder_)
     {
         // Spezielle Reihenfolge
 
@@ -1519,10 +1519,10 @@ void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
 }
 
 /// Setzt neue Baureihenfolge-Einstellungen
-void GamePlayer::ChangeBuildOrder(const unsigned char order_type, const BuildOrders& order_data)
+void GamePlayer::ChangeBuildOrder(bool useCustomBuidOrder, const BuildOrders& oder_data)
 {
-    this->orderType_ = order_type;
-    this->build_order = order_data;
+    this->useCustomBuildOrder_ = useCustomBuidOrder;
+    this->build_order = oder_data;
 }
 
 bool GamePlayer::ShouldSendDefender()
@@ -2412,7 +2412,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     visDistribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
     visDistribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
 
-    visualSettings.order_type  = orderType_;
+    visualSettings.useCustomBuildOrder  = useCustomBuildOrder_;
     visualSettings.build_order = build_order;
 
     // Map prip of each ware to STD prio

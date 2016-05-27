@@ -220,7 +220,7 @@ class GamePlayer: public GamePlayerInfo
         /// Setzt neue Verteilungseinstellungen
         void ChangeDistribution(const Distributions& distribution_settings);
         /// Setzt neue Baureihenfolge-Einstellungen
-        void ChangeBuildOrder(const unsigned char order_type, const BuildOrders& oder_data);
+        void ChangeBuildOrder(bool order_type, const BuildOrders& oder_data);
 
         /// Can this player and the other attack each other?
         bool IsAttackable(const unsigned char playerId) const;
@@ -427,8 +427,8 @@ class GamePlayer: public GamePlayerInfo
 
         boost::array<Distribution, WARE_TYPES_COUNT> distribution;
 
-        /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
-        unsigned char orderType_;
+        /// Art der Reihenfolge (false = nach Auftraggebung, ansonsten nach build_order)
+        bool useCustomBuildOrder_;
         /// Baureihenfolge
         BuildOrders build_order;
         /// Prioritäten der Waren im Transport

@@ -113,7 +113,8 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
         RecalcBQAroundPointBig(pt);
     }
 
-    gi->GI_FlagDestroyed(pt);
+    if(gi)
+        gi->GI_FlagDestroyed(pt);
 }
 
 void GameWorldGame::SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type)

@@ -188,14 +188,14 @@ namespace gc{
     {
         GC_FRIEND_DECL;
             /// Ordnungs-Typ
-            const unsigned char order_type;
+            const bool useCustomBuildOrder;
             /// Daten der BuildOrder
             boost::array<unsigned char, 32> data;
         protected:
-            ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 32>& data)
-                : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) {}
+            ChangeBuildOrder(const bool useCustomBuildOrder, const boost::array<unsigned char, 32>& data)
+                : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(useCustomBuildOrder), data(data) {}
             ChangeBuildOrder(Serializer& ser)
-                : GameCommand(CHANGEBUILDORDER), order_type(ser.PopUnsignedChar())
+                : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(ser.PopBool())
             {
                 for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
@@ -203,7 +203,7 @@ namespace gc{
         public:
             void Serialize(Serializer& ser) const override
             {
-                ser.PushUnsignedChar(order_type);
+                ser.PushBool(useCustomBuildOrder);
                 for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
