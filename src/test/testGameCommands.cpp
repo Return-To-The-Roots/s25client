@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,6 +22,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/VisualSettings.h"
+#include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 
@@ -47,8 +48,20 @@ public:
     MapPoint hqPos;
     WorldWithGCExecution(): curPlayer(0), hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
 protected:
-    virtual bool AddGC(gc::GameCommand* gc) override
+    bool AddGC(gc::GameCommand* gc) override
     {
+        // Go through serialization to check if that works too
+        Serializer ser;
+        const gc::Type type = gc->GetType();
+        gc->Serialize(ser);
+        deletePtr(gc);
+        gc = gc::GameCommand::Deserialize(type, ser);
+        BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
+        Serializer ser2;
+        gc->Serialize(ser2);
+        BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
+        for(unsigned i = 0; i < ser.GetLength(); i++)
+            BOOST_REQUIRE_EQUAL(ser2.GetData()[i], ser.GetData()[i]);
         gc->Execute(world, curPlayer);
         deletePtr(gc);
         return true;
