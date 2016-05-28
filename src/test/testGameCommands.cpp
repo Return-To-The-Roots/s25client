@@ -122,22 +122,22 @@ BOOST_FIXTURE_TEST_CASE(RoadTest, WorldWithGCExecution2P)
     this->SetFlag(flagPt + MapPoint(4, 0));
     // Build road with 3 segments:
     // a1) invalid start pt -> No road
-    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<unsigned char>(4, 3));
+    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<unsigned char>(4, Direction::EAST));
     for(unsigned i = 0; i < 6; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 0);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     // a2) invalid player
     curPlayer = 1;
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, 3));
+    this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, Direction::EAST));
     for(unsigned i = 0; i < 6; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 0);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     curPlayer = 0;
 
     // b) Flag->Flag ->OK
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, 3));
+    this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, Direction::EAST));
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     // End of road
-    BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(4, 0), 3), 0);
+    BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(4, 0), Direction::EAST), 0);
     // BQ on road
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(1, 0)).bq, BQ_NOTHING);
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(2, 0)).bq, BQ_FLAG);
@@ -162,26 +162,26 @@ BOOST_FIXTURE_TEST_CASE(RoadTest, WorldWithGCExecution2P)
     // e) upgrade
     this->UpgradeRoad(flagPt, 3);
     for(unsigned i = 0; i < 2; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 2);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 2);
     for(unsigned i = 2; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     // f) destroy middle flag -> Road destroyed
     this->DestroyFlag(flagPt + MapPoint(2, 0));
     for(unsigned i = 0; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 0);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
 
     // g) Road with no existing end flag -> Road and flag place
     this->BuildRoad(flagPt, false, std::vector<unsigned char>(2, 3));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     for(unsigned i = 0; i < 2; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
 
     // h) Non-blocking env. object
     world.SetNO(flagPt + MapPoint(3, 0), new noEnvObject(flagPt, 512));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NOP_ENVIRONMENT);
-    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<unsigned char>(2, 3));
+    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<unsigned char>(2, Direction::EAST));
     for(unsigned i = 2; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NOP_NOTHING);
 
     // Remove other flags
@@ -190,13 +190,13 @@ BOOST_FIXTURE_TEST_CASE(RoadTest, WorldWithGCExecution2P)
 
     // i) outside player territory
     // i1) border
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x), 3));
+    this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x), Direction::EAST));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 0);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     // i2) territory
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, 3));
+    this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::EAST));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), 3), 0);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
 }
 
 BOOST_FIXTURE_TEST_CASE(DistributionAndBuildOrderTest, WorldWithGCExecution2P)
@@ -222,6 +222,63 @@ BOOST_FIXTURE_TEST_CASE(DistributionAndBuildOrderTest, WorldWithGCExecution2P)
         for(unsigned i = 0; i < inBuildOrder.size(); i++)
             BOOST_CHECK_EQUAL(outSettings.build_order[i], inBuildOrder[i]);
     }
-};
+}
+
+BOOST_FIXTURE_TEST_CASE(BuildBldTest, WorldWithGCExecution2P)
+{
+    const MapPoint closePt = hqPos + MapPoint(2, 0);
+    const MapPoint farmPt = hqPos + MapPoint(6, 0);
+    const MapPoint closeMilPt = hqPos - MapPoint(4, 0);
+    const MapPoint okMilPt = hqPos - MapPoint(5, 0);
+    // Wrong BQ (blocked by HQ)
+    this->SetBuildingSite(closePt, BLD_FARM);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_NOTHING);
+    // OK
+    this->SetBuildingSite(closePt, BLD_WOODCUTTER);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDINGSITE);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BLD_WOODCUTTER);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(closePt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+    // OK
+    this->SetBuildingSite(farmPt, BLD_FARM);
+    BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NOP_BUILDINGSITE);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(farmPt)->GetBuildingType(), BLD_FARM);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+    // Millitary bld to close
+    this->SetBuildingSite(closeMilPt, BLD_BARRACKS);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closeMilPt)->GetType(), NOP_NOTHING);
+    // Millitary bld ok
+    this->SetBuildingSite(okMilPt, BLD_BARRACKS);
+    BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NOP_BUILDINGSITE);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(okMilPt)->GetBuildingType(), BLD_BARRACKS);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+
+    // Remove bld
+    this->DestroyBuilding(farmPt);
+    BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+
+    // Remove flag -> bld also destroyed
+    this->DestroyFlag(world.GetNeighbour(okMilPt, Direction::SOUTHEAST));
+    BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(), NOP_NOTHING);
+
+    // Check if bld is build
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<unsigned char>(2, Direction::EAST));
+    for(unsigned i = 0; i < 1200; i++)
+        this->em.ExecuteNextGF();
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetGOT(), GOT_NOB_USUAL);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BLD_WOODCUTTER);
+
+    // Destroy finished bld -> Fire
+    this->DestroyBuilding(closePt);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+    // Destroy twice -> Nothing happens
+    this->DestroyBuilding(closePt);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+    // Try to build on fire
+    this->SetBuildingSite(closePt, BLD_WOODCUTTER);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

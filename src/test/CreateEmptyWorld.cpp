@@ -61,5 +61,6 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
         if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
             return false;
     }
+    world.InitAfterLoad();
     return true;
 }

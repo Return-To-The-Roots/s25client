@@ -178,30 +178,18 @@ void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
         RecalcBQ(GetNeighbour(pt, i));
 }
 
+namespace{
+    bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
+    {
+        return gwb.IsMilitaryBuilding(pt) && (gwb.GetNode(pt).owner == owner);
+    }
+}
+
 bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
 {
+    using boost::lambda::_1;
     // Im Umkreis von 4 Punkten ein Militärgebäude suchen
-    MapPoint pt(nPt);
-
-    for(int r = 1; r <= 4; ++r)
-    {
-        // Eins weiter nach links gehen
-        pt = GetNeighbour(pt, 0);
-
-        for(unsigned dir = 0; dir < 6; ++dir)
-        {
-            for(unsigned short i = 0; i < r; ++i)
-            {
-                if(IsMilitaryBuilding(pt) && (GetNode(pt).owner == player + 1))
-                    return true;
-                // Nach rechts oben anfangen
-                pt = GetNeighbour(pt, (2 + dir) % 6);
-            }
-        }
-    }
-
-    // Keins gefunden
-    return false;
+    return CheckPointsInRadius(nPt, 4, boost::lambda::bind(IsMilBldOfOwner, boost::lambda::constant_ref(*this), _1, player + 1), false);
 }
 
 bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const

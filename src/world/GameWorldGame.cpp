@@ -165,7 +165,8 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
 
     // Baustelle setzen
     SetNO(pt, new noBuildingSite(type, pt, player));
-    gi->GI_UpdateMinimap(pt);
+    if(gi)
+        gi->GI_UpdateMinimap(pt);
 
     // Bauplätze drumrum neu berechnen
     RecalcBQAroundPointBig(pt);
