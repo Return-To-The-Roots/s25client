@@ -18,7 +18,6 @@
 #ifndef BuildingTypes_h__
 #define BuildingTypes_h__
 
-#include "mygettext.h"
 #include "GoodTypes.h"
 #include "JobTypes.h"
 #include "BuildingQuality.h"
@@ -108,49 +107,7 @@ enum BuildingType
 
 // Anzahl an unterschiedlichen Gebäudetypen
 const unsigned BUILDING_TYPES_COUNT = BLD_COUNT;
-
-const std::string BUILDING_NAMES[BLD_COUNT] =
-{
-	gettext_noop("Headquarters"),
-	gettext_noop("Barracks"),
-	gettext_noop("Guardhouse"),
-	"",
-	gettext_noop("Watchtower"),
-	"",
-	"",
-	"",
-	"",
-	gettext_noop("Fortress"),
-	gettext_noop("Granite mine"),
-	gettext_noop("Coal mine"),
-	gettext_noop("Iron mine"),
-	gettext_noop("Gold mine"),
-	gettext_noop("Lookout tower"),
-	"",
-	gettext_noop("Catapult"),
-	gettext_noop("Woodcutter"),
-	gettext_noop("Fishery"),
-	gettext_noop("Quarry"),
-	gettext_noop("Forester"),
-	gettext_noop("Slaughterhouse"),
-	gettext_noop("Hunter"),
-	gettext_noop("Brewery"),
-	gettext_noop("Armory"),
-	gettext_noop("Metalworks"),
-	gettext_noop("Iron smelter"),
-	gettext_noop("Charburner"),
-	gettext_noop("Pig farm"),
-	gettext_noop("Storehouse"),
-	"",
-	gettext_noop("Mill"),
-	gettext_noop("Bakery"),
-	gettext_noop("Sawmill"),
-	gettext_noop("Mint"),
-	gettext_noop("Well"),
-	gettext_noop("Shipyard"),
-	gettext_noop("Farm"),
-	gettext_noop("Donkey breeding"),
-	gettext_noop("Harbor building"),
-};
+// NUmber of NOTHING entries (currently unused buildings)
+const unsigned NUM_UNUSED_BLD_TYPES = 7;
 
 #endif // BuildingTypes_h__

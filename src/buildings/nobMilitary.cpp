@@ -33,6 +33,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "notifications/BuildingNote.h"
+#include "gameData/SettingTypeConv.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"

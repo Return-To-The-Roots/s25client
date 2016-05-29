@@ -214,7 +214,7 @@ class GamePlayer: public GamePlayerInfo
         const Inventory& GetInventory() const { return global_inventory; }
 
         /// Setzt neue Militäreinstellungen
-        void ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings);
+        void ChangeMilitarySettings(const MilitarySettings& military_settings);
         /// Setzt neue Werkzeugeinstellungen
         void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges);
         /// Setzt neue Verteilungseinstellungen
@@ -368,6 +368,7 @@ class GamePlayer: public GamePlayerInfo
         /// Empfangene GC für diesen Spieler
         std::queue<GameMessage_GameCommand> gc_queue;
 
+        static BuildOrders GetStandardBuildOrder();
     private:
         // Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
         GameWorldGame* gwg;
@@ -432,9 +433,9 @@ class GamePlayer: public GamePlayerInfo
         /// Baureihenfolge
         BuildOrders build_order;
         /// Prioritäten der Waren im Transport
-        boost::array<unsigned char, WARE_TYPES_COUNT> transportPrio;
+        TransportPriorities transportPrio;
         /// Militäreinstellungen (die vom Militärmenü)
-        boost::array<unsigned char, MILITARY_SETTINGS_COUNT> militarySettings_;
+        MilitarySettings militarySettings_;
         /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
         ToolSettings toolsSettings_;
         // qx:tools
@@ -473,7 +474,6 @@ class GamePlayer: public GamePlayerInfo
 
         void LoadStandardToolSettings();
         void LoadStandardMilitarySettings();
-        void LoadStandardBuildOrder();
         void LoadStandardDistribution();
         /// Bündnis (real, d.h. spielentscheidend) abschließen
         void MakePact(const PactType pt, const unsigned char other_player, const unsigned duration);

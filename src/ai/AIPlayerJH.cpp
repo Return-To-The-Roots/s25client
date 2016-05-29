@@ -2632,7 +2632,7 @@ void AIPlayerJH::AdjustSettings()
         }
 
     // Set military settings to some currently required values
-    boost::array<unsigned char, MILITARY_SETTINGS_COUNT> milSettings;
+    MilitarySettings milSettings;
     milSettings[0] = 10;
     milSettings[1] = HasFrontierBuildings()?5:0; //if we have a front send strong soldiers first else weak first to make upgrading easier
     milSettings[2] = 4;

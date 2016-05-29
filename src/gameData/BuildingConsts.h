@@ -22,6 +22,8 @@
 #include "gameData/NationConsts.h"
 #include "DrawPoint.h"
 
+extern const boost::array<const char*, BLD_COUNT> BUILDING_NAMES;
+
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
 const BuildingCost BUILDING_COSTS[NAT_COUNT][40] =
 {

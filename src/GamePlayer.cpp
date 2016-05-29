@@ -48,16 +48,11 @@
 #include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/SettingTypeConv.h"
 #include "libutil/src/Log.h"
 #include <boost/foreach.hpp>
 #include <stdint.h>
 #include <limits>
-
-// Standard priority of each ware
-const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
-{{
-    2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
-}};
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg):
 		GamePlayerInfo(playerId, playerInfo), is_lagging(false), gwg(&gwg),
@@ -66,7 +61,8 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
     LoadStandardDistribution();
-    LoadStandardBuildOrder();
+    useCustomBuildOrder_ = false;
+    build_order = GetStandardBuildOrder();
     transportPrio = STD_TRANSPORT_PRIO;
     LoadStandardMilitarySettings();
     LoadStandardToolSettings();
@@ -129,12 +125,13 @@ void GamePlayer::LoadStandardMilitarySettings()
     militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
 }
 
-void GamePlayer::LoadStandardBuildOrder()
+BuildOrders GamePlayer::GetStandardBuildOrder()
 {
-    useCustomBuildOrder_ = false;
+    BuildOrders ordering;
 
     // Baureihenfolge füllen (0 ist das HQ!)
-    for(unsigned char i = 1, j = 0; i < BLD_COUNT; ++i)
+    unsigned curPrio = 0;
+    for(unsigned i = 1; i < BLD_COUNT; ++i)
     {
         // Diese Ids sind noch nicht besetzt
         if(
@@ -148,9 +145,12 @@ void GamePlayer::LoadStandardBuildOrder()
             )
             continue;
 
-        build_order[j] = i;
-        ++j;
+        RTTR_Assert(curPrio < ordering.size());
+        ordering[curPrio] = BuildingType(i);
+        ++curPrio;
     }
+    RTTR_Assert(curPrio == ordering.size());
+    return ordering;
 }
 
 void GamePlayer::LoadStandardDistribution()
@@ -266,7 +266,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
 
     sgd.PushRawData(transportPrio.elems, transportPrio.size());
 
-    for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+    for(unsigned i = 0; i < militarySettings_.size(); ++i)
         sgd.PushUnsignedChar(militarySettings_[i]);
 
     for(unsigned i = 0; i < toolsSettings_.size(); ++i)
@@ -378,7 +378,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     useCustomBuildOrder_ = sgd.PopBool();
 
     for(unsigned i = 0; i < build_order.size(); ++i)
-        build_order[i] = sgd.PopUnsignedChar();
+        build_order[i] = BuildingType(sgd.PopUnsignedChar());
 
     sgd.PopRawData(transportPrio.elems, transportPrio.size());
 
@@ -1278,7 +1278,7 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
         // Typ in der Reihenfolge suchen und Position als Priorität zurückgeben
         for(unsigned i = 0; i < build_order.size(); ++i)
         {
-            if(building_site->GetBuildingType() == static_cast<BuildingType>(build_order[i]))
+            if(building_site->GetBuildingType() == build_order[i])
                 return i;
         }
     }
@@ -1301,19 +1301,8 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 
 void GamePlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
-    // Mit Hilfe der Standardbelegung lässt sich das recht einfach konvertieren:
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
-    {
-        for(unsigned z = 0; z < NUM_TRANSPORT_ORDERS; ++z)
-        {
-            if(transport_data[z] == STD_TRANSPORT_PRIO[i])
-            {
-                transportPrio[i] = z;
-                break;
-            }
-        }
-
-    }
+        transportPrio[i] = GetTransportPrioFromOrdering(transport_data, GoodType(i));
 }
 
 bool GamePlayer::IsAlly(const unsigned char playerId) const
@@ -1443,14 +1432,14 @@ void GamePlayer::RefreshDefenderList()
 {
     /// Die Verteidigungsliste muss erneuert werden
     for(unsigned i = 0; i < defenders.size(); ++i)
-        defenders[i] = (i < militarySettings_[2] * 5 / MILITARY_SETTINGS_SCALE[2]);
+        defenders[i] = (i < militarySettings_[2] * 5u / MILITARY_SETTINGS_SCALE[2]);
     // und ordentlich schütteln
-    RANDOM.Shuffle(&defenders[0], 5);
+    RANDOM.Shuffle(&defenders[0], defenders.size());
 
     defenders_pos = 0;
 }
 
-void GamePlayer::ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings)
+void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_settings)
 {
     for(unsigned i = 0; i < military_settings.size(); ++i)
     {
@@ -2415,10 +2404,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     visualSettings.useCustomBuildOrder  = useCustomBuildOrder_;
     visualSettings.build_order = build_order;
 
-    // Map prip of each ware to STD prio
-    // See declaration of TransportOrders for details
-    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ware++)
-        visualSettings.transport_order[transportPrio[ware]] = STD_TRANSPORT_PRIO[ware];
+    visualSettings.transport_order = GetOrderingFromTransportPrio(transportPrio);
 
     visualSettings.military_settings = militarySettings_;
     visualSettings.tools_settings    = toolsSettings_;

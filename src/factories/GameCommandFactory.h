@@ -57,7 +57,7 @@ public:
     bool OrderNewSoldiers(const MapPoint pt);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
-    bool ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data);
+    bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
     bool ChangeTools(const ToolSettings& data, const signed char* order_delta = NULL);
     /// Calls a geologist to a flag

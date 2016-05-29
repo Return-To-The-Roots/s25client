@@ -23,6 +23,7 @@
 #include "GamePlayer.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/SettingTypeConv.h"
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
@@ -70,7 +71,7 @@ void iwMilitary::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        for(unsigned char i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+        for(unsigned char i = 0; i <  GAMECLIENT.visual_settings.military_settings.size(); ++i)
             GAMECLIENT.visual_settings.military_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
         gcFactory.ChangeMilitary(GAMECLIENT.visual_settings.military_settings);
@@ -100,7 +101,7 @@ void iwMilitary::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+    for(unsigned i = 0; i <  GAMECLIENT.visual_settings.military_settings.size(); ++i)
         GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.military_settings[i]);
 }
 

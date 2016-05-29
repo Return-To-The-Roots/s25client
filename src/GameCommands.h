@@ -159,23 +159,21 @@ namespace gc{
     class ChangeDistribution : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = 23;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             Distributions data;
         protected:
             ChangeDistribution(const Distributions& data)
-                : GameCommand(CHANGEDISTRIBUTION), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGEDISTRIBUTION), data(data) {}
             ChangeDistribution(Serializer& ser)
                 : GameCommand(CHANGEDISTRIBUTION)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
@@ -190,15 +188,15 @@ namespace gc{
             /// Ordnungs-Typ
             const bool useCustomBuildOrder;
             /// Daten der BuildOrder
-            boost::array<unsigned char, 32> data;
+            BuildOrders data;
         protected:
-            ChangeBuildOrder(const bool useCustomBuildOrder, const boost::array<unsigned char, 32>& data)
+            ChangeBuildOrder(const bool useCustomBuildOrder, const BuildOrders& data)
                 : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(useCustomBuildOrder), data(data) {}
             ChangeBuildOrder(Serializer& ser)
                 : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(ser.PopBool())
             {
                 for(unsigned i = 0; i < data.size(); ++i)
-                    data[i] = ser.PopUnsignedChar();
+                    data[i] = BuildingType(ser.PopUnsignedChar());
             }
         public:
             void Serialize(Serializer& ser) const override
@@ -284,23 +282,21 @@ namespace gc{
     class ChangeTransport : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = 14;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             TransportOrders data;
         protected:
             ChangeTransport(const TransportOrders& data)
-                : GameCommand(CHANGETRANSPORT), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGETRANSPORT), data(data) {}
             ChangeTransport(Serializer& ser)
                 : GameCommand(CHANGETRANSPORT)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
@@ -312,23 +308,21 @@ namespace gc{
     class ChangeMilitary : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = MILITARY_SETTINGS_COUNT;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
-             boost::array<unsigned char, MILITARY_SETTINGS_COUNT> data;
+            MilitarySettings data;
         protected:
-            ChangeMilitary(const  boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
-                : GameCommand(CHANGEMILITARY), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+            ChangeMilitary(const MilitarySettings& data)
+                : GameCommand(CHANGEMILITARY), data(data) {}
             ChangeMilitary(Serializer& ser)
                 : GameCommand(CHANGEMILITARY)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
@@ -340,8 +334,6 @@ namespace gc{
     class ChangeTools : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = 12;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             ToolSettings data;
 
@@ -350,8 +342,6 @@ namespace gc{
             ChangeTools(const ToolSettings& data, const signed char* order_delta = 0)
                 : GameCommand(CHANGETOOLS), data(data)
             {
-                RTTR_Assert(data.size() == DATA_SIZE);
-
                 if (order_delta != 0)
                 {
                     for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -367,7 +357,7 @@ namespace gc{
             ChangeTools(Serializer& ser)
                 : GameCommand(CHANGETOOLS)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -376,7 +366,7 @@ namespace gc{
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)

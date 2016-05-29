@@ -20,6 +20,7 @@
 #include "Loader.h"
 #include "GamePlayer.h"
 #include "gameData/const_gui_ids.h"
+#include "gameData/BuildingConsts.h"
 #include "files.h"
 #include "libutil/src/colors.h"
 

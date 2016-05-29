@@ -41,6 +41,7 @@
 #include "world/GameWorldGame.h"
 #include "factories/JobFactory.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/SettingTypeConv.h"
 #include "helpers/containerUtils.h"
 #include "Log.h"
 

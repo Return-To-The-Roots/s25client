@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ToolConsts_h__
-#define ToolConsts_h__
+#ifndef SettingTypeConv_h__
+#define SettingTypeConv_h__
 
+#include "gameTypes/SettingsTypes.h"
 #include "gameTypes/GoodTypes.h"
-#include <boost/array.hpp>
 
-/// List of all tools (correspond to buttons at IO:140-163)
-const boost::array<GoodType, TOOL_COUNT> SUPPRESS_UNUSED TOOLS =
-{{
-    GD_TONGS,       // Zange
-    GD_HAMMER,      // Hammer
-    GD_AXE,         // Axt,
-    GD_SAW,         // Säge
-    GD_PICKAXE,     // Spitzhacke
-    GD_SHOVEL,      // Schaufel
-    GD_CRUCIBLE,    // Schmelztiegel
-    GD_RODANDLINE,  // Angel
-    GD_SCYTHE,      // Sense
-    GD_CLEAVER,     // Beil
-    GD_ROLLINGPIN,  // Nudelholz
-    GD_BOW          // Bogen
-}};
+/// Scaling (max values) of each military setting
+extern const MilitarySettings MILITARY_SETTINGS_SCALE;
+/// Standard priority of each ware
+extern const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO;
 
-#endif // ToolConsts_h__
+/// Get the priority of a given good from the ordering of goods (good categories)
+unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good);
+/// Converts the transport priorities to an odering of goods (good categories)
+TransportOrders GetOrderingFromTransportPrio(const TransportPriorities& priorities);
+
+#endif // SettingTypeConv_h__
+

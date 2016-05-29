@@ -80,7 +80,7 @@ bool GameCommandFactory::ChangeTransport(const TransportOrders& data)
     return AddGC( new gc::ChangeTransport(data) );
 }
 
-bool GameCommandFactory::ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
+bool GameCommandFactory::ChangeMilitary(const MilitarySettings& data)
 {
     return AddGC( new gc::ChangeMilitary(data) );
 }

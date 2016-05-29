@@ -42,6 +42,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
+#include "gameData/SettingTypeConv.h"
 #include "helpers/containerUtils.h"
 #include <stdexcept>
 

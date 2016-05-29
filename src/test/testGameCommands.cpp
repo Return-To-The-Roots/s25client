@@ -22,6 +22,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/VisualSettings.h"
+#include "gameData/SettingTypeConv.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
@@ -220,20 +221,46 @@ BOOST_FIXTURE_TEST_CASE(DistributionAndBuildOrderTest, WorldWithGCExecution2P)
         Distributions inDist;
         for(unsigned i = 0; i < inDist.size(); i++)
             inDist[i] = rand();
-        bool orderType = rand() % 2 == 0;
-        BuildOrders inBuildOrder;
-        for(unsigned i = 0; i < inBuildOrder.size(); i++)
-            inBuildOrder[i] = rand();
         this->ChangeDistribution(inDist);
+
+        bool orderType = rand() % 2 == 0;
+        BuildOrders inBuildOrder = GamePlayer::GetStandardBuildOrder();
+        std::random_shuffle(inBuildOrder.begin(), inBuildOrder.end());
         this->ChangeBuildOrder(orderType, inBuildOrder);
+
+        TransportOrders inTransportOrder;
+        for(unsigned i = 0; i < inTransportOrder.size(); i++)
+            inTransportOrder[i] = i;
+        std::random_shuffle(inTransportOrder.begin(), inTransportOrder.end());
+        this->ChangeTransport(inTransportOrder);
+
+        MilitarySettings militarySettings;
+        for(unsigned i = 0; i < militarySettings.size(); ++i)
+            militarySettings[i] = rand() % (MILITARY_SETTINGS_SCALE[i] + 1);
+        this->ChangeMilitary(militarySettings);
+
+        ToolSettings toolPrios;
+        for(unsigned i = 0; i < toolPrios.size(); ++i)
+            toolPrios[i] = rand() % 11;
+        this->ChangeTools(toolPrios);
+
+        const GamePlayer& player = world.GetPlayer(curPlayer);
         // TODO: Use better getters once available
         VisualSettings outSettings;
-        world.GetPlayer(curPlayer).FillVisualSettings(outSettings);
+        player.FillVisualSettings(outSettings);
         for(unsigned i = 0; i < inDist.size(); i++)
-            BOOST_CHECK_EQUAL(outSettings.distribution[i], inDist[i]);
+            BOOST_REQUIRE_EQUAL(outSettings.distribution[i], inDist[i]);
         BOOST_REQUIRE_EQUAL(outSettings.useCustomBuildOrder, orderType);
         for(unsigned i = 0; i < inBuildOrder.size(); i++)
-            BOOST_CHECK_EQUAL(outSettings.build_order[i], inBuildOrder[i]);
+            BOOST_REQUIRE_EQUAL(outSettings.build_order[i], inBuildOrder[i]);
+        for(unsigned i = 0; i < inTransportOrder.size(); i++)
+            BOOST_REQUIRE_EQUAL(outSettings.transport_order[i], inTransportOrder[i]);
+        for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+            BOOST_REQUIRE_EQUAL(player.GetTransportPriority(GoodType(i)), GetTransportPrioFromOrdering(inTransportOrder, GoodType(i)));
+        for(unsigned i = 0; i < militarySettings.size(); i++)
+            BOOST_REQUIRE_EQUAL(player.GetMilitarySetting(i), militarySettings[i]);
+        for(unsigned i = 0; i < toolPrios.size(); i++)
+            BOOST_REQUIRE_EQUAL(player.GetToolPriority(i), toolPrios[i]);
     }
 }
 

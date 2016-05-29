@@ -15,39 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SettingsConst_h__
-#define SettingsConst_h__
+#ifndef SettingsTypes_h__
+#define SettingsTypes_h__
 
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/BuildingTypes.h"
 #include <boost/array.hpp>
 
-#define NUM_DISTRIBUTION 23
-#define NUM_BUILD_ORDERS 32
-#define NUM_TRANSPORT_ORDERS 14
-#define NUM_TOOL_SETTINGS 12
+//TODO: Make this structs so meanings are obvious
 
 /// Custom mapping of (Ware, Receiver)-tuple to percentage of wares distributed to that building
-typedef boost::array<unsigned char, NUM_DISTRIBUTION> Distributions;
-typedef boost::array<unsigned char, NUM_BUILD_ORDERS> BuildOrders;
+typedef boost::array<unsigned char, 23> Distributions;
+/// Ordering of building types by priority. All buildings in here except unused and HQ
+typedef boost::array<BuildingType, BLD_COUNT - NUM_UNUSED_BLD_TYPES - 1> BuildOrders;
 /// Mapping transport priority -> standard transport priority of ware(group):
 /// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
 /// New prio of coints = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
-typedef boost::array<unsigned char, NUM_TRANSPORT_ORDERS> TransportOrders;
-typedef boost::array<unsigned char, NUM_TOOL_SETTINGS> ToolSettings;
+typedef boost::array<unsigned char, 14> TransportOrders;
+typedef boost::array<unsigned char, WARE_TYPES_COUNT> TransportPriorities;
+/// Priority of each tool
+typedef boost::array<unsigned char, TOOL_COUNT> ToolSettings;
+/// Value (0-10) of each military slider
+typedef boost::array<unsigned char, 8> MilitarySettings;
 
-/// Anzahl an Militäreinstellungen
-const unsigned MILITARY_SETTINGS_COUNT = 8;
+#endif // SettingsTypes_h__
 
-/// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
-const boost::array<unsigned, MILITARY_SETTINGS_COUNT> SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE =
-{{
-    10,
-    5,
-    5,
-    5,
-    8,
-    8,
-    8,
-    8
-}};
-
-#endif // SettingsConst_h__
