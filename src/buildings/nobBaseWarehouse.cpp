@@ -1136,23 +1136,27 @@ const Inventory& nobBaseWarehouse::GetInventory() const
     return inventory.visual;
 }
 
-/// Fügt einige Güter hinzu
-void nobBaseWarehouse::AddGoods(const Inventory& goods)
+void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 {
-    for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
+    GamePlayer& owner = gwg->GetPlayer(player);
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
+        if(!goods.goods[i])
+            continue;
         inventory.Add(GoodType(i), goods.goods[i]);
-
-        if(goods.goods[i])
-            CheckUsesForNewWare(GoodType(i));
+        if(addToPlayer)
+            owner.IncreaseInventoryWare(GoodType(i), goods.goods[i]);
+        CheckUsesForNewWare(GoodType(i));
     }
 
-    for(unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
+        if(!goods.people[i])
+            continue;
         inventory.Add(Job(i), goods.people[i]);
-
-        if(goods.people[i])
-            CheckJobsForNewFigure(Job(i));
+        if(addToPlayer)
+            owner.IncreaseInventoryJob(Job(i), goods.goods[i]);
+        CheckJobsForNewFigure(Job(i));
     }
 }
 

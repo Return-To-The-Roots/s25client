@@ -159,8 +159,10 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
         const Inventory& GetInventory() const;
 
-        /// Fügt einige Güter hinzu
-        void AddGoods(const Inventory& goods);
+        /// Adds specified goods. If addToPlayer is true,
+        /// then they are also added to the owners inventory (for newly created/arrived goods)
+        /// Use false for goods, that are only moved between players units
+        void AddGoods(const Inventory& goods, bool addToPlayer);
 
 
         /// Gibt Anzahl der Waren bzw. Figuren zurück

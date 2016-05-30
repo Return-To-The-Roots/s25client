@@ -131,14 +131,12 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
     for(std::map<GoodType, unsigned>::const_iterator it = wares.begin(); it != wares.end(); ++it)
     {
         if(unsigned(it->first) < WARE_TYPES_COUNT)
-        {
             goods.Add(it->first, it->second);
-            player.IncreaseInventoryWare(it->first, it->second);
-        } else
+        else
             throw std::runtime_error((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
     }
 
-    warehouse->AddGoods(goods);
+    warehouse->AddGoods(goods, true);
     return true;
 }
 
@@ -154,14 +152,12 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
     for(std::map<Job, unsigned>::const_iterator it = people.begin(); it != people.end(); ++it)
     {
         if(unsigned(it->first) < JOB_TYPES_COUNT)
-        {
             goods.Add(it->first, it->second);
-            player.IncreaseInventoryJob(it->first, it->second);
-        } else
+        else
             throw std::runtime_error((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
     }
 
-    warehouse->AddGoods(goods);
+    warehouse->AddGoods(goods, true);
     return true;
 }
 

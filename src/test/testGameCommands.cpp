@@ -20,12 +20,16 @@
 #include "GamePlayer.h"
 #include "nodeObjs/noBase.h"
 #include "nodeObjs/noEnvObject.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobMilitary.h"
+#include "figures/nofPassiveSoldier.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
+#include "factories/BuildingFactory.h"
 
 #define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)    \
     for(TYPE pt(0, 0); pt.y < (HEIGHT); ++pt.y) \
@@ -319,6 +323,98 @@ BOOST_FIXTURE_TEST_CASE(BuildBldTest, WorldWithGCExecution2P)
     // Try to build on fire
     this->SetBuildingSite(closePt, BLD_WOODCUTTER);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+}
+
+BOOST_FIXTURE_TEST_CASE(SendSoldierHomeTest, WorldWithGCExecution2P)
+{
+    const MapPoint milPt = hqPos + MapPoint(6, 0);
+    // Setup: Give player 3 generals
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    nobBaseWarehouse* wh = player.GetFirstWH();
+    BOOST_REQUIRE(wh);
+    BOOST_REQUIRE_EQUAL(wh->GetInventory().people[JOB_GENERAL], 0u);
+    Inventory goods;
+    goods.Add(JOB_PRIVATEFIRSTCLASS, 1);
+    goods.Add(JOB_SERGEANT, 1);
+    goods.Add(JOB_OFFICER, 1);
+    goods.Add(JOB_GENERAL, 2);
+    wh->AddGoods(goods, true);
+    // Set all military stuff to max
+    this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
+    // Build a watchtower and connect it
+    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
+    BOOST_REQUIRE(bld);
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<unsigned char>((milPt.x - hqPos.x), Direction::EAST));
+    // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked, 50GFs safety)
+    unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x) + 50;
+    for(unsigned i = 0; i < numGFtillAllArrive; i++)
+        this->em.ExecuteNextGF();
+    // Now we should have 1 each of ranks 0-3 and 2 rank 4s
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
+    SortedTroops::const_iterator itTroops = bld->troops.begin();
+    for(unsigned i = 0; i < 4; i++, ++itTroops)
+        BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
+    for(unsigned i = 0; i < 2; i++, ++itTroops)
+        BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 4);
+    // End preparation
+
+    unsigned expectedTroopCt = 6u;
+    // send each of the higher ranks home
+    for(unsigned curRank = 4; curRank > 0; --curRank)
+    {
+        this->SendSoldiersHome(milPt);
+        expectedTroopCt -= (curRank == 4) ? 2 : 1; // 2 generals, 1 of the others
+        BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), expectedTroopCt);
+        itTroops = bld->troops.begin();
+        for(unsigned i = 0; i < expectedTroopCt; i++, ++itTroops)
+            BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
+    }
+    // One low rank is left
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 1u);
+    this->SendSoldiersHome(milPt);
+    // But he must stay
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 1u);
+
+    // Wait till new soldiers have arrived
+    for(unsigned i = 0; i < numGFtillAllArrive; i++)
+        this->em.ExecuteNextGF();
+
+    // 6 low ranks
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
+    itTroops = bld->troops.begin();
+    for(unsigned i = 0; i < 6; i++, ++itTroops)
+        BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 0u);
+
+    // Send 5 of them home
+    this->SendSoldiersHome(milPt);
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 1u);
+
+    // Wait till one left so new ones get ordered
+    for(unsigned i = 0; i < 40; i++)
+        this->em.ExecuteNextGF();
+
+    // All higher rank soldiers should have been ordered and hence removed from the real inventory
+    for(unsigned i = 1; i < SOLDIER_JOBS.size(); i++)
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), 0u);
+
+    // Allow one of them to leave the HQ
+    for(unsigned i = 0; i < 40; i++)
+        this->em.ExecuteNextGF();
+
+    // Now cancel orders for generals and replace with low rank ones
+    this->OrderNewSoldiers(milPt);
+
+    // Wait till new soldiers have arrived
+    for(unsigned i = 0; i < numGFtillAllArrive; i++)
+        this->em.ExecuteNextGF();
+
+    // 3 low ranks and 1 each of other ranks except general
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
+    itTroops = bld->troops.begin();
+    for(unsigned i = 0; i < 3; i++, ++itTroops)
+        BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 0u);
+    for(unsigned i = 1; i < 3; i++, ++itTroops)
+        BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

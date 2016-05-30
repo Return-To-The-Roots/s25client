@@ -422,7 +422,7 @@ void nobMilitary::RegulateTroops()
 
     // Zu viele oder zu wenig Truppen?
     int diff = CalcTroopsCount() - static_cast<int>(GetTotalSoldiers());
-    if(diff < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
+    if(diff < 0)
     {
         // Zu viel --> überflüssige Truppen nach Hause schicken
         // Zuerst die bestellten Soldaten wegschicken
@@ -552,7 +552,7 @@ void nobMilitary::OrderNewSoldiers()
 
 	int diff = CalcTroopsCount() - static_cast<int>(GetTotalSoldiers());
 	//order new troops now
-    if(diff > 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
+    if(diff > 0)
 	{
 		// Zu wenig Truppen
         // Gebäude wird angegriffen und
