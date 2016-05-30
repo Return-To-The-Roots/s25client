@@ -18,12 +18,12 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SettingTypeConv.h"
 
-/// Skalierung der einzelnen Militäreinstellungen (maximale Werte)
 const MilitarySettings SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE = {{10, 5, 5, 5, 8, 8, 8, 8}};
-// Standard priority of each ware
 const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
-{{
-        2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
+{{   2, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    10, 10, 12, 12, 12, 13,  1,  3, 11, 11,
+    11,  1,  9,  7,  8,  1,  1, 11,  0,  4,
+     5,  6, 11, 11,  1
 }};
 
 unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good)
