@@ -24,12 +24,14 @@
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
 #include "factories/GameCommandFactory.h"
+#include "factories/BuildingFactory.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
-#include "factories/BuildingFactory.h"
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 #define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)    \
     for(TYPE pt(0, 0); pt.y < (HEIGHT); ++pt.y) \
@@ -415,6 +417,72 @@ BOOST_FIXTURE_TEST_CASE(SendSoldierHomeTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 0u);
     for(unsigned i = 1; i < 3; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
+}
+
+template<typename T_CallWorker>
+void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType, T_CallWorker callWorker)
+{
+    const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SOUTHEAST) + MapPoint(3, 0);
+    GamePlayer& player = worldFixture.world.GetPlayer(worldFixture.curPlayer);
+    nobBaseWarehouse* wh = player.GetFirstWH();
+    BOOST_REQUIRE(wh);
+
+    const unsigned startFigureCt = wh->GetRealFiguresCount(workerJob);
+    const unsigned startToolsCt = wh->GetRealWaresCount(toolType);
+    // We need some of them!
+    BOOST_REQUIRE_GT(startFigureCt, 0u);
+    BOOST_REQUIRE_GT(startToolsCt, 0u);
+
+    // No flag -> Nothing happens
+    callWorker(flagPt);
+    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
+
+    worldFixture.SetFlag(flagPt);
+    // Unconnected flag -> Nothing happens
+    callWorker(flagPt);
+    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
+
+    // Build road and let worker leave
+    worldFixture.BuildRoad(flagPt, false, std::vector<unsigned char>(3, Direction::WEST));
+    for(unsigned i = 0; i < 30; i++)
+        worldFixture.em.ExecuteNextGF();
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
+
+    // Call one geologist to flag
+    callWorker(flagPt);
+    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob) + 1, startFigureCt);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().front()->GetJobType(), workerJob);
+
+    // Call remaining ones
+    for(unsigned i = 1; i < startFigureCt; i++)
+        callWorker(flagPt);
+    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt);
+
+    // Recruit all possible ones
+    BOOST_REQUIRE_EQUAL(wh->GetRealWaresCount(toolType), startToolsCt);
+    for(unsigned i = 0; i < startToolsCt; i++)
+        callWorker(flagPt);
+    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
+
+    // And an extra one -> Fail
+    callWorker(flagPt);
+    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
+}
+
+BOOST_FIXTURE_TEST_CASE(CallGeologistTest, WorldWithGCExecution2P)
+{
+    FlagWorkerTest(*this, JOB_GEOLOGIST, GD_HAMMER, boost::lambda::bind(&GameCommandFactory::CallGeologist, this, boost::lambda::_1));
+}
+
+BOOST_FIXTURE_TEST_CASE(CallScoutTest, WorldWithGCExecution2P)
+{
+    FlagWorkerTest(*this, JOB_SCOUT, GD_BOW, boost::lambda::bind(&GameCommandFactory::CallScout, this, boost::lambda::_1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

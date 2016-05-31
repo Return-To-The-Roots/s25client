@@ -267,9 +267,9 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         const unsigned* GetReservePointerAvailable(unsigned rank) const { return &reserve_soldiers_available[rank]; }
         const unsigned* GetReservePointerClaimed(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
 
-        /// Available goods of a speciefic type that can be used for trading
+        /// Available goods of a specific type that can be used for trading
         unsigned GetAvailableWaresForTrading(const GoodType gt) const;
-        /// Available figures of a speciefic type that can be used for trading
+        /// Available figures of a specific type that can be used for trading
         unsigned GetAvailableFiguresForTrading(const Job job) const;
         /// Starts a trade caravane from this warehouse
         void StartTradeCaravane(const GoodType gt,  Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
