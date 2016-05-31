@@ -1254,7 +1254,7 @@ void nobBaseWarehouse::SetInventorySetting(const bool isJob, const unsigned char
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerId() != player)
         SetInventorySettingVisual(isJob, type, state);
 
-    if(oldState.IsSet(EInventorySetting::STOP) && !state.IsSet(EInventorySetting::STOP))
+    if(!isJob && oldState.IsSet(EInventorySetting::STOP) && !state.IsSet(EInventorySetting::STOP))
     {
         // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
         gwg->GetPlayer(player).FindClientForLostWares();

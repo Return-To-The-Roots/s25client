@@ -27,8 +27,9 @@
 #include "factories/GameCommandFactory.h"
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
-#include "gameTypes/VisualSettings.h"
+#include "gameTypes/InventorySetting.h"
 #include "gameData/SettingTypeConv.h"
+#include "gameTypes/VisualSettings.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
@@ -43,6 +44,11 @@ template<typename T>
 std::ostream& operator<<(std::ostream &out, const Point<T>& point)
 {
     return out << "(" << point.x << ", " << point.y << ")";
+}
+
+std::ostream& operator<<(std::ostream &out, const InventorySetting& setting)
+{
+    return out << setting.ToUnsignedChar();
 }
 
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
@@ -625,5 +631,74 @@ BOOST_FIXTURE_TEST_CASE(NotifyAlliesTest, WorldWithGCExecution3P)
     BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(1u)->GetNumMsgs(), 0u);
     BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(2u)->GetNumMsgs(), 1u);
 }
+
+BOOST_AUTO_TEST_CASE(TestInventorySettingType)
+{
+    InventorySetting setting;
+    // Default setting is 0
+    BOOST_REQUIRE_EQUAL(setting.ToUnsignedChar(), 0u);
+
+    // Test all 3 single types
+    setting = EInventorySetting::STOP;
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::STOP));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::SEND));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::COLLECT));
+
+    setting = EInventorySetting::SEND;
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::STOP));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::SEND));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::COLLECT));
+
+    setting = EInventorySetting::COLLECT;
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::STOP));
+    BOOST_CHECK(!setting.IsSet(EInventorySetting::SEND));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::COLLECT));
+
+    // Reset and test toggle
+    setting = InventorySetting();
+    setting.Toggle(EInventorySetting::STOP);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::STOP);
+    setting.Toggle(EInventorySetting::SEND);
+    // Both set
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::STOP));
+    BOOST_REQUIRE(setting.IsSet(EInventorySetting::SEND));
+    BOOST_REQUIRE(!setting.IsSet(EInventorySetting::COLLECT));
+
+    // Resets others
+    setting.Toggle(EInventorySetting::COLLECT);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::COLLECT);
+    // Resets collect
+    setting.Toggle(EInventorySetting::STOP);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::STOP);
+
+    // Enable send, disable stop
+    setting.Toggle(EInventorySetting::SEND);
+    setting.Toggle(EInventorySetting::STOP);
+    BOOST_REQUIRE_EQUAL(setting, EInventorySetting::SEND);
+}
+
+BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
+{
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    nobBaseWarehouse* wh = player.GetFirstWH();
+    BOOST_REQUIRE(wh);
+    InventorySetting expectedSetting;
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+    expectedSetting.Toggle(EInventorySetting::STOP);
+    expectedSetting.Toggle(EInventorySetting::SEND);
+
+    this->SetInventorySetting(hqPos, GD_BOARDS, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
+    this->SetInventorySetting(hqPos, JOB_PRIVATE, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+
+    expectedSetting.Toggle(EInventorySetting::COLLECT);
+    this->SetInventorySetting(hqPos, GD_BOARDS, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
+    this->SetInventorySetting(hqPos, JOB_PRIVATE, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
