@@ -91,7 +91,8 @@ script:
     - set -e
     - cd build
     - ./cmake.sh --RTTR_PREFIX=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" --generator="Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
-    - make
+    # Travis uses 2 cores
+    - make -j2
     # Execute tests
     - export CTEST_OUTPUT_ON_FAILURE=1
     - make test
