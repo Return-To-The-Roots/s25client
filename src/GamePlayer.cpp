@@ -1812,13 +1812,21 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
 
 void GamePlayer::MakeStartPacts()
 {
+    // Reset pacts
+    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    {
+        for(unsigned z = 0; z < PACTS_COUNT; ++z)
+            pacts[i][z] = Pact();
+    }
+
     // Translate possible random team to real team or no team
     Team ownTeam = GetFixedTeam(team);
+    // No team -> No pacts
     if(ownTeam == TM_NOTEAM)
         return;
     RTTR_Assert(ownTeam >= TM_TEAM1 && ownTeam <= TM_TEAM4);
 
-    // Create ally- and non-aggression-pact or all players of same team
+    // Create ally- and non-aggression-pact for all players of same team
     for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
         if(ownTeam != GetFixedTeam(gwg->GetPlayer(i).team))

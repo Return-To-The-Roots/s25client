@@ -22,9 +22,11 @@
 #include "nodeObjs/noEnvObject.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
+#include "buildings/nobUsual.h"
 #include "figures/nofPassiveSoldier.h"
 #include "factories/GameCommandFactory.h"
 #include "factories/BuildingFactory.h"
+#include "postSystem/PostBox.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "libutil/src/Serializer.h"
@@ -82,6 +84,14 @@ public:
     using WorldWithGCExecution<2>::world;
     using WorldWithGCExecution<2>::curPlayer;
     using WorldWithGCExecution<2>::hqPos;
+};
+
+class WorldWithGCExecution3P: public WorldWithGCExecution<3>
+{
+public:
+    using WorldWithGCExecution<3>::world;
+    using WorldWithGCExecution<3>::curPlayer;
+    using WorldWithGCExecution<3>::hqPos;
 };
 
 BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
@@ -419,60 +429,62 @@ BOOST_FIXTURE_TEST_CASE(SendSoldierHomeTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
 }
 
-template<typename T_CallWorker>
-void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType, T_CallWorker callWorker)
-{
-    const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SOUTHEAST) + MapPoint(3, 0);
-    GamePlayer& player = worldFixture.world.GetPlayer(worldFixture.curPlayer);
-    nobBaseWarehouse* wh = player.GetFirstWH();
-    BOOST_REQUIRE(wh);
+namespace{
+    template<typename T_CallWorker>
+    void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType, T_CallWorker callWorker)
+    {
+        const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SOUTHEAST) + MapPoint(3, 0);
+        GamePlayer& player = worldFixture.world.GetPlayer(worldFixture.curPlayer);
+        nobBaseWarehouse* wh = player.GetFirstWH();
+        BOOST_REQUIRE(wh);
 
-    const unsigned startFigureCt = wh->GetRealFiguresCount(workerJob);
-    const unsigned startToolsCt = wh->GetRealWaresCount(toolType);
-    // We need some of them!
-    BOOST_REQUIRE_GT(startFigureCt, 0u);
-    BOOST_REQUIRE_GT(startToolsCt, 0u);
+        const unsigned startFigureCt = wh->GetRealFiguresCount(workerJob);
+        const unsigned startToolsCt = wh->GetRealWaresCount(toolType);
+        // We need some of them!
+        BOOST_REQUIRE_GT(startFigureCt, 0u);
+        BOOST_REQUIRE_GT(startToolsCt, 0u);
 
-    // No flag -> Nothing happens
-    callWorker(flagPt);
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
-
-    worldFixture.SetFlag(flagPt);
-    // Unconnected flag -> Nothing happens
-    callWorker(flagPt);
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
-
-    // Build road and let worker leave
-    worldFixture.BuildRoad(flagPt, false, std::vector<unsigned char>(3, Direction::WEST));
-    for(unsigned i = 0; i < 30; i++)
-        worldFixture.em.ExecuteNextGF();
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
-
-    // Call one geologist to flag
-    callWorker(flagPt);
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob) + 1, startFigureCt);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().front()->GetJobType(), workerJob);
-
-    // Call remaining ones
-    for(unsigned i = 1; i < startFigureCt; i++)
+        // No flag -> Nothing happens
         callWorker(flagPt);
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
-    // Recruit all possible ones
-    BOOST_REQUIRE_EQUAL(wh->GetRealWaresCount(toolType), startToolsCt);
-    for(unsigned i = 0; i < startToolsCt; i++)
+        worldFixture.SetFlag(flagPt);
+        // Unconnected flag -> Nothing happens
         callWorker(flagPt);
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
-    // And an extra one -> Fail
-    callWorker(flagPt);
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
+        // Build road and let worker leave
+        worldFixture.BuildRoad(flagPt, false, std::vector<unsigned char>(3, Direction::WEST));
+        for(unsigned i = 0; i < 30; i++)
+            worldFixture.em.ExecuteNextGF();
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
+
+        // Call one geologist to flag
+        callWorker(flagPt);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob) + 1, startFigureCt);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().front()->GetJobType(), workerJob);
+
+        // Call remaining ones
+        for(unsigned i = 1; i < startFigureCt; i++)
+            callWorker(flagPt);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt);
+
+        // Recruit all possible ones
+        BOOST_REQUIRE_EQUAL(wh->GetRealWaresCount(toolType), startToolsCt);
+        for(unsigned i = 0; i < startToolsCt; i++)
+            callWorker(flagPt);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
+
+        // And an extra one -> Fail
+        callWorker(flagPt);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), 0u);
+        BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(CallGeologistTest, WorldWithGCExecution2P)
@@ -483,6 +495,135 @@ BOOST_FIXTURE_TEST_CASE(CallGeologistTest, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(CallScoutTest, WorldWithGCExecution2P)
 {
     FlagWorkerTest(*this, JOB_SCOUT, GD_BOW, boost::lambda::bind(&GameCommandFactory::CallScout, this, boost::lambda::_1));
+}
+
+BOOST_FIXTURE_TEST_CASE(ChangeCoinAcceptTest, WorldWithGCExecution2P)
+{
+    const MapPoint bldPt = hqPos + MapPoint(3, 0);
+    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
+    BOOST_REQUIRE(bld);
+    BOOST_REQUIRE(!bld->IsGoldDisabled());
+
+    // Enable (already is)
+    this->SetCoinsAllowed(bldPt, true);
+    BOOST_REQUIRE(!bld->IsGoldDisabled());
+
+    // Disable
+    this->SetCoinsAllowed(bldPt, false);
+    BOOST_REQUIRE(bld->IsGoldDisabled());
+
+    // Reenable
+    this->SetCoinsAllowed(bldPt, true);
+    BOOST_REQUIRE(!bld->IsGoldDisabled());
+
+    // Production should have no effect
+    this->SetProductionEnabled(bldPt, true);
+    BOOST_REQUIRE(!bld->IsGoldDisabled());
+    this->SetProductionEnabled(bldPt, false);
+    BOOST_REQUIRE(!bld->IsGoldDisabled());
+}
+
+BOOST_FIXTURE_TEST_CASE(DisableProductionTest, WorldWithGCExecution2P)
+{
+    const MapPoint bldPt = hqPos + MapPoint(3, 0);
+    nobUsual* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(&world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
+    BOOST_REQUIRE(bld);
+    BOOST_REQUIRE(!bld->IsProductionDisabled());
+
+    // Enable (already is)
+    this->SetProductionEnabled(bldPt, true);
+    BOOST_REQUIRE(!bld->IsProductionDisabled());
+
+    // Disable
+    this->SetProductionEnabled(bldPt, false);
+    BOOST_REQUIRE(bld->IsProductionDisabled());
+
+    // Reenable
+    this->SetProductionEnabled(bldPt, true);
+    BOOST_REQUIRE(!bld->IsProductionDisabled());
+
+    // Coins should have no effect
+    this->SetCoinsAllowed(bldPt, true);
+    BOOST_REQUIRE(!bld->IsProductionDisabled());
+    this->SetCoinsAllowed(bldPt, false);
+    BOOST_REQUIRE(!bld->IsProductionDisabled());
+}
+
+namespace{
+    void InitPactsAndPost(GameWorldBase& world)
+    {
+        for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        {
+            world.GetPlayer(i).MakeStartPacts();
+            PostBox& box = *world.GetPostMgr().GetPostBox(i);
+            const unsigned numMsgs = box.GetNumMsgs();
+            for(unsigned j = 0; j < numMsgs; j++)
+                BOOST_REQUIRE(box.DeleteMsg(0u));
+            BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
+        }
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(NotifyAlliesTest, WorldWithGCExecution3P)
+{
+    // At first there are no teams
+    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        BOOST_REQUIRE_EQUAL(world.GetPlayer(i).team, TM_NOTEAM);
+    // Add postbox for each player
+    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        world.GetPostMgr().AddPostBox(i);
+    // Choose middle player so we can observe side effects and off-by-one errors
+    curPlayer = 1;
+
+    // No ally -> no messages
+    this->NotifyAlliesOfLocation(hqPos);
+    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+    // Still no allies
+    world.GetPlayer(1).team = TM_TEAM1;
+    InitPactsAndPost(world);
+    this->NotifyAlliesOfLocation(hqPos);
+    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+
+    // First 2 players are allied -> Message received by player 0 only
+    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM1;
+    InitPactsAndPost(world);
+    this->NotifyAlliesOfLocation(hqPos);
+    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(0u)->GetNumMsgs(), 1u);
+    for(unsigned i = 1; i < world.GetPlayerCount(); i++)
+        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+
+    // Same if player 2 is in another team
+    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(2).team = TM_TEAM2;
+    InitPactsAndPost(world);
+    this->NotifyAlliesOfLocation(hqPos);
+    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(0u)->GetNumMsgs(), 1u);
+    for(unsigned i = 1; i < world.GetPlayerCount(); i++)
+        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+
+    // player 2 is in same team
+    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM2;
+    world.GetPlayer(2).team = TM_TEAM2;
+    InitPactsAndPost(world);
+    this->NotifyAlliesOfLocation(hqPos);
+    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(2u)->GetNumMsgs(), 1u);
+    for(unsigned i = 0; i < 2; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+
+    // All are in same team
+    world.GetPlayer(0).team = TM_TEAM3;
+    world.GetPlayer(1).team = TM_TEAM3;
+    world.GetPlayer(2).team = TM_TEAM3;
+    InitPactsAndPost(world);
+    this->NotifyAlliesOfLocation(hqPos);
+    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(0u)->GetNumMsgs(), 1u);
+    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(1u)->GetNumMsgs(), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(2u)->GetNumMsgs(), 1u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
