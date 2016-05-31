@@ -28,8 +28,9 @@
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
 #include "gameTypes/InventorySetting.h"
-#include "gameData/SettingTypeConv.h"
 #include "gameTypes/VisualSettings.h"
+#include "gameData/SettingTypeConv.h"
+#include "gameData/ShieldConsts.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
@@ -698,7 +699,67 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
     this->SetInventorySetting(hqPos, JOB_PRIVATE, expectedSetting);
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+
+    std::vector<InventorySetting> settings(JOB_TYPES_COUNT);
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+        settings[i] = InventorySetting(rand() % 5);
+    this->SetAllInventorySettings(hqPos, true, settings);
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+    {
+        // Boat carriers are stored as helpers and boats
+        if(i == JOB_BOATCARRIER)
+            BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job(i)), settings[JOB_HELPER]);
+        else
+            BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job(i)), settings[i]);
+    }
+
+    settings.resize(WARE_TYPES_COUNT);
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+        settings[i] = InventorySetting(rand() % 5);
+    this->SetAllInventorySettings(hqPos, false, settings);
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+        BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType(i)), settings[ConvertShields(GoodType(i))]);
 }
 
+BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
+{
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    nobBaseWarehouse* wh = player.GetFirstWH();
+    BOOST_REQUIRE(wh);
+    Inventory goods;
+
+    // Add enough soldiers per rank
+    for (unsigned i=0; i<SOLDIER_JOBS.size(); i++)
+    {
+        goods.Add(SOLDIER_JOBS[i], 50);
+        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), 0u);
+    }
+    wh->AddGoods(goods, true);
+
+    // Use more
+    for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
+    {
+        unsigned newVal = i * 5 + 2;
+        unsigned numSoldiersAv = wh->GetVisualFiguresCount(SOLDIER_JOBS[i]);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv);
+        // Update reserve -> Removed from inventory
+        this->ChangeReserve(hqPos, i, newVal);
+        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), newVal);
+        BOOST_REQUIRE_EQUAL(wh->GetVisualFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv - newVal);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv - newVal);
+    }
+    // Use less
+    for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
+    {
+        unsigned newVal = i * 3 + 1;
+        unsigned numSoldiersAv = wh->GetVisualFiguresCount(SOLDIER_JOBS[i]);
+        unsigned numSoldiersReleased = *wh->GetReservePointerAvailable(i) - newVal;
+        // Release some soldiers from reserve -> Added to inventory
+        this->ChangeReserve(hqPos, i, newVal);
+        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), newVal);
+        BOOST_REQUIRE_EQUAL(wh->GetVisualFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
+        BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()
