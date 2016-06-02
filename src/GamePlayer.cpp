@@ -479,9 +479,9 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
     return best;
 }
 
-void GamePlayer::SetHQ(const nobBaseWarehouse& hq)
+void GamePlayer::SetHQ(const nobBaseWarehouse* hq)
 {
-    hqPos = hq.GetPos();
+    hqPos = hq ? hq->GetPos() : MapPoint::Invalid();
 }
 
 void GamePlayer::NewRoadConnection(RoadSegment* const rs)
@@ -1534,8 +1534,6 @@ void GamePlayer::TestDefeat()
         // GUI Bescheid sagen
 		if(gwg->GetGameInterface())
 			gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
-		else
-			LOG.lprintf("Warning: Player %i defeated but could not find GameInterface (GameClientPlayer.cpp::TestDefeat()\n",GetPlayerId());
     }
 }
 
@@ -1544,7 +1542,8 @@ void GamePlayer::Surrender()
     isDefeated = true;
 
     // GUI Bescheid sagen
-    gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
+    if(gwg->GetGameInterface())
+        gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
 }
 
 void GamePlayer::SetStatisticValue(StatisticType type, unsigned int value)

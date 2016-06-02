@@ -672,8 +672,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             if(no->GetType() == NOP_FLAG && (!exception || no != exception->GetFlag()))
                 static_cast<noFlag*>(no)->DestroyAttachedBuilding();
 
-            no->Destroy();
-            delete no;
+            DestroyNO(pt, false);
             return;
         }
     }
@@ -1004,7 +1003,7 @@ void GameWorldGame::Armageddon()
             if(flag)
             {
                 flag->DestroyAttachedBuilding();
-                DestroyNO(pt);
+                DestroyNO(pt, false);
             }
         }
 }
@@ -1019,7 +1018,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
             if(flag && flag->GetPlayer() == player)
             {
                 flag->DestroyAttachedBuilding();
-                DestroyNO(pt);
+                DestroyNO(pt, false);
             }
         }
 }

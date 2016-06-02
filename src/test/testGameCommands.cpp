@@ -729,7 +729,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     Inventory goods;
 
     // Add enough soldiers per rank
-    for (unsigned i=0; i<SOLDIER_JOBS.size(); i++)
+    for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
     {
         goods.Add(SOLDIER_JOBS[i], 50);
         BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), 0u);
@@ -760,6 +760,70 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(wh->GetVisualFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
         BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(ArmageddonTest, WorldWithGCExecution2P)
+{
+    GamePlayer& player1 = world.GetPlayer(0);
+    GamePlayer& player2 = world.GetPlayer(1);
+    MapPoint hqPt1 = player1.GetHQPos();
+    MapPoint hqPt2 = player2.GetHQPos();
+    BOOST_REQUIRE(hqPt1.isValid());
+    BOOST_REQUIRE(hqPt2.isValid());
+    // Destroy everything
+    this->CheatArmageddon();
+    BOOST_REQUIRE(!player1.GetHQPos().isValid());
+    BOOST_REQUIRE(!player2.GetHQPos().isValid());
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        const MapNode& node = world.GetNode(pt);
+        BOOST_REQUIRE_EQUAL(node.owner, 0u);
+    }
+    BOOST_REQUIRE_NE(world.GetNO(hqPt1)->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE_NE(world.GetNO(hqPt2)->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE(player1.IsDefeated());
+    BOOST_REQUIRE(player2.IsDefeated());
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
+{
+    GamePlayer& player1 = world.GetPlayer(0);
+    GamePlayer& player2 = world.GetPlayer(1);
+    MapPoint hqPt1 = player1.GetHQPos();
+    MapPoint hqPt2 = player2.GetHQPos();
+    BOOST_REQUIRE(hqPt1.isValid());
+    BOOST_REQUIRE(hqPt2.isValid());
+    // Destroy only own buildings
+    this->DestroyAll();
+    BOOST_REQUIRE(!player1.GetHQPos().isValid());
+    BOOST_REQUIRE(player2.GetHQPos().isValid());
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        const MapNode& node = world.GetNode(pt);
+        BOOST_REQUIRE_NE(node.owner, 1u);
+    }
+    BOOST_REQUIRE_NE(world.GetNO(hqPt1)->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE_EQUAL(world.GetNO(hqPt2)->GetGOT(), GOT_NOB_HQ);
+    BOOST_REQUIRE(player1.IsDefeated());
+    BOOST_REQUIRE(!player2.IsDefeated());
+}
+
+BOOST_FIXTURE_TEST_CASE(SurrenderTest, WorldWithGCExecution2P)
+{
+    GamePlayer& player1 = world.GetPlayer(0);
+    GamePlayer& player2 = world.GetPlayer(1);
+    MapPoint hqPt1 = player1.GetHQPos();
+    MapPoint hqPt2 = player2.GetHQPos();
+    BOOST_REQUIRE(hqPt1.isValid());
+    BOOST_REQUIRE(hqPt2.isValid());
+    // Only sets defeated flag
+    this->Surrender();
+    BOOST_REQUIRE(player1.GetHQPos().isValid());
+    BOOST_REQUIRE(player2.GetHQPos().isValid());
+    BOOST_REQUIRE_NE(world.GetNode(hqPt1).obj, (const noBase*) NULL);
+    BOOST_REQUIRE_NE(world.GetNode(hqPt2).obj, (const noBase*) NULL);
+    BOOST_REQUIRE(player1.IsDefeated());
+    BOOST_REQUIRE(!player2.IsDefeated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

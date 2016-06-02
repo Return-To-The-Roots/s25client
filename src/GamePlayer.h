@@ -96,7 +96,8 @@ class GamePlayer: public GamePlayerInfo
         GameWorldGame& GetGameWorld(){ return *gwg; }
 
         const MapPoint& GetHQPos() const { return hqPos; }
-        void SetHQ(const nobBaseWarehouse& hq);
+        /// Set or clear HQ
+        void SetHQ(const nobBaseWarehouse* hq);
 
         /// Notify that a new road connection exists (not only an existing road splitted)
         void NewRoadConnection(RoadSegment* const rs);
