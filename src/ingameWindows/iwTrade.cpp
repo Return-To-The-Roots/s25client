@@ -31,6 +31,7 @@
 #include "factories/GameCommandFactory.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
+#include <cstdio>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),

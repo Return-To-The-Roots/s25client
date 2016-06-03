@@ -36,6 +36,7 @@
 #include "gameTypes/BuildingCount.h"
 #include "gameData/const_gui_ids.h"
 #include "files.h"
+#include <cstdio>
 
 const unsigned BUILDINGS_COUNT = 32;
 
