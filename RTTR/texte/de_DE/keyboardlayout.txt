@@ -1,4 +1,4 @@
-2010.03.22        SIEDLER II.5 - RETURN TO THE ROOTS           0.7-dev
+2016.06.03        SIEDLER II.5 - RETURN TO THE ROOTS           0.8.1-dev
 ------------------------------------------------------------------------
 Globale Tastaturbelegung im Spiel:
 
@@ -12,17 +12,17 @@ B:.................... Zur Ausgangsposition zurückspringen
 N:.................... Nachrichtenfenster
 L:.................... Landkarte
 M:.................... Hauptauswahl
-I:..................... Inventar
+I:.................... Inventar
 
-SPACE:............ Haus-Bau-Hilfe an-/ausschalten
+SPACE:................ Haus-Bau-Hilfe an-/ausschalten
 C:.................... Bezeichnungen der Häuser zeigen
 S:.................... Status der Häuser zeigen
 
-Z:.................... (Zoomt das aktuelle Fenster)
-V:.................... (Spielgeschwindigkeit verstellen)
+Z:.................... Zoomt das aktuelle Fenster
+V:.................... Spielgeschwindigkeit verstellen
 
-Alt-W, Esc:...... Schließt aktives Fenster
-Alt-Q:.............. Spiel verlassen
+Alt-W, Esc:........... Schließt aktives Fenster
+Alt-Q:................ Spiel verlassen
 
 F1:................... (Spiel laden)
 F2:................... Spiel speichern
@@ -33,9 +33,9 @@ F12:.................. Kontrollfenster
 
 Im Nachrichten Fenster:
 
-DEL:................ (Nachricht lï¿½schen)
-G:.................... (Zum Ort der Nachricht gehen)
-+/-:.................. (Nï¿½chste/Vorherige Nachricht)
+DEL:.................. Nachricht löschen
+G:.................... Zum Ort der Nachricht gehen
++/-:.................. Nächste/Vorherige Nachricht
 
 Cursortasten: Kartenausschnitt scrollen
 
@@ -47,6 +47,6 @@ P:.................... Pause/Fortsetzen (Auch nach GF Sprung)
 1-7:.................. Spielerwechsel
 
 ------------------------------------------------------------------------
-http://www.siedler25.org    Copyright (C) 2005-2010 Settlers Freaks
+http://www.siedler25.org    Copyright (C) 2005-2016 Settlers Freaks
 ------------------------------------------------------------------------
 
