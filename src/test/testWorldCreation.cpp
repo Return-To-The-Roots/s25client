@@ -22,10 +22,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 
-#define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)    \
-    for(TYPE pt(0, 0); pt.y < (HEIGHT); ++pt.y) \
-        for(pt.x = 0; pt.x < (WIDTH); ++pt.x)
-
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
 BOOST_FIXTURE_TEST_CASE(HQPlacement, EmptyWorldFixture<1>)
