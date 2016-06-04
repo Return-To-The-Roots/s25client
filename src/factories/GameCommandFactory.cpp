@@ -170,9 +170,9 @@ bool GameCommandFactory::SuggestPact(unsigned char player, PactType pt, unsigned
     return AddGC( new gc::SuggestPact(player, pt, duration) );
 }
 
-bool GameCommandFactory::AcceptPact(bool accepted, unsigned id, PactType pt, unsigned char player)
+bool GameCommandFactory::AcceptPact(unsigned id, PactType pt, unsigned char player)
 {
-    return AddGC( new gc::AcceptPact(accepted, id, pt, player) );
+    return AddGC( new gc::AcceptPact(id, pt, player) );
 }
 
 bool GameCommandFactory::CancelPact(const PactType pt, unsigned char player)

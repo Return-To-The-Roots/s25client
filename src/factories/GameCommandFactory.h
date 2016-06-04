@@ -83,7 +83,7 @@ public:
     bool Surrender();
     bool DestroyAll();
     bool SuggestPact(unsigned char player, PactType pt, unsigned duration);
-    bool AcceptPact(bool accepted, unsigned id, PactType pt, unsigned char player);
+    bool AcceptPact(unsigned id, PactType pt, unsigned char player);
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
     bool ToggleShipYardMode(const MapPoint pt);

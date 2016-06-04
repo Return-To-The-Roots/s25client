@@ -185,7 +185,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // New contract?
                 if(dcurMsg->IsAccept())
-                    GAMECLIENT.AcceptPact(true, dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                    GAMECLIENT.AcceptPact(dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 else
                     GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 postBox.DeleteMsg(dcurMsg);

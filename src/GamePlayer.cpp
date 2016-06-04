@@ -1307,7 +1307,7 @@ void GamePlayer::ConvertTransportData(const TransportOrders& transport_data)
 
 bool GamePlayer::IsAlly(const unsigned char playerId) const
 {
-    // Der Spieler ist ja auch zu sich selber verbündet ;
+    // Der Spieler ist ja auch zu sich selber verbündet
     if(GetPlayerId() == playerId)
         return true;
     else
@@ -1692,16 +1692,19 @@ void GamePlayer::PactChanged(const PactType pt)
 
 void GamePlayer::SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration)
 {
-    pacts[targetPlayer][pt].accepted = false;
-    pacts[targetPlayer][pt].duration = duration;
-    pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
+    if(!pacts[targetPlayer][pt].accepted && duration > 0)
+    {
+        pacts[targetPlayer][pt].accepted = false;
+        pacts[targetPlayer][pt].duration = duration;
+        pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
 
-    gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
+        gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
+    }
 }
 
 void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer)
 {
-    if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].start == id)
+    if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].duration > 0 && pacts[targetPlayer][pt].start == id)
     {
         MakePact(pt, targetPlayer, pacts[targetPlayer][pt].duration);
         gwg->GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
@@ -1731,11 +1734,8 @@ GamePlayer::PactState GamePlayer::GetPactState(const PactType pt, const unsigned
             return IN_PROGRESS;
 
         if(pacts[other_player][pt].duration == 0xFFFFFFFF)
-        {
-            if(pacts[other_player][pt].accepted)
-                return ACCEPTED;
-        }
-        else if(gwg->GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration )
+            return ACCEPTED;
+        else if(gwg->GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
             return ACCEPTED;
     }
 

@@ -689,8 +689,6 @@ namespace gc{
     class AcceptPact : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Vertrag angenommen oder abgelehnt?
-            bool accepted;
             /// ID des Vertrages
             const unsigned id;
             /// Art des Vertrages
@@ -699,15 +697,14 @@ namespace gc{
             const unsigned char fromPlayer;
 
         protected:
-            AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char fromPlayer) : GameCommand(ACCEPTPACT),
-                accepted(accepted), id(id), pt(pt), fromPlayer(fromPlayer) {}
+            AcceptPact(const unsigned id, const PactType pt, const unsigned char fromPlayer) : GameCommand(ACCEPTPACT),
+                id(id), pt(pt), fromPlayer(fromPlayer) {}
             AcceptPact(Serializer& ser) : GameCommand(ACCEPTPACT),
-                accepted(ser.PopBool()), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar()) {}
+                id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar()) {}
         public:
 
             void Serialize(Serializer& ser) const override
             {
-                ser.PushBool(accepted);
                 ser.PushUnsignedInt(id);
                 ser.PushUnsignedChar(static_cast<unsigned char>(pt));
                 ser.PushUnsignedChar(fromPlayer);

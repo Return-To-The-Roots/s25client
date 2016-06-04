@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "EmptyWorldFixture.h"
+#include "test/WorldWithGCExecution.h"
 #include "GamePlayer.h"
 #include "nodeObjs/noBase.h"
 #include "nodeObjs/noEnvObject.h"
@@ -24,22 +24,15 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "figures/nofPassiveSoldier.h"
-#include "factories/GameCommandFactory.h"
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
-#include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
-#include <boost/foreach.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
-
-#define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)    \
-    for(TYPE pt(0, 0); pt.y < (HEIGHT); ++pt.y) \
-        for(pt.x = 0; pt.x < (WIDTH); ++pt.x)
 
 template<typename T>
 std::ostream& operator<<(std::ostream &out, const Point<T>& point)
@@ -53,53 +46,6 @@ std::ostream& operator<<(std::ostream &out, const InventorySetting& setting)
 }
 
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
-
-template<unsigned T_numPlayers>
-class WorldWithGCExecution: public EmptyWorldFixture<T_numPlayers>, public GameCommandFactory
-{
-public:
-    using EmptyWorldFixture<T_numPlayers>::world;
-
-    unsigned curPlayer;
-    MapPoint hqPos;
-    WorldWithGCExecution(): curPlayer(0), hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
-protected:
-    bool AddGC(gc::GameCommand* gc) override
-    {
-        // Go through serialization to check if that works too
-        Serializer ser;
-        const gc::Type type = gc->GetType();
-        gc->Serialize(ser);
-        deletePtr(gc);
-        gc = gc::GameCommand::Deserialize(type, ser);
-        BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
-        Serializer ser2;
-        gc->Serialize(ser2);
-        BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
-        for(unsigned i = 0; i < ser.GetLength(); i++)
-            BOOST_REQUIRE_EQUAL(ser2.GetData()[i], ser.GetData()[i]);
-        gc->Execute(world, curPlayer);
-        deletePtr(gc);
-        return true;
-    }
-};
-
-// Avoid having to use "this->" to access those
-class WorldWithGCExecution2P: public WorldWithGCExecution<2>
-{
-public:
-    using WorldWithGCExecution<2>::world;
-    using WorldWithGCExecution<2>::curPlayer;
-    using WorldWithGCExecution<2>::hqPos;
-};
-
-class WorldWithGCExecution3P: public WorldWithGCExecution<3>
-{
-public:
-    using WorldWithGCExecution<3>::world;
-    using WorldWithGCExecution<3>::curPlayer;
-    using WorldWithGCExecution<3>::hqPos;
-};
 
 BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 {

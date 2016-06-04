@@ -26,7 +26,7 @@
 /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
 const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
 /// Version des Replay-Formates
-const unsigned short Replay::REPLAY_VERSION = 30;
+const unsigned short Replay::REPLAY_VERSION = 31;
 
 Replay::Replay() : nwf_length(0), random_init(0),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
