@@ -1692,6 +1692,10 @@ void GamePlayer::PactChanged(const PactType pt)
 
 void GamePlayer::SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration)
 {
+    // Don't try to make pact with self
+    if(targetPlayer == GetPlayerId())
+        return;
+
     if(!pacts[targetPlayer][pt].accepted && duration > 0)
     {
         pacts[targetPlayer][pt].accepted = false;
@@ -1773,6 +1777,10 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
 /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
 void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerIdx)
 {
+    // Don't try to cancel pact with self
+    if(otherPlayerIdx == GetPlayerId())
+        return;
+
     // Besteht bereits ein Bündnis?
     if(pacts[otherPlayerIdx][pt].accepted)
     {

@@ -22,39 +22,87 @@
 #include "postSystem/DiplomacyPostQuestion.h"
 #include <boost/test/unit_test.hpp>
 
+namespace utf = boost::unit_test;
+
 BOOST_AUTO_TEST_SUITE(PactTestSuite)
 
-BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P)
+BOOST_FIXTURE_TEST_CASE(TestInitialPactStates, WorldWithGCExecution3P)
+{
+    // No pacts at start
+    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    {
+        const GamePlayer& player = world.GetPlayer(i);
+        for(unsigned j = 0; j < world.GetPlayerCount(); j++)
+        {
+            // Self is always an ally and not attackable
+            if(i == j)
+            {
+                BOOST_REQUIRE(player.IsAlly(j));
+                BOOST_REQUIRE(!player.IsAttackable(j));
+            } else{
+                BOOST_REQUIRE(!player.IsAlly(j));
+                BOOST_REQUIRE(player.IsAttackable(j));
+            }
+            for(unsigned p = 0; p < PACTS_COUNT; p++)
+            {
+                BOOST_REQUIRE_EQUAL(player.GetPactState(PactType(p), j), GamePlayer::NO_PACT);
+                BOOST_REQUIRE_EQUAL(player.GetRemainingPactTime(PactType(p),j), 0u);
+            }
+        }
+    }
+}
+
+namespace {
+    /// Validate the state of a pact between to players. Also checks that the state for the other player is the same
+    void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned playerIdTo, PactType pact, GamePlayer::PactState expectedState)
+    {
+        const GamePlayer& playerFrom = world.GetPlayer(playerIdFrom);
+        const GamePlayer& playerTo = world.GetPlayer(playerIdTo);
+
+        BOOST_REQUIRE_EQUAL(playerFrom.GetPactState(pact, playerIdTo), expectedState);
+        // If pact was requested, to other player has no pact yet
+        if(expectedState == GamePlayer::IN_PROGRESS)
+            BOOST_REQUIRE_EQUAL(playerTo.GetPactState(pact, playerIdFrom), GamePlayer::NO_PACT);
+        else
+            BOOST_REQUIRE_EQUAL(playerTo.GetPactState(pact, playerIdFrom), expectedState);
+
+        // If pact is accepted, we must have some time remaining, else not
+        if(expectedState == GamePlayer::ACCEPTED)
+            BOOST_REQUIRE_GT(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
+        else
+            BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
+
+        // Remaining times must match
+        BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), playerFrom.GetRemainingPactTime(pact, playerIdTo));
+
+        // Attackable must match
+        BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo), playerTo.IsAttackable(playerIdFrom));
+        // Ally must match
+        BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), playerTo.IsAlly(playerIdFrom));
+
+        // Attackable only when non-agg. pact not accepted
+        BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo), (playerFrom.GetPactState(NON_AGGRESSION_PACT, playerIdTo) != GamePlayer::ACCEPTED));
+        // Ally when treaty of alliance accepted
+        BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), (playerFrom.GetPactState(TREATY_OF_ALLIANCE, playerIdTo) == GamePlayer::ACCEPTED));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
 {
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
         world.GetPostMgr().AddPostBox(i);
     // Use middle player for off-by-one detection
     curPlayer = 1;
     GamePlayer& player1 = world.GetPlayer(1);
-    // No pacts at start
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
-    {
-        // Self is always an ally and not attackable
-        if(i == curPlayer)
-        {
-            BOOST_REQUIRE(player1.IsAlly(i));
-            BOOST_REQUIRE(!player1.IsAttackable(i));
-        } else{
-            BOOST_REQUIRE(!player1.IsAlly(i));
-            BOOST_REQUIRE(player1.IsAttackable(i));
-        }
-        for(unsigned j=0; j<PACTS_COUNT; j++)
-        {
-            BOOST_REQUIRE_EQUAL(player1.GetPactState(PactType(j), i), GamePlayer::NO_PACT);
-            BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(PactType(j), i), 0u);
-        }
-    }
     PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);
     BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 0u);
 
     // Invalid length
     this->SuggestPact(2, NON_AGGRESSION_PACT, 0u);
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(TREATY_OF_ALLIANCE, 2), GamePlayer::NO_PACT);
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
+    // Own player
+    this->SuggestPact(1, NON_AGGRESSION_PACT, 0u);
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
     BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 0u);
 
     const unsigned duration = 10;
@@ -65,60 +113,120 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P)
     BOOST_REQUIRE(msg);
     BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT);
     BOOST_REQUIRE_EQUAL(msg->GetPlayerId(), curPlayer);
+    BOOST_REQUIRE_EQUAL(msg->IsAccept(), true);
     GamePlayer& player2 = world.GetPlayer(2);
-    // But pact should not have been changed yet
-    BOOST_REQUIRE(player1.IsAttackable(2));
-    BOOST_REQUIRE(player2.IsAttackable(1));
-    // But should be in progress for player1
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::IN_PROGRESS);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(NON_AGGRESSION_PACT, 1), GamePlayer::NO_PACT);
+    // should be in progress for player1
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::IN_PROGRESS);
 
     // Same player sends accept -> Disallowed
     this->AcceptPact(msg->GetPactId(), NON_AGGRESSION_PACT, 2);
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::IN_PROGRESS);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(NON_AGGRESSION_PACT, 1), GamePlayer::NO_PACT);
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::IN_PROGRESS);
 
     curPlayer = 2;
     // Wrong ID
     this->AcceptPact(msg->GetPactId() + 1, NON_AGGRESSION_PACT, msg->GetPlayerId());
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::IN_PROGRESS);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(NON_AGGRESSION_PACT, 1), GamePlayer::NO_PACT);
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::IN_PROGRESS);
     // Wrong Pact
     this->AcceptPact(msg->GetPactId(), TREATY_OF_ALLIANCE, msg->GetPlayerId());
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::IN_PROGRESS);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(NON_AGGRESSION_PACT, 1), GamePlayer::NO_PACT);
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(TREATY_OF_ALLIANCE, 2), GamePlayer::NO_PACT);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(TREATY_OF_ALLIANCE, 1), GamePlayer::NO_PACT);
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::IN_PROGRESS);
     // Correct
     this->AcceptPact(msg->GetPactId(), NON_AGGRESSION_PACT, msg->GetPlayerId());
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::ACCEPTED);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(NON_AGGRESSION_PACT, 1), GamePlayer::ACCEPTED);
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(TREATY_OF_ALLIANCE, 2), GamePlayer::NO_PACT);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(TREATY_OF_ALLIANCE, 1), GamePlayer::NO_PACT);
-    BOOST_REQUIRE(!player1.IsAttackable(2));
-    BOOST_REQUIRE(!player2.IsAttackable(1));
-    
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::ACCEPTED);
+    // Other pact should not be affected
+    CheckPactState(world, 1, 2, TREATY_OF_ALLIANCE, GamePlayer::NO_PACT);
+
     // Check duration
     BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), duration);
-    em.ExecuteNextGF();
-    BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), duration - 1);
-    // Double accept -> Do not change
-    this->AcceptPact(msg->GetPactId(), NON_AGGRESSION_PACT, msg->GetPlayerId());
-    BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), duration - 1);
-    // Execute the GFs during which the pact is valid (1 already run)
-    for(unsigned i = 1; i < duration; i++)
+}
+
+// Creates a non-aggression pact between players 1 and 2
+struct PactCreatedFixture: public WorldWithGCExecution3P
+{
+    const unsigned duration = 10;
+    const DiplomacyPostQuestion* msg;
+    PactCreatedFixture()
     {
-        BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::ACCEPTED);
+        for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+            world.GetPostMgr().AddPostBox(i);
+        // Use middle player for off-by-one detection
+        curPlayer = 1;
+        PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);
+
+        this->SuggestPact(2, NON_AGGRESSION_PACT, duration);
+        msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
+        BOOST_REQUIRE(msg);
+        curPlayer = 2;
+        this->AcceptPact(msg->GetPactId(), NON_AGGRESSION_PACT, msg->GetPlayerId());
+        CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::ACCEPTED);
+    }
+};
+
+BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture, *utf::depends_on("PactTestSuite/MakePactTest"))
+{
+    GamePlayer& player1 = world.GetPlayer(1);
+
+    // Check duration
+    BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), duration);
+    // Execute the GFs during which the pact is valid, starting in the GF in which the pact was accepted
+    for(unsigned i = 0; i < duration; i++)
+    {
+        // Pact still valid
+        CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::ACCEPTED);
         BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), duration - i);
+        // Double accept -> Do not change
+        this->AcceptPact(msg->GetPactId(), NON_AGGRESSION_PACT, msg->GetPlayerId());
+        BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), duration - i);
+        // Advance 1 GF and test pacts
         em.ExecuteNextGF();
         player1.TestPacts();
     }
-    // On last GF the pact expired (first GF is the GF in which the pact was concluded)
+    // On last GF the pact expired
     BOOST_REQUIRE_EQUAL(player1.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), 0u);
-    BOOST_REQUIRE_EQUAL(player1.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::NO_PACT);
-    BOOST_REQUIRE_EQUAL(player2.GetRemainingPactTime(NON_AGGRESSION_PACT, 2), 0u);
-    BOOST_REQUIRE_EQUAL(player2.GetPactState(NON_AGGRESSION_PACT, 2), GamePlayer::NO_PACT);
-    player1.TestPacts();
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
+}
+
+BOOST_FIXTURE_TEST_CASE(CancelPactTest, PactCreatedFixture, *utf::depends_on("PactTestSuite/MakePactTest"))
+{
+    PostBox& postbox1 = *world.GetPostMgr().GetPostBox(1);
+    PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);
+    postbox1.Clear();
+    postbox2.Clear();
+
+    curPlayer = 2;
+    this->CancelPact(NON_AGGRESSION_PACT, 1);
+    // Pact still alive
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::ACCEPTED);
+    // But player1 should have received a question
+    BOOST_REQUIRE_EQUAL(postbox1.GetNumMsgs(), 1u);
+    msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox1.GetMsg(0));
+    BOOST_REQUIRE(msg);
+    BOOST_REQUIRE_EQUAL(msg->GetPlayerId(), 2u);
+    BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT);
+    BOOST_REQUIRE_EQUAL(msg->IsAccept(), false);
+
+    // Same player tries to cancel again
+    this->CancelPact(NON_AGGRESSION_PACT, 1);
+    // .. or with self
+    this->CancelPact(NON_AGGRESSION_PACT, 2);
+    // Pact still alive
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::ACCEPTED);
+
+    curPlayer = 1;
+    // other player tries self cancel
+    this->CancelPact(NON_AGGRESSION_PACT, 1);
+    // Pact still alive
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::ACCEPTED);
+
+    // And finally do it. Each player should receive a message
+    BOOST_REQUIRE_EQUAL(postbox1.GetNumMsgs(), 2u); // 2 cancel messages
+    BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 0u);
+    this->CancelPact(NON_AGGRESSION_PACT, 2);
+    CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
+    BOOST_REQUIRE_EQUAL(postbox1.GetNumMsgs(), 3u);
+    BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 1u);
+    // The new message should not be a question
+    BOOST_REQUIRE(!dynamic_cast<const DiplomacyPostQuestion*>(postbox1.GetMsg(postbox1.GetNumMsgs() - 1)));
+    BOOST_REQUIRE(!dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(postbox2.GetNumMsgs() - 1)));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
