@@ -19,10 +19,10 @@ for (int i = 0 ; i < archs.size(); ++i) {
             unstash 'source'
             dir('build') {
                 sh """BARCH=--arch=c.${x}
-                      if [ "$(uname -s | tr "[:upper:]" "[:lower:]").$(uname -m)" = "${x}" ] ; then
+                      if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${x}" ] ; then
                           BARCH=
                       fi
-                      ./cmake.sh --prefix=. $BARCH -DRTTR_USE_STATIC_BOOST=ON
+                      ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON
                    """
                 archive 's25rttr*.tar.bz2,s25rttr*.zip'
             }
