@@ -24,6 +24,8 @@ node('master') {
     sh "env"
 }
 
+checkpoint 'checkout-complete' 
+
 compile_map = [:]
 
 for (int i = 0 ; i < archs.size(); ++i) {
@@ -31,7 +33,8 @@ for (int i = 0 ; i < archs.size(); ++i) {
     compile_map["${x}"] = { 
         node('master') {
             ws(pwd()+"/"+x) {
-                echo "Build ${x} in "+pwd()+"/"+x
+                echo "Build ${x} in "+pwd()
+                deleteDir()
                 unstash 'source'
                 sh """set -x
                       BARCH=--arch=c.${x}
