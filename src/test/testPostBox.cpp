@@ -119,4 +119,17 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
     BOOST_REQUIRE_EQUAL(cb.delCalls, box.GetMaxMsgs());
 }
 
+BOOST_AUTO_TEST_CASE(ClearMsgs)
+{
+    PostBox box;
+    CallbackChecker cb(box);
+    box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
+    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+        box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
+    // Deleting should delete all messages and call delete callback for each one
+    box.Clear();
+    BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
+    BOOST_REQUIRE_EQUAL(cb.delCalls, box.GetMaxMsgs());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
