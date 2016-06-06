@@ -15,23 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CreateEmptyWorld_h__
-#define CreateEmptyWorld_h__
+#include "WorldFixture.h"
+#include "CreateSeaWorld.h"
+#include "GCExecutor.h"
 
-#include "gameTypes/Nation.h"
-#include <vector>
+#ifndef SeaWorldWithGCExecution_h__
+#define SeaWorldWithGCExecution_h__
 
-class GameWorldGame;
-
-/// Creates an empty world, with meadow terrain and the given number of players
-struct CreateEmptyWorld
+class SeaWorldWithGCExecution: public WorldFixture<CreateSeaWorld, 4>, public GCExecutor
 {
-    CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers);
-    bool operator()(GameWorldGame& world) const;
-private:
-    unsigned width_, height_;
-    std::vector<Nation> playerNations_;
+public:
+    using WorldFixture<CreateSeaWorld, 4>::world;
+protected:
+    virtual GameWorldGame& GetWorld() override { return world; }
 };
 
-
-#endif // CreateEmptyWorld_h__
+#endif // SeaWorldWithGCExecution_h__

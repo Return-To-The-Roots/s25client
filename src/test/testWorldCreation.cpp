@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,7 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "EmptyWorldFixture.h"
+#include "WorldFixture.h"
+#include "CreateEmptyWorld.h"
 #include "GamePlayer.h"
 #include "nodeObjs/noBase.h"
 #include <boost/test/unit_test.hpp>
@@ -24,7 +25,9 @@
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
-BOOST_FIXTURE_TEST_CASE(HQPlacement, EmptyWorldFixture<1>)
+typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
+
+BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
 {
     GamePlayer& player = world.GetPlayer(0);
     BOOST_REQUIRE(player.isUsed());

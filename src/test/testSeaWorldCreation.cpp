@@ -15,23 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CreateEmptyWorld_h__
-#define CreateEmptyWorld_h__
+#include "defines.h" // IWYU pragma: keep
+#include "SeaWorldWithGCExecution.h"
+#include "GamePlayer.h"
+#include <boost/test/unit_test.hpp>
+#include <boost/foreach.hpp>
 
-#include "gameTypes/Nation.h"
-#include <vector>
+BOOST_AUTO_TEST_SUITE(SeaWorldCreationSuite)
 
-class GameWorldGame;
-
-/// Creates an empty world, with meadow terrain and the given number of players
-struct CreateEmptyWorld
+BOOST_FIXTURE_TEST_CASE(TestHarborSpotCreation, SeaWorldWithGCExecution)
 {
-    CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers);
-    bool operator()(GameWorldGame& world) const;
-private:
-    unsigned width_, height_;
-    std::vector<Nation> playerNations_;
-};
+    BOOST_REQUIRE_EQUAL(world.GetHarborPointCount(), 8u);
+}
 
-
-#endif // CreateEmptyWorld_h__
+BOOST_AUTO_TEST_SUITE_END()

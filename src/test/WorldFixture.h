@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EmptyWorldFixture_h__
-#define EmptyWorldFixture_h__
+#ifndef WorldFixture_h__
+#define WorldFixture_h__
 
-#include "CreateEmptyWorld.h"
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
@@ -27,19 +26,19 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-template<unsigned T_numPlayers = 0, unsigned T_width = 128, unsigned T_height = 128>
-struct EmptyWorldFixture
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = 128, unsigned T_height = 128>
+struct WorldFixture
 {
     EventManager em;
     GlobalGameSettings ggs;
     GameWorldGame world;
-    EmptyWorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em)
+    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em)
     {
         GameObject::SetPointers(&world);
-        BOOST_REQUIRE(CreateEmptyWorld(T_width, T_height, T_numPlayers)(world));
+        BOOST_REQUIRE(T_WorldCreator(T_width, T_height, T_numPlayers)(world));
         BOOST_REQUIRE_EQUAL(world.GetPlayerCount(), T_numPlayers);
     }
-    ~EmptyWorldFixture()
+    ~WorldFixture()
     {
         // Reset to allow assertions on GameObject destruction to pass
         GameObject::SetPointers(NULL);
@@ -52,4 +51,4 @@ struct EmptyWorldFixture
     }
 };
 
-#endif // EmptyWorldFixture_h__
+#endif // WorldFixture_h__

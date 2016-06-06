@@ -1,5 +1,7 @@
-#define BOOST_FOREACH(var, col) var;
+#define BOOST_FOREACH(var, col) for(var;;)
 #define BOOST_FIXTURE_TEST_CASE(name, fixture) class name: public fixture{ void testMethod(); }; void name::testMethod()
 #define BOOST_AUTO_TEST_CASE(name) class name{ void testMethod(); }; void name::testMethod()
 #define BOOST_AUTO_TEST_SUITE(name) namespace name{
 #define BOOST_AUTO_TEST_SUITE_END() }
+
+#define RTTR_FOREACH_PT(PtType, width, height) for(PtType pt;;)

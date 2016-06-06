@@ -418,8 +418,10 @@ bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const 
     return true;
 }
 
-void MapLoader::InitSeasAndHarbors(World& world)
+void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
 {
+    world.harbor_pos.insert(world.harbor_pos.end(), additionalHarbors.begin(), additionalHarbors.end());
+
     /// Weltmeere vermessen
     MapPoint pt;
     for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)

@@ -15,18 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CreateEmptyWorld_h__
-#define CreateEmptyWorld_h__
+#ifndef CreateSeaWorld_h__
+#define CreateSeaWorld_h__
 
 #include "gameTypes/Nation.h"
 #include <vector>
 
 class GameWorldGame;
 
-/// Creates an empty world, with meadow terrain and the given number of players
-struct CreateEmptyWorld
+/// Creates a world for up to 4 players,
+/// with a sea on the outside and a lake on the inside with each player having access to both
+struct CreateSeaWorld
 {
-    CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers);
+    CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
 private:
     unsigned width_, height_;
@@ -34,4 +35,4 @@ private:
 };
 
 
-#endif // CreateEmptyWorld_h__
+#endif // CreateSeaWorld_h__

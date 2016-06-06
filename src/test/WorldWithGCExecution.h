@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,42 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "EmptyWorldFixture.h"
+#include "CreateEmptyWorld.h"
+#include "WorldFixture.h"
 #include "GamePlayer.h"
-#include "factories/GameCommandFactory.h"
-#include "libutil/src/Serializer.h"
+#include "GCExecutor.h"
 
 #ifndef WorldWithGCExecution_h__
 #define WorldWithGCExecution_h__
 
 template<unsigned T_numPlayers>
-class WorldWithGCExecution: public EmptyWorldFixture<T_numPlayers>, public GameCommandFactory
+class WorldWithGCExecution: public WorldFixture<CreateEmptyWorld, T_numPlayers>, public GCExecutor
 {
 public:
-    using EmptyWorldFixture<T_numPlayers>::world;
+    using WorldFixture<CreateEmptyWorld, T_numPlayers>::world;
 
-    unsigned curPlayer;
     MapPoint hqPos;
-    WorldWithGCExecution(): curPlayer(0), hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
+    WorldWithGCExecution(): hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
+
 protected:
-    bool AddGC(gc::GameCommand* gc) override
-    {
-        // Go through serialization to check if that works too
-        Serializer ser;
-        const gc::Type type = gc->GetType();
-        gc->Serialize(ser);
-        deletePtr(gc);
-        gc = gc::GameCommand::Deserialize(type, ser);
-        BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
-        Serializer ser2;
-        gc->Serialize(ser2);
-        BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
-        for(unsigned i = 0; i < ser.GetLength(); i++)
-            BOOST_REQUIRE_EQUAL(ser2.GetData()[i], ser.GetData()[i]);
-        gc->Execute(world, curPlayer);
-        deletePtr(gc);
-        return true;
-    }
+    virtual GameWorldGame& GetWorld() override { return world; }
 };
 
 // Avoid having to use "this->" to access those
