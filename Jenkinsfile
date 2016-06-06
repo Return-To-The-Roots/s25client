@@ -7,7 +7,8 @@ def compile_map = [:]
 node('master') {
     stage "Checkout"
     checkout scm
-    sh """git submodule foreach "git reset --hard || true" || true
+    sh """set -x
+          git submodule foreach "git reset --hard || true" || true
           git reset --hard || true
           git submodule update --init || true
        """
@@ -21,14 +22,16 @@ for (int i = 0 ; i < archs.size(); ++i) {
     def x = archs.get(i)
     compile_map["${x}"] = { 
         node('master') {
+            stage "Build ${x}"
             deleteDir()
             unstash 'source'
             dir('build') {
-                sh """BARCH=--arch=c.${x}
+                sh """set -x
+                      BARCH=--arch=c.${x}
                       if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${x}" ] ; then
                           BARCH=
                       fi
-                      ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON
+                      docker run -it -u jenkins -v \$(pwd):/workdir -v /srv/apache2/siedler25.org/nightly:/www -v /srv/backup/www/s25client:/archive ubuntu/crossbuild:precise -c "cd build ; ls -la . ; ./cmake.sh --prefix=. --arch=\$BARCH -DRTTR_USE_STATIC_BOOST=ON && make create_nightly"
                    """
                 archive 's25rttr*.tar.bz2,s25rttr*.zip'
             }
