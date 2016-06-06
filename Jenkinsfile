@@ -30,8 +30,8 @@ for (int i = 0 ; i < archs.size(); ++i) {
     def x = archs.get(i)
     compile_map["${x}"] = { 
         node('master') {
-            ws(x) {
-                echo "Build ${x}"
+            ws(pwd()+"/"+x) {
+                echo "Build ${x} in "+pwd()+"/"+x
                 unstash 'source'
                 sh """set -x
                       BARCH=--arch=c.${x}
