@@ -7,7 +7,7 @@ def compile_map = [:]
 node('master') {
     stage "Checkout"
     checkout scm
-    sh """git submodule foreach "&quot;"git reset --hard || true" || true
+    sh """git submodule foreach "git reset --hard || true" || true
           git reset --hard || true
           git submodule update --init || true
        """
