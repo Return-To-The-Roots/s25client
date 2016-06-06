@@ -24,8 +24,6 @@ node('master') {
     sh "env"
 }
 
-checkpoint 'checkout-complete' 
-
 compile_map = [:]
 
 for (int i = 0 ; i < archs.size(); ++i) {
