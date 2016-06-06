@@ -32,7 +32,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
         node('master') {
             ws(pwd()+"/"+x) {
                 echo "Build ${x} in "+pwd()
-                deleteDir()
+                sh 'chmod -R u+w .git' // fixes unstash overwrite bug ... #JENKINS-33126
                 unstash 'source'
                 sh """set -x
                       BARCH=--arch=c.${x}
