@@ -24,7 +24,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
     def x = archs.get(i)
     compile_map["${x}"] = { 
         node('master') {
-            stage "Build ${x}"
+            // stage "Build ${x}"
             deleteDir()
             unstash 'source'
             dir('build') {
