@@ -35,7 +35,8 @@ for (int i = 0 ; i < archs.size(); ++i) {
                   docker run --rm -u jenkins -v \$(pwd):/workdir \
                                              -v /srv/apache2/siedler25.org/nightly:/www \
                                              -v /srv/backup/www/s25client:/archive \
-                                             ubuntu/crossbuild:precise --name "${env.JOB_NAME}-\$BARCH" -c \
+                                             --name "${env.JOB_NAME}-\$BARCH" \
+                                             ubuntu/crossbuild:precise -c \
                                              "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON && make create_nightly"
                """
             archive 's25rttr*.tar.bz2,s25rttr*.zip'
