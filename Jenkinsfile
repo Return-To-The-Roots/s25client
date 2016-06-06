@@ -11,7 +11,7 @@ String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64"
 def compile_map = [:]
 
 node('master') {
-    stage "Checkout", concurrency: 1
+    stage "Checkout"
     checkout scm
     sh """set -x
           git submodule foreach "git reset --hard || true" || true
@@ -58,8 +58,8 @@ for (int i = 0 ; i < archs.size(); ++i) {
     }
 }
 
-stage "Building", concurrency: 1
+stage "Building"
 parallel compile_map, failFast: true 
 
-stage "Publishing", concurrency: 1
+stage "Publishing"
 // todo
