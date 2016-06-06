@@ -59,7 +59,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
 }
 
 stage "Building"
-parallel compile_map, failFast: true 
+parallel compile_map
 
 stage "Publishing"
 // todo
