@@ -32,12 +32,19 @@ for (int i = 0 ; i < archs.size(); ++i) {
                   if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${x}" ] ; then
                       BARCH=
                   fi
+                  PARAMS=
+                  # if [[ "${env.BRANCH_NAME}" == "PR-*" ]] ; then
+                  if [ "${env.BRANCH_NAME}" == "master" ] ; then
+                      PARAMS=create_nightly
+                  #elif [ "${env.BRANCH_NAME}" == "latest" ] ; then
+                  #    PARAMS=create_release
+                  fi
                   docker run --rm -u jenkins -v \$(pwd):/workdir \
                                              -v /srv/apache2/siedler25.org/nightly:/www \
                                              -v /srv/backup/www/s25client:/archive \
                                              --name "${env.BUILD_TAG}-${x}" \
                                              ubuntu/crossbuild:precise -c \
-                                             "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON && make create_nightly"
+                                             "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON && make $PARAMS"
                """
             archive 's25rttr*.tar.bz2,s25rttr*.zip'
         } 
