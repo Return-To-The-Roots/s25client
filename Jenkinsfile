@@ -13,6 +13,8 @@ node('master') {
           git submodule update --init || true
        """
 
+    stash includes: '**, .git/', name: 'source', useDefaultExcludes: false
+    
     sh "env"
 }
 
