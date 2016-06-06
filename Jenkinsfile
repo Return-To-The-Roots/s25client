@@ -1,6 +1,10 @@
 #!/bin/groovy
 
-properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '10', numToKeepStr: '100']]])
+properties([[$class: 'jenkins.model.BuildDiscarderProperty',
+            strategy: [$class: 'LogRotator',
+                        daysToKeepStr: '10',
+                        numToKeepStr: '100',
+                        artifactNumToKeepStr: '10']]])
 
 String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
 
