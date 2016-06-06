@@ -1,5 +1,7 @@
 #!/bin/groovy
 
+properties [[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '10', numToKeepStr: '100']]
+
 String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
 
 def compile_map = [:]
@@ -24,7 +26,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
     def x = archs.get(i)
     compile_map["${x}"] = { 
         node('master') {
-            // stage "Build ${x}"
+            echo "Build ${x}"
             deleteDir()
             unstash 'source'
             sh """set -x
