@@ -50,7 +50,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
                                              -v /srv/backup/www/s25client:/archive \
                                              --name "${env.BUILD_TAG}-${x}" \
                                              ubuntu/crossbuild:precise -c \
-                                             "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON && make $PARAMS"
+                                             "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON && make \$PARAMS"
                """
             archive 's25rttr*.tar.bz2,s25rttr*.zip'
         } 
