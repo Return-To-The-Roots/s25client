@@ -191,18 +191,23 @@ unsigned World::CalcDistance(const int x1, const int y1, const int x2, const int
     return((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
-ShipDirection World::GetShipDir(const MapPoint fromPt, const MapPoint toPt)
+ShipDirection World::GetShipDir(const MapPoint fromPt, const MapPoint toPt) const
 {
-    // Richtung bestimmen, in der dieser Punkt relativ zum Ausgangspunkt steht
-    unsigned diff = SafeDiff(fromPt.y, toPt.y);
-    // Avoid division by zero
-    if(diff == 0)
-        diff = 1;
-    bool marginal_x = ((SafeDiff(fromPt.x, toPt.x) * 1000 / diff) < 180);
+    // First divide into NORTH/SOUTH by only looking at the y-Difference. On equal we choose SOUTH
+    // Then choose between main dir (S/N) or partial E/W:
+    //     6 directions -> 60° covered per direction, mainDir +- 30°
+    //     -> Switching at an angle of 60° compared to x-axis
+    //     hence: |dy/dx| > tan(60°) -> main dir, else add E or W
+
+    unsigned dy = SafeDiff(fromPt.y, toPt.y);
+    unsigned dx = SafeDiff(fromPt.x, toPt.x);
+    // tan(60°) ~= 1.73205080757. Divider at |dy| > |dx| * 1.732 using fixed point math
+    // (floating point math may lead to different results among configurations/platforms)
+    bool isMainDir = dy * 1000 > dx * 1732;
     if(toPt.y < fromPt.y)
     {
         // North
-        if(marginal_x)
+        if(isMainDir)
             return ShipDirection::NORTH;
         else if(toPt.x < fromPt.x)
             return ShipDirection::NORTHWEST;
@@ -211,7 +216,7 @@ ShipDirection World::GetShipDir(const MapPoint fromPt, const MapPoint toPt)
     } else
     {
         // South
-        if(marginal_x)
+        if(isMainDir)
             return ShipDirection::SOUTH;
         else if(toPt.x < fromPt.x)
             return ShipDirection::SOUTHWEST;
