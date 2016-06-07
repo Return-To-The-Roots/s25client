@@ -10,6 +10,8 @@ String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64"
 
 def compile_map = [:]
 
+def p = "";
+
 node('master') {
     stage "Checkout"
     checkout scm
@@ -22,9 +24,10 @@ node('master') {
     stash includes: '**, .git/', excludes: 'ws', name: 'source', useDefaultExcludes: false
     
     sh "env"
+    
+    p = pwd()
 }
 
-def p = pwd()
 
 compile_map = [:]
 
