@@ -191,17 +191,30 @@ unsigned World::CalcDistance(const int x1, const int y1, const int x2, const int
     return((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
-ShipDirection World::GetShipDir(const MapPoint fromPt, const MapPoint toPt) const
+ShipDirection World::GetShipDir(MapPoint fromPt, MapPoint toPt) const
 {
     // First divide into NORTH/SOUTH by only looking at the y-Difference. On equal we choose SOUTH
     // Then choose between main dir (S/N) or partial E/W:
-    //     6 directions -> 60° covered per direction, mainDir +- 30°
-    //     -> Switching at an angle of 60° compared to x-axis
-    //     hence: |dy/dx| > tan(60°) -> main dir, else add E or W
+    //     6 directions -> 60deg covered per direction, mainDir +- 30deg
+    //     -> Switching at an angle of 60deg compared to x-axis
+    //     hence: |dy/dx| > tan(60deg) -> main dir, else add E or W
 
     unsigned dy = SafeDiff(fromPt.y, toPt.y);
     unsigned dx = SafeDiff(fromPt.x, toPt.x);
-    // tan(60°) ~= 1.73205080757. Divider at |dy| > |dx| * 1.732 using fixed point math
+    // Handle wrapping. Also swap coordinates when wrapping (we reverse the direction)
+    if(dy > height_ / 2u)
+    {
+        dy = height_ - dy;
+        using std::swap;
+        swap(fromPt.y, toPt.y);
+    }
+    if(dx > width_ / 2u)
+    {
+        dx = width_ - dx;
+        using std::swap;
+        swap(fromPt.x, toPt.x);
+    }
+    // tan(60deg) ~= 1.73205080757. Divider at |dy| > |dx| * 1.732 using fixed point math
     // (floating point math may lead to different results among configurations/platforms)
     bool isMainDir = dy * 1000 > dx * 1732;
     if(toPt.y < fromPt.y)

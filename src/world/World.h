@@ -133,7 +133,7 @@ public:
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
     /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
-    ShipDirection GetShipDir(const MapPoint fromPt, const MapPoint toPt) const;
+    ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
 
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Point<int> pt) const;
