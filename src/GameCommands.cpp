@@ -229,7 +229,7 @@ namespace gc{
         else if(action == CANCELEXPEDITION)
             ship->CancelExpedition();
         else
-            ship->ContinueExpedition(action - 2);
+            ship->ContinueExpedition(ShipDirection(action - 2));
     }
 
     /// Fuehrt das GameCommand aus

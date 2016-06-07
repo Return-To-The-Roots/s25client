@@ -93,7 +93,7 @@ public:
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer Richtung im Umkreis
     sortedMilitaryBlds LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 
-    /// Pr�ft, ob von einem bestimmten Punkt aus der Untergrund f�r Figuren zug�nglich ist (kein Wasser,Lava,Sumpf)
+    /// Pr�ft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zug�nglich ist (kein Wasser,Lava,Sumpf)
     bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;
 
     /// Finds a path for figures. Returns 0xFF if none found
@@ -108,7 +108,7 @@ public:
     noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255);
     const noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255) const;
 
-    /// Erzeugt eine GUI-ID f�r die Fenster von Map-Objekten
+    /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
@@ -119,20 +119,19 @@ public:
     /// Berechnet Bauqualitäten wie bei letzterer Funktion, bloß noch den 2. Kreis um x;y herum
     void RecalcBQAroundPointBig(const MapPoint pt);
 
-    /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verb�ndeten des jeweiligen Spielers
+    /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
     Visibility CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const;
 
-    /// Ist es an dieser Stelle f�r einen Spieler m�glich einen Hafen zu bauen
-    bool IsHarborPointFree(const unsigned harbor_id, const unsigned char player,
-        const unsigned short sea_id) const;
-    /// Ermittelt, ob ein Punkt K�stenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1 Hafenplatz liegt, hat
-    /// und gibt ggf. die Meeres-ID zur�ck, ansonsten 0
-    unsigned short IsCoastalPointToSeaWithHarbor(const MapPoint pt) const;
+    /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
+    bool IsHarborPointFree(const unsigned harborId, const unsigned char player) const;
+    /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1 Hafenplatz liegt, hat
+    /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
+    bool IsCoastalPointToSeaWithHarbor(const MapPoint pt) const;
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir, const unsigned char player) const;
+    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir, const unsigned char player) const;
     /// Berechnet die Entfernung zwischen 2 Hafenpunkten
-    unsigned CalcHarborDistance(const unsigned habor_id1, const unsigned harbor_id2) const;
-    /// Bestimmt f�r einen beliebigen Punkt auf der Karte die Entfernung zum n�chsten Hafenpunkt
+    unsigned CalcHarborDistance(const unsigned habor_id1, const unsigned harborId2) const;
+    /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
     unsigned CalcDistanceToNearestHarbor(const MapPoint pos) const;
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
@@ -177,9 +176,9 @@ public:
 
     /// Liefert Hafenpunkte im Umkreis von einem bestimmten Milit�rgeb�ude
     std::vector<unsigned> GetHarborPointsAroundMilitaryBuilding(const MapPoint pt) const;
-    /// returns all sea_ids from which a given building can be attacked by sea
+    /// returns all seaIds from which a given building can be attacked by sea
     std::vector<unsigned> GetValidSeaIDsAroundMilitaryBuildingForAttack(const MapPoint pt, std::vector<bool>& use_seas, const unsigned char player_attacker)const;
-    /// returns all sea_ids found in the given vector from which a given building can be attacked by sea
+    /// returns all seaIds found in the given vector from which a given building can be attacked by sea
     void GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(const MapPoint pt, std::vector<unsigned short>& use_seas, const unsigned char player_attacker)const;
     /// Sucht verf�gbare Soldaten, um dieses Milit�rgeb�ude mit einem Seeangriff anzugreifen
     std::vector<PotentialSeaAttacker> GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const;
@@ -197,9 +196,12 @@ protected:
     /// Called, when the altitude of a point was changed
     void AltitudeChanged(const MapPoint pt) override;
 
-    /// Gibt n�chsten Hafenpunkt in einer bestimmten Richtung zur�ck, bzw. 0, wenn es keinen gibt
-    unsigned GetNextHarborPoint(const MapPoint pt, const unsigned origin_harbor_id, const unsigned char dir,
-        const unsigned char player, bool (GameWorldBase::*IsPointOK)(const unsigned, const unsigned char, const unsigned short) const) const;
+private:
+    /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)
+    /// T_IsHarborOk must be a predicate taking a harbor Id and returning a bool if the harbor is valid to return
+    template<typename T_IsHarborOk>
+    unsigned GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
+        const unsigned char player, T_IsHarborOk isHarborOk) const;
 
 };
 

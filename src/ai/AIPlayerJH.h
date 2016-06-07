@@ -106,7 +106,7 @@ class AIPlayerJH : public AIBase
 		/// military & tool production settings 
 		void AdjustSettings();
 
-        ///return number of sea_ids with at least 2 harbor spots
+        ///return number of seaIds with at least 2 harbor spots
         unsigned GetCountofAIRelevantSeaIds();
 		
         bool IsInvalidShipyardPosition(const MapPoint pt);

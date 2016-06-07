@@ -20,6 +20,7 @@
 
 #include "noMovable.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/ShipDirection.h"
 #include <list>
 #include <vector>
 
@@ -66,7 +67,7 @@ class noShip : public noMovable
         /// Das Meer, auf dem dieses Schiff fährt
         unsigned short seaId_;
         /// Zielpunkt des Schiffes
-        unsigned goal_harbor_id;
+        unsigned goal_harborId;
         /// Anlegepunkt am Zielhafen, d.h. die Richtung relativ zum Zielpunkt
         unsigned char goal_dir;
         /// Namen des Schiffs
@@ -195,7 +196,7 @@ class noShip : public noMovable
         /// Startet eine Erkundungs-Expedition
         void StartExplorationExpedition(unsigned homeHarborId);
         /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
-        void ContinueExpedition(const unsigned char dir);
+        void ContinueExpedition(const ShipDirection dir);
         /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
         /// Hafen zurückzukehren
         void CancelExpedition();

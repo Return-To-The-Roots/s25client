@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SeaWorldWithGCExecution.h"
 #include "GamePlayer.h"
+#include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 
@@ -25,7 +26,54 @@ BOOST_AUTO_TEST_SUITE(SeaWorldCreationSuite)
 
 BOOST_FIXTURE_TEST_CASE(TestHarborSpotCreation, SeaWorldWithGCExecution)
 {
+    // Point 0,0 is definitely inside the sea
+    BOOST_REQUIRE(world.IsWaterPoint(MapPoint(0, 0)));
+    BOOST_REQUIRE(world.IsSeaPoint(MapPoint(0, 0)));
+    // 2 harbors for each of the 4 player spots
     BOOST_REQUIRE_EQUAL(world.GetHarborPointCount(), 8u);
+    // 2 seas: 1 outside, 1 inside
+    BOOST_REQUIRE_EQUAL(world.GetNumSeas(), 2u);
+    // Harbor ID 0 is means invalid harbor
+#if RTTR_ENABLE_ASSERTS
+    RTTR_AssertEnableBreak = false;
+    BOOST_REQUIRE_THROW(world.GetHarborPoint(0), RTTR_AssertError);
+    RTTR_AssertEnableBreak = true;
+#else
+    BOOST_REQUIRE(!world.GetHarborPoint(0).IsValid());
+#endif
+    // Note: Dummy harbor not counted
+    for(unsigned curHarborId = 1; curHarborId <= world.GetHarborPointCount(); curHarborId++)
+    {
+        const MapPoint curHarborPt = world.GetHarborPoint(curHarborId);
+        BOOST_REQUIRE(curHarborPt.isValid());
+        // Reverse mapping must match
+        BOOST_REQUIRE_EQUAL(world.GetHarborPointID(curHarborPt), curHarborId);
+        // We must be at one of the 2 seas
+        unsigned seaId;
+        if(world.IsHarborAtSea(curHarborId, 1))
+            seaId = 1;
+        else if(world.IsHarborAtSea(curHarborId, 2))
+            seaId = 2;
+        else
+            BOOST_FAIL("Harbor is at no sea");
+        // We must have a coast point at that sea
+        const MapPoint coastPt = world.GetCoastalPoint(curHarborId, seaId);
+        BOOST_REQUIRE(coastPt.isValid());
+        BOOST_REQUIRE_NE(world.GetSeaFromCoastalPoint(coastPt), 0);
+        // Sea in the direction of the coast must match
+        bool coastPtFound = false;
+        for(unsigned dir = 0; dir < 6; dir++)
+        {
+            if(world.GetNeighbour(curHarborPt, Direction::fromInt(dir)) == coastPt)
+            {
+                BOOST_REQUIRE_EQUAL(world.GetSeaId(curHarborId, Direction::fromInt(dir)), seaId);
+                coastPtFound = true;
+                break;
+            }
+        }
+        BOOST_REQUIRE(coastPtFound);
+        BOOST_REQUIRE_EQUAL(world.GetNode(curHarborPt).bq, BQ_HARBOR);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

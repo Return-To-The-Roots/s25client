@@ -71,16 +71,16 @@ const DrawPointInit SHIPS_FLAG_POS[2][6] =
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos),
-      player(player), state(STATE_IDLE), seaId_(0), goal_harbor_id(0), goal_dir(0),
+      player(player), state(STATE_IDLE), seaId_(0), goal_harborId(0), goal_dir(0),
       name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_count)]),
       curRouteIdx(0), lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(unsigned i = 0; i < 6; ++i)
     {
-        unsigned short sea_id = gwg->GetNeighbourNode(pos, i).sea_id;
-        if(sea_id)
-            this->seaId_ = sea_id;
+        unsigned short seaId = gwg->GetNeighbourNode(pos, i).seaId;
+        if(seaId)
+            this->seaId_ = seaId;
     }
 
     // Auf irgendeinem Meer müssen wir ja sein
@@ -94,7 +94,7 @@ void noShip::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
     sgd.PushUnsignedShort(seaId_);
-    sgd.PushUnsignedInt(goal_harbor_id);
+    sgd.PushUnsignedInt(goal_harborId);
     sgd.PushUnsignedChar(goal_dir);
     sgd.PushString(name);
     sgd.PushUnsignedInt(curRouteIdx);
@@ -114,7 +114,7 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id) :
     player(sgd.PopUnsignedChar()),
     state(State(sgd.PopUnsignedChar())),
     seaId_(sgd.PopUnsignedShort()),
-    goal_harbor_id(sgd.PopUnsignedInt()),
+    goal_harborId(sgd.PopUnsignedInt()),
     goal_dir(sgd.PopUnsignedChar()),
     name(sgd.PopString()),
     curRouteIdx(sgd.PopUnsignedInt()),
@@ -276,7 +276,7 @@ void noShip::HandleEvent(const unsigned int id)
         case STATE_EXPEDITION_UNLOADING:
         {
             // Hafen herausfinden
-            noBase* hb = goal_harbor_id ? gwg->GetNO(gwg->GetHarborPoint(goal_harbor_id)) : NULL;
+            noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : NULL;
 
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
@@ -301,7 +301,7 @@ void noShip::HandleEvent(const unsigned int id)
         case STATE_EXPLORATIONEXPEDITION_UNLOADING:
         {
             // Hafen herausfinden
-            noBase* hb = goal_harbor_id ? gwg->GetNO(gwg->GetHarborPoint(goal_harbor_id)): NULL;
+            noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)): NULL;
 
             unsigned old_visual_range = GetVisualRange();
 
@@ -335,7 +335,7 @@ void noShip::HandleEvent(const unsigned int id)
         {
             // Hafen herausfinden
             RTTR_Assert(state == STATE_SEAATTACK_UNLOADING || remaining_sea_attackers == 0);
-            noBase* hb = goal_harbor_id ? gwg->GetNO(gwg->GetHarborPoint(goal_harbor_id)): NULL;
+            noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)): NULL;
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
             {
                 static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures, wares);
@@ -445,8 +445,8 @@ void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>&
 
     state = STATE_GOTOHARBOR;
 
-    goal_harbor_id = gwg->GetNode(hb->GetPos()).harbor_id;
-    RTTR_Assert(goal_harbor_id);
+    goal_harborId = gwg->GetNode(hb->GetPos()).harborId;
+    RTTR_Assert(goal_harborId);
 
     // Route merken
     this->route_ = route;
@@ -465,7 +465,7 @@ void noShip::StartExpedition(unsigned homeHarborId)
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
-    goal_harbor_id = homeHarborId; // This is current goal (commands are relative to current goal)
+    goal_harborId = homeHarborId; // This is current goal (commands are relative to current goal)
 }
 
 /// Startet eine Erkundungs-Expedition
@@ -478,7 +478,7 @@ void noShip::StartExplorationExpedition(unsigned homeHarborId)
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     home_harbor = homeHarborId;
-    goal_harbor_id = homeHarborId; // This is current goal (commands are relative to current goal)
+    goal_harborId = homeHarborId; // This is current goal (commands are relative to current goal)
     // Sichtbarkeiten neu berechnen
     gwg->SetVisibilitiesAroundPoint(pos, GetVisualRange(), player);
 }
@@ -486,10 +486,10 @@ void noShip::StartExplorationExpedition(unsigned homeHarborId)
 /// Fährt weiter zu einem Hafen
 noShip::Result noShip::DriveToHarbour()
 {
-    if(!goal_harbor_id)
+    if(!goal_harborId)
         return HARBOR_DOESNT_EXIST;
 
-    MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
+    MapPoint goal(gwg->GetHarborPoint(goal_harborId));
     RTTR_Assert(goal.isValid());
 
     // Existiert der Hafen überhaupt noch?
@@ -502,7 +502,7 @@ noShip::Result noShip::DriveToHarbour()
 /// Fährt weiter zu Hafenbauplatz
 noShip::Result noShip::DriveToHarbourPlace()
 {
-    if(goal_harbor_id == 0)
+    if(goal_harborId == 0)
         return HARBOR_DOESNT_EXIST;
 
     // Sind wir schon da?
@@ -510,7 +510,7 @@ noShip::Result noShip::DriveToHarbourPlace()
         return GOAL_REACHED;
 
     // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
-    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
+    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harborId, seaId_);
 
     MapPoint goalRoutePos;
 
@@ -551,18 +551,18 @@ noShip::Result noShip::DriveToHarbourPlace()
 unsigned noShip::GetCurrentHarbor() const
 {
     RTTR_Assert(state == STATE_EXPEDITION_WAITING);
-    return goal_harbor_id;
+    return goal_harborId;
 }
 
 
 /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
-void noShip::ContinueExpedition(const unsigned char dir)
+void noShip::ContinueExpedition(const ShipDirection dir)
 {
     if(state != STATE_EXPEDITION_WAITING)
         return;
 
     // Nächsten Hafenpunkt in dieser Richtung suchen
-    unsigned new_goal = gwg->GetNextFreeHarborPoint(pos, goal_harbor_id, dir, player);
+    unsigned new_goal = gwg->GetNextFreeHarborPoint(pos, goal_harborId, dir, player);
 
     // Auch ein Ziel gefunden?
     if(!new_goal)
@@ -576,7 +576,7 @@ void noShip::ContinueExpedition(const unsigned char dir)
 
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
-    goal_harbor_id = new_goal;
+    goal_harborId = new_goal;
     state = STATE_EXPEDITION_DRIVING;
 
     StartDriving(route_[curRouteIdx++]);
@@ -595,7 +595,7 @@ void noShip::CancelExpedition()
 
     // Zum Heimathafen zurückkehren
     // Oder sind wir schon dort?
-    if(goal_harbor_id == home_harbor)
+    if(goal_harborId == home_harbor)
     {
         route_.clear();
         curRouteIdx = 0;
@@ -605,7 +605,7 @@ void noShip::CancelExpedition()
     else
     {
         state = STATE_EXPEDITION_DRIVING;
-        goal_harbor_id = home_harbor;
+        goal_harborId = home_harbor;
         StartDrivingToHarborPlace();
         HandleState_ExpeditionDriving();
     }
@@ -618,7 +618,7 @@ void noShip::FoundColony()
         return;
 
     // Kolonie gründen
-    if(gwg->FoundColony(goal_harbor_id, player, seaId_))
+    if(gwg->FoundColony(goal_harborId, player, seaId_))
     {
         // Dann idlen wir wieder
         StartIdling();
@@ -632,7 +632,7 @@ void noShip::FoundColony()
 void noShip::HandleState_GoToHarbor()
 {
     // Hafen schon zerstört?
-    if(goal_harbor_id == 0)
+    if(goal_harborId == 0)
     {
         StartIdling();
         return;
@@ -645,7 +645,7 @@ void noShip::HandleState_GoToHarbor()
         return; // Continue
     case GOAL_REACHED:
         {
-            MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
+            MapPoint goal(gwg->GetHarborPoint(goal_harborId));
             RTTR_Assert(goal.isValid());
             // Go idle here (if harbor does not need it)
             StartIdling();
@@ -656,7 +656,7 @@ void noShip::HandleState_GoToHarbor()
         } break;
     case NO_ROUTE_FOUND:
         {
-            MapPoint goal(gwg->GetHarborPoint(goal_harbor_id));
+            MapPoint goal(gwg->GetHarborPoint(goal_harborId));
             RTTR_Assert(goal.isValid());
             // Dem Hafen Bescheid sagen
             gwg->GetSpecObj<nobHarborBuilding>(goal)->ShipLost(this);
@@ -672,7 +672,7 @@ void noShip::HandleState_ExpeditionDriving()
 {
     Result res;
     // Zum Heimathafen fahren?
-    if(home_harbor == goal_harbor_id)
+    if(home_harbor == goal_harborId)
         res = DriveToHarbour();
     else
         res = DriveToHarbourPlace();
@@ -683,7 +683,7 @@ void noShip::HandleState_ExpeditionDriving()
         case GOAL_REACHED:
         {
             // Haben wir unsere Expedition beendet?
-            if(home_harbor == goal_harbor_id)
+            if(home_harbor == goal_harborId)
             {
                 // Sachen wieder in den Hafen verladen
                 state = STATE_EXPEDITION_UNLOADING;
@@ -702,10 +702,10 @@ void noShip::HandleState_ExpeditionDriving()
         case NO_ROUTE_FOUND:
         case HARBOR_DOESNT_EXIST: //should only happen when an expedition is cancelled and the home harbor no longer exists
         {
-            if(home_harbor != goal_harbor_id && home_harbor != 0)
+            if(home_harbor != goal_harborId && home_harbor != 0)
             {
                 // Try to go back
-                goal_harbor_id = home_harbor;
+                goal_harborId = home_harbor;
                 HandleState_ExpeditionDriving();
             }else
                 FindUnloadGoal(STATE_EXPEDITION_DRIVING); // Unload anywhere!
@@ -717,7 +717,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
 {
     Result res;
     // Zum Heimathafen fahren?
-    if(home_harbor == goal_harbor_id && covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
+    if(home_harbor == goal_harborId && covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
         res = DriveToHarbour();
     else
         res = DriveToHarbourPlace();
@@ -728,7 +728,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
         case GOAL_REACHED:
         {
             // Haben wir unsere Expedition beendet?
-            if(home_harbor == goal_harbor_id && covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
+            if(home_harbor == goal_harborId && covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
             {
                 // Dann sind wir fertig -> wieder entladen
                 state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
@@ -805,7 +805,7 @@ void noShip::HandleState_SeaAttackDriving()
         break;
     case NO_ROUTE_FOUND:
     case HARBOR_DOESNT_EXIST:
-        RTTR_Assert(goal_harbor_id != home_harbor || home_harbor == 0);
+        RTTR_Assert(goal_harborId != home_harbor || home_harbor == 0);
         AbortSeaAttack();
         break;
     }
@@ -836,9 +836,9 @@ bool noShip::IsAbleToFoundColony() const
     if(state == STATE_EXPEDITION_WAITING)
     {
         // We must always have a goal harbor
-        RTTR_Assert(goal_harbor_id);
+        RTTR_Assert(goal_harborId);
         // Ist der Punkt, an dem wir gerade ankern, noch frei?
-        if(gwg->IsHarborPointFree(goal_harbor_id, player, seaId_))
+        if(gwg->IsHarborPointFree(goal_harborId, player))
             return true;
     }
 
@@ -848,7 +848,7 @@ bool noShip::IsAbleToFoundColony() const
 /// Gibt zurück, ob das Schiff einen bestimmten Hafen ansteuert
 bool noShip::IsGoingToHarbor(nobHarborBuilding* hb) const
 {
-    if(goal_harbor_id != hb->GetHarborPosID())
+    if(goal_harborId != hb->GetHarborPosID())
         return false;
     // Explicit switch to check all states
     switch (state)
@@ -887,7 +887,7 @@ void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::l
     // ID von Zielhafen herausfinden
     noBase* nb = gwg->GetNO(goal);
     RTTR_Assert(nb->GetGOT() == GOT_NOB_HARBORBUILDING);
-    this->goal_harbor_id = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
+    this->goal_harborId = static_cast<nobHarborBuilding*>(nb)->GetHarborPosID();
 
     this->figures = figures;
     this->wares = wares;
@@ -903,8 +903,8 @@ void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::l
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
     this->home_harbor = homeHarborId;
-    this->goal_harbor_id = gwg->GetHarborPointID(goal);
-    RTTR_Assert(goal_harbor_id);
+    this->goal_harborId = gwg->GetHarborPointID(goal);
+    RTTR_Assert(goal_harborId);
     this->figures = figures;
     for(std::list<noFigure*>::iterator it = this->figures.begin(); it != this->figures.end(); ++it)
     {
@@ -929,11 +929,11 @@ void noShip::AbortSeaAttack()
     RTTR_Assert(remaining_sea_attackers == 0); // Some soldiers are still not aboard
 
     if ((state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION) &&
-        goal_harbor_id != home_harbor && home_harbor != 0)
+        goal_harborId != home_harbor && home_harbor != 0)
     {
         // We did not start the attack yet and we can (possibly) go back to our home harbor
         // -> tell the soldiers we go back (like after an attack)
-        goal_harbor_id = home_harbor;
+        goal_harborId = home_harbor;
         for (std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
         {
             RTTR_Assert(dynamic_cast<nofAttacker*>(*it));
@@ -976,14 +976,14 @@ void noShip::AbortSeaAttack()
 /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
 void noShip::StartDrivingToHarborPlace()
 {
-    if(!goal_harbor_id)
+    if(!goal_harborId)
     {
         route_.clear();
         curRouteIdx = 0;
         return;
     }
 
-    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harbor_id, seaId_);
+    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harborId, seaId_);
     if(pos == coastalPos)
         route_.clear();
     else if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
@@ -991,8 +991,8 @@ void noShip::StartDrivingToHarborPlace()
         // todo
         RTTR_Assert(false);
         LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n",
-            GetEvMgr().GetCurrentGF(), player, state, pos.x, pos.y, coastalPos.x, coastalPos.y, goal_harbor_id, gwg->GetHarborPoint(goal_harbor_id).x, gwg->GetHarborPoint(goal_harbor_id).y);
-        goal_harbor_id = 0;
+            GetEvMgr().GetCurrentGF(), player, state, pos.x, pos.y, coastalPos.x, coastalPos.y, goal_harborId, gwg->GetHarborPoint(goal_harborId).x, gwg->GetHarborPoint(goal_harborId).y);
+        goal_harborId = 0;
         return;
     }
     curRouteIdx = 0;
@@ -1013,10 +1013,10 @@ void noShip::FindUnloadGoal(State newState)
     state = newState;
     // Das Schiff muss einen Notlandeplatz ansteuern
     // Neuen Hafen suchen
-    if(gwg->GetPlayer(player).FindHarborForUnloading(this, pos, &goal_harbor_id, &route_, NULL))
+    if(gwg->GetPlayer(player).FindHarborForUnloading(this, pos, &goal_harborId, &route_, NULL))
     {
         curRouteIdx = 0;
-        home_harbor = goal_harbor_id; // To allow unloading here
+        home_harbor = goal_harborId; // To allow unloading here
         if(state == STATE_EXPEDITION_DRIVING)
             HandleState_ExpeditionDriving();
         else if(state == STATE_TRANSPORT_DRIVING)
@@ -1034,7 +1034,7 @@ void noShip::FindUnloadGoal(State newState)
     {
         // Ansonsten als verloren markieren, damit uns später Bescheid gesagt wird
         // wenn es einen neuen Hafen gibt
-        home_harbor = goal_harbor_id = 0;
+        home_harbor = goal_harborId = 0;
         lost = true;
     }
 }
@@ -1050,7 +1050,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         home_harbor = 0;
 
     // Ist unser Ziel betroffen?
-    if(destroyedHarborId != goal_harbor_id)
+    if(destroyedHarborId != goal_harborId)
     {
         return;
     }
@@ -1063,7 +1063,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         // Just reset goal, but not for expeditions
         if(!IsOnExpedition() && !IsOnExplorationExpedition())
         {
-            goal_harbor_id = 0;
+            goal_harborId = 0;
         }
         return; // Skip the rest
     case noShip::STATE_TRANSPORT_LOADING:
@@ -1099,7 +1099,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         {
             // Then save us some time and unload immediately
             // goal is now the start harbor (if it still exists)
-            goal_harbor_id = home_harbor;
+            goal_harborId = home_harbor;
             state = STATE_TRANSPORT_UNLOADING;
         }
         else
@@ -1129,7 +1129,7 @@ void noShip::StartIdling()
     RTTR_Assert(remaining_sea_attackers == 0);
 
     home_harbor = 0;
-    goal_harbor_id = 0;
+    goal_harborId = 0;
     state = STATE_IDLE;
 }
 
@@ -1148,7 +1148,7 @@ void noShip::SeaAttackerWishesNoReturn()
         if(!figures.empty())
         {
             // Go back home. Note: home_harbor can be 0 if it was destroyed, allow this and let the state handlers handle that case later
-            goal_harbor_id = home_harbor;
+            goal_harborId = home_harbor;
             state = STATE_SEAATTACK_RETURN_DRIVING;
             StartDrivingToHarborPlace();
             HandleState_SeaAttackReturn();
@@ -1180,7 +1180,7 @@ void noShip::ContinueExplorationExpedition()
     if(covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
     {
         // Ggf. sind wir schon da?
-        if(goal_harbor_id == home_harbor)
+        if(goal_harborId == home_harbor)
         {
             // Dann sind wir fertig -> wieder entladen
             state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
@@ -1189,22 +1189,22 @@ void noShip::ContinueExplorationExpedition()
         }
 
         // Dann steuern wir unseren Heimathafen an!
-        goal_harbor_id = home_harbor;
+        goal_harborId = home_harbor;
     }
     else
     {
         // Nächsten Zielpunkt bestimmen
         std::vector<unsigned> hps;
-        if(goal_harbor_id)
-            hps = gwg->GetHarborPointsWithinReach(goal_harbor_id, seaId_);
+        if(goal_harborId)
+            hps = gwg->GetHarborPointsWithinReach(goal_harborId, seaId_);
 
         // Keine möglichen Häfen gefunden?
         if(hps.empty())
             // Dann wieder Heimathafen ansteuern
-            goal_harbor_id = home_harbor;
+            goal_harborId = home_harbor;
         else
             // Zufällig den nächsten Hafen auswählen
-            goal_harbor_id = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];
+            goal_harborId = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];
     }
 
     StartDrivingToHarborPlace();
@@ -1218,11 +1218,11 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
     if(!lost)
         return;
     // Liegt der Hafen auch am Meer von diesem Schiff?
-    if(!gwg->IsAtThisSea(hb->GetHarborPosID(), seaId_))
+    if(!gwg->IsHarborAtSea(hb->GetHarborPosID(), seaId_))
         return;
 
     //LOG.lprintf("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
-    home_harbor = goal_harbor_id = hb->GetHarborPosID();
+    home_harbor = goal_harborId = hb->GetHarborPosID();
     lost = false;
 
     StartDrivingToHarborPlace();

@@ -1431,10 +1431,10 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
 }
 
 /// Gründet vom Schiff aus eine neue Kolonie
-bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id)
+bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)
 {
     // Ist es hier überhaupt noch möglich, eine Kolonie zu gründen?
-    if(!IsHarborPointFree(harbor_point, player, sea_id))
+    if(!IsHarborAtSea(harbor_point, seaId) || !IsHarborPointFree(harbor_point, player))
         return false;
 
     MapPoint pos(GetHarborPoint(harbor_point));
@@ -1472,7 +1472,7 @@ std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned h
     std::vector<unsigned> hps;
     for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
     {
-        if(i == hbId || !IsAtThisSea(i, seaId))
+        if(i == hbId || !IsHarborAtSea(i, seaId))
             continue;
         unsigned dist = CalcHarborDistance(hbId, i);
         if(dist == 0xffffffff)

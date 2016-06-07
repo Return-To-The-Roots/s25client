@@ -54,9 +54,9 @@ public:
             data = helpers::toString(static_cast<unsigned>(node.resources));
             break;
         case 4:
-            if(node.sea_id)
-                data = helpers::toString(node.sea_id);
-            else if(gw.IsCoastalPoint(pt))
+            if(node.seaId)
+                data = helpers::toString(node.seaId);
+            else if(gw.GetSeaFromCoastalPoint(pt))
                 data = "C";
             break;
         case 5:

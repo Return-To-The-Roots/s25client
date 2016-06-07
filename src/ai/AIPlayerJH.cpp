@@ -2490,13 +2490,13 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
         if(!seaId)
             continue;
 
-        for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++) //start at 1 harbor dummy yadayada :>
+        for(unsigned curHarborId = 1; curHarborId <= gwb.GetHarborPointCount(); curHarborId++) //start at 1 harbor dummy yadayada :>
         {
-            if(i != harborid && gwb.IsAtThisSea(i, seaId))
+            if(curHarborId != harborid && gwb.IsHarborAtSea(curHarborId, seaId))
             {
                 if(onlyempty) //check if the spot is actually free for colonization?
                 {
-                    if(gwb.IsHarborPointFree(i, playerId, seaId))
+                    if(gwb.IsHarborPointFree(curHarborId, playerId))
                         return true;
                 }
                 else
@@ -2583,7 +2583,7 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
                     onetimeuseseaids.push_back(seaId);
                 else
                 {
-                    //LOG.lprintf("found a second harbor at sea id %i \n",sea_ids[r]);
+                    //LOG.lprintf("found a second harbor at sea id %i \n",seaIds[r]);
                     onetimeuseseaids.remove(seaId);
                     validseaids.push_back(seaId);
                 }

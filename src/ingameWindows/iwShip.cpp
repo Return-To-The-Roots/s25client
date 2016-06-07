@@ -108,7 +108,7 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), i, ship->GetPlayer()) > 0);
+            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), ShipDirection::fromInt(i), ship->GetPlayer()) > 0);
     }
     else
     {

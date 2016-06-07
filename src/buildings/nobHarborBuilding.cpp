@@ -75,7 +75,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     gwg->GetMilitarySquares().Add(this);
     gwg->RecalcTerritory(*this, false, true);
 
-    // Alle Waren 0, außer 100 Träger
+    // Alle Waren 0
     inventory.clear();
 
     // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
@@ -86,7 +86,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(unsigned i = 0; i < 6; ++i)
-        sea_ids[i] = gwg->IsCoastalPoint(gwg->GetNeighbour(pos, i));
+        seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, i));
 
     // Post versenden
     SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New harbor building finished"), PostCategory::Economy, *this));
@@ -177,7 +177,7 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     exploration_expedition.Serialize(sgd);
     sgd.PushObject(orderware_ev, true);
     for(unsigned i = 0; i < 6; ++i)
-        sgd.PushUnsignedShort(sea_ids[i]);
+        sgd.PushUnsignedShort(seaIds[i]);
     sgd.PushObjectContainer(wares_for_ships, true);
     sgd.PushUnsignedInt(figures_for_ships.size());
     for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
@@ -203,7 +203,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     gwg->GetMilitarySquares().Add(this);
 
     for(unsigned i = 0; i < 6; ++i)
-        sea_ids[i] = sgd.PopUnsignedShort();
+        seaIds[i] = sgd.PopUnsignedShort();
 
     sgd.PopObjectContainer(wares_for_ships, GOT_WARE);
 
@@ -849,10 +849,10 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
-    for(unsigned short sea_id = 0; sea_id < 6; ++sea_id)
+    for(unsigned short seaId = 0; seaId < 6; ++seaId)
     {
-        if(sea_ids[sea_id] != 0)
-            gwg->GetPlayer(player).GetHarborBuildings(harbor_buildings, sea_ids[sea_id]);
+        if(seaIds[seaId] != 0)
+            gwg->GetPlayer(player).GetHarborBuildings(harbor_buildings, seaIds[seaId]);
     }
 
     for(unsigned i = 0; i < harbor_buildings.size(); ++i)

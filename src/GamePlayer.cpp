@@ -1910,7 +1910,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding* hb)
     {
         for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
         {
-            if ((*it)->IsIdling() && gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
+            if ((*it)->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
             {
                 sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
             }
@@ -1922,7 +1922,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding* hb)
         {
             if ((*it)->IsIdling())
             {
-                if (gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
+                if (gwg->IsHarborAtSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
                 {
                     sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
                 }
@@ -2034,7 +2034,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), ship->GetSeaID()))
+        if(gwg->IsHarborAtSea((*it)->GetHarborPosID(), ship->GetSeaID()))
         {
             MapPoint dest = gwg->GetCoastalPoint((*it)->GetHarborPosID(), ship->GetSeaID());
 
@@ -2090,14 +2090,14 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 
 
 /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-void GamePlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short sea_id) const
+void GamePlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
 {
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         if(helpers::contains(harbor_buildings, *it))
             continue;
 
-        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), sea_id))
+        if(gwg->IsHarborAtSea((*it)->GetHarborPosID(), seaId))
             harbor_buildings.push_back(*it);
     }
 }
@@ -2130,7 +2130,7 @@ void GamePlayer::HarborDestroyed(nobHarborBuilding* hb)
 
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
-bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harbor_id,
+bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId,
         std::vector<unsigned char>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = NULL;
@@ -2144,7 +2144,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
             continue;
 
         // Prüfen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
-        if(!gwg->IsAtThisSea(hb->GetHarborPosID(), ship->GetSeaID()))
+        if(!gwg->IsHarborAtSea(hb->GetHarborPosID(), ship->GetSeaID()))
             continue;
 
         // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
@@ -2164,7 +2164,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
         // Weg dorthin suchen
         MapPoint dest = gwg->GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
         route->clear();
-        *goal_harbor_id = best->GetHarborPosID();
+        *goal_harborId = best->GetHarborPosID();
         // Weg dorthin gefunden?
         if(start == dest || gwg->FindShipPath(start, dest, route, NULL))
             return true;

@@ -252,7 +252,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Schloss bis hierhin und ist hier ein Hafenplatz?
-    if(curBQ == BQ_CASTLE && world.GetNode(pt).harbor_id)
+    if(curBQ == BQ_CASTLE && world.GetNode(pt).harborId)
         // Dann machen wir einen Hafen draus
         curBQ = BQ_HARBOR;
 

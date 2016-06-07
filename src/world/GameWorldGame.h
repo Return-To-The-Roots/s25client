@@ -151,7 +151,7 @@ public:
     void ConvertMineResourceTypes(unsigned char from, unsigned char to);
 
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
-    bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id);
+    bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist
     void AddHarborBuildingSiteFromSea(noBuildingSite* building_site) { harbor_building_sites_from_sea.push_back(building_site); }
     /// Removes it. It is allowed to be called with a regular harbor building site (no-op in that case)

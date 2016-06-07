@@ -668,7 +668,7 @@ namespace{
         IsCoastalAndForFigs(const GameWorldGame& gwg): gwg(gwg){}
 
         bool operator()(const MapPoint& pt) const{
-            return gwg.IsCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
+            return gwg.GetSeaFromCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
         }
     };
 }
