@@ -87,7 +87,7 @@ namespace {
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
+BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P)//, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
 {
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
         world.GetPostMgr().AddPostBox(i);
@@ -114,7 +114,6 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("
     BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT);
     BOOST_REQUIRE_EQUAL(msg->GetPlayerId(), curPlayer);
     BOOST_REQUIRE_EQUAL(msg->IsAccept(), true);
-    GamePlayer& player2 = world.GetPlayer(2);
     // should be in progress for player1
     CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::IN_PROGRESS);
 
@@ -142,7 +141,7 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("
 // Creates a non-aggression pact between players 1 and 2
 struct PactCreatedFixture: public WorldWithGCExecution3P
 {
-    const unsigned duration = 10;
+    BOOST_STATIC_CONSTEXPR unsigned duration = 10;
     const DiplomacyPostQuestion* msg;
     PactCreatedFixture()
     {
@@ -161,7 +160,9 @@ struct PactCreatedFixture: public WorldWithGCExecution3P
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture, *utf::depends_on("PactTestSuite/MakePactTest"))
+BOOST_CONSTEXPR_OR_CONST unsigned PactCreatedFixture::duration;
+
+BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture)//, *utf::depends_on("PactTestSuite/MakePactTest"))
 {
     GamePlayer& player1 = world.GetPlayer(1);
 
@@ -185,7 +186,7 @@ BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture, *utf::depends_on("
     CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
 }
 
-BOOST_FIXTURE_TEST_CASE(CancelPactTest, PactCreatedFixture, *utf::depends_on("PactTestSuite/MakePactTest"))
+BOOST_FIXTURE_TEST_CASE(CancelPactTest, PactCreatedFixture)//, *utf::depends_on("PactTestSuite/MakePactTest"))
 {
     PostBox& postbox1 = *world.GetPostMgr().GetPostBox(1);
     PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);
