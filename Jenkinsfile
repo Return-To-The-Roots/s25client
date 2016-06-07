@@ -19,10 +19,12 @@ node('master') {
           git submodule update --init || true
        """
 
-    stash includes: '**, .git/', name: 'source', useDefaultExcludes: false
+    stash includes: '**, .git/', excludes: 'ws', name: 'source', useDefaultExcludes: false
     
     sh "env"
 }
+
+def p = pwd()
 
 compile_map = [:]
 
@@ -30,7 +32,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
     def x = archs.get(i)
     compile_map["${x}"] = { 
         node('master') {
-            ws(pwd()+"/"+x) {
+            ws(p+"/ws/"+x) {
                 echo "Build ${x} in "+pwd()
                 sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
                 unstash 'source'
