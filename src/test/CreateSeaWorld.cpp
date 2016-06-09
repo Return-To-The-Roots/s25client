@@ -105,12 +105,12 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         }
     }
 
-    // Place HQs at top, bottom, left, right
+    // Place HQs at top, left, right, bottom
     std::vector<MapPoint> hqPositions;
     hqPositions.push_back(MapPoint(width_ / 2, offset + landSize / 2));
-    hqPositions.push_back(MapPoint(width_ / 2, height_ - offset - landSize / 2));
     hqPositions.push_back(MapPoint(offset + landSize / 2, height_ / 2));
     hqPositions.push_back(MapPoint(width_ - offset - landSize / 2, height_ / 2));
+    hqPositions.push_back(MapPoint(width_ / 2, height_ - offset - landSize / 2));
 
     std::vector<MapPoint> harbors;
     // Place harbors
