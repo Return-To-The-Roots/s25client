@@ -66,7 +66,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
 parallel_map["mirror"] = {
             node('master') {
                         sh """set -x
-                              mkdir ws
+                              mkdir -p ws
                               pushd ws
                               if [ ! -d s25client.git ] ; then
                                   git clone --mirror https://github.com/Return-To-The-Roots/s25client.git
