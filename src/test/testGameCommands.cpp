@@ -97,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, dir).bq, BQ_CASTLE);
 }
 
-BOOST_FIXTURE_TEST_CASE(RoadTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
 {
     MapPoint flagPt = this->hqPos + MapPoint(4, 0);
     // 2 flags outside range of HQ
@@ -182,7 +182,7 @@ BOOST_FIXTURE_TEST_CASE(RoadTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
 }
 
-BOOST_FIXTURE_TEST_CASE(DistributionAndBuildOrderTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
 {
     // Execute for both players to make sure they don't influence each other
     for(; curPlayer < 2; curPlayer++)
@@ -233,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE(DistributionAndBuildOrderTest, WorldWithGCExecution2P)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(BuildBldTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
 {
     const MapPoint closePt = hqPos + MapPoint(2, 0);
     const MapPoint farmPt = hqPos + MapPoint(6, 0);
@@ -290,7 +290,7 @@ BOOST_FIXTURE_TEST_CASE(BuildBldTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
 }
 
-BOOST_FIXTURE_TEST_CASE(SendSoldierHomeTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 {
     const MapPoint milPt = hqPos + MapPoint(6, 0);
     // Setup: Give player 3 generals
@@ -440,17 +440,17 @@ namespace{
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(CallGeologistTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(CallGeologist, WorldWithGCExecution2P)
 {
     FlagWorkerTest(*this, JOB_GEOLOGIST, GD_HAMMER, boost::lambda::bind(&GameCommandFactory::CallGeologist, this, boost::lambda::_1));
 }
 
-BOOST_FIXTURE_TEST_CASE(CallScoutTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 {
     FlagWorkerTest(*this, JOB_SCOUT, GD_BOW, boost::lambda::bind(&GameCommandFactory::CallScout, this, boost::lambda::_1));
 }
 
-BOOST_FIXTURE_TEST_CASE(ChangeCoinAcceptTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
@@ -476,7 +476,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAcceptTest, WorldWithGCExecution2P)
     BOOST_REQUIRE(!bld->IsGoldDisabled());
 }
 
-BOOST_FIXTURE_TEST_CASE(DisableProductionTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     nobUsual* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(&world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
@@ -517,7 +517,7 @@ namespace{
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(NotifyAlliesTest, WorldWithGCExecution3P)
+BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
 {
     // At first there are no teams
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
@@ -579,7 +579,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAlliesTest, WorldWithGCExecution3P)
     BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(2u)->GetNumMsgs(), 1u);
 }
 
-BOOST_AUTO_TEST_CASE(TestInventorySettingType)
+BOOST_AUTO_TEST_CASE(InventorySettingType)
 {
     InventorySetting setting;
     // Default setting is 0
@@ -708,7 +708,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(ArmageddonTest, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(Armageddon, WorldWithGCExecution2P)
 {
     GamePlayer& player1 = world.GetPlayer(0);
     GamePlayer& player2 = world.GetPlayer(1);

@@ -849,10 +849,10 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
-    for(unsigned short seaId = 0; seaId < 6; ++seaId)
+    for(unsigned short dir = 0; dir < 6; ++dir)
     {
-        if(seaIds[seaId] != 0)
-            gwg->GetPlayer(player).GetHarborBuildings(harbor_buildings, seaIds[seaId]);
+        if(seaIds[dir] != 0)
+            gwg->GetPlayer(player).GetHarborsAtSea(harbor_buildings, seaIds[dir]);
     }
 
     for(unsigned i = 0; i < harbor_buildings.size(); ++i)

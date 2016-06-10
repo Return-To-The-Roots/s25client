@@ -17,10 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "SeaWorldWithGCExecution.h"
-#include "GamePlayer.h"
 #include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
-#include <boost/foreach.hpp>
 
 std::ostream& operator<<(std::ostream &out, const ShipDirection& dir)
 {
@@ -88,7 +86,7 @@ namespace{
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(TestGetShipDir, DummyWorldFixture)
+BOOST_FIXTURE_TEST_CASE(GetShipDir, DummyWorldFixture)
 {
     // Basic case
     testShipDir(this->world, MapPoint(world.GetWidth() / 2, world.GetHeight() / 2));
@@ -103,7 +101,7 @@ BOOST_FIXTURE_TEST_CASE(TestGetShipDir, DummyWorldFixture)
     testShipDir(this->world, MapPoint(world.GetWidth() - 1, world.GetHeight() - 1));
 }
 
-BOOST_FIXTURE_TEST_CASE(TestHarborSpotCreation, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution)
 {
     // Point 0,0 is definitely inside the sea
     BOOST_REQUIRE(world.IsWaterPoint(MapPoint(0, 0)));
@@ -153,6 +151,10 @@ BOOST_FIXTURE_TEST_CASE(TestHarborSpotCreation, SeaWorldWithGCExecution)
         BOOST_REQUIRE(coastPtFound);
         BOOST_REQUIRE_EQUAL(world.GetNode(curHarborPt).bq, BQ_HARBOR);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution)
+{
     // Now just test some assumptions: 2 harbor spots per possible HQ.
     // Square land, 1 HQ on each side, harbors top and bottom or left and right of it
     // 1) Compare those around each HQ

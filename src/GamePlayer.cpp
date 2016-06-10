@@ -2090,7 +2090,7 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 
 
 /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-void GamePlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
+void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
 {
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {

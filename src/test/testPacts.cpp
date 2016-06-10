@@ -26,7 +26,7 @@ namespace utf = boost::unit_test;
 
 BOOST_AUTO_TEST_SUITE(PactTestSuite)
 
-BOOST_FIXTURE_TEST_CASE(TestInitialPactStates, WorldWithGCExecution3P)
+BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)
 {
     // No pacts at start
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
@@ -186,7 +186,7 @@ BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture)//, *utf::depends_o
     CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
 }
 
-BOOST_FIXTURE_TEST_CASE(CancelPactTest, PactCreatedFixture)//, *utf::depends_on("PactTestSuite/MakePactTest"))
+BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture)//, *utf::depends_on("PactTestSuite/MakePactTest"))
 {
     PostBox& postbox1 = *world.GetPostMgr().GetPostBox(1);
     PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);

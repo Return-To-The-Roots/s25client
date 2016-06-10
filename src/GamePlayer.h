@@ -267,7 +267,7 @@ class GamePlayer: public GamePlayerInfo
         /// Gibt die Gesamtanzahl von Schiffen zurück
         unsigned GetShipCount() const { return ships.size(); }
         /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-        void GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const;
+        void GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const;
         /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
         unsigned GetShipsToHarbor(nobHarborBuilding* hb) const;
         /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
