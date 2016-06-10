@@ -52,6 +52,7 @@ for (int i = 0 ; i < archs.size(); ++i) {
                       #    PARAMS=create_release
                       fi
                       docker run --rm -u jenkins -v \$(pwd):/workdir \
+                                                 -v ~/.ccache:/workspace/.ccache \
                                                  -v /srv/apache2/siedler25.org/nightly:/www \
                                                  -v /srv/backup/www/s25client:/archive \
                                                  --name "${env.BUILD_TAG}-${x}" \
