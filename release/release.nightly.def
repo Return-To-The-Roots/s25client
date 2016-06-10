@@ -1,5 +1,5 @@
-TARGET=/srv/apache/siedler25.org/nightly/s25client/nightly
-ARCHIVE=/srv/apache/siedler25.org/nightly/s25client/archive/$(date +%Y)
+TARGET=/srv/apache2/siedler25.org/nightly/s25client/nightly
+ARCHIVE=/srv/apache2/siedler25.org/nightly/s25client/archive/$(date +%Y)
 UPLOADHOST=root@tyra4.ra-doersch.de
 UPLOADPATH=/www/siedler25.org/www/uploads/
 UPLOADTARGET=$UPLOADHOST:$UPLOADPATH
