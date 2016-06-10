@@ -6,14 +6,10 @@ properties([[$class: 'jenkins.model.BuildDiscarderProperty',
                         numToKeepStr: '100',
                         artifactNumToKeepStr: '10']]])
 
-String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
-
-def compile_map = [:]
-
-def p = "";
+def wspwd = "";
 
 node('master') {
-    stage "Checkout"
+    stage name:"Checkout", concurrency:1
     checkout scm
     sh """set -x
           git submodule foreach "git reset --hard || true" || true
@@ -25,17 +21,17 @@ node('master') {
     
     sh "env"
     
-    p = pwd()
+    wspwd = pwd()
 }
 
-
-parallel_map = [:]
+String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
+def parallel_map = [:]
 
 for (int i = 0 ; i < archs.size(); ++i) {
     def x = archs.get(i)
     parallel_map["${x}"] = { 
         node('master') {
-            ws(p+"/ws/"+x) {
+            ws(wspwd+"/ws/"+x) {
                 echo "Build ${x} in "+pwd()
                 sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
                 unstash 'source'
@@ -87,7 +83,7 @@ parallel_map["mirror"] = {
 /*
 parallel_map["upload-ppa"] = {
             node('master') {
-                        ws(p+"/ws/upload-ppa") {
+                        ws(wspwd+"/ws/upload-ppa") {
                                     echo "Upload to PPA in "+pwd()
                                     sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
                                     unstash 'source'
@@ -102,10 +98,10 @@ parallel_map["upload-ppa"] = {
 }
 */
 
-stage "Building"
+stage name:"Building", concurrency:1
 parallel parallel_map
 
-stage "Publishing"
+stage name:"Publishing", concurrency:1
 node('master') {
             sh """set -x
                   alias ssh="ssh -o ForwardX11=no"
