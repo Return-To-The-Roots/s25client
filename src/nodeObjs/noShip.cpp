@@ -436,7 +436,7 @@ unsigned noShip::GetVisualRange() const
 }
 
 /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
-void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route)
+void noShip::GoToHarbor(const nobHarborBuilding& hb, const std::vector<unsigned char>& route)
 {
     RTTR_Assert(state == STATE_IDLE); // otherwise we might carry wares etc
     RTTR_Assert(figures.empty());
@@ -445,7 +445,7 @@ void noShip::GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>&
 
     state = STATE_GOTOHARBOR;
 
-    goal_harborId = gwg->GetNode(hb->GetPos()).harborId;
+    goal_harborId = gwg->GetNode(hb.GetPos()).harborId;
     RTTR_Assert(goal_harborId);
 
     // Route merken
@@ -846,9 +846,9 @@ bool noShip::IsAbleToFoundColony() const
 }
 
 /// Gibt zurück, ob das Schiff einen bestimmten Hafen ansteuert
-bool noShip::IsGoingToHarbor(nobHarborBuilding* hb) const
+bool noShip::IsGoingToHarbor(const nobHarborBuilding& hb) const
 {
-    if(goal_harborId != hb->GetHarborPosID())
+    if(goal_harborId != hb.GetHarborPosID())
         return false;
     // Explicit switch to check all states
     switch (state)

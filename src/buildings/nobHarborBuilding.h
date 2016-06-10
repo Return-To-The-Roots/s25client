@@ -227,9 +227,6 @@ public:
 
         /// Is the harbor just being destroyed right now?
         bool IsBeingDestroyedNow() const;
-
-
-
 };
 
 

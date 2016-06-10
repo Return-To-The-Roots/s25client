@@ -207,14 +207,14 @@ namespace gc{
     void StartExpedition::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobHarborBuilding* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->StartExpedition();
     }
 
-    void StartExplorationExpedition::Execute(GameWorldGame& gwg, unsigned char  /*playerId*/)
+    void StartExplorationExpedition::Execute(GameWorldGame& gwg, unsigned char playerId)
     {
         nobHarborBuilding* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
-        if(bld)
+        if(bld && bld->GetPlayer() == playerId)
             bld->StartExplorationExpedition();
     }
 

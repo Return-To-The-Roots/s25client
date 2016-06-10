@@ -1901,19 +1901,17 @@ struct ShipForHarbor
 };
 
 /// Schiff für Hafen bestellen
-bool GamePlayer::OrderShip(nobHarborBuilding* hb)
+bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 {
     std::vector<ShipForHarbor> sfh;
 
     // we need more ships than those that are already on their way? limit search to idle ships
-    if (GetShipsToHarbor(hb) < hb->GetNeededShipsCount())
+    if (GetShipsToHarbor(hb) < hb.GetNeededShipsCount())
     {
         for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
         {
-            if ((*it)->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
-            {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
-            }
+            if ((*it)->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), (*it)->GetSeaID()))
+                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
         }
     }
     else
@@ -1922,15 +1920,11 @@ bool GamePlayer::OrderShip(nobHarborBuilding* hb)
         {
             if ((*it)->IsIdling())
             {
-                if (gwg->IsHarborAtSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
-                {
-                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
-                }
+                if (gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), (*it)->GetSeaID()))
+                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
             }
             else if ((*it)->IsGoingToHarbor(hb))
-            {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
-            }
+                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
         }
     }
 
@@ -1947,18 +1941,16 @@ bool GamePlayer::OrderShip(nobHarborBuilding* hb)
 
         // the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
         if (it->estimate >= best_distance)
-        {
             break;
-        }
 
         noShip* ship = it->ship;
 
-        MapPoint dest = gwg->GetCoastalPoint(hb->GetHarborPosID(), ship->GetSeaID());
+        MapPoint dest = gwg->GetCoastalPoint(hb.GetHarborPosID(), ship->GetSeaID());
 
         // ship already there?
         if (ship->GetPos() == dest)
         {
-            hb->ShipArrived(ship);
+            hb.ShipArrived(ship);
             return(true);
         }
 
@@ -2027,7 +2019,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
             continue;
 
         // Anzahl der Schiffe ermitteln, die diesen Hafen bereits anfahren
-        unsigned ships_coming = GetShipsToHarbor(*it);
+        unsigned ships_coming = GetShipsToHarbor(**it);
 
         // Evtl. kommen schon genug?
         if((*it)->GetNeededShipsCount() <= ships_coming)
@@ -2065,7 +2057,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
     // Einen Hafen gefunden?
     if(best)
         // Dann bekommt das gleich der Hafen
-        ship->GoToHarbor(best, best_route);
+        ship->GoToHarbor(*best, best_route);
 }
 
 
@@ -2104,7 +2096,7 @@ void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildin
 
 
 /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
-unsigned GamePlayer::GetShipsToHarbor(nobHarborBuilding* hb) const
+unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 {
     unsigned count = 0;
     for(unsigned i = 0; i < ships.size(); ++i)

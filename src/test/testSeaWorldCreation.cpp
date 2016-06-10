@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution)
         // Reverse mapping must match
         BOOST_REQUIRE_EQUAL(world.GetHarborPointID(curHarborPt), curHarborId);
         // We must be at one of the 2 seas
-        unsigned seaId;
+        unsigned seaId = 0;
         if(world.IsHarborAtSea(curHarborId, 1))
             seaId = 1;
         else if(world.IsHarborAtSea(curHarborId, 2))

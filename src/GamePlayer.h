@@ -259,17 +259,19 @@ class GamePlayer: public GamePlayerInfo
         /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
         void GetJobForShip(noShip* ship);
         /// Schiff für Hafen bestellen. Wenn ein Schiff kommt, true.
-        bool OrderShip(nobHarborBuilding* hb);
+        bool OrderShip(nobHarborBuilding& hb);
         /// Gibt die ID eines Schiffes zurück
         unsigned GetShipID(const noShip* const ship) const;
         /// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert
         noShip* GetShipByID(const unsigned ship_id) const;
         /// Gibt die Gesamtanzahl von Schiffen zurück
         unsigned GetShipCount() const { return ships.size(); }
+        ///Gibt liste der Schiffe zurück
+        const std::vector<noShip*>& GetShips() const { return ships; }
         /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
         void GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const;
         /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
-        unsigned GetShipsToHarbor(nobHarborBuilding* hb) const;
+        unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
         /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
         /// gibt true zurück, falls erfolgreich
         bool FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<unsigned char> * route,
@@ -278,9 +280,6 @@ class GamePlayer: public GamePlayerInfo
         /// i.e. there is a sufficient distance to older locations
         /// Returns true if yes and false if not
         bool ShipDiscoveredHostileTerritory(const MapPoint location);
-
-        ///Gibt liste der Schiffe zurück
-        const std::vector<noShip*>&GetShips() const {return ships;}
 
         /// Er gibt auf
         void Surrender();

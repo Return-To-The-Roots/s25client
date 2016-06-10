@@ -26,6 +26,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
+#include "PointOutput.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
@@ -33,12 +34,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
-
-template<typename T>
-std::ostream& operator<<(std::ostream &out, const Point<T>& point)
-{
-    return out << "(" << point.x << ", " << point.y << ")";
-}
 
 std::ostream& operator<<(std::ostream &out, const InventorySetting& setting)
 {

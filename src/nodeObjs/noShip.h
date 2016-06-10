@@ -24,12 +24,10 @@
 #include <list>
 #include <vector>
 
-class nobHarborBuilding;
-
 #define SHIP_CAPACITY 40
 
-
 class noFigure;
+class nobHarborBuilding;
 class Ware;
 class nofAttacker;
 class SerializedGameData;
@@ -190,7 +188,7 @@ class noShip : public noMovable
         unsigned GetCurrentHarbor() const;
 
         /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
-        void GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route);
+        void GoToHarbor(const nobHarborBuilding& hb, const std::vector<unsigned char>& route);
         /// Startet eine Expedition
         void StartExpedition(unsigned homeHarborId);
         /// Startet eine Erkundungs-Expedition
@@ -207,7 +205,7 @@ class noShip : public noMovable
         /// Weist das Schiff an, an der aktuellen Position einen Hafen zu gründen
         void FoundColony();
         /// Gibt zurück, ob das Schiff einen bestimmten Hafen ansteuert
-        bool IsGoingToHarbor(nobHarborBuilding* hb) const;
+        bool IsGoingToHarbor(const nobHarborBuilding& hb) const;
 
         /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
         void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);

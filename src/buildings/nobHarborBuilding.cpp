@@ -992,10 +992,8 @@ void nobHarborBuilding::OrderShip()
     GamePlayer& owner = gwg->GetPlayer(player);    
 
     // Order (possibly) remaining ships
-    for(unsigned ordered = owner.GetShipsToHarbor(this); ordered < needed; ++ordered)
-    {
-        owner.OrderShip(this);
-    }
+    for(unsigned ordered = owner.GetShipsToHarbor(*this); ordered < needed; ++ordered)
+        owner.OrderShip(*this);
 }
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
