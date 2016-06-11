@@ -223,6 +223,4 @@ class noShip : public noMovable
         void NewHarborBuilt(nobHarborBuilding* hb);
 };
 
-
 #endif
-

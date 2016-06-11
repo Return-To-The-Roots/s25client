@@ -1445,7 +1445,8 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     SetNO(pos, bs);
     AddHarborBuildingSiteFromSea(bs);
 
-    gi->GI_UpdateMinimap(pos);
+    if(gi)
+        gi->GI_UpdateMinimap(pos);
 
     RecalcTerritory(*bs, false, true);
     // BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)

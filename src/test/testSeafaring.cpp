@@ -20,6 +20,7 @@
 #include "GamePlayer.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "factories/BuildingFactory.h"
+#include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobShipYard.h"
 #include "postSystem/PostBox.h"
@@ -28,6 +29,7 @@
 #include "PointOutput.h"
 #include "Random.h"
 #include <boost/test/unit_test.hpp>
+#include <iostream>
 
 namespace{
     struct PathConditionRoad
@@ -89,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
 
 BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
 {
-    RANDOM.Init(1337);
+    std::cout << "Random: " << RANDOM.GetCurrentRandomValue() << std::endl;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const MapPoint hqPos = player.GetHQPos();
     const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
@@ -116,7 +118,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
     PostBox& postBox = *world.GetPostMgr().GetPostBox(curPlayer);
     postBox.Clear();
 
-    for(unsigned gf = 0; gf < 4000; gf++)
+    for(unsigned gf = 0; gf < 4400; gf++)
     {
         this->em.ExecuteNextGF();
         if(postBox.GetNumMsgs() > 0)
@@ -148,6 +150,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
 
         nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(&world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
         BOOST_REQUIRE(harbor);
+        world.RecalcBQAroundPointBig(hbPos);
         std::vector<unsigned char> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
@@ -163,7 +166,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
 
 BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
 {
-    RANDOM.Init(1337);
+    std::cout << "Random: " << RANDOM.GetCurrentRandomValue() << std::endl;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
     const nobHarborBuilding& harbor = *player.GetHarbors().front();
@@ -213,12 +216,12 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
 
     // Let the ship scout a bit
-    for(unsigned gf = 0; gf < 2000; gf++)
+    for(unsigned gf = 0; gf < 1000; gf++)
         this->em.ExecuteNextGF();
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
-    BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 60u);
+    BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 40u);
     // And at some time it should return home
-    for(unsigned gf = 0; gf < 4000; gf++)
+    for(unsigned gf = 0; gf < 5000; gf++)
     {
         this->em.ExecuteNextGF();
         if(ship->IsIdling())
@@ -227,6 +230,158 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsIdling());
     BOOST_REQUIRE_EQUAL(ship->GetSeaID(), 1u);
     BOOST_REQUIRE_EQUAL(ship->GetPos(), world.GetCoastalPoint(harbor.GetHarborPosID(), 1));
+}
+
+BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)
+{
+    std::cout << "Random: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip* ship = player.GetShipByID(0);
+    const nobHarborBuilding& harbor = *player.GetHarbors().front();
+    const MapPoint hbPos = harbor.GetPos();
+    BOOST_REQUIRE(ship);
+    BOOST_REQUIRE(ship->IsIdling());
+    BOOST_REQUIRE(!harbor.IsExpeditionActive());
+    this->StartExpedition(hbPos);
+    BOOST_REQUIRE(harbor.IsExpeditionActive());
+    // Expedition not ready, ship still idling
+    BOOST_REQUIRE(ship->IsIdling());
+
+    // Wait till wares arrive
+    for(unsigned gf = 0; gf < 3400; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(!ship->IsIdling())
+            break;
+    }
+    // Expedition ready, ship ordered
+    BOOST_REQUIRE(!ship->IsIdling());
+    BOOST_REQUIRE(ship->IsGoingToHarbor(harbor));
+    BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 1u);
+
+    // No available boards
+    BOOST_REQUIRE_EQUAL(harbor.GetRealWaresCount(GD_BOARDS), 0u);
+    // Stop it
+    this->StartExpedition(hbPos);
+    BOOST_REQUIRE(!harbor.IsExpeditionActive());
+    // Boards available again
+    BOOST_REQUIRE_GT(harbor.GetRealWaresCount(GD_BOARDS), 0u);
+
+    // Let ship arrive
+    for(unsigned gf = 0; gf < 180; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsIdling())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsIdling());
+    BOOST_REQUIRE(!ship->IsGoingToHarbor(harbor));
+    BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 0u);
+
+    // Start again (everything is here)
+    this->StartExpedition(hbPos);
+    // ...so we can start right now
+    BOOST_REQUIRE(ship->IsOnExpedition());
+
+    // Wait for ship to be "loaded"
+    for(unsigned gf = 0; gf < 200; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsWaitingForExpeditionInstructions())
+            break;
+    }
+    // Ship should be waiting for expedition instructions (where to go) and player should have received a message
+    BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    BOOST_REQUIRE_EQUAL(ship->GetCurrentHarbor(), harbor.GetHarborPosID());
+    BOOST_REQUIRE_EQUAL(postBox->GetNumMsgs(), 1u);
+    const ShipPostMsg* msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
+    BOOST_REQUIRE(msg);
+    BOOST_REQUIRE_EQUAL(msg->GetPos(), ship->GetPos());
+
+    // Harbor pos taken by other player
+    this->TravelToNextSpot(ShipDirection::SOUTHEAST, player.GetShipID(ship));
+    BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+
+    // Last free one (far south -> North is closer)
+    this->TravelToNextSpot(ShipDirection::NORTH, player.GetShipID(ship));
+    BOOST_REQUIRE(!ship->IsWaitingForExpeditionInstructions());
+    BOOST_REQUIRE(ship->IsMoving());
+
+    unsigned gfsToDest;
+    for(gfsToDest = 0; gfsToDest < 1000; gfsToDest++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsWaitingForExpeditionInstructions())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    BOOST_REQUIRE_EQUAL(ship->GetCurrentHarbor(), 8u);
+    BOOST_REQUIRE_EQUAL(world.CalcDistance(ship->GetPos(), world.GetHarborPoint(8)), 1u);
+
+    // Cancel expedition -> Ship is going back to harbor
+    this->CancelExpedition(player.GetShipID(ship));
+    BOOST_REQUIRE(ship->IsMoving());
+    // Let ship arrive and unload
+    for(unsigned gf = 0; gf < gfsToDest + 300; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsIdling())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsIdling());
+
+    // Start again (everything is here)
+    this->StartExpedition(hbPos);
+    BOOST_REQUIRE(ship->IsOnExpedition());
+
+    // Wait for ship to be "loaded"
+    for(unsigned gf = 0; gf < 200; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsWaitingForExpeditionInstructions())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    BOOST_REQUIRE_EQUAL(ship->GetCurrentHarbor(), harbor.GetHarborPosID());
+
+    // Try to found colony -> Fail
+    this->FoundColony(player.GetShipID(ship));
+    BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    // Go back to free spot
+    this->TravelToNextSpot(ShipDirection::NORTH, player.GetShipID(ship));
+    BOOST_REQUIRE(!ship->IsWaitingForExpeditionInstructions());
+    for(unsigned gf = 0; gf < 2; gf++)
+    {
+        // Send commands that should be ignored as ship is not expecting them
+        this->FoundColony(player.GetShipID(ship));
+        this->TravelToNextSpot(ShipDirection::NORTH, player.GetShipID(ship));
+        this->CancelExpedition(player.GetShipID(ship));
+        this->em.ExecuteNextGF();
+    }
+    // Go to destination
+    postBox->Clear();
+    for(unsigned gf = 0; gf < gfsToDest; gf++)
+        this->em.ExecuteNextGF();
+    BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
+    // This should again trigger a message
+    msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
+    BOOST_REQUIRE(msg);
+    BOOST_REQUIRE_EQUAL(msg->GetPos(), ship->GetPos());
+    // And now we can found a new colony
+    this->FoundColony(player.GetShipID(ship));
+    // Ship is free again
+    BOOST_REQUIRE(ship->IsIdling());
+    const noBuildingSite* newHarbor = world.GetSpecObj<noBuildingSite>(world.GetHarborPoint(8));
+    BOOST_REQUIRE(newHarbor);
+    BOOST_REQUIRE(world.IsHarborBuildingSiteFromSea(newHarbor));
+    // And it should be completed after some time
+    for(unsigned gf = 0; gf < 5000; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(player.GetHarbors().size() > 1)
+            break;
+    }
+    BOOST_REQUIRE_EQUAL(player.GetHarbors().size(), 2u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
