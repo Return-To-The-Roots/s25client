@@ -104,6 +104,12 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
     std::vector<unsigned char> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
+    MapPoint curPt = hqFlagPos;
+    for(unsigned i=0; i<road.size(); i++)
+    {
+        curPt = world.GetNeighbour(curPt, road[i]);
+        this->SetFlag(curPt);
+    }
     BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
     nobShipYard* shipYard = dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(&world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(shipYard);
@@ -117,8 +123,8 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
     world.GetPostMgr().AddPostBox(curPlayer);
     PostBox& postBox = *world.GetPostMgr().GetPostBox(curPlayer);
     postBox.Clear();
-
-    for(unsigned gf = 0; gf < 4400; gf++)
+    // Ship building takes 10 steps with ~500 GFs each. +600 GF to let wares and people reach the site
+    for(unsigned gf = 0; gf < 5600; gf++)
     {
         this->em.ExecuteNextGF();
         if(postBox.GetNumMsgs() > 0)
@@ -154,6 +160,12 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
         std::vector<unsigned char> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
+        MapPoint curPt = hqFlagPos;
+        for(unsigned i = 0; i < road.size(); i++)
+        {
+            curPt = world.GetNeighbour(curPt, road[i]);
+            this->SetFlag(curPt);
+        }
 
         noShip* ship = new noShip(MapPoint(hbPos.x, hbPos.y - 7), curPlayer);
         world.AddFigure(ship, ship->GetPos());
@@ -219,7 +231,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     for(unsigned gf = 0; gf < 1000; gf++)
         this->em.ExecuteNextGF();
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
-    BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 40u);
+    BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 35u);
     // And at some time it should return home
     for(unsigned gf = 0; gf < 5000; gf++)
     {

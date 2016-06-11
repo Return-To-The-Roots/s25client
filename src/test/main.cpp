@@ -23,6 +23,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 namespace bfs = boost::filesystem;
 
@@ -48,6 +50,7 @@ struct TestSetup
                 break;
             }
         }
+        srand(static_cast<unsigned>(time(NULL)));
     }
 };
 
