@@ -53,12 +53,6 @@ class nobBaseMilitary : public noBuilding
         /// Soldat, der grad dieses Gebäude verteidigt
         nofDefender* defender_;
 
-    private:
-
-        /// die abgeleiteten Klassen sollen einen Soldaten als Verteidiger zur Verfügung stellen, wenn sie keinen haben
-        /// wird 0 zurückgegeben!
-        virtual nofDefender* ProvideDefender(nofAttacker* const attacker) = 0;
-
     public:
 
         nobBaseMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
@@ -73,9 +67,6 @@ class nobBaseMilitary : public noBuilding
     protected: void Serialize_nobBaseMilitary(SerializedGameData& sgd) const;
     public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobBaseMilitary(sgd); }
 
-
-        /// Figur hinzufügen, die rausgehen will (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)
-        void AddLeavingFigure(noFigure* fig);
         const std::list<noFigure*>& GetLeavingFigures() const { return leave_house; }
 
         /// Liefert Militärradius des Gebäudes
@@ -151,6 +142,12 @@ class nobBaseMilitary : public noBuilding
                 return (*one) < (*two);
             }
         };
+    protected:
+        /// The building shall provide a soldier for defense. Return NULL if none available
+        virtual nofDefender* ProvideDefender(nofAttacker* const attacker) = 0;
+        /// Add a figure that will leave the house
+        void AddLeavingFigure(noFigure* fig);
+
 };
 
 class sortedMilitaryBlds: public boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer>

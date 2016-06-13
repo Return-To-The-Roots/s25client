@@ -726,6 +726,7 @@ void nobMilitary::SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActive
     troops.erase(passive_soldier);
     passive_soldier->LeftBuilding();
     troops_on_mission.push_back(active_soldier);
+    AddLeavingFigure(active_soldier);
 }
 
 nofPassiveSoldier* nobMilitary::ChooseSoldier()

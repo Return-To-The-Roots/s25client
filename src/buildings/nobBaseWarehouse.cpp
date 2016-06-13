@@ -1425,7 +1425,7 @@ bool nobBaseWarehouse::IsDependentFigure(noFigure* fig)
     return helpers::contains(dependent_figures, fig);
 }
 
-/// Available goods of a speciefic type that can be used for trading
+/// Available goods of a specific type that can be used for trading
 unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
 {
     // We need a helper as leader
@@ -1488,11 +1488,9 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     else
     {
         RTTR_Assert(gt == GD_NOTHING);
-        //remove the jobs & the helpers
+        //remove the jobs
         inventory.real.Remove(job, count);
         owner.DecreaseInventoryJob(job, count);
-        inventory.real.Remove(JOB_HELPER, count);
-        owner.DecreaseInventoryJob(JOB_HELPER, count);
     }
 }
 

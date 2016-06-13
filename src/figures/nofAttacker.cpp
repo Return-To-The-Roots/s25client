@@ -45,8 +45,6 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
-    // Das Haus soll uns rausschicken
-    building->AddLeavingFigure(this);
     // Dem Ziel Bescheid sagen
     attacked_goal->LinkAggressor(this);
 }
@@ -58,8 +56,6 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
-    // Das Haus soll uns rausschicken
-    building->AddLeavingFigure(this);
     // Dem Ziel Bescheid sagen
     attacked_goal->LinkAggressor(this);
 }

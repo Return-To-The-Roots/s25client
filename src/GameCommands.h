@@ -827,25 +827,26 @@ namespace gc{
     };
 
 
-/// Send wares to another allied player via donkeys
+    /// Send wares or figures to another allied player
     class TradeOverLand : public Coords
     {
         GC_FRIEND_DECL;
-            /// Type of Ware / Figure
-            bool ware_figure;
             GoodType gt;
             Job job;
             /// Number of wares/figures we want to trade
             unsigned count;
 
         protected:
-            TradeOverLand(const MapPoint pt, const bool ware_figure, const GoodType gt, const Job job, const unsigned count)
-                : Coords(TRADEOVERLAND, pt), ware_figure(ware_figure), gt(gt), job(job), count(count) {}
+            /// Note: Can only trade wares or figures!
+            TradeOverLand(const MapPoint pt, const GoodType gt, const Job job, const unsigned count)
+                : Coords(TRADEOVERLAND, pt), gt(gt), job(job), count(count)
+            {
+                RTTR_Assert((gt == GD_NOTHING) != (job == JOB_NOTHING));
+            }
             TradeOverLand(Serializer& ser)
                 : Coords(TRADEOVERLAND, ser),
-                  ware_figure(ser.PopBool()),
-                  gt( ware_figure ? GD_NOTHING : GoodType(ser.PopUnsignedChar())),
-                  job( ware_figure ? Job(ser.PopUnsignedChar()) : JOB_NOTHING),
+                  gt(GoodType(ser.PopUnsignedChar())),
+                  job(Job(ser.PopUnsignedChar())),
                   count(ser.PopUnsignedInt())
             {}
         public:
@@ -853,9 +854,8 @@ namespace gc{
             {
                 Coords::Serialize(ser);
 
-                ser.PushBool(ware_figure);
-                if(!ware_figure) ser.PushUnsignedChar(static_cast<unsigned char>(gt));
-                else ser.PushUnsignedChar(static_cast<unsigned char>(job));
+                ser.PushUnsignedChar(static_cast<unsigned char>(gt));
+                ser.PushUnsignedChar(static_cast<unsigned char>(job));
                 ser.PushUnsignedInt(count);
             }
 

@@ -2332,6 +2332,9 @@ struct WarehouseDistanceComparator
 /// Send wares to warehouse wh
 void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job job, unsigned count) const
 {
+    if(!gwg->GetGGS().isEnabled(AddonId::TRADE))
+        return;
+    
     if(count == 0)
         return;
 

@@ -233,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 35u);
     // And at some time it should return home
-    for(unsigned gf = 0; gf < 5000; gf++)
+    for(unsigned gf = 0; gf < 5600; gf++)
     {
         this->em.ExecuteNextGF();
         if(ship->IsIdling())

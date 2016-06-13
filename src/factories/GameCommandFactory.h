@@ -96,7 +96,7 @@ public:
     /// Cancels an expedition
     bool CancelExpedition(unsigned int shipID);
     bool StartExplorationExpedition(const MapPoint pt);
-    bool TradeOverLand(const MapPoint pt, bool ware_figure, GoodType gt, Job job, unsigned count);
+    bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:
     virtual ~GameCommandFactory(){}

@@ -234,8 +234,8 @@ bool GameCommandFactory::StartExplorationExpedition(const MapPoint pt)
     return AddGC( new gc::StartExplorationExpedition(pt) );
 }
 
-bool GameCommandFactory::TradeOverLand(const MapPoint pt, bool ware_figure, GoodType gt, Job job, unsigned count)
+bool GameCommandFactory::TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count)
 {
-    return AddGC( new gc::TradeOverLand(pt, ware_figure, gt, job, count) );
+    return AddGC( new gc::TradeOverLand(pt, gt, job, count) );
 }
 

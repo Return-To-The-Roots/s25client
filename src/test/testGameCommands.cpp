@@ -20,6 +20,7 @@
 #include "GamePlayer.h"
 #include "nodeObjs/noBase.h"
 #include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noFlag.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
@@ -34,7 +35,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
-#include "nodeObjs/noFlag.h"
 
 std::ostream& operator<<(std::ostream &out, const InventorySetting& setting)
 {
