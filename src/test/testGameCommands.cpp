@@ -34,6 +34,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
+#include "nodeObjs/noFlag.h"
 
 std::ostream& operator<<(std::ostream &out, const InventorySetting& setting)
 {
@@ -44,7 +45,7 @@ BOOST_AUTO_TEST_SUITE(GameCommandSuite)
 
 BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 {
-    MapPoint flagPt = this->hqPos + MapPoint(4, 0);
+    MapPoint flagPt = hqPos + MapPoint(4, 0);
     // Place flag for other player:
     curPlayer = 1;
     this->SetFlag(flagPt);
@@ -94,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
 {
-    MapPoint flagPt = this->hqPos + MapPoint(4, 0);
+    MapPoint flagPt = hqPos + MapPoint(4, 0);
     // 2 flags outside range of HQ
     this->SetFlag(flagPt);
     this->SetFlag(flagPt + MapPoint(4, 0));
@@ -137,12 +138,6 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq, BQ_CASTLE);  // Flag could be build
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq, BQ_NOTHING);    // no more flag possible
-    // e) upgrade
-    this->UpgradeRoad(flagPt, 3);
-    for(unsigned i = 0; i < 2; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 2);
-    for(unsigned i = 2; i < 4; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     // f) destroy middle flag -> Road destroyed
     this->DestroyFlag(flagPt + MapPoint(2, 0));
     for(unsigned i = 0; i < 4; i++)
@@ -175,6 +170,51 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::EAST));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
+{
+    // 3 Roads, so we have a middle flag, and an additional road
+    const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    this->BuildRoad(hqFlagPos, false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(hqFlagPos + MapPoint(2, 0), false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(hqFlagPos + MapPoint(4, 0), false, std::vector<unsigned char>(2, Direction::EAST));
+    const MapPoint middleFlag = hqFlagPos + MapPoint(2, 0);
+    const noFlag* hqFlag = world.GetSpecObj<noFlag>(hqFlagPos);
+    const noFlag* flag = world.GetSpecObj<noFlag>(middleFlag);
+    const noFlag* flag2 = world.GetSpecObj<noFlag>(middleFlag + MapPoint(2, 0));
+    BOOST_REQUIRE(hqFlag);
+    BOOST_REQUIRE(flag);
+    BOOST_REQUIRE(flag2);
+    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FT_NORMAL);
+    // No flag
+    this->UpgradeRoad(middleFlag - MapPoint(1, 0), Direction::EAST);
+    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FT_NORMAL);
+    // Wrong direction
+    this->UpgradeRoad(middleFlag, Direction::SOUTHEAST);
+    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FT_NORMAL);
+    // Upgrading correctly but twice (2nd does nothing)
+    for(unsigned i=0; i<2; i++)
+    {
+        // Correct
+        this->UpgradeRoad(middleFlag, Direction::EAST);
+        BOOST_CHECK_EQUAL(flag->GetFlagType(), FT_LARGE);
+        BOOST_CHECK_EQUAL(flag2->GetFlagType(), FT_LARGE);
+        BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FT_NORMAL);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::EAST), RoadSegment::RT_DONKEY + 1);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::EAST), RoadSegment::RT_DONKEY + 1);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::EAST), RoadSegment::RT_NORMAL + 1);
+        BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::WEST), RoadSegment::RT_NORMAL + 1);
+    }
+    // Upgrade in other direction
+    this->UpgradeRoad(middleFlag, Direction::WEST);
+    BOOST_CHECK_EQUAL(flag->GetFlagType(), FT_LARGE);
+    BOOST_CHECK_EQUAL(flag2->GetFlagType(), FT_LARGE);
+    BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FT_LARGE);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::EAST), RoadSegment::RT_DONKEY + 1);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::EAST), RoadSegment::RT_DONKEY + 1);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::EAST), RoadSegment::RT_NORMAL + 1);
+    BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::WEST), RoadSegment::RT_DONKEY + 1);
 }
 
 BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)

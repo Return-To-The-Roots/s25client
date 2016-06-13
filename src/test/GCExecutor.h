@@ -41,8 +41,7 @@ protected:
         Serializer ser2;
         gc->Serialize(ser2);
         BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
-        for(unsigned i = 0; i < ser.GetLength(); i++)
-            BOOST_REQUIRE_EQUAL(ser2.GetData()[i], ser.GetData()[i]);
+        BOOST_REQUIRE_EQUAL(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()), 0);
         gc->Execute(GetWorld(), curPlayer);
         deletePtr(gc);
         return true;
