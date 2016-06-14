@@ -71,9 +71,11 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         node.t1 = node.t2 = TT_WATER;
     }
     // Init some land stripes of size 16 (a bit less than the HQ radius)
-    const MapCoord offset = 20;
+    const MapCoord offset = 7;
     const MapCoord landSize = 16;
-    if(width_ < 3 * (offset + landSize) || height_ < 3 * (offset + landSize))
+    // We have: Water(Offset)-Land-Water-Land-Water(Offset)
+    const MapCoord minSize = landSize * 3 + offset * 2;
+    if(width_ < minSize || height_ < minSize)
         throw std::runtime_error("World to small");
 
     // Vertical

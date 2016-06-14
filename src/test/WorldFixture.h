@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = 128, unsigned T_height = 128>
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = 64, unsigned T_height = 64>
 struct WorldFixture
 {
     EventManager em;
@@ -35,7 +35,14 @@ struct WorldFixture
     WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em)
     {
         GameObject::SetPointers(&world);
-        BOOST_REQUIRE(T_WorldCreator(T_width, T_height, T_numPlayers)(world));
+        try
+        {
+            BOOST_REQUIRE(T_WorldCreator(T_width, T_height, T_numPlayers)(world));
+        }catch(std::exception& e)
+        {
+            GameObject::SetPointers(NULL);
+            throw e;
+        }
         BOOST_REQUIRE_EQUAL(world.GetPlayerCount(), T_numPlayers);
     }
     ~WorldFixture()

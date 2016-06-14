@@ -267,7 +267,7 @@ void dskLobby::UpdateServerList(bool first)
             std::string name = (it->hasPassword() ? "(pwd) " : "") + it->getName();
             std::string ping = boost::lexical_cast<std::string>(it->getPing());
             std::string player = boost::lexical_cast<std::string>(it->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(it->getMaxPlayers());
-                servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
+            servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
         }
         if(first)
             servertable->SortRows(0);
