@@ -20,6 +20,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/foreach.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
 
@@ -214,6 +215,53 @@ BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
     // Recruited soldiers
     numHelpers -= numSwords;
     testAfterLeaving(20);
+}
+
+BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
+{
+    this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
+    // Each donkey carries a ware and we need a leader
+    numBoards -= 2;
+    numDonkeys -= 2;
+    numHelpers -= 1;
+    testExpectedWares();
+    testAfterLeaving(2);
+
+    // Make sure all of them are a bit outside
+    for(unsigned gf = 0; gf < 40; gf++)
+        this->em.ExecuteNextGF();
+
+    // Start a trade that will fail once they leave the bld
+    this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_WOODCUTTER, 2);
+    numHelpers -= 1;
+    numWoodcutters -= 2;
+    testExpectedWares();
+
+    // Add a ring off enemy owned land so they cannot pass
+    std::vector<MapPoint> pts = world.GetPointsInRadius(curWh->GetPos(), 10);
+    BOOST_FOREACH(const MapPoint& pt, pts)
+    {
+        if(world.CalcDistance(pt, curWh->GetPos()) >= 8)
+            world.SetOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1
+    }
+    // New trade fails
+    this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
+    testExpectedWares();
+
+    // Let them come in again (walk same way back, assume at most 8 nodes away + same as above)
+    for(unsigned gf = 0; gf < 40 + 20 * 8; gf++)
+        this->em.ExecuteNextGF();
+    // Recruited soldiers
+    numHelpers -= numSwords;
+    // Our stuff is back
+    numBoards += 2;
+    numDonkeys += 2;
+    numHelpers += 1 + 1;
+    numWoodcutters += 2;
+    // helpers can be produced in the meantime
+    BOOST_REQUIRE_GE(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
+    numHelpers = curWh->GetRealFiguresCount(JOB_HELPER);
+    testExpectedWares();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
