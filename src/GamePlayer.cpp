@@ -2342,6 +2342,10 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
     if(goalWh->GetPlayer() == GetPlayerId())
         return;
 
+    // No trades with enemies
+    if(!IsAlly(goalWh->GetPlayer()))
+        return;
+
     const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
     std::vector<nobBaseWarehouse*> whs(warehouses.begin(), warehouses.end());

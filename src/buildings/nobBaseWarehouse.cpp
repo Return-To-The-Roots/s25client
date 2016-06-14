@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-
 #include "defines.h" // IWYU pragma: keep
 #include "nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"
@@ -44,9 +42,7 @@
 #include "gameData/SettingTypeConv.h"
 #include "helpers/containerUtils.h"
 #include "Log.h"
-
 #include <algorithm>
-class nofAttacker;
 
 /// Intervall für Ausleerung (in gf)
 const unsigned empty_INTERVAL = 25;
