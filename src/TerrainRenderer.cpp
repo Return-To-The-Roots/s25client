@@ -230,28 +230,33 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         }
     }
 
-    if(SETTINGS.video.vbo)
+    if(SETTINGS.video.vbo && glGenBuffersARB && glBindBufferARB && glBufferDataARB)
     {
         // Create and fill the 3 VBOs for vertices, texCoords and colors
         GLuint vbos[3];
         glGenBuffersARB(3, vbos);
         BOOST_STATIC_ASSERT_MSG(sizeof(vbo_vertices) >= sizeof(GLuint), "Cannot store Gluint in vbo variable!");
-        vbo_vertices = vbos[0];
-        vbo_texcoords = vbos[1];
-        vbo_colors = vbos[2];
+        if(!vbos[0] || !vbos[1] || !vbos[2])
+            glDeleteBuffersARB(3, vbos);
+        else
+        {
+            vbo_vertices = vbos[0];
+            vbo_texcoords = vbos[1];
+            vbo_colors = vbos[2];
 
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_vertices.size() * sizeof(Triangle), &gl_vertices.front(), GL_STATIC_DRAW_ARB);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_vertices.size() * sizeof(Triangle), &gl_vertices.front(), GL_STATIC_DRAW_ARB);
 
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_texcoords.size() * sizeof(Triangle), &gl_texcoords.front(), GL_STATIC_DRAW_ARB);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_texcoords.size() * sizeof(Triangle), &gl_texcoords.front(), GL_STATIC_DRAW_ARB);
 
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB);
-        
-        // Unbind VBO to not interfere with other program parts
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-        vboBuffersUsed = true;
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB);
+
+            // Unbind VBO to not interfere with other program parts
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+            vboBuffersUsed = true;
+        }
     }
 }
 
