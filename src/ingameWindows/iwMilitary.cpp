@@ -38,7 +38,6 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     AddProgress(4, 17, 153, 132, 26, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", 4, 4, 0, _("Interior"), _("Interior"));
     AddProgress(5, 17, 185, 132, 26, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", 4, 4, 0, _("Center of country"), _("Center of country"));
     AddProgress(6, 17, 217, 132, 26, TC_GREY, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "", 4, 4, 0, _("Near harbor points"), _("Near harbor points"));
-
     AddProgress(7, 17, 249, 132, 26, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", 4, 4, 0, _("Border areas"), _("Border areas"));
 
     // unteren 2 Buttons

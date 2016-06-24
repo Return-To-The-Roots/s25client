@@ -69,12 +69,20 @@ public:
     /// Berechnet ein Militärgebäude mit ein
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
-    unsigned GetIdx(const PointI& pt) const { PointI offset(pt - startPt); return offset.y * size.x + offset.x; }
+    inline unsigned GetIdx(const PointI& pt) const;
     /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
     unsigned char GetOwner(const PointI& pt) const { return GetNode(pt).owner; }
     /// Liefert Radius mit dem der Punkt besetzt wurde
     unsigned char GetRadius(const PointI& pt) const { return GetNode(pt).radius; }
 };
+
+inline unsigned TerritoryRegion::GetIdx(const PointI& pt) const
+{
+    PointI offset(pt - startPt);
+    RTTR_Assert(offset.x >= 0 && offset.x < size.x);
+    RTTR_Assert(offset.y >= 0 && offset.y < size.y);
+    return offset.y * size.x + offset.x;
+}
 
 #endif
 

@@ -23,11 +23,12 @@
 #ifndef WorldWithGCExecution_h__
 #define WorldWithGCExecution_h__
 
-template<unsigned T_numPlayers>
-class WorldWithGCExecution: public WorldFixture<CreateEmptyWorld, T_numPlayers>, public GCExecutor
+template<unsigned T_numPlayers, unsigned T_width = 64, unsigned T_height = 64>
+class WorldWithGCExecution: public WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:
-    using WorldFixture<CreateEmptyWorld, T_numPlayers>::world;
+    typedef WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height> Parent;
+    using Parent::world;
 
     MapPoint hqPos;
     WorldWithGCExecution(): hqPos(world.GetPlayer(curPlayer).GetHQPos()){}

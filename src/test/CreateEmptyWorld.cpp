@@ -41,8 +41,8 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
         // Distribute player HQs evenly across map
         unsigned numPlayers = playerNations_.size();
         Point<unsigned> numPlayersPerDim;
-        numPlayersPerDim.x = static_cast<unsigned>(sqrt(numPlayers));
-        numPlayersPerDim.y = numPlayers / numPlayersPerDim.x;
+        numPlayersPerDim.y = static_cast<unsigned>(ceil(sqrt(numPlayers)));
+        numPlayersPerDim.x = static_cast<unsigned>(ceil(float(numPlayers) / numPlayersPerDim.y));
         // Distance between HQs
         Point<unsigned> playerDist = Point<unsigned>(width_ / numPlayersPerDim.x, height_ / numPlayersPerDim.y);
         // Start with a little offset so we don't place them at the map border
@@ -50,12 +50,14 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
         std::vector<MapPoint> hqPositions;
         for(unsigned y = 0; y < numPlayersPerDim.y; y++)
         {
+            numPlayersPerDim.x = min<unsigned>(numPlayersPerDim.x, numPlayers - hqPositions.size());
+            playerDist.x = width_ / numPlayersPerDim.x;
+            curPt.x = playerDist.x / 2;
             for (unsigned x = 0; x < numPlayersPerDim.x; x++)
             {
                 hqPositions.push_back(curPt);
                 curPt.x += playerDist.x;
             }
-            curPt.x = playerDist.x / 2;
             curPt.y += playerDist.y;
         }
         if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
