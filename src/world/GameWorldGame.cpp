@@ -221,7 +221,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
         curPt = GetNeighbour(curPt, route[i]);
 
         // Feld bebaubar und auf unserem Gebiet
-        if(!RoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
+        if(!IsRoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
         {
             // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
             if (!RoadAlreadyBuilt(boat_road, start, route))

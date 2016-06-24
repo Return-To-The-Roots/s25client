@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SeaWorldWithGCExecution.h"
 #include "GamePlayer.h"
-#include "pathfinding/FreePathFinderImpl.h"
+#include "pathfinding/FindPathForRoad.h"
 #include "factories/BuildingFactory.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
@@ -32,32 +32,10 @@
 #include <iostream>
 
 namespace{
-    struct PathConditionRoad
-    {
-        const GameWorldBase& world;
-
-        PathConditionRoad(const GameWorldBase& world): world(world){}
-
-        // Called for every node but the start & goal and should return true, if this point is usable
-        FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
-        {
-            return world.IsPlayerTerritory(pt) && !world.IsOnRoad(pt) && world.RoadAvailable(false, pt);
-        }
-
-        // Called for every edge (node to other node)
-        FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
-        {
-            return true;
-        }
-    };
-
     std::vector<unsigned char> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
     {
-        std::vector<unsigned char> road;
-        world.GetFreePathFinder().FindPath(fromPt, toPt, false, 100, &road, NULL, NULL, PathConditionRoad(world));
-        return road;
+        return FindPathForRoad(world, fromPt, toPt, world, false);
     }
-
 }
 
 BOOST_AUTO_TEST_SUITE(SeafaringTestSuite)

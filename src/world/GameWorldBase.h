@@ -75,7 +75,7 @@ public:
 
     /// Can a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road
-    bool RoadAvailable(const bool boat_road, const MapPoint pt) const;
+    bool IsRoadAvailable(const bool boat_road, const MapPoint pt) const;
     /// Check if this road already exists completely
     bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
     bool IsOnRoad(const MapPoint& pt) const;

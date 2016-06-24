@@ -79,7 +79,7 @@ unsigned GameWorldBase::GetPlayerCount() const
     return players.size();
 }
 
-bool GameWorldBase::RoadAvailable(const bool boat_road, const MapPoint pt) const
+bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) const
 {
     // Hindernisse
     if(GetNode(pt).obj)

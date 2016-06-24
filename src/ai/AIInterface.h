@@ -164,7 +164,7 @@ class AIInterface: public GameCommandFactory
 
         bool IsMilitaryBuildingNearNode(const MapPoint pt, const unsigned char player) const { return gwb.IsMilitaryBuildingNearNode(pt, player); }
 
-        bool RoadAvailable(const MapPoint pt, bool boat_road = false) {return gwb.RoadAvailable(boat_road, pt);}
+        bool RoadAvailable(const MapPoint pt, bool boat_road = false) {return gwb.IsRoadAvailable(boat_road, pt);}
 
         ///returns true when the buildingqulity at the 2nd point is lower than the bq on the first point
         bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
