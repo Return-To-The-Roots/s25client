@@ -41,6 +41,9 @@ public:
 
     GameWorldViewer(unsigned playerId, GameWorldBase& gwb);
 
+    /// Init the terrain renderer. Must be done before first call to GetTerrainRenderer!
+    void InitTerrainRenderer();
+    
     /// Return the world itself
     const GameWorldBase& GetWorld() const { return gwb; }
     /// Return non-const world (TODO: Remove, this is a view only!)
@@ -109,7 +112,6 @@ private:
     std::vector<VisualMapNode> visualNodes;
 
     void InitVisualData();
-    void InitTerrainRenderer();
     inline void VisibilityChanged(const MapPoint& pt, unsigned player);
     inline void RoadConstructionEnded(const RoadNote& note);
     void RecalcBQ(const MapPoint& pt);

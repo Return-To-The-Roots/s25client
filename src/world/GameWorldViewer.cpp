@@ -34,7 +34,6 @@
 
 GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb): playerId_(playerId), gwb(gwb)
 {
-    InitTerrainRenderer();
     InitVisualData();
 }
 
@@ -92,8 +91,10 @@ unsigned GameWorldViewer::GetPlayerCount() const
 
 unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
 {
-    // Ist das angegriffenne ein normales Gebäude?
     const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
+    // Can we actually attack this player?
+    if(!GetPlayer().IsAttackable(attacked_building->GetPlayer()))
+        return 0;
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
         // Wird es gerade eingenommen?
@@ -295,7 +296,7 @@ void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<
 
 bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const
 {
-    return !IsOnRoad(pt) && GetWorld().RoadAvailable(isWaterRoad, pt);
+    return !IsOnRoad(pt) && GetWorld().IsRoadAvailable(isWaterRoad, pt);
 }
 
 /// Get the "youngest" FOWObject of all players who share the view with the local player
