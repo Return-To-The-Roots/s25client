@@ -19,10 +19,13 @@
 #include "test/WorldWithGCExecution.h"
 #include "factories/BuildingFactory.h"
 #include "pathfinding/FindPathForRoad.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
 #include <boost/test/unit_test.hpp>
+#include "nodeObjs/noFlag.h"
+#include "figures/nofPassiveSoldier.h"
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
@@ -42,7 +45,13 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
     AttackFixture(): gwv(curPlayer, world)
     {
         for(unsigned i = 0; i < 3; i++)
+        {
             hqPos[i] = world.GetPlayer(i).GetHQPos();
+            nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos[i]);
+            Inventory goods;
+            goods.Add(JOB_GENERAL, 3);
+            hq->AddGoods(goods, true);
+        }
         // Assert player positions: 0: Top-Left, 1: Top-Right, 2: Bottom-Left
         BOOST_REQUIRE_LT(hqPos[0].x, hqPos[1].x);
         BOOST_REQUIRE_LT(hqPos[0].y, hqPos[2].y);
@@ -102,31 +111,129 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, AttackFixture)
 {
     // Player 0 has no military blds -> Can't attack
     SetCurPlayer(0);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[1]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[2]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld1Near->GetPos()), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld1Far->GetPos()), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld2->GetPos()), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[2]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Near->GetPos()), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Far->GetPos()), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld2->GetPos()), 0u);
     SetCurPlayer(1);
     // No self attack
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[1]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld1Near->GetPos()), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld1Far->GetPos()), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Near->GetPos()), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Far->GetPos()), 0u);
     // Attack both others
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[0]), 5u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[2]), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[2]), 5u);
     // This is in the extended range of the far bld -> 2 more (with current range)
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld2->GetPos()), 7u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld2->GetPos()), 7u);
     SetCurPlayer(2);
     // No self attack
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[2]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld2->GetPos()), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[2]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld2->GetPos()), 0u);
     // Attack both others
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[0]), 5u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(hqPos[1]), 5u);
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld1Near->GetPos()), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Near->GetPos()), 5u);
     // Counterpart: 2 possible for far bld
-    BOOST_REQUIRE_EQUAL(gwv.GetAvailableSoldiersForAttack(milBld1Far->GetPos()), 2u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Far->GetPos()), 2u);
+
+    // Functions related to stationed soldiers
+    BOOST_REQUIRE(milBld1Near->HasMaxRankSoldier());
+    BOOST_REQUIRE(!milBld1Far->HasMaxRankSoldier());
+    BOOST_REQUIRE(milBld2->HasMaxRankSoldier());
+    BOOST_REQUIRE_GT(milBld1Near->GetSoldiersStrength(), milBld1Far->GetSoldiersStrength());
+}
+
+BOOST_FIXTURE_TEST_CASE(LandAttack, AttackFixture)
+{
+    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM2;
+    world.GetPlayer(2).team = TM_TEAM1;
+    for(unsigned i = 0; i < 3; i++)
+        world.GetPlayer(i).MakeStartPacts();
+    // Make sure attacking is not limited by visibility
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        world.SetVisibility(pt, 2, VIS_VISIBLE, this->em.GetCurrentGF());
+
+    const nobMilitary& attackSrc = *milBld2;
+    const MapPoint usualBldPos = hqPos[1] + MapPoint(2, 0);
+    BOOST_REQUIRE_GT(world.GetBQ(usualBldPos, 1), BQ_FLAG);
+    const noBuilding* usualBld = BuildingFactory::CreateBuilding(&world, BLD_WOODCUTTER, usualBldPos, 1, NAT_ROMANS);
+    BOOST_REQUIRE(usualBld);
+    const MapPoint newBuiltPos = hqPos[1] + MapPoint(3, 5);
+    BOOST_REQUIRE_GT(world.GetBQ(newBuiltPos, 1), BQ_FLAG);
+    nobMilitary* newBuilt = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_BARRACKS, newBuiltPos, 1, NAT_ROMANS));
+    BOOST_REQUIRE(newBuilt);
+
+    // Destroy road so player does not get reinforcements
+    SetCurPlayer(1);
+    unsigned char flagDir = 0;
+    const noFlag* flag = gwv.GetWorld().GetRoadFlag(milBld1Near->GetFlag()->GetPos(), flagDir, Direction::NORTHWEST);
+    BOOST_REQUIRE(flag);
+    this->DestroyRoad(flag->GetPos(), flagDir);
+
+    SetCurPlayer(attackSrc.GetPlayer());
+
+    // Try to attack non-military bld -> Fail
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(usualBldPos), 0u);
+    this->Attack(usualBldPos, 1, true);
+    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+
+    // Try to attack ally -> Fail
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
+    this->Attack(hqPos[0], 1, true);
+    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+
+    // Try to attack newly build bld -> Fail
+    BOOST_REQUIRE_EQUAL(world.CalcWithAllyVisiblity(newBuiltPos, curPlayer), VIS_VISIBLE);
+    BOOST_REQUIRE(newBuilt->IsNewBuilt());
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(newBuiltPos), 0u);
+    this->Attack(newBuiltPos, 1, true);
+    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+
+    // Add soldier
+    nofPassiveSoldier* soldier = new nofPassiveSoldier(newBuiltPos, 1, newBuilt, newBuilt, 0);
+    newBuilt->AddPassiveSoldier(soldier);
+    BOOST_REQUIRE(!newBuilt->IsNewBuilt());
+    // Try to attack invisible bld -> Fail
+    MapNode& node = world.GetNodeWriteable(newBuiltPos);
+    node.fow[0].visibility = VIS_FOW;
+    node.fow[2].visibility = VIS_FOW;
+    BOOST_REQUIRE_EQUAL(world.CalcWithAllyVisiblity(newBuiltPos, curPlayer), VIS_FOW);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(newBuiltPos), 5u);
+    this->Attack(newBuiltPos, 1, true);
+    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+
+    // Attack it
+    node.fow[0].visibility = VIS_VISIBLE;
+    std::vector<nofPassiveSoldier*> soldiers(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
+    BOOST_REQUIRE_EQUAL(soldiers.size(), 6u);
+    for(int i = 0; i < 3; i++)
+        BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 0u);
+    for(int i = 3; i < 6; i++)
+        BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 4u);
+    this->Attack(newBuiltPos, 1, true);
+    // 1 strong soldier has left
+    soldiers.assign(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
+    BOOST_REQUIRE_EQUAL(soldiers.size(), 5u);
+    for(int i = 0; i < 3; i++)
+        BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 0u);
+    for(int i = 3; i < 5; i++)
+        BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 4u);
+    // Attack with 1 weak soldier
+    this->Attack(newBuiltPos, 1, false);
+    // 1 weak soldier has left
+    soldiers.assign(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
+    BOOST_REQUIRE_EQUAL(soldiers.size(), 4u);
+    for(int i = 0; i < 2; i++)
+        BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 0u);
+    for(int i = 2; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 4u);
+    // -> 2 strong, 2 weak remaining, attack with 3 weak ones -> 1 strong remaining
+    this->Attack(newBuiltPos, 3, false);
+    soldiers.assign(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
+    BOOST_REQUIRE_EQUAL(soldiers.size(), 1u);
+    BOOST_REQUIRE_EQUAL(soldiers[0]->GetRank(), 4u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

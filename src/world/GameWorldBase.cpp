@@ -718,7 +718,7 @@ std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const
 }
 
 /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
-unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count)const
+unsigned int GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool count)const
 {
     // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
@@ -740,7 +740,7 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
     for(unsigned i = 0; i < buildings.size(); ++i)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers = buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos(), player_attacker);
+        std::vector<nofPassiveSoldier*> tmp_soldiers = buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos());
 
         // Überhaupt welche gefunden?
         if(tmp_soldiers.empty())
@@ -759,7 +759,7 @@ unsigned int GameWorldBase::GetAvailableSoldiersForSeaAttackAtSea(const unsigned
 }
 
 /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const
+std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const
 {
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers;
     //sea attack abgeschaltet per addon?
@@ -821,7 +821,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
     for(std::vector<nobHarborBuilding::SeaAttackerBuilding>::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers = it->building->GetSoldiersForAttack(it->harbor->GetPos(), player_attacker);
+        std::vector<nofPassiveSoldier*> tmp_soldiers = it->building->GetSoldiersForAttack(it->harbor->GetPos());
 
         // Soldaten hinzufügen
         for(std::vector<nofPassiveSoldier*>::const_iterator itSoldier = tmp_soldiers.begin(); itSoldier != tmp_soldiers.end(); ++itSoldier)

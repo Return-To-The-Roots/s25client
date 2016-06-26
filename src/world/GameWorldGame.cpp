@@ -808,10 +808,10 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 
         // Take soldier(s)
         unsigned i = 0;
-        SortedTroops& troops = static_cast<nobMilitary*>(*it)->troops;
+        const SortedTroops& troops = static_cast<nobMilitary*>(*it)->GetTroops();
         if(strong_soldiers){
             // Strong soldiers first
-            for(SortedTroops::reverse_iterator it2 = troops.rbegin();
+            for(SortedTroops::const_reverse_iterator it2 = troops.rbegin();
                     it2 != troops.rend() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -834,7 +834,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             }
         }else{
             // Weak soldiers first
-            for(SortedTroops::iterator it2 = troops.begin();
+            for(SortedTroops::const_iterator it2 = troops.begin();
                     it2 != troops.end() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -890,7 +890,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Verfügbare Soldaten herausfinden
-    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetSoldiersForSeaAttack(player_attacker, pt);
 
     unsigned counter = 0;
     if(strong_soldiers)

@@ -152,7 +152,7 @@ void nofPassiveSoldier::LeaveBuilding()
 
 void nofPassiveSoldier::Upgrade()
 {
-    RTTR_Assert(!building || !helpers::contains(static_cast<nobMilitary*>(building)->troops, this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
+    RTTR_Assert(!building || !helpers::contains(static_cast<nobMilitary*>(building)->GetTroops(), this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 

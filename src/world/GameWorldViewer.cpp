@@ -89,19 +89,12 @@ unsigned GameWorldViewer::GetPlayerCount() const
     return GetWorld().GetPlayerCount();
 }
 
-unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
+unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
 {
     const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
-    // Can we actually attack this player?
-    if(!GetPlayer().IsAttackable(attacked_building->GetPlayer()))
+    // Can we actually attack this bld?
+    if(!attacked_building || !attacked_building->IsAttackable(playerId_))
         return 0;
-    if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
-    {
-        // Wird es gerade eingenommen?
-        if(static_cast<const nobMilitary*>(attacked_building)->IsBeingCaptured())
-            // Dann darf es nicht angegriffen werden
-            return 0;
-    }
 
     // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
@@ -111,7 +104,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
-            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, playerId_);
+            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
     }
 
     return total_count;
@@ -240,11 +233,11 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 }
 
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
-unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const
+unsigned GameWorldViewer::GetNumSoldiersForSeaAttack(const MapPoint pt) const
 {
     if(GetWorld().GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
         return 0;
-    return unsigned(GetWorld().GetAvailableSoldiersForSeaAttack(playerId_, pt).size());
+    return unsigned(GetWorld().GetSoldiersForSeaAttack(playerId_, pt).size());
 }
 
 void GameWorldViewer::ChangePlayer(unsigned player)

@@ -313,7 +313,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
 
         selected_soldiers_count_sea = 1;
-        available_soldiers_count_sea = gwv.GetViewer().GetAvailableSoldiersForSeaAttackCount(selectedPt);
+        available_soldiers_count_sea = gwv.GetViewer().GetNumSoldiersForSeaAttack(selectedPt);
 
         AddAttackControls(group, available_soldiers_count_sea);
     }

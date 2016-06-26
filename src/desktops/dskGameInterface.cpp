@@ -894,7 +894,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        params = worldViewer.GetAvailableSoldiersForAttack(cSel);
+        params = worldViewer.GetNumSoldiersForAttack(cSel);
     }
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mouse_x, mouse_y, params, enable_military_buildings);

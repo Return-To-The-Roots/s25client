@@ -55,10 +55,10 @@ public:
     unsigned GetPlayerId() const { return playerId_; }
     unsigned GetPlayerCount() const;
 
-    /// Get number of soldiers that can attack that point
-    unsigned GetAvailableSoldiersForAttack(const MapPoint pt) const;
+    /// Get number of soldiers that can attack bld at that point
+    unsigned GetNumSoldiersForAttack(const MapPoint pt) const;
     /// Get number of soldiers for attacking a point via sea
-    unsigned GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const;
+    unsigned GetNumSoldiersForSeaAttack(const MapPoint pt) const;
 
     /// Get BQ for this player
     BuildingQuality GetBQ(const MapPoint& pt) const;

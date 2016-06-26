@@ -1827,7 +1827,7 @@ void AIPlayerJH::TryToAttack()
                     continue;
 
                 unsigned newAttackers;
-                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, playerId, newAttackers);
+                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, newAttackers);
                 attackersCount += newAttackers;
             }
         }
@@ -1865,7 +1865,7 @@ void AIPlayerJH::TrySeaAttack()
         //sea id not already listed as valid or invalid?
         if(!helpers::contains(seaidswithattackers, (*it)->GetSeaID()) && !helpers::contains(invalidseas, (*it)->GetSeaID()))
         {
-            unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
+            unsigned int attackercount = gwb.GetNumSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
             {
                 seaidswithattackers.push_back((*it)->GetSeaID());
@@ -1925,7 +1925,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos());
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii.SeaAttack((*it)->GetPos(), 1, true);
@@ -1974,7 +1974,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos());
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii.SeaAttack((*it)->GetPos(), 1, true);
@@ -1989,7 +1989,7 @@ void AIPlayerJH::TrySeaAttack()
         gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId); //test only if we should have attackers from one of our valid sea ids
         if(!testseaidswithattackers.empty()) //only do the final check if it will probably be a good result
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos()); //now get a final list of attackers and attack it
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos()); //now get a final list of attackers and attack it
             if(!attackers.empty())
             {
                 aii.SeaAttack((*it)->GetPos(), attackers.size(), true);

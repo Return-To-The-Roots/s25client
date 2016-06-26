@@ -66,13 +66,8 @@ class nobMilitary : public nobBaseMilitary
         GameEvent* upgrade_event;
         /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
         bool is_regulating_troops;
-    public:
-
         /// Soldatenbesatzung
         SortedTroops troops;
-
-        // Das Fenster braucht ja darauf Zugriff
-        friend class iwMilitaryBuilding;
 
     private:
 
@@ -132,11 +127,12 @@ class nobMilitary : public nobBaseMilitary
         unsigned char GetFrontierDistance() const { return frontier_distance; }
 
         /// Berechnet die gewünschte Besatzung je nach Grenznähe
-        int CalcTroopsCount();
+        int CalcRequiredTroopsCount();
         /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
         void RegulateTroops();
         /// Gibt aktuelle Besetzung zurück
         unsigned GetTroopsCount() const { return troops.size(); }
+        const SortedTroops& GetTroops() const { return troops; }
 
 
         /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
@@ -166,11 +162,11 @@ class nobMilitary : public nobBaseMilitary
         nofAggressiveDefender* SendDefender(nofAttacker* attacker) override;
 
         /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        unsigned GetNumSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
+        unsigned GetNumSoldiersForAttack(const MapPoint dest) const;
         /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        std::vector<nofPassiveSoldier*> GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const;
+        std::vector<nofPassiveSoldier*> GetSoldiersForAttack(const MapPoint dest) const;
         /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-        unsigned GetSoldiersStrengthForAttack(const MapPoint dest, const unsigned char player_attacker, unsigned& soldiers_count) const;
+        unsigned GetSoldiersStrengthForAttack(const MapPoint dest, unsigned& soldiers_count) const;
         /// Gibt die Stärke eines Militärgebäudes zurück
         unsigned GetSoldiersStrength() const;
 
@@ -202,8 +198,9 @@ class nobMilitary : public nobBaseMilitary
         bool IsGoldDisabledVirtual() const { return coinsDisabledVirtual; }
         /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)
         bool IsGoldDisabled() const { return coinsDisabled; }
+        unsigned char GetNumCoins() const { return coins; }
 		/// is there a max rank soldier in the building?
-		unsigned HasMaxRankSoldier() const;
+		bool HasMaxRankSoldier() const;
 
         /// Sucht sämtliche Lagerhäuser nach Goldmünzen ab und bestellt ggf. eine, falls eine gebraucht wird
         void SearchCoins();

@@ -351,7 +351,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         this->em.ExecuteNextGF();
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
-    SortedTroops::const_iterator itTroops = bld->troops.begin();
+    SortedTroops::const_iterator itTroops = bld->GetTroops().begin();
     for(unsigned i = 0; i < 4; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
     for(unsigned i = 0; i < 2; i++, ++itTroops)
@@ -365,7 +365,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         this->SendSoldiersHome(milPt);
         expectedTroopCt -= (curRank == 4) ? 2 : 1; // 2 generals, 1 of the others
         BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), expectedTroopCt);
-        itTroops = bld->troops.begin();
+        itTroops = bld->GetTroops().begin();
         for(unsigned i = 0; i < expectedTroopCt; i++, ++itTroops)
             BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
     }
@@ -381,7 +381,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 
     // 6 low ranks
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
-    itTroops = bld->troops.begin();
+    itTroops = bld->GetTroops().begin();
     for(unsigned i = 0; i < 6; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 0u);
 
@@ -410,7 +410,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 
     // 3 low ranks and 1 each of other ranks except general
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
-    itTroops = bld->troops.begin();
+    itTroops = bld->GetTroops().begin();
     for(unsigned i = 0; i < 3; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 0u);
     for(unsigned i = 1; i < 3; i++, ++itTroops)
