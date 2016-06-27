@@ -19,13 +19,15 @@
 #include "test/WorldWithGCExecution.h"
 #include "factories/BuildingFactory.h"
 #include "pathfinding/FindPathForRoad.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofAttacker.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
+#include "nodeObjs/noFlag.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
 #include <boost/test/unit_test.hpp>
-#include "nodeObjs/noFlag.h"
-#include "figures/nofPassiveSoldier.h"
+#include <boost/foreach.hpp>
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
@@ -37,7 +39,7 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
     using Parent::curPlayer;
 
     /// Positions of the players HQ
-    std::array<MapPoint, 3> hqPos;
+    boost::array<MapPoint, 3> hqPos;
     /// Tested positions for military buildings
     MapPoint milBld1NearPos, milBld1FarPos, milBld2Pos;
     /// Military buildings of players 1 and 2 (for 1, one is close and one far away from player 1)
@@ -102,21 +104,28 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
         gwv.ChangePlayer(playerIdx);
     }
 
-    void AddSoldiers(MapPoint bldPos, unsigned numWeak, unsigned numStrong)
+    void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
     {
+        BOOST_REQUIRE_LE(rank, world.GetGGS().GetMaxMilitaryRank());
         nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
         BOOST_REQUIRE(bld);
-        for(unsigned i = 0; i < numWeak; i++)
+        const unsigned oldNumSoldiers = bld->GetTroopsCount();
+        for(unsigned i = 0; i < numSoldiers; i++)
         {
-            nofPassiveSoldier* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), NULL, bld, 0);
-            bld->AddPassiveSoldier(soldier);
+            nofPassiveSoldier* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), bld, bld, rank);
+            world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier->GetJobType(), 1);
+            world.AddFigure(soldier, bldPos);
+            // Let him "walk" to goal -> Already reached -> Added
+            soldier->WalkToGoal();
+            BOOST_REQUIRE(soldier->HasNoGoal());
         }
+        BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), oldNumSoldiers + numSoldiers);
+    }
 
-        for(unsigned i = 0; i < numStrong; i++)
-        {
-            nofPassiveSoldier* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), NULL, bld, 4);
-            bld->AddPassiveSoldier(soldier);
-        }
+    void AddSoldiers(MapPoint bldPos, unsigned numWeak, unsigned numStrong)
+    {
+        AddSoldiersWithRank(bldPos, numWeak, 0);
+        AddSoldiersWithRank(bldPos, numStrong, 4);
     }
 };
 
@@ -251,6 +260,97 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     soldiers.assign(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
     BOOST_REQUIRE_EQUAL(soldiers.size(), 1u);
     BOOST_REQUIRE_EQUAL(soldiers[0]->GetRank(), 4u);
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
+{
+    AddSoldiers(milBld2Pos, 1, 5);
+    AddSoldiers(milBld1NearPos, 1, 1);
+    SetCurPlayer(2);
+    BuildRoadForBlds(milBld2Pos, hqPos[2]);
+    // Finish recruiting, carrier outhousing etc.
+    for(unsigned gf = 0; gf < 400; gf++)
+        em.ExecuteNextGF();
+    // Start attack 2->1 (weak one first)
+    this->Attack(milBld1NearPos, 1, false);
+    this->Attack(milBld1NearPos, 5, false);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 1u);
+    BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount(), 2u);
+    // Run till attackers reach bld. 1 Soldier will leave for them.
+    // 1 stays inside till first one died and attacker is at door
+    // 20 GFs/node + 30 GFs for leaving
+    const unsigned distance = world.CalcDistance(milBld2Pos, milBld1NearPos); // 50% more than direct route
+    for (unsigned gf=0; gf<distance*20+30; gf++)
+    {
+        em.ExecuteNextGF();
+        if(milBld1Near->GetTroopsCount() == 1)
+            break;
+    }
+    BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount(), 1u);
+    BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount() + milBld1Near->GetLeavingFigures().size(), 2u);
+    const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
+    const unsigned oldWeakSoldierCt = attackedPlInventory.people[JOB_PRIVATE];
+    const unsigned oldStrongSoldierCt = attackedPlInventory.people[JOB_GENERAL];
+
+    // 1st soldier will walk towards attacker and will be killed
+    // Once an attacker reaches the flag, the bld will send a defender
+    BOOST_REQUIRE(!milBld1Near->GetDefender());
+    for(unsigned gf = 0; gf < 300; gf++)
+    {
+        em.ExecuteNextGF();
+        if(milBld1Near->GetTroopsCount() == 0)
+            break;
+    }
+    BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount(), 0u);
+    // Defender deployed, attacker at flag
+    BOOST_REQUIRE(milBld1Near->GetDefender());
+    const std::list<noBase*>& figures = world.GetFigures(milBld1Near->GetFlag()->GetPos());
+    BOOST_REQUIRE_EQUAL(figures.size(), 1u);
+    BOOST_REQUIRE(dynamic_cast<nofAttacker*>(figures.front()));
+    BOOST_REQUIRE_EQUAL(static_cast<nofAttacker*>(figures.front())->GetPlayer(), 2u);
+
+    // Lets fight
+    for(unsigned gf = 0; gf < 400; gf++)
+    {
+        em.ExecuteNextGF();
+        if(milBld1Near->IsBeingCaptured())
+            break;
+    }
+    BOOST_REQUIRE(milBld1Near->IsBeingCaptured());
+    // Let others in
+    for(unsigned gf = 0; gf < 200; gf++)
+    {
+        em.ExecuteNextGF();
+        if(!milBld1Near->IsBeingCaptured())
+            break;
+    }
+    // Not capturing anymore
+    BOOST_REQUIRE(!milBld1Near->IsBeingCaptured());
+    // Building conquered
+    BOOST_REQUIRE_EQUAL(milBld1Near->GetPlayer(), 2u);
+    // 1 soldier must be inside
+    BOOST_REQUIRE_GT(milBld1Near->GetTroopsCount(), 1u);
+    // Src building refill
+    for(unsigned gf = 0; gf < 400; gf++)
+    {
+        em.ExecuteNextGF();
+        if(milBld2->GetTroopsCount() == 6u)
+            break;
+    }
+    // Src building got refilled
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 6u);
+    // Both enemy soldiers should be dead now
+    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_PRIVATE], oldWeakSoldierCt - 1);
+    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_GENERAL], oldStrongSoldierCt - 1);
+    // At least 2 survivors
+    BOOST_REQUIRE_GT(milBld1Near->GetTroopsCount(), 2u);
+
+    // Points around bld should be ours
+    const std::vector<MapPoint> pts = world.GetPointsInRadius(milBld1NearPos, 3);
+    BOOST_FOREACH(const MapPoint& pt, pts)
+    {
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, 2u + 1u);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -212,93 +212,84 @@ void noFighting::HandleEvent(const unsigned int id)
     {
         switch(turn)
         {
-            case 2:
-            {
-                // Der Kampf hat gerade begonnen
+        case 2:
+        {
+            // Der Kampf hat gerade begonnen
 
-                // "Auslosen", wer als erstes dran ist mit Angreifen
-                turn = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2));
-                // anfangen anzugreifen
-                StartAttack();
-            } return;
-            case 0:
-            case 1:
-            {
-                // Sounds löschen von der letzten Kampfphase
-                SOUNDMANAGER.WorkingFinished(this);
+            // "Auslosen", wer als erstes dran ist mit Angreifen
+            turn = static_cast<unsigned char>(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2));
+            // anfangen anzugreifen
+            StartAttack();
+        } return;
+        case 0:
+        case 1:
+        {
+            // Sounds löschen von der letzten Kampfphase
+            SOUNDMANAGER.WorkingFinished(this);
 
-                // Wurde der eine getroffen?
-                if(defending_animation == 3)
+            // Wurde der eine getroffen?
+            if(defending_animation == 3)
+            {
+                if(--soldiers[1 - turn]->hitpoints == 0)
                 {
-                    if(--soldiers[!turn]->hitpoints == 0)
-                    {
-                        // Besitzer merken für die Sichtbarkeiten am Ende dann
-                        player_won = soldiers[turn]->GetPlayer();
-                        // Soldat Bescheid sagen, dass er stirbt
-                        soldiers[!turn]->LostFighting();
-                        // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
-                        gwg->AddFigure(soldiers[turn], soldiers[turn]->GetPos());
-                        soldiers[turn]->WonFighting();
-                        soldiers[turn] = NULL;
-                        // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
-                        turn = 3 + (!turn);
-                        // Event zum Sterben des einen Soldaten anmelden
-                        current_ev = GetEvMgr().AddEvent(this, 30);
-                        // Umstehenden Figuren Bescheid nach gewisser Zeit Bescheid sagen
-                        /*GetEvMgr().AddEvent(this,RELEASE_FIGURES_OFFSET,1);*/
-                        gwg->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
+                    // Besitzer merken für die Sichtbarkeiten am Ende dann
+                    player_won = soldiers[turn]->GetPlayer();
+                    // Soldat Bescheid sagen, dass er stirbt
+                    soldiers[1 - turn]->LostFighting();
+                    // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
+                    gwg->AddFigure(soldiers[turn], soldiers[turn]->GetPos());
+                    soldiers[turn]->WonFighting();
+                    soldiers[turn] = NULL;
+                    // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
+                    turn = 3 + (1 - turn);
+                    // Event zum Sterben des einen Soldaten anmelden
+                    current_ev = GetEvMgr().AddEvent(this, 30);
+                    // Umstehenden Figuren Bescheid Bescheid sagen
+                    gwg->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
 
-                        // In die Statistik eintragen
-                        gwg->GetPlayer(player_won).ChangeStatisticValue(STAT_VANQUISHED, 1);
-                        return;
-                    }
+                    // In die Statistik eintragen
+                    gwg->GetPlayer(player_won).ChangeStatisticValue(STAT_VANQUISHED, 1);
+                    return;
                 }
+            }
 
-                turn = !turn;
-                StartAttack();
-            } return;
-            case 3:
-            case 4:
+            turn = 1 - turn;
+            StartAttack();
+        } return;
+        case 3:
+        case 4:
+        {
+            unsigned player_lost = turn - 3;
+            MapPoint pt = soldiers[player_lost]->GetPos();
+
+            // Sounds löschen vom Sterben
+            SOUNDMANAGER.WorkingFinished(this);
+
+            // Kampf ist endgültig beendet
+            GetEvMgr().AddToKillList(this);
+            gwg->RemoveFigure(this, pt);
+
+            // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
+            NodalObjectType noType = gwg->GetNO(pt)->GetType();
+            if(noType == NOP_NOTHING || noType == NOP_ENVIRONMENT)
             {
-                unsigned player_lost = turn - 3;
-                MapPoint pt = soldiers[player_lost]->GetPos();
+                gwg->DestroyNO(pt, false);
+                gwg->SetNO(pt, new noSkeleton(pt));
+            }
 
-                // Sounds löschen vom Sterben
-                SOUNDMANAGER.WorkingFinished(this);
+            // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt hat
+            gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), NULL);
+            gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, NULL);
 
-                // Kampf ist endgültig beendet
-                GetEvMgr().AddToKillList(this);
-                gwg->RemoveFigure(this, pt);
+            // Soldaten endgültig umbringen
+            gwg->GetPlayer(soldiers[player_lost]->GetPlayer()).DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
+            soldiers[player_lost]->Destroy();
+            deletePtr(soldiers[player_lost]);
 
-                // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
-                NodalObjectType noType = gwg->GetNO(pt)->GetType();
-                if(noType == NOP_NOTHING || noType == NOP_ENVIRONMENT)
-                {
-                    gwg->DestroyNO(pt, false);
-                    gwg->SetNO(pt, new noSkeleton(pt));
-                }
-
-                // Umstehenden Figuren Bescheid sagen
-                //gwg->RoadNodeAvailable(soldiers[turn-3]->GetX(),soldiers[turn-3]->GetY());
-
-                // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt hat
-                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), NULL);
-                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, NULL);
-
-                // Soldaten endgültig umbringen
-                gwg->GetPlayer(soldiers[player_lost]->GetPlayer()).DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
-                soldiers[player_lost]->Destroy();
-                deletePtr(soldiers[player_lost]);
-
-            } break;
+        } break;
         }
-    }
-    // Figur-Weiterlauf-Event
-    else if(id == 1)
-    {
-        //// Figuren weiterlaufen lassen
-        //gwg->RoadNodeAvailable(soldiers[turn-3]->GetX(),soldiers[turn-3]->GetY());
-    }
+    } else
+        RTTR_Assert(false);
 }
 
 void noFighting::StartAttack()

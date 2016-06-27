@@ -113,6 +113,8 @@ class nobMilitary : public nobBaseMilitary
 
         /// Liefert Militärradius des Gebäudes
         unsigned GetMilitaryRadius() const override;
+        unsigned GetMaxCoinCt() const;
+        unsigned GetMaxTroopsCt() const;
 
         /// Sucht feindliche Miitärgebäude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
         /// auch von den feindlichen Gebäuden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen
