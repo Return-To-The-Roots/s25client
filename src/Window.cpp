@@ -852,7 +852,7 @@ void Window::Draw3D(DrawPoint drawPt,
                     const bool illuminated,
                     const bool draw_content)
 {
-    if(width < 4 || height < 4)
+    if(width < 4 || height < 4 || tc == TC_INVISIBLE)
         return;
 
     if(type <= 1)

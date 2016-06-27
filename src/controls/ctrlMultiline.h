@@ -32,7 +32,6 @@ class ctrlMultiline : public Window
     public:
         ctrlMultiline(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned int format = 0);
 
-        //void AddText(const std::string& text, unsigned int color);
         void AddString(const std::string& str, unsigned int color, bool scroll = true);
         unsigned GetLineCount() { return unsigned(lines.size()); }
         /// Gibt den index-ten Eintrag zurück

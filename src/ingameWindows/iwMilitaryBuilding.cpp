@@ -73,11 +73,12 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
-    DrawPoint goldPos = GetDrawPos() + DrawPoint((width_ - 22 * GOLD_COUNT[building->GetNation()][building->GetSize()]) / 2, 60);
-    DrawRectangle(goldPos, 22 * GOLD_COUNT[building->GetNation()][building->GetSize()], 24, 0x96000000);
+    const unsigned maxCoinCt = building->GetMaxCoinCt();
+    DrawPoint goldPos = GetDrawPos() + DrawPoint((width_ - 22 * maxCoinCt) / 2, 60);
+    DrawRectangle(goldPos, 22 * maxCoinCt, 24, 0x96000000);
     // Gold
     goldPos += DrawPoint(12, 12);
-    for(unsigned short i = 0; i < GOLD_COUNT[building->GetNation()][building->GetSize()]; ++i)
+    for(unsigned short i = 0; i < maxCoinCt; ++i)
     {
         LOADER.GetMapImageN(2278)->Draw(goldPos, 0, 0, 0, 0, 0, 0, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
         goldPos.x += 22;
@@ -97,9 +98,10 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         }
     }
 
-    DrawPoint troopsPos = GetDrawPos() + DrawPoint((width_ - 22 * TROOPS_COUNT[building->GetNation()][building->GetSize()]) / 2, 98);
+    const unsigned maxSoldierCt = building->GetMaxTroopsCt();
+    DrawPoint troopsPos = GetDrawPos() + DrawPoint((width_ - 22 * maxSoldierCt) / 2, 98);
     // Schwarzer Untergrund für Soldatenanzeige
-    DrawRectangle(troopsPos, 22 * TROOPS_COUNT[building->GetNation()][building->GetSize()], 24, 0x96000000);
+    DrawRectangle(troopsPos, 22 * maxSoldierCt, 24, 0x96000000);
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
@@ -114,7 +116,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         DrawPoint healthPos = troopsPos - DrawPoint(0, 14);
 
         // black background for hitpoints
-        DrawRectangle(healthPos, 22 * TROOPS_COUNT[building->GetNation()][building->GetSize()], 14, 0x96000000);
+        DrawRectangle(healthPos, 22 * maxSoldierCt, 14, 0x96000000);
 
         healthPos += DrawPoint(12, 2);
         for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it) {
