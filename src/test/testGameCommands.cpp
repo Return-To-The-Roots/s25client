@@ -114,7 +114,11 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     // b) Flag->Flag ->OK
     this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, Direction::EAST));
     for(unsigned i = 0; i < 4; i++)
+    {
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+        // Same but in opposite direction
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 1, 0), Direction::WEST), 1);
+    }
     // End of road
     BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(4, 0), Direction::EAST), 0);
     // BQ on road
@@ -170,6 +174,62 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::EAST));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyRoadTest, WorldWithGCExecution2P)
+{
+    MapPoint flagPt = hqPos + MapPoint(4, 0);
+    MapPoint flagPt2 = flagPt + MapPoint(2, 0);
+    this->SetFlag(flagPt);
+    // Build road with 3 segments:
+    this->BuildRoad(flagPt, false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(flagPt2, false, std::vector<unsigned char>(2, Direction::EAST));
+    for(unsigned i = 0; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+    // Destroy from middle of road -> fail
+    this->DestroyRoad(flagPt2 + MapPoint(1, 0), Direction::EAST);
+    for(unsigned i = 0; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+    // Wrong player -> Fail
+    curPlayer = 1;
+    this->DestroyRoad(flagPt2, Direction::EAST);
+    for(unsigned i = 0; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+    // Wrong direction -> Fail
+    curPlayer = 0;
+    this->DestroyRoad(flagPt2, Direction::SOUTHEAST);
+    for(unsigned i = 0; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+    // Correct -> Succeed
+    this->DestroyRoad(flagPt2, Direction::EAST);
+    for(unsigned i = 0; i < 2; i++)
+    {
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 2, 0), Direction::EAST), 0);
+    }
+    // Flags must still exist
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt));
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2));
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2 + MapPoint(2, 0)));
+    // Rebuild
+    this->BuildRoad(flagPt2, false, std::vector<unsigned char>(2, Direction::EAST));
+    for(unsigned i = 0; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
+    // Opposite dir
+    this->DestroyRoad(flagPt2, Direction::WEST);
+    for(unsigned i = 0; i < 2; i++)
+    {
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i + 2, 0), Direction::EAST), 1);
+    }
+    // Both
+    this->DestroyRoad(flagPt2, Direction::EAST);
+    for(unsigned i = 0; i < 4; i++)
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
+    // Flags must still exist
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt));
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2));
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2 + MapPoint(2, 0)));
 }
 
 BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
