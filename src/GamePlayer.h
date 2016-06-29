@@ -30,6 +30,7 @@
 #include "gameData/MaxPlayers.h"
 #include "gameData/ToolConsts.h"
 #include "helpers/containerUtils.h"
+#include "helpers/multiArray.h"
 #include <boost/array.hpp>
 #include <list>
 #include <queue>
@@ -62,9 +63,9 @@ class GamePlayer: public GamePlayerInfo
         struct Statistic
         {
             // 30 Datensätze pro Typ
-            unsigned int data[STAT_TYPE_COUNT][STAT_STEP_COUNT];
+            helpers::MultiArray<unsigned, STAT_TYPE_COUNT, STAT_STEP_COUNT> data;
             // und das gleiche für die Warenstatistik
-            unsigned short merchandiseData[STAT_MERCHANDISE_TYPE_COUNT][STAT_STEP_COUNT];
+            helpers::MultiArray<unsigned short, STAT_MERCHANDISE_TYPE_COUNT, STAT_STEP_COUNT> merchandiseData;
             // Index, der gerade 'vorne' (rechts im Statistikfenster) ist
             unsigned short currentIndex;
             // Counter, bei jedem vierten Update jeweils Daten zu den längerfristigen Statistiken kopieren
@@ -389,7 +390,7 @@ class GamePlayer: public GamePlayerInfo
         std::list<JobNeeded> jobs_wanted;
 
         /// Listen der einzelnen Gebäudetypen (nur nobUsuals!)
-        std::list<nobUsual*> buildings[30];
+        boost::array<std::list<nobUsual*>, 30> buildings;
         /// Liste von sämtlichen Baustellen
         std::list<noBuildingSite*> building_sites;
         /// Liste von allen Militärgebäuden
@@ -458,14 +459,14 @@ class GamePlayer: public GamePlayerInfo
             void Serialize(SerializedGameData& sgd);
         };
         /// Bündnisse dieses Spielers mit anderen Spielern
-        Pact pacts[MAX_PLAYERS][PACTS_COUNT];
+        helpers::MultiArray<Pact, MAX_PLAYERS, PACTS_COUNT> pacts;
 
         // Statistikdaten
         boost::array<Statistic, STAT_TIME_COUNT> statistic;
 
         // Die Statistikwerte die 'aktuell' gemessen werden
-        int statisticCurrentData[STAT_TYPE_COUNT];
-        int statisticCurrentMerchandiseData[STAT_MERCHANDISE_TYPE_COUNT];
+        boost::array<int, STAT_TYPE_COUNT> statisticCurrentData;
+        boost::array<int, STAT_MERCHANDISE_TYPE_COUNT> statisticCurrentMerchandiseData;
 
         // Notfall-Programm aktiviert ja/nein (Es gehen nur noch Res an Holzfäller- und Sägewerk-Baustellen raus)
         bool emergency;
