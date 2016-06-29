@@ -97,7 +97,7 @@ public:
     void RecalcAllColors();
 
     /// Makes this a viewer for another player
-    void ChangePlayer(unsigned player);
+    void ChangePlayer(unsigned player, bool updateVisualData = true);
 
 private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency

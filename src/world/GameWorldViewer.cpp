@@ -235,17 +235,19 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
 unsigned GameWorldViewer::GetNumSoldiersForSeaAttack(const MapPoint pt) const
 {
-    if(GetWorld().GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
-        return 0;
     return unsigned(GetWorld().GetSoldiersForSeaAttack(playerId_, pt).size());
 }
 
-void GameWorldViewer::ChangePlayer(unsigned player)
+void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData/* = true*/)
 {
     if(player == playerId_)
         return;
     playerId_ = player;
-    RecalcAllColors();
+    if(updateVisualData)
+    {
+        RecalcAllColors();
+        InitVisualData();
+    }
 }
 
 void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
