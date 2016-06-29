@@ -1895,8 +1895,7 @@ void AIPlayerJH::TrySeaAttack()
                 if(aii.IsPlayerAttackable(hb->GetPlayer()))
                 {
                     //attackers for this building?
-                    std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), testseaidswithattackers, playerId);
+                    const std::vector<unsigned short> testseaidswithattackers = gwb.GetFilteredSeaIDsForAttack(gwb.GetHarborPoint(i), seaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty()) //harbor can be attacked?
                     {
                         if(!hb->DefendersAvailable()) //no defenders?
@@ -1953,8 +1952,7 @@ void AIPlayerJH::TrySeaAttack()
                     continue;
                 if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable())) //undefended headquarter(or unlikely as it is a harbor...) - priority list!
                 {
-                    std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId);
+                    const std::vector<unsigned short> testseaidswithattackers = gwb.GetFilteredSeaIDsForAttack((*it)->GetPos(), seaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(*it);
@@ -1985,8 +1983,9 @@ void AIPlayerJH::TrySeaAttack()
     std::random_shuffle(potentialTargets.begin(), potentialTargets.end());
     for(std::deque<const nobBaseMilitary*>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); ++it)
     {
-        std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
-        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId); //test only if we should have attackers from one of our valid sea ids
+        //TODO: decide if it is worth attacking the target and not just "possible"
+        //test only if we should have attackers from one of our valid sea ids
+        const std::vector<unsigned short> testseaidswithattackers = gwb.GetFilteredSeaIDsForAttack((*it)->GetPos(), seaidswithattackers, playerId);
         if(!testseaidswithattackers.empty()) //only do the final check if it will probably be a good result
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos()); //now get a final list of attackers and attack it
