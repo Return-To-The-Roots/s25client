@@ -199,6 +199,11 @@ void nobMilitary::Draw(DrawPoint drawPt)
     unsigned frontier_distance_tmp = frontier_distance;
     glArchivItem_Bitmap_Player* bitmap = NULL;
     unsigned int animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
+    if(new_built)
+    {
+        // don't draw a flag for new buildings - fixes bug #215
+    }
+    else
     if(frontier_distance_tmp == 2)
     {
         // todo Hafenflagge
