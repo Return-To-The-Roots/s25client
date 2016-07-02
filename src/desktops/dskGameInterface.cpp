@@ -749,6 +749,12 @@ void dskGameInterface::Run()
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
     SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 
+    // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
+    if(gameClient.IsPaused())
+    {
+        DrawRectangle(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), COLOR_SHADOW);
+    }
+
     messenger.Draw();
 }
 
