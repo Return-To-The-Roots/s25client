@@ -131,6 +131,12 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
         // Wird schon ein Sound gespielt?
         if(!AUDIODRIVER.IsEffectPlaying(ocean_play_id))
         {
+            // SDL Mixer may return false values here. Therefore,
+            // we make sure the old effect is stopped.
+            // DO NOT REMOVE - THIS PREVENTS A BUG!
+            if(ocean_play_id)
+                AUDIODRIVER.StopEffect(ocean_play_id);
+
             // Wenn nicht --> neuen abspielen
             ocean_play_id = LOADER.GetSoundN("sound", 98 + rand() % 3)->Play(255, true);
         }
