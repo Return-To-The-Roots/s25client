@@ -730,7 +730,7 @@ void dskGameInterface::OnBuildingNote(const BuildingNote& note)
         break;
     case BuildingNote::Captured:
         // Fanfaren
-        LOADER.GetSoundN("sound", 110)->Play(255, false);
+        LOADER.GetSoundN("sound", 110)->Play(100, false);
         break;
     default:
         break;
@@ -1140,7 +1140,7 @@ void dskGameInterface::NewPostMessage(const unsigned msgCt)
     UpdatePostIcon(msgCt, true);
 
     // Tauben-Sound abspielen
-    LOADER.GetSoundN("sound", 114)->Play(255, false);
+    LOADER.GetSoundN("sound", 114)->Play(100, false);
 }
 
 /**
