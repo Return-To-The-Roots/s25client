@@ -348,6 +348,9 @@ bool VideoDriverWrapper::Initialize()
     // Puffer leeren
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
     // Buffer swappen um den leeren Buffer darzustellen
     SwapBuffers();
 

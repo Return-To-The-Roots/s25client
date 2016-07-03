@@ -318,15 +318,11 @@ void glArchivItem_Font::Draw(DrawPoint pos,
     if(texList.empty())
         return;
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glVertexPointer(3, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].x);
     glTexCoordPointer(2, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].tx);
     VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? fontNoOutline->GetTexture() : fontWithOutline->GetTexture());
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.size());
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 template<class T_Iterator>

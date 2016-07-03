@@ -733,8 +733,6 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     lastOffset = PointI(0, 0);
 
     // Arrays aktivieren
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
 
     if(vboBuffersUsed)
@@ -823,8 +821,6 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
 
     DrawWays(sorted_roads);
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     // Wieder zurück ins normale modulate
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

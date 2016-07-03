@@ -65,15 +65,11 @@ void glArchivItem_Bitmap::Draw(DrawPoint dst, short dst_w, short dst_h, short sr
     texCoords[0].y = texCoords[3].y = GLfloat(src_y) / tex_height_;
     texCoords[1].y = texCoords[2].y = GLfloat(src_y + src_h) / tex_height_;
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
     VIDEODRIVER.BindTexture(GetTexture());
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, 4);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void glArchivItem_Bitmap::FillTexture()

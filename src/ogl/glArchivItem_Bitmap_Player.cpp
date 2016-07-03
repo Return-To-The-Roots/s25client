@@ -78,16 +78,12 @@ void glArchivItem_Bitmap_Player::Draw(DrawPoint dst, short dst_w, short dst_h, s
     colors[4].a = GetAlpha(player_color);
     colors[7] = colors[6] = colors[5] = colors[4];
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
     VIDEODRIVER.BindTexture(GetTexture());
     glDrawArrays(GL_QUADS, 0, 8);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
 }
 
