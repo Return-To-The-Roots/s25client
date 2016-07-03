@@ -30,6 +30,7 @@
 #include "postSystem/PostMsg.h"
 #include "libutil/src/Serializer.h"
 #include "libutil/src/Log.h"
+#include "gameTypes/Resource.h"
 #include <fstream>
 
 LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
@@ -135,6 +136,13 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
     ADD_LUA_CONST(GD_COAL);
     ADD_LUA_CONST(GD_MEAT);
     ADD_LUA_CONST(GD_HAM);
+
+    ADD_LUA_CONST(RES_IRON_ORE);
+    ADD_LUA_CONST(RES_GOLD);
+    ADD_LUA_CONST(RES_COAL);
+    ADD_LUA_CONST(RES_GRANITE);
+    ADD_LUA_CONST(RES_WATER);
+    lua["RES_IRON"] = RES_IRON_ORE;
 
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
