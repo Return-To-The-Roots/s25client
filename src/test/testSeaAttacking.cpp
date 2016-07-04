@@ -174,15 +174,29 @@ struct AttackFixture: public SeaWorldWithGCExecution
         AddSoldiersWithRank(bldPos, numWeak, 0);
         AddSoldiersWithRank(bldPos, numStrong, 4);
     }
+
+    /// Assert that attacking the given building from milBld2 fails
+    void TestFailingSeaAttack(MapPoint bldPos, unsigned numSoldiersLeft = 6u)
+    {
+        BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), numSoldiersLeft);
+        // No availbale soldiers
+        BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(bldPos), 0u);
+        this->SeaAttack(bldPos, 1, true);
+        // Noone left
+        BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), numSoldiersLeft);
+    }
 };
 
-BOOST_FIXTURE_TEST_CASE(NumSoldiersForSeaAttack, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(SeaAttackDisabled, AttackFixture)
 {
     AddSoldiers(milBld1NearPos, 6, 0);
     AddSoldiers(milBld1FarPos, 6, 0);
-    AddSoldiers(milBld2Pos, 6, 0);
+    AddSoldiers(milBld2Pos, 3, 3);
 
     SetCurPlayer(2);
+    // Disable Sea attack
+    ggs.setSelection(AddonId::SEA_ATTACK, 2);
+
     // No land attack
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
@@ -191,31 +205,23 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForSeaAttack, AttackFixture)
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1NearPos), 0u);
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1FarPos), 0u);
 
-    // Disable Sea attack
-    ggs.setSelection(AddonId::SEA_ATTACK, 2);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1NearPos), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1FarPos), 0u);
+    // No sea attack
+    TestFailingSeaAttack(hqPos[0]);
+    TestFailingSeaAttack(hqPos[1]);
+    TestFailingSeaAttack(harborPos[1]);
+    TestFailingSeaAttack(milBld1NearPos);
+    TestFailingSeaAttack(milBld1FarPos);
+}
 
-    // Enemy harbors block
-    ggs.setSelection(AddonId::SEA_ATTACK, 1);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
-    // Harbor exists -> Can't attack
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1NearPos), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1FarPos), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
+BOOST_FIXTURE_TEST_CASE(NoHarborBlock, AttackFixture)
+{
+    AddSoldiers(milBld1FarPos, 6, 0);
+    AddSoldiers(milBld2Pos, 3, 3);
 
+    SetCurPlayer(2);
     // Enemy harbors don't block
     ggs.setSelection(AddonId::SEA_ATTACK, 0);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 5u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1NearPos), 5u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1FarPos), 0u);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
-    // And still no land attack
+    // No land attack
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(harborPos[0]), 0u);
@@ -224,31 +230,83 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForSeaAttack, AttackFixture)
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1FarPos), 0u);
 
     // No building
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[0]), 0u);
+    TestFailingSeaAttack(harborPos[0]);
+
     // Non-Military building
     BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
     const noBuilding* usualBld = BuildingFactory::CreateBuilding(&world, BLD_WOODCUTTER, harborPos[0], 0, NAT_ROMANS);
     BOOST_REQUIRE(usualBld);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[0]), 0u);
-    // But we can still attack the HQ as that is not a harbor at the harbor spot
-    ggs.setSelection(AddonId::SEA_ATTACK, 1);
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
+    TestFailingSeaAttack(harborPos[0]);
 
-    // Test teams
-    ggs.setSelection(AddonId::SEA_ATTACK, 0);
-    world.GetPlayer(0).team = TM_TEAM1;
-    world.GetPlayer(1).team = TM_TEAM2;
-    world.GetPlayer(2).team = TM_TEAM1;
-    for(unsigned i = 0; i < 3; i++)
-        world.GetPlayer(i).MakeStartPacts();
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 0u);
+    // Bld to far
+    TestFailingSeaAttack(milBld1FarPos);
+
+    // Bld not occupied
+    TestFailingSeaAttack(milBld1NearPos);
+    // Occupy now
+    AddSoldiers(milBld1NearPos, 6, 0);
+
+    // Rest is attackable
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 5u);
-    // Invisible point
-    world.SetVisibility(hqPos[1], 2, VIS_FOW, em.GetCurrentGF());
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 0u);
-    // Visible for ally
-    world.SetVisibility(hqPos[1], 0, VIS_VISIBLE, em.GetCurrentGF());
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(milBld1NearPos), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
+    this->SeaAttack(hqPos[0], 1, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 5u);
+
+    this->SeaAttack(hqPos[1], 1, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 4u);
+
+    this->SeaAttack(milBld1NearPos, 1, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 3u);
+
+    this->SeaAttack(harborPos[1], 2, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 1u);
+
+    // All gone
+    TestFailingSeaAttack(harborPos[1], 1u);
+}
+
+BOOST_FIXTURE_TEST_CASE(HarborsBlock, AttackFixture)
+{
+    AddSoldiers(milBld1NearPos, 6, 0);
+    AddSoldiers(milBld1FarPos, 6, 0);
+    AddSoldiers(milBld2Pos, 3, 3);
+
+    SetCurPlayer(2);
+    // Enemy harbors block
+    ggs.setSelection(AddonId::SEA_ATTACK, 1);
+    // No land attack
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(harborPos[0]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(harborPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1NearPos), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1FarPos), 0u);
+
+    // Harbor exists -> Can't attack
+    TestFailingSeaAttack(hqPos[1]);
+    TestFailingSeaAttack(milBld1NearPos);
+    TestFailingSeaAttack(milBld1FarPos);
+
+    // No building
+    TestFailingSeaAttack(harborPos[0]);
+    // Non-Military building
+    BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
+    const noBuilding* usualBld = BuildingFactory::CreateBuilding(&world, BLD_WOODCUTTER, harborPos[0], 0, NAT_ROMANS);
+    BOOST_REQUIRE(usualBld);
+    TestFailingSeaAttack(harborPos[0]);
+
+    // HQ Attackable as no harbor at harbor spot (but regular bld)
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
+    // Harbor is always attackable
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
+    // HQ
+    this->SeaAttack(hqPos[0], 1, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 5u);
+    // Harbor
+    this->SeaAttack(harborPos[1], 1, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 4u);
 
     // Test for unowned harbor
     const MapPoint harborBot1 = world.GetHarborPoint(7);
@@ -261,7 +319,7 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForSeaAttack, AttackFixture)
     BOOST_REQUIRE_LE(world.CalcDistance(bldPos, harborBot2), 12u);
     BOOST_REQUIRE_GE(world.CalcDistance(bldPos, harborBot2), 9u);
     BOOST_REQUIRE_EQUAL(world.GetNode(bldPos).bq, BQ_CASTLE);
-    std::vector<MapPoint> pts =  world.GetPointsInRadius(bldPos, 3);
+    std::vector<MapPoint> pts = world.GetPointsInRadius(bldPos, 3);
     pts.push_back(bldPos);
     BOOST_FOREACH(const MapPoint& pt, pts)
         world.SetOwner(pt, 1 + 1);
@@ -271,26 +329,48 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForSeaAttack, AttackFixture)
     BOOST_REQUIRE_EQUAL(world.GetNode(harborBot1).owner, 0u);
     BOOST_REQUIRE_EQUAL(world.GetNode(harborBot2).owner, 0u);
     // But we can attack the building
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(bldPos), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(bldPos), 3u);
+    this->SeaAttack(bldPos, 1, true);
+    BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 3u);
+}
 
-    // Ally harbors don't block
+BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
+{
+    AddSoldiers(milBld1NearPos, 6, 0);
+    AddSoldiers(milBld1FarPos, 6, 0);
+    AddSoldiers(milBld2Pos, 3, 3);
+
+    SetCurPlayer(2);
+    // Enemy harbors block
     ggs.setSelection(AddonId::SEA_ATTACK, 1);
-    // Enemy harbor is still blocking
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 0u);
-    world.DestroyNO(harborPos[1]);
-    // Wait till fire vanishes
-    for(unsigned gf = 0; gf < 5000; gf++)
-    {
-        em.ExecuteNextGF();
-        if(!world.GetNode(harborPos[1]).obj)
-            break;
-    }
-    BOOST_REQUIRE(!world.GetNode(harborPos[1]).obj);
-    // Build ally harbor
-    noBuilding* harborBld = BuildingFactory::CreateBuilding(&world, BLD_HARBORBUILDING, harborPos[1], 0, NAT_ROMANS);
+
+    // Build (later) ally harbor
+    noBuilding* harborBld = BuildingFactory::CreateBuilding(&world, BLD_HARBORBUILDING, harborPos[0], 1, NAT_ROMANS);
     BOOST_REQUIRE(harborBld);
+
+    // Enemy harbor blocks
+    TestFailingSeaAttack(hqPos[1]);
+
+    world.GetPlayer(0).team = TM_TEAM2;
+    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(2).team = TM_TEAM1;
+    for(unsigned i = 0; i < 3; i++)
+        world.GetPlayer(i).MakeStartPacts();
+
+    // Can't attack ally
+    TestFailingSeaAttack(harborPos[1]);
+    TestFailingSeaAttack(hqPos[1]);
+
+    // Invisible point
+    world.SetVisibility(hqPos[0], 1, VIS_FOW, em.GetCurrentGF());
+    world.SetVisibility(hqPos[0], 2, VIS_FOW, em.GetCurrentGF());
+    TestFailingSeaAttack(hqPos[0]);
+    // Visible for ally
+    world.SetVisibility(hqPos[0], 1, VIS_VISIBLE, em.GetCurrentGF());
+    
     // Attackable
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[1]), 5u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
+    this->SeaAttack(hqPos[0], 1, true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
