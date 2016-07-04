@@ -280,9 +280,7 @@ bool VideoSDL::MessageLoop()
 
             case SDL_VIDEORESIZE:
             {
-                screenWidth = ev.resize.w;
-                screenHeight = ev.resize.h;
-
+                ResizeScreen(ev.resize.w, ev.resize.h, isFullscreen_);
                 CallBack->ScreenResized(screenWidth, screenHeight);
             } break;
 
