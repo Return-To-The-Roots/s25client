@@ -135,6 +135,8 @@ class nobBaseMilitary : public noBuilding
         virtual bool DefendersAvailable() const = 0;
 
         bool IsUnderAttack() const {return !aggressors.empty();};
+        /// Return whether this building can be attacked by the given player. For -1 player alliances are not checked
+        virtual bool IsAttackable(int playerIdx) const;
 
         /// Debugging
         bool IsAggressor(nofAttacker* attacker) const;

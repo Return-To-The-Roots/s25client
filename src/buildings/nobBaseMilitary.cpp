@@ -25,9 +25,9 @@
 #include "figures/nofDefender.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
 #include "gameData/GameConsts.h"
 #include <limits>
-
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
                                  const unsigned char player, const Nation nation)
@@ -347,6 +347,14 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
+
+bool nobBaseMilitary::IsAttackable(int playerIdx) const
+{
+    if(playerIdx < 0)
+        return true; // Nothing prevents this in general
+    else
+        return gwg->GetPlayer(player).IsAttackable(static_cast<unsigned>(playerIdx));
+}
 
 bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const
 {

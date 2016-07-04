@@ -574,6 +574,13 @@ bool nobMilitary::IsUseless() const
     return !gwg->DoesTerritoryChange(*this, true, false);
 }
 
+
+bool nobMilitary::IsAttackable(int playerIdx) const
+{
+    // Cannot be attacked, if it is beeing captured or not claimed yet (just built)
+    return nobBaseMilitary::IsAttackable(playerIdx) && !IsBeingCaptured() && !IsNewBuilt();
+}
+
 void nobMilitary::TakeWare(Ware* ware)
 {
     // Goldmünze in Bestellliste aufnehmen
