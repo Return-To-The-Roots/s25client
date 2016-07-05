@@ -1139,6 +1139,9 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
     {
         if(!goods.goods[i])
             continue;
+        // Can only add canonical shields (romans)
+        RTTR_Assert(GoodType(i) == GD_SHIELDROMANS || ConvertShields(GoodType(i)) != GD_SHIELDROMANS);
+
         inventory.Add(GoodType(i), goods.goods[i]);
         if(addToPlayer)
             owner.IncreaseInventoryWare(GoodType(i), goods.goods[i]);
@@ -1149,9 +1152,12 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
     {
         if(!goods.people[i])
             continue;
+        // Boatcarriers are added as carriers and boat individually
+        RTTR_Assert(Job(i) != JOB_BOATCARRIER);
+
         inventory.Add(Job(i), goods.people[i]);
         if(addToPlayer)
-            owner.IncreaseInventoryJob(Job(i), goods.goods[i]);
+            owner.IncreaseInventoryJob(Job(i), goods.people[i]);
         CheckJobsForNewFigure(Job(i));
     }
 }
