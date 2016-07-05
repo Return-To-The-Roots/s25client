@@ -279,7 +279,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     // Run till attackers reach bld. 1 Soldier will leave for them.
     // 1 stays inside till first one died and attacker is at door
     // 20 GFs/node + 30 GFs for leaving
-    const unsigned distance = world.CalcDistance(milBld2Pos, milBld1NearPos); // 50% more than direct route
+    const unsigned distance = world.CalcDistance(milBld2Pos, milBld1NearPos);
     for (unsigned gf=0; gf<distance*20+30; gf++)
     {
         em.ExecuteNextGF();

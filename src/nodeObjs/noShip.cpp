@@ -873,7 +873,7 @@ bool noShip::IsGoingToHarbor(const nobHarborBuilding& hb) const
     case noShip::STATE_SEAATTACK_UNLOADING: // Unloading attackers at this harbor
     case noShip::STATE_SEAATTACK_RETURN_DRIVING:    // Returning attackers to this harbor
         return true;
-}
+    }
     RTTR_Assert(false);
     return false;
 }

@@ -21,7 +21,7 @@
 #include "world/MapLoader.h"
 
 CreateEmptyWorld::CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers):
-    width_(width), height_(height), playerNations_(numPlayers, NAT_ROMANS)
+    width_(width), height_(height), playerNations_(numPlayers, NAT_AFRICANS)
 {}
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const

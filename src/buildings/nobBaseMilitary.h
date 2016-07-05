@@ -73,7 +73,7 @@ class nobBaseMilitary : public noBuilding
         virtual unsigned GetMilitaryRadius() const = 0;
 
         /// Gibt Verteidiger zurück
-        nofDefender* GetDefender() const { return defender_; }
+        const nofDefender* GetDefender() const { return defender_; }
 
         /// Compares according to build time (Age): Bigger objIds are "younger"
         bool operator<(const nobBaseMilitary& other) const { return GetObjId() > other.GetObjId(); }
