@@ -1075,7 +1075,6 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
                 else
                     inventory.visual.Add((*it)->GetJobType());
                 AddLeavingFigure(*it);
-                (*it)->ShipJourneyEnded();
             }
             else if (nextDir == SHIP_DIR)
             {
@@ -1251,6 +1250,28 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     inventory.visual.Add(attacker->GetJobType());
 
     OrderShip();
+}
+
+void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
+{
+    bool found = false;
+    for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
+    {
+        if(it->attacker == attacker)
+        {
+            soldiers_for_ships.erase(it);
+            found = true;
+            break;
+        }
+    }
+    RTTR_Assert(found);
+    if(attacker->HasNoGoal())
+    {
+        // No goal? We take it
+        AddDependentFigure(attacker);
+        AddFigure(attacker, false);
+    } else
+        AddLeavingFigure(attacker); // Just let him leave so he can go home
 }
 
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)

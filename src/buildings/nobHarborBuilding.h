@@ -221,6 +221,8 @@ public:
 
         /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
         void AddSeaAttacker(nofAttacker* attacker);
+        /// Attacker does not want to attack anymore
+        void CancelSeaAttacker(nofAttacker* attacker);
 
         /// People waiting for a ship have to examine their route if a road was destroyed
         void ExamineShipRouteOfPeople();

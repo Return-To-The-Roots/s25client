@@ -719,6 +719,18 @@ void nofAttacker::AttackedGoalDestroyed()
             state == STATE_ATTACKING_WAITINGAROUNDBUILDING ||
             state == STATE_WAITINGFORFIGHT)
         ReturnHomeMissionAttacking();
+    else if(state == STATE_SEAATTACKING_WAITINHARBOR)
+    {
+        // We don't need to wait anymore, target was destroyed
+        nobHarborBuilding* harbor = gwg->GetSpecObj<nobHarborBuilding>(harborPos);
+        RTTR_Assert(harbor);
+        // go home
+        goal_ = building;
+        state = STATE_FIGUREWORK;
+        fs = FS_GOTOGOAL;
+        harbor->CancelSeaAttacker(this);
+        return;
+    }
 
     if(was_waiting_for_defender)
     {

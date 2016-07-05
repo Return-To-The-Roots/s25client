@@ -215,8 +215,6 @@ class noFigure : public noMovable
         void StartShipJourney();
         /// Tells the figure it arrived at a harbor at the given position
         void ArrivedByShip(const MapPoint harborPos);
-        /// Informiert die Figur, wenn Kreuzfahrt beendet ist
-        void ShipJourneyEnded();
         /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
         /// Lagerhaus interniert werden muss
         bool HasNoGoal() const { return (goal_ ==  NULL); }
