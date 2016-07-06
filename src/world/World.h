@@ -27,6 +27,8 @@
 #include "gameTypes/Direction.h"
 #include "Identity.h"
 #include "ReturnConst.h"
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 #include <list>
 
@@ -65,7 +67,7 @@ class World
     /// Alle Hafenpositionen
     std::vector<HarborPos> harbor_pos;
 
-    noNothing* noNodeObj;
+    boost::interprocess::unique_ptr<noBase, Deleter<noBase> > noNodeObj;
 
     /// Internal method for access to nodes with write access
     inline MapNode& GetNodeInt(const MapPoint pt);

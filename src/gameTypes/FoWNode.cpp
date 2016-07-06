@@ -18,6 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "gameTypes/FoWNode.h"
 #include "SerializedGameData.h"
+#include <algorithm>
+
+FoWNode::FoWNode(): 
+    last_update_time(0), visibility(VIS_INVISIBLE), object(NULL), owner(0)
+{
+    std::fill(roads.begin(), roads.end(), 0);
+    std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
+}
 
 void FoWNode::Serialize(SerializedGameData& sgd) const
 {

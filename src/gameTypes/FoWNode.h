@@ -40,7 +40,7 @@ struct FoWNode
     unsigned char owner;
     BoundaryStones boundary_stones;
 
-    FoWNode(): object(NULL){}
+    FoWNode();
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);
 };

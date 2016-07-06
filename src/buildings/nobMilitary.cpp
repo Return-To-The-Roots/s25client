@@ -175,7 +175,7 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
 
     if(capturing && capturing_soldiers == 0 && aggressors.empty())
     {
-        LOG.lprintf("Bug in savegame detected: Building at (%d,%d) beeing captured has no capturers. Trying to fix this...\n", pos.x, pos.y);
+        LOG.lprintf("Bug in savegame detected: Building at (%d,%d) Being captured has no capturers. Trying to fix this...\n", pos.x, pos.y);
         capturing = false;
     }
 }
@@ -407,10 +407,10 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 
 void nobMilitary::RegulateTroops()
 {
-    RTTR_Assert(helpers::contains(gwg->GetPlayer(player).GetMilitaryBuildings(), this)); // If this fails, the building is beeing destroyed!
+    RTTR_Assert(helpers::contains(gwg->GetPlayer(player).GetMilitaryBuildings(), this)); // If this fails, the building is Being destroyed!
 
     // Wenn das Gebäude eingenommen wird, erstmal keine neuen Truppen und warten, wieviele noch reinkommen
-    if(IsCaptured())
+    if(IsBeingCaptured())
         return;
 
     // Already regulate its troops => Don't call this method again
@@ -574,6 +574,13 @@ bool nobMilitary::IsUseless() const
     return !gwg->DoesTerritoryChange(*this, true, false);
 }
 
+
+bool nobMilitary::IsAttackable(int playerIdx) const
+{
+    // Cannot be attacked, if it is Being captured or not claimed yet (just built)
+    return nobBaseMilitary::IsAttackable(playerIdx) && !IsBeingCaptured() && !IsNewBuilt();
+}
+
 void nobMilitary::TakeWare(Ware* ware)
 {
     // Goldmünze in Bestellliste aufnehmen
@@ -653,7 +660,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
     else if(helpers::contains(troops_on_mission, soldier))
     {
         troops_on_mission.remove(soldier);
-    }else if(IsCaptured() || IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
+    }else if(IsBeingCaptured() || IsFarAwayCapturer(dynamic_cast<nofAttacker*>(soldier)))
     {
         RTTR_Assert(dynamic_cast<nofAttacker*>(soldier));
         return;
@@ -895,7 +902,7 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 
 void nobMilitary::Capture(const unsigned char new_owner)
 {
-    RTTR_Assert(IsCaptured());
+    RTTR_Assert(IsBeingCaptured());
 
     captured_not_built = true;
 
@@ -991,7 +998,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
 void nobMilitary::NeedOccupyingTroops()
 {
-    RTTR_Assert(IsCaptured()); // Only valid during capturing
+    RTTR_Assert(IsBeingCaptured()); // Only valid during capturing
     // Check if we need more soldiers from the attacking soldiers
     // Choose the closest ones first to avoid having them walk a long way
 
@@ -1085,7 +1092,7 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
         // send coins back if just deactivated
         for(std::list<Ware*>::iterator it = ordered_coins.begin(); it != ordered_coins.end();)
         {
-            // But only those, that are not just beeing carried in
+            // But only those, that are not just Being carried in
             if((*it)->GetLocation() != this)
             {
                 WareNotNeeded(*it);
@@ -1247,7 +1254,7 @@ void nobMilitary::UnlinkAggressor(nofAttacker* soldier)
 
 void nobMilitary::CapturingSoldierArrived()
 {
-    RTTR_Assert(IsCaptured());
+    RTTR_Assert(IsBeingCaptured());
     RTTR_Assert(capturing_soldiers > 0);
     --capturing_soldiers;
     if(capturing_soldiers == 0)
@@ -1267,7 +1274,7 @@ void nobMilitary::CapturingSoldierArrived()
 void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
 {
     RTTR_Assert(IsFarAwayCapturer(attacker));
-    if(IsCaptured())
+    if(IsBeingCaptured())
     {
         // If we are still capturing just re-add this soldier to the aggressors
         // one of the currently capturing soldiers will notify him

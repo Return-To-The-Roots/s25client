@@ -25,9 +25,9 @@
 #include "figures/nofDefender.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
 #include "gameData/GameConsts.h"
 #include <limits>
-
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
                                  const unsigned char player, const Nation nation)
@@ -193,7 +193,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (type_ >= BLD_BARRACKS && type_ <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsCaptured()) : false;
+    bool capturing = (type_ >= BLD_BARRACKS && type_ <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
     if(!capturing && gwg->ValidPointForFighting(flagPos, false))
     {
@@ -347,6 +347,14 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
+
+bool nobBaseMilitary::IsAttackable(int playerIdx) const
+{
+    if(playerIdx < 0)
+        return true; // Nothing prevents this in general
+    else
+        return gwg->GetPlayer(player).IsAttackable(static_cast<unsigned>(playerIdx));
+}
 
 bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const
 {

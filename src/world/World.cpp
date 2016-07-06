@@ -30,7 +30,7 @@
 #include "helpers/containerUtils.h"
 #include <set>
 
-World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing())
+World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(NULL)
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -39,11 +39,12 @@ World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(new noNothing
 World::~World()
 {
     Unload();
-    delete noNodeObj;
 }
 
 void World::Init(const unsigned short width, const unsigned short height, LandscapeType lt)
 {
+    RTTR_Assert(width_ == 0 && height_ == 0); // Already init
+    RTTR_Assert(width > 0 && height > 0);     // No empty map
     width_ = width;
     height_ = height;
     this->lt = lt;
@@ -53,6 +54,7 @@ void World::Init(const unsigned short width, const unsigned short height, Landsc
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());
+    noNodeObj.reset(new noNothing);
 }
 
 void World::Unload()
@@ -98,8 +100,12 @@ void World::Unload()
 
     catapult_stones.clear();
 
+    width_ = height_ = 0;
+
     nodes.clear();
     militarySquares.Clear();
+    harbor_pos.clear();
+    noNodeObj.reset();
 }
 
 MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
@@ -250,7 +256,7 @@ noBase* World::GetNO(const MapPoint pt)
     if(GetNode(pt).obj)
         return GetNode(pt).obj;
     else
-        return noNodeObj;
+        return noNodeObj.get();
 }
 
 const noBase* World::GetNO(const MapPoint pt) const
@@ -258,7 +264,7 @@ const noBase* World::GetNO(const MapPoint pt) const
     if(GetNode(pt).obj)
         return GetNode(pt).obj;
     else
-        return noNodeObj;
+        return noNodeObj.get();
 }
 
 void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)

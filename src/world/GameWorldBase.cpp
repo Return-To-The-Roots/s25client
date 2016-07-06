@@ -782,11 +782,9 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetAvailableSold
     //sea attack abgeschaltet per addon?
     if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return attackers;
-    // Ist das Ziel auch ein richtiges Militärgebäude?
-    if(GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING && GetNO(pt)->GetGOT() !=  GOT_NOB_HQ && GetNO(pt)->GetGOT() !=  GOT_NOB_MILITARY)
-        return attackers;
-    // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    // Do we have an attackble military building?
+    const nobBaseMilitary* milBld = GetSpecObj<nobBaseMilitary>(pt);
+    if(!milBld || !milBld->IsAttackable(player_attacker))
         return attackers;
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)

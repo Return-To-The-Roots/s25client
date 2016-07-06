@@ -27,6 +27,7 @@
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noAnimal.h"
 #include "buildings/nobHQ.h"
+#include "gameData/MaxPlayers.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "Log.h"
 #include <queue>
@@ -44,37 +45,46 @@ bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Explorati
 
     InitNodes(map, exploration);
     PlaceObjects(map);
-    if(!PlaceHQs(randomStartPos))
-        return false;
     PlaceAnimals(map);
-    InitSeasAndHarbors();
+    InitSeasAndHarbors(world);
 
-    /// Schatten und BQ berechnen
-    MapPoint pt;
-    for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
+    /// Schatten
+    InitShadows(world);
+
+    // If we have explored FoW, create the FoW objects
+    if(exploration == EXP_FOGOFWARE_EXPLORED)
+        SetMapExplored(world, playerNations.size());
+
+    if(!PlaceHQs(world, hqPositions, playerNations, randomStartPos))
+        return false;
+
+    return true;
+}
+
+void MapLoader::InitShadows(World& world)
+{
+    for(MapPoint pt(0, 0); pt.y < world.GetHeight(); ++pt.y)
     {
         for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
             world.RecalcShadow(pt);
     }
+}
 
-    // If we have explored FoW, create the FoW objects
-    if(exploration == EXP_FOGOFWARE_EXPLORED)
+void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
+{
+    for(MapPoint pt(0,0); pt.y < world.GetHeight(); ++pt.y)
     {
-        for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
+        for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
         {
-            for(pt.x = 0; pt.x < world.GetWidth(); ++pt.x)
+            // For every player
+            for(unsigned i = 0; i < numPlayers; ++i)
             {
-                // For every player
-                for(unsigned i = 0; i < playerNations.size(); ++i)
-                {
-                    // If we have FoW here, save it
-                    if(world.GetNode(pt).fow[i].visibility == VIS_FOW)
-                        world.SaveFOWNode(pt, i, 0);
-                }
+                // If we have FoW here, save it
+                if(world.GetNode(pt).fow[i].visibility == VIS_FOW)
+                    world.SaveFOWNode(pt, i, 0);
             }
         }
     }
-    return true;
 }
 
 void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
@@ -162,8 +172,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 
 void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 {
-    hqPositions.resize(playerNations.size());
-    std::fill(hqPositions.begin(), hqPositions.end(), MapPoint::Invalid());
+    hqPositions.clear();
 
     MapPoint pt;
     for(pt.y = 0; pt.y < world.GetHeight(); ++pt.y)
@@ -178,8 +187,12 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Player Startpos (provisorisch)
             case 0x80:
             {
-                if(lc < hqPositions.size())
+                if(lc < MAX_PLAYERS)
+                {
+                    while(hqPositions.size() <= lc)
+                        hqPositions.push_back(MapPoint::Invalid());
                     hqPositions[lc] = pt;
+                }
             } break;
 
             // Baum 1-4
@@ -378,7 +391,7 @@ struct RandomFunctor
     }
 };
 
-bool MapLoader::PlaceHQs(bool randomStartPos)
+bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos)
 {
     //random locations? -> randomize them :)
     if(randomStartPos)
@@ -387,14 +400,14 @@ bool MapLoader::PlaceHQs(bool randomStartPos)
         std::random_shuffle(hqPositions.begin(), hqPositions.end(), random);
     }
 
-    for(unsigned i = 0; i < hqPositions.size(); ++i)
+    for(unsigned i = 0; i < playerNations.size(); ++i)
     {
         // Skip unused slots
         if(playerNations[i] == NAT_INVALID)
             continue;
 
         // Does the HQ have a position?
-        if(!hqPositions[i].isValid())
+        if(i >= hqPositions.size() || !hqPositions[i].isValid())
         {
             LOG.lprintf(_("Player %u does not have a valid start position!"), i);
             return false;
@@ -405,7 +418,7 @@ bool MapLoader::PlaceHQs(bool randomStartPos)
     return true;
 }
 
-void MapLoader::InitSeasAndHarbors()
+void MapLoader::InitSeasAndHarbors(World& world)
 {
     /// Weltmeere vermessen
     MapPoint pt;
@@ -416,7 +429,7 @@ void MapLoader::InitSeasAndHarbors()
             // Noch kein Meer an diesem Punkt  Aber trotzdem Teil eines noch nicht vermessenen Meeres?
             if(!world.GetNode(pt).sea_id && world.IsSeaPoint(pt))
             {
-                unsigned sea_size = MeasureSea(pt, world.seas.size());
+                unsigned sea_size = MeasureSea(world, pt, world.seas.size());
                 world.seas.push_back(World::Sea(sea_size));
             }
         }
@@ -446,7 +459,7 @@ void MapLoader::InitSeasAndHarbors()
     }
 
     // Nachbarn der einzelnen Hafenpl�tze ermitteln
-    CalcHarborPosNeighbors();
+    CalcHarborPosNeighbors(world);
 }
 
 
@@ -462,7 +475,7 @@ public:
 };
 
 /// Calculate the distance from each harbor to the others
-void MapLoader::CalcHarborPosNeighbors()
+void MapLoader::CalcHarborPosNeighbors(World& world)
 {
     // FIFO queue used for a BFS
     std::queue<CalcHarborPosNeighborsNode> todo_list;
@@ -546,7 +559,7 @@ void MapLoader::CalcHarborPosNeighbors()
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
 /// Wasserpunkte mit der gleichen ID belegt und die Anzahl zur�ckgibt
-unsigned MapLoader::MeasureSea(const MapPoint start, const unsigned short sea_id)
+unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned short sea_id)
 {
     // Breitensuche von diesem Punkt aus durchf�hren
     std::vector<bool> visited(world.GetWidth() * world.GetHeight(), false);
@@ -555,7 +568,7 @@ unsigned MapLoader::MeasureSea(const MapPoint start, const unsigned short sea_id
     todo.push(start);
     visited[world.GetIdx(start)] = true;
 
-    // Knoten z�hlen (Startknoten schon mit inbegriffen)
+    // Count of nodes (including start node)
     unsigned count = 0;
 
     while(!todo.empty())

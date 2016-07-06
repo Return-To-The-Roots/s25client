@@ -97,7 +97,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
     if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
     {
         // Wird es gerade eingenommen?
-        if(static_cast<const nobMilitary*>(attacked_building)->IsCaptured())
+        if(static_cast<const nobMilitary*>(attacked_building)->IsBeingCaptured())
             // Dann darf es nicht angegriffen werden
             return 0;
     }
