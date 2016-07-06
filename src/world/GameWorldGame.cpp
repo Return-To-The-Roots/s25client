@@ -770,31 +770,13 @@ struct PotentialAttacker
 
 void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers)
 {
-    // Verzögerungsbug-Abfrage:
-    // Existiert das angegriffenen Gebäude überhaupt noch?
-    if(GetNO(pt)->GetGOT() != GOT_NOB_MILITARY && GetNO(pt)->GetGOT() != GOT_NOB_HQ
-            && GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING)
-        return;
-
-    // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
+    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
         return;
-
-    // Ist das angegriffenne ein normales Gebäude?
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
-    if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
-    {
-        // Wird es gerade eingenommen?
-        if(static_cast<nobMilitary*>(attacked_building)->IsCaptured())
-            // Dann darf es nicht angegriffen werden
-            return;
-        if (static_cast<nobMilitary*>(attacked_building)->IsNewBuilt())
-            return;
-    }
 
     // Militärgebäude in der Nähe finden
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
@@ -908,15 +890,6 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
     //sea attack abgeschaltet per addon?
     if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return;
-    // Verzögerungsbug-Abfrage:
-    // Existiert das angegriffenen Gebäude überhaupt noch?
-    if(GetNO(pt)->GetGOT() != GOT_NOB_MILITARY && GetNO(pt)->GetGOT() != GOT_NOB_HQ
-            && GetNO(pt)->GetGOT() != GOT_NOB_HARBORBUILDING)
-        return;
-
-    // Auch noch ein Gebäude von einem Feind (nicht inzwischen eingenommen)?
-    if(!GetPlayer(player_attacker).IsAttackable(GetSpecObj<noBuilding>(pt)->GetPlayer()))
-        return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
     if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
@@ -924,15 +897,8 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 
     // Ist das angegriffenne ein normales Gebäude?
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
-    if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
-    {
-        // Wird es gerade eingenommen?
-        if(static_cast<nobMilitary*>(attacked_building)->IsCaptured())
-            // Dann darf es nicht angegriffen werden
-            return;
-        if (static_cast<nobMilitary*>(attacked_building)->IsNewBuilt())
-            return;
-    }
+    if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
+        return;
 
     // Verfügbare Soldaten herausfinden
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
