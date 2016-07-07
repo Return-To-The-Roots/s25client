@@ -388,7 +388,6 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
 {
-    RANDOM.Init(14078);
     std::cout << "Random AttackHarbor: " << RANDOM.GetCurrentRandomValue() << std::endl;
     BuildRoadForBlds(milBld2Pos, harborPos[2]);
     BuildRoadForBlds(milBld2Pos, hqPos[2]);
