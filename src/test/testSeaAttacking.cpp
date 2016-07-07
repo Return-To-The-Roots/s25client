@@ -339,6 +339,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, AttackFixture)
     BOOST_FOREACH(const MapPoint& pt, pts)
         world.SetOwner(pt, 1 + 1);
     const noBuilding* bld = BuildingFactory::CreateBuilding(&world, BLD_BARRACKS, bldPos, 1, NAT_ROMANS);
+    BOOST_REQUIRE(bld);
     AddSoldiers(bldPos, 2, 0);
     // Still unowned harbors
     BOOST_REQUIRE_EQUAL(world.GetNode(harborBot1).owner, 0u);

@@ -26,8 +26,10 @@
 #include "nodeObjs/noFlag.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
+#include "Random.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
+#include <iostream>
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
@@ -273,6 +275,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
 {
+    std::cout << "ConquerBld Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
     AddSoldiers(milBld2Pos, 1, 5);
     AddSoldiers(milBld1NearPos, 1, 1);
     SetCurPlayer(2);
@@ -286,7 +289,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 1u);
     BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount(), 2u);
     // Run till attackers reach bld. 1 Soldier will leave for them.
-    // 1 stays inside till first one died and attacker is at door
+    // 1 stays inside till an attacker is at door
     // 20 GFs/node + 30 GFs for leaving
     const unsigned distance = world.CalcDistance(milBld2Pos, milBld1NearPos);
     for (unsigned gf=0; gf<distance*20+30; gf++)
@@ -300,6 +303,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
     const unsigned oldWeakSoldierCt = attackedPlInventory.people[JOB_PRIVATE];
     const unsigned oldStrongSoldierCt = attackedPlInventory.people[JOB_GENERAL];
+    const unsigned oldAttackerStrongSoldierCt = world.GetPlayer(2).GetInventory().people[JOB_GENERAL];
 
     // 1st soldier will walk towards attacker and will be killed
     // Once an attacker reaches the flag, the bld will send a defender
@@ -339,8 +343,10 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     BOOST_REQUIRE_EQUAL(milBld1Near->GetPlayer(), 2u);
     // 1 soldier must be inside
     BOOST_REQUIRE_GT(milBld1Near->GetTroopsCount(), 1u);
+    // Weak soldier must be dead
+    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_PRIVATE], oldWeakSoldierCt - 1);
     // Src building refill
-    for(unsigned gf = 0; gf < 400; gf++)
+    for(unsigned gf = 0; gf < 700; gf++)
     {
         em.ExecuteNextGF();
         if(milBld2->GetTroopsCount() == 6u)
@@ -348,9 +354,12 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     }
     // Src building got refilled
     BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 6u);
-    // Both enemy soldiers should be dead now
-    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_PRIVATE], oldWeakSoldierCt - 1);
-    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_GENERAL], oldStrongSoldierCt - 1);
+    // We may have lost soldiers
+    BOOST_REQUIRE_LE(world.GetPlayer(2).GetInventory().people[JOB_GENERAL], oldAttackerStrongSoldierCt);
+    // The enemy may have lost his general
+    BOOST_REQUIRE_LE(attackedPlInventory.people[JOB_GENERAL], oldStrongSoldierCt);
+    // But only one
+    BOOST_REQUIRE_GE(attackedPlInventory.people[JOB_GENERAL], oldStrongSoldierCt - 1);
     // At least 2 survivors
     BOOST_REQUIRE_GT(milBld1Near->GetTroopsCount(), 2u);
 
