@@ -696,7 +696,7 @@ void nofAttacker::TryToOrderAggressiveDefender()
            gwg->GetPlayer(player).IsAttackable((*it)->GetPlayer()))
         {
             // ggf. Verteidiger rufen
-            huntingDefender = (*it)->SendDefender(this);
+            huntingDefender = (*it)->SendAggressiveDefender(this);
             if(huntingDefender)
             {
                 // nun brauchen wir keinen Verteidiger mehr

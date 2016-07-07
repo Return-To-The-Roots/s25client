@@ -39,7 +39,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "SerializedGameData.h"
-class noRoadNode;
+#include <boost/foreach.hpp>
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
     boards(sgd.PopUnsignedInt()),
@@ -1100,6 +1100,21 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
         AddWare(*it);
     }
     wares.clear();
+}
+
+nofAggressiveDefender* nobHarborBuilding::SendAggressiveDefender(nofAttacker* attacker)
+{
+    // Don't sent out last soldier
+    unsigned numSoldiers = 0;
+    BOOST_FOREACH(const Job rankJob, SOLDIER_JOBS)
+    {
+        numSoldiers += inventory[rankJob];
+        if(numSoldiers > 1)
+            break;
+    }
+    if(numSoldiers <= 1)
+        return NULL;
+    return nobBaseWarehouse::SendAggressiveDefender(attacker);
 }
 
 /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll

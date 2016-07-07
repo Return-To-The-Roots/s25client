@@ -248,7 +248,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst=false);
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-        nofAggressiveDefender* SendDefender(nofAttacker* attacker) override;
+        nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
         void SoldierLost(nofSoldier* soldier) override;
 

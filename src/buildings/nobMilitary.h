@@ -161,7 +161,7 @@ class nobMilitary : public nobBaseMilitary
         void SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActiveSoldier* active_soldier);
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-        nofAggressiveDefender* SendDefender(nofAttacker* attacker) override;
+        nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
 
         /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
         unsigned GetNumSoldiersForAttack(const MapPoint dest) const;

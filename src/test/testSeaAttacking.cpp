@@ -388,6 +388,7 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
 {
+    RANDOM.Init(14078);
     std::cout << "Random AttackHarbor: " << RANDOM.GetCurrentRandomValue() << std::endl;
     BuildRoadForBlds(milBld2Pos, harborPos[2]);
     BuildRoadForBlds(milBld2Pos, hqPos[2]);
@@ -497,6 +498,9 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
         if(hbDest.GetDefender())
             break;
     }
+    // Harbor still valid
+    BOOST_REQUIRE(world.GetSpecObj<nobHarborBuilding>(harborPos[1]));
+    // Defender sent
     BOOST_REQUIRE(hbDest.GetDefender());
 
     // Eventually the harbor gets destroyed

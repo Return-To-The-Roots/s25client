@@ -779,7 +779,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     return NULL;
 }
 
-nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
+nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker)
 {
     // Sind noch Soldaten da?
     if(troops.size() > 1)

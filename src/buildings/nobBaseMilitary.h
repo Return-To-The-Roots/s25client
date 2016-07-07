@@ -86,7 +86,7 @@ class nobBaseMilitary : public noBuilding
         virtual void AddActiveSoldier(nofActiveSoldier* soldier) = 0;
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-        virtual nofAggressiveDefender* SendDefender(nofAttacker* attacker) = 0;
+        virtual nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) = 0;
 
         /// Soldaten zur Angreifer-Liste hinzufügen und wieder entfernen
         void LinkAggressor(nofAttacker* soldier) { aggressors.push_back(soldier); }

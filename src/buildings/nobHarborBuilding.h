@@ -188,6 +188,8 @@ public:
         /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
         void ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares);
 
+        nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
+
         struct SeaAttackerBuilding
         {
             /// Comparator that compares only the building pointer

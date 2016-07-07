@@ -948,7 +948,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
 
 }
 
-nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
+nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* attacker)
 {
     // Sind noch Soldaten da?
     unsigned char rank;
