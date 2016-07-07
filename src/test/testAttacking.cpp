@@ -129,6 +129,17 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
         AddSoldiersWithRank(bldPos, numWeak, 0);
         AddSoldiersWithRank(bldPos, numStrong, 4);
     }
+
+    /// Assert that attacking the given building from attackSrc fails
+    void TestFailingAttack(MapPoint bldPos, const nobMilitary& attackSrc, unsigned numSoldiersLeft = 6u)
+    {
+        BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), numSoldiersLeft);
+        // No availbale soldiers
+        BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(bldPos), 0u);
+        this->Attack(bldPos, 1, true);
+        // Noone left
+        BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), numSoldiersLeft);
+    }
 };
 
 BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, AttackFixture)
@@ -208,26 +219,18 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     SetCurPlayer(attackSrc.GetPlayer());
 
     // Try to attack non-military bld -> Fail
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(usualBldPos), 0u);
-    this->Attack(usualBldPos, 1, true);
-    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+    TestFailingAttack(usualBldPos, attackSrc);
 
     // Try to attack storehouse -> Fail
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(storehousePos), 0u);
-    this->Attack(storehousePos, 1, true);
-    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+    TestFailingAttack(storehousePos, attackSrc);
 
     // Try to attack ally -> Fail
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
-    this->Attack(hqPos[0], 1, true);
-    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+    TestFailingAttack(hqPos[0], attackSrc);
 
     // Try to attack newly build bld -> Fail
     BOOST_REQUIRE_EQUAL(world.CalcWithAllyVisiblity(milBld1NearPos, curPlayer), VIS_VISIBLE);
     BOOST_REQUIRE(milBld1Near->IsNewBuilt());
-    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1NearPos), 0u);
-    this->Attack(milBld1NearPos, 1, true);
-    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+    TestFailingAttack(milBld1NearPos, attackSrc);
 
     // Add soldier
     AddSoldiers(milBld1NearPos, 1, 0);
@@ -271,6 +274,9 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     soldiers.assign(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
     BOOST_REQUIRE_EQUAL(soldiers.size(), 1u);
     BOOST_REQUIRE_EQUAL(soldiers[0]->GetRank(), 4u);
+
+    //None left
+    TestFailingAttack(milBld1NearPos, attackSrc, 1u);
 }
 
 BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
