@@ -195,15 +195,24 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
 
     const nobMilitary& attackSrc = *milBld2;
     const MapPoint usualBldPos = hqPos[1] + MapPoint(2, 0);
-    BOOST_REQUIRE_GT(world.GetBQ(usualBldPos, 1), BQ_FLAG);
+    BOOST_REQUIRE_GE(world.GetBQ(usualBldPos, 1), BQ_HUT);
     const noBuilding* usualBld = BuildingFactory::CreateBuilding(&world, BLD_WOODCUTTER, usualBldPos, 1, NAT_ROMANS);
     BOOST_REQUIRE(usualBld);
+    const MapPoint storehousePos = hqPos[1] - MapPoint(4, 0);
+    BOOST_REQUIRE_GE(world.GetBQ(storehousePos, 1), BQ_HOUSE);
+    const noBuilding* storeHouse = BuildingFactory::CreateBuilding(&world, BLD_STOREHOUSE, storehousePos, 1, NAT_ROMANS);
+    BOOST_REQUIRE(storeHouse);
 
     SetCurPlayer(attackSrc.GetPlayer());
 
     // Try to attack non-military bld -> Fail
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(usualBldPos), 0u);
     this->Attack(usualBldPos, 1, true);
+    BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
+
+    // Try to attack storehouse -> Fail
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(storehousePos), 0u);
+    this->Attack(storehousePos, 1, true);
     BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);
 
     // Try to attack ally -> Fail

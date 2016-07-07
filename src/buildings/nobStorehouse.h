@@ -37,6 +37,7 @@ class nobStorehouse : public nobBaseWarehouse
 
         GO_Type GetGOT() const override { return GOT_NOB_STOREHOUSE; }
         unsigned GetMilitaryRadius() const override { return 0; }
+        bool IsAttackable(int playerIdx) const override { return false; }
 
         void Draw(DrawPoint drawPt) override;
 
