@@ -146,23 +146,24 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
     namespace bl = boost::lambda;
     using bl::_1;
-    subBuilding = gwb.GetNotifications().subscribe<BuildingNote>(
+    NotificationManager& notifications = gwb.GetNotifications();
+    subBuilding = notifications.subscribe<BuildingNote>(
         bl::if_(bl::bind(&BuildingNote::player, _1) == playerId)[
             bl::bind(&HandleBuildingNote, boost::ref(eventManager), _1)
         ]);
-    subExpedition = gwb.GetNotifications().subscribe<ExpeditionNote>(
+    subExpedition = notifications.subscribe<ExpeditionNote>(
         bl::if_(bl::bind(&ExpeditionNote::player, _1) == playerId)[
             bl::bind(&HandleExpeditionNote, boost::ref(eventManager), _1)
         ]);
-    subResource = gwb.GetNotifications().subscribe<ResourceNote>(
+    subResource = notifications.subscribe<ResourceNote>(
         bl::if_(bl::bind(&ResourceNote::player, _1) == playerId)[
             bl::bind(&HandleResourceNote, boost::ref(eventManager), _1)
         ]);
-    subRoad = gwb.GetNotifications().subscribe<RoadNote>(
+    subRoad = notifications.subscribe<RoadNote>(
         bl::if_(bl::bind(&RoadNote::player, _1) == playerId)[
             bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)
         ]);
-    subShip = gwb.GetNotifications().subscribe<ShipNote>(
+    subShip = notifications.subscribe<ShipNote>(
         bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[
             bl::bind(&HandleShipNote, boost::ref(eventManager), _1)
         ]);
@@ -1826,7 +1827,7 @@ void AIPlayerJH::TryToAttack()
                     continue;
 
                 unsigned newAttackers;
-                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, playerId, newAttackers);
+                attackersStrength += myMil->GetSoldiersStrengthForAttack(dest, newAttackers);
                 attackersCount += newAttackers;
             }
         }
@@ -1864,7 +1865,7 @@ void AIPlayerJH::TrySeaAttack()
         //sea id not already listed as valid or invalid?
         if(!helpers::contains(seaidswithattackers, (*it)->GetSeaID()) && !helpers::contains(invalidseas, (*it)->GetSeaID()))
         {
-            unsigned int attackercount = gwb.GetAvailableSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
+            unsigned int attackercount = gwb.GetNumSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
             {
                 seaidswithattackers.push_back((*it)->GetSeaID());
@@ -1894,8 +1895,7 @@ void AIPlayerJH::TrySeaAttack()
                 if(aii.IsPlayerAttackable(hb->GetPlayer()))
                 {
                     //attackers for this building?
-                    std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare(gwb.GetHarborPoint(i), testseaidswithattackers, playerId);
+                    const std::vector<unsigned short> testseaidswithattackers = gwb.GetFilteredSeaIDsForAttack(gwb.GetHarborPoint(i), seaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty()) //harbor can be attacked?
                     {
                         if(!hb->DefendersAvailable()) //no defenders?
@@ -1924,7 +1924,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos());
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii.SeaAttack((*it)->GetPos(), 1, true);
@@ -1952,8 +1952,7 @@ void AIPlayerJH::TrySeaAttack()
                     continue;
                 if (((*it)->GetGOT() != GOT_NOB_MILITARY) && (!(*it)->DefendersAvailable())) //undefended headquarter(or unlikely as it is a harbor...) - priority list!
                 {
-                    std::vector<unsigned short> testseaidswithattackers(seaidswithattackers);
-                    gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId);
+                    const std::vector<unsigned short> testseaidswithattackers = gwb.GetFilteredSeaIDsForAttack((*it)->GetPos(), seaidswithattackers, playerId);
                     if(!testseaidswithattackers.empty())
                     {
                         undefendedTargets.push_back(*it);
@@ -1973,7 +1972,7 @@ void AIPlayerJH::TrySeaAttack()
         std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
         for(std::deque<const nobBaseMilitary*>::iterator it = undefendedTargets.begin(); it != undefendedTargets.end(); ++it)
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos());
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos());
             if(!attackers.empty()) //try to attack it!
             {
                 aii.SeaAttack((*it)->GetPos(), 1, true);
@@ -1984,11 +1983,12 @@ void AIPlayerJH::TrySeaAttack()
     std::random_shuffle(potentialTargets.begin(), potentialTargets.end());
     for(std::deque<const nobBaseMilitary*>::iterator it = potentialTargets.begin(); it != potentialTargets.end(); ++it)
     {
-        std::vector<unsigned short> testseaidswithattackers(seaidswithattackers); //TODO: decide if it is worth attacking the target and not just "possible"
-        gwb.GetValidSeaIDsAroundMilitaryBuildingForAttackCompare((*it)->GetPos(), testseaidswithattackers, playerId); //test only if we should have attackers from one of our valid sea ids
+        //TODO: decide if it is worth attacking the target and not just "possible"
+        //test only if we should have attackers from one of our valid sea ids
+        const std::vector<unsigned short> testseaidswithattackers = gwb.GetFilteredSeaIDsForAttack((*it)->GetPos(), seaidswithattackers, playerId);
         if(!testseaidswithattackers.empty()) //only do the final check if it will probably be a good result
         {
-            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetAvailableSoldiersForSeaAttack(playerId, (*it)->GetPos()); //now get a final list of attackers and attack it
+            std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, (*it)->GetPos()); //now get a final list of attackers and attack it
             if(!attackers.empty())
             {
                 aii.SeaAttack((*it)->GetPos(), attackers.size(), true);
@@ -2489,13 +2489,13 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
         if(!seaId)
             continue;
 
-        for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++) //start at 1 harbor dummy yadayada :>
+        for(unsigned curHarborId = 1; curHarborId <= gwb.GetHarborPointCount(); curHarborId++) //start at 1 harbor dummy yadayada :>
         {
-            if(i != harborid && gwb.IsAtThisSea(i, seaId))
+            if(curHarborId != harborid && gwb.IsHarborAtSea(curHarborId, seaId))
             {
                 if(onlyempty) //check if the spot is actually free for colonization?
                 {
-                    if(gwb.IsHarborPointFree(i, playerId, seaId))
+                    if(gwb.IsHarborPointFree(curHarborId, playerId))
                         return true;
                 }
                 else
@@ -2582,7 +2582,7 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
                     onetimeuseseaids.push_back(seaId);
                 else
                 {
-                    //LOG.lprintf("found a second harbor at sea id %i \n",sea_ids[r]);
+                    //LOG.lprintf("found a second harbor at sea id %i \n",seaIds[r]);
                     onetimeuseseaids.remove(seaId);
                     validseaids.push_back(seaId);
                 }
@@ -2631,7 +2631,7 @@ void AIPlayerJH::AdjustSettings()
         }
 
     // Set military settings to some currently required values
-    boost::array<unsigned char, MILITARY_SETTINGS_COUNT> milSettings;
+    MilitarySettings milSettings;
     milSettings[0] = 10;
     milSettings[1] = HasFrontierBuildings()?5:0; //if we have a front send strong soldiers first else weak first to make upgrading easier
     milSettings[2] = 4;

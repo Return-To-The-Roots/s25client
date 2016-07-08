@@ -31,10 +31,11 @@ PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 
 void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
 {
-    map_width = s2map.getHeader().getWidth();
-    map_height = s2map.getHeader().getHeight();
+    const libsiedler2::ArchivItem_Map_Header& header = s2map.getHeader();
+    map_width = header.getWidth();
+    map_height = header.getHeight();
 
-    unsigned char gfxSet = s2map.getHeader().getGfxSet();
+    unsigned char gfxSet = header.getGfxSet();
     RTTR_Assert(gfxSet < LT_COUNT);
     lt = LandscapeType(gfxSet);
     objects = s2map.GetLayer(MAP_TYPE);

@@ -44,7 +44,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
         const HarborPos& curHarborPos = world.harbor_pos[i];
         sgd.PushMapPoint(curHarborPos.pos);
         for(unsigned z = 0; z < 6; ++z)
-            sgd.PushUnsignedShort(curHarborPos.cps[z].sea_id);
+            sgd.PushUnsignedShort(curHarborPos.cps[z].seaId);
         for(unsigned z = 0; z < 6; ++z)
         {
             sgd.PushUnsignedInt(curHarborPos.neighbors[z].size());
@@ -65,7 +65,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     for(std::vector<MapNode>::iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
         it->Deserialize(sgd, numPlayers);
-        if(it->harbor_id)
+        if(it->harborId)
         {
             HarborPos p(curPos);
             world.harbor_pos.push_back(p);
@@ -95,7 +95,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
         HarborPos& curHarborPos = world.harbor_pos[i];
         curHarborPos.pos = sgd.PopMapPoint();
         for(unsigned z = 0; z < 6; ++z)
-            curHarborPos.cps[z].sea_id = sgd.PopUnsignedShort();
+            curHarborPos.cps[z].seaId = sgd.PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)
         {
             curHarborPos.neighbors[z].resize(sgd.PopUnsignedInt());

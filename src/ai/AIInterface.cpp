@@ -220,12 +220,12 @@ BuildingCount AIInterface::GetBuildingCount() const
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const
 {
-    return gwb.GetNextFreeHarborPoint(pt, originHarbor->GetHarborPosID(), direction.toUInt(), playerID_) > 0;
+    return IsExplorationDirectionPossible(pt, originHarbor->GetHarborPosID(), direction);
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const
 {
-    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction.toUInt(), playerID_) > 0;
+    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_) > 0;
 }
 
 void AIInterface::SetCoinsAllowed(const nobMilitary* building, const bool enabled) { SetCoinsAllowed(building->GetPos(), enabled); }

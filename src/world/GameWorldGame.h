@@ -85,7 +85,7 @@ public:
     /// kann ansonsten auf 255 gesetzt werden
     void SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 255);
     /// Flagge soll zerstrört werden
-    void DestroyFlag(const MapPoint pt);
+    void DestroyFlag(const MapPoint pt, unsigned char playerId);
     /// Baustelle setzen
     void SetBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
     /// Gebäude bzw Baustelle abreißen
@@ -109,10 +109,6 @@ public:
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
-    /// Reißt eine Straße ab
-    void DestroyRoad(const MapPoint pt, const unsigned char dir);
-    /// baut eine Straße aus
-    void UpgradeRoad(const MapPoint pt, const unsigned char dir);
 
     /// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
     /// Militärgebäude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll
@@ -155,7 +151,7 @@ public:
     void ConvertMineResourceTypes(unsigned char from, unsigned char to);
 
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
-    bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id);
+    bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist
     void AddHarborBuildingSiteFromSea(noBuildingSite* building_site) { harbor_building_sites_from_sea.push_back(building_site); }
     /// Removes it. It is allowed to be called with a regular harbor building site (no-op in that case)
@@ -167,6 +163,9 @@ public:
 
     /// Returns true, if the given (map)-resource is available at that node
     bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
+
+    /// Writeable access to node. Use only for initial map setup!
+    MapNode& GetNodeWriteable(const MapPoint pt);
 protected:
     void VisibilityChanged(const MapPoint pt, unsigned player) override;
 };

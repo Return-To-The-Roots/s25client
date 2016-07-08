@@ -21,7 +21,6 @@
 #include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
 
-const unsigned TOOL_COUNT = 12;
 /// List of all tools (correspond to buttons at IO:140-163)
 const boost::array<GoodType, TOOL_COUNT> SUPPRESS_UNUSED TOOLS =
 {{

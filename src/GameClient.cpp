@@ -1366,7 +1366,7 @@ void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
     for(unsigned char i = 0; i < gcs.gcs.size(); ++i)
     {
         // NC ausführen
-        gcs.gcs[i]->Execute(*gw, gw->GetPlayer(gcs.player), gcs.player);
+        gcs.gcs[i]->Execute(*gw, gcs.player);
     }
 }
 

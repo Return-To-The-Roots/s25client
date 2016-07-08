@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -116,6 +116,19 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         box.DeleteMsg(0u);
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
+    BOOST_REQUIRE_EQUAL(cb.delCalls, box.GetMaxMsgs());
+}
+
+BOOST_AUTO_TEST_CASE(ClearMsgs)
+{
+    PostBox box;
+    CallbackChecker cb(box);
+    box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
+    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+        box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
+    // Deleting should delete all messages and call delete callback for each one
+    box.Clear();
+    BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
     BOOST_REQUIRE_EQUAL(cb.delCalls, box.GetMaxMsgs());
 }
 

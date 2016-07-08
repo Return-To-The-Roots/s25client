@@ -62,8 +62,7 @@ void nofTradeDonkey::GoalReached()
     {
         Inventory goods;
         goods.goods[gt] = 1;
-        wh->AddGoods(goods);
-        whOwner.IncreaseInventoryWare(gt, 1);
+        wh->AddGoods(goods, true);
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);

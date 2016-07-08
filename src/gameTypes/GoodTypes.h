@@ -63,6 +63,8 @@ enum GoodType
 };
 // Anzahl an unterschiedlichen Warentypen
 const unsigned WARE_TYPES_COUNT = GD_NOTHING;
+// Number of tools
+const unsigned TOOL_COUNT = 12;
 
 const std::string WARE_NAMES[GD_INVALID] =
 {

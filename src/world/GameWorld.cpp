@@ -26,7 +26,6 @@
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Map.h"
 #include "buildings/noBuildingSite.h"
-#include "buildings/nobBaseWarehouse.h"
 
 #include "libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
@@ -68,19 +67,6 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     MapLoader loader(*this, players);
     if(!loader.Load(map, GetGGS().random_location, GetGGS().exploration))
         return false;
-
-    for(unsigned i = 0; i < GetPlayerCount(); i++)
-    {
-        GamePlayer& player = GetPlayer(i);
-        if(player.isUsed())
-        {
-            MapPoint hqPos = loader.GetHQPos(i);
-            nobBaseWarehouse* wh = GetSpecObj<nobBaseWarehouse>(hqPos);
-            RTTR_Assert(wh);
-            player.SetHQ(*wh);
-            player.AddWarehouse(wh);
-        }
-    }
 
     CreateTradeGraphs();
     return true;

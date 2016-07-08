@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -163,7 +163,7 @@ class TestRemoveEvent: public TestEventHandler
 public:
     EventManager& em;
     GameEvent* ev2Remove;
-    TestRemoveEvent(EventManager& em): em(em){}
+    TestRemoveEvent(EventManager& em): em(em), ev2Remove(NULL){}
 
     void HandleEvent(const unsigned evId) override
     {

@@ -96,7 +96,8 @@ class GamePlayer: public GamePlayerInfo
         GameWorldGame& GetGameWorld(){ return *gwg; }
 
         const MapPoint& GetHQPos() const { return hqPos; }
-        void SetHQ(const nobBaseWarehouse& hq);
+        /// Set or clear HQ
+        void SetHQ(const nobBaseWarehouse* hq);
 
         /// Notify that a new road connection exists (not only an existing road splitted)
         void NewRoadConnection(RoadSegment* const rs);
@@ -214,13 +215,13 @@ class GamePlayer: public GamePlayerInfo
         const Inventory& GetInventory() const { return global_inventory; }
 
         /// Setzt neue Militäreinstellungen
-        void ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings);
+        void ChangeMilitarySettings(const MilitarySettings& military_settings);
         /// Setzt neue Werkzeugeinstellungen
         void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges);
         /// Setzt neue Verteilungseinstellungen
         void ChangeDistribution(const Distributions& distribution_settings);
         /// Setzt neue Baureihenfolge-Einstellungen
-        void ChangeBuildOrder(const unsigned char order_type, const BuildOrders& oder_data);
+        void ChangeBuildOrder(bool order_type, const BuildOrders& oder_data);
 
         /// Can this player and the other attack each other?
         bool IsAttackable(const unsigned char playerId) const;
@@ -258,28 +259,27 @@ class GamePlayer: public GamePlayerInfo
         /// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
         void GetJobForShip(noShip* ship);
         /// Schiff für Hafen bestellen. Wenn ein Schiff kommt, true.
-        bool OrderShip(nobHarborBuilding* hb);
+        bool OrderShip(nobHarborBuilding& hb);
         /// Gibt die ID eines Schiffes zurück
         unsigned GetShipID(const noShip* const ship) const;
         /// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert
         noShip* GetShipByID(const unsigned ship_id) const;
         /// Gibt die Gesamtanzahl von Schiffen zurück
         unsigned GetShipCount() const { return ships.size(); }
+        ///Gibt liste der Schiffe zurück
+        const std::vector<noShip*>& GetShips() const { return ships; }
         /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-        void GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short sea_id) const;
+        void GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const;
         /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
-        unsigned GetShipsToHarbor(nobHarborBuilding* hb) const;
+        unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
         /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
         /// gibt true zurück, falls erfolgreich
-        bool FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harbor_id, std::vector<unsigned char> * route,
+        bool FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<unsigned char> * route,
                                     nobHarborBuilding* exception);
         /// A ship has discovered new hostile territory --> determines if this is new
         /// i.e. there is a sufficient distance to older locations
         /// Returns true if yes and false if not
         bool ShipDiscoveredHostileTerritory(const MapPoint location);
-
-        ///Gibt liste der Schiffe zurück
-        const std::vector<noShip*>&GetShips() const {return ships;}
 
         /// Er gibt auf
         void Surrender();
@@ -368,6 +368,7 @@ class GamePlayer: public GamePlayerInfo
         /// Empfangene GC für diesen Spieler
         std::queue<GameMessage_GameCommand> gc_queue;
 
+        static BuildOrders GetStandardBuildOrder();
     private:
         // Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
         GameWorldGame* gwg;
@@ -427,14 +428,14 @@ class GamePlayer: public GamePlayerInfo
 
         boost::array<Distribution, WARE_TYPES_COUNT> distribution;
 
-        /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
-        unsigned char orderType_;
+        /// Art der Reihenfolge (false = nach Auftraggebung, ansonsten nach build_order)
+        bool useCustomBuildOrder_;
         /// Baureihenfolge
         BuildOrders build_order;
         /// Prioritäten der Waren im Transport
-        boost::array<unsigned char, WARE_TYPES_COUNT> transportPrio;
+        TransportPriorities transportPrio;
         /// Militäreinstellungen (die vom Militärmenü)
-        boost::array<unsigned char, MILITARY_SETTINGS_COUNT> militarySettings_;
+        MilitarySettings militarySettings_;
         /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
         ToolSettings toolsSettings_;
         // qx:tools
@@ -473,7 +474,6 @@ class GamePlayer: public GamePlayerInfo
 
         void LoadStandardToolSettings();
         void LoadStandardMilitarySettings();
-        void LoadStandardBuildOrder();
         void LoadStandardDistribution();
         /// Bündnis (real, d.h. spielentscheidend) abschließen
         void MakePact(const PactType pt, const unsigned char other_player, const unsigned duration);

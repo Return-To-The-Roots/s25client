@@ -22,18 +22,19 @@
 
 struct VisualSettings
 {
-    /// Verteilung
+    /// Distribution of wares
     Distributions distribution;
-    /// Art der Reihenfolge (0 = nach Auftraggebung, ansonsten nach build_order)
-    unsigned char order_type;
-    /// Baureihenfolge
+    /// Use custom build order? (False = order of build issue time)
+    bool useCustomBuildOrder;
+    /// Custom build order
     BuildOrders build_order;
-    /// Transport-Reihenfolge
+    /// Transport-Order
     TransportOrders transport_order;
-    /// Militäreinstellungen (die vom Militärmenü)
-    boost::array<unsigned char, MILITARY_SETTINGS_COUNT> military_settings;
-    /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
+    /// Military settings (in the menu)
+    MilitarySettings military_settings;
+    /// Priority of each tool
     ToolSettings tools_settings;
 };
 
 #endif // VisualSettings_h__
+

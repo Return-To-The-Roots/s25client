@@ -33,6 +33,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "notifications/BuildingNote.h"
+#include "gameData/SettingTypeConv.h"
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
@@ -320,6 +321,16 @@ unsigned int nobMilitary::GetMilitaryRadius() const
     return MILITARY_RADIUS[size];
 }
 
+unsigned nobMilitary::GetMaxCoinCt() const
+{
+    return GOLD_COUNT[nation][size];
+}
+
+unsigned nobMilitary::GetMaxTroopsCt() const
+{
+    return TROOPS_COUNT[nation][size];
+}
+
 void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 {
     // Umgebung nach Militärgebäuden absuchen
@@ -345,7 +356,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             }
             // in mittlerem Umkreis, also theoretisch angreifbar?
             else if(distance < BASE_ATTACKING_DISTANCE
-                    + (TROOPS_COUNT[nation][size] - 1) * EXTENDED_ATTACKING_DISTANCE)
+                    + (GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
             {
                 // Grenznähe entsprechend setzen
                 if(!frontier_distance)
@@ -359,7 +370,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             else if ((*it)->GetGOT() == GOT_NOB_MILITARY)
             {
                 nobMilitary* mil = dynamic_cast<nobMilitary*>(*it);
-                if(distance < BASE_ATTACKING_DISTANCE + (TROOPS_COUNT[mil->nation][mil->size] - 1) * EXTENDED_ATTACKING_DISTANCE)
+                if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
                 {
                     // Grenznähe entsprechend setzen
                     if(!frontier_distance)
@@ -420,8 +431,8 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = true;
 
     // Zu viele oder zu wenig Truppen?
-    int diff = CalcTroopsCount() - static_cast<int>(GetTotalSoldiers());
-    if(diff < 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
+    int diff = CalcRequiredTroopsCount() - static_cast<int>(GetTotalSoldiers());
+    if(diff < 0)
     {
         // Zu viel --> überflüssige Truppen nach Hause schicken
         // Zuerst die bestellten Soldaten wegschicken
@@ -506,9 +517,9 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = false;
 }
 
-int nobMilitary::CalcTroopsCount()
+int nobMilitary::CalcRequiredTroopsCount()
 {
-    return (TROOPS_COUNT[nation][size] - 1) * gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance) / MILITARY_SETTINGS_SCALE[4 + frontier_distance] + 1;
+    return (GetMaxTroopsCt() - 1) * gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance) / MILITARY_SETTINGS_SCALE[4 + frontier_distance] + 1;
 }
 
 void nobMilitary::SendSoldiersHome()
@@ -549,9 +560,9 @@ void nobMilitary::OrderNewSoldiers()
 		    ++it;
     }
 
-	int diff = CalcTroopsCount() - static_cast<int>(GetTotalSoldiers());
+	int diff = CalcRequiredTroopsCount() - static_cast<int>(GetTotalSoldiers());
 	//order new troops now
-    if(diff > 0) //poc: this should only be >0 if we are being captured. capturing should be true until its the last soldier and this last one would count twice here and result in a returning soldier that shouldnt return.
+    if(diff > 0)
 	{
 		// Zu wenig Truppen
         // Gebäude wird angegriffen und
@@ -672,7 +683,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
 void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
 {
     RTTR_Assert(soldier->GetPlayer() == player);
-    RTTR_Assert(troops.size() < unsigned(TROOPS_COUNT[nation][size]));
+    RTTR_Assert(troops.size() < GetMaxTroopsCt());
 
     troops.insert(soldier);
 
@@ -725,12 +736,13 @@ void nobMilitary::SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActive
     troops.erase(passive_soldier);
     passive_soldier->LeftBuilding();
     troops_on_mission.push_back(active_soldier);
+    AddLeavingFigure(active_soldier);
 }
 
 nofPassiveSoldier* nobMilitary::ChooseSoldier()
 {
     if(troops.empty())
-        return 0;
+        return NULL;
 
     nofPassiveSoldier* candidates[5] = {NULL, NULL, NULL, NULL, NULL}; // candidates per rank
 
@@ -767,7 +779,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     return NULL;
 }
 
-nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
+nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker)
 {
     // Sind noch Soldaten da?
     if(troops.size() > 1)
@@ -776,8 +788,6 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
         nofPassiveSoldier* soldier = ChooseSoldier();
         // neuen aggressiven Verteidiger daraus erzeugen
         nofAggressiveDefender* defender = new nofAggressiveDefender(soldier, attacker);
-        // soll rausgehen
-        AddLeavingFigure(defender);
         SoldierOnMission(soldier, defender);
         // alten passiven Soldaten vernichten
         soldier->Destroy();
@@ -790,13 +800,13 @@ nofAggressiveDefender* nobMilitary::SendDefender(nofAttacker* attacker)
 }
 
 /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
+unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
 {
     // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
     // Militäreinstellungen zum Angriff eingestellt wurden
     unsigned short soldiers_count =
         (GetTroopsCount() > 1) ?
-        ((GetTroopsCount() - 1) * gwg->GetPlayer(player_attacker).GetMilitarySetting(3) / 5) : 0;
+        ((GetTroopsCount() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / 5) : 0;
 
     unsigned int distance = gwg->CalcDistance(pos, dest);
 
@@ -820,10 +830,10 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest, const unsigne
 }
 
 /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint dest, const unsigned char player_attacker) const
+std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint dest) const
 {
     std::vector<nofPassiveSoldier*> soldiers;
-    unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
+    unsigned soldiers_count = GetNumSoldiersForAttack(dest);
     for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
     {
         soldiers.push_back(*it);
@@ -832,14 +842,14 @@ std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint
 }
 
 /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, const unsigned char player_attacker, unsigned& count) const
+unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, unsigned& soldiers_count) const
 {
     unsigned strength = 0;
 
-    unsigned soldiers_count = GetNumSoldiersForAttack(dest, player_attacker);
-    count = soldiers_count;
+    soldiers_count = GetNumSoldiersForAttack(dest);
+    unsigned numRemainingSoldiers = soldiers_count;
 
-    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
+    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && numRemainingSoldiers; ++it, --numRemainingSoldiers)
     {
         strength += HITPOINTS[nation][(*it)->GetRank()];
     }
@@ -861,15 +871,14 @@ unsigned nobMilitary::GetSoldiersStrength() const
 }
 
 /// is there a max rank soldier in the building?
-unsigned nobMilitary::HasMaxRankSoldier() const
+bool nobMilitary::HasMaxRankSoldier() const
 {
-	unsigned count=0;
     for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
-		if ((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
-			count++;
+        if((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
+            return true;
     }
-	return count;
+	return false;
 }
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
@@ -1005,7 +1014,7 @@ void nobMilitary::NeedOccupyingTroops()
     nofAttacker* best_attacker = NULL;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
 
-    unsigned needed_soldiers = unsigned(CalcTroopsCount());
+    unsigned needed_soldiers = unsigned(CalcRequiredTroopsCount());
     unsigned currentSoldiers = troops.size() + capturing_soldiers + troops_on_mission.size();
 
     if(needed_soldiers > currentSoldiers)
@@ -1133,7 +1142,7 @@ unsigned nobMilitary::CalcCoinsPoints()
 bool nobMilitary::WantCoins()
 {
     // Wenn die Goldzufuhr gestoppt wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
-    return (!coinsDisabled && coins + ordered_coins.size() != GOLD_COUNT[nation][size] && !new_built);
+    return (!coinsDisabled && coins + ordered_coins.size() != GetMaxCoinCt() && !new_built);
 }
 
 void nobMilitary::SearchCoins()

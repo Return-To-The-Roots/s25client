@@ -74,5 +74,18 @@
 #   define CHECK_HEAP_CORRUPTION
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
+/// Iterate over all points of an area using a point of TYPE named "pt"
+/// WIDTH and HEIGHT is evaluated at most once
+/// Use like:
+///     RTTR_FOREACH_PT(Point<int>, world.GetWidth(), world.GetHeight()) {
+///         std::cout << pt.x << "/" << pt.y;
+///     }
+#define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)                 \
+    /* Create scoped temporaries holding width and height by \
+       using assignment in if to save potential accesses */  \
+    if( TYPE::ElementType rttrForeachPtWidth  = (WIDTH)  )   \
+    if( TYPE::ElementType rttrForeachPtHeight = (HEIGHT) )   \
+    for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)   \
+        for(pt.x = 0; pt.x < rttrForeachPtWidth; ++pt.x)
 
 #endif // !MACROS_H_INCLUDED

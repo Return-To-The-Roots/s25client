@@ -1036,6 +1036,7 @@ void noFigure::StartShipJourney()
 {
     // We should not be in the world, as we start the journey from a harbor -> We are in that harbor
     RTTR_Assert(!helpers::contains(gwg->GetFigures(pos), this));
+    RTTR_Assert(!on_ship);
 
     pos = MapPoint::Invalid();
     on_ship = true;
@@ -1045,11 +1046,6 @@ void noFigure::ArrivedByShip(const MapPoint harborPos)
 {
     RTTR_Assert(on_ship);
     pos = harborPos;
-}
-
-/// Informiert die Figur, wenn Kreuzfahrt beendet ist
-void noFigure::ShipJourneyEnded()
-{
     on_ship = false;
 }
 

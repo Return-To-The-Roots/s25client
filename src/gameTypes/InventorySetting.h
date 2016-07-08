@@ -46,6 +46,7 @@ struct InventorySetting
     inline InventorySetting Toggle(const EInventorySetting setting);
     inline void MakeValid();
     unsigned char ToUnsignedChar() const { return state; }
+    friend bool operator==(const InventorySetting& lhs, const InventorySetting& rhs);
 private:
     inline static unsigned char MakeBitField(const EInventorySetting setting);
     // Current state as a bitfield!
@@ -92,6 +93,16 @@ void InventorySetting::MakeValid()
             return;
     }
     state = 0;
+}
+
+inline bool operator!=(const InventorySetting& lhs, const InventorySetting& rhs)
+{
+    return !(lhs == rhs);
+}
+
+inline bool operator==(const InventorySetting& lhs, const InventorySetting& rhs)
+{
+    return lhs.state == rhs.state;
 }
 
 #endif // InventorySetting_h__

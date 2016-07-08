@@ -34,7 +34,6 @@
 
 GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb): playerId_(playerId), gwb(gwb)
 {
-    InitTerrainRenderer();
     InitVisualData();
 }
 
@@ -90,17 +89,12 @@ unsigned GameWorldViewer::GetPlayerCount() const
     return GetWorld().GetPlayerCount();
 }
 
-unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
+unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
 {
-    // Ist das angegriffenne ein normales Gebäude?
     const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
-    if(attacked_building->GetBuildingType() >= BLD_BARRACKS && attacked_building->GetBuildingType() <= BLD_FORTRESS)
-    {
-        // Wird es gerade eingenommen?
-        if(static_cast<const nobMilitary*>(attacked_building)->IsBeingCaptured())
-            // Dann darf es nicht angegriffen werden
-            return 0;
-    }
+    // Can we actually attack this bld?
+    if(!attacked_building || !attacked_building->IsAttackable(playerId_))
+        return 0;
 
     // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
@@ -110,7 +104,7 @@ unsigned GameWorldViewer::GetAvailableSoldiersForAttack(const MapPoint pt) const
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
-            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt, playerId_);
+            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
     }
 
     return total_count;
@@ -239,19 +233,21 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 }
 
 /// Gibt die verfügbar Anzahl der Angreifer für einen Seeangriff zurück
-unsigned GameWorldViewer::GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const
+unsigned GameWorldViewer::GetNumSoldiersForSeaAttack(const MapPoint pt) const
 {
-    if(GetWorld().GetGGS().getSelection(AddonId::SEA_ATTACK) == 2) //deactivated by addon?
-        return 0;
-    return unsigned(GetWorld().GetAvailableSoldiersForSeaAttack(playerId_, pt).size());
+    return unsigned(GetWorld().GetSoldiersForSeaAttack(playerId_, pt).size());
 }
 
-void GameWorldViewer::ChangePlayer(unsigned player)
+void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData/* = true*/)
 {
     if(player == playerId_)
         return;
     playerId_ = player;
-    RecalcAllColors();
+    if(updateVisualData)
+    {
+        RecalcAllColors();
+        InitVisualData();
+    }
 }
 
 void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
@@ -295,7 +291,7 @@ void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<
 
 bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const
 {
-    return !IsOnRoad(pt) && GetWorld().RoadAvailable(isWaterRoad, pt);
+    return !IsOnRoad(pt) && GetWorld().IsRoadAvailable(isWaterRoad, pt);
 }
 
 /// Get the "youngest" FOWObject of all players who share the view with the local player

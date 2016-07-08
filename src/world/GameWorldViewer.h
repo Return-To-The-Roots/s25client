@@ -41,6 +41,9 @@ public:
 
     GameWorldViewer(unsigned playerId, GameWorldBase& gwb);
 
+    /// Init the terrain renderer. Must be done before first call to GetTerrainRenderer!
+    void InitTerrainRenderer();
+    
     /// Return the world itself
     const GameWorldBase& GetWorld() const { return gwb; }
     /// Return non-const world (TODO: Remove, this is a view only!)
@@ -52,10 +55,10 @@ public:
     unsigned GetPlayerId() const { return playerId_; }
     unsigned GetPlayerCount() const;
 
-    /// Get number of soldiers that can attack that point
-    unsigned GetAvailableSoldiersForAttack(const MapPoint pt) const;
+    /// Get number of soldiers that can attack bld at that point
+    unsigned GetNumSoldiersForAttack(const MapPoint pt) const;
     /// Get number of soldiers for attacking a point via sea
-    unsigned GetAvailableSoldiersForSeaAttackCount(const MapPoint pt) const;
+    unsigned GetNumSoldiersForSeaAttack(const MapPoint pt) const;
 
     /// Get BQ for this player
     BuildingQuality GetBQ(const MapPoint& pt) const;
@@ -94,7 +97,7 @@ public:
     void RecalcAllColors();
 
     /// Makes this a viewer for another player
-    void ChangePlayer(unsigned player);
+    void ChangePlayer(unsigned player, bool updateVisualData = true);
 
 private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
@@ -109,7 +112,6 @@ private:
     std::vector<VisualMapNode> visualNodes;
 
     void InitVisualData();
-    void InitTerrainRenderer();
     inline void VisibilityChanged(const MapPoint& pt, unsigned player);
     inline void RoadConstructionEnded(const RoadNote& note);
     void RecalcBQ(const MapPoint& pt);

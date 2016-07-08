@@ -50,9 +50,9 @@ bool GameCommandFactory::ChangeDistribution(const Distributions& data)
     return AddGC( new gc::ChangeDistribution(data) );
 }
 
-bool GameCommandFactory::ChangeBuildOrder(unsigned char order_type, const BuildOrders& data)
+bool GameCommandFactory::ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data)
 {
-    return AddGC( new gc::ChangeBuildOrder(order_type, data) );
+    return AddGC( new gc::ChangeBuildOrder(useCustomBuildOrder, data) );
 }
 
 bool GameCommandFactory::SetBuildingSite(const MapPoint pt, BuildingType bt)
@@ -80,7 +80,7 @@ bool GameCommandFactory::ChangeTransport(const TransportOrders& data)
     return AddGC( new gc::ChangeTransport(data) );
 }
 
-bool GameCommandFactory::ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
+bool GameCommandFactory::ChangeMilitary(const MilitarySettings& data)
 {
     return AddGC( new gc::ChangeMilitary(data) );
 }
@@ -170,9 +170,9 @@ bool GameCommandFactory::SuggestPact(unsigned char player, PactType pt, unsigned
     return AddGC( new gc::SuggestPact(player, pt, duration) );
 }
 
-bool GameCommandFactory::AcceptPact(bool accepted, unsigned id, PactType pt, unsigned char player)
+bool GameCommandFactory::AcceptPact(unsigned id, PactType pt, unsigned char player)
 {
-    return AddGC( new gc::AcceptPact(accepted, id, pt, player) );
+    return AddGC( new gc::AcceptPact(id, pt, player) );
 }
 
 bool GameCommandFactory::CancelPact(const PactType pt, unsigned char player)
@@ -234,8 +234,8 @@ bool GameCommandFactory::StartExplorationExpedition(const MapPoint pt)
     return AddGC( new gc::StartExplorationExpedition(pt) );
 }
 
-bool GameCommandFactory::TradeOverLand(const MapPoint pt, bool ware_figure, GoodType gt, Job job, unsigned count)
+bool GameCommandFactory::TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count)
 {
-    return AddGC( new gc::TradeOverLand(pt, ware_figure, gt, job, count) );
+    return AddGC( new gc::TradeOverLand(pt, gt, job, count) );
 }
 

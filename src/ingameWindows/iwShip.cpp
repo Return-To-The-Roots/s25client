@@ -72,8 +72,9 @@ void iwShip::Msg_PaintBefore()
 
 void iwShip::Msg_PaintAfter()
 {
+    const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
-    noShip* ship = (player == 0xff) ? NULL : gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
+    noShip* ship = (player == 0xff) ? NULL : owner.GetShipByID(ship_id);
 
     // Kein Schiff gefunden? Dann erstes Schiff holen
     if(!ship)
@@ -81,7 +82,7 @@ void iwShip::Msg_PaintAfter()
         ship_id = 0;
         // Nochmal probieren
         if(player != 0xff)
-            ship = gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
+            ship = owner.GetShipByID(ship_id);
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
@@ -95,7 +96,7 @@ void iwShip::Msg_PaintAfter()
     NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
-    sprintf(str, "%u/%u", ship_id + 1, gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount());
+    sprintf(str, "%u/%u", ship_id + 1, owner.GetShipCount());
     NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->Draw(GetDrawPos() + DrawPoint(138, 117));
@@ -107,8 +108,7 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), i, ship->GetPlayer()) > 0);
-
+            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), ShipDirection::fromInt(i), ship->GetPlayer()) > 0);
     }
     else
     {

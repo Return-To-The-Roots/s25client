@@ -72,6 +72,12 @@ bool PostBox::DeleteMsg(unsigned idx, bool notify)
     return true;
 }
 
+void PostBox::Clear()
+{
+    for(unsigned i = numMessages; i > 0; --i)
+        DeleteMsg(i - 1);
+}
+
 const PostMsg* PostBox::GetMsg(unsigned idx) const
 {
     if(idx >= numMessages)

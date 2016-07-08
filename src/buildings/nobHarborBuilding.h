@@ -65,7 +65,7 @@ class nobHarborBuilding : public nobBaseWarehouse
         /// Bestell-Ware-Event
         GameEvent* orderware_ev;
         /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
-        unsigned short sea_ids[6];
+        unsigned short seaIds[6];
         /// Liste von Waren, die weggeschifft werden sollen
         std::list<Ware*> wares_for_ships;
         /// Liste von Menschen, die weggeschifft werden sollen
@@ -188,6 +188,8 @@ public:
         /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
         void ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares);
 
+        nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
+
         struct SeaAttackerBuilding
         {
             /// Comparator that compares only the building pointer
@@ -221,15 +223,14 @@ public:
 
         /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
         void AddSeaAttacker(nofAttacker* attacker);
+        /// Attacker does not want to attack anymore
+        void CancelSeaAttacker(nofAttacker* attacker);
 
         /// People waiting for a ship have to examine their route if a road was destroyed
         void ExamineShipRouteOfPeople();
 
         /// Is the harbor just being destroyed right now?
         bool IsBeingDestroyedNow() const;
-
-
-
 };
 
 

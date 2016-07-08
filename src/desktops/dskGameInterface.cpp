@@ -126,6 +126,7 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
         NewPostMessage(postBox.GetNumMsgs());
 
     InitPlayer();
+    worldViewer.InitTerrainRenderer();
 }
 
 void dskGameInterface::InitPlayer()
@@ -251,10 +252,13 @@ void dskGameInterface::Msg_PaintAfter()
     /* NWF-Anzeige (vorläufig)*/
     char nwf_string[256];
 
+    const GameWorldBase& world = worldViewer.GetWorld();
     if(gameClient.IsReplayModeOn())
-        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), gameClient.GetLastReplayGF(), gameClient.GetGFLength(), gameClient.GetNWFLength(), gameClient.GetNWFLength() * gameClient.GetGFLength());
+    {
+        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"), world.GetEvMgr().GetCurrentGF(), gameClient.GetLastReplayGF(), gameClient.GetGFLength(), gameClient.GetNWFLength(), gameClient.GetNWFLength() * gameClient.GetGFLength());
+    }
     else
-        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), worldViewer.GetWorld().GetEvMgr().GetCurrentGF(), gameClient.GetGFLength(), gameClient.GetNWFLength(), gameClient.GetNWFLength() * gameClient.GetGFLength(), worldViewer.GetPlayer().ping);
+        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), world.GetEvMgr().GetCurrentGF(), gameClient.GetGFLength(), gameClient.GetNWFLength(), gameClient.GetNWFLength() * gameClient.GetGFLength(), worldViewer.GetPlayer().ping);
 
     // tournament mode?
     unsigned tmd = gameClient.GetTournamentModeDuration();
@@ -262,7 +266,7 @@ void dskGameInterface::Msg_PaintAfter()
     if(tmd)
     {
         // Convert gf to seconds
-        unsigned sec = (tmd - worldViewer.GetWorld().GetEvMgr().GetCurrentGF()) * gameClient.GetGFLength() / 1000;
+        unsigned sec = (tmd - world.GetEvMgr().GetCurrentGF()) * gameClient.GetGFLength() / 1000;
         char str[512];
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }
@@ -288,9 +292,9 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenWidth() - 70, 35);
-    for(unsigned int i = 0; i < worldViewer.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned int i = 0; i < world.GetPlayerCount(); ++i)
     {
-        const GamePlayer& player = worldViewer.GetWorld().GetPlayer(i);
+        const GamePlayer& player = world.GetPlayer(i);
         if(player.is_lagging)
             LOADER.GetPlayerImage("rttr", 0)->Draw(snailPos, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
         snailPos.x -= 40;
@@ -488,7 +492,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
                 {
                     // Dann darf es nicht neu gebaut sein!
-                    if(!worldViewer.GetWorld().GetSpecObj<nobMilitary>(cSel)->IsNewBuilt())
+                    if(!static_cast<const nobMilitary*>(building)->IsNewBuilt())
                         action_tabs.attack = action_tabs.sea_attack = true;
                 }
                 // oder ein HQ oder Hafen?
@@ -861,6 +865,8 @@ void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
 
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings)
 {
+    const GameWorldBase& world = worldViewer.GetWorld();
+
     unsigned int params = 0;
 
     // Sind wir am Wasser?
@@ -868,7 +874,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     {
         for(unsigned char x = 0; x < 6; ++x)
         {
-            if(TerrainData::IsWater(worldViewer.GetWorld().GetTerrainAround(cSel, x)))
+            if(TerrainData::IsWater(world.GetTerrainAround(cSel, x)))
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -876,12 +882,11 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
     if(action_tabs.flag)
     {
-
-        if(worldViewer.GetWorld().GetNO(worldViewer.GetWorld().GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
+        if(world.GetNO(world.GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
             params = iwAction::AWFT_HQ;
-        else if(worldViewer.GetWorld().GetNO(cSel)->GetType() == NOP_FLAG)
+        else if(world.GetNO(cSel)->GetType() == NOP_FLAG)
         {
-            if(worldViewer.GetWorld().GetSpecObj<noFlag>(cSel)->GetFlagType() == FT_WATER)
+            if(world.GetSpecObj<noFlag>(cSel)->GetFlagType() == FT_WATER)
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -889,8 +894,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        if(worldViewer.GetPlayer().IsAttackable(worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel)->GetPlayer()))
-            params = worldViewer.GetAvailableSoldiersForAttack(cSel);
+        params = worldViewer.GetNumSoldiersForAttack(cSel);
     }
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mouse_x, mouse_y, params, enable_military_buildings);

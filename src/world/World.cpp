@@ -27,6 +27,7 @@
 #include "FOWObjects.h"
 #include "gameData/TerrainData.h"
 #include "RoadSegment.h"
+#include "gameTypes/ShipDirection.h"
 #include "helpers/containerUtils.h"
 #include <set>
 
@@ -190,36 +191,51 @@ unsigned World::CalcDistance(const int x1, const int y1, const int x2, const int
     return((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
-/// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
-unsigned char World::GetShipDir(Point<int> pos1, Point<int> pos2)
+ShipDirection World::GetShipDir(MapPoint fromPt, MapPoint toPt) const
 {
-    // Richtung bestimmen, in der dieser Punkt relativ zum Ausgangspunkt steht
-    unsigned char exp_dir = 0xff;
+    // First divide into NORTH/SOUTH by only looking at the y-Difference. On equal we choose SOUTH
+    // Then choose between main dir (S/N) or partial E/W:
+    //     6 directions -> 60deg covered per direction, mainDir +- 30deg
+    //     -> Switching at an angle of 60deg compared to x-axis
+    //     hence: |dy/dx| > tan(60deg) -> main dir, else add E or W
 
-    unsigned diff = SafeDiff<int>(pos1.y, pos2.y);
-    if(!diff)
-        diff = 1;
-    // Oben?
-    bool marginal_x = ((SafeDiff<int>(pos1.x, pos2.x) * 1000 / diff) < 180);
-    if(pos2.y < pos1.y)
+    unsigned dy = SafeDiff(fromPt.y, toPt.y);
+    unsigned dx = SafeDiff(fromPt.x, toPt.x);
+    // Handle wrapping. Also swap coordinates when wrapping (we reverse the direction)
+    if(dy > height_ / 2u)
     {
-        if(marginal_x)
-            exp_dir = 0;
-        else if(pos2.x < pos1.x)
-            exp_dir = 5;
+        dy = height_ - dy;
+        using std::swap;
+        swap(fromPt.y, toPt.y);
+    }
+    if(dx > width_ / 2u)
+    {
+        dx = width_ - dx;
+        using std::swap;
+        swap(fromPt.x, toPt.x);
+    }
+    // tan(60deg) ~= 1.73205080757. Divider at |dy| > |dx| * 1.732 using fixed point math
+    // (floating point math may lead to different results among configurations/platforms)
+    bool isMainDir = dy * 1000 > dx * 1732;
+    if(toPt.y < fromPt.y)
+    {
+        // North
+        if(isMainDir)
+            return ShipDirection::NORTH;
+        else if(toPt.x < fromPt.x)
+            return ShipDirection::NORTHWEST;
         else
-            exp_dir = 1;
+            return ShipDirection::NORTHEAST;
     } else
     {
-        if(marginal_x)
-            exp_dir = 3;
-        else if(pos2.x < pos1.x)
-            exp_dir = 4;
+        // South
+        if(isMainDir)
+            return ShipDirection::SOUTH;
+        else if(toPt.x < fromPt.x)
+            return ShipDirection::SOUTHWEST;
         else
-            exp_dir = 2;
+            return ShipDirection::SOUTHEAST;
     }
-
-    return exp_dir;
 }
 
 MapPoint World::MakeMapPoint(Point<int> pt) const
@@ -314,13 +330,13 @@ void World::SetReserved(const MapPoint pt, const bool reserved)
 
 void World::SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime)
 {
-    MapNode& node = GetNodeInt(pt);
-    if(node.fow[player].visibility == vis)
+    FoWNode& node = GetNodeInt(pt).fow[player];
+    if(node.visibility == vis)
         return;
 
-    node.fow[player].visibility = vis;
+    node.visibility = vis;
     if(vis == VIS_VISIBLE)
-        deletePtr(node.fow[player].object);
+        deletePtr(node.object);
     else if(vis == VIS_FOW)
         SaveFOWNode(pt, player, curTime);
     VisibilityChanged(pt, player);
@@ -441,31 +457,39 @@ bool World::IsWaterPoint(const MapPoint pt) const
     return true;
 }
 
-/// Grenzt der Hafen an ein bestimmtes Meer an?
-bool World::IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const
+unsigned World::GetSeaSize(const unsigned seaId) const
 {
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        if(sea_id == harbor_pos[harbor_id].cps[i].sea_id)
-            return true;
-    }
-    return false;
+    RTTR_Assert(seaId > 0 && seaId <= seas.size());
+    return seas[seaId - 1].nodes_count;
 }
 
-MapPoint World::GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const
+unsigned short World::GetSeaId(const unsigned harborId, const Direction dir) const
 {
-    RTTR_Assert(harbor_id);
+    RTTR_Assert(harborId);
+    return harbor_pos[harborId].cps[dir.toUInt()].seaId;
+}
+
+/// Grenzt der Hafen an ein bestimmtes Meer an?
+bool World::IsHarborAtSea(const unsigned harborId, const unsigned short seaId) const
+{
+    return GetCoastalPoint(harborId, seaId).isValid();
+}
+
+MapPoint World::GetCoastalPoint(const unsigned harborId, const unsigned short seaId) const
+{
+    RTTR_Assert(harborId);
+    RTTR_Assert(seaId);
 
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(harbor_pos[harbor_id].cps[i].sea_id == sea_id)
+        if(harbor_pos[harborId].cps[i].seaId == seaId)
         {
-            return GetNeighbour(harbor_pos[harbor_id].pos, i);
+            return GetNeighbour(harbor_pos[harborId].pos, i);
         }
     }
 
     // Keinen Punkt gefunden
-    return MapPoint(0xFFFF, 0xFFFF);
+    return MapPoint::Invalid();
 }
 
 unsigned char World::GetRoad(const MapPoint pt, unsigned char dir) const
@@ -509,17 +533,23 @@ void World::RemoveCatapultStone(CatapultStone* cs)
     catapult_stones.remove(cs);
 }
 
-MapPoint World::GetHarborPoint(const unsigned harbor_id) const
+MapPoint World::GetHarborPoint(const unsigned harborId) const
 {
-    RTTR_Assert(harbor_id);
+    RTTR_Assert(harborId);
 
-    return harbor_pos[harbor_id].pos;
+    return harbor_pos[harborId].pos;
 }
 
-unsigned short World::IsCoastalPoint(const MapPoint pt) const
+const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbor(const unsigned harborId, const ShipDirection& dir) const
+{
+    RTTR_Assert(harborId);
+    return harbor_pos[harborId].neighbors[dir.toUInt()];
+}
+
+unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
 {
     // Point itself must not be a sea
-    if(GetNode(pt).sea_id)
+    if(GetNode(pt).seaId)
         return 0;
 
     // Should not be inside water itself
@@ -529,12 +559,12 @@ unsigned short World::IsCoastalPoint(const MapPoint pt) const
     // Surrounding must be valid sea
     for(unsigned i = 0; i < 6; ++i)
     {
-        unsigned short sea_id = GetNeighbourNode(pt, i).sea_id;
-        if(sea_id)
+        unsigned short seaId = GetNeighbourNode(pt, i).seaId;
+        if(seaId)
         {
             // Check size (TODO: Others checks like harbor spots?)
-            if(GetSeaSize(sea_id) > 20)
-                return sea_id;
+            if(GetSeaSize(seaId) > 20)
+                return seaId;
         }
     }
 

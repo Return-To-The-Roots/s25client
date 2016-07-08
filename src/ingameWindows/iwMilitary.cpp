@@ -23,6 +23,7 @@
 #include "GamePlayer.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/SettingTypeConv.h"
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
@@ -37,7 +38,6 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     AddProgress(4, 17, 153, 132, 26, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", 4, 4, 0, _("Interior"), _("Interior"));
     AddProgress(5, 17, 185, 132, 26, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", 4, 4, 0, _("Center of country"), _("Center of country"));
     AddProgress(6, 17, 217, 132, 26, TC_GREY, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "", 4, 4, 0, _("Near harbor points"), _("Near harbor points"));
-
     AddProgress(7, 17, 249, 132, 26, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", 4, 4, 0, _("Border areas"), _("Border areas"));
 
     // unteren 2 Buttons
@@ -70,7 +70,7 @@ void iwMilitary::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        for(unsigned char i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+        for(unsigned char i = 0; i <  GAMECLIENT.visual_settings.military_settings.size(); ++i)
             GAMECLIENT.visual_settings.military_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
         gcFactory.ChangeMilitary(GAMECLIENT.visual_settings.military_settings);
@@ -100,7 +100,7 @@ void iwMilitary::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+    for(unsigned i = 0; i <  GAMECLIENT.visual_settings.military_settings.size(); ++i)
         GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.military_settings[i]);
 }
 

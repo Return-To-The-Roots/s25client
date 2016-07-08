@@ -42,7 +42,8 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
     for(unsigned i = 0; i < TOOL_COUNT; i++)
         AddToolSettingSlider(i, TOOLS[i]);
 
-    if (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+    const GlobalGameSettings& settings = gwv.GetWorld().GetGGS();
+    if (settings.isEnabled(AddonId::TOOL_ORDERING))
     {
         // qx:tools
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -56,10 +57,10 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
 
     // Info
     AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
-    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+    if(settings.isEnabled(AddonId::TOOL_ORDERING))
         AddImageButton(15, 130, 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
     // Standard
-    AddImageButton(13, 118 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(13, 118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
     UpdateSettings();

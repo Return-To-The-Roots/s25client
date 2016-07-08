@@ -38,6 +38,7 @@ public:
     /// Delete the message by its index. Return true, if it was valid
     /// Oldest message is at index 0
     bool DeleteMsg(unsigned idx);
+    void Clear();
     unsigned GetNumMsgs() const { return numMessages; }
     static BOOST_CONSTEXPR unsigned GetMaxMsgs() { return MAX_MESSAGES; }
     /// Get message by index or NULL if invalid index

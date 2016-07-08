@@ -46,7 +46,7 @@ public:
     bool UpgradeRoad(const MapPoint pt, unsigned char start_dir);
     /// Sets new distribution of goods
     bool ChangeDistribution(const Distributions& data);
-    bool ChangeBuildOrder(unsigned char order_type, const BuildOrders& data);
+    bool ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data);
     /// Sets a building site (new building)
     bool SetBuildingSite(const MapPoint pt, BuildingType bt);
     /// Destroys a building on a spot
@@ -57,7 +57,7 @@ public:
     bool OrderNewSoldiers(const MapPoint pt);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
-    bool ChangeMilitary(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data);
+    bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
     bool ChangeTools(const ToolSettings& data, const signed char* order_delta = NULL);
     /// Calls a geologist to a flag
@@ -83,7 +83,7 @@ public:
     bool Surrender();
     bool DestroyAll();
     bool SuggestPact(unsigned char player, PactType pt, unsigned duration);
-    bool AcceptPact(bool accepted, unsigned id, PactType pt, unsigned char player);
+    bool AcceptPact(unsigned id, PactType pt, unsigned char player);
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
     bool ToggleShipYardMode(const MapPoint pt);
@@ -96,7 +96,7 @@ public:
     /// Cancels an expedition
     bool CancelExpedition(unsigned int shipID);
     bool StartExplorationExpedition(const MapPoint pt);
-    bool TradeOverLand(const MapPoint pt, bool ware_figure, GoodType gt, Job job, unsigned count);
+    bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:
     virtual ~GameCommandFactory(){}

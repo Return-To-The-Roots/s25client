@@ -313,7 +313,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
 
         selected_soldiers_count_sea = 1;
-        available_soldiers_count_sea = gwv.GetViewer().GetAvailableSoldiersForSeaAttackCount(selectedPt);
+        available_soldiers_count_sea = gwv.GetViewer().GetNumSoldiersForSeaAttack(selectedPt);
 
         AddAttackControls(group, available_soldiers_count_sea);
     }
@@ -621,13 +621,14 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
         } break;
         case 3: // Flagge abreißen
         {
-            NodalObjectType nop = (gwv.GetWorld().GetNO(gwv.GetViewer().GetNeighbour(selectedPt, Direction::NORTHWEST)))->GetType() ;
+            const GameWorldBase& world = gwv.GetWorld();
+            NodalObjectType nop = (world.GetNO(world.GetNeighbour(selectedPt, Direction::NORTHWEST)))->GetType() ;
             // Haben wir ne Baustelle/Gebäude dran?
             if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
             {
                 // Abreißen?
                 Close();
-                const noBaseBuilding* building = gwv.GetWorld().GetSpecObj<noBaseBuilding>(gwv.GetViewer().GetNeighbour(selectedPt, Direction::NORTHWEST));
+                const noBaseBuilding* building = world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NORTHWEST));
 
                 // Militärgebäude?
                 if(building->GetGOT() == GOT_NOB_MILITARY)
@@ -636,7 +637,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
                     if(!static_cast<const nobMilitary*>(building)->IsDemolitionAllowed())
                     {
                         // Nein, dann Messagebox anzeigen
-                        iwMilitaryBuilding::DemolitionNotAllowed(gwv.GetWorld().GetGGS());
+                        iwMilitaryBuilding::DemolitionNotAllowed(world.GetGGS());
                         break;
                     }
                 }

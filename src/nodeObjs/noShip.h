@@ -20,15 +20,14 @@
 
 #include "noMovable.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/ShipDirection.h"
 #include <list>
 #include <vector>
 
-class nobHarborBuilding;
-
 #define SHIP_CAPACITY 40
 
-
 class noFigure;
+class nobHarborBuilding;
 class Ware;
 class nofAttacker;
 class SerializedGameData;
@@ -66,7 +65,7 @@ class noShip : public noMovable
         /// Das Meer, auf dem dieses Schiff fährt
         unsigned short seaId_;
         /// Zielpunkt des Schiffes
-        unsigned goal_harbor_id;
+        unsigned goal_harborId;
         /// Anlegepunkt am Zielhafen, d.h. die Richtung relativ zum Zielpunkt
         unsigned char goal_dir;
         /// Namen des Schiffs
@@ -159,12 +158,12 @@ class noShip : public noMovable
 
         /// Gibt den Besitzer zurück
         unsigned char GetPlayer() const { return player; }
-        /// Hat das Schiff gerade nichts zu tun
-        bool IsIdling() const { return (state == STATE_IDLE); }
         /// Gibt die ID des Meeres zurück, auf dem es sich befindet
         unsigned short GetSeaID() const { return seaId_; }
         /// Gibt den Schiffsnamen zurück
         const std::string& GetName() const { return name; }
+        /// Hat das Schiff gerade nichts zu tun
+        bool IsIdling() const { return (state == STATE_IDLE); }
         /// Führt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?
         bool IsWaitingForExpeditionInstructions() const { return (state == STATE_EXPEDITION_WAITING); }
         /// Ist das Schiff gerade irgendwie am Expeditionieren und hat entsprechenden Kram an Bord?
@@ -178,10 +177,15 @@ class noShip : public noMovable
             return (state == STATE_EXPLORATIONEXPEDITION_LOADING || state == STATE_EXPLORATIONEXPEDITION_UNLOADING
                     || state == STATE_EXPLORATIONEXPEDITION_WAITING || state == STATE_EXPLORATIONEXPEDITION_DRIVING);
         }
+        bool IsOnAttackMission() const
+        {
+            return (state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_UNLOADING
+                || state == STATE_SEAATTACK_DRIVINGTODESTINATION || state == STATE_SEAATTACK_WAITING || state == STATE_SEAATTACK_RETURN_DRIVING);
+        }
         /// Gibt Liste der Waren an Bord zurück
-        const std::list<Ware*> &GetWares() const { return wares; }
+        const std::list<Ware*>& GetWares() const { return wares; }
         /// Gibt Liste der Menschen an Bord zurück
-        const std::list<noFigure*> &GetFigures() const { return figures; }
+        const std::list<noFigure*>& GetFigures() const { return figures; }
         /// Gibt Sichtradius dieses Schiffes zurück
         unsigned GetVisualRange() const;
 
@@ -189,13 +193,13 @@ class noShip : public noMovable
         unsigned GetCurrentHarbor() const;
 
         /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
-        void GoToHarbor(nobHarborBuilding* hb, const std::vector<unsigned char>& route);
+        void GoToHarbor(const nobHarborBuilding& hb, const std::vector<unsigned char>& route);
         /// Startet eine Expedition
         void StartExpedition(unsigned homeHarborId);
         /// Startet eine Erkundungs-Expedition
         void StartExplorationExpedition(unsigned homeHarborId);
         /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
-        void ContinueExpedition(const unsigned char dir);
+        void ContinueExpedition(const ShipDirection dir);
         /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
         /// Hafen zurückzukehren
         void CancelExpedition();
@@ -205,8 +209,8 @@ class noShip : public noMovable
         bool IsAbleToFoundColony() const;
         /// Weist das Schiff an, an der aktuellen Position einen Hafen zu gründen
         void FoundColony();
-        /// Gibt zurück, ob das Schiff einen bestimmten Hafen ansteuert
-        bool IsGoingToHarbor(nobHarborBuilding* hb) const;
+        /// Return true, if the ship is driving to this harbor as its final destination (free for new orders)
+        bool IsGoingToHarbor(const nobHarborBuilding& hb) const;
 
         /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
         void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
@@ -224,6 +228,4 @@ class noShip : public noMovable
         void NewHarborBuilt(nobHarborBuilding* hb);
 };
 
-
 #endif
-

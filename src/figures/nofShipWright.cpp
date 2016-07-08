@@ -287,7 +287,7 @@ void nofShipWright::WorkAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if((state == STATE_WORK && workplace->GetPos() != pos) || state == STATE_WALKTOWORKPOINT) //&& static_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::SHIPS)
-        gwg->SetReserved(dest, true);
+        gwg->SetReserved(dest, false);
 }
 
 

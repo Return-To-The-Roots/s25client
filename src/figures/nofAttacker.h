@@ -135,8 +135,6 @@ class nofAttacker : public nofActiveSoldier
         /// Ein um-die-Flagge-Swartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
         /// Lücken entstehen
         void StartSucceeding(const MapPoint pt, const unsigned short new_radius, const unsigned char dir);
-        /// Siehe oben, wird nach jeder Wegeinheit aufgerufen
-        void SucceedingWalk();
         /// Try to start capturing although he is still far away from the destination
         /// Returns true if successful
         bool TryToStartFarAwayCapturing(nobMilitary* dest);

@@ -423,7 +423,7 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
         || bt == BLD_HEADQUARTERS
         || bt == BLD_HARBORBUILDING) //is it a military building?
     {
-        if(gwv.GetAvailableSoldiersForAttack(building->GetPos())) //soldiers available for attack?
+        if(gwv.GetNumSoldiersForAttack(building->GetPos())) //soldiers available for attack?
             LOADER.GetImageN("map_new", 20000)->Draw(curPos + DrawPoint(1, -5));
     }
 }

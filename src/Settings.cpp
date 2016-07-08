@@ -199,7 +199,7 @@ bool Settings::Load()
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
-    global.smartCursor = (iniGlobal->getValue("smartCursor") == "" || iniGlobal->getValueI("smartCursor") != 0);
+    global.smartCursor = (iniGlobal->getValue("smartCursor").empty() || iniGlobal->getValueI("smartCursor") != 0);
     global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
 
     // };

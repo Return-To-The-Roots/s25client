@@ -329,9 +329,8 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     gwg->RecalcTerritory(*this, false, true);
 
     GamePlayer& owner = gwg->GetPlayer(player);
-    owner.SetHQ(*this);
+    owner.SetHQ(this);
     owner.AddWarehouse(this);
-
 }
 
 void nobHQ::Destroy_nobHQ()
@@ -343,6 +342,7 @@ void nobHQ::Destroy_nobHQ()
     // Land drumherum neu berechnen
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     gwg->RecalcTerritory(*this, true, false);
+    gwg->GetPlayer(player).SetHQ(NULL);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const

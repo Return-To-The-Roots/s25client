@@ -24,6 +24,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
@@ -54,7 +55,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
 
     // Eintrag in Combobox auswählen
-    combo->SetSelection(GAMECLIENT.visual_settings.order_type);
+    combo->SetSelection(GAMECLIENT.visual_settings.useCustomBuildOrder ? 1 : 0);
 
     // Standard
     AddImageButton(10, 200, 250, 48, 30, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
@@ -67,8 +68,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
 iwBuildOrder::~iwBuildOrder()
 {
-    unsigned char selection = (unsigned char)GetCtrl<ctrlComboBox>(6)->GetSelection();
-    GAMECLIENT.visual_settings.order_type = selection;
+    GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1;
 
     TransmitSettings();
 }
@@ -81,7 +81,7 @@ void iwBuildOrder::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        GAMECLIENT.ChangeBuildOrder((unsigned char)GetCtrl<ctrlComboBox>(6)->GetSelection(), GAMECLIENT.visual_settings.build_order);
+        GAMECLIENT.ChangeBuildOrder(GetCtrl<ctrlComboBox>(6)->GetSelection() != 0, GAMECLIENT.visual_settings.build_order);
         settings_changed = false;
     }
 }
@@ -194,7 +194,7 @@ void iwBuildOrder::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    GetCtrl<ctrlComboBox>(6)->SetSelection(GAMECLIENT.visual_settings.order_type);
+    GetCtrl<ctrlComboBox>(6)->SetSelection(GAMECLIENT.visual_settings.useCustomBuildOrder ? 1 : 0);
     for(unsigned char i = 0; i < 31; ++i)
         GetCtrl<ctrlList>(0)->SetString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]), i);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2015 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-
 #ifndef ShipDirection_h__
 #define ShipDirection_h__
 
-/// "Enum" to represent one of the 6 directions from each node
+/// "Enum" to represent one of the 6 directions a ship can go
 struct ShipDirection
 {
     enum Type
@@ -42,7 +41,7 @@ struct ShipDirection
     static ShipDirection fromInt(int t){ return Type(t); }
     operator Type() const { return t_; }
     /// Returns the Direction as an UInt (for legacy code)
-    unsigned toUInt(){ return t_; }
+    unsigned toUInt() const{ return t_; }
     ShipDirection operator+(unsigned i) const { return ShipDirection(t_ + i); }
     // TODO: Add iterator to iterate over all values from a given value
 private:

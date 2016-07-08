@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,12 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 
+#include "Random.h"
+
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 namespace bfs = boost::filesystem;
 
@@ -48,6 +52,10 @@ struct TestSetup
                 break;
             }
         }
+        srand(static_cast<unsigned>(time(NULL)));
+#ifdef RTTR_RAND_TEST
+        RANDOM.Init(rand());
+#endif
     }
 };
 

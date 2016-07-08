@@ -23,7 +23,7 @@
 
 MapNode::MapNode():
     altitude(10), shadow(64), t1(TT_SNOW), t2(TT_SNOW), resources(0), reserved(false), owner(0), bq(BQ_NOTHING),
-    sea_id(0), harbor_id(0), obj(NULL)
+    seaId(0), harborId(0), obj(NULL)
 {
     std::fill(roads.begin(), roads.end(), 0);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
@@ -49,8 +49,8 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
         fow[z].Serialize(sgd);
     sgd.PushObject(obj, false);
     sgd.PushObjectContainer(figures, false);
-    sgd.PushUnsignedShort(sea_id);
-    sgd.PushUnsignedInt(harbor_id);
+    sgd.PushUnsignedShort(seaId);
+    sgd.PushUnsignedInt(harborId);
 }
 
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
@@ -78,6 +78,6 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
         fow[z].Deserialize(sgd);
     obj = sgd.PopObject<noBase>(GOT_UNKNOWN);
     sgd.PopObjectContainer(figures, GOT_UNKNOWN);
-    sea_id = sgd.PopUnsignedShort();
-    harbor_id = sgd.PopUnsignedInt();
+    seaId = sgd.PopUnsignedShort();
+    harborId = sgd.PopUnsignedInt();
 }

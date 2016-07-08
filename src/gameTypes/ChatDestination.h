@@ -18,7 +18,7 @@
 #ifndef ChatDestination_h__
 #define ChatDestination_h__
 
-// Ziele fürs Chatten (Ingame)
+// Targets for ingame chat
 enum ChatDestination
 {
     CD_SYSTEM = 0,
@@ -28,3 +28,4 @@ enum ChatDestination
 };
 
 #endif // ChatDestination_h__
+

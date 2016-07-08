@@ -36,6 +36,7 @@ class noNothing;
 class CatapultStone;
 class FOWObject;
 class noBase;
+struct ShipDirection;
 template <typename T> struct Point;
 
 /// Base class representing the world itself, no algorithms, handlers etc!
@@ -69,6 +70,7 @@ class World
 
     boost::interprocess::unique_ptr<noBase, Deleter<noBase> > noNodeObj;
 
+protected:
     /// Internal method for access to nodes with write access
     inline MapNode& GetNodeInt(const MapPoint pt);
     inline MapNode& GetNeighbourNodeInt(const MapPoint pt, const unsigned i);
@@ -131,7 +133,7 @@ public:
     unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
     /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
-    unsigned char GetShipDir(Point<int> pos1, Point<int> pos2);
+    ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
 
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Point<int> pt) const;
@@ -193,21 +195,22 @@ public:
     bool IsSeaPoint(const MapPoint pt) const;
     /// Returns true, if the point is surrounded by water
     bool IsWaterPoint(const MapPoint pt) const;
-    inline const unsigned GetSeaSize(const unsigned seaId) const;
+    unsigned GetSeaSize(const unsigned seaId) const;
+    /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
+    unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
     /// Is the harbor at the given sea
-    bool IsAtThisSea(const unsigned harbor_id, const unsigned short sea_id) const;
+    bool IsHarborAtSea(const unsigned harborId, const unsigned short seaId) const;
     /// Returns the coast pt for a given harbor (where ships can land) if any
-    MapPoint GetCoastalPoint(const unsigned harbor_id, const unsigned short sea_id) const;
-    inline unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
+    MapPoint GetCoastalPoint(const unsigned harborId, const unsigned short seaId) const;
     /// Gibt die Anzahl an Hafenpunkten zurück
     unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
     /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
-    MapPoint GetHarborPoint(const unsigned harbor_id) const;
+    MapPoint GetHarborPoint(const unsigned harborId) const;
     /// Gibt die ID eines Hafenpunktes zurück
-    unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harbor_id; }
-    const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const Direction dir) const { return harbor_pos[harborId].neighbors[dir.toUInt()]; }
+    unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
+    const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const ShipDirection& dir) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
-    unsigned short IsCoastalPoint(const MapPoint pt) const;
+    unsigned short GetSeaFromCoastalPoint(const MapPoint pt) const;
 
     /// Return the road type of this point in the given direction (E, SE, SW) or 0 if no road
     unsigned char GetRoad(const MapPoint pt, unsigned char dir) const;
@@ -267,17 +270,6 @@ const MapNode& World::GetNeighbourNode(const MapPoint pt, const unsigned i) cons
 MapNode& World::GetNeighbourNodeInt(const MapPoint pt, const unsigned i)
 {
     return GetNodeInt(GetNeighbour(pt, i));
-}
-
-const unsigned World::GetSeaSize(const unsigned seaId) const
-{
-    RTTR_Assert(seaId < seas.size());
-    return seas[seaId].nodes_count;
-}
-
-unsigned short World::GetSeaId(const unsigned harborId, const Direction dir) const
-{
-    return harbor_pos[harborId].cps[dir.toUInt()].sea_id;
 }
 
 template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>

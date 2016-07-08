@@ -39,7 +39,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "SerializedGameData.h"
-class noRoadNode;
+#include <boost/foreach.hpp>
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd) :
     boards(sgd.PopUnsignedInt()),
@@ -75,7 +75,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     gwg->GetMilitarySquares().Add(this);
     gwg->RecalcTerritory(*this, false, true);
 
-    // Alle Waren 0, außer 100 Träger
+    // Alle Waren 0
     inventory.clear();
 
     // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
@@ -86,7 +86,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(unsigned i = 0; i < 6; ++i)
-        sea_ids[i] = gwg->IsCoastalPoint(gwg->GetNeighbour(pos, i));
+        seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, i));
 
     // Post versenden
     SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New harbor building finished"), PostCategory::Economy, *this));
@@ -177,7 +177,7 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     exploration_expedition.Serialize(sgd);
     sgd.PushObject(orderware_ev, true);
     for(unsigned i = 0; i < 6; ++i)
-        sgd.PushUnsignedShort(sea_ids[i]);
+        sgd.PushUnsignedShort(seaIds[i]);
     sgd.PushObjectContainer(wares_for_ships, true);
     sgd.PushUnsignedInt(figures_for_ships.size());
     for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
@@ -203,7 +203,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     gwg->GetMilitarySquares().Add(this);
 
     for(unsigned i = 0; i < 6; ++i)
-        sea_ids[i] = sgd.PopUnsignedShort();
+        seaIds[i] = sgd.PopUnsignedShort();
 
     sgd.PopObjectContainer(wares_for_ships, GOT_WARE);
 
@@ -410,9 +410,10 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // Look for missing scouts
-    if(inventory[JOB_SCOUT] < gwg->GetGGS().GetNumScoutsExedition())
+    const unsigned numScoutsRequired = gwg->GetGGS().GetNumScoutsExedition();
+    if(inventory[JOB_SCOUT] < numScoutsRequired)
     {
-        unsigned missing = gwg->GetGGS().GetNumScoutsExedition() - inventory[JOB_SCOUT];
+        unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
         //got scouts in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
         for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
@@ -429,12 +430,12 @@ void nobHarborBuilding::StartExplorationExpedition()
         while(missing > 0 && TryRecruitJob(JOB_SCOUT))
             missing--;
         // Order scouts, we still requires
-        for(unsigned i = inventory[JOB_SCOUT]; i < gwg->GetGGS().GetNumScoutsExedition(); ++i)
+        for(unsigned i = inventory[JOB_SCOUT]; i < numScoutsRequired; ++i)
             owner.AddJobWanted(JOB_SCOUT, this);
     }
     if(inventory[JOB_SCOUT])
     {
-        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], gwg->GetGGS().GetNumScoutsExedition());
+        exploration_expedition.scouts = std::min(inventory[JOB_SCOUT], numScoutsRequired);
         inventory.real.Remove(JOB_SCOUT, exploration_expedition.scouts);
     }
 
@@ -848,10 +849,10 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
-    for(unsigned short sea_id = 0; sea_id < 6; ++sea_id)
+    for(unsigned short dir = 0; dir < 6; ++dir)
     {
-        if(sea_ids[sea_id] != 0)
-            gwg->GetPlayer(player).GetHarborBuildings(harbor_buildings, sea_ids[sea_id]);
+        if(seaIds[dir] != 0)
+            gwg->GetPlayer(player).GetHarborsAtSea(harbor_buildings, seaIds[dir]);
     }
 
     for(unsigned i = 0; i < harbor_buildings.size(); ++i)
@@ -991,10 +992,8 @@ void nobHarborBuilding::OrderShip()
     GamePlayer& owner = gwg->GetPlayer(player);    
 
     // Order (possibly) remaining ships
-    for(unsigned ordered = owner.GetShipsToHarbor(this); ordered < needed; ++ordered)
-    {
-        owner.OrderShip(this);
-    }
+    for(unsigned ordered = owner.GetShipsToHarbor(*this); ordered < needed; ++ordered)
+        owner.OrderShip(*this);
 }
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
@@ -1076,7 +1075,6 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
                 else
                     inventory.visual.Add((*it)->GetJobType());
                 AddLeavingFigure(*it);
-                (*it)->ShipJourneyEnded();
             }
             else if (nextDir == SHIP_DIR)
             {
@@ -1102,6 +1100,21 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
         AddWare(*it);
     }
     wares.clear();
+}
+
+nofAggressiveDefender* nobHarborBuilding::SendAggressiveDefender(nofAttacker* attacker)
+{
+    // Don't sent out last soldier
+    unsigned numSoldiers = 0;
+    BOOST_FOREACH(const Job rankJob, SOLDIER_JOBS)
+    {
+        numSoldiers += inventory[rankJob];
+        if(numSoldiers > 1)
+            break;
+    }
+    if(numSoldiers <= 1)
+        return NULL;
+    return nobBaseWarehouse::SendAggressiveDefender(attacker);
 }
 
 /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
@@ -1252,6 +1265,28 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     inventory.visual.Add(attacker->GetJobType());
 
     OrderShip();
+}
+
+void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
+{
+    bool found = false;
+    for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
+    {
+        if(it->attacker == attacker)
+        {
+            soldiers_for_ships.erase(it);
+            found = true;
+            break;
+        }
+    }
+    RTTR_Assert(found);
+    if(attacker->HasNoGoal())
+    {
+        // No goal? We take it
+        AddDependentFigure(attacker);
+        AddFigure(attacker, false);
+    } else
+        AddLeavingFigure(attacker); // Just let him leave so he can go home
 }
 
 unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)

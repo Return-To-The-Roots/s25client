@@ -22,6 +22,9 @@
 
 /// Type used for specifying drawing offsets and coordinates. Signed base type!
 typedef Point<int> DrawPoint;
+//-V:DrawPoint:801 
+//-V:DrawPoint:813 
+
 /// Helper struct to allow use in array initializers till C++11.
 /// Implicitly convertible to DrawPoint
 struct DrawPointInit

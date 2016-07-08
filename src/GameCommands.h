@@ -57,7 +57,7 @@ namespace gc{
         public:
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Flagge zerstören
@@ -71,7 +71,7 @@ namespace gc{
                 : Coords(DESTROYFLAG, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Straße bauen
@@ -106,7 +106,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Straße zerstören
@@ -130,7 +130,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Straße aufwerten
@@ -152,35 +152,33 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Warenverteilung ändern
     class ChangeDistribution : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = 23;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             Distributions data;
         protected:
             ChangeDistribution(const Distributions& data)
-                : GameCommand(CHANGEDISTRIBUTION), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGEDISTRIBUTION), data(data) {}
             ChangeDistribution(Serializer& ser)
                 : GameCommand(CHANGEDISTRIBUTION)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Baureihenfolge ändern
@@ -188,28 +186,28 @@ namespace gc{
     {
         GC_FRIEND_DECL;
             /// Ordnungs-Typ
-            const unsigned char order_type;
+            const bool useCustomBuildOrder;
             /// Daten der BuildOrder
-            boost::array<unsigned char, 32> data;
+            BuildOrders data;
         protected:
-            ChangeBuildOrder(const unsigned char order_type, const boost::array<unsigned char, 32>& data)
-                : GameCommand(CHANGEBUILDORDER), order_type(order_type), data(data) {}
+            ChangeBuildOrder(const bool useCustomBuildOrder, const BuildOrders& data)
+                : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(useCustomBuildOrder), data(data) {}
             ChangeBuildOrder(Serializer& ser)
-                : GameCommand(CHANGEBUILDORDER), order_type(ser.PopUnsignedChar())
+                : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(ser.PopBool())
             {
                 for(unsigned i = 0; i < data.size(); ++i)
-                    data[i] = ser.PopUnsignedChar();
+                    data[i] = BuildingType(ser.PopUnsignedChar());
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                ser.PushUnsignedChar(order_type);
+                ser.PushBool(useCustomBuildOrder);
                 for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 
@@ -234,7 +232,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Gebäude zerstören
@@ -248,7 +246,7 @@ namespace gc{
                 : Coords(DESTROYBUILDING, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Send all highest rank soldiers home (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -262,7 +260,7 @@ namespace gc{
                 : Coords(SENDSOLDIERSHOME, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// call for new min rank soldiers (used by ai to upgrade troops instead of changing mil settings all the time)
@@ -276,7 +274,7 @@ namespace gc{
                 : Coords(ORDERNEWSOLDIERS, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 
@@ -284,64 +282,58 @@ namespace gc{
     class ChangeTransport : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = 14;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             TransportOrders data;
         protected:
             ChangeTransport(const TransportOrders& data)
-                : GameCommand(CHANGETRANSPORT), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+                : GameCommand(CHANGETRANSPORT), data(data) {}
             ChangeTransport(Serializer& ser)
                 : GameCommand(CHANGETRANSPORT)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Transportreihenfolge ändern
     class ChangeMilitary : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = MILITARY_SETTINGS_COUNT;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
-             boost::array<unsigned char, MILITARY_SETTINGS_COUNT> data;
+            MilitarySettings data;
         protected:
-            ChangeMilitary(const  boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& data)
-                : GameCommand(CHANGEMILITARY), data(data) { RTTR_Assert(data.size() == DATA_SIZE); }
+            ChangeMilitary(const MilitarySettings& data)
+                : GameCommand(CHANGEMILITARY), data(data) {}
             ChangeMilitary(Serializer& ser)
                 : GameCommand(CHANGEMILITARY)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
             }
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Werkzeugeinstellungen ändern
     class ChangeTools : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Größe der Distributionsdaten
-            static const unsigned DATA_SIZE = 12;
             /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
             ToolSettings data;
 
@@ -350,8 +342,6 @@ namespace gc{
             ChangeTools(const ToolSettings& data, const signed char* order_delta = 0)
                 : GameCommand(CHANGETOOLS), data(data)
             {
-                RTTR_Assert(data.size() == DATA_SIZE);
-
                 if (order_delta != 0)
                 {
                     for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -367,7 +357,7 @@ namespace gc{
             ChangeTools(Serializer& ser)
                 : GameCommand(CHANGETOOLS)
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     data[i] = ser.PopUnsignedChar();
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -376,7 +366,7 @@ namespace gc{
         public:
             void Serialize(Serializer& ser) const override
             {
-                for(unsigned i = 0; i < DATA_SIZE; ++i)
+                for(unsigned i = 0; i < data.size(); ++i)
                     ser.PushUnsignedChar(data[i]);
 
                 for (unsigned i = 0; i < TOOL_COUNT; ++i)
@@ -384,7 +374,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Geologen rufen
@@ -398,7 +388,7 @@ namespace gc{
                 : Coords(CALLGEOLOGIST, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Späher rufen
@@ -412,7 +402,7 @@ namespace gc{
                 : Coords(CALLSCOUT, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Basisklasse für beide Angriffstypen
@@ -454,7 +444,7 @@ namespace gc{
                 : BaseAttack(ATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// See-Angriff starten
@@ -468,7 +458,7 @@ namespace gc{
                 : BaseAttack(SEAATTACK, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
@@ -486,7 +476,7 @@ namespace gc{
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -504,7 +494,7 @@ namespace gc{
                 ser.PushBool(enabled);
             }
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -518,7 +508,7 @@ namespace gc{
                 : Coords(NOTIFYALLIESOFLOCATION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
@@ -549,7 +539,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
@@ -582,7 +572,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Verändert die Reserve im HQ auf einen bestimmten Wert
@@ -611,7 +601,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Alle Fahnen zerstören
@@ -628,7 +618,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Aufgeben
@@ -645,7 +635,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Alle eigenen Fahnen zerstören
@@ -662,7 +652,7 @@ namespace gc{
             {}
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Unterbreitet anderen Spielern einen Bündnisvertrag
@@ -691,7 +681,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 
@@ -699,8 +689,6 @@ namespace gc{
     class AcceptPact : public GameCommand
     {
         GC_FRIEND_DECL;
-            /// Vertrag angenommen oder abgelehnt?
-            bool accepted;
             /// ID des Vertrages
             const unsigned id;
             /// Art des Vertrages
@@ -709,22 +697,21 @@ namespace gc{
             const unsigned char fromPlayer;
 
         protected:
-            AcceptPact(const bool accepted, const unsigned id, const PactType pt, const unsigned char fromPlayer) : GameCommand(ACCEPTPACT),
-                accepted(accepted), id(id), pt(pt), fromPlayer(fromPlayer) {}
+            AcceptPact(const unsigned id, const PactType pt, const unsigned char fromPlayer) : GameCommand(ACCEPTPACT),
+                id(id), pt(pt), fromPlayer(fromPlayer) {}
             AcceptPact(Serializer& ser) : GameCommand(ACCEPTPACT),
-                accepted(ser.PopBool()), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar()) {}
+                id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar()) {}
         public:
 
             void Serialize(Serializer& ser) const override
             {
-                ser.PushBool(accepted);
                 ser.PushUnsignedInt(id);
                 ser.PushUnsignedChar(static_cast<unsigned char>(pt));
                 ser.PushUnsignedChar(fromPlayer);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 
@@ -751,7 +738,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Zwischen Boote und Schiffen beim Schiffsbauer hin- und herschalten
@@ -765,7 +752,7 @@ namespace gc{
                 : Coords(TOGGLESHIPYARDMODE, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Expedition starten
@@ -779,7 +766,7 @@ namespace gc{
                 : Coords(STARTEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Expedition starten
@@ -793,7 +780,7 @@ namespace gc{
                 : Coords(STARTEXPLORATIONEXPEDITION, ser) {}
         public:
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 /// Wartendes Schiff einer Expedition Befehle geben
@@ -830,7 +817,7 @@ namespace gc{
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
 
         private:
             /// Die Aktion, die ausgeführt werden soll
@@ -840,25 +827,26 @@ namespace gc{
     };
 
 
-/// Send wares to another allied player via donkeys
+    /// Send wares or figures to another allied player
     class TradeOverLand : public Coords
     {
         GC_FRIEND_DECL;
-            /// Type of Ware / Figure
-            bool ware_figure;
             GoodType gt;
             Job job;
             /// Number of wares/figures we want to trade
             unsigned count;
 
         protected:
-            TradeOverLand(const MapPoint pt, const bool ware_figure, const GoodType gt, const Job job, const unsigned count)
-                : Coords(TRADEOVERLAND, pt), ware_figure(ware_figure), gt(gt), job(job), count(count) {}
+            /// Note: Can only trade wares or figures!
+            TradeOverLand(const MapPoint pt, const GoodType gt, const Job job, const unsigned count)
+                : Coords(TRADEOVERLAND, pt), gt(gt), job(job), count(count)
+            {
+                RTTR_Assert((gt == GD_NOTHING) != (job == JOB_NOTHING));
+            }
             TradeOverLand(Serializer& ser)
                 : Coords(TRADEOVERLAND, ser),
-                  ware_figure(ser.PopBool()),
-                  gt( ware_figure ? GD_NOTHING : GoodType(ser.PopUnsignedChar())),
-                  job( ware_figure ? Job(ser.PopUnsignedChar()) : JOB_NOTHING),
+                  gt(GoodType(ser.PopUnsignedChar())),
+                  job(Job(ser.PopUnsignedChar())),
                   count(ser.PopUnsignedInt())
             {}
         public:
@@ -866,14 +854,13 @@ namespace gc{
             {
                 Coords::Serialize(ser);
 
-                ser.PushBool(ware_figure);
-                if(!ware_figure) ser.PushUnsignedChar(static_cast<unsigned char>(gt));
-                else ser.PushUnsignedChar(static_cast<unsigned char>(job));
+                ser.PushUnsignedChar(static_cast<unsigned char>(gt));
+                ser.PushUnsignedChar(static_cast<unsigned char>(job));
                 ser.PushUnsignedInt(count);
             }
 
             /// Führt das GameCommand aus
-            void Execute(GameWorldGame& gwg, GamePlayer& player, const unsigned char playerId) override;
+            void Execute(GameWorldGame& gwg, unsigned char playerId) override;
     };
 
 

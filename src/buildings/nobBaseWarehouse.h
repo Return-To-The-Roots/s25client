@@ -159,8 +159,10 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
 
         const Inventory& GetInventory() const;
 
-        /// Fügt einige Güter hinzu
-        void AddGoods(const Inventory& goods);
+        /// Adds specified goods. If addToPlayer is true,
+        /// then they are also added to the owners inventory (for newly created/arrived goods)
+        /// Use false for goods, that are only moved between players units
+        void AddGoods(const Inventory& goods, bool addToPlayer);
 
 
         /// Gibt Anzahl der Waren bzw. Figuren zurück
@@ -246,7 +248,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         void OrderTroops(nobMilitary* goal, unsigned count,bool ignoresettingsendweakfirst=false);
 
         /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt
-        nofAggressiveDefender* SendDefender(nofAttacker* attacker) override;
+        nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
         /// Wird aufgerufen, wenn ein Soldat nicht mehr kommen kann
         void SoldierLost(nofSoldier* soldier) override;
 
@@ -265,9 +267,9 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         const unsigned* GetReservePointerAvailable(unsigned rank) const { return &reserve_soldiers_available[rank]; }
         const unsigned* GetReservePointerClaimed(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
 
-        /// Available goods of a speciefic type that can be used for trading
+        /// Available goods of a specific type that can be used for trading
         unsigned GetAvailableWaresForTrading(const GoodType gt) const;
-        /// Available figures of a speciefic type that can be used for trading
+        /// Available figures of a specific type that can be used for trading
         unsigned GetAvailableFiguresForTrading(const Job job) const;
         /// Starts a trade caravane from this warehouse
         void StartTradeCaravane(const GoodType gt,  Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);

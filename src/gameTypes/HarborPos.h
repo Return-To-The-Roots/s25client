@@ -28,8 +28,8 @@ struct HarborPos
 
     struct CoastalPoint
     {
-        unsigned short sea_id;
-        CoastalPoint(): sea_id(0){}
+        unsigned short seaId;
+        CoastalPoint(): seaId(0){}
     };
     boost::array<CoastalPoint, 6> cps;
 

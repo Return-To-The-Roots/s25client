@@ -39,8 +39,8 @@ class MapLoader
     void PlaceAnimals(const glArchivItem_Map& map);
 
     /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
-    /// Wasserpunkte mit der gleichen sea_id belegt und die Anzahl zurückgibt
-    static unsigned MeasureSea(World& world, const MapPoint pt, unsigned short sea_id);
+    /// Wasserpunkte mit der gleichen seaId belegt und die Anzahl zurückgibt
+    static unsigned MeasureSea(World& world, const MapPoint pt, unsigned short seaId);
     static void CalcHarborPosNeighbors(World& world);
 
 public:
@@ -55,7 +55,7 @@ public:
 
     static void InitShadows(World& world);
     static void SetMapExplored(World& world, unsigned numPlayers);
-    static void InitSeasAndHarbors(World& world);
+    static void InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
     static bool PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos);
 
 };

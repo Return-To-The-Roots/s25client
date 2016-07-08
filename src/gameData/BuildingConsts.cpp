@@ -19,6 +19,50 @@
 #include "BuildingConsts.h"
 #include "mygettext.h"
 
+const boost::array<const char*, BLD_COUNT> BUILDING_NAMES =
+{{
+    gettext_noop("Headquarters"),
+    gettext_noop("Barracks"),
+    gettext_noop("Guardhouse"),
+    "",
+    gettext_noop("Watchtower"),
+    "",
+    "",
+    "",
+    "",
+    gettext_noop("Fortress"),
+    gettext_noop("Granite mine"),
+    gettext_noop("Coal mine"),
+    gettext_noop("Iron mine"),
+    gettext_noop("Gold mine"),
+    gettext_noop("Lookout tower"),
+    "",
+    gettext_noop("Catapult"),
+    gettext_noop("Woodcutter"),
+    gettext_noop("Fishery"),
+    gettext_noop("Quarry"),
+    gettext_noop("Forester"),
+    gettext_noop("Slaughterhouse"),
+    gettext_noop("Hunter"),
+    gettext_noop("Brewery"),
+    gettext_noop("Armory"),
+    gettext_noop("Metalworks"),
+    gettext_noop("Iron smelter"),
+    gettext_noop("Charburner"),
+    gettext_noop("Pig farm"),
+    gettext_noop("Storehouse"),
+    "",
+    gettext_noop("Mill"),
+    gettext_noop("Bakery"),
+    gettext_noop("Sawmill"),
+    gettext_noop("Mint"),
+    gettext_noop("Well"),
+    gettext_noop("Shipyard"),
+    gettext_noop("Farm"),
+    gettext_noop("Donkey breeding"),
+    gettext_noop("Harbor building"),
+}};
+
 const char* const BUILDING_HELP_STRINGS[40] =
 {
     // Headquarters

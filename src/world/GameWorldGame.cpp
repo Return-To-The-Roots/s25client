@@ -42,6 +42,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"
+#include "gameData/SettingTypeConv.h"
 #include "helpers/containerUtils.h"
 #include <stdexcept>
 
@@ -86,11 +87,15 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const
     }
 }
 
-void GameWorldGame::DestroyFlag(const MapPoint pt)
+void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
 {
     // Let's see if there is a flag
     if(GetNO(pt)->GetType() == NOP_FLAG)
     {
+        noFlag* flag = GetSpecObj<noFlag>(pt);
+        if(flag->GetPlayer() != playerId)
+            return;
+
         // Get the attached building if existing
         noBase* building = GetNO(GetNeighbour(pt, 1));
 
@@ -103,13 +108,14 @@ void GameWorldGame::DestroyFlag(const MapPoint pt)
         }
 
         // Demolish, also the building
-        GetSpecObj<noFlag>(pt)->DestroyAttachedBuilding();
+        flag->DestroyAttachedBuilding();
 
         DestroyNO(pt, false);
         RecalcBQAroundPointBig(pt);
     }
 
-    gi->GI_FlagDestroyed(pt);
+    if(gi)
+        gi->GI_FlagDestroyed(pt);
 }
 
 void GameWorldGame::SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type)
@@ -160,7 +166,8 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
 
     // Baustelle setzen
     SetNO(pt, new noBuildingSite(type, pt, player));
-    gi->GI_UpdateMinimap(pt);
+    if(gi)
+        gi->GI_UpdateMinimap(pt);
 
     // Bauplätze drumrum neu berechnen
     RecalcBQAroundPointBig(pt);
@@ -214,7 +221,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
         curPt = GetNeighbour(curPt, route[i]);
 
         // Feld bebaubar und auf unserem Gebiet
-        if(!RoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
+        if(!IsRoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
         {
             // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
             if (!RoadAlreadyBuilt(boat_road, start, route))
@@ -325,23 +332,6 @@ bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
     }
 
     return false;
-}
-
-void GameWorldGame::DestroyRoad(const MapPoint pt, const unsigned char dir)
-{
-    // TODO: Verzögerungsbugabfrage, kann später ggf. weg
-    if(!GetSpecObj<noFlag>(pt))
-        return;
-
-    GetSpecObj<noFlag>(pt)->DestroyRoad(dir);
-}
-
-void GameWorldGame::UpgradeRoad(const MapPoint pt, const unsigned char dir)
-{
-    if(!GetSpecObj<noFlag>(pt))
-        return;
-
-    GetSpecObj<noFlag>(pt)->UpgradeRoad(dir);
 }
 
 void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool destroyed, const bool newBuilt)
@@ -682,8 +672,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             if(no->GetType() == NOP_FLAG && (!exception || no != exception->GetFlag()))
                 static_cast<noFlag*>(no)->DestroyAttachedBuilding();
 
-            no->Destroy();
-            delete no;
+            DestroyNO(pt, false);
             return;
         }
     }
@@ -819,10 +808,10 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 
         // Take soldier(s)
         unsigned i = 0;
-        SortedTroops& troops = static_cast<nobMilitary*>(*it)->troops;
+        const SortedTroops& troops = static_cast<nobMilitary*>(*it)->GetTroops();
         if(strong_soldiers){
             // Strong soldiers first
-            for(SortedTroops::reverse_iterator it2 = troops.rbegin();
+            for(SortedTroops::const_reverse_iterator it2 = troops.rbegin();
                     it2 != troops.rend() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -845,7 +834,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             }
         }else{
             // Weak soldiers first
-            for(SortedTroops::iterator it2 = troops.begin();
+            for(SortedTroops::const_iterator it2 = troops.begin();
                     it2 != troops.end() && i < soldiers_count;
                     ++it2, ++i){
                 bool inserted = false;
@@ -901,7 +890,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Verfügbare Soldaten herausfinden
-    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetAvailableSoldiersForSeaAttack(player_attacker, pt);
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetSoldiersForSeaAttack(player_attacker, pt);
 
     unsigned counter = 0;
     if(strong_soldiers)
@@ -1014,7 +1003,7 @@ void GameWorldGame::Armageddon()
             if(flag)
             {
                 flag->DestroyAttachedBuilding();
-                DestroyNO(pt);
+                DestroyNO(pt, false);
             }
         }
 }
@@ -1029,7 +1018,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
             if(flag && flag->GetPlayer() == player)
             {
                 flag->DestroyAttachedBuilding();
-                DestroyNO(pt);
+                DestroyNO(pt, false);
             }
         }
 }
@@ -1442,10 +1431,10 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
 }
 
 /// Gründet vom Schiff aus eine neue Kolonie
-bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short sea_id)
+bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)
 {
     // Ist es hier überhaupt noch möglich, eine Kolonie zu gründen?
-    if(!IsHarborPointFree(harbor_point, player, sea_id))
+    if(!IsHarborAtSea(harbor_point, seaId) || !IsHarborPointFree(harbor_point, player))
         return false;
 
     MapPoint pos(GetHarborPoint(harbor_point));
@@ -1456,7 +1445,8 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     SetNO(pos, bs);
     AddHarborBuildingSiteFromSea(bs);
 
-    gi->GI_UpdateMinimap(pos);
+    if(gi)
+        gi->GI_UpdateMinimap(pos);
 
     RecalcTerritory(*bs, false, true);
     // BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)
@@ -1483,7 +1473,7 @@ std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned h
     std::vector<unsigned> hps;
     for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
     {
-        if(i == hbId || !IsAtThisSea(i, seaId))
+        if(i == hbId || !IsHarborAtSea(i, seaId))
             continue;
         unsigned dist = CalcHarborDistance(hbId, i);
         if(dist == 0xffffffff)
@@ -1507,6 +1497,12 @@ bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char typ
 
     // Gibts Ressourcen von dem Typ an diesem Punkt?
     return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
+}
+
+
+MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)
+{
+    return GetNodeInt(pt);
 }
 
 void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player)

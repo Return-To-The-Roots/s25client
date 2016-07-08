@@ -33,7 +33,7 @@ struct RoadNodeComperatorGreater
     {
         if (lhs->estimate == rhs->estimate)
         {
-            // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir f�r std::set eine streng
+            // Wenn die Wegkosten gleich sind, vergleichen wir die Koordinaten, da wir für std::set eine streng
             // monoton steigende Folge brauchen
             return (lhs->GetObjId() > rhs->GetObjId());
         }
@@ -60,7 +60,7 @@ namespace AdditonalCosts{
     {
         unsigned operator()(const noRoadNode& curNode, const unsigned char nextDir) const
         {
-            // Im Warenmodus m�ssen wir Strafpunkte f�r �berlastete Tr�ger hinzuaddieren, 
+            // Im Warenmodus m�ssen wir Strafpunkte für �berlastete Tr�ger hinzuaddieren, 
             // damit der Algorithmus auch Ausweichrouten ausw�hlt
             return curNode.GetPunishmentPoints(nextDir);
         }
@@ -240,7 +240,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(!isSegmentAllowed(*best.routes[i]))
                 continue;
 
-            // Neuer Weg f�r diesen neuen Knoten berechnen
+            // Neuer Weg für diesen neuen Knoten berechnen
             unsigned cost = best.cost + best.routes[i]->GetLength();
             cost += addCosts(best, i);
 
@@ -281,7 +281,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 
             for (unsigned i = 0; i < scs.size(); ++i)
             {
-                // Neuer Weg f�r diesen neuen Knoten berechnen
+                // Neuer Weg für diesen neuen Knoten berechnen
                 unsigned cost = best.cost + scs[i].way_costs;
 
                 if (cost > max)

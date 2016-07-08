@@ -51,9 +51,9 @@ struct MapNode
     boost::array<FoWNode, MAX_PLAYERS> fow;
 
     /// To which sea this belongs to (0=None)
-    unsigned short sea_id;
+    unsigned short seaId;
     /// Hafenpunkt-ID (0 = kein Hafenpunkt)
-    unsigned harbor_id;
+    unsigned harborId;
 
     /// Objekt, welches sich dort befindet
     noBase* obj;

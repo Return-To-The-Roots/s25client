@@ -48,15 +48,11 @@
 #include "gameTypes/PactTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/SettingTypeConv.h"
 #include "libutil/src/Log.h"
+#include <boost/foreach.hpp>
 #include <stdint.h>
 #include <limits>
-
-// Standard priority of each ware
-const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
-{{
-    2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1
-}};
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg):
 		GamePlayerInfo(playerId, playerInfo), is_lagging(false), gwg(&gwg),
@@ -65,7 +61,8 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
     LoadStandardDistribution();
-    LoadStandardBuildOrder();
+    useCustomBuildOrder_ = false;
+    build_order = GetStandardBuildOrder();
     transportPrio = STD_TRANSPORT_PRIO;
     LoadStandardMilitarySettings();
     LoadStandardToolSettings();
@@ -128,12 +125,13 @@ void GamePlayer::LoadStandardMilitarySettings()
     militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
 }
 
-void GamePlayer::LoadStandardBuildOrder()
+BuildOrders GamePlayer::GetStandardBuildOrder()
 {
-    orderType_ = 0;
+    BuildOrders ordering;
 
     // Baureihenfolge füllen (0 ist das HQ!)
-    for(unsigned char i = 1, j = 0; i < BLD_COUNT; ++i)
+    unsigned curPrio = 0;
+    for(unsigned i = 1; i < BLD_COUNT; ++i)
     {
         // Diese Ids sind noch nicht besetzt
         if(
@@ -147,9 +145,12 @@ void GamePlayer::LoadStandardBuildOrder()
             )
             continue;
 
-        build_order[j] = i;
-        ++j;
+        RTTR_Assert(curPrio < ordering.size());
+        ordering[curPrio] = BuildingType(i);
+        ++curPrio;
     }
+    RTTR_Assert(curPrio == ordering.size());
+    return ordering;
 }
 
 void GamePlayer::LoadStandardDistribution()
@@ -245,29 +246,27 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
 
     sgd.PushMapPoint(hqPos);
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    BOOST_FOREACH(const Distribution& dist, distribution)
     {
-        for (unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
-        {
-            sgd.PushUnsignedChar(distribution[i].percent_buildings[bldType]);
-        }
-        sgd.PushUnsignedInt(distribution[i].client_buildings.size());
-        for(std::vector<BuildingType>::iterator it = distribution[i].client_buildings.begin(); it != distribution[i].client_buildings.end(); ++it)
-            sgd.PushUnsignedChar(*it);
-        sgd.PushUnsignedInt(unsigned(distribution[i].goals.size()));
-        for(unsigned z = 0; z < distribution[i].goals.size(); ++z)
-            sgd.PushUnsignedChar(distribution[i].goals[z]);
-        sgd.PushUnsignedInt(distribution[i].selected_goal);
+        BOOST_FOREACH(unsigned char p, dist.percent_buildings)
+            sgd.PushUnsignedChar(p);
+        sgd.PushUnsignedInt(dist.client_buildings.size());
+        BOOST_FOREACH(unsigned char bld, dist.client_buildings)
+            sgd.PushUnsignedChar(bld);
+        sgd.PushUnsignedInt(unsigned(dist.goals.size()));
+        BOOST_FOREACH(BuildingType goal, dist.goals)
+            sgd.PushUnsignedChar(goal);
+        sgd.PushUnsignedInt(dist.selected_goal);
     }
 
-    sgd.PushUnsignedChar(orderType_);
+    sgd.PushBool(useCustomBuildOrder_);
 
     for(unsigned i = 0; i < build_order.size(); ++i)
         sgd.PushUnsignedChar(build_order[i]);
 
     sgd.PushRawData(transportPrio.elems, transportPrio.size());
 
-    for(unsigned i = 0; i < MILITARY_SETTINGS_COUNT; ++i)
+    for(unsigned i = 0; i < militarySettings_.size(); ++i)
         sgd.PushUnsignedChar(militarySettings_[i]);
 
     for(unsigned i = 0; i < toolsSettings_.size(); ++i)
@@ -376,10 +375,10 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         distribution[i].selected_goal = sgd.PopUnsignedInt();
     }
 
-    orderType_ = sgd.PopUnsignedChar();
+    useCustomBuildOrder_ = sgd.PopBool();
 
     for(unsigned i = 0; i < build_order.size(); ++i)
-        build_order[i] = sgd.PopUnsignedChar();
+        build_order[i] = BuildingType(sgd.PopUnsignedChar());
 
     sgd.PopRawData(transportPrio.elems, transportPrio.size());
 
@@ -480,9 +479,9 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
     return best;
 }
 
-void GamePlayer::SetHQ(const nobBaseWarehouse& hq)
+void GamePlayer::SetHQ(const nobBaseWarehouse* hq)
 {
-    hqPos = hq.GetPos();
+    hqPos = hq ? hq->GetPos() : MapPoint::Invalid();
 }
 
 void GamePlayer::NewRoadConnection(RoadSegment* const rs)
@@ -1272,14 +1271,14 @@ unsigned short GamePlayer::CalcAverageProductivitiy()
 
 unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 {
-    if(orderType_)
+    if(useCustomBuildOrder_)
     {
         // Spezielle Reihenfolge
 
         // Typ in der Reihenfolge suchen und Position als Priorität zurückgeben
         for(unsigned i = 0; i < build_order.size(); ++i)
         {
-            if(building_site->GetBuildingType() == static_cast<BuildingType>(build_order[i]))
+            if(building_site->GetBuildingType() == build_order[i])
                 return i;
         }
     }
@@ -1302,24 +1301,13 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 
 void GamePlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
-    // Mit Hilfe der Standardbelegung lässt sich das recht einfach konvertieren:
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
-    {
-        for(unsigned z = 0; z < NUM_TRANSPORT_ORDERS; ++z)
-        {
-            if(transport_data[z] == STD_TRANSPORT_PRIO[i])
-            {
-                transportPrio[i] = z;
-                break;
-            }
-        }
-
-    }
+        transportPrio[i] = GetTransportPrioFromOrdering(transport_data, GoodType(i));
 }
 
 bool GamePlayer::IsAlly(const unsigned char playerId) const
 {
-    // Der Spieler ist ja auch zu sich selber verbündet ;
+    // Der Spieler ist ja auch zu sich selber verbündet
     if(GetPlayerId() == playerId)
         return true;
     else
@@ -1414,6 +1402,8 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
     noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
+    if(!flag)
+        return;
     /// Find wh with given job type (e.g. geologist, scout, ...)
     nobBaseWarehouse* wh = FindWarehouse(*flag, FW::HasFigure(job, true), false, false);
 
@@ -1442,14 +1432,14 @@ void GamePlayer::RefreshDefenderList()
 {
     /// Die Verteidigungsliste muss erneuert werden
     for(unsigned i = 0; i < defenders.size(); ++i)
-        defenders[i] = (i < militarySettings_[2] * 5 / MILITARY_SETTINGS_SCALE[2]);
+        defenders[i] = (i < militarySettings_[2] * 5u / MILITARY_SETTINGS_SCALE[2]);
     // und ordentlich schütteln
-    RANDOM.Shuffle(&defenders[0], 5);
+    RANDOM.Shuffle(&defenders[0], defenders.size());
 
     defenders_pos = 0;
 }
 
-void GamePlayer::ChangeMilitarySettings(const boost::array<unsigned char, MILITARY_SETTINGS_COUNT>& military_settings)
+void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_settings)
 {
     for(unsigned i = 0; i < military_settings.size(); ++i)
     {
@@ -1518,10 +1508,10 @@ void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
 }
 
 /// Setzt neue Baureihenfolge-Einstellungen
-void GamePlayer::ChangeBuildOrder(const unsigned char order_type, const BuildOrders& order_data)
+void GamePlayer::ChangeBuildOrder(bool useCustomBuidOrder, const BuildOrders& oder_data)
 {
-    this->orderType_ = order_type;
-    this->build_order = order_data;
+    this->useCustomBuildOrder_ = useCustomBuidOrder;
+    this->build_order = oder_data;
 }
 
 bool GamePlayer::ShouldSendDefender()
@@ -1544,8 +1534,6 @@ void GamePlayer::TestDefeat()
         // GUI Bescheid sagen
 		if(gwg->GetGameInterface())
 			gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
-		else
-			LOG.lprintf("Warning: Player %i defeated but could not find GameInterface (GameClientPlayer.cpp::TestDefeat()\n",GetPlayerId());
     }
 }
 
@@ -1554,7 +1542,8 @@ void GamePlayer::Surrender()
     isDefeated = true;
 
     // GUI Bescheid sagen
-    gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
+    if(gwg->GetGameInterface())
+        gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
 }
 
 void GamePlayer::SetStatisticValue(StatisticType type, unsigned int value)
@@ -1703,16 +1692,23 @@ void GamePlayer::PactChanged(const PactType pt)
 
 void GamePlayer::SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration)
 {
-    pacts[targetPlayer][pt].accepted = false;
-    pacts[targetPlayer][pt].duration = duration;
-    pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
+    // Don't try to make pact with self
+    if(targetPlayer == GetPlayerId())
+        return;
 
-    gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
+    if(!pacts[targetPlayer][pt].accepted && duration > 0)
+    {
+        pacts[targetPlayer][pt].accepted = false;
+        pacts[targetPlayer][pt].duration = duration;
+        pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
+
+        gwg->GetPlayer(targetPlayer).SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
+    }
 }
 
 void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer)
 {
-    if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].start == id)
+    if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].duration > 0 && pacts[targetPlayer][pt].start == id)
     {
         MakePact(pt, targetPlayer, pacts[targetPlayer][pt].duration);
         gwg->GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
@@ -1742,11 +1738,8 @@ GamePlayer::PactState GamePlayer::GetPactState(const PactType pt, const unsigned
             return IN_PROGRESS;
 
         if(pacts[other_player][pt].duration == 0xFFFFFFFF)
-        {
-            if(pacts[other_player][pt].accepted)
-                return ACCEPTED;
-        }
-        else if(gwg->GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration )
+            return ACCEPTED;
+        else if(gwg->GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
             return ACCEPTED;
     }
 
@@ -1784,6 +1777,10 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
 /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
 void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerIdx)
 {
+    // Don't try to cancel pact with self
+    if(otherPlayerIdx == GetPlayerId())
+        return;
+
     // Besteht bereits ein Bündnis?
     if(pacts[otherPlayerIdx][pt].accepted)
     {
@@ -1822,13 +1819,21 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
 
 void GamePlayer::MakeStartPacts()
 {
+    // Reset pacts
+    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    {
+        for(unsigned z = 0; z < PACTS_COUNT; ++z)
+            pacts[i][z] = Pact();
+    }
+
     // Translate possible random team to real team or no team
     Team ownTeam = GetFixedTeam(team);
+    // No team -> No pacts
     if(ownTeam == TM_NOTEAM)
         return;
     RTTR_Assert(ownTeam >= TM_TEAM1 && ownTeam <= TM_TEAM4);
 
-    // Create ally- and non-aggression-pact or all players of same team
+    // Create ally- and non-aggression-pact for all players of same team
     for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
     {
         if(ownTeam != GetFixedTeam(gwg->GetPlayer(i).team))
@@ -1896,19 +1901,17 @@ struct ShipForHarbor
 };
 
 /// Schiff für Hafen bestellen
-bool GamePlayer::OrderShip(nobHarborBuilding* hb)
+bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 {
     std::vector<ShipForHarbor> sfh;
 
     // we need more ships than those that are already on their way? limit search to idle ships
-    if (GetShipsToHarbor(hb) < hb->GetNeededShipsCount())
+    if (GetShipsToHarbor(hb) < hb.GetNeededShipsCount())
     {
         for (std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
         {
-            if ((*it)->IsIdling() && gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
-            {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
-            }
+            if ((*it)->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), (*it)->GetSeaID()))
+                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
         }
     }
     else
@@ -1917,15 +1920,11 @@ bool GamePlayer::OrderShip(nobHarborBuilding* hb)
         {
             if ((*it)->IsIdling())
             {
-                if (gwg->IsAtThisSea(gwg->GetHarborPointID(hb->GetPos()), (*it)->GetSeaID()))
-                {
-                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
-                }
+                if (gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), (*it)->GetSeaID()))
+                    sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
             }
             else if ((*it)->IsGoingToHarbor(hb))
-            {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb->GetPos(), (*it)->GetPos())));
-            }
+                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
         }
     }
 
@@ -1942,18 +1941,16 @@ bool GamePlayer::OrderShip(nobHarborBuilding* hb)
 
         // the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
         if (it->estimate >= best_distance)
-        {
             break;
-        }
 
         noShip* ship = it->ship;
 
-        MapPoint dest = gwg->GetCoastalPoint(hb->GetHarborPosID(), ship->GetSeaID());
+        MapPoint dest = gwg->GetCoastalPoint(hb.GetHarborPosID(), ship->GetSeaID());
 
         // ship already there?
         if (ship->GetPos() == dest)
         {
-            hb->ShipArrived(ship);
+            hb.ShipArrived(ship);
             return(true);
         }
 
@@ -2022,14 +2019,14 @@ void GamePlayer::GetJobForShip(noShip* ship)
             continue;
 
         // Anzahl der Schiffe ermitteln, die diesen Hafen bereits anfahren
-        unsigned ships_coming = GetShipsToHarbor(*it);
+        unsigned ships_coming = GetShipsToHarbor(**it);
 
         // Evtl. kommen schon genug?
         if((*it)->GetNeededShipsCount() <= ships_coming)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), ship->GetSeaID()))
+        if(gwg->IsHarborAtSea((*it)->GetHarborPosID(), ship->GetSeaID()))
         {
             MapPoint dest = gwg->GetCoastalPoint((*it)->GetHarborPosID(), ship->GetSeaID());
 
@@ -2060,7 +2057,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
     // Einen Hafen gefunden?
     if(best)
         // Dann bekommt das gleich der Hafen
-        ship->GoToHarbor(best, best_route);
+        ship->GoToHarbor(*best, best_route);
 }
 
 
@@ -2085,21 +2082,21 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 
 
 /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-void GamePlayer::GetHarborBuildings(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short sea_id) const
+void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
 {
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         if(helpers::contains(harbor_buildings, *it))
             continue;
 
-        if(gwg->IsAtThisSea((*it)->GetHarborPosID(), sea_id))
+        if(gwg->IsHarborAtSea((*it)->GetHarborPosID(), seaId))
             harbor_buildings.push_back(*it);
     }
 }
 
 
 /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
-unsigned GamePlayer::GetShipsToHarbor(nobHarborBuilding* hb) const
+unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 {
     unsigned count = 0;
     for(unsigned i = 0; i < ships.size(); ++i)
@@ -2125,7 +2122,7 @@ void GamePlayer::HarborDestroyed(nobHarborBuilding* hb)
 
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
-bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harbor_id,
+bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId,
         std::vector<unsigned char>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = NULL;
@@ -2139,7 +2136,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
             continue;
 
         // Prüfen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
-        if(!gwg->IsAtThisSea(hb->GetHarborPosID(), ship->GetSeaID()))
+        if(!gwg->IsHarborAtSea(hb->GetHarborPosID(), ship->GetSeaID()))
             continue;
 
         // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
@@ -2159,7 +2156,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
         // Weg dorthin suchen
         MapPoint dest = gwg->GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
         route->clear();
-        *goal_harbor_id = best->GetHarborPosID();
+        *goal_harborId = best->GetHarborPosID();
         // Weg dorthin gefunden?
         if(start == dest || gwg->FindShipPath(start, dest, route, NULL))
             return true;
@@ -2226,11 +2223,12 @@ void GamePlayer::TestPacts()
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pactId].duration = 0;
-                RTTR_Assert(gwg->GetPlayer(i).pacts[GetPlayerId()][pactId].duration);
-                gwg->GetPlayer(i).pacts[GetPlayerId()][pactId].duration = 0;
+                GamePlayer& otherPlayer = gwg->GetPlayer(i);
+                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pactId].duration);
+                otherPlayer.pacts[GetPlayerId()][pactId].duration = 0;
                 // And notify
                 PactChanged(PactType(pactId));
-                gwg->GetPlayer(i).PactChanged(PactType(pactId));
+                otherPlayer.PactChanged(PactType(pactId));
             }
         }
     }
@@ -2334,11 +2332,18 @@ struct WarehouseDistanceComparator
 /// Send wares to warehouse wh
 void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job job, unsigned count) const
 {
+    if(!gwg->GetGGS().isEnabled(AddonId::TRADE))
+        return;
+    
     if(count == 0)
         return;
 
     // Don't try to trade with us!
     if(goalWh->GetPlayer() == GetPlayerId())
+        return;
+
+    // No trades with enemies
+    if(!IsAlly(goalWh->GetPlayer()))
         return;
 
     const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
@@ -2410,13 +2415,10 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     visDistribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
     visDistribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
 
-    visualSettings.order_type  = orderType_;
+    visualSettings.useCustomBuildOrder  = useCustomBuildOrder_;
     visualSettings.build_order = build_order;
 
-    // Map prip of each ware to STD prio
-    // See declaration of TransportOrders for details
-    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ware++)
-        visualSettings.transport_order[transportPrio[ware]] = STD_TRANSPORT_PRIO[ware];
+    visualSettings.transport_order = GetOrderingFromTransportPrio(transportPrio);
 
     visualSettings.military_settings = militarySettings_;
     visualSettings.tools_settings    = toolsSettings_;

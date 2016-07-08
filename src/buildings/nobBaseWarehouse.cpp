@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////////
-
 #include "defines.h" // IWYU pragma: keep
 #include "nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"
@@ -41,11 +39,10 @@
 #include "world/GameWorldGame.h"
 #include "factories/JobFactory.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/SettingTypeConv.h"
 #include "helpers/containerUtils.h"
 #include "Log.h"
-
 #include <algorithm>
-class nofAttacker;
 
 /// Intervall für Ausleerung (in gf)
 const unsigned empty_INTERVAL = 25;
@@ -951,7 +948,7 @@ void nobBaseWarehouse::OrderTroops(nobMilitary* goal, unsigned count,bool ignore
 
 }
 
-nofAggressiveDefender* nobBaseWarehouse::SendDefender(nofAttacker* attacker)
+nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* attacker)
 {
     // Sind noch Soldaten da?
     unsigned char rank;
@@ -1135,23 +1132,33 @@ const Inventory& nobBaseWarehouse::GetInventory() const
     return inventory.visual;
 }
 
-/// Fügt einige Güter hinzu
-void nobBaseWarehouse::AddGoods(const Inventory& goods)
+void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 {
-    for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
+    GamePlayer& owner = gwg->GetPlayer(player);
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
     {
-        inventory.Add(GoodType(i), goods.goods[i]);
+        if(!goods.goods[i])
+            continue;
+        // Can only add canonical shields (romans)
+        RTTR_Assert(GoodType(i) == GD_SHIELDROMANS || ConvertShields(GoodType(i)) != GD_SHIELDROMANS);
 
-        if(goods.goods[i])
-            CheckUsesForNewWare(GoodType(i));
+        inventory.Add(GoodType(i), goods.goods[i]);
+        if(addToPlayer)
+            owner.IncreaseInventoryWare(GoodType(i), goods.goods[i]);
+        CheckUsesForNewWare(GoodType(i));
     }
 
-    for(unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
     {
-        inventory.Add(Job(i), goods.people[i]);
+        if(!goods.people[i])
+            continue;
+        // Boatcarriers are added as carriers and boat individually
+        RTTR_Assert(Job(i) != JOB_BOATCARRIER);
 
-        if(goods.people[i])
-            CheckJobsForNewFigure(Job(i));
+        inventory.Add(Job(i), goods.people[i]);
+        if(addToPlayer)
+            owner.IncreaseInventoryJob(Job(i), goods.people[i]);
+        CheckJobsForNewFigure(Job(i));
     }
 }
 
@@ -1249,7 +1256,7 @@ void nobBaseWarehouse::SetInventorySetting(const bool isJob, const unsigned char
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.GetPlayerId() != player)
         SetInventorySettingVisual(isJob, type, state);
 
-    if(oldState.IsSet(EInventorySetting::STOP) && !state.IsSet(EInventorySetting::STOP))
+    if(!isJob && oldState.IsSet(EInventorySetting::STOP) && !state.IsSet(EInventorySetting::STOP))
     {
         // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
         gwg->GetPlayer(player).FindClientForLostWares();
@@ -1420,7 +1427,7 @@ bool nobBaseWarehouse::IsDependentFigure(noFigure* fig)
     return helpers::contains(dependent_figures, fig);
 }
 
-/// Available goods of a speciefic type that can be used for trading
+/// Available goods of a specific type that can be used for trading
 unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
 {
     // We need a helper as leader
@@ -1483,11 +1490,9 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt,  Job job, const uns
     else
     {
         RTTR_Assert(gt == GD_NOTHING);
-        //remove the jobs & the helpers
+        //remove the jobs
         inventory.real.Remove(job, count);
         owner.DecreaseInventoryJob(job, count);
-        inventory.real.Remove(JOB_HELPER, count);
-        owner.DecreaseInventoryJob(JOB_HELPER, count);
     }
 }
 

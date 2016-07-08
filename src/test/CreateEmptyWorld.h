@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SettingsTypes_h__
-#define SettingsTypes_h__
+#ifndef CreateEmptyWorld_h__
+#define CreateEmptyWorld_h__
 
-#include <boost/array.hpp>
+#include "gameTypes/Nation.h"
+#include <vector>
 
-#define NUM_DISTRIBUTION 23
-#define NUM_BUILD_ORDERS 31
-#define NUM_TRANSPORT_ORDERS 14
-#define NUM_TOOL_SETTINGS 12
+class GameWorldGame;
 
-typedef boost::array<unsigned char, NUM_DISTRIBUTION> Distributions;
-typedef boost::array<unsigned char, NUM_BUILD_ORDERS> BuildOrders;
-typedef boost::array<unsigned char, NUM_TRANSPORT_ORDERS> TransportOrders;
-typedef boost::array<unsigned char, NUM_TOOL_SETTINGS> ToolSettings;
+/// Creates an empty world, with meadow terrain and the given number of players
+struct CreateEmptyWorld
+{
+    CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers);
+    bool operator()(GameWorldGame& world) const;
+private:
+    unsigned width_, height_;
+    std::vector<Nation> playerNations_;
+};
 
-#endif // SettingsTypes_h__
+
+#endif // CreateEmptyWorld_h__

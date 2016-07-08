@@ -37,13 +37,14 @@
 namespace{
     // Enum is auto-numbering once we set a start value
     enum ButtonIds{
-        ID_FIRST_FREE = 2,
+        ID_FIRST_FREE = 1,
         ID_SHOW_ALL,
         ID_SHOW_GEN,
         ID_SHOW_MIL,
         ID_SHOW_GEO,
         ID_SHOW_ECO,
         ID_SHOW_DIPLO,
+        ID_HELP,
         ID_GO_START,
         ID_GO_BACK,
         ID_GO_FWD,
@@ -68,12 +69,12 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     AddImageButton(ID_SHOW_ECO,   126, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
     AddImageButton(ID_SHOW_DIPLO, 161, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
     AddImageButton(ID_SHOW_GEN,   199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
-    AddImage(0, 126, 151, LOADER.GetImageN("io", 228));
-    AddImageButton(1, 18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton(ID_GO_START, 51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));// Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK, 81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(ID_GO_FWD, 111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(ID_GO_END, 141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImage(0,                   126, 151, LOADER.GetImageN("io", 228));
+    AddImageButton(ID_HELP,        18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+    AddImageButton(ID_GO_START,    51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
+    AddImageButton(ID_GO_BACK,     81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
+    AddImageButton(ID_GO_FWD,     111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton(ID_GO_END,     141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
     AddImageButton(ID_GOTO, 181, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
@@ -85,7 +86,7 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     AddImage(ID_IMG, 127, 155, LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 50, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 120, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
     text->EnableBox(false);
     text->AddString("", COLOR_WINDOWBROWN, false);
     text->AddString("", COLOR_WINDOWBROWN, false);
@@ -185,7 +186,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // New contract?
                 if(dcurMsg->IsAccept())
-                    GAMECLIENT.AcceptPact(true, dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                    GAMECLIENT.AcceptPact(dcurMsg->GetPactId(), dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 else
                     GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 postBox.DeleteMsg(dcurMsg);
@@ -257,6 +258,7 @@ void iwPostWindow::DisplayPostMessage()
     {
         SetMessageText(_("No letters!"));
         GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
+        curMsg = NULL;
         return;
     }
 
@@ -306,7 +308,7 @@ void iwPostWindow::SetMessageText(const std::string& message)
 
     glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(message, 190, 190);
     std::vector<std::string> lines = wi.CreateSingleStrings(message);
-    for(unsigned i = 0; i < 4; ++i)
+    for(unsigned i = 0; i < text->GetLineCount(); ++i)
     {
         if (i < lines.size())
             text->SetLine(i, lines[i], COLOR_WINDOWBROWN);
