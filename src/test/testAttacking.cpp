@@ -283,7 +283,8 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
 {
     std::cout << "ConquerBld Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
     AddSoldiers(milBld2Pos, 1, 5);
-    AddSoldiers(milBld1NearPos, 1, 1);
+    AddSoldiersWithRank(milBld1NearPos, 1, 0);
+    AddSoldiersWithRank(milBld1NearPos, 1, 1);
     SetCurPlayer(2);
     BuildRoadForBlds(milBld2Pos, hqPos[2]);
     // Finish recruiting, carrier outhousing etc.
@@ -308,7 +309,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount() + milBld1Near->GetLeavingFigures().size(), 2u);
     const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
     const unsigned oldWeakSoldierCt = attackedPlInventory.people[JOB_PRIVATE];
-    const unsigned oldStrongSoldierCt = attackedPlInventory.people[JOB_GENERAL];
+    const unsigned oldStrongerSoldierCt = attackedPlInventory.people[JOB_PRIVATEFIRSTCLASS];
     const unsigned oldAttackerStrongSoldierCt = world.GetPlayer(2).GetInventory().people[JOB_GENERAL];
 
     // 1st soldier will walk towards attacker and will be killed
@@ -329,7 +330,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     BOOST_REQUIRE_EQUAL(static_cast<nofAttacker*>(figures.front())->GetPlayer(), 2u);
 
     // Lets fight
-    for(unsigned gf = 0; gf < 400; gf++)
+    for(unsigned gf = 0; gf < 1000; gf++)
     {
         em.ExecuteNextGF();
         if(milBld1Near->IsBeingCaptured())
@@ -352,7 +353,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     // Weak soldier must be dead
     BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_PRIVATE], oldWeakSoldierCt - 1);
     // Src building refill
-    for(unsigned gf = 0; gf < 700; gf++)
+    for(unsigned gf = 0; gf < 800; gf++)
     {
         em.ExecuteNextGF();
         if(milBld2->GetTroopsCount() == 6u)
@@ -362,10 +363,10 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 6u);
     // We may have lost soldiers
     BOOST_REQUIRE_LE(world.GetPlayer(2).GetInventory().people[JOB_GENERAL], oldAttackerStrongSoldierCt);
-    // The enemy may have lost his general
-    BOOST_REQUIRE_LE(attackedPlInventory.people[JOB_GENERAL], oldStrongSoldierCt);
+    // The enemy may have lost his stronger soldier
+    BOOST_REQUIRE_LE(attackedPlInventory.people[JOB_PRIVATEFIRSTCLASS], oldStrongerSoldierCt);
     // But only one
-    BOOST_REQUIRE_GE(attackedPlInventory.people[JOB_GENERAL], oldStrongSoldierCt - 1);
+    BOOST_REQUIRE_GE(attackedPlInventory.people[JOB_PRIVATEFIRSTCLASS], oldStrongerSoldierCt - 1);
     // At least 2 survivors
     BOOST_REQUIRE_GT(milBld1Near->GetTroopsCount(), 2u);
 

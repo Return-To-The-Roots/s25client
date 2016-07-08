@@ -17,6 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 
+#include "Random.h"
+
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
@@ -51,6 +53,9 @@ struct TestSetup
             }
         }
         srand(static_cast<unsigned>(time(NULL)));
+#ifdef RTTR_RAND_TEST
+        RANDOM.Init(rand());
+#endif
     }
 };
 

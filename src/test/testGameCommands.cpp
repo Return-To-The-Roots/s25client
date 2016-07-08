@@ -27,6 +27,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
+#include "Random.h"
 #include "PointOutput.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VisualSettings.h"
@@ -35,6 +36,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
+#include <iostream>
 
 std::ostream& operator<<(std::ostream &out, const InventorySetting& setting)
 {
@@ -387,6 +389,8 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 {
+    std::cout << "SendSoldiersHome Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    
     const MapPoint milPt = hqPos + MapPoint(6, 0);
     // Setup: Give player 3 generals
     GamePlayer& player = world.GetPlayer(curPlayer);
@@ -405,8 +409,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<unsigned char>((milPt.x - hqPos.x), Direction::EAST));
-    // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked, 50GFs safety)
-    unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x) + 50;
+    // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to and from flag), 30GFs for leaving carrier)
+    unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
     for(unsigned i = 0; i < numGFtillAllArrive; i++)
         this->em.ExecuteNextGF();
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s

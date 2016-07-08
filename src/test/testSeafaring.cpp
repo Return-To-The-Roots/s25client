@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
 
 BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
 {
-    std::cout << "Random: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    std::cout << "ShipBuilding Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const MapPoint hqPos = player.GetHQPos();
     const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
@@ -156,7 +156,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
 
 BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
 {
-    std::cout << "Random: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    std::cout << "ExplorationExpedition Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
     const nobHarborBuilding& harbor = *player.GetHarbors().front();
@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 10u);
     // And at some time it should return home
-    for(unsigned gf = 0; gf < 5600; gf++)
+    for(unsigned gf = 0; gf < 6200; gf++)
     {
         this->em.ExecuteNextGF();
         if(ship->IsIdling())
@@ -224,7 +224,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
 
 BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)
 {
-    std::cout << "Random: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    std::cout << "Expedition Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
     const nobHarborBuilding& harbor = *player.GetHarbors().front();
