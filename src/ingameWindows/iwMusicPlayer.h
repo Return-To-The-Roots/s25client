@@ -48,6 +48,7 @@ class iwMusicPlayer : public IngameWindow
         void SetSegments(const std::vector<std::string>& segments);
         void SetRepeats(const unsigned repeats);
         void SetRandomPlayback(const bool random_playback);
+        void SetCurrentSong(const unsigned int selection);
 
         /// Gibt Werte zurück
         std::vector<std::string> GetSegments() const;

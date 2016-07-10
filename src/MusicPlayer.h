@@ -35,7 +35,7 @@ class Playlist
         /// bereitet die Playlist aufs abspielen vor.
         void Prepare();
 
-        /// liefert den Dateinamen des akteullen Songs
+        /// liefert den Dateinamen des aktuellen Songs
         const std::string getCurrentSong() const    {   return (!songs.empty() && !order.empty() ? songs[order[0]] : "");   }
 
         /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
@@ -55,6 +55,7 @@ class Playlist
         void SetStartSong(const unsigned id);
 
     protected:
+        unsigned int current;
         unsigned int repeats;               /// Anzahl der Wiederholungen
         bool random;                        /// Zufallswiedergabe?
         std::vector<std::string> songs;     /// Dateinamen der abzuspielenden Titel

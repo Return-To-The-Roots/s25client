@@ -157,6 +157,11 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
     window->SetSegments(songs);
     window->SetRepeats(repeats);
     window->SetRandomPlayback(random);
+
+    if (current != 0xFFFF)
+    {
+        window->SetCurrentSong(current);
+    }
 }
 
 /**
@@ -257,6 +262,7 @@ void MusicPlayer::PlayNext()
 const std::string Playlist::getNextSong()
 {
     const std::string tmp(getCurrentSong());
+    current = !songs.empty() && !order.empty() ? order[0] : 0xFFFF;
     if(!order.empty())
         order.erase(order.begin());
     return tmp;

@@ -395,6 +395,11 @@ void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
         random_playback ? LOADER.GetImageN("io", 225) : LOADER.GetImageN("io", 107));
 }
 
+void iwMusicPlayer::SetCurrentSong(const unsigned int selection)
+{
+    GetCtrl<ctrlList>(0)->SetSelection(selection);
+}
+
 std::vector<std::string> iwMusicPlayer::GetSegments() const
 {
     std::vector<std::string> segments;
