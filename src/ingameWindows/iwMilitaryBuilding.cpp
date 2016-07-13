@@ -50,7 +50,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
 
     // Hilfe
-    AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21));
+    AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Abreißen
     AddImageButton(5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
     // Gold an/aus (227,226)

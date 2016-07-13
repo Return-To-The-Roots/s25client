@@ -114,7 +114,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     UpdatePercents();
 
     // Hilfe-Button
-    AddImageButton(500, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(500, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 /// Aktualisieren der Prozente

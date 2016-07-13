@@ -106,7 +106,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory):
     }
 
     // Hilfe-Button
-    AddImageButton(32, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(32, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
 }
 

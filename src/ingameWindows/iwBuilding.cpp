@@ -65,7 +65,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     }
 
     // Info
-    AddImageButton( 4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
+    AddImageButton( 4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Abreißen
     AddImageButton( 5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)

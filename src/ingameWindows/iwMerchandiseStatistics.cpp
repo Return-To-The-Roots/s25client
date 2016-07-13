@@ -72,7 +72,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player):
     types->AddImageButton(14, 203, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_BOAT), _("Boats"));
 
     // Hilfe
-    AddImageButton(16, 17, 261, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(16, 17, 261, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
     // Mülleimer
     AddImageButton(17, 49, 263, 30, 28, TC_GREY, LOADER.GetImageN("io", 106), _("Delete all"));

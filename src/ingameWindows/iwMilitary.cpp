@@ -41,7 +41,7 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     AddProgress(7, 17, 249, 132, 26, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", 4, 4, 0, _("Border areas"), _("Border areas"));
 
     // unteren 2 Buttons
-    AddImageButton(20, 18, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(20, 18, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     AddImageButton(21, 120, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Falls Verteidiger ändern verboten ist, einfach die Bar ausblenden

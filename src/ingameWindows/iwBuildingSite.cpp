@@ -37,7 +37,7 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
     AddText(1, 113, 44, _("Order of building site"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Hilfe
-    AddImageButton( 2,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  21));
+    AddImageButton( 2,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Gebäude abbrennen
     AddImageButton( 3,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
 

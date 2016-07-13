@@ -171,7 +171,7 @@ iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
     // "Blättern"
     AddImageButton(0, 52, height - 47, 66, 32, TC_GREY, LOADER.GetImageN("io", 84), _("Next page"));
     // Hilfe
-    AddImageButton(12,  16, height - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(12,  16, height - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)

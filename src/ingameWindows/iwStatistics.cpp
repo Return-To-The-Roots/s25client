@@ -122,7 +122,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
     timeChanger->AddTextButton(24, 186, 288, 43, 28, TC_GREY, _("16 h"), NormalFont);
 
     // Hilfe-Button
-    AddImageButton(25, 18, 288, 30, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(25, 18, 288, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
     // Aktuelle Überschrift über der Statistik
     headline = AddText(30, 130, 120, _("Size of country"), MakeColor(255, 136, 96, 52),

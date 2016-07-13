@@ -56,7 +56,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
     }
 
     // Info
-    AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
+    AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
         AddImageButton(15, 130, 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
     // Standard

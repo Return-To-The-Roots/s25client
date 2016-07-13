@@ -47,7 +47,7 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     IngameWindow(CGI_TRANSPORT, 0xFFFF, 0xFFFF, 166, 333, _("Transport"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
-    AddImageButton(0, 18, 285, 30, 30, TC_GREY, LOADER.GetImageN("io",  21), _("Help"));
+    AddImageButton(0, 18, 285, 30, 30, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
 
     // Standard
     AddImageButton(1, 60, 285, 48, 30, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));

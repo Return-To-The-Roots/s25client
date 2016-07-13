@@ -151,7 +151,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     AddTimer(1, 2000);
 
     // Hilfe
-    AddImageButton(2, 15, height_ - 15 - 32, 32, 32, TC_GREY, LOADER.GetImageN("io", 21), _("Help"));
+    AddImageButton(2, 15, height_ - 15 - 32, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     // Standardbelegung
     AddImageButton(10, width_ - 15 - 32, height_ - 15 - 32, 32, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
