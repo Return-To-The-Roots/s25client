@@ -1,3 +1,4 @@
+*~
 *.bak
 *.user
 *.opensdf
@@ -11,6 +12,7 @@
 /build/*.def
 /build/*.exp
 /build/LICENSE.*
+/build/callgrind.out.*
 /build/Testing
 /build/CTestTestfile.cmake
 /build/s25client.VC.opendb
