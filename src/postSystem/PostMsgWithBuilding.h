@@ -31,7 +31,7 @@ class PostMsgWithBuilding: public PostMsg
 public:
     /// Creates the message.
     /// NOTE: Building is only valid during the call (do not store)
-    PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld);
+    PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld, SoundEffect soundEffect = SoundEffect::Pidgeon);
     PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation, const MapPoint& pos = MapPoint::Invalid());
 
     glArchivItem_Bitmap* GetImage_() const override;

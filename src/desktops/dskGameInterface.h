@@ -41,6 +41,7 @@ class GlobalGameSettings;
 class MouseCoords;
 class GameWorldBase;
 class PostBox;
+class PostMsg;
 struct BuildingNote;
 struct KeyEvent;
 
@@ -100,7 +101,7 @@ class dskGameInterface :
         void CI_Error(const ClientError ce) override;
         void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
 
-        void NewPostMessage(unsigned msgCt);
+        void NewPostMessage(const PostMsg& msg, unsigned msgCt);
         void PostMessageDeleted(unsigned msgCt);
 
         /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss

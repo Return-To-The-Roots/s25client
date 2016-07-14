@@ -21,8 +21,8 @@
 #include "Loader.h"
 #include <stdexcept>
 
-PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld):
-    PostMsg(sendFrame, text, cat, bld.GetPos()), bldType(bld.GetBuildingType()), nation(bld.GetNation())
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld, SoundEffect soundEffect):
+    PostMsg(sendFrame, text, cat, bld.GetPos(), soundEffect), bldType(bld.GetBuildingType()), nation(bld.GetNation())
 {}
 
 PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation, const MapPoint& pos /*= MapPoint::Invalid()*/):

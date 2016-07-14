@@ -81,6 +81,7 @@
 #include <boost/lambda/bind.hpp>
 #include <sstream>
 #include <algorithm>
+#include "postSystem/PostMsg.h"
 
 dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gameClient(GAMECLIENT),
@@ -119,11 +120,11 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), borders);
 
     PostBox& postBox = GetPostBox();
-    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1));
+    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1, _2));
     postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
     // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
-    if (postBox.GetNumMsgs() > 0)
-        NewPostMessage(postBox.GetNumMsgs());
+    if(postBox.GetNumMsgs() > 0)
+        UpdatePostIcon(postBox.GetNumMsgs(), true);
 
     InitPlayer();
     worldViewer.InitTerrainRenderer();
@@ -732,10 +733,6 @@ void dskGameInterface::OnBuildingNote(const BuildingNote& note)
         // In "Constructed" this means the buildingsite
         WINDOWMANAGER.Close(worldViewer.GetWorld().CreateGUIID(note.pos));
         break;
-    case BuildingNote::Captured:
-        // Fanfaren
-        LOADER.GetSoundN("sound", 110)->Play(100, false);
-        break;
     default:
         break;
     }
@@ -1139,12 +1136,18 @@ void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool sh
 /**
  *  Neue Post-Nachricht eingetroffen
  */
-void dskGameInterface::NewPostMessage(const unsigned msgCt)
+void dskGameInterface::NewPostMessage(const PostMsg& msg, const unsigned msgCt)
 {
     UpdatePostIcon(msgCt, true);
-
-    // Tauben-Sound abspielen
-    LOADER.GetSoundN("sound", 114)->Play(100, false);
+    SoundEffect soundEffect = msg.GetSoundEffect();
+    switch(soundEffect)
+    {
+    case SoundEffect::Pidgeon:
+        LOADER.GetSoundN("sound", 114)->Play(100, false);
+        break;
+    case SoundEffect::Fanfare:
+        LOADER.GetSoundN("sound", 110)->Play(100, false);
+    }
 }
 
 /**

@@ -91,7 +91,7 @@ struct CallbackChecker
     PostBox& box;
     unsigned newCalls, delCalls;
     CallbackChecker(PostBox& box): box(box), newCalls(0), delCalls(0){}
-    void OnNew(unsigned ct)
+    void OnNew(const PostMsg& /*msg*/, unsigned ct)
     {
         newCalls++;
         BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), ct);
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
 {
     PostBox box;
     CallbackChecker cb(box);
-    box.ObserveNewMsg(boost::bind(&CallbackChecker::OnNew, &cb, _1));
+    box.ObserveNewMsg(boost::bind(&CallbackChecker::OnNew, &cb, _1, _2));
     box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));

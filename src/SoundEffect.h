@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PostCategory_h__
-#define PostCategory_h__
+#ifndef SoundEffect_h__
+#define SoundEffect_h__
 
 #include <boost/detail/scoped_enum_emulation.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect)
 {
-    General,
-    Military,
-    Geologist,
-    Economy,
-    Diplomacy
+    Fanfare,
+    Pidgeon
 }
-BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
+BOOST_SCOPED_ENUM_DECLARE_END(SoundEffect)
 
-#endif // PostCategory_h__
+#endif // SoundEffect_h__

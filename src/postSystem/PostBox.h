@@ -26,7 +26,8 @@ class PostMsg;
 class PostBox
 {
 public:
-    typedef boost::function<void(unsigned)> Callback;
+    typedef boost::function<void(const PostMsg&, unsigned)> NewMsgCallback;
+    typedef boost::function<void(unsigned)> MsgDeletedCallback;
 
     PostBox();
     ~PostBox();
@@ -44,16 +45,17 @@ public:
     /// Get message by index or NULL if invalid index
     /// Oldest message is at index 0
     const PostMsg* GetMsg(unsigned idx) const;
-    /// Set callback that receives new message count everytime a message is added
-    void ObserveNewMsg(const Callback& callback) { evNewMsg = callback; }
+    /// Set callback that receives new message and message count everytime a message is added
+    void ObserveNewMsg(const NewMsgCallback& callback) { evNewMsg = callback; }
     /// Set callback that receives new message count everytime a message is deleted
-    void ObserveDeletedMsg(const Callback& callback) { evDelMsg = callback; }
+    void ObserveDeletedMsg(const MsgDeletedCallback& callback) { evDelMsg = callback; }
 private:
     BOOST_STATIC_CONSTEXPR unsigned MAX_MESSAGES = 20;
     bool DeleteMsg(unsigned idx, bool notify);
     boost::array<const PostMsg*, MAX_MESSAGES> messages;
     unsigned numMessages;
-    Callback evNewMsg, evDelMsg;
+    NewMsgCallback evNewMsg;
+    MsgDeletedCallback evDelMsg;
 };
 
 #endif // PostBox_h__

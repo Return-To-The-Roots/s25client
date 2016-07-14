@@ -693,7 +693,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
     {
-        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building occupied"), PostCategory::Military, *this));
+        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building occupied"), PostCategory::Military, *this, SoundEffect::Fanfare));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben

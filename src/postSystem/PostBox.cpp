@@ -38,7 +38,7 @@ void PostBox::AddMsg(const PostMsg* msg)
     messages[numMessages] = msg;
     numMessages++;
     if(evNewMsg)
-        evNewMsg(numMessages);
+        evNewMsg(*msg, numMessages);
 }
 
 bool PostBox::DeleteMsg(const PostMsg* msg)
