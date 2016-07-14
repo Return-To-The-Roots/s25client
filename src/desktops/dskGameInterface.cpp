@@ -64,6 +64,7 @@
 #include "world/GameWorldViewer.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
+#include "postSystem/PostMsg.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
 #include "gameData/TerrainData.h"
@@ -81,7 +82,6 @@
 #include <boost/lambda/bind.hpp>
 #include <sstream>
 #include <algorithm>
-#include "postSystem/PostMsg.h"
 
 dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gameClient(GAMECLIENT),

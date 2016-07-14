@@ -19,7 +19,6 @@
 #include "CreateSeaWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "world/BQCalculator.h"
 #include <boost/foreach.hpp>
 
 CreateSeaWorld::CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers):
@@ -27,16 +26,15 @@ CreateSeaWorld::CreateSeaWorld(unsigned width, unsigned height, unsigned numPlay
 {}
 
 namespace{
-    bool PlaceHarbor(MapPoint pt, const World& world, std::vector<MapPoint>& harbors)
+    bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbors)
     {
         // Get all points within a radius of 3 and place the harbor on the first possible place
         std::vector<MapPoint> pts = world.GetPointsInRadius(pt, 3);
-        BQCalculator calcBQ(world);
-        ReturnConst<bool, false> retFalse;
         BOOST_FOREACH(MapPoint curPt, pts)
         {
             // Harbor only at castles
-            if(calcBQ(curPt, retFalse) != BQ_CASTLE)
+            world.RecalcBQ(curPt);
+            if(world.GetNode(curPt).bq != BQ_CASTLE)
                 continue;
             // We must have a coast around
             for(unsigned i = 0; i < 6; i++)
