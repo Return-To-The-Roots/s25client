@@ -49,8 +49,19 @@
 #include "libutil/src/Log.h"
 #include "libsiedler2/src/prototypen.h"
 
+namespace{
+    enum CtrlIds
+    {
+        ID_SWAP_BUTTON = 80,
+        ID_FIRST_FREE = ID_SWAP_BUTTON + MAX_PLAYERS,
+        ID_GAME_CHAT,
+        ID_CHAT_INPUT
+    };
+}
+
 dskHostGame::dskHostGame(const ServerType serverType) :
-    Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(GAMECLIENT.GetGameLobby()), hasCountdown_(false), wasActivated(false)
+    Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(GAMECLIENT.GetGameLobby()),
+    hasCountdown_(false), wasActivated(false), gameChat(NULL)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -105,9 +116,9 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     if (!IsSinglePlayer())
     {
         // Chatfenster
-        AddChatCtrl(1, 20, 320, 360, 218, TC_GREY, NormalFont);
+        gameChat = AddChatCtrl(ID_GAME_CHAT, 20, 320, 360, 218, TC_GREY, NormalFont);
         // Edit für Chatfenster
-        AddEdit(4, 20, 540, 360, 22, TC_GREY, NormalFont);
+        AddEdit(ID_CHAT_INPUT, 20, 540, 360, 22, TC_GREY, NormalFont);
     }
 
     // "Spiel starten"
@@ -209,7 +220,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     if(GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() && (!lua || lua->IsChangeAllowed("swapping")))
     {
         for(unsigned char i = gameLobby.GetPlayerCount(); i; --i)
-            AddTextButton(80 + i, 5, 80 + (i - 1) * 30, 10, 22, TC_RED1, _("-"), NormalFont);;
+            AddTextButton(ID_SWAP_BUTTON + i - 1, 5, 80 + (i - 1) * 30, 10, 22, TC_RED1, _("-"), NormalFont);;
     }
     CI_GGSChanged(gameLobby.GetSettings());
 
@@ -401,7 +412,7 @@ void dskHostGame::Msg_PaintBefore()
     }
 }
 
-void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     unsigned playerId = 8 - (group_id - 50);
 
@@ -500,7 +511,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned int group_id, const unsig
     }
 }
 
-void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const bool checked)
+void dskHostGame::Msg_Group_CheckboxChange(const unsigned group_id, const unsigned  /*ctrl_id*/, const bool checked)
 {
     unsigned playerId = 8 - (group_id - 50);
 
@@ -509,7 +520,7 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned int group_id, const un
         TogglePlayerReady(playerId, checked);
 }
 
-void dskHostGame::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int  /*ctrl_id*/, const int selection)
+void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned  /*ctrl_id*/, const int selection)
 {
     unsigned playerId = 8 - (group_id - 50);
 
@@ -546,44 +557,25 @@ void dskHostGame::GoBack()
         WINDOWMANAGER.Switch(new dskDirectIP);
 }
 
-void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
 {
+    if(ctrl_id >= ID_SWAP_BUTTON && ctrl_id < ID_SWAP_BUTTON + MAX_PLAYERS)
+    {
+        LOG.lprintf("dskHostGame: swap button pressed\n");
+        unsigned char p = 0;
+        while(p < MAX_PLAYERS && !gameLobby.GetPlayer(p).isHost)
+            p++;
+
+        if(p < MAX_PLAYERS)
+        {
+            GAMESERVER.SwapPlayer(p, ctrl_id - ID_SWAP_BUTTON);
+            CI_PlayersSwapped(p, ctrl_id - ID_SWAP_BUTTON);
+        }else
+            LOG.lprintf("dskHostGame: could not find host\n");
+        return;
+    }
     switch(ctrl_id)
     {
-        case 81:
-        case 82:
-        case 83:
-        case 84:
-        case 85:
-        case 86:
-        case 87:
-        case 88:
-        case 80: //swap
-        {
-            LOG.lprintf("dskHostGame: swap button pressed\n");
-            unsigned char p = 0;
-            while (true)
-            {
-                if (gameLobby.GetPlayer(p).isHost)
-                {
-                    LOG.lprintf("dskHostGame: host detected\n");
-                    break;
-                }
-                if(p > MAX_PLAYERS)
-                {
-                    LOG.lprintf("dskHostGame: could not find host\n");
-                    break;
-                }
-                else
-                    p++;
-            }
-
-            if (p < MAX_PLAYERS)
-            {
-                GAMESERVER.SwapPlayer(p, ctrl_id - 81);
-                CI_PlayersSwapped(p, ctrl_id - 81);
-            }
-        } break;
         case 3: // Zurück
         {
             if(GAMECLIENT.IsHost())
@@ -635,10 +627,13 @@ void dskHostGame::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void dskHostGame::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
+void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
 {
-    GAMECLIENT.Command_Chat(GetCtrl<ctrlEdit>(4)->GetText(), CD_ALL);
-    GetCtrl<ctrlEdit>(4)->SetText("");
+    if(ctrl_id != ID_CHAT_INPUT)
+        return;
+    ctrlEdit* edit = GetCtrl<ctrlEdit>(ctrl_id);
+    GAMECLIENT.Command_Chat(edit->GetText(), CD_ALL);
+    edit->SetText("");
 }
 
 void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
@@ -650,9 +645,9 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
     {
         char startMsg[100];
         sprintf(startMsg, _("You have %u seconds until game starts"), remainingTimeInSec);
-        GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, startMsg, COLOR_RED);
-        GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
-        GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, "", 0xFFFFCC00);
+        gameChat->AddMessage("", "", 0, startMsg, COLOR_RED);
+        gameChat->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
+        gameChat->AddMessage("", "", 0, "", 0xFFFFCC00);
         hasCountdown_ = true;
     }
 
@@ -662,7 +657,7 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
     else
         message << _("Starting game, please wait");
 
-    GetCtrl<ctrlChat>(1)->AddMessage("", "", 0, message.str(), 0xFFFFBB00);
+    gameChat->AddMessage("", "", 0, message.str(), 0xFFFFBB00);
 }
 
 void dskHostGame::CI_CancelCountdown()
@@ -670,7 +665,7 @@ void dskHostGame::CI_CancelCountdown()
     if (IsSinglePlayer())
         return;
 
-    GetCtrl<ctrlChat>(1)->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
+    gameChat->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
 
     hasCountdown_ = false;
 
@@ -696,7 +691,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const int  /*selection*/)
+void dskHostGame::Msg_ComboSelectItem(const unsigned ctrl_id, const int  /*selection*/)
 {
     switch(ctrl_id)
     {
@@ -714,7 +709,7 @@ void dskHostGame::Msg_ComboSelectItem(const unsigned int ctrl_id, const int  /*s
     }
 }
 
-void dskHostGame::Msg_CheckboxChange(const unsigned int ctrl_id, const bool  /*checked*/)
+void dskHostGame::Msg_CheckboxChange(const unsigned ctrl_id, const bool  /*checked*/)
 {
 
     switch(ctrl_id)
@@ -762,7 +757,7 @@ void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
     GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlBaseText>(5)->SetText(teams[nr]);
 }
 
-void dskHostGame::ChangeReady(const unsigned int player, const bool ready)
+void dskHostGame::ChangeReady(const unsigned player, const bool ready)
 {
     ctrlCheck* check = GetCtrl<ctrlGroup>(58 - player)->GetCtrl<ctrlCheck>(6);
     if(check)
@@ -785,7 +780,7 @@ void dskHostGame::ChangeNation(const unsigned i, const Nation nation)
 
 void dskHostGame::ChangePing(unsigned playerId)
 {
-    unsigned int color = COLOR_RED;
+    unsigned color = COLOR_RED;
 
     // Farbe bestimmen
     if(gameLobby.GetPlayer(playerId).ping < 300)
@@ -924,8 +919,8 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination  /*cd*/
     {
         std::string time = TIME.FormatTime("(%H:%i:%s)");
 
-        GetCtrl<ctrlChat>(1)->AddMessage(time, gameLobby.GetPlayer(playerId).name,
-                                         gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
+        gameChat->AddMessage(time, gameLobby.GetPlayer(playerId).name,
+                                   gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
     }
 }
 

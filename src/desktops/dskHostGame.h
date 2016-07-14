@@ -26,6 +26,7 @@
 #include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
+class ctrlChat;
 class GameLobby;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
@@ -59,14 +60,14 @@ class dskHostGame :
         void ChangeColor(const unsigned i, const unsigned color);
 
         void Msg_PaintBefore() override;
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
-        void Msg_Group_CheckboxChange(const unsigned int group_id, const unsigned int ctrl_id, const bool checked) override;
-        void Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
+        void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+        void Msg_Group_CheckboxChange(const unsigned group_id, const unsigned ctrl_id, const bool checked) override;
+        void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_EditEnter(const unsigned ctrl_id) override;
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
-        void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
+        void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+        void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
 
         void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
@@ -100,6 +101,7 @@ class dskHostGame :
         bool hasCountdown_;
         boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
         bool wasActivated, allowAddonChange;
+        ctrlChat* gameChat;
 };
 
 
