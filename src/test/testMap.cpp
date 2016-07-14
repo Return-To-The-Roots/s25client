@@ -24,7 +24,6 @@
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
-#include "world/BQCalculator.h"
 #include "ogl/glArchivItem_Map.h"
 #include "FileChecksum.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
@@ -122,19 +121,16 @@ BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
     }
 }
 
-bool RetFalse(MapPoint pt){
-    return false;
-}
 const char* bqNames[] = {"Nothing", "Flag", "Hut", "House", "Castle", "Mine"};
 
 BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
 {
-    BQCalculator bqCalculator(world);
-
+    // Init BQ
+    world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
     {
         BuildingQuality s2BQ = BuildingQuality(map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
-        BuildingQuality bq = bqCalculator(pt, RetFalse);
+        BuildingQuality bq = world.GetNode(pt).bq;
         BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt.x << "," << pt.y << " original:" << map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
     }
 }
@@ -159,11 +155,11 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, WorldFixture)
     }
     MapLoader loader(world, std::vector<Nation>());
     BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
-    BQCalculator bqCalculator(world);
-    boost::function<BuildingQuality(MapPoint)> calcBQ = boost::lambda::bind(bqCalculator, boost::lambda::_1, boost::lambda::protect(boost::lambda::bind(&GameWorldBase::IsOnRoad, &world, boost::lambda::_1)));
+    // Init BQ
+    world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
     {
-        BuildingQuality bq = calcBQ(pt);
+        BuildingQuality bq = world.GetNode(pt).bq;
         BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bqNames[bq] << "!=" << bqNames[BQ_CASTLE] << " at " << pt.x << "," << pt.y);
     }
     // Create a road of length 6
@@ -173,20 +169,24 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, WorldFixture)
     {
         roadPts.push_back(curPt);
         world.SetPointRoad(curPt, 4, 1);
+        world.RecalcBQForRoad(curPt);
         curPt = world.GetNeighbour(curPt, 4);
     }
     // Final pt still belongs to road
     roadPts.push_back(curPt);
+    // Normally this is done by the flag
+    world.RecalcBQForRoad(curPt);
+
     BOOST_FOREACH(MapPoint pt, roadPts)
     {
         BOOST_REQUIRE(world.IsOnRoad(pt));
         // On the road we only allow flags
-        BOOST_REQUIRE_EQUAL(calcBQ(pt), BQ_FLAG);
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt).bq, BQ_FLAG);
         // Next to the road should be houses
         // But left to first point is still a castle
         BuildingQuality leftBQ = (pt == roadPts[0]) ? BQ_CASTLE : BQ_HOUSE;
-        BOOST_REQUIRE_EQUAL(calcBQ(pt - MapPoint(1, 0)), leftBQ);
-        BOOST_REQUIRE_EQUAL(calcBQ(pt + MapPoint(1, 0)), BQ_HOUSE);
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt - MapPoint(1, 0)).bq, leftBQ);
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt + MapPoint(1, 0)).bq, BQ_HOUSE);
     }
 }
 
