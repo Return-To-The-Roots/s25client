@@ -44,11 +44,12 @@ class ctrlChat : public Window
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
 
+        /// Create a (almost) unique color for the given name
+        static unsigned CalcUniqueColor(const std::string& name);
+
     protected:
         /// Zeichnet das Chat-Control.
         bool Draw_() override;
-        /// Vergrößert die Anzahl der Chatzeilen.
-        void ExtendMemory(const unsigned int count);
         /// Converts an unwrapped line into a wrapped one and appends it
         void WrapLine(unsigned short i);
 

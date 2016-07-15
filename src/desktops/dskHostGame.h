@@ -68,6 +68,7 @@ class dskHostGame :
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
         void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
         void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
+        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
         void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
@@ -92,6 +93,7 @@ class dskHostGame :
         void CI_CancelCountdown() override;
 
         void LC_Status_Error(const std::string& error) override;
+        void LC_Chat(const std::string& player, const std::string& text) override;
 
         void GoBack();
         bool IsSinglePlayer(){ return serverType == ServerType::LOCAL; }

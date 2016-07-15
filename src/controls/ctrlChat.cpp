@@ -22,6 +22,7 @@
 #include "CollisionDetection.h"
 #include "Log.h"
 #include "driver/src/MouseCoords.h"
+#include "FileChecksum.h"
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
@@ -54,9 +55,6 @@ ctrlChat::ctrlChat(Window* parent,
 
     // Scrollbalken hinzufügen
     AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, page_size);
-
-    //// Erst einmal 128 Chatzeilen reservieren
-    //ExtendMemory(128);
 
     // Breite der Klammern <> um die Spielernamen berechnen
     bracket1_size = font->getWidth("<");
@@ -300,5 +298,12 @@ bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
     }
     else
         return false;
+}
+
+unsigned ctrlChat::CalcUniqueColor(const std::string& name)
+{
+    unsigned checksum = CalcChecksumOfBuffer(name.c_str(), unsigned(name.length())) * name.length();
+    unsigned color = checksum | (checksum << 12) | 0xff000000;
+    return color;
 }
 

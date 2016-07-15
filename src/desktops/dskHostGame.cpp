@@ -30,6 +30,7 @@
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlGroup.h"
+#include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlVarDeepening.h"
@@ -55,7 +56,11 @@ namespace{
         ID_SWAP_BUTTON = 80,
         ID_FIRST_FREE = ID_SWAP_BUTTON + MAX_PLAYERS,
         ID_GAME_CHAT,
-        ID_CHAT_INPUT
+        ID_LOBBY_CHAT,
+        ID_CHAT_INPUT,
+        ID_CHAT_TAB,
+        TAB_GAMECHAT,
+        TAB_LOBBYCHAT
     };
 }
 
@@ -115,8 +120,18 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 
     if (!IsSinglePlayer())
     {
-        // Chatfenster
-        gameChat = AddChatCtrl(ID_GAME_CHAT, 20, 320, 360, 218, TC_GREY, NormalFont);
+        if(LOBBYCLIENT.LoggedIn())
+        {
+            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK, scale_);
+            chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 180, 22, TC_GREEN2, _("Game Chat"), NormalFont);
+            chatTab->AddTextButton(TAB_LOBBYCHAT, 200, 320, 180, 22, TC_GREEN2, _("Lobby Chat"), NormalFont);
+            gameChat = AddChatCtrl(ID_GAME_CHAT,  20, 345, 360, 218 - 25, TC_GREY, NormalFont);
+                       AddChatCtrl(ID_LOBBY_CHAT, 20, 345, 360, 218 - 25, TC_GREY, NormalFont);
+            chatTab->SetSelection(ID_GAME_CHAT, true);
+        } else{
+            // Chatfenster
+            gameChat = AddChatCtrl(ID_GAME_CHAT, 20, 320, 360, 218, TC_GREY, NormalFont);
+        }
         // Edit für Chatfenster
         AddEdit(ID_CHAT_INPUT, 20, 540, 360, 22, TC_GREY, NormalFont);
     }
@@ -408,7 +423,7 @@ void dskHostGame::Msg_PaintBefore()
     // Chatfenster Fokus geben
     if (!IsSinglePlayer())
     {
-        GetCtrl<ctrlEdit>(4)->SetFocus();
+        GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
     }
 }
 
@@ -632,8 +647,12 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
     if(ctrl_id != ID_CHAT_INPUT)
         return;
     ctrlEdit* edit = GetCtrl<ctrlEdit>(ctrl_id);
-    GAMECLIENT.Command_Chat(edit->GetText(), CD_ALL);
+    const std::string msg = edit->GetText();
     edit->SetText("");
+    if(gameChat->GetVisible())
+        GAMECLIENT.Command_Chat(edit->GetText(), CD_ALL);
+    else if(LOBBYCLIENT.LoggedIn())
+        LOBBYCLIENT.SendChat(msg);
 }
 
 void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
@@ -723,6 +742,15 @@ void dskHostGame::Msg_CheckboxChange(const unsigned ctrl_id, const bool  /*check
             // GameSettings wurden verändert, resetten
             UpdateGGS();
         } break;
+    }
+}
+
+void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+{
+    if(ctrl_id == ID_CHAT_TAB)
+    {
+        gameChat->SetVisible(selection == TAB_GAMECHAT);
+        GetCtrl<Window>(ID_LOBBY_CHAT)->SetVisible(selection == TAB_LOBBYCHAT);
     }
 }
 
@@ -956,4 +984,13 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
 void dskHostGame::LC_Status_Error(const std::string& error)
 {
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+}
+
+void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
+{
+    ctrlOptionGroup* chatTab = GetCtrl<ctrlOptionGroup>(ID_CHAT_TAB);
+    if(!chatTab)
+        return;
+    ctrlChat* lobbyChat = chatTab->GetCtrl<ctrlChat>(ID_LOBBY_CHAT);
+    lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
 }
