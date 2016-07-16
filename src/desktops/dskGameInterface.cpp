@@ -171,8 +171,10 @@ void dskGameInterface::SettingsChanged()
 {
 }
 
-void dskGameInterface::Resize_(unsigned short width, unsigned short height)
+void dskGameInterface::Resize(unsigned short width, unsigned short height)
 {
+    Window::Resize(width, height);
+
     // recreate borders
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);

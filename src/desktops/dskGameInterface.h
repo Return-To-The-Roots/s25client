@@ -81,7 +81,8 @@ class dskGameInterface :
         dskGameInterface(GameWorldBase& world);
         ~dskGameInterface() override;
 
-        virtual void SetActive(bool activate = true) override;
+        void Resize(unsigned short width, unsigned short height) override;
+        void SetActive(bool activate = true) override;
 
         void LC_Status_ConnectionLost() override;
         void LC_Status_Error(const std::string& error) override;
@@ -139,8 +140,6 @@ class dskGameInterface :
 
         /// Lässt das Spiel laufen (zeichnen)
         void Run();
-
-        void Resize_(unsigned short width, unsigned short height) override;
 
         /// Baut Weg zurück von Ende bis zu start_id
         void DemolishRoad(const unsigned start_id);

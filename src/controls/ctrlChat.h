@@ -32,7 +32,7 @@ class ctrlChat : public Window
         ~ctrlChat() override;
 
         /// Größe ändern
-        void Resize_(unsigned short width, unsigned short height) override;
+        void Resize(unsigned short width, unsigned short height) override;
         /// Fügt eine Chatnachricht hinzu.
         void AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, unsigned int msg_color);
         /// Setzt Farbe der Zeitangaben.

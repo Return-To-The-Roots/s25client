@@ -85,7 +85,7 @@ class Window
         /// liefert die Höhe des Fensters.
         unsigned short GetHeight(const bool scale = false) const { return (scale) ? ScaleY(height_) : height_; }
         /// setzt die Größe des Fensters
-        void Resize(unsigned short width, unsigned short height) { Resize_(width, height); this->width_ = width; this->height_ = height; }
+        virtual void Resize(unsigned short width, unsigned short height) { this->width_ = width; this->height_ = height; }
         /// setzt die Breite des Fensters
         void SetWidth(unsigned short width)   { Resize(width, this->height_); }
         /// setzt die Höhe des Fensters
@@ -112,9 +112,9 @@ class Window
         // macht das Fenster sichtbar oder blendet es aus
         virtual void SetVisible(bool visible) { this->visible_ = visible; }
         /// Ist das Fenster sichtbar?
-        bool GetVisible() const { return visible_; }
+        bool IsVisible() const { return visible_; }
         /// Ist das Fenster aktiv?
-        bool GetActive() const { return active_; }
+        bool IsActive() const { return active_; }
         /// liefert das übergeordnete Fenster
         Window* GetParent() const { return parent_; }
         const unsigned int GetID() const { return id_; }
@@ -295,8 +295,6 @@ class Window
         virtual bool Draw_() = 0;
         /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
         virtual bool IsMessageRelayAllowed() const;
-        /// Auf Größe verändern evtl. auch individuell reagieren?
-        virtual void Resize_(unsigned short  /*width*/, unsigned short  /*height*/) {}
 
         template <typename T>
         T* AddCtrl(unsigned int id, T* ctrl)

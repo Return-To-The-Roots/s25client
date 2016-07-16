@@ -37,6 +37,7 @@ class ctrlButton : public Window
         ~ctrlButton() override;
 
         void Enable(bool enable = true) { enabled = enable; }
+        TextureColor GetTexture() const { return tc; }
         void SetTexture(TextureColor tc) { this->tc = tc; }
 
         /// Setzt Tooltip

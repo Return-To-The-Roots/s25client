@@ -66,7 +66,7 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
 
     unsigned short map_width = s2map->getHeader().getWidth();
     unsigned short map_height = s2map->getHeader().getHeight();
-    SetDisplaySize(width_, height_, map_width, map_height);
+    SetMapSize(map_width, map_height);
     minimap.SetMap(*s2map);
     for(unsigned i = 0; i < MAX_PLAYERS; i++)
         players[i].color = 0;

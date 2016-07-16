@@ -32,28 +32,26 @@ ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned short map_height)
     : Window(x, y, id, parent, width, height), padding(padding_x, padding_y), mapWidth_(map_width), mapHeight_(map_height)
 {
-    SetDisplaySize(width, height, map_width, map_height);
+    SetMapSize(map_width, map_height);
 }
 
 /**
  *  Größe ändern
  */
-void ctrlMinimap::Resize_(unsigned short width, unsigned short height)
+void ctrlMinimap::Resize(unsigned short width, unsigned short height)
 {
-    SetDisplaySize(width, height, mapWidth_, mapHeight_);
+    Window::Resize(width, height);
+    SetMapSize(mapWidth_, mapHeight_);
 }
 
-void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned short height, const unsigned short map_width, const unsigned short map_height)
+void ctrlMinimap::SetMapSize(const unsigned short map_width, const unsigned short map_height)
 {
-    this->width_ = width;
-    this->height_ = height;
-
     this->mapWidth_ = map_width;
     this->mapHeight_ = map_height;
 
     unsigned short scaled_map_width = static_cast<unsigned short>(map_width * MINIMAP_SCALE_X);
-    double x_scale = double(scaled_map_width) / double(width - padding.x * 2);
-    double y_scale = double(map_height) / double(height - padding.y * 2);
+    double x_scale = double(scaled_map_width) / double(width_ - padding.x * 2);
+    double y_scale = double(map_height) / double(height_ - padding.y * 2);
 
     bool scale_width = false;
 
@@ -64,12 +62,12 @@ void ctrlMinimap::SetDisplaySize(const unsigned short width, const unsigned shor
 
     if(scale_width)
     {
-        height_show = height - padding.y * 2;
+        height_show = height_ - padding.y * 2;
         width_show = (scaled_map_width * height_show / map_height);
     }
     else
     {
-        width_show  = width - padding.x * 2;
+        width_show  = width_ - padding.x * 2;
         height_show = map_height * width_show / scaled_map_width;
     }
 }

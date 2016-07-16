@@ -32,7 +32,7 @@ class ctrlList : public Window
         ~ctrlList() override;
 
         /// Größe verändern
-        void Resize_(unsigned short width, unsigned short height) override;
+        void Resize(unsigned short width, unsigned short height) override;
 
         /// Neuen String zur Listbox hinzufügen.
         void AddString(const std::string& text);

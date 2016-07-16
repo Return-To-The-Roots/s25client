@@ -40,7 +40,7 @@ ctrlScrollBar::ctrlScrollBar(Window* parent,
     AddImageButton(0, 0, 0, width, button_height, tc, LOADER.GetImageN("io", 33));
     AddImageButton(1, 0, (height > button_height) ? height - button_height : 1, width, button_height, tc, LOADER.GetImageN("io", 34));
 
-    Resize_(width, height);
+    Resize(width, height);
 }
 
 bool ctrlScrollBar::Msg_LeftUp(const MouseCoords& mc)
@@ -175,8 +175,10 @@ void ctrlScrollBar::SetPageSize(unsigned short pagesize)
     CalculateScrollBar();
 }
 
-void ctrlScrollBar::Resize_(unsigned short width, unsigned short height)
+void ctrlScrollBar::Resize(unsigned short width, unsigned short height)
 {
+    Window::Resize(width, height);
+
     ctrlButton* button;
 
     button = GetCtrl<ctrlButton>(0);

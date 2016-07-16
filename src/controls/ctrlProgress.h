@@ -43,6 +43,7 @@ class ctrlProgress : public Window
                      const std::string& button_plus_tooltip = NULL,
                      unsigned short* const write_val = NULL);
 
+        void Resize(unsigned short width, unsigned short height) override;
         void SetPosition(unsigned short position);
         const unsigned short& GetPosition() const { return position; }
 
@@ -55,7 +56,6 @@ class ctrlProgress : public Window
 
     protected:
         bool Draw_() override;
-        void Resize_(unsigned short width, unsigned short height) override;
 
     private:
         TextureColor tc;

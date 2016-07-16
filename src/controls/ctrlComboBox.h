@@ -29,7 +29,7 @@ class ctrlComboBox : public Window
     public:
         ctrlComboBox(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
 
-        void Resize_(unsigned short width, unsigned short height) override;
+        void Resize(unsigned short width, unsigned short height) override;
 
         void AddString(const std::string& text);
         void DeleteAllItems();

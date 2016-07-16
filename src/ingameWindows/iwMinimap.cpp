@@ -67,7 +67,7 @@ void iwMinimap::ChangeWindowSize(const unsigned short width, const unsigned shor
 {
     ctrlIngameMinimap* im = GetCtrl<ctrlIngameMinimap>(0);
 
-    im->SetDisplaySize(width - 20, height - 30);
+    im->Resize(width - 20, height - 30);
 
     // Control kürzen in der Höhe
     im->RemoveBoundingBox(BUTTON_WIDTH * 4 + WINDOW_MAP_SPACE * 2, 0);

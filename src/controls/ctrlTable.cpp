@@ -79,8 +79,11 @@ ctrlTable::~ctrlTable()
 /**
  *  Größe verändern
  */
-void ctrlTable::Resize_(unsigned short width, unsigned short height)
+void ctrlTable::Resize(unsigned short width, unsigned short height)
 {
+    const bool heightIncreased = height > height_;
+    Window::Resize(width, height);
+
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // changed height
@@ -93,16 +96,15 @@ void ctrlTable::Resize_(unsigned short width, unsigned short height)
 
     // If the size was enlarged we have to check that we don't try to
     // display more lines than present
-    if(height > this->height_)
+    if(heightIncreased)
         while(rows.size() - scrollbar->GetPos() < line_count
                 && scrollbar->GetPos() > 0)
             scrollbar->SetPos(scrollbar->GetPos() - 1);
 
     // changed width
 
-    this->width_ = width;
     ResetButtonWidths();
-    if(scrollbar->GetVisible())
+    if(scrollbar->IsVisible())
         Msg_ScrollShow(0, true);
 }
 
@@ -264,7 +266,7 @@ bool ctrlTable::Draw_()
         if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
-            DrawRectangle(curPos, width_ - 4 - (scroll->GetVisible() ? 24 : 0), font->getHeight(), 0x80000000);
+            DrawRectangle(curPos, width_ - 4 - (scroll->IsVisible() ? 24 : 0), font->getHeight(), 0x80000000);
         }
 
         DrawPoint colPos = curPos;

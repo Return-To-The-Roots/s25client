@@ -68,8 +68,10 @@ ctrlChat::~ctrlChat()
 /**
  *  Größe ändern
  */
-void ctrlChat::Resize_(unsigned short width, unsigned short height)
+void ctrlChat::Resize(unsigned short width, unsigned short height)
 {
+    const bool width_changed = (this->width_ != width && !chat_lines.empty());
+    Window::Resize(width, height);
 
     ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);
     scroll->Move(width - SCROLLBAR_WIDTH, 0);
@@ -77,7 +79,6 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
 
     // Remember some things
     const bool was_on_bottom = (scroll->GetPos() + page_size == chat_lines.size());
-    const bool width_changed = (this->width_ != width && !chat_lines.empty());
     unsigned short position = 0;
     // Remember the entry on top
     for(unsigned short i = 1; i <= scroll->GetPos(); ++i)
@@ -87,7 +88,6 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
     // Rewrap
     if(width_changed)
     {
-        this->width_ = width;
         chat_lines.clear();
         for(unsigned short i = 0; i < raw_chat_lines.size(); ++i)
             WrapLine(i);
@@ -115,13 +115,11 @@ void ctrlChat::Resize_(unsigned short width, unsigned short height)
     // Don't display empty lines at the end if there are this is
     // not necessary because of a lack of lines in total
     if(chat_lines.size() < page_size)
-    {
         scroll->SetPos(0);
-    }
     else if(scroll->GetPos() + page_size > chat_lines.size())
         scroll->SetPos(chat_lines.size() - page_size);
-
 }
+
 /**
  *  Zeichnet das Chat-Control.
  */

@@ -121,14 +121,6 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
     return false;
 }
 
-/**
- *  Setzt Breite und Höhe des Controls
- */
-void ctrlIngameMinimap::SetDisplaySize(const unsigned short width, const unsigned short height)
-{
-    ctrlMinimap::SetDisplaySize(width, height, minimap.GetMapWidth(), minimap.GetMapHeight());
-}
-
 void ctrlIngameMinimap::ToggleTerritory()
 {
     minimap.ToggleTerritory();

@@ -35,6 +35,7 @@ class ctrlTable : public Window
         ctrlTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
         ~ctrlTable() override;
 
+        void Resize(unsigned short width, unsigned short height) override;
         /// löscht alle Items.
         void DeleteAllItems();
         /// fügt eine Zeile hinzu.
@@ -73,8 +74,6 @@ class ctrlTable : public Window
 
         bool Draw_() override;
 
-        /// Größe ändern
-        void Resize_(unsigned short width, unsigned short height) override;
         /// Setzt die Breite und Position der Buttons ohne Scrolleiste
         void ResetButtonWidths();
         int GetSelectionFromMouse(const MouseCoords &mc);

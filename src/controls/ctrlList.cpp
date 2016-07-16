@@ -241,7 +241,7 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
  *  @param[in] width  Neue Breite
  *  @param[in] height Neue Höhe
  */
-void ctrlList::Resize_(unsigned short width, unsigned short height)
+void ctrlList::Resize(unsigned short width, unsigned short height)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
     scrollbar->Move(width - 20, 0);
@@ -258,6 +258,7 @@ void ctrlList::Resize_(unsigned short width, unsigned short height)
                 && scrollbar->GetPos() > 0)
             scrollbar->SetPos(scrollbar->GetPos() - 1);
 
+    Window::Resize(width, height);
 }
 
 /**
