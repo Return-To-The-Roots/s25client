@@ -42,7 +42,7 @@ class dskHostGame :
         dskHostGame(const ServerType serverType);
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
-        void Resize_(unsigned short width, unsigned short height) override;
+        void Resize(unsigned short width, unsigned short height) override;
         void SetActive(bool activate = true) override;
     private:
 
@@ -60,6 +60,7 @@ class dskHostGame :
         void ChangeColor(const unsigned i, const unsigned color);
 
         void Msg_PaintBefore() override;
+        void Msg_Timer(const unsigned timerId) override;
         void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
         void Msg_Group_CheckboxChange(const unsigned group_id, const unsigned ctrl_id, const bool checked) override;
         void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
@@ -103,7 +104,8 @@ class dskHostGame :
         bool hasCountdown_;
         boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
         bool wasActivated, allowAddonChange;
-        ctrlChat* gameChat;
+        ctrlChat *gameChat, *lobbyChat;
+        bool hasUnreadChat;
 };
 
 

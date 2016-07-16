@@ -38,6 +38,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "desktops/dskLAN.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwAddons.h"
 #include "GameLobby.h"
@@ -60,13 +61,14 @@ namespace{
         ID_CHAT_INPUT,
         ID_CHAT_TAB,
         TAB_GAMECHAT,
-        TAB_LOBBYCHAT
+        TAB_LOBBYCHAT,
+        ID_UNREAD_ANIM_TIMER
     };
 }
 
 dskHostGame::dskHostGame(const ServerType serverType) :
     Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(GAMECLIENT.GetGameLobby()),
-    hasCountdown_(false), wasActivated(false), gameChat(NULL)
+    hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), hasUnreadChat(false)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -123,11 +125,12 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         if(LOBBYCLIENT.LoggedIn())
         {
             ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK, scale_);
-            chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 180, 22, TC_GREEN2, _("Game Chat"), NormalFont);
-            chatTab->AddTextButton(TAB_LOBBYCHAT, 200, 320, 180, 22, TC_GREEN2, _("Lobby Chat"), NormalFont);
-            gameChat = AddChatCtrl(ID_GAME_CHAT,  20, 345, 360, 218 - 25, TC_GREY, NormalFont);
-                       AddChatCtrl(ID_LOBBY_CHAT, 20, 345, 360, 218 - 25, TC_GREY, NormalFont);
-            chatTab->SetSelection(ID_GAME_CHAT, true);
+            chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 178, 22, TC_GREEN2, _("Game Chat"), NormalFont);
+            chatTab->AddTextButton(TAB_LOBBYCHAT, 202, 320, 178, 22, TC_GREEN2, _("Lobby Chat"), NormalFont);
+            gameChat  = AddChatCtrl(ID_GAME_CHAT,  20, 345, 360, 218 - 25, TC_GREY, NormalFont);
+            lobbyChat = AddChatCtrl(ID_LOBBY_CHAT, 20, 345, 360, 218 - 25, TC_GREY, NormalFont);
+            chatTab->SetSelection(TAB_GAMECHAT, true);
+            AddTimer(ID_UNREAD_ANIM_TIMER, 500);
         } else{
             // Chatfenster
             gameChat = AddChatCtrl(ID_GAME_CHAT, 20, 320, 360, 218, TC_GREY, NormalFont);
@@ -258,8 +261,10 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  */
-void dskHostGame::Resize_(unsigned short  /*width*/, unsigned short  /*height*/)
+void dskHostGame::Resize(unsigned short width, unsigned short height)
 {
+    Window::Resize(width, height);
+
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
     ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
@@ -422,9 +427,19 @@ void dskHostGame::Msg_PaintBefore()
 {
     // Chatfenster Fokus geben
     if (!IsSinglePlayer())
-    {
         GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
-    }
+}
+
+void dskHostGame::Msg_Timer(const unsigned timerId)
+{
+    if(timerId != ID_UNREAD_ANIM_TIMER || !hasUnreadChat)
+        return;
+    ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(gameChat->IsVisible() ? TAB_LOBBYCHAT : TAB_GAMECHAT);
+    if(bt->GetTexture() != TC_GREEN2)
+        bt->SetTexture(TC_GREEN2);
+    else
+        bt->SetTexture(TC_RED2);
+
 }
 
 void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
@@ -649,9 +664,9 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
     ctrlEdit* edit = GetCtrl<ctrlEdit>(ctrl_id);
     const std::string msg = edit->GetText();
     edit->SetText("");
-    if(gameChat->GetVisible())
-        GAMECLIENT.Command_Chat(edit->GetText(), CD_ALL);
-    else if(LOBBYCLIENT.LoggedIn())
+    if(gameChat->IsVisible())
+        GAMECLIENT.Command_Chat(msg, CD_ALL);
+    else if(LOBBYCLIENT.LoggedIn() && lobbyChat->IsVisible())
         LOBBYCLIENT.SendChat(msg);
 }
 
@@ -750,7 +765,9 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int select
     if(ctrl_id == ID_CHAT_TAB)
     {
         gameChat->SetVisible(selection == TAB_GAMECHAT);
-        GetCtrl<Window>(ID_LOBBY_CHAT)->SetVisible(selection == TAB_LOBBYCHAT);
+        lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
+        GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
+        hasUnreadChat = false;
     }
 }
 
@@ -947,8 +964,9 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination  /*cd*/
     {
         std::string time = TIME.FormatTime("(%H:%i:%s)");
 
-        gameChat->AddMessage(time, gameLobby.GetPlayer(playerId).name,
-                                   gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
+        gameChat->AddMessage(time, gameLobby.GetPlayer(playerId).name, gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
+        if(!gameChat->IsVisible())
+            hasUnreadChat = true;
     }
 }
 
@@ -988,9 +1006,9 @@ void dskHostGame::LC_Status_Error(const std::string& error)
 
 void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
 {
-    ctrlOptionGroup* chatTab = GetCtrl<ctrlOptionGroup>(ID_CHAT_TAB);
-    if(!chatTab)
+    if(!lobbyChat)
         return;
-    ctrlChat* lobbyChat = chatTab->GetCtrl<ctrlChat>(ID_LOBBY_CHAT);
     lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
+    if(!lobbyChat->IsVisible())
+        hasUnreadChat = true;
 }
