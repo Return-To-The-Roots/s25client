@@ -21,9 +21,11 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "WindowManager.h"
 #include "controls/ctrlOptionGroup.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
+#include "iwHelp.h"
 
 const std::string TOOLTIPS[14] =
 {
@@ -134,6 +136,13 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
         return;
     switch(ctrl_id)
     {
+        case 0:
+        {
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
+                _("The transport priority of a type of merchandise can "
+                  "be determined here.The higher the priority of an item "
+                  "in the list, the quicker it is transported by helpers.")));
+        } break;
         case 1: // Standardbelegung
         {
             ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);

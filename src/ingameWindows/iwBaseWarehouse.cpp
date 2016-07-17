@@ -192,7 +192,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 12: // "Hilfe"
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + wh->GetBuildingType()), _(BUILDING_NAMES[wh->GetBuildingType()]), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
         } break;
         case 13: // "Gehe Zu Ort"
         {

@@ -21,6 +21,8 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "WindowManager.h"
+#include "iwHelp.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
@@ -110,6 +112,21 @@ void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)
     {
         default: return;
             // Default button
+        case 20:
+        {
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
+                "This is where you can make adjustments to all military matters. "
+                "The upper value corresponds to the recruiting rate of your army. "
+                "The higher it is, the more inhabitants are recruited as soldiers. "
+                "Below this is the setting to protect your huts.If this value is "
+                "set at maximum, your huts are defended by the strongest unit. To "
+                "raise the number of attackers leaving your huts per attack, choose "
+                "the next setting.The number of defenders who counter the enemy in "
+                "the event of an attack is shown by the fourth display.The final "
+                " three values correspond to the occupation of your huts in the "
+                "interior, in the center of the country and on its borders.")));
+
+        } break;
         case 21:
         {
             GAMECLIENT.visual_settings.military_settings = GAMECLIENT.default_settings.military_settings;

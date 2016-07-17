@@ -147,8 +147,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + building->GetBuildingType()), _(BUILDING_NAMES[building->GetBuildingType()]),
-                                                  _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         } break;
         case 5: // Gebäude abbrennen
         {

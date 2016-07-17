@@ -114,7 +114,8 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     UpdatePercents();
 
     // Hilfe-Button
-    AddImageButton(500, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    // Original S2 does not have a Help button in this window. Add it if you have something to say.
+    //AddImageButton(500, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 /// Aktualisieren der Prozente

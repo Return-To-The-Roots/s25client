@@ -19,6 +19,8 @@
 #include "iwMerchandiseStatistics.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "WindowManager.h"
+#include "iwHelp.h"
 #include "controls/ctrlMultiSelectGroup.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
@@ -110,6 +112,12 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 16: // Hilfe
         {
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
+                _("The merchandise statistics window allows you to check the quantities "
+                  "of your merchandise.By clicking the left mouse button you can switch "
+                  "the display of individual goods on and off.These can displayed over "
+                  "four different time periods.To delete all displays, click on the wastebasket button.")));
+            
             // TODO Help!
         } break;
         case 17: // Alle abwählen

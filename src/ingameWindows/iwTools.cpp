@@ -25,6 +25,8 @@
 #include "controls/ctrlProgress.h"
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
+#include "WindowManager.h"
+#include "iwHelp.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
 #include "gameData/const_gui_ids.h"
@@ -145,6 +147,10 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         switch(ctrl_id)
         {
             default: return;
+            case 12:
+                WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
+                    "These settings control the tool production of your metalworks. "
+                    "The higher the value, the more likely this tool is to be produced.")));
             case 13: // Standard
                 GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
                 UpdateSettings();
