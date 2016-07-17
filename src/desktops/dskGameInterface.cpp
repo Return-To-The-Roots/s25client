@@ -1140,7 +1140,7 @@ void dskGameInterface::NewPostMessage(const PostMsg& msg, const unsigned msgCt)
 {
     UpdatePostIcon(msgCt, true);
     SoundEffect soundEffect = msg.GetSoundEffect();
-    switch(soundEffect)
+    switch(boost::native_value(soundEffect))
     {
     case SoundEffect::Pidgeon:
         LOADER.GetSoundN("sound", 114)->Play(100, false);
