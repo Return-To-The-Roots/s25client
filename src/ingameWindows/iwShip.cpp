@@ -129,7 +129,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
             _("The ship register contains all the ships in your fleet.Here you can monitor "
-              "the loading and destinations of individual ships.Ships on an expedition are "
+              "the loading and destinations of individual ships. Ships on an expedition are "
               "controlled from here as well.")));
         return;
     }

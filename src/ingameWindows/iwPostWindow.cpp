@@ -111,7 +111,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         case ID_HELP:
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
                 "All important messages are collected in this window and "
-                "sorted into groups.If this window is not open, the dove "
+                "sorted into groups. If this window is not open, the dove "
                 "symbol at the bottom of the screen indicates the arrival of a new message.")));
             break;
         case ID_SHOW_ALL:

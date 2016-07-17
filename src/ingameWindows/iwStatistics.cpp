@@ -173,7 +173,7 @@ void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
                 "This window allows a direct comparison with the enemies. "
                 "Factors such as the wealth, territorial area, inhabitants, "
-                "etc.of all parties can be compared.This data can be shown "
+                "etc. of all parties can be compared. This data can be shown "
                 "over four different time periods.")));
         } break;
     }
