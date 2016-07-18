@@ -18,7 +18,7 @@
 #ifndef SoundEffect_h__
 #define SoundEffect_h__
 
-#include <boost/detail/scoped_enum_emulation.hpp>
+#include <boost/core/scoped_enum.hpp>
 
 BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect)
 {

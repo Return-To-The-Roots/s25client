@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,7 +22,7 @@
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/BuildingQuality.h"
 #include "Rect.h"
-#include <boost/detail/scoped_enum_emulation.hpp>
+#include <boost/core/scoped_enum.hpp>
 
 BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ)
 {
