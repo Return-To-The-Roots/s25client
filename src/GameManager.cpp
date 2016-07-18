@@ -311,7 +311,7 @@ bool GameManager::ShowMenu()
 
     GAMECLIENT.SetInterface(NULL);
 
-    if(LOBBYCLIENT.LoggedIn())
+    if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
         WINDOWMANAGER.Switch(new dskLobby);
     else

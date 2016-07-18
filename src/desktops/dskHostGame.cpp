@@ -122,7 +122,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 
     if (!IsSinglePlayer())
     {
-        if(LOBBYCLIENT.LoggedIn())
+        if(LOBBYCLIENT.IsLoggedIn())
         {
             ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK, scale_);
             chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 178, 22, TC_GREEN2, _("Game Chat"), NormalFont);
@@ -183,7 +183,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
     combo->AddString(_("Total domination")); // Alleinherrschaft
     // Lobby game?
-    if(LOBBYCLIENT.LoggedIn())
+    if(LOBBYCLIENT.IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
         for(unsigned i = 0; i < TOURNAMENT_MODES_COUNT; ++i)
@@ -243,7 +243,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     CI_GGSChanged(gameLobby.GetSettings());
 
     LOBBYCLIENT.SetInterface(this);
-    if(serverType == ServerType::LOBBY && LOBBYCLIENT.LoggedIn())
+    if(serverType == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
     {
         LOBBYCLIENT.SendServerJoinRequest();
         LOBBYCLIENT.SendRankingInfoRequest(gameLobby.GetPlayer(GAMECLIENT.GetPlayerId()).name);
@@ -345,7 +345,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     if(player.isUsed())
     {
         /// Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
-        group->AddVarDeepening(2, 180, cy, 50, 22, tc, (LOBBYCLIENT.LoggedIn() || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
+        group->AddVarDeepening(2, 180, cy, 50, 22, tc, (LOBBYCLIENT.IsLoggedIn() || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
 
         // If not in savegame -> Player can change own row and host can change AIs
         const bool allowPlayerChange = ((GAMECLIENT.IsHost() && player.ps == PS_AI) || GAMECLIENT.GetPlayerId() == row) && !GAMECLIENT.IsSavegame();
@@ -581,7 +581,7 @@ void dskHostGame::GoBack()
         WINDOWMANAGER.Switch(new dskSinglePlayer);
     else if (serverType == ServerType::LAN)
         WINDOWMANAGER.Switch(new dskLAN);
-    else if (serverType == ServerType::LOBBY && LOBBYCLIENT.LoggedIn())
+    else if (serverType == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
         WINDOWMANAGER.Switch(new dskLobby);
     else
         WINDOWMANAGER.Switch(new dskDirectIP);
@@ -666,7 +666,7 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
     edit->SetText("");
     if(gameChat->IsVisible())
         GAMECLIENT.Command_Chat(msg, CD_ALL);
-    else if(LOBBYCLIENT.LoggedIn() && lobbyChat->IsVisible())
+    else if(LOBBYCLIENT.IsLoggedIn() && lobbyChat->IsVisible())
         LOBBYCLIENT.SendChat(msg);
 }
 
@@ -866,7 +866,7 @@ void dskHostGame::CI_NewPlayer(const unsigned playerId)
     UpdatePlayerRow(playerId);
 
     // Rankinginfo abrufen
-    if(LOBBYCLIENT.LoggedIn())
+    if(LOBBYCLIENT.IsLoggedIn())
     {
         for(unsigned char i = 0; i < gameLobby.GetPlayerCount(); ++i)
         {

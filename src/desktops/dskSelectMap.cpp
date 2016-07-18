@@ -193,7 +193,7 @@ void dskSelectMap::GoBack()
         WINDOWMANAGER.Switch(new dskSinglePlayer);
     else if (csi.type == ServerType::LAN)
         WINDOWMANAGER.Switch(new dskLAN);
-    else if (csi.type == ServerType::LOBBY && LOBBYCLIENT.LoggedIn())
+    else if (csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
         WINDOWMANAGER.Switch(new dskLobby);
     else
         WINDOWMANAGER.Switch(new dskDirectIP);
@@ -256,7 +256,7 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     {
         GAMECLIENT.Stop();
 
-        if(csi.type == ServerType::LOBBY &&  LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
+        if(csi.type == ServerType::LOBBY &&  LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
         else if(csi.type == ServerType::LOBBY)
             WINDOWMANAGER.Switch(new dskDirectIP);

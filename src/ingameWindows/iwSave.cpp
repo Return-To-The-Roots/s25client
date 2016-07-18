@@ -200,7 +200,7 @@ void iwLoad::SaveLoad()
     if(!GAMESERVER.TryToStart(csi, table->GetItemText(table->GetSelection(), 4), MAPTYPE_SAVEGAME))
     {
         // Server starten
-        if(LOBBYCLIENT.LoggedIn())
+        if(LOBBYCLIENT.IsLoggedIn())
             // Lobby zeigen, wenn wenn das nich ging und man im Lobby-Modus ist
             WINDOWMANAGER.Switch(new dskLobby);
         else

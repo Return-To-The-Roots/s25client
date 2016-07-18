@@ -425,7 +425,7 @@ void GameServer::Stop()
 
     lanAnnouncer.Stop();
 
-    if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
+    if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
         LOBBYCLIENT.DeleteServer();
 
     // status
