@@ -3,6 +3,5 @@ coverage:
     ignore:
         - contrib/*
         - src/test/*
-comment:
-    layout: "header, diff, changes"
+comment: false
 
