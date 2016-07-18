@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,7 +18,7 @@
 #ifndef ServerType_h__
 #define ServerType_h__
 
-#include <boost/detail/scoped_enum_emulation.hpp>
+#include <boost/core/scoped_enum.hpp>
 
 // Servertypen
 BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType) //-V730
