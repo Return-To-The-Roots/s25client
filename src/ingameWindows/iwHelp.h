@@ -27,7 +27,7 @@
 class iwHelp : public IngameWindow
 {
     public:
-        iwHelp(const GUI_ID gui_id, const std::string& title, const std::string& content);
+        iwHelp(const GUI_ID gui_id, const std::string& content);
 };
 
 #endif // iwHELP_H_INCLUDED

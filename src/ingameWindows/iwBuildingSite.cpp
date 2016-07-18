@@ -51,8 +51,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 2: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING + buildingsite->GetBuildingType()),
-                                                  _(BUILDING_NAMES[buildingsite->GetBuildingType()]),
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
                                                   _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()]) ) );
         } break;
         case 3: // Gebäude abbrennen

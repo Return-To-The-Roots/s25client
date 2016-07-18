@@ -20,6 +20,8 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "WindowManager.h"
+#include "iwHelp.h"
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
 #include "Ware.h"
@@ -123,6 +125,15 @@ void iwShip::Msg_PaintAfter()
 
 void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
 {
+    if (ctrl_id == 2) // Hilfe
+    {
+        WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
+            _("The ship register contains all the ships in your fleet. Here you can monitor "
+              "the loading and destinations of individual ships. Ships on an expedition are "
+              "controlled from here as well.")));
+        return;
+    }
+
     noShip* ship = gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
 
     if(!ship)
@@ -173,11 +184,6 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             gwv.MoveToMapPt(ship->GetPos());
         } break;
-        /*  case 2: // Hilfe
-                {
-                //  WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELPBUILDING+ship->GetShipType()),_(BUILDING_NAMES[ship->GetShipType()]),
-                //      _(BUILDING_HELP_STRINGS[ship->GetShipType()])));
-                } break;*/
     }
 }
 

@@ -27,8 +27,8 @@ const unsigned short HELP_WINDOW_WIDTH = 240;
 /// Maximale Anzahl von Zeilen, bis Scrollbar eingesetzt wird
 const unsigned MAX_LINES = 15;
 
-iwHelp::iwHelp(const GUI_ID gui_id, const std::string& title, const std::string& content)
-    : IngameWindow(gui_id, 0xFFFE, 0xFFFE, HELP_WINDOW_WIDTH, 480, title, LOADER.GetImageN("resource", 41))
+iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
+    : IngameWindow(gui_id, 0xFFFE, 0xFFFE, HELP_WINDOW_WIDTH, 480, _("What is this?"), LOADER.GetImageN("resource", 41))
 {
     glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28, HELP_WINDOW_WIDTH - 28);
 

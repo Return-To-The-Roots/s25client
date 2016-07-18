@@ -19,6 +19,8 @@
 #include "iwWares.h"
 #include "Loader.h"
 #include "GamePlayer.h"
+#include "WindowManager.h"
+#include "iwHelp.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
@@ -181,6 +183,12 @@ void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
         case 0: // "Blättern"
         {
             SetPage( (page + 1) );
+        } break;
+        case 12: // Hilfe
+        {
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
+                _("Here you will find a list of your entire stores of "
+                  "merchandise and all the inhabitants of your realm.")));
         } break;
     }
 }

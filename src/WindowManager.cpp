@@ -29,6 +29,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "Log.h"
+#include "gameData/const_gui_ids.h"
 
 #include <algorithm>
 
@@ -218,8 +219,13 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         {
             // Ja, also vorheriges schliessen
             (*it)->Close();
-            delete window;
-            return;
+
+            // Hilfefenster nutzen gleiche ID, altes schließen und neues öffnen
+            if (window->id_ != CGI_HELP)
+            {
+                delete window;
+                return;
+            }
         }
     }
 

@@ -22,6 +22,8 @@
 #include "Settings.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "WindowManager.h"
+#include "iwHelp.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
@@ -168,7 +170,11 @@ void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
 
         case 25: // Hilfe
         {
-            // TODO Help!
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
+                "This window allows a direct comparison with the enemies. "
+                "Factors such as the wealth, territorial area, inhabitants, "
+                "etc. of all parties can be compared. This data can be shown "
+                "over four different time periods.")));
         } break;
     }
 }
