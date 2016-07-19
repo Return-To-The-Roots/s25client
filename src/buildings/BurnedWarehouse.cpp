@@ -54,6 +54,8 @@ BurnedWarehouse::~BurnedWarehouse()
 
 void BurnedWarehouse::Destroy()
 {
+    gwg->RemoveFigure(this, pos);
+    noCoordBase::Destroy();
 }
 
 

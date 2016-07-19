@@ -221,13 +221,16 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
     em = &gw.GetEvMgr();
 
     expectedObjectsReadCount = PopUnsignedInt();
-    GameObject::SetObjCount(expectedObjectsReadCount);
+    GameObject::SetObjCount(0);
 
     gw.Deserialize(*this);
     em->Deserialize(*this);
     for (unsigned i = 0; i < gw.GetPlayerCount(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 
+    // If this check fails, we did not serialize all objects or there was an async
+    RTTR_Assert(expectedObjectsReadCount == GameObject::GetObjCount());
+    RTTR_Assert(expectedObjectsReadCount == objectsCount + 1); // "Nothing" nodeObj does not get serialized
     em = NULL;
     readObjects.clear();
 }
@@ -281,7 +284,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     writtenObjIds.insert(objId);
 
     objectsCount++;
-    RTTR_Assert(objectsCount <= GameObject::GetObjCount());
+    RTTR_Assert(objectsCount < GameObject::GetObjCount());
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
@@ -379,7 +382,7 @@ void SerializedGameData::AddObject(GameObject* go)
     RTTR_Assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
     readObjects[go->GetObjId()] = go;
     objectsCount++;
-    RTTR_Assert(objectsCount <= expectedObjectsReadCount);
+    RTTR_Assert(objectsCount < expectedObjectsReadCount);
 }
 
 bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
