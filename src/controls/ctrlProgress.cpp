@@ -119,8 +119,10 @@ bool ctrlProgress::Draw_()
     return true;
 }
 
-void ctrlProgress::Resize_(unsigned short width, unsigned short height)
+void ctrlProgress::Resize(unsigned short width, unsigned short height)
 {
+    Window::Resize(width, height);
+
     Window* lessBt = GetCtrl<Window>(0);
     Window* moreBt = GetCtrl<Window>(1);
     lessBt->Resize(height, height);

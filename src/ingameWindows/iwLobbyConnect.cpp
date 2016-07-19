@@ -86,7 +86,7 @@ iwLobbyConnect::~iwLobbyConnect()
     std::string user, pass, email;
     LobbyForm(user, pass, email);
 
-    if(!LOBBYCLIENT.LoggedIn())
+    if(!LOBBYCLIENT.IsLoggedIn())
     {
         LOBBYCLIENT.Stop();
         LOBBYCLIENT.SetInterface(NULL);

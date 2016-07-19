@@ -301,7 +301,7 @@ void iwPostWindow::DisplayPostMessage()
         GetCtrl<Window>(ID_DENY)->SetVisible(true);
     }
     // Place text at top or center depending on whether we have an img or the acceptButton
-    if(img || GetCtrl<Window>(ID_ACCEPT)->GetVisible())
+    if(img || GetCtrl<Window>(ID_ACCEPT)->IsVisible())
         GetCtrl<Window>(ID_TEXT)->Move(xTextTopCenter, yTextTopCenter);
     else
         GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);

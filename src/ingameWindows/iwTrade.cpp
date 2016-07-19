@@ -110,7 +110,7 @@ void iwTrade::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
     const std::string number_str = GetCtrl<ctrlEdit>(6)->GetText();
 
     // Start trading
-    if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->GetVisible() && atoi(number_str.c_str()) > 0)
+    if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->IsVisible() && atoi(number_str.c_str()) > 0)
     {
         gcFactory.TradeOverLand(wh.GetPos(), gt, job, atoi(number_str.c_str()));
         this->Close();

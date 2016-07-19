@@ -51,9 +51,6 @@ class ctrlIngameMinimap : public ctrlMinimap
         bool Msg_LeftDown(const MouseCoords& mc) override;
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
-        /// Setzt Breite und Höhe des Controls
-        void SetDisplaySize(const unsigned short width, const unsigned short height);
-
         /// Die einzelnen Dinge umschalten
         void ToggleTerritory();
         void ToggleHouses();

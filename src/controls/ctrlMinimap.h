@@ -50,9 +50,8 @@ class ctrlMinimap : public Window
         unsigned short GetBottom() const { return GetTop() + height_show; }
 
         /// Größe ändern
-        void Resize_(unsigned short width, unsigned short heigth) override;
-        void SetDisplaySize(const unsigned short width, const unsigned short height,
-                            const unsigned short map_width, const unsigned short map_height);
+        void Resize(unsigned short width, unsigned short heigth) override;
+        void SetMapSize(const unsigned short map_width, const unsigned short map_height);
 
         /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
         DrawPoint CalcMapCoord(MapPoint pt) const;

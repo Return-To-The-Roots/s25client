@@ -46,14 +46,16 @@ ctrlComboBox::ctrlComboBox(Window* parent,
     if(!readonly)
         AddImageButton(1, width - height, 0, height, height, tc, LOADER.GetImageN("io", 34));
 
-    Resize_(width, height);
+    Resize(width, height);
 }
 
 /**
  *  Größe verändern
  */
-void ctrlComboBox::Resize_(unsigned short width, unsigned short height)
+void ctrlComboBox::Resize(unsigned short width, unsigned short height)
 {
+    Window::Resize(width, height);
+
     ctrlButton* button = GetCtrl<ctrlButton>(1);
     if(button)
     {
@@ -115,7 +117,7 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
     if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Liste wieder ein/ausblenden
-        ShowList(!list->GetVisible());
+        ShowList(!list->IsVisible());
         return true;
     }
 
@@ -150,7 +152,7 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
 {
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->GetVisible())
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->IsVisible())
     {
         // Scrolled in opened list ->
         return RelayMouseMessage(&Window::Msg_WheelUp, mc);
@@ -171,7 +173,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
 {
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->GetVisible())
+    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->IsVisible())
     {
         // Scrolled in opened list ->
         return RelayMouseMessage(&Window::Msg_WheelDown, mc);
@@ -210,7 +212,7 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int sele
 void ctrlComboBox::AddString(const std::string& text)
 {
     GetCtrl<ctrlList>(0)->AddString(text);
-    Resize_(width_, height_);
+    Resize(width_, height_);
 }
 
 /**
@@ -219,7 +221,7 @@ void ctrlComboBox::AddString(const std::string& text)
 void ctrlComboBox::DeleteAllItems()
 {
     GetCtrl<ctrlList>(0)->DeleteAllItems();
-    Resize_(width_, height_);
+    Resize(width_, height_);
 }
 
 /**

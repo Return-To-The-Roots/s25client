@@ -116,7 +116,7 @@ void WindowManager::Draw()
 bool WindowManager::IsDesktopActive()
 {
     if(curDesktop)
-        return curDesktop->GetActive();
+        return curDesktop->IsActive();
 
     return false;
 }
@@ -136,7 +136,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
     if(!curDesktop)
         return;
     // ist der Desktop aktiv?
-    if(curDesktop->GetActive())
+    if(curDesktop->IsActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
         (*curDesktop.*msg)(ke);
@@ -172,7 +172,7 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
     if(!curDesktop)
         return;
     // ist der Desktop aktiv?
-    if(curDesktop->GetActive())
+    if(curDesktop->IsActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
         (*curDesktop.*msg)(mc);
@@ -322,7 +322,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     IngameWindow& lastActiveWnd = *windows.back();
     if(lastActiveWnd.GetModal())
     {
-        if(!lastActiveWnd.GetActive())
+        if(!lastActiveWnd.IsActive())
             lastActiveWnd.SetActive();
 
         // ja es ist modal, ist der Maus-Klick-Fix aktiv?
@@ -412,7 +412,7 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     if(!disable_mouse)
     {
         // ist der Desktop aktiv?
-        if(curDesktop->GetActive())
+        if(curDesktop->IsActive())
         {
             // ja, dann Msg_LeftUp aufrufen
             curDesktop->Msg_LeftUp(mc);
@@ -481,7 +481,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     }
 
     // ist der Desktop aktiv?
-    if(curDesktop->GetActive())
+    if(curDesktop->IsActive())
     {
         // ja, dann Msg_RightDown aufrufen
         curDesktop->Msg_RightDown(mc);
@@ -644,7 +644,7 @@ void WindowManager::Msg_MouseMove(const MouseCoords& mc)
         return;
 
     // nein, ist unser Desktop aktiv?
-    if(curDesktop->GetActive())
+    if(curDesktop->IsActive())
     {
         // ja, dann Msg_MouseMove aufrufen
         curDesktop->Msg_MouseMove(mc);

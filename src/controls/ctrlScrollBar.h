@@ -26,6 +26,7 @@ class ctrlScrollBar : public Window
 {
     public:
         ctrlScrollBar(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short button_height, TextureColor tc, unsigned short pagesize);
+        void Resize(unsigned short width, unsigned short height) override;
         void SetPos(unsigned short scroll_pos);
         void SetRange(unsigned short scroll_range);
         void SetPageSize(unsigned short pagesize);
@@ -40,8 +41,6 @@ class ctrlScrollBar : public Window
 
     protected:
         bool Draw_() override;
-
-        void Resize_(unsigned short width, unsigned short height) override;
 
     private:
         void CalculatePosition() { scroll_pos = (scrollbar_pos * scroll_range / scroll_height); }

@@ -65,7 +65,7 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxR
     {
         GAMECLIENT.Stop();
 
-        if(LOBBYCLIENT.LoggedIn()) // steht die Lobbyverbindung noch?
+        if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
         else
             WINDOWMANAGER.Switch(new dskDirectIP);

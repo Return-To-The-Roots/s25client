@@ -22,7 +22,6 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "LobbyClient.h"
-#include "FileChecksum.h"
 #include "Settings.h"
 
 #include "dskHostGame.h"
@@ -345,12 +344,11 @@ void dskLobby::LC_Connected()
  */
 void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {
-    unsigned int checksum = CalcChecksumOfBuffer(player.c_str(), unsigned(player.length())) * player.length();
-    unsigned int color = checksum | (checksum << 12) | 0xff000000;
+    unsigned playerColor = ctrlChat::CalcUniqueColor(player);
 
     std::string time = TIME.FormatTime("(%H:%i:%s)");
 
-    if (!player.compare("LobbyBot"))
+    if (player == "LobbyBot")
     {
         std::string self = LOBBYCLIENT.GetUser();
 
@@ -364,7 +362,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
                 }
                 else if (text.substr(self.length() + 1, 2) == ", ")
                 {
-                    GetCtrl<ctrlChat>(20)->AddMessage(time, player, color, text.substr(self.length() + 3), COLOR_YELLOW);
+                    GetCtrl<ctrlChat>(20)->AddMessage(time, player, playerColor, text.substr(self.length() + 3), COLOR_YELLOW);
                 }
             }
 
@@ -372,7 +370,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
         }
     }
 
-    GetCtrl<ctrlChat>(20)->AddMessage(time, player, color, text, COLOR_YELLOW);
+    GetCtrl<ctrlChat>(20)->AddMessage(time, player, playerColor, text, COLOR_YELLOW);
 }
 
 
