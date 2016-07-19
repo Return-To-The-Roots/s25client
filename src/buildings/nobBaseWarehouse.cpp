@@ -115,7 +115,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
-    new BurnedWarehouse(pos, player, inventory.real.people);
+    gwg->AddFigure(new BurnedWarehouse(pos, player, inventory.real.people), pos);
 
     Destroy_nobBaseMilitary();
 }
