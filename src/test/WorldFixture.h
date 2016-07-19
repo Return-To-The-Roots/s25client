@@ -32,12 +32,13 @@ struct WorldFixture
     EventManager em;
     GlobalGameSettings ggs;
     GameWorldGame world;
-    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em)
+    T_WorldCreator worldCreator;
+    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em), worldCreator(T_width, T_height, T_numPlayers)
     {
         GameObject::SetPointers(&world);
         try
         {
-            BOOST_REQUIRE(T_WorldCreator(T_width, T_height, T_numPlayers)(world));
+            BOOST_REQUIRE(worldCreator(world));
         }catch(std::exception& e)
         {
             GameObject::SetPointers(NULL);
