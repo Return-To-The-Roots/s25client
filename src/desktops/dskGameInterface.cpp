@@ -501,6 +501,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 // oder ein HQ oder Hafen?
                 else if(bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING)
                     action_tabs.attack = action_tabs.sea_attack = true;
+                action_tabs.sea_attack = action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);
             }
         }
 
