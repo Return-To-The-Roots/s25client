@@ -376,12 +376,19 @@ BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) cons
 
 BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
 {
-    if(GetNode(pt).owner != player + 1 || !IsPlayerTerritory(pt))
+    if(nodeBQ == BQ_NOTHING || GetNode(pt).owner != player + 1 || !IsPlayerTerritory(pt))
         return BQ_NOTHING;
     // If we could build a building, but the buildings flag point is at the border, we can only build a flag
-    if(nodeBQ != BQ_NOTHING && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
+    if(nodeBQ != BQ_FLAG && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
+    {
+        // Check for close flags, that prohibit to build a flag but not a building at this spot
+        for(unsigned i = Direction::WEST; i <= Direction::NORTHEAST; i++)
+        {
+            if(GetNO(GetNeighbour(pt, Direction::fromInt(i)))->GetBM() == noBase::BM_FLAG)
+                return BQ_NOTHING;
+        }
         return BQ_FLAG;
-    else
+    } else
         return nodeBQ;
 }
 

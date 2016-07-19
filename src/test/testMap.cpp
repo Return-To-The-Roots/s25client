@@ -27,6 +27,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "FileChecksum.h"
 #include "test/WorldFixture.h"
+#include "test/CreateEmptyWorld.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libutil/src/tmpFile.h"
 #include <boost/test/unit_test.hpp>
@@ -56,8 +57,8 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
 namespace{
     struct UninitializedWorldCreator
     {
-        UninitializedWorldCreator(...){}
-        bool operator()(...){ return true; }
+        UninitializedWorldCreator(unsigned w, unsigned h, unsigned numPlayers){}
+        bool operator()(GameWorldBase& world){ return true; }
     };
 
     struct LoadWorldFromFileCreator
@@ -183,6 +184,69 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, UninitializedWorld1PFixture)
         BOOST_REQUIRE_EQUAL(world.GetNode(pt + MapPoint(1, 0)).bq, BQ_HOUSE);
     }
 }
+
+typedef WorldFixture<CreateEmptyWorld, 1, 22, 22> EmptyWorldFixture1P;
+
+BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
+{
+    // Calc all BQs
+    world.InitAfterLoad();
+    GamePlayer& player = world.GetPlayer(0);
+    const MapPoint hqPos = player.GetHQPos();
+    const nobBaseMilitary* hq = world.GetSpecObj<nobBaseMilitary>(hqPos);
+    BOOST_REQUIRE(hq);
+    const unsigned hqRadius = hq->GetMilitaryRadius();
+    BOOST_REQUIRE_GT(hqRadius, 4u);
+    std::vector<MapPoint> pts = world.GetPointsInRadius(hqPos, hq->GetMilitaryRadius() + 1);
+    BOOST_FOREACH(const MapPoint pt, pts)
+    {
+        const unsigned distance = world.CalcDistance(pt, hqPos);
+        if(distance < 3)
+            continue; // Influenced by HQ
+        else if(distance + 1 < hqRadius)
+        {
+            // Our territory -> No restrictions
+            BOOST_REQUIRE(world.IsPlayerTerritory(pt));
+            BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_CASTLE);
+        } else if(distance < hqRadius)
+        {
+            // Near border, flag if we cant build a buildings flag
+            BOOST_REQUIRE(world.IsPlayerTerritory(pt));
+            if(!world.IsPlayerTerritory(world.GetNeighbour(pt, Direction::SOUTHEAST)))
+                BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_FLAG);
+            else
+                BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_CASTLE);
+        } else if(distance == hqRadius)
+        {
+            // At border
+            BOOST_REQUIRE(!world.IsPlayerTerritory(pt));
+            BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, 0u + 1u);
+            BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_NOTHING);
+        } else
+        {
+            // Outside border
+            BOOST_REQUIRE(!world.IsPlayerTerritory(pt));
+            BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, 0u);
+            BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_NOTHING);
+        }
+    }
+
+    // Place a flag near a border
+    MapPoint flagPt = hqPos;
+    for(unsigned i = 0; i < hqRadius - 2; i++)
+        flagPt = world.GetNeighbour(flagPt, i % 2 ? Direction::SOUTHEAST : Direction::SOUTHWEST);
+    // This is near the border, so only a flag is possible
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_FLAG);
+    world.SetFlag(flagPt, 0);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetGOT(), GOT_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::WEST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHWEST), 0), BQ_CASTLE); // Building to this flag
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHEAST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::EAST), 0), BQ_HOUSE); // This flag blocks castles extensions
+    // This flag is to close and border prohibits building
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHWEST), 0), BQ_NOTHING);
+};
 
 BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 {
