@@ -73,7 +73,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 
     std::vector<DriverItem> drivers = LoadDriverList(dt);
 
-    LOG.lprintf("%u %s drivers found!\n", unsigned(drivers.size()), DIRECTORY[dt].c_str());
+    LOG.write("%u %s drivers found!\n", unsigned(drivers.size()), DIRECTORY[dt].c_str());
 
     // Welche gefunden?
     if(drivers.empty())
@@ -181,7 +181,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #   endif // !__APPLE__
 #endif // !_WIN32
 
-    LOG.lprintf(_("Searching for drivers in %s\n"), path.c_str());
+    LOG.write(_("Searching for drivers in %s\n"), path.c_str());
     std::vector<std::string> driver_files = ListDir(path, extension, false);
 
     for(std::vector<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
@@ -204,7 +204,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #endif
         std::string nameOrError;
         if(!CheckLibrary(path, dt, nameOrError))
-            LOG.lprintf(_("Skipping %s: %s"), path.c_str(), nameOrError.c_str());
+            LOG.write(_("Skipping %s: %s"), path.c_str(), nameOrError.c_str());
         else
             driver_list.push_back(DriverItem(path, nameOrError));
     }

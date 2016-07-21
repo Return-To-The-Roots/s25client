@@ -248,7 +248,7 @@ std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
         if(addons.typeTest<std::vector<AddonId> >())
             return addons;
         else
-            LOG.lprintf("Invalid type returned by getAllowedAddons");
+            LOG.write("Invalid type returned by getAllowedAddons");
     }
     return std::vector<AddonId>();
 }

@@ -230,11 +230,11 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
     const unsigned short oldlength = chat_lines.size();
 
     // Loggen
-    LOG.lprintf("%s <", time_string.c_str());
-    LOG.lcprintf(player_color, "%s", player.c_str());
-    LOG.lprintf(">: ");
-    LOG.lcprintf(msg_color, "%s", msg.c_str());
-    LOG.lprintf("\n");
+    LOG.write("%s <", time_string.c_str());
+    LOG.writeColored(player_color, "%s", player.c_str());
+    LOG.write(">: ");
+    LOG.writeColored(msg_color, "%s", msg.c_str());
+    LOG.write("\n");
 
     // Umbrechen
     WrapLine(raw_chat_lines.size() - 1);

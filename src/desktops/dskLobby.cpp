@@ -258,7 +258,7 @@ void dskLobby::UpdateServerList(bool first)
 
             if(helpers::contains(ids, it->getId()))
             {
-                LOG.lprintf("Duplicate ID in serverlist detected: %u\n", it->getId());
+                LOG.write("Duplicate ID in serverlist detected: %u\n", it->getId());
                 continue;
             }
             ids.insert(it->getId());

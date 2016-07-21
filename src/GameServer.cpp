@@ -143,7 +143,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.type)
     {
-        default: LOG.lprintf("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.type); return false;
+        default: LOG.write("GameServer::Start: ERROR: Map-Type %u not supported!\n", mapinfo.type); return false;
         // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {
@@ -152,7 +152,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             // Karteninformationen laden
             if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
             {
-                LOG.lprintf("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
+                LOG.write("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
                 return false;
             }
             const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
@@ -281,8 +281,8 @@ bool GameServer::Start()
     // und das socket in listen-modus schicken
     if(!serversocket.Listen(config.port, config.ipv6, config.use_upnp))
     {
-        LOG.lprintf("GameServer::Start: ERROR: Listening on port %d failed!\n", config.port);
-        LOG.getlasterror("Fehler");
+        LOG.write("GameServer::Start: ERROR: Listening on port %d failed!\n", config.port);
+        LOG.writeLastError("Fehler");
         return false;
     }
 
@@ -373,7 +373,7 @@ void GameServer::Run()
             else
             {
                 SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
-                LOG.write("SERVER >>> BROADCAST: NMS_SERVER_COUNTDOWN(%d)\n", countdown.GetRemainingSecs());
+                LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_COUNTDOWN(%d)\n", countdown.GetRemainingSecs());
             }
         }
     }
@@ -430,7 +430,7 @@ void GameServer::Stop()
 
     // status
     status = SS_STOPPED;
-    LOG.lprintf("server state changed to stop\n");
+    LOG.write("server state changed to stop\n");
 }
 
 /**
@@ -470,7 +470,7 @@ bool GameServer::StartCountdown()
     {
         countdown.Start(3, VIDEODRIVER.GetTickCount());
         SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
-        LOG.write("SERVER >>> Countdown started(%d)\n", countdown.GetRemainingSecs());
+        LOG.writeToFile("SERVER >>> Countdown started(%d)\n", countdown.GetRemainingSecs());
     }else if(!StartGame())
     {
         GAMEMANAGER.ShowMenu();
@@ -489,7 +489,7 @@ void GameServer::CancelCountdown()
     // Countdown-Stop allen mitteilen
     countdown.Stop();
     SendToAll(GameMessage_Server_CancelCountdown());
-    LOG.write("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
 }
 
 /**
@@ -527,12 +527,12 @@ bool GameServer::StartGame()
 
     GameMessage_Server_Start start_msg(random_init, framesinfo.nwf_length);
 
-    LOG.lprintf("SERVER: Using gameframe length of %dms\n", framesinfo.gf_length);
-    LOG.lprintf("SERVER: Using networkframe length of %u GFs (%ums)\n", framesinfo.nwf_length, framesinfo.nwf_length * framesinfo.gf_length);
+    LOG.write("SERVER: Using gameframe length of %dms\n", framesinfo.gf_length);
+    LOG.write("SERVER: Using networkframe length of %u GFs (%ums)\n", framesinfo.nwf_length, framesinfo.nwf_length * framesinfo.gf_length);
 
     // Spielstart allen mitteilen
     SendToAll(start_msg);
-    LOG.write("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n", random_init);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n", random_init);
 
     framesinfo.lastTime = VIDEODRIVER.GetTickCount();
 
@@ -543,7 +543,7 @@ bool GameServer::StartGame()
     }
     catch (SerializedGameData::Error& error)
     {
-        LOG.lprintf("Error when loading game: %s\n", error.what());
+        LOG.write("Error when loading game: %s\n", error.what());
         return false;
     }
 
@@ -560,7 +560,7 @@ bool GameServer::StartGame()
         }
     }
 
-    LOG.write("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
     // Spielstart allen mitteilen
     SendToAll(GameMessage_Server_NWFDone(0xff, currentGF, framesinfo.gf_length, true));
@@ -711,7 +711,7 @@ void GameServer::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
 {
     this->ggs_ = ggs;
     SendToAll(GameMessage_GGSChange(ggs));
-    LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
 }
 
 void GameServer::RemoveLuaScript()
@@ -763,7 +763,7 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
 
     SendToAll(GameMessage_Player_Kicked(playerId, cause, param));
     AnnounceStatusChange();
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", playerId, cause, param);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n", playerId, cause, param);
 
     if(status == SS_GAME)
         SendNothingNC(playerId);
@@ -790,7 +790,7 @@ void GameServer::ClientWatchDog()
         {
             if(set.InSet(players[id].so))
             {
-                LOG.lprintf("SERVER: Error on socket of player %d, bye bye!\n", id);
+                LOG.write("SERVER: Error on socket of player %d, bye bye!\n", id);
                 KickPlayer(id, NP_CONNECTIONLOST, 0);
             }
         }
@@ -868,7 +868,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         // Befehle der KI senden
         if(player.ps == PS_AI)
         {
-            //LOG.write("SERVER >>> GC %u\n", playerId);
+            //LOG.writeToFile("SERVER >>> GC %u\n", playerId);
             SendToAll(GameMessage_GameCommand(playerId, AsyncChecksum(0), ai_players[playerId]->GetGameCommands()));
             ai_players[playerId]->FetchGameCommands();
             RTTR_Assert(player.gc_queue.empty());
@@ -901,7 +901,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         // Checksummen nicht gleich?
         if (curChecksum != referenceChecksum)
         {
-            LOG.lprintf("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", currentGF, playerId, referencePlayerIdx,
+            LOG.write("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", currentGF, playerId, referencePlayerIdx,
                 curChecksum.randState, referenceChecksum.randState,
                 curChecksum.objCt, referenceChecksum.objCt,
                 curChecksum.objIdCt, referenceChecksum.objIdCt);
@@ -936,7 +936,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         unsigned oldnNwfLen = framesinfo.nwf_length;
         framesinfo.ApplyNewGFLength();
 
-        LOG.lprintf("Server %d/%d: Speed changed from %d to %d. NWF %u to %u\n", currentGF, currentGF, oldGfLen, framesinfo.gf_length, oldnNwfLen, framesinfo.nwf_length);
+        LOG.write("Server %d/%d: Speed changed from %d to %d. NWF %u to %u\n", currentGF, currentGF, oldGfLen, framesinfo.gf_length, oldnNwfLen, framesinfo.nwf_length);
     }
 
     framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
@@ -953,7 +953,7 @@ void GameServer::CheckAndKickLaggingPlayer(const unsigned char playerIdx)
     if(timeOut == 0)
         KickPlayer(playerIdx, NP_PINGTIMEOUT, 0);
     else if(timeOut <= 30 && (timeOut % 5 == 0 || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
-        LOG.lprintf("SERVER: Kicke Spieler %d in %u Sekunden\n", playerIdx, timeOut);
+        LOG.write("SERVER: Kicke Spieler %d in %u Sekunden\n", playerIdx, timeOut);
 }
 
 unsigned char GameServer::GetLaggingPlayer() const
@@ -1005,7 +1005,7 @@ void GameServer::WaitForClients()
                     // platz reservieren
                     players[playerId].reserve(socket);
                     newPlayerId = playerId;
-                    //LOG.lprintf("new socket, about to tell him about his playerId: %i \n",playerId);
+                    //LOG.write(("new socket, about to tell him about his playerId: %i \n",playerId);
                     // schleife beenden
                     break;
                 }
@@ -1050,7 +1050,7 @@ void GameServer::FillPlayerQueues()
                     // nachricht empfangen
                     if(!players[id].recv_queue.recv(players[id].so))
                     {
-                        LOG.lprintf("SERVER: Receiving Message for player %d failed, kick it like Beckham!\n", id);
+                        LOG.write("SERVER: Receiving Message for player %d failed, kick it like Beckham!\n", id);
                         KickPlayer(id, NP_CONNECTIONLOST, 0);
                     } else
                         msgReceived = true;
@@ -1142,7 +1142,7 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 
     GameServerPlayer& player = players[msg.player];
 
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n", msg.player, msg.playername.c_str());
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n", msg.player, msg.playername.c_str());
 
     player.name = msg.playername;
 
@@ -1193,12 +1193,12 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 
     player.nation = msg.nation;
 
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLENATION\n", msg.player);
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLENATION\n", msg.player);
 
     // Nation-Change senden
     SendToAll(GameMessage_Player_Set_Nation(msg.player, msg.nation));
 
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n", msg.player, player.nation);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n", msg.player, player.nation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1212,9 +1212,9 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 
     player.team = msg.team;
 
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLETEAM\n", msg.player);
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLETEAM\n", msg.player);
     SendToAll(GameMessage_Player_Set_Team(msg.player, msg.team));
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n", msg.player, player.team);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n", msg.player, player.team);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1224,7 +1224,7 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
     if(msg.player >= GetMaxPlayerCount())
         return;
 
-    LOG.write("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
+    LOG.writeToFile("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n", msg.player, msg.color);
     CheckAndSetColor(msg.player, msg.color);
 }
 
@@ -1244,10 +1244,10 @@ inline void GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
     if(!player.isReady && countdown.IsActive())
         CancelCountdown();
 
-    LOG.write("CLIENT%d >>> SERVER: NMS_PLAYER_READY(%s)\n", msg.player, (player.isReady ? "true" : "false"));
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_READY(%s)\n", msg.player, (player.isReady ? "true" : "false"));
     // Broadcast to all players
     SendToAll(msg);
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n", msg.player, (player.isReady ? "true" : "false"));
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n", msg.player, (player.isReady ? "true" : "false"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1261,12 +1261,12 @@ inline void GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 
     bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
 
-    LOG.write("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n", msg.player, msg.mapChecksum, mapinfo.mapChecksum, checksumok ? "yes" : "no");
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n", msg.player, msg.mapChecksum, mapinfo.mapChecksum, checksumok ? "yes" : "no");
 
     // Antwort senden
     player.send_queue.push(new GameMessage_Map_ChecksumOK(checksumok));
 
-    LOG.write("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n", msg.player, checksumok);
+    LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n", msg.player, checksumok);
 
     if(!checksumok)
         KickPlayer(msg.player, NP_WRONGCHECKSUM, 0);
@@ -1275,7 +1275,7 @@ inline void GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
         // den anderen Spielern mitteilen das wir einen neuen haben
         SendToAll(GameMessage_Player_New(msg.player, player.name));
 
-        LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n", msg.player, player.name.c_str());
+        LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n", msg.player, player.name.c_str());
 
         // belegt markieren
         player.ps = PS_OCCUPIED;
@@ -1295,7 +1295,7 @@ inline void GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 
         AnnounceStatusChange();
 
-        LOG.write("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
+        LOG.writeToFile("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
     }
 }
 
@@ -1311,7 +1311,7 @@ void GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
         return;
 
     GameServerPlayer& player = players[msg.player];
-    //LOG.write("SERVER <<< GC %u\n", msg.player);
+    //LOG.writeToFile("SERVER <<< GC %u\n", msg.player);
 
     // Only valid from humans (for now)
     if(player.ps != PS_OCCUPIED)
@@ -1330,7 +1330,7 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
         if (msg.last)
         {
-            LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player1, async_player1_log.size());
+            LOG.write("Received async logs from %u (%lu entries).\n", async_player1, async_player1_log.size());
             async_player1_done = true;
         }
     }
@@ -1340,13 +1340,13 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
         if (msg.last)
         {
-            LOG.lprintf("Received async logs from %u (%lu entries).\n", async_player2, async_player2_log.size());
+            LOG.write("Received async logs from %u (%lu entries).\n", async_player2, async_player2_log.size());
             async_player2_done = true;
         }
     }
     else
     {
-        LOG.lprintf("Received async log from %u, but did not expect it!\n", msg.player);
+        LOG.write("Received async log from %u, but did not expect it!\n", msg.player);
         return;
     }
 
@@ -1354,7 +1354,7 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     if (!async_player1_done || !async_player2_done)
         return;
 
-    LOG.lprintf("Async logs received completely.\n");
+    LOG.write("Async logs received completely.\n");
 
     std::vector<RandomEntry>::const_iterator it1 = async_player1_log.begin();
     std::vector<RandomEntry>::const_iterator it2 = async_player2_log.begin();
@@ -1388,7 +1388,7 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     it1 -= identical;
     it2 -= identical;
 
-    LOG.lprintf("There are %u identical async log entries.\n", identical);
+    LOG.write("There are %u identical async log entries.\n", identical);
 
     if (SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
@@ -1399,7 +1399,7 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
        )
     {
         DebugInfo di;
-        LOG.lprintf("Sending async logs %s.\n",
+        LOG.write("Sending async logs %s.\n",
                     di.SendAsyncLog(it1, it2, async_player1_log, async_player2_log, identical) ? "succeeded" : "failed");
 
         di.SendReplay();
@@ -1430,11 +1430,11 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
         fclose(file);
 
-        LOG.lprintf("Async log saved at \"%s\"\n", fileName.c_str());
+        LOG.write("Async log saved at \"%s\"\n", fileName.c_str());
     }
     else
     {
-        LOG.lprintf("Failed to save async log at \"%s\"\n", fileName.c_str());
+        LOG.write("Failed to save async log at \"%s\"\n", fileName.c_str());
     }
 
     async_player1_log.clear();
@@ -1475,7 +1475,7 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
     player.color = newColor;
 
     SendToAll(GameMessage_Player_Set_Color(playerIdx, player.color));
-    LOG.write("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n", playerIdx, player.color);
 }
 
 void GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
@@ -1498,7 +1498,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 {
     RTTR_Assert(status == SS_GAME); // Change player only ingame
 
-    LOG.lprintf("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
+    LOG.write("GameServer::ChangePlayer %i - %i \n",old_id, new_id);
     using std::swap;
     swap(players[new_id].ps, players[old_id].ps);
     swap(players[new_id].so, players[old_id].so);

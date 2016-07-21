@@ -1293,7 +1293,7 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
         }
     }
 
-    LOG.lprintf("GameClientPlayer::GetBuidingSitePriority: ERROR: BuildingSite or type of it not found in the list!\n");
+    LOG.write("GameClientPlayer::GetBuidingSitePriority: ERROR: BuildingSite or type of it not found in the list!\n");
     RTTR_Assert(false);
     // We may want to multiply this value so don't return the absolute max value
     return std::numeric_limits<unsigned>::max() / 1000;
@@ -1465,7 +1465,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const b
         tools_ordered_delta[i] -= orderChanges[i];
 
         if(orderChanges[i] != 0){
-            LOG.lprintf(">> Committing an order of %d for tool #%d(%s)\n", (int)orderChanges[i], i, _(WARE_NAMES[TOOLS[i]]));
+            LOG.write(">> Committing an order of %d for tool #%d(%s)\n", (int)orderChanges[i], i, _(WARE_NAMES[TOOLS[i]]));
             gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
         }
     }

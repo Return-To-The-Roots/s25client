@@ -70,7 +70,7 @@ void GameClient::ExecuteGameFrame_Replay()
                     if(ci)
                         ci->CI_ReplayAsync(text);
 
-                    LOG.lprintf("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", curGF,
+                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n", curGF,
                         msg.checksum.randState, checksum.randState,
                         msg.checksum.objCt, checksum.objCt,
                         msg.checksum.objIdCt, checksum.objIdCt);

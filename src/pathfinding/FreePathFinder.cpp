@@ -86,7 +86,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     {
         // Path where start==goal should never happen
         RTTR_Assert(false);
-        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", gwb_.GetEvMgr().GetCurrentGF(), unsigned(start.x), unsigned(start.y));
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n", gwb_.GetEvMgr().GetCurrentGF(), unsigned(start.x), unsigned(start.y));
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
             route->clear();
@@ -114,7 +114,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     nodes[startId].lastVisitedEven = currentVisit;
     nodes[startId].wayEven = 0;
     nodes[startId].dirEven = 0;
-    //LOG.lprintf("pf: from %i, %i to %i, %i \n", x_start, y_start, x_dest, y_dest);
+    //LOG.write(("pf: from %i, %i to %i, %i \n", x_start, y_start, x_dest, y_dest);
 
     // Start at random dir (so different jobs may use different roads)
     const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
@@ -125,10 +125,10 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         {			
             prevStepEven = !prevStepEven;
             stepsTilSwitch = todo.size();
-            //prevstepEven ? LOG.lprintf("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.lprintf("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
+            //prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
         }
         //else
-        //prevstepEven ? LOG.lprintf("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.lprintf("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
+        //prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
         stepsTilSwitch--;
 
         // Get node with lowest cost
@@ -141,7 +141,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         // ID des besten Punktes ausrechnen
 
         unsigned bestId = best.id_;
-        //LOG.lprintf(" now %i, %i id: %i \n", best.x, best.y, best_id);
+        //LOG.write((" now %i, %i id: %i \n", best.x, best.y, best_id);
         // Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
         // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
         //pf_nodes[best_id].it_p = todo.end();
@@ -178,7 +178,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         if((prevStepEven && nodes[bestId].wayEven == maxLength) || (!prevStepEven && nodes[bestId].way == maxLength))
             continue;
 
-        //LOG.lprintf("pf get neighbor nodes %i, %i id: %i \n", best.x, best.y, best_id);
+        //LOG.write(("pf get neighbor nodes %i, %i id: %i \n", best.x, best.y, best_id);
         // Knoten in alle 6 Richtungen bilden
         for(unsigned z = startDir + 3; z < startDir + 9; ++z)
         {
@@ -225,17 +225,17 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         alternate = !alternate;
                     }
                     bool tooClose = false;
-                    //LOG.lprintf("pf from %i, %i to %i, %i now %i, %i ", x_start, y_start, x_dest, y_dest, xa, ya);//\n
+                    //LOG.write(("pf from %i, %i to %i, %i now %i, %i ", x_start, y_start, x_dest, y_dest, xa, ya);//\n
                     for(std::vector<MapPoint>::const_iterator it = evenLocationsOnRoute.begin();it!= evenLocationsOnRoute.end(); ++it)
                     {
-                        //LOG.lprintf("dist to %i, %i ", temp, *it);
+                        //LOG.write(("dist to %i, %i ", temp, *it);
                         if(gwb_.CalcDistance(neighbourPos, (*it)) < 2)
                         {
                             tooClose = true;
                             break;
                         }
                     }
-                    //LOG.lprintf("\n");
+                    //LOG.write(("\n");
                     if(tooClose)
                         continue;
                     if(gwb_.CalcDistance(neighbourPos, start) < 2)

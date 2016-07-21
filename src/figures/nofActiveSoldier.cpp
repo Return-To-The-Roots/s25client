@@ -66,10 +66,10 @@ void nofActiveSoldier::GoalReached()
         RTTR_Assert(false);
         building = gwg->GetSpecObj<nobMilitary>(this->GetPos());
         if(building)
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y, GetEvMgr().GetCurrentGF());
+            LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y, GetEvMgr().GetCurrentGF());
         else
         {
-            LOG.lprintf("nofActiveSoldier::GoalRoached() - no valid 'building' also didn't find one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y, GetEvMgr().GetCurrentGF());
+            LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' also didn't find one at soldier's position (%i,%i) (gf: %u)\n", pos.x, pos.y, GetEvMgr().GetCurrentGF());
             throw std::runtime_error("No building found for soldier");
         }
     }

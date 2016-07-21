@@ -687,7 +687,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     // Ware überhaupt hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
     if(!inventory[good])
     {
-        LOG.lprintf("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n", static_cast<unsigned>(good));
+        LOG.write("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n", static_cast<unsigned>(good));
         return NULL;
     }
 

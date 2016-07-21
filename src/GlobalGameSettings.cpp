@@ -230,7 +230,7 @@ void GlobalGameSettings::SaveSettings() const
  */
 void GlobalGameSettings::Serialize(Serializer& ser) const
 {
-    LOG.write(">>> Addon Status:\n");
+    LOG.writeToFile(">>> Addon Status:\n");
 
     ser.PushUnsignedChar(static_cast<unsigned char>(game_speed));
     ser.PushUnsignedChar(static_cast<unsigned char>(game_objective));
@@ -246,7 +246,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
         ser.PushUnsignedInt(it->addon->getId());
         ser.PushUnsignedInt(it->status);
 
-        LOG.write("\t0x%08X=%d\n", AddonId::type_(it->addon->getId()), it->status);
+        LOG.writeToFile("\t0x%08X=%d\n", AddonId::type_(it->addon->getId()), it->status);
     }
 }
 
@@ -267,7 +267,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     reset();
 
-    LOG.write("<<< Addon Status:\n");
+    LOG.writeToFile("<<< Addon Status:\n");
 
     for(unsigned int i = 0; i < count; ++i)
     {
@@ -275,7 +275,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
         unsigned int status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
-        LOG.write("\t0x%08X=%d\n", AddonId::type_(addon), status);
+        LOG.writeToFile("\t0x%08X=%d\n", AddonId::type_(addon), status);
     }
 }
 

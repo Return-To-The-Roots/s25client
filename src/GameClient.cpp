@@ -123,7 +123,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     // Verbinden
     if(!socket.Connect(server, port, use_ipv6, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port)) //-V807
     {
-        LOG.lprintf("GameClient::Connect: ERROR: Connect failed!\n");
+        LOG.write("GameClient::Connect: ERROR: Connect failed!\n");
         return false;
     }
 
@@ -158,7 +158,7 @@ void GameClient::Run()
         // nachricht empfangen
         if(!recv_queue.recv(socket))
         {
-            LOG.lprintf("Receiving Message from server failed\n");
+            LOG.write("Receiving Message from server failed\n");
             ServerLost();
         }
     }
@@ -175,7 +175,7 @@ void GameClient::Run()
         if(set.InSet(socket))
         {
             // Server ist weg
-            LOG.lprintf("Error on socket to server\n");
+            LOG.write("Error on socket to server\n");
             ServerLost();
         }
     }
@@ -226,7 +226,7 @@ void GameClient::Stop()
     RTTR_Assert(!gameLobby);
 
     state = CS_STOPPED;
-    LOG.lprintf("client state changed to stop\n");
+    LOG.write("client state changed to stop\n");
 }
 
 GameLobby& GameClient::GetGameLobby()
@@ -423,7 +423,7 @@ void GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_New& msg)
 {
-    LOG.write("<<< NMS_PLAYER_NEW(%d)\n", msg.player);
+    LOG.writeToFile("<<< NMS_PLAYER_NEW(%d)\n", msg.player);
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->GetPlayerCount())
         return;
@@ -537,7 +537,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
  */
 inline void GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
-    LOG.write("<<< NMS_PLAYER_READY(%d, %s)\n", msg.player, (msg.ready ? "true" : "false"));
+    LOG.writeToFile("<<< NMS_PLAYER_READY(%d, %s)\n", msg.player, (msg.ready ? "true" : "false"));
 
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->GetPlayerCount())
@@ -554,7 +554,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 {
-    LOG.write("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n", msg.player, msg.cause, msg.param);
+    LOG.writeToFile("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n", msg.player, msg.cause, msg.param);
 
     RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
@@ -575,7 +575,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 
 inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
-    LOG.write("<<< NMS_PLAYER_SWAP(%u, %u)\n", msg.player, msg.player2);
+    LOG.writeToFile("<<< NMS_PLAYER_SWAP(%u, %u)\n", msg.player, msg.player2);
 
     RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
@@ -686,7 +686,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
         StartGame(msg.random_init);
     } catch(SerializedGameData::Error& error)
     {
-        LOG.lprintf("Error when loading game: %s\n", error.what());
+        LOG.write("Error when loading game: %s\n", error.what());
         GAMEMANAGER.ShowMenu();
         ExitGame();
     }
@@ -754,9 +754,9 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     }
 
     // Fehler ausgeben (Konsole)!
-    LOG.lprintf(_("The Game is not in sync. Checksums of some players don't match."));
-    LOG.lprintf(checksum_list.str().c_str());
-    LOG.lprintf("\n");
+    LOG.write(_("The Game is not in sync. Checksums of some players don't match."));
+    LOG.write(checksum_list.str().c_str());
+    LOG.write("\n");
 
     // Messenger im Game
     if(ci)
@@ -767,7 +767,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     std::string filePathLog = GetFilePath(FILE_PATHS[47]) + timeStr + "Player.log";
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
-    LOG.lprintf("Async log saved at \"%s\", game saved at \"%s\"\n", filePathLog.c_str(), filePathSave.c_str());
+    LOG.write("Async log saved at \"%s\", game saved at \"%s\"\n", filePathLog.c_str(), filePathSave.c_str());
 }
 
 /**
@@ -817,7 +817,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 {
     RTTR_Assert(state == CS_CONNECT);
-    LOG.write("<<< NMS_MAP_DATA(%u)\n", msg.data.size());
+    LOG.writeToFile("<<< NMS_MAP_DATA(%u)\n", msg.data.size());
     if(msg.isMapData)
         std::copy(msg.data.begin(), msg.data.end(), mapinfo.mapData.data.begin() + msg.offset);
     else
@@ -858,7 +858,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 // Karteninformationen laden
                 if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
                 {
-                    LOG.lprintf("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
+                    LOG.write("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n", mapinfo.filepath.c_str());
                     if(ci)
                         ci->CI_Error(CE_WRONGMAP);
                     Stop();
@@ -900,7 +900,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
         }
         send_queue.push(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
 
-        LOG.write(">>>NMS_MAP_CHECKSUM(%u)\n", mapinfo.mapChecksum);
+        LOG.writeToFile(">>>NMS_MAP_CHECKSUM(%u)\n", mapinfo.mapChecksum);
     }
 }
 
@@ -909,7 +909,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 inline void GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 {
-    LOG.write("<<< NMS_MAP_CHECKSUM(%d)\n", msg.correct ? 1 : 0);
+    LOG.writeToFile("<<< NMS_MAP_CHECKSUM(%d)\n", msg.correct ? 1 : 0);
 
     if(!msg.correct)
     {
@@ -928,7 +928,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 void GameClient::OnGameMessage(const GameMessage_GGSChange& msg)
 {
     RTTR_Assert(state == CS_CONFIG);
-    LOG.write("<<< NMS_GGS_CHANGE\n");
+    LOG.writeToFile("<<< NMS_GGS_CHANGE\n");
 
     gameLobby->GetSettings() = msg.ggs;
 
@@ -953,7 +953,7 @@ void GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
         return;
     if(msg.player >= gw->GetPlayerCount())
         return;
-    LOG.write("CLIENT <<< GC %u\n", msg.player);
+    LOG.writeToFile("CLIENT <<< GC %u\n", msg.player);
     // Nachricht in Queue einhängen
     gw->GetPlayer(msg.player).gc_queue.push(msg);
     // If this is our GC then it must be the next and only command as we need to execute this before we even send the next one
@@ -1054,7 +1054,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
         framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
     }
 
-    //LOG.write("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n", framesinfo.gf_nr, framesinfo.gfNrServer);
+    //LOG.writeToFile("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n", framesinfo.gf_nr, framesinfo.gfNrServer);
 }
 
 /**
@@ -1073,7 +1073,7 @@ void GameClient::OnGameMessage(const GameMessage_Pause& msg)
         framesinfo.pause_gf = 0;
     }
 
-    LOG.write("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
+    LOG.writeToFile("<<< NMS_NFC_PAUSE(%u)\n", framesinfo.pause_gf);
 
     if(msg.paused)
         ci->CI_GamePaused();
@@ -1293,7 +1293,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                         framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length;
                     }
 
-                    LOG.lprintf("Client: %u/%u: Speed changed from %u to %u (NWF: %u to %u)\n", framesinfo.gfNrServer, curGF, oldGfLen, framesinfo.gf_length, oldNwfLen, framesinfo.nwf_length);
+                    LOG.write("Client: %u/%u: Speed changed from %u to %u (NWF: %u to %u)\n", framesinfo.gfNrServer, curGF, oldGfLen, framesinfo.gf_length, oldNwfLen, framesinfo.nwf_length);
                 }
                 // "pop" the length
                 framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
@@ -1439,7 +1439,7 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
 
     // Datei speichern
     if(!replayinfo.replay.WriteHeader(fileName, mapinfo))
-        LOG.lprintf("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
+        LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
 }
 
 bool GameClient::StartReplay(const std::string& path)
@@ -1451,7 +1451,7 @@ bool GameClient::StartReplay(const std::string& path)
 
     if(!replayinfo.replay.LoadHeader(path, &mapinfo))
     {
-        LOG.lprintf(_("Invalid Replay!"));
+        LOG.write(_("Invalid Replay!"));
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
         return false;
@@ -1504,7 +1504,7 @@ bool GameClient::StartReplay(const std::string& path)
             mapinfo.filepath = GetFilePath(FILE_PATHS[48]) +  replayinfo.replay.mapFileName;
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
-                LOG.lprintf(_("Error decompressing map file"));
+                LOG.write(_("Error decompressing map file"));
                 if(ci)
                     ci->CI_Error(CE_WRONGMAP);
                 Stop();
@@ -1515,7 +1515,7 @@ bool GameClient::StartReplay(const std::string& path)
                 mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
-                    LOG.lprintf(_("Error decompressing lua file"));
+                    LOG.write(_("Error decompressing lua file"));
                     if(ci)
                         ci->CI_Error(CE_WRONGMAP);
                     Stop();
@@ -1537,7 +1537,7 @@ bool GameClient::StartReplay(const std::string& path)
     }
     catch (SerializedGameData::Error& error)
     {
-        LOG.lprintf(_("Error when loading game from replay: %s\n"), error.what());
+        LOG.write(_("Error when loading game from replay: %s\n"), error.what());
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
         Stop();
@@ -1588,7 +1588,7 @@ void GameClient::ServerLost()
 
 
     if(state != CS_STOPPED)
-        LOG.lprintf("client forced to stop\n");
+        LOG.write("client forced to stop\n");
 
     state = CS_STOPPED;
 
@@ -1614,7 +1614,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             GAMESERVER.TogglePause();
         GAMESERVER.skiptogf = gf;
         skiptogf = gf;
-        LOG.lprintf("jumping from gf %i to gf %i \n", GetGFNumber(), gf);
+        LOG.write("jumping from gf %i to gf %i \n", GetGFNumber(), gf);
         return;
     }
     
@@ -1639,7 +1639,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             VIDEODRIVER.SwapBuffers();
         }
         ExecuteGameFrame(true);
-        //LOG.lprintf("jumping: now at gf %i\n", framesinfo.nr);        
+        //LOG.write(("jumping: now at gf %i\n", framesinfo.nr);        
     }
     
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat 

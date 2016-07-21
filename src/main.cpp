@@ -284,7 +284,7 @@ bool InitProgram()
 bool InitDirectories()
 {
     std::string curPath = boost::filesystem::current_path().string();
-    LOG.lprintf("Starting in %s\n", curPath.c_str());
+    LOG.write("Starting in %s\n", curPath.c_str());
 
     // diverse dirs anlegen
     const unsigned int dir_count = 7;
@@ -377,7 +377,7 @@ int RunProgram(po::variables_map& options)
     {
         // Write to log file, but don't throw any errors if this fails too
         try{
-            LOG.write(error.what());
+            LOG.writeToFile(error.what());
         } catch(...){} //-V565
         return 42;
     }

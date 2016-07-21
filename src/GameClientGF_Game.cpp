@@ -58,7 +58,7 @@ void GameClient::ExecuteNWF()
 
     // Send GC message for this NWF
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, gameCommands_));
-    //LOG.write("CLIENT >>> GC %u\n", playerId_);
+    //LOG.writeToFile("CLIENT >>> GC %u\n", playerId_);
 
     // alles gesendet --> Liste löschen
     gameCommands_.clear();

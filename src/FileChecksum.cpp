@@ -47,7 +47,7 @@ unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size
     unsigned int checksum = 0;
     for(unsigned int i = 0; i < size; ++i)
     {
-        //LOG.lprintf("%d - %d\n", i, checksum);
+        //LOG.write(("%d - %d\n", i, checksum);
         checksum += (unsigned int)buffer[i];
     }
     return checksum;
