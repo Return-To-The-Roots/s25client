@@ -18,7 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "JoinPlayerInfo.h"
 #include "libutil/src/Serializer.h"
-#include "libutil/src/colors.h"
 #include "mygettext/src/mygettext.h"
 #include <cstdio>
 
@@ -54,21 +53,6 @@ void JoinPlayerInfo::Serialize(Serializer& ser) const
     ser.PushString(originName);
     ser.PushUnsignedInt(rating);
     ser.PushBool(isReady);
-}
-
-int JoinPlayerInfo::GetColorIdx() const
-{
-    return GetColorIdx(color);
-}
-
-int JoinPlayerInfo::GetColorIdx(unsigned color)
-{
-    for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
-    {
-        if(PLAYER_COLORS[i] == color)
-            return i;
-    }
-    return -1;
 }
 
 void JoinPlayerInfo::InitRating()

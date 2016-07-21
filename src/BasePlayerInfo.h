@@ -47,6 +47,11 @@ struct BasePlayerInfo
     bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
     /// Slot filled (Used by human or AI, but excludes currently connecting humans)
     bool isUsed() const { return (ps == PS_AI || ps == PS_OCCUPIED); }
+
+    /// Returns index of color in PLAYER_COLORS array or -1 if not found
+    int GetColorIdx() const;
+    static int GetColorIdx(unsigned color);
+
 };
 
 #endif // BasePlayerInfo_h__

@@ -182,6 +182,9 @@ unsigned LuaPlayer::GetPeopleCount(Job job)
 
 bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
 {
+    // Only for actual AIs
+    if(!player.isUsed() || player.isHuman())
+        return false;
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
     GameWorldGame& world = player.GetGameWorld();
     check(x < world.GetWidth(), "x coordinate to large");
