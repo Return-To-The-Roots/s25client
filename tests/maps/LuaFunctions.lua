@@ -111,11 +111,11 @@ function addPlayerRes(pl)
 	people = {[JOB_HELPER]=30,[JOB_WOODCUTTER]=6,[JOB_FISHER]=0,[JOB_FORESTER]=2,[JOB_CARPENTER]=2,[JOB_STONEMASON]=4,[JOB_HUNTER]=1,[JOB_MINER]=10,[JOB_BREWER]=1,[JOB_IRONFOUNDER]=2,[JOB_MINTER]=1,[JOB_METALWORKER]=1,[JOB_ARMORER]=2,[JOB_BUILDER]=14,[JOB_PLANER]=8,[JOB_PRIVATE]=10,[JOB_PRIVATEFIRSTCLASS]=1,[JOB_SERGEANT]=1,[JOB_OFFICER]=1,[JOB_GENERAL]=20,[JOB_GEOLOGIST]=4,[JOB_SHIPWRIGHT]=0,[JOB_SCOUT]=4}
 	pl:AddWares(wares)
 	for gd,ct in pairs(wares) do
-		assert(pl:GetWareCount(gd) == ct)
+		assert(pl:GetWareCount(gd) == ct, "Ware count of " .. gd .. "!=" .. ct)
 	end
 	pl:AddPeople(people)
 	for job,ct in pairs(people) do
-		assert(pl:GetPeopleCount(job) == ct)
+		assert(pl:GetPeopleCount(job) == ct, "Job count of " .. job .. "!=" .. ct)
 	end
 end
 
@@ -126,6 +126,7 @@ function testPlayerFuncs(pl)
 	pl:DisableBuilding(BLD_WOODCUTTER)
 	pl:EnableBuilding(BLD_WOODCUTTER)
 	pl:ClearResources()
+	assert(pl:GetWareCount(GD_BEER) == 0)
 	addPlayerRes(pl)
 	pl:SetRestrictedArea(5,2, 5,10, 10,10, 10,2)
 	assert(pl:GetBuildingCount(BLD_MILL) == 0)
@@ -158,13 +159,11 @@ function onStart(isFirstStart)
 	end
 	assert(rttr:GetGF() == gfCounter)
 	assert(isLoaded ~= isFirstStart)
-	rttr:ClearResources()
-	assert(rttr:GetPlayer(0):GetWareCount(GD_BEER) == 0)
-	addPlayerRes(rttr:GetPlayer(0))
-	addPlayerRes(rttr:GetPlayer(1))
 	assert(rttr:GetPlayerCount() > 1)
-	for i=1,rttr:GetPlayerCount() do
-		testPlayerFuncs(rttr:GetPlayer(i - 1))
+	if(isFirstStart) then
+		for i=1,rttr:GetPlayerCount() do
+			testPlayerFuncs(rttr:GetPlayer(i - 1))
+		end
 	end
 end
 

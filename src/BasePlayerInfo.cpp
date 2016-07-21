@@ -57,3 +57,18 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     ser.PushUnsignedInt(color);
     ser.PushUnsignedChar(static_cast<unsigned char>(team));
 }
+
+int BasePlayerInfo::GetColorIdx() const
+{
+    return GetColorIdx(color);
+}
+
+int BasePlayerInfo::GetColorIdx(unsigned color)
+{
+    for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
+    {
+        if(PLAYER_COLORS[i] == color)
+            return i;
+    }
+    return -1;
+}

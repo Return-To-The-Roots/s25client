@@ -80,7 +80,11 @@ Team LuaPlayerBase::GetTeam() const
 
 unsigned LuaPlayerBase::GetColor() const
 {
-    return GetPlayer().color;
+    int colorIdx = GetPlayer().GetColorIdx();
+    if(colorIdx < 0)
+        return GetPlayer().color;
+    else
+        return static_cast<unsigned>(colorIdx);
 }
 
 bool LuaPlayerBase::IsHuman() const
