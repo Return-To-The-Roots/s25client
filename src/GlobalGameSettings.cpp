@@ -72,7 +72,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-GlobalGameSettings::GlobalGameSettings() : game_speed(GS_FAST), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true), random_location(false)
+GlobalGameSettings::GlobalGameSettings() : game_speed(GS_NORMAL), game_objective(GO_NONE), start_wares(SWR_NORMAL), lock_teams(false), exploration(EXP_FOGOFWAR), team_view(true), random_location(false)
 {
     // register addons
     reset();
