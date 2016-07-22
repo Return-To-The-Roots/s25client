@@ -35,10 +35,6 @@ struct JoinPlayerInfo: public PlayerInfo
     // Serialize complete struct
     void Serialize(Serializer& ser) const;
 
-    /// Returns index of color in PLAYER_COLORS array or -1 if not found
-    int GetColorIdx() const;
-    static int GetColorIdx(unsigned color);
-
     void InitRating();
     void SetAIName(unsigned id);
 };

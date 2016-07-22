@@ -191,7 +191,7 @@ Serializer LuaInterfaceGame::Serialize()
         lua.setErrorHandler(ErrorHandlerThrow);
         try
         {
-            if(!save.call<bool>(luaSaveState))
+            if(!save.call<bool>(kaguya::standard::ref(luaSaveState)))
             {
                 LOG.lprintf("Lua state could not be saved!");
                 luaSaveState.Clear();
@@ -217,7 +217,7 @@ void LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
         lua.setErrorHandler(ErrorHandlerThrow);
         try
         {
-            if(!load.call<bool>(luaSaveState))
+            if(!load.call<bool>(kaguya::standard::ref(luaSaveState)))
                 LOG.lprintf("Lua state was not loaded correctly!");
             lua.setErrorHandler(ErrorHandler);
         } catch(std::exception& e)
