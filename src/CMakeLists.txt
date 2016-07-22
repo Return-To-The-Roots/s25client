@@ -91,18 +91,6 @@ SET(s25client_SRCS
 	${SOURCES_SUBDIRS}
 )
 
-IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	ADD_DEFINITIONS("-DAFX_TARG_DEU")
-
-	# Add Icon to Application
-	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o
-					   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
-
-	SET(s25client_SRCS ${s25client_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
-
-	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)
-ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-
 IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	CORRECT_LIB(OPENGL_gl_LIBRARY OpenGL)
 	CORRECT_LIB(SDL_LIBRARY SDL)
@@ -195,14 +183,26 @@ ENDIF()
 ################################################################################
 
 IF (MSVC)
-	SET(s25client_RC "${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
 	ADD_DEFINITIONS(/wd4267)
 	# Signed/Unsigned operations
 	ADD_DEFINITIONS(/we4389)
 	ADD_DEFINITIONS(/WX) # warning = error
 	ADD_DEFINITIONS(/MP) # parallel compilation
+ENDIF()
+
+# Add Icon to Application
+IF (MSVC)
+	SET(s25client_RC "${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+ELSEIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	ADD_DEFINITIONS("-DAFX_TARG_DEU")
+	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)
+
+	ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o
+					   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/../win32/ -i${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
+
+	SET(s25client_RC ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
 ELSE()
 	SET(s25client_RC "")
 ENDIF()
