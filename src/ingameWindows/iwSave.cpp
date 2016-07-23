@@ -102,7 +102,8 @@ void iwSaveLoad::RefreshTable()
     }
 
     // Nach Zeit Sortieren
-    GetCtrl<ctrlTable>(0)->SortRows(2);
+    bool bFalse = false;
+    GetCtrl<ctrlTable>(0)->SortRows(2, &bFalse);
 }
 
 void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)

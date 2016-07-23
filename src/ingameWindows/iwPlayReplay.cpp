@@ -72,6 +72,10 @@ iwPlayReplay::iwPlayReplay()
 
     PopulateTable();
 
+    // Nach Zeit Sortieren
+    bool bFalse = false;
+    GetCtrl<ctrlTable>(0)->SortRows(1, &bFalse);
+
     GAMECLIENT.SetInterface(NULL);
 }
 
