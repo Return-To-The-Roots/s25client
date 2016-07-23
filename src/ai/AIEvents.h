@@ -41,7 +41,8 @@ namespace AIEvent
         RoadConstructionFailed,
         NewColonyFounded,
         LuaConstructionOrder,
-        ResourceFound
+        ResourceFound,
+        LostLand
     };
 
 

@@ -37,6 +37,7 @@
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
 #include "EventManager.h"
+#include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/RoadNote.h"
 #include "gameData/MilitaryConsts.h"
@@ -402,7 +403,10 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if (newBuilt && sizeChanges[i] < 0)
+        {
             GetPostMgr().SendMsg(i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PostCategory::Military, building));
+            GetNotifications().publish(BuildingNote(BuildingNote::LostLand, i, building.GetPos(), building.GetBuildingType()));
+        }
     }
 
     for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)

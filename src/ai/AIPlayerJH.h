@@ -233,6 +233,9 @@ class AIPlayerJH : public AIBase
         // Handle new colony
         void HandleNewColonyFounded(const MapPoint pt);
 
+        /// Lost land to another player
+        void HandleLostLand(const MapPoint pt);
+
         /// Sends a chat messsage to all players
         void Chat(const std::string& message);
 

@@ -444,6 +444,13 @@ void AIJH::EventJob::ExecuteJob()//for now it is assumed that all these will be 
             status = AIJH::JOB_FINISHED;
         }
         break;
+        case AIEvent::LostLand:
+        {
+            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            aijh.HandleLostLand(evb->GetPos());
+            status = AIJH::JOB_FINISHED;
+        }
+        break;
         case AIEvent::BuildingDestroyed:
         {
             //todo maybe do sth about it?

@@ -33,7 +33,8 @@ struct BuildingNote
         Captured,     /// Military building was captured (player = new owner)
         Lost,         /// Military building was captured or lost
         NoRessources, /// Building can't find any more resources
-        LuaOrder      /// Ordered to build by lua
+        LuaOrder,     /// Ordered to build by lua
+        LostLand      /// Lost land to another player's military building
     };
 
     BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld):

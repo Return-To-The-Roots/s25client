@@ -70,6 +70,9 @@ namespace{
         case BuildingNote::Lost:
             ev = new AIEvent::Building(AIEvent::BuildingLost, note.pos, note.bld);
             break;
+        case BuildingNote::LostLand:
+            ev = new AIEvent::Building(AIEvent::LostLand, note.pos, note.bld);
+            break;
         case BuildingNote::NoRessources:
             ev = new AIEvent::Building(AIEvent::NoMoreResourcesReachable, note.pos, note.bld);
             break;
@@ -1423,12 +1426,8 @@ void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char  
 
 void AIPlayerJH::HandleMilitaryBuilingLost(const MapPoint pt)
 {
-    if(aii.GetStorehouses().empty()) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
-    {
-        return;
-    }
-    RemoveAllUnusedRoads(pt);
-
+    // For now, this is the same as losing land.
+    HandleLostLand(pt);
 }
 
 void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
@@ -1622,6 +1621,16 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
             AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
         }
     }
+}
+
+void AIPlayerJH::HandleLostLand(const MapPoint pt)
+{
+    if(aii.GetStorehouses().empty()) //check if we have a storehouse left - if we dont have one trying to find a path to one will crash
+    {
+        return;
+    }
+    RemoveAllUnusedRoads(pt);
+
 }
 
 void AIPlayerJH::MilUpgradeOptim()
