@@ -69,6 +69,7 @@
 #include "notifications/NotificationManager.h"
 #include "gameData/TerrainData.h"
 #include "gameData/const_gui_ids.h"
+#include "gameData/GameConsts.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Sound.h"
@@ -76,6 +77,7 @@
 #include "Settings.h"
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
+#include "helpers/converters.h"
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
@@ -301,6 +303,53 @@ void dskGameInterface::Msg_PaintAfter()
         if(player.is_lagging)
             LOADER.GetPlayerImage("rttr", 0)->Draw(snailPos, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
         snailPos.x -= 40;
+    }
+
+    // Show icons in the upper right corner of the game interface
+	DrawPoint iconPos(VIDEODRIVER.GetScreenWidth() - 56, 32);
+
+    /*
+    // Draw cheating indicator icon (WINTER) - Single Player only!
+    if (...)
+    {
+        glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
+        const DrawPoint drawPos(iconPos);
+
+        iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
+        cheatingImg->Draw(drawPos, 0, 0, 0, 0);
+    }
+    */
+
+    // Draw speed indicator icon
+    const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().game_speed];
+    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
+
+    if(speedStep != 0)
+    {
+        glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
+        const DrawPoint drawPos(iconPos);
+
+        iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
+        runnerImg->Draw(drawPos, 0, 0, 0, 0);
+
+        if(speedStep != 1)
+        {
+            std::string multiplier = helpers::toString(std::abs(speedStep));
+            NormalFont->Draw(drawPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
+        }
+    }
+
+    // Draw zoom level indicator icon
+    if (zoomLvl > 0)
+    {
+        glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
+        const DrawPoint drawPos(iconPos);
+
+        iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
+        magnifierImg->Draw(drawPos, 0, 0, 0, 0);
+
+        std::string multiplier = helpers::toString(zoomLvl);
+        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), multiplier, glArchivItem_Font::DF_LEFT, COLOR_YELLOW);
     }
 }
 

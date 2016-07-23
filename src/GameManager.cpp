@@ -190,23 +190,8 @@ bool GameManager::Run()
                 current_time = VIDEODRIVER.GetTickCount();
             }
         }
+
 		WINDOWMANAGER.Draw();
-        if(GAMECLIENT.GetState() == GameClient::CS_GAME)
-        {
-            const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().game_speed];
-            const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
-            if(speedStep != 0)
-            {
-                glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
-                const DrawPoint drawPos(VIDEODRIVER.GetScreenWidth() - 55, 35);
-                runnerImg->Draw(drawPos, 0, 0, 0, 0);
-                if(speedStep != 1)
-                {
-                    std::string multiplier = helpers::toString(std::abs(speedStep));
-                    NormalFont->Draw(drawPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, glArchivItem_Font::DF_LEFT, speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
-                }
-            }
-        }
 
 		DrawCursor();
     } else if(GAMECLIENT.GetGFNumber() % 5000 == 0)
