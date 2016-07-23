@@ -80,7 +80,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 void LuaPlayer::DisableBuilding(BuildingType bld)
 {
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
-    player.EnableBuilding(bld);
+    player.DisableBuilding(bld);
 }
 
 void LuaPlayer::EnableAllBuildings()
