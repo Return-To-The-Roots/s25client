@@ -21,6 +21,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/MapTypes.h"
+#include "nodeObjs/noMovable.h"
 
 class GameWorldView;
 class MouseCoords;
@@ -40,6 +41,8 @@ class iwObservate : public IngameWindow
 
         unsigned zoomLvl;
 
+        unsigned followMovable;
+
     public:
         iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
 
@@ -49,6 +52,8 @@ class iwObservate : public IngameWindow
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
+
+        noMovable *FindMovableAt(const MapPoint pt);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED

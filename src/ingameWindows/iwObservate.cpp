@@ -21,10 +21,13 @@
 #include "driver/src/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
 #include "Settings.h"
 #include "controls/ctrlButton.h"
 #include "gameTypes/RoadBuildState.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "libutil/src/Log.h"
 
 // 260x190, 300x250, 340x310
 
@@ -32,21 +35,44 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
     IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
-    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0)
+    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0), followMovable(0xFFFFFFFF)
 {
     view->MoveToMapPt(selectedPt);
     SetCloseOnRightClick(false);
 
     // Lupe: 36
-    AddImageButton(1, GetWidth() / 2 - 36 * 2, GetHeight() - 50, 36, 36, TC_BRICKS, LOADER.GetImageN("io", 36));
+    AddImageButton(1, GetWidth() / 2 - 36 * 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 36));
     // Kamera (Folgen): 43
-    AddImageButton(2, GetWidth() / 2 - 36, GetHeight() - 50, 36, 36, TC_BRICKS, LOADER.GetImageN("io", 43));
+    AddImageButton(2, GetWidth() / 2 - 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 43));
     // Zum Ort
     AddImageButton(3, GetWidth() / 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 107));
     // Fenster vergroessern/verkleinern
     AddImageButton(4, GetWidth() / 2 + 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 109));
 }
 
+noMovable *iwObservate::FindMovableAt(const MapPoint pt)
+{
+    Visibility visibility = view->GetViewer().GetVisibility(pt);
+
+    if(visibility != VIS_VISIBLE)
+    {
+        return(NULL);
+    }
+
+    const std::list<noBase*>& figures = view->GetWorld().GetNode(pt).figures;
+
+    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    {
+        noMovable *movable = dynamic_cast<noMovable*>(*it);
+
+        if (movable)
+        {
+            return(movable);
+        }
+    }
+
+    return(NULL);
+}
 
 void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
 {
@@ -67,7 +93,46 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
                 view->SetZoomFactor(2.3f);
             break;
         case 2:
+        {
+            if (followMovable == 0xFFFFFFFF)
+            {
+                MapPoint center(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2);
+
+                noMovable *movable = FindMovableAt(center);
+
+                if (movable)
+                {
+                    followMovable = movable->GetObjId();
+                    return;
+                }
+
+		        const unsigned max_radius = 10;
+
+		        for(MapCoord tx = view->GetWorld().GetXA(center, 0), r = 1; r <= max_radius; tx = view->GetWorld().GetXA(tx, center.y, 0), ++r)
+		        {
+		            MapPoint t2(tx, center.y);
+		            
+		            for(unsigned i = 2; i < 8; ++i)
+		            {
+		                for(MapCoord r2 = 0; r2 < r; t2 = view->GetWorld().GetNeighbour(t2,  (i % 6)), ++r2)
+		                {
+		                    movable = FindMovableAt(t2);
+
+                            if (movable)
+                            {
+                                followMovable = movable->GetObjId();
+                                return;
+                            }
+		                }
+		            }
+		        }
+		    } else
+		    {
+		        followMovable = 0xFFFFFFFF;
+		    }
+
             break;
+        }
         case 3:
             parentView.MoveToMapPt( MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2) );
             break;
@@ -121,6 +186,45 @@ bool iwObservate::Draw_()
         last_y = y_;
     }
 
+    if (followMovable != 0xFFFFFFFF)
+    {
+        noMovable *movable = NULL;
+        
+        for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
+        {
+            for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
+            {
+                MapPoint curPt(x,y);
+                Visibility visibility = view->GetViewer().GetVisibility(curPt);
+
+                if(visibility != VIS_VISIBLE)
+                    continue;
+
+                const std::list<noBase*>& figures = view->GetWorld().GetNode(curPt).figures;
+
+                for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+                {
+                    if ((*it)->GetObjId() == followMovable)
+                    {
+                        movable = dynamic_cast<noMovable*>(*it);
+
+                        DrawPoint drawPt = view->GetWorld().GetNodePos(curPt);
+
+                        if (movable->IsMoving())
+                            drawPt += movable->CalcWalkingRelative();
+
+                        view->MoveTo(drawPt.x - (width_ - 20) / 2, drawPt.y - (height_ - 20) / 2, true);
+                    }
+                }
+            }
+        }
+
+        if (movable == NULL)
+        {
+            followMovable = 0xFFFFFFFF;
+        }
+    }
+
     if (!GetMinimized())
     {
         RoadBuildState road;
@@ -129,7 +233,14 @@ bool iwObservate::Draw_()
         view->Draw(road, true, parentView.GetSelectedPt());
     }
 
-    return IngameWindow::Draw_();
+    bool res = IngameWindow::Draw_();
+
+    if (followMovable == 0xFFFFFFFF)
+    {
+        LOADER.GetMapImageN(23)->Draw(DrawPoint(GetX() + 10 + (width_ - 20) / 2, GetY() + 15 + (height_ - 20) / 2));
+    }
+
+    return res;
 }
 
 bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
@@ -154,6 +265,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
     sy = mc.y;
 
     scroll = true;
+    followMovable = 0xFFFFFFFF;
 
     return(false);
 }
