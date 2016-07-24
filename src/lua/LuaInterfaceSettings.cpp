@@ -132,36 +132,45 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
 {
     RTTR_Assert(GAMESERVER.IsRunning());
     GlobalGameSettings ggs = GAMESERVER.GetGGS();
-    if(settings.getField("speed"))
+    std::vector<std::string>keys = settings.keys<std::string>();
+
+    if(std::find(keys.begin(), keys.end(), "speed") != keys.end())
     {
         GameSpeed speed = settings.getField("speed");
         check(unsigned(speed) <= GS_VERYFAST, "Speed is invalid");
         ggs.game_speed = speed;
     }
-    if(settings.getField("objective"))
+
+    if(std::find(keys.begin(), keys.end(), "objective") != keys.end())
     {
         GameObjective objective = settings.getField("objective");
         check(unsigned(objective) <= GO_TOTALDOMINATION, "Objective is invalid");
         ggs.game_objective = objective;
     }
-    if(settings.getField("startWares"))
+
+    if(std::find(keys.begin(), keys.end(), "startWares") != keys.end())
     {
         StartWares wares = settings.getField("startWares");
         check(unsigned(wares) <= SWR_ALOT, "Start wares is invalid");
         ggs.start_wares = wares;
     }
-    if(settings.getField("fow"))
+
+    if(std::find(keys.begin(), keys.end(), "fow") != keys.end())
     {
         Exploration fow = settings.getField("fow");
         check(unsigned(fow) <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
         ggs.exploration = fow;
     }
-    if(settings.getField("lockedTeams"))
+
+    if(std::find(keys.begin(), keys.end(), "lockedTeams") != keys.end())
         ggs.lock_teams = settings.getField("lockedTeams");
-    if(settings.getField("teamView"))
+
+    if(std::find(keys.begin(), keys.end(), "teamView") != keys.end())
         ggs.team_view = settings.getField("teamView");
-    if(settings.getField("randomStartPosition"))
+
+    if(std::find(keys.begin(), keys.end(), "randomStartPosition") != keys.end())
         ggs.random_location = settings.getField("randomStartPosition");
+
     GAMESERVER.ChangeGlobalGameSettings(ggs);
 }
 
