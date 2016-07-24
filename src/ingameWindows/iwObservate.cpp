@@ -35,7 +35,7 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
     IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
-    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0), followMovable(0xFFFFFFFF)
+    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0), followPoint(MapPoint::Invalid()), followMovableId(0xFFFFFFFF)
 {
     view->MoveToMapPt(selectedPt);
     SetCloseOnRightClick(false);
@@ -48,30 +48,6 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
     AddImageButton(3, GetWidth() / 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 107));
     // Fenster vergroessern/verkleinern
     AddImageButton(4, GetWidth() / 2 + 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 109));
-}
-
-noMovable *iwObservate::FindMovableAt(const MapPoint pt)
-{
-    Visibility visibility = view->GetViewer().GetVisibility(pt);
-
-    if(visibility != VIS_VISIBLE)
-    {
-        return(NULL);
-    }
-
-    const std::list<noBase*>& figures = view->GetWorld().GetNode(pt).figures;
-
-    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
-    {
-        noMovable *movable = dynamic_cast<noMovable*>(*it);
-
-        if (movable)
-        {
-            return(movable);
-        }
-    }
-
-    return(NULL);
 }
 
 void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -94,42 +70,14 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             break;
         case 2:
         {
-            if (followMovable == 0xFFFFFFFF)
+            if (followMovableId == 0xFFFFFFFF)
             {
-                MapPoint center(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2);
-
-                noMovable *movable = FindMovableAt(center);
-
-                if (movable)
-                {
-                    followMovable = movable->GetObjId();
-                    return;
-                }
-
-		        const unsigned max_radius = 10;
-
-		        for(MapCoord tx = view->GetWorld().GetXA(center, 0), r = 1; r <= max_radius; tx = view->GetWorld().GetXA(tx, center.y, 0), ++r)
-		        {
-		            MapPoint t2(tx, center.y);
-		            
-		            for(unsigned i = 2; i < 8; ++i)
-		            {
-		                for(MapCoord r2 = 0; r2 < r; t2 = view->GetWorld().GetNeighbour(t2,  (i % 6)), ++r2)
-		                {
-		                    movable = FindMovableAt(t2);
-
-                            if (movable)
-                            {
-                                followMovable = movable->GetObjId();
-                                return;
-                            }
-		                }
-		            }
-		        }
-		    } else
-		    {
-		        followMovable = 0xFFFFFFFF;
-		    }
+                followPoint = MapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
+            } else
+            {
+                followMovableId = 0xFFFFFFFF;
+                followPoint = MapPoint::Invalid();
+            }
 
             break;
         }
@@ -186,15 +134,45 @@ bool iwObservate::Draw_()
         last_y = y_;
     }
 
-    if (followMovable != 0xFFFFFFFF)
+    // For now, this workaround seems to be needed, as the list seems to sometimes
+    // contain invalid node objects in the button handler.
+    if (followPoint.isValid())
     {
-        noMovable *movable = NULL;
+        std::vector<MapPoint> pts = view->GetWorld().GetPointsInRadius(followPoint, 10);
+
+        // look at our current center as well
+        pts.insert(pts.begin(), followPoint);
+
+        for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+        {
+            Visibility visibility = view->GetViewer().GetVisibility(*it);
+
+            if(visibility != VIS_VISIBLE)
+                continue;
+
+            std::vector<noBase*> movables(parentView.GetWorld().GetDynamicObjectsFrom(*it));
+
+           if (!movables.empty())
+            {
+                followMovableId = movables.front()->GetObjId();
+                break;
+            }
+        }
+
+        followPoint = MapPoint::Invalid();
+    }
+
+    if (followMovableId != 0xFFFFFFFF)
+    {
+        const noMovable *movable = NULL;
         
         for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
         {
             for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
             {
-                MapPoint curPt(x,y);
+                Point<int> curOffset;
+                const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>(x, y), &curOffset);
+
                 Visibility visibility = view->GetViewer().GetVisibility(curPt);
 
                 if(visibility != VIS_VISIBLE)
@@ -204,9 +182,9 @@ bool iwObservate::Draw_()
 
                 for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
                 {
-                    if ((*it)->GetObjId() == followMovable)
+                    if ((*it)->GetObjId() == followMovableId)
                     {
-                        movable = dynamic_cast<noMovable*>(*it);
+                        movable = static_cast<noMovable*>(*it);
 
                         DrawPoint drawPt = view->GetWorld().GetNodePos(curPt);
 
@@ -221,7 +199,7 @@ bool iwObservate::Draw_()
 
         if (movable == NULL)
         {
-            followMovable = 0xFFFFFFFF;
+            followMovableId = 0xFFFFFFFF;
         }
     }
 
@@ -235,7 +213,7 @@ bool iwObservate::Draw_()
 
     bool res = IngameWindow::Draw_();
 
-    if (followMovable == 0xFFFFFFFF)
+    if (followMovableId == 0xFFFFFFFF)
     {
         LOADER.GetMapImageN(23)->Draw(DrawPoint(GetX() + 10 + (width_ - 20) / 2, GetY() + 15 + (height_ - 20) / 2));
     }
@@ -265,7 +243,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
     sy = mc.y;
 
     scroll = true;
-    followMovable = 0xFFFFFFFF;
+    followMovableId = 0xFFFFFFFF;
 
     return(false);
 }

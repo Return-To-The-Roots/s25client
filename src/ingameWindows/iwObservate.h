@@ -41,7 +41,10 @@ class iwObservate : public IngameWindow
 
         unsigned zoomLvl;
 
-        unsigned followMovable;
+        // button handler sets followPoint
+		MapPoint followPoint;
+		// which then gets translated to the object id
+        unsigned followMovableId;
 
     public:
         iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
@@ -52,8 +55,6 @@ class iwObservate : public IngameWindow
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
-
-        noMovable *FindMovableAt(const MapPoint pt);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED
