@@ -976,6 +976,30 @@ void GameClient::IncreaseSpeed()
     send_queue.push(new GameMessage_Server_Speed(framesinfo.gfLengthReq));
 }
 
+void GameClient::DecreaseSpeed()
+{
+    if (framesinfo.gfLengthReq == 70)
+    {
+#ifndef NDEBUG
+        framesinfo.gfLengthReq = 1;
+#else
+        framesinfo.gfLengthReq = 10;
+#endif
+    }
+#ifndef NDEBUG
+    else if (framesinfo.gfLengthReq == 1)
+    {
+        framesinfo.gfLengthReq = 10;
+    }
+#endif
+    else
+    {
+        framesinfo.gfLengthReq += 10;
+    }
+
+    send_queue.push(new GameMessage_Server_Speed(framesinfo.gfLengthReq));
+}
+
 void GameClient::IncreaseReplaySpeed()
 {
     if (replay_mode)

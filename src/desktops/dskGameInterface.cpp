@@ -663,11 +663,23 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 
     switch(ke.c)
     {
-        case '+': // Geschwindigkeit im Replay erhöhen
-            gameClient.IncreaseReplaySpeed();
+        case '+':
+            if(gameClient.IsReplayModeOn())
+            {
+                gameClient.IncreaseReplaySpeed();
+            } else if(gameClient.IsSinglePlayer())
+            {
+                gameClient.IncreaseSpeed();
+            }
             return true;
-        case '-': // Geschwindigkeit im Replay verringern
-            gameClient.DecreaseReplaySpeed();
+        case '-':
+            if(gameClient.IsReplayModeOn())
+            {
+                gameClient.DecreaseReplaySpeed();
+            } else if(gameClient.IsSinglePlayer())
+            {
+                gameClient.DecreaseSpeed();
+            }
             return true;
 
         case '1':   case '2':   case '3': // Spieler umschalten
@@ -754,20 +766,17 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 'z': // zoom
             if(++zoomLvl > 5)
                 zoomLvl = 0;
-            float zoomFactor;
-            if(zoomLvl == 0)
-                zoomFactor = 1.f;
-            else if(zoomLvl == 1)
-                zoomFactor = 1.1f;
-            else if(zoomLvl == 2)
-                zoomFactor = 1.2f;
-            else if(zoomLvl == 3)
-                zoomFactor = 1.3f;
-            else if(zoomLvl == 4)
-                zoomFactor = 1.5f;
-            else
-                zoomFactor = 1.9f;
-            gwv.SetZoomFactor(zoomFactor);
+            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            return true;
+        case 'Z':
+            if (zoomLvl == 0)
+            {
+                zoomLvl = 5;
+            } else
+            {
+                zoomLvl--;
+            }
+            gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
             return true;
     }
 

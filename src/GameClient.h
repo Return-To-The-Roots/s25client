@@ -117,6 +117,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
         void Command_SetReady(bool isReady);
 
         void IncreaseSpeed();
+        void DecreaseSpeed();
 
         /// Lädt ein Replay und startet dementsprechend das Spiel
         bool StartReplay(const std::string& path);

@@ -45,6 +45,8 @@ class PostMsg;
 struct BuildingNote;
 struct KeyEvent;
 
+const float ZOOM_FACTORS[6] = {1.f, 1.1f, 1.2f, 1.3f, 1.5f, 1.9f};
+
 class dskGameInterface :
     public Desktop,
     public ClientInterface,
