@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
     // This flag is to close and border prohibits building
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_NOTHING);
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHWEST), 0), BQ_NOTHING);
-};
+}
 
 BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 {
