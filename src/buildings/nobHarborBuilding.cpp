@@ -267,7 +267,7 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
             LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(boardsPos - DrawPoint(0, i * 4));
-        DrawPoint stonesPos = drawPt + BOARDS_POS[nation];
+        DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
             LOADER.GetMapImageN(2200 + GD_STONES)->Draw(stonesPos - DrawPoint(0, i * 4));
