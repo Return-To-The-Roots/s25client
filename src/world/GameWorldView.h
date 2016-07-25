@@ -111,6 +111,7 @@ public:
 
     void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : offset.x) + x, offset.y, true); }
     void MoveToY(int y, bool absolute = false) { MoveTo( offset.x, (absolute ? 0 : offset.y) + y, true); }
+    DrawPoint GetOffset() const { return offset; }
 
     /// Set the debug node printer used. Max. 1 at a time. NULL for disabling
     void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }

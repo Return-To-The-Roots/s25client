@@ -41,8 +41,6 @@ class iwObservate : public IngameWindow
 
         unsigned zoomLvl;
 
-        // button handler sets followPoint
-		MapPoint followPoint;
 		// which then gets translated to the object id
         unsigned followMovableId;
 

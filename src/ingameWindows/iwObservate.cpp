@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "math.h"
 #include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "Loader.h"
@@ -35,7 +36,7 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
     IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
-    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0), followPoint(MapPoint::Invalid()), followMovableId(0xFFFFFFFF)
+    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0), followMovableId(0xFFFFFFFF)
 {
     view->MoveToMapPt(selectedPt);
     SetCloseOnRightClick(false);
@@ -72,11 +73,53 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             if (followMovableId == 0xFFFFFFFF)
             {
-                followPoint = MapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
+                Point<int> curOffset;
+                const MapPoint centerMapPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>((view->GetFirstPt().x + view->GetLastPt().x) / 2, (view->GetFirstPt().y + view->GetLastPt().y) / 2), &curOffset);
+                DrawPoint centerDrawPt = view->GetWorld().GetNodePos(centerMapPt) - view->GetOffset() + curOffset;
+
+                double minDistance = std::numeric_limits<double>::max();
+
+                for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
+                {
+                    for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
+                    {
+                        const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>(x, y), &curOffset);
+                        DrawPoint curPos = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
+
+                        Visibility visibility = view->GetViewer().GetVisibility(curPt);
+
+                        if(visibility != VIS_VISIBLE)
+                            continue;
+
+                        const std::list<noBase*>& figures = view->GetWorld().GetNode(curPt).figures;
+
+                        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+                        {
+                            noMovable *movable = dynamic_cast<noMovable*>(*it);
+
+                            if (movable)
+                            {
+                                DrawPoint drawPt = curPos;
+
+                                if (movable->IsMoving())
+                                    drawPt += movable->CalcWalkingRelative();
+
+                                double xDiff = drawPt.x - centerDrawPt.x;
+                                double yDiff = drawPt.y - centerDrawPt.y;
+                                double distance = sqrt(pow(xDiff, 2) + pow(yDiff, 2));
+
+                                if (distance < minDistance)
+                                {
+                                    followMovableId = movable->GetObjId();
+                                    minDistance = distance;
+                                }
+                            }
+                        }
+                    }
+                }
             } else
             {
                 followMovableId = 0xFFFFFFFF;
-                followPoint = MapPoint::Invalid();
             }
 
             break;
@@ -132,34 +175,6 @@ bool iwObservate::Draw_()
         view->SetPos(Point<int>(GetX() + 10, GetY() + 15));
         last_x = x_;
         last_y = y_;
-    }
-
-    // For now, this workaround seems to be needed, as the list seems to sometimes
-    // contain invalid node objects in the button handler.
-    if (followPoint.isValid())
-    {
-        std::vector<MapPoint> pts = view->GetWorld().GetPointsInRadius(followPoint, 10);
-
-        // look at our current center as well
-        pts.insert(pts.begin(), followPoint);
-
-        for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-        {
-            Visibility visibility = view->GetViewer().GetVisibility(*it);
-
-            if(visibility != VIS_VISIBLE)
-                continue;
-
-            std::vector<noBase*> movables(parentView.GetWorld().GetDynamicObjectsFrom(*it));
-
-           if (!movables.empty())
-            {
-                followMovableId = movables.front()->GetObjId();
-                break;
-            }
-        }
-
-        followPoint = MapPoint::Invalid();
     }
 
     if (followMovableId != 0xFFFFFFFF)
