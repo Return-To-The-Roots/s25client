@@ -125,7 +125,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
         {
             if(i)
             {
-                SetMinimized(!GetMinimized());
+                SetMinimized(!IsMinimized());
                 LOADER.GetSoundN("sound", 113)->Play(255, false);
             }
             else if(!modal)

@@ -88,6 +88,7 @@ public:
 
     void SetPos(const Point<int>& newPos) { pos = newPos; }
     Point<int> GetPos() const { return pos; }
+    Point<unsigned> GetSize() const { return Point<unsigned>(width, height); }
 
     void SetZoomFactor(float zoomFactor);
 
@@ -104,6 +105,7 @@ public:
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
+    void MoveTo(const DrawPoint& newPos, bool absolute = false);
     /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
     void MoveToMapPt(const MapPoint pt);
     /// Springt zur letzten Position, bevor man "weggesprungen" ist

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,10 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwOBSERVATE_H_INCLUDED
-#define iwOBSERVATE_H_INCLUDED
 
 #pragma once
+
+#ifndef iwOBSERVATE_H_INCLUDED
+#define iwOBSERVATE_H_INCLUDED
 
 #include "IngameWindow.h"
 #include "gameTypes/MapTypes.h"
@@ -26,22 +27,24 @@
 class GameWorldView;
 class MouseCoords;
 
-/// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
+/// Observing window (shows a part of the world in an extra window)
 class iwObservate : public IngameWindow
 {
+        /// View of parent GUI element
         GameWorldView& parentView;
+        /// View shown in this window
         GameWorldView* view;
 
         const MapPoint selectedPt;
-        short last_x, last_y;
+        Point<unsigned short> lastWindowPos;
 
         // Scrolling
-        bool scroll;
-        int sx, sy;
+        bool isScrolling;
+        Point<int> scrollOrigin;
 
         unsigned zoomLvl;
 
-		// which then gets translated to the object id
+        /// id of object currently followed or INVALID_ID
         unsigned followMovableId;
 
     public:
@@ -53,6 +56,9 @@ class iwObservate : public IngameWindow
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
+        /// Move view to the object we currently follow, return true if it can still be found
+        bool MoveToFollowedObj();
+        inline bool MoveToFollowedObj(const MapPoint ptToCheck);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED

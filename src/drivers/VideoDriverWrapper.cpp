@@ -498,12 +498,16 @@ bool VideoDriverWrapper::IsRightDown()
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
+    SetMousePos(Point<int>(x, y));
+}
+
+void VideoDriverWrapper::SetMousePos(const Point<int>& newPos)
+{
     if(!videodriver || !SETTINGS.global.smartCursor)
         return;
 
-    videodriver->SetMousePos(x, y);
+    videodriver->SetMousePos(newPos.x, newPos.y);
 }
-
 
 /**
  *  Listet verfügbare Videomodi auf.

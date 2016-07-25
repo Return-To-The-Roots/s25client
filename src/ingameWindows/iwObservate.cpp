@@ -29,26 +29,26 @@
 #include "gameTypes/RoadBuildState.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/src/Log.h"
-
-// 260x190, 300x250, 340x310
+#include <boost/foreach.hpp>
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
     IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
-    selectedPt(selectedPt), last_x(-1), last_y(-1), scroll(false), zoomLvl(0), followMovableId(0xFFFFFFFF)
+    selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
+    followMovableId(GameObject::INVALID_ID)
 {
     view->MoveToMapPt(selectedPt);
     SetCloseOnRightClick(false);
 
     // Lupe: 36
-    AddImageButton(1, GetWidth() / 2 - 36 * 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 36));
+    AddImageButton(1, GetWidth() / 2 - 36 * 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 36), _("Zoom"));
     // Kamera (Folgen): 43
-    AddImageButton(2, GetWidth() / 2 - 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 43));
+    AddImageButton(2, GetWidth() / 2 - 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 43), _("Follow object"));
     // Zum Ort
-    AddImageButton(3, GetWidth() / 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 107));
+    AddImageButton(3, GetWidth() / 2, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
     // Fenster vergroessern/verkleinern
-    AddImageButton(4, GetWidth() / 2 + 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 109));
+    AddImageButton(4, GetWidth() / 2 + 36, GetHeight() - 50, 36, 36, TC_GREY, LOADER.GetImageN("io", 109), _("Resize window"));
 }
 
 void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -71,11 +71,11 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             break;
         case 2:
         {
-            if (followMovableId == 0xFFFFFFFF)
+            if (followMovableId != GameObject::INVALID_ID)
+                followMovableId = GameObject::INVALID_ID;
+            else
             {
-                Point<int> curOffset;
-                const MapPoint centerMapPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>((view->GetFirstPt().x + view->GetLastPt().x) / 2, (view->GetFirstPt().y + view->GetLastPt().y) / 2), &curOffset);
-                DrawPoint centerDrawPt = view->GetWorld().GetNodePos(centerMapPt) - view->GetOffset() + curOffset;
+                const DrawPoint centerDrawPt = DrawPoint(view->GetSize() / 2);
 
                 double minDistance = std::numeric_limits<double>::max();
 
@@ -83,43 +83,37 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
                 {
                     for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
                     {
+                        Point<int> curOffset;
                         const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>(x, y), &curOffset);
-                        DrawPoint curPos = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
+                        DrawPoint curDrawPt = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
 
-                        Visibility visibility = view->GetViewer().GetVisibility(curPt);
-
-                        if(visibility != VIS_VISIBLE)
+                        if(view->GetViewer().GetVisibility(curPt) != VIS_VISIBLE)
                             continue;
 
-                        const std::list<noBase*>& figures = view->GetWorld().GetNode(curPt).figures;
+                        const std::list<noBase*>& figures = view->GetWorld().GetFigures(curPt);
 
-                        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+                        BOOST_FOREACH(const noBase* obj, figures)
                         {
-                            noMovable *movable = dynamic_cast<noMovable*>(*it);
+                            const noMovable *movable = dynamic_cast<const noMovable*>(obj);
+                            if(!movable)
+                                continue;
 
-                            if (movable)
+                            DrawPoint objDrawPt = curDrawPt;
+
+                            if (movable->IsMoving())
+                                objDrawPt += movable->CalcWalkingRelative();
+
+                            DrawPoint diffToCenter = objDrawPt - centerDrawPt;
+                            double distance = sqrt(pow(diffToCenter.x, 2) + pow(diffToCenter.y, 2));
+
+                            if (distance < minDistance)
                             {
-                                DrawPoint drawPt = curPos;
-
-                                if (movable->IsMoving())
-                                    drawPt += movable->CalcWalkingRelative();
-
-                                double xDiff = drawPt.x - centerDrawPt.x;
-                                double yDiff = drawPt.y - centerDrawPt.y;
-                                double distance = sqrt(pow(xDiff, 2) + pow(yDiff, 2));
-
-                                if (distance < minDistance)
-                                {
-                                    followMovableId = movable->GetObjId();
-                                    minDistance = distance;
-                                }
+                                followMovableId = movable->GetObjId();
+                                minDistance = distance;
                             }
                         }
                     }
                 }
-            } else
-            {
-                followMovableId = 0xFFFFFFFF;
             }
 
             break;
@@ -170,83 +164,89 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
 
 bool iwObservate::Draw_()
 {
-    if ((x_ != last_x) || (y_ != last_y))
+    if ((x_ != lastWindowPos.x) || (y_ != lastWindowPos.y))
     {
         view->SetPos(Point<int>(GetX() + 10, GetY() + 15));
-        last_x = x_;
-        last_y = y_;
+        lastWindowPos = Point<unsigned short>(x_, y_);
     }
 
-    if (followMovableId != 0xFFFFFFFF)
+    if (followMovableId != GameObject::INVALID_ID)
     {
-        const noMovable *movable = NULL;
-        
-        for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
-        {
-            for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
-            {
-                Point<int> curOffset;
-                const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>(x, y), &curOffset);
-
-                Visibility visibility = view->GetViewer().GetVisibility(curPt);
-
-                if(visibility != VIS_VISIBLE)
-                    continue;
-
-                const std::list<noBase*>& figures = view->GetWorld().GetNode(curPt).figures;
-
-                for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
-                {
-                    if ((*it)->GetObjId() == followMovableId)
-                    {
-                        movable = static_cast<noMovable*>(*it);
-
-                        DrawPoint drawPt = view->GetWorld().GetNodePos(curPt);
-
-                        if (movable->IsMoving())
-                            drawPt += movable->CalcWalkingRelative();
-
-                        view->MoveTo(drawPt.x - (width_ - 20) / 2, drawPt.y - (height_ - 20) / 2, true);
-                    }
-                }
-            }
-        }
-
-        if (movable == NULL)
-        {
-            followMovableId = 0xFFFFFFFF;
-        }
+        if(!MoveToFollowedObj())
+            followMovableId = GameObject::INVALID_ID;
     }
 
-    if (!GetMinimized())
+    if (!IsMinimized())
     {
         RoadBuildState road;
         road.mode = RM_DISABLED;
 
         view->Draw(road, true, parentView.GetSelectedPt());
+        // Draw indicator for center point
+        if (followMovableId == GameObject::INVALID_ID)
+            LOADER.GetMapImageN(23)->Draw(view->GetPos() + DrawPoint(view->GetSize() / 2));
     }
 
-    bool res = IngameWindow::Draw_();
+    return IngameWindow::Draw_();
+}
 
-    if (followMovableId == 0xFFFFFFFF)
+bool iwObservate::MoveToFollowedObj()
+{
+    // First look at the center (figure is normally still there)
+    const MapPoint centerPt = view->GetWorld().MakeMapPoint((view->GetLastPt() - view->GetFirstPt()) / 2);
+    const std::vector<MapPoint> centerPts = view->GetWorld().GetPointsInRadiusWithCenter(centerPt, 1);
+    BOOST_FOREACH(const MapPoint& curPt, centerPts)
     {
-        LOADER.GetMapImageN(23)->Draw(DrawPoint(GetX() + 10 + (width_ - 20) / 2, GetY() + 15 + (height_ - 20) / 2));
+        if(MoveToFollowedObj(curPt))
+            return true;
     }
 
-    return res;
+    // Not at the center (normally due to lags) -> Check full area
+    for(int y = view->GetFirstPt().y; y <= view->GetLastPt().y; ++y)
+    {
+        for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
+        {
+            const MapPoint curPt = view->GetWorld().MakeMapPoint(Point<int>(x, y));
+            if(MoveToFollowedObj(curPt))
+                return true;
+        }
+    }
+    return false;
+}
+
+bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
+{
+    if(view->GetViewer().GetVisibility(ptToCheck) != VIS_VISIBLE)
+        return false;
+    const std::list<noBase*>& curObjs = view->GetWorld().GetFigures(ptToCheck);
+    BOOST_FOREACH(const noBase* obj, curObjs)
+    {
+        if(obj->GetObjId() == followMovableId)
+        {
+            const noMovable* followMovable = static_cast<const noMovable*>(obj);
+            DrawPoint drawPt = view->GetWorld().GetNodePos(ptToCheck);
+
+            if (followMovable->IsMoving())
+                drawPt += followMovable->CalcWalkingRelative();
+
+            view->MoveTo(drawPt - DrawPoint(view->GetSize()) / 2, true);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 {
-    if (scroll)
+    if (isScrolling)
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
         if(SETTINGS.interface.revert_mouse)
             acceleration = -acceleration;
 
-        view->MoveTo((mc.x - sx) * acceleration, (mc.y - sy) * acceleration);
-        VIDEODRIVER.SetMousePos(sx, sy);
+        view->MoveTo((DrawPoint(mc.x, mc.y) - scrollOrigin));
+        VIDEODRIVER.SetMousePos(scrollOrigin);
     }
 
     return(false);
@@ -254,18 +254,18 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 
 bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 {
-    sx = mc.x;
-    sy = mc.y;
+    scrollOrigin.x = mc.x;
+    scrollOrigin.y = mc.y;
 
-    scroll = true;
-    followMovableId = 0xFFFFFFFF;
+    isScrolling = true;
+    followMovableId = GameObject::INVALID_ID;
 
     return(false);
 }
 
 bool iwObservate::Msg_RightUp(const MouseCoords&  /*mc*/)
 {
-    scroll = false;
+    isScrolling = false;
 
     return(false);
 }

@@ -110,16 +110,23 @@ public:
     /// Overloads are used due to missing template default args until C++11
     template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
     inline std::vector<typename T_TransformPt::result_type>
-    GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const;
+    GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt = false) const;
+
     template<class T_TransformPt>
     std::vector<typename T_TransformPt::result_type>
     GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt) const
     {
         return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
     }
+
     std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
     {
         return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
+    }
+
+    std::vector<MapPoint> GetPointsInRadiusWithCenter(const MapPoint pt, const unsigned radius) const
+    {
+        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>(), true);
     }
 
     /// Returns true, if the IsValid functor returns true for any point in the given radius
@@ -274,10 +281,20 @@ MapNode& World::GetNeighbourNodeInt(const MapPoint pt, const unsigned i)
 
 template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
 std::vector<typename T_TransformPt::result_type>
-World::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid) const
+World::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt) const
 {
     typedef typename T_TransformPt::result_type Element;
     std::vector<Element> result;
+    if(includePt)
+    {
+        Element el = transformPt(pt, 0);
+        if(isValid(el))
+        {
+            result.push_back(el);
+            if(T_maxResults == 1u)
+                return result;
+        }
+    }
     MapPoint curStartPt = pt;
     for(unsigned r = 1; r <= radius; ++r)
     {

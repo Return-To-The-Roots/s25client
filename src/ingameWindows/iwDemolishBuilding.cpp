@@ -28,11 +28,11 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
     : IngameWindow(building->CreateGUIID(), 0xFFFE, 0xFFFE, 200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
 {
     // Ja
-    AddImageButton(0, 14, 140, 66, 40, TC_RED1, LOADER.GetImageN("io", 32)); //-V525
+    AddImageButton(0, 14, 140, 66, 40, TC_RED1, LOADER.GetImageN("io", 32), _("Yes")); //-V525
     // Nein
-    AddImageButton(1, 82, 140, 66, 40, TC_GREY, LOADER.GetImageN("io", 40));
+    AddImageButton(1, 82, 140, 66, 40, TC_GREY, LOADER.GetImageN("io", 40), _("No"));
     // Gehe zum Standort
-    AddImageButton(2, 150, 140, 36, 40, TC_GREY, LOADER.GetImageN("io", 107));
+    AddImageButton(2, 150, 140, 36, 40, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
     // Gebäudebild
     AddImage(3, 104, 109, building->GetBuildingImage());
     // Gebäudename
