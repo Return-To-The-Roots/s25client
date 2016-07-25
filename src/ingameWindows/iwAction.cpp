@@ -464,14 +464,7 @@ void iwAction::Msg_TabChange(const unsigned int ctrl_id, const unsigned short ta
                 case TAB_CUTROAD: height = 138; break;
                 case TAB_BUILD:
                 {
-                    // unterschiedliche Höhe, je nachdem welches Gebäude
-                    switch(GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentTab())
-                    {
-                        case Tabs::BT_HUT:    height = 222; break;
-                        case Tabs::BT_HOUSE:  height = 258; break;
-                        case Tabs::BT_CASTLE: height = 186; break;
-                        case Tabs::BT_MINE:   height = 186; break;
-                    }
+                    height = building_tab_heights[GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentTab()];
                 } break;
                 case TAB_SETFLAG: height = 138; break;
                 case TAB_ATTACK:
