@@ -192,9 +192,9 @@ bool iwObservate::Draw_()
 
 bool iwObservate::MoveToFollowedObj()
 {
-    // First look at the center (figure is normally still there)
-    const MapPoint centerPt = view->GetWorld().MakeMapPoint((view->GetLastPt() - view->GetFirstPt()) / 2);
-    const std::vector<MapPoint> centerPts = view->GetWorld().GetPointsInRadiusWithCenter(centerPt, 1);
+    // First look around the center (figure is normally still there)
+    const MapPoint centerPt = view->GetWorld().MakeMapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
+    const std::vector<MapPoint> centerPts = view->GetWorld().GetPointsInRadiusWithCenter(centerPt, 2);
     BOOST_FOREACH(const MapPoint& curPt, centerPts)
     {
         if(MoveToFollowedObj(curPt))
@@ -229,7 +229,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
             if (followMovable->IsMoving())
                 drawPt += followMovable->CalcWalkingRelative();
 
-            view->MoveTo(drawPt - DrawPoint(view->GetSize()) / 2, true);
+            view->MoveTo(drawPt - DrawPoint(view->GetSize() / 2), true);
             return true;
         }
     }
