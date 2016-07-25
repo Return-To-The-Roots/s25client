@@ -78,6 +78,9 @@ class GameWorldView
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor;
+    float targetZoomFactor;
+    float zoomSpeed;
+    //float zoomAcceleration;
 
 public:
     GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
@@ -90,6 +93,7 @@ public:
     Point<int> GetPos() const { return pos; }
 
     void SetZoomFactor(float zoomFactor);
+    void SetNextZoomFactor();
 
     /// Bauqualitäten anzeigen oder nicht
     void ToggleShowBQ() { show_bq = !show_bq; }

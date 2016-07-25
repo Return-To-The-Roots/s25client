@@ -52,7 +52,9 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
 	d_active(false),
 	pos(pos),
 	width(width), height(height),
-    zoomFactor(1.f)
+    zoomFactor(1.f),
+    targetZoomFactor(1.f),
+    zoomSpeed(0.f)
 {
     MoveTo(0, 0);
 }
@@ -66,10 +68,32 @@ const GameWorldBase& GameWorldView::GetWorld() const
     return gwv.GetWorld();
 }
 
+void GameWorldView::SetNextZoomFactor()
+{
+    const float max_zoom_acc = 0.001f;
+
+    if (zoomFactor == targetZoomFactor)
+        return;
+
+    float zoomDirection = targetZoomFactor - zoomFactor;
+    
+    if (abs(zoomDirection) < abs(zoomSpeed))
+        zoomSpeed = zoomDirection;
+    else if (abs(zoomDirection) < 10 * abs(zoomSpeed))
+        zoomSpeed *= 0.9f; // TODO not exactly correct...
+    else if (zoomDirection < 0.f)
+        zoomSpeed -= max_zoom_acc;
+    else if (zoomDirection > 0.f)
+        zoomSpeed += max_zoom_acc;
+
+    zoomFactor = zoomFactor + zoomSpeed;
+    CalcFxLx();
+}
+
 void GameWorldView::SetZoomFactor(float zoomFactor)
 {
-    this->zoomFactor = zoomFactor;
-    CalcFxLx();
+    this->targetZoomFactor = zoomFactor;
+    //CalcFxLx();
 }
 
 struct ObjectBetweenLines
@@ -82,6 +106,8 @@ struct ObjectBetweenLines
 
 void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, const MapPoint selected, unsigned* water)
 {
+    SetNextZoomFactor();
+
     int shortestDistToMouse = 100000;
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
     mousePos -= Point<int>(pos);
