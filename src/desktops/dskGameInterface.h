@@ -79,6 +79,7 @@ class dskGameInterface :
         bool isScrolling;
         Point<int> startScrollPt;
         unsigned zoomLvl;
+        double wheelzoomLvl;
     public:
         dskGameInterface(GameWorldBase& world);
         ~dskGameInterface() override;
@@ -158,6 +159,8 @@ class dskGameInterface :
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
+        bool Msg_WheelUp(const MouseCoords& mc) override;
+        bool Msg_WheelDown(const MouseCoords& mc) override;
 
         void OnBuildingNote(const BuildingNote& note);
 

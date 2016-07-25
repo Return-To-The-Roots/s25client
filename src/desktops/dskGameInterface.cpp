@@ -91,7 +91,7 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
-    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(0)
+    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(0), wheelzoomLvl(1.0)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -767,6 +767,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             if(++zoomLvl > 5)
                 zoomLvl = 0;
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            wheelzoomLvl = ZOOM_FACTORS[zoomLvl];
             return true;
         case 'Z':
             if (zoomLvl == 0)
@@ -777,10 +778,32 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 zoomLvl--;
             }
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
+            wheelzoomLvl = ZOOM_FACTORS[zoomLvl];
             return true;
     }
 
     return false;
+}
+
+bool dskGameInterface::Msg_WheelUp(const MouseCoords& mc) 
+{ 
+    zoomLvl = 5;
+    if (wheelzoomLvl < 5)
+    {
+        wheelzoomLvl *= 1.03;
+        gwv.SetZoomFactor((float)wheelzoomLvl);
+    }
+    return true; 
+}
+bool dskGameInterface::Msg_WheelDown(const MouseCoords& mc) 
+{ 
+    zoomLvl = 5;
+    if (wheelzoomLvl > 0.1)
+    {
+        wheelzoomLvl *= 0.97;
+        gwv.SetZoomFactor((float)wheelzoomLvl);
+    }
+    return true; 
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)
