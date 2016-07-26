@@ -91,7 +91,7 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
-    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(0), wheelzoomLvl(1.0)
+    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -764,21 +764,20 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.ToggleShowProductivity();
             return true;
         case 'z': // zoom
-            if(++zoomLvl > 5)
+            if (ke.ctrl)
+                zoomLvl = ZOOM_DEFAULT_INDEX;
+            else if (++zoomLvl >= ZOOM_FACTORS.size())
                 zoomLvl = 0;
+
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
-            wheelzoomLvl = ZOOM_FACTORS[zoomLvl];
             return true;
         case 'Z':
             if (zoomLvl == 0)
-            {
-                zoomLvl = 5;
-            } else
-            {
+                zoomLvl = ZOOM_FACTORS.size() - 1;
+            else
                 zoomLvl--;
-            }
+
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
-            wheelzoomLvl = ZOOM_FACTORS[zoomLvl];
             return true;
     }
 
@@ -787,23 +786,29 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 
 bool dskGameInterface::Msg_WheelUp(const MouseCoords& mc) 
 { 
-    zoomLvl = 5;
-    if (wheelzoomLvl < 5)
-    {
-        wheelzoomLvl *= 1.03;
-        gwv.SetZoomFactor((float)wheelzoomLvl);
-    }
+    WheelZoom(ZOOM_WHEEL_INCREMENT);
     return true; 
 }
 bool dskGameInterface::Msg_WheelDown(const MouseCoords& mc) 
 { 
-    zoomLvl = 5;
-    if (wheelzoomLvl > 0.1)
-    {
-        wheelzoomLvl *= 0.97;
-        gwv.SetZoomFactor((float)wheelzoomLvl);
-    }
+    WheelZoom(-ZOOM_WHEEL_INCREMENT);
     return true; 
+}
+
+void dskGameInterface::WheelZoom(float step)
+{
+    float new_zoom = gwv.GetCurrentTargetZoomFactor() * (1 + step);
+    gwv.SetZoomFactor(new_zoom);
+
+    // also keep track in terms of fixed defined zoom levels
+    zoomLvl = ZOOM_DEFAULT_INDEX;
+    for (size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
+        if (ZOOM_FACTORS[i] < new_zoom)
+            zoomLvl = i;
+
+    for (size_t i = ZOOM_DEFAULT_INDEX; i-- > 0; )
+        if (ZOOM_FACTORS[i] > new_zoom)
+            zoomLvl = i;
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)

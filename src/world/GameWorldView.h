@@ -80,7 +80,6 @@ class GameWorldView
     float zoomFactor;
     float targetZoomFactor;
     float zoomSpeed;
-    //float zoomAcceleration;
 
 public:
     GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
@@ -93,6 +92,7 @@ public:
     Point<int> GetPos() const { return pos; }
 
     void SetZoomFactor(float zoomFactor);
+    float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
 
     /// Bauqualitäten anzeigen oder nicht

@@ -45,8 +45,6 @@ class PostMsg;
 struct BuildingNote;
 struct KeyEvent;
 
-const float ZOOM_FACTORS[6] = {1.f, 1.1f, 1.2f, 1.3f, 1.5f, 1.9f};
-
 class dskGameInterface :
     public Desktop,
     public ClientInterface,
@@ -78,8 +76,7 @@ class dskGameInterface :
 
         bool isScrolling;
         Point<int> startScrollPt;
-        unsigned zoomLvl;
-        double wheelzoomLvl;
+        size_t zoomLvl;
     public:
         dskGameInterface(GameWorldBase& world);
         ~dskGameInterface() override;
@@ -159,8 +156,11 @@ class dskGameInterface :
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
+        
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
+        void WheelZoom(float step);
+
 
         void OnBuildingNote(const BuildingNote& note);
 
