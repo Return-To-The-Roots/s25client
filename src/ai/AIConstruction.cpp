@@ -94,7 +94,7 @@ void AIConstruction::AddBuildJob(AIJH::BuildJob* job, bool front)
 		}
 		else
 		{
-			//LOG.write(("duplicate buildorders type %i at %i,%i \n",job->GetType(),job->GetTargetX(),job->GetTargetY());
+			//LOG.writeCFormat(("duplicate buildorders type %i at %i,%i \n",job->GetType(),job->GetTargetX(),job->GetTargetY());
 			delete job;
 		}
 	}
@@ -342,7 +342,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
 
     if (found)
     {
-        //LOG.write(("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
+        //LOG.writeCFormat(("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
         return MinorRoadImprovements(flag, *shortest, route);
     }
     return false;
@@ -355,9 +355,9 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
     MapPoint pStart = start->GetPos();
     /*for(unsigned i=0;i<route.size();i++)
     {
-        LOG.write((" %i",route[i]);
+        LOG.writeCFormat((" %i",route[i]);
     }
-    LOG.write(("\n");*/
+    LOG.writeCFormat(("\n");*/
     for(unsigned i = 0; i < (route.size() - 1); i++)
     {
         if(((route[i] + 1) % 6 == route[i + 1]) || ((route[i] + 5) % 6 == route[i + 1])) //switching current and next route element will result in the same position after building both
@@ -369,7 +369,7 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
             {
                 if(aii.CalcBQSumDifference(pStart, t)) //does the alternative road block a lower buildingquality point than the normal planned route?
                 {
-                    //LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID, start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
+                    //LOG.writeCFormat(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID, start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
                     pStart = t; //we move the alternative path so move x&y and switch the route entries
                     if((route[i] + 1) % 6 == route[i + 1])
                     {
@@ -390,12 +390,12 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
     }
     /*if(done)
     {
-        LOG.write(("final road\n");
+        LOG.writeCFormat(("final road\n");
         for(unsigned i=0;i<route.size();i++)
         {
-            LOG.write((" %i",route[i]);
+            LOG.writeCFormat((" %i",route[i]);
         }
-        LOG.write(("\n");
+        LOG.writeCFormat(("\n");
     }*/
     return BuildRoad(start, target, route);
 }
@@ -767,7 +767,7 @@ void AIConstruction::InitBuildingsWanted()
 
 bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsigned char> &route)
 {
-    //LOG.write(("ai build alt road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
+    //LOG.writeCFormat(("ai build alt road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
     // Radius in dem nach würdigen Fahnen gesucht wird
     const unsigned short maxRoadLength = 10;
     // Faktor um den der Weg kürzer sein muss als ein vorhander Pfad, um gebaut zu werden

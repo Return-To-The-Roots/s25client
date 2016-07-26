@@ -188,7 +188,7 @@ void EventManager::RemoveEvent(GameEvent*& ep)
     if(ep == curActiveEvent)
     {
         RTTR_Assert(false);
-        LOG.write("Bug detected: Active event deleted");
+        LOG.writeCFormat("Bug detected: Active event deleted");
         ep = NULL;
         return;
     }
@@ -205,7 +205,7 @@ void EventManager::RemoveEvent(GameEvent*& ep)
         } else
         {
             RTTR_Assert(false);
-            LOG.write("Bug detected: Event to be removed did not exist");
+            LOG.writeCFormat("Bug detected: Event to be removed did not exist");
         }
 
         // Note: Removing this is possible, as it cannot be the currently processed list
@@ -215,7 +215,7 @@ void EventManager::RemoveEvent(GameEvent*& ep)
     }else
     {
         RTTR_Assert(false);
-        LOG.write("Bug detected: GF of event to be removed did not exist");
+        LOG.writeCFormat("Bug detected: GF of event to be removed did not exist");
     }
 
     deletePtr(ep);

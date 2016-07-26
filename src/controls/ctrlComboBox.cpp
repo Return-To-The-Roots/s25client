@@ -150,19 +150,20 @@ bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
 
 bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
 {
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    if(readonly)
+        return false;
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->IsVisible())
+    ctrlList* list = GetCtrl<ctrlList>(0);
+    if(list->IsVisible())
     {
         // Scrolled in opened list ->
-        return RelayMouseMessage(&Window::Msg_WheelUp, mc);
-    }
-
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+        if(Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()))
+            return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+    }else if(Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Scrolled without list opened
         if (list->GetSelection() > 0)
-            Msg_ListSelectItem(GetID(), list->GetSelection() - 1);
+            list->SetSelection(list->GetSelection() - 1);
         return true;
     }
 

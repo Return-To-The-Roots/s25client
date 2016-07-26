@@ -96,7 +96,7 @@ bool Playlist::Load(const std::string& filename)
     if(filename.length() == 0)
         return false;
 
-    LOG.write("lade \"%s\"\n", filename.c_str());
+    LOG.writeCFormat("lade \"%s\"\n", filename.c_str());
 
     std::ifstream in(filename.c_str());
 
@@ -244,7 +244,7 @@ void MusicPlayer::PlayNext()
     // in "sng" speichern, daher evtl. altes Stück erstmal löschen
     sng.clear();
 
-    LOG.write("lade \"%s\": ", song.c_str());
+    LOG.writeCFormat("lade \"%s\": ", song.c_str());
 
     // Neues Stück laden
     if(libsiedler2::loader::LoadSND(song, sng) != 0 )

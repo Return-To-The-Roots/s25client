@@ -193,7 +193,7 @@ Serializer LuaInterfaceGame::Serialize()
         {
             if(!save.call<bool>(kaguya::standard::ref(luaSaveState)))
             {
-                LOG.write("Lua state could not be saved!");
+                LOG.writeCFormat("Lua state could not be saved!");
                 luaSaveState.Clear();
             }
             lua.setErrorHandler(ErrorHandler);
@@ -201,7 +201,7 @@ Serializer LuaInterfaceGame::Serialize()
         } catch(std::exception& e)
         {
             lua.setErrorHandler(ErrorHandler);
-            LOG.write("Error during saving: %s\n", e.what());
+            LOG.writeCFormat("Error during saving: %s\n", e.what());
             if(GLOBALVARS.isTest)
                 throw std::runtime_error("Error during lua call");
         }
@@ -218,12 +218,12 @@ void LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
         try
         {
             if(!load.call<bool>(kaguya::standard::ref(luaSaveState)))
-                LOG.write("Lua state was not loaded correctly!");
+                LOG.writeCFormat("Lua state was not loaded correctly!");
             lua.setErrorHandler(ErrorHandler);
         } catch(std::exception& e)
         {
             lua.setErrorHandler(ErrorHandler);
-            LOG.write("Error during loading: %s\n", e.what());
+            LOG.writeCFormat("Error during loading: %s\n", e.what());
             if(GLOBALVARS.isTest)
                 throw std::runtime_error("Error during lua call");
         }

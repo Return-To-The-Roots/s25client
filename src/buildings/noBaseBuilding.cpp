@@ -214,7 +214,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
     if (!ware)
     {
         RTTR_Assert(false);
-        LOG.write("Warning: Trying to remove non-existing ware. Please report this replay!\n");
+        LOG.writeCFormat("Warning: Trying to remove non-existing ware. Please report this replay!\n");
         return;
     }
 

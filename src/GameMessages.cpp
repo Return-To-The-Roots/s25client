@@ -24,7 +24,7 @@ GameMessage_Player_List::GameMessage_Player_List(): GameMessage(NMS_PLAYER_LIST)
 
 GameMessage_Player_List::GameMessage_Player_List(const std::vector<JoinPlayerInfo>& playerInfos) : GameMessage(NMS_PLAYER_LIST, 0xFF), playerInfos(playerInfos)
 {
-    LOG.writeToFile(">>> NMS_PLAYER_LIST(%u)\n", playerInfos.size());
+    LOG.writeCFormatToFile(">>> NMS_PLAYER_LIST(%u)\n", playerInfos.size());
 }
 
 GameMessage_Player_List::~GameMessage_Player_List()
@@ -50,11 +50,11 @@ void GameMessage_Player_List::Deserialize(Serializer& ser)
 
 void GameMessage_Player_List::Run(MessageInterface* callback)
 {
-    LOG.writeToFile("<<< NMS_PLAYER_LIST(%d)\n", playerInfos.size());
+    LOG.writeCFormatToFile("<<< NMS_PLAYER_LIST(%d)\n", playerInfos.size());
     for(unsigned i = 0; i < playerInfos.size(); ++i)
     {
         const JoinPlayerInfo& playerInfo = playerInfos[i];
-        LOG.writeToFile("    %d: %s %d %d %d %d %d %d %s\n", i, playerInfo.name.c_str(), playerInfo.ps, playerInfo.rating, playerInfo.ping, playerInfo.nation, playerInfo.color, playerInfo.team, (playerInfo.isReady ? "true" : "false"));
+        LOG.writeCFormatToFile("    %d: %s %d %d %d %d %d %d %s\n", i, playerInfo.name.c_str(), playerInfo.ps, playerInfo.rating, playerInfo.ping, playerInfo.nation, playerInfo.color, playerInfo.team, (playerInfo.isReady ? "true" : "false"));
     }
     GetInterface(callback)->OnGameMessage(*this);
 }

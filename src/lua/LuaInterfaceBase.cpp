@@ -54,7 +54,7 @@ void LuaInterfaceBase::Register(kaguya::State& state)
 
 void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 {
-    LOG.write("Lua error: %s\n", message);
+    LOG.writeCFormat("Lua error: %s\n", message);
     if(GLOBALVARS.isTest)
     {
         GLOBALVARS.errorOccured = true;
@@ -127,5 +127,5 @@ void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& ms
 
 void LuaInterfaceBase::Log(const std::string& msg)
 {
-    LOG.write("%s\n", msg.c_str());
+    LOG.writeCFormat("%s\n", msg.c_str());
 }

@@ -103,7 +103,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
 
     if(!bfs::exists(file))
     {
-        LOG.write(_("File or directory does not exist: %s\n"), file.c_str());
+        LOG.writeCFormat(_("File or directory does not exist: %s\n"), file.c_str());
         return false;
     }
     // is the entry a directory?
@@ -112,7 +112,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         // yes, load all files in the directory
         unsigned int ladezeit = VIDEODRIVER.GetTickCount();
 
-        LOG.write(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n"), GetFilePath(file).c_str());
+        LOG.writeCFormat(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n"), GetFilePath(file).c_str());
 
         std::vector<std::string> lst = ListDir(file, "lst", true);
         lst = ListDir(file, "bob", true, &lst);
@@ -128,7 +128,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
             if(!LoadFile( *i, GetPaletteN("pal5"), isOriginal ) )
                 return false;
         }
-        LOG.write(_("finished in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
+        LOG.writeCFormat(_("finished in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
     }
     else
     {
@@ -166,7 +166,7 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
         std::string filePath = GetFilePath(FILE_PATHS[ files[i] ]);
         if(!LoadFileOrDir(filePath, files[i], isOriginal))
         {
-            LOG.write(_("Failed to load %s\n"), filePath.c_str());
+            LOG.writeCFormat(_("Failed to load %s\n"), filePath.c_str());
             return false;
         }
     }
@@ -230,7 +230,7 @@ bool Loader::LoadSounds()
         std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
 #endif // _WIN32
 
-        LOG.write(_("Starting Sound-Converter ..."));
+        LOG.writeCFormat(_("Starting Sound-Converter ..."));
         if(system(cmd.c_str()) == -1)
             return false;
 
@@ -253,13 +253,13 @@ bool Loader::LoadSounds()
     {
         libsiedler2::ArchivInfo sng;
 
-        LOG.write(_("Loading \"%s\": "), it->c_str());
+        LOG.writeCFormat(_("Loading \"%s\": "), it->c_str());
         if(libsiedler2::Load(*it, sng) != 0 )
         {
-            LOG.write(_("failed\n"));
+            LOG.writeCFormat(_("failed\n"));
             return false;
         }
-        LOG.write(_("finished\n"));
+        LOG.writeCFormat(_("finished\n"));
 
         sng_lst.setC(i++, *sng.get(0));
     }
@@ -342,7 +342,7 @@ bool Loader::SaveSettings()
 {
     std::string file = GetFilePath(FILE_PATHS[0]);
 
-    LOG.write(_("Writing \"%s\": "), file.c_str());
+    LOG.writeCFormat(_("Writing \"%s\": "), file.c_str());
     fflush(stdout);
 
     if(libsiedler2::Write(file, *GetInfoN(CONFIG_NAME)) != 0)
@@ -351,7 +351,7 @@ bool Loader::SaveSettings()
     using namespace boost::filesystem;
     permissions(file, owner_read | owner_write);
 
-    LOG.write(_("finished\n"));
+    LOG.writeCFormat(_("finished\n"));
 
     return true;
 }
@@ -1093,16 +1093,16 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
 
     std::string file = GetFilePath(pfad);
 
-    LOG.write(_("Loading \"%s\": "), file.c_str());
+    LOG.writeCFormat(_("Loading \"%s\": "), file.c_str());
     fflush(stdout);
 
     if(libsiedler2::Load(file, archiv, palette) != 0)
     {
-        LOG.write(_("failed\n"));
+        LOG.writeCFormat(_("failed\n"));
         return false;
     }
 
-    LOG.write(_("done in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
+    LOG.writeCFormat(_("done in %ums\n"), VIDEODRIVER.GetTickCount() - ladezeit);
 
     return true;
 }
@@ -1121,18 +1121,18 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
 
     if(!boost::filesystem::exists(filePath))
     {
-        LOG.write(_("File or directory does not exist: %s\n"), filePath.c_str());
+        LOG.writeCFormat(_("File or directory does not exist: %s\n"), filePath.c_str());
         return false;
     }
     if(boost::filesystem::is_regular_file(filePath))
         return LoadArchiv(filePath, palette, to);
     if(!boost::filesystem::is_directory(filePath))
     {
-        LOG.write(_("Could not determine type of path %s\n"), filePath.c_str());
+        LOG.writeCFormat(_("Could not determine type of path %s\n"), filePath.c_str());
         return false;
     }
 
-    LOG.write(_("Loading directory %s\n"), filePath.c_str());
+    LOG.writeCFormat(_("Loading directory %s\n"), filePath.c_str());
     std::vector<std::string> lst = ListDir(filePath, "bmp");
     lst = ListDir(filePath, "txt", false, &lst);
     lst = ListDir(filePath, "ger", false, &lst);
@@ -1185,7 +1185,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
 
         if( wf.back() == "empty" ) // Placeholder
         {
-            LOG.write(_("Skipping %s\n"), itFile->c_str());
+            LOG.writeCFormat(_("Skipping %s\n"), itFile->c_str());
             to.alloc_inc(1);
             continue;
         }else if( wf.back() == "bmp" ) // Bitmap
@@ -1201,7 +1201,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
 
             if(!out)
             {
-                LOG.write("unbekannter bobtype: %d\n", bobtype);
+                LOG.writeCFormat("unbekannter bobtype: %d\n", bobtype);
                 return false;
             }
 
@@ -1306,7 +1306,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         return false;
 
 #ifndef NDEBUG
-    LOG.write(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
+    LOG.writeCFormat(_("Replacing entries of previously loaded file '%s'\n"), name.c_str());
 #endif // !NDEBUG
 
     libsiedler2::ArchivInfo* existing = GetInfoN(name);
@@ -1318,7 +1318,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));
         if(!existing)
         {
-            LOG.write(_("Error while replacing a BOB file\n"));
+            LOG.writeCFormat(_("Error while replacing a BOB file\n"));
             return false;
         }
     }
@@ -1331,7 +1331,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
         if(newEntries.get(i))
         {
 #ifndef NDEBUG
-            LOG.write(_("Replacing entry %d with %s\n"), i, newEntries.get(i)->getName().c_str());
+            LOG.writeCFormat(_("Replacing entry %d with %s\n"), i, newEntries.get(i)->getName().c_str());
 #endif // !NDEBUG
             existing->setC(i, *newEntries.get(i));
         }

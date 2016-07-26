@@ -102,7 +102,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
         {
 			if(!gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
 			{
-				//LOG.write(("armorer handlewait1 - consume wares %i \n",player);
+				//LOG.writeCFormat(("armorer handlewait1 - consume wares %i \n",player);
 				nofWorkman::HandleStateWaiting1();
 			}
 			else
@@ -111,7 +111,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
 				current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
 				state = STATE_WORK;
 				workplace->is_working = true;
-				//LOG.write(("armorer handlewait1 - no consume wares %i \n",player);
+				//LOG.writeCFormat(("armorer handlewait1 - no consume wares %i \n",player);
 			}
         } break;
         case STATE_WORK:

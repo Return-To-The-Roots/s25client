@@ -698,7 +698,7 @@ void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHei
 {
     VIDEODRIVER.RenewViewport();
     Msg_ScreenResize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
-    LOG.writeToFile("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
+    LOG.writeCFormatToFile("Resized screen. Requested %ux%u, got %ux%u\n", newWidth, newHeight, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 }
 
 /**

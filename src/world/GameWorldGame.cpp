@@ -668,7 +668,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
                     (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !dynamic_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt()) ||
                     (noCheckMil->GetType() == NOP_BUILDINGSITE && dynamic_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
 				{
-					//LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type, %i \n", x, y, no->GetType());
+					//LOG.writeCFormat(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type, %i \n", x, y, no->GetType());
 					return;
 				}
 			}				
@@ -875,7 +875,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     }
 
     /*if(soldiers.empty())
-        LOG.write(S("GameWorldGame::Attack: WARNING: Attack failed. No Soldiers available!\n");*/
+        LOG.writeCFormat(S("GameWorldGame::Attack: WARNING: Attack failed. No Soldiers available!\n");*/
 }
 
 void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers)
@@ -1420,7 +1420,7 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
     from = RESOURCES_MINE_TO_MAP[from];
     to = ((to != 0xFF) ? RESOURCES_MINE_TO_MAP[to] : 0xFF);
 
-    //LOG.write(("Convert map resources from %i to %i\n", from, to);
+    //LOG.writeCFormat(("Convert map resources from %i to %i\n", from, to);
     // Alle Punkte durchgehen
     MapPoint pt(0, 0);
     for(pt.y = 0; pt.y < GetHeight(); ++pt.y)

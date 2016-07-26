@@ -164,7 +164,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
         }
     }
     //if(returnval<0&&lastval>=0&&res==AIJH::BORDERLAND)
-    //LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
+    //LOG.writeCFormat(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
     return returnVal;
 }
 
