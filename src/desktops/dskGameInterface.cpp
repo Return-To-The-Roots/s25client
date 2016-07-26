@@ -340,7 +340,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw zoom level indicator icon
-    if (zoomLvl > 0)
+    if (gwv.GetCurrentTargetZoomFactor() != 1.f)
     {
         glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
         const DrawPoint drawPos(iconPos);
@@ -348,8 +348,8 @@ void dskGameInterface::Msg_PaintAfter()
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
         magnifierImg->Draw(drawPos, 0, 0, 0, 0);
 
-        std::string multiplier = helpers::toString(zoomLvl);
-        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), multiplier, glArchivItem_Font::DF_LEFT, COLOR_YELLOW);
+        std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
+        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
     }
 }
 
@@ -763,15 +763,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 's': // Produktivität anzeigen
             gwv.ToggleShowProductivity();
             return true;
+        case 26: // ctrl+z
+            gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+            return true;
         case 'z': // zoom
-            if (ke.ctrl)
-                zoomLvl = ZOOM_DEFAULT_INDEX;
-            else if (++zoomLvl >= ZOOM_FACTORS.size())
+            if (++zoomLvl >= ZOOM_FACTORS.size())
                 zoomLvl = 0;
 
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
             return true;
-        case 'Z':
+        case 'Z': // shift-z, reverse zoom
             if (zoomLvl == 0)
                 zoomLvl = ZOOM_FACTORS.size() - 1;
             else
