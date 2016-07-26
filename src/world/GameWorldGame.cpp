@@ -1247,7 +1247,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     if(visible)
     {
         if (visibility_before != VIS_VISIBLE && HasLua())
-            GetLua().EventExplored(player, pt);
+            GetLua().EventExplored(player, pt, GetNode(pt).owner);
         SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
     }
     else
@@ -1281,7 +1281,7 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
     SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
 
     if (visibility_before != VIS_VISIBLE && HasLua())
-        GetLua().EventExplored(player, pt);
+        GetLua().EventExplored(player, pt, GetNode(pt).owner);
 }
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player, const noBaseBuilding* const exception)

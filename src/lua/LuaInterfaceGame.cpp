@@ -289,11 +289,11 @@ LuaWorld LuaInterfaceGame::GetWorld()
     return LuaWorld(gw);
 }
 
-void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt)
+void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt, unsigned char owner)
 {
     kaguya::LuaRef onExplored = lua["onExplored"];
     if(onExplored.type() == LUA_TFUNCTION)
-        onExplored.call<void>(player, pt.x, pt.y);
+        onExplored.call<void>(player, pt.x, pt.y, owner);
 }
 
 void LuaInterfaceGame::EventOccupied(unsigned player, const MapPoint pt)

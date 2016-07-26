@@ -38,7 +38,7 @@ public:
     Serializer Serialize();
     void Deserialize(Serializer& luaState);
 
-    void EventExplored(unsigned player, const MapPoint pt);
+    void EventExplored(unsigned player, const MapPoint pt, unsigned char owner);
     void EventOccupied(unsigned player, const MapPoint pt);
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned number);
