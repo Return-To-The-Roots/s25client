@@ -293,7 +293,17 @@ void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt, unsigne
 {
     kaguya::LuaRef onExplored = lua["onExplored"];
     if(onExplored.type() == LUA_TFUNCTION)
-        onExplored.call<void>(player, pt.x, pt.y, owner);
+    {
+        if (owner == 0)
+        {
+            // No owner? Pass nil value to Lua.
+            onExplored.call<void>(player, pt.x, pt.y, kaguya::NilValue());
+        } else
+        {
+            // Adapt owner to be comparable with the player index
+            onExplored.call<void>(player, pt.x, pt.y, owner - 1);
+        }
+    }
 }
 
 void LuaInterfaceGame::EventOccupied(unsigned player, const MapPoint pt)
