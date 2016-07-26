@@ -176,7 +176,7 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id) : nobBa
 
     if(capturing && capturing_soldiers == 0 && aggressors.empty())
     {
-        LOG.writeCFormat("Bug in savegame detected: Building at (%d,%d) Being captured has no capturers. Trying to fix this...\n", pos.x, pos.y);
+        LOG.write("Bug in savegame detected: Building at (%d,%d) Being captured has no capturers. Trying to fix this...\n") % pos.x % pos.y;
         capturing = false;
     }
 }
@@ -1161,7 +1161,7 @@ void nobMilitary::SearchCoins()
             {
                 RTTR_Assert(false);
                 // Ware dürfte nicht 0 werden, da ja ein Lagerhaus MIT GOLDMÜNZEN bereits gesucht wird
-                LOG.writeCFormat("nobMilitary::SearchCoins: WARNING: ware = NULL. Bug alarm!\n");
+                LOG.write("nobMilitary::SearchCoins: WARNING: ware = NULL. Bug alarm!\n");
                 return;
             }
 

@@ -267,7 +267,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     RTTR_Assert(objId < GameObject::GetObjIDCounter());
     if(objId >= GameObject::GetObjIDCounter())
     {
-        LOG.writeCFormat("%s\n", _("An error occured while saving which was suppressed!"));
+        LOG.write("%s\n") % _("An error occured while saving which was suppressed!");
         PushUnsignedInt(0);
         return;
     }
@@ -278,12 +278,12 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     if(IsObjectSerialized(objId))
     {
         if (debugMode)
-            LOG.writeCFormatToFile("Saved known objId %u\n", objId);
+            LOG.writeToFile("Saved known objId %u\n") % objId;
         return;
     }
 
     if (debugMode)
-        LOG.writeCFormatToFile("Saving objId %u, obj#=%u\n", objId, objectsCount);
+        LOG.writeToFile("Saving objId %u, obj#=%u\n") % objId % objectsCount;
 
     // Objekt merken
     writtenObjIds.insert(objId);
@@ -297,7 +297,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     // Objekt serialisieren
     if (debugMode)
-        LOG.writeCFormatToFile("Start serializing %u\n", objId);
+        LOG.writeToFile("Start serializing %u\n") % objId;
     go->Serialize(*this);
 
     // Sicherheitscode reinschreiben
@@ -369,7 +369,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
 
     if(safety_code != GetSafetyCode(*go))
     {
-        LOG.writeCFormat("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n", objId, got);
+        LOG.write("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n") % objId % got;
         throw Error("Invalid safety code after PopObject");
     }
 

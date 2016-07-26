@@ -53,7 +53,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		//LOG.writeCFormatToFile("<<< NMS_PING\n");
+		//LOG.writeToFile("<<< NMS_PING\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -66,7 +66,7 @@ public:
 	GameMessage_Pong(const unsigned char player): GameMessage(NMS_PONG, player) {}
 	void Run(MessageInterface* callback) override
 	{
-		//LOG.writeCFormatToFile("<<< NMS_PONG\n");
+		//LOG.writeToFile("<<< NMS_PONG\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -81,7 +81,7 @@ public:
 	GameMessage_Server_Type(): GameMessage(NMS_SERVER_TYPE) { }
 	GameMessage_Server_Type(const ServerType type, const std::string& version): GameMessage(NMS_SERVER_TYPE, 0xFF), type(type), version(version)
     {
-        LOG.writeCFormatToFile(">>> NMS_SERVER_Type(%d, %s)\n", boost::underlying_cast<int>(type), version.c_str());    
+        LOG.writeToFile(">>> NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % version;    
     }
 
 	void Serialize(Serializer& ser) const override
@@ -100,7 +100,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_Type(%d, %s)\n", boost::underlying_cast<int>(type), version.c_str());
+		LOG.writeToFile("<<< NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % version;
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -155,7 +155,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_PASSWORD(%s)\n", "********");
+		LOG.writeToFile("<<< NMS_SERVER_PASSWORD(%s)\n") % "********";
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -171,7 +171,7 @@ public:
 
 	void Serialize(Serializer& ser) const override
     {
-        LOG.writeCFormatToFile(">>> NMS_SERVER_NAME(%s)\n", name.c_str());
+        LOG.writeToFile(">>> NMS_SERVER_NAME(%s)\n") % name;
         GameMessage::Serialize(ser);
         ser.PushString(name);
     }
@@ -184,7 +184,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_NAME(%s)\n", name.c_str());
+		LOG.writeToFile("<<< NMS_SERVER_NAME(%s)\n") % name;
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -201,7 +201,7 @@ public:
 
 	void Serialize(Serializer& ser) const override
     {
-        LOG.writeCFormatToFile(">>> NMS_SERVER_START(%d, %d)\n", random_init, nwf_length);
+        LOG.writeToFile(">>> NMS_SERVER_START(%d, %d)\n") % random_init % nwf_length;
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(random_init);
         ser.PushUnsignedInt(nwf_length);
@@ -216,7 +216,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_START(%d, %d)\n", random_init, nwf_length);
+		LOG.writeToFile("<<< NMS_SERVER_START(%d, %d)\n") % random_init % nwf_length;
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -232,7 +232,7 @@ public:
 
 	void Serialize(Serializer& ser) const override
     {
-        LOG.writeCFormatToFile(">>> NMS_SERVER_COUNTDOWN(%d)\n", countdown);
+        LOG.writeToFile(">>> NMS_SERVER_COUNTDOWN(%d)\n") % countdown;
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(countdown);
     }
@@ -245,7 +245,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_COUNTDOWN(%d)\n", countdown);
+		LOG.writeToFile("<<< NMS_SERVER_COUNTDOWN(%d)\n") % countdown;
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -258,7 +258,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_CANCELCOUNTDOWN\n");
+		LOG.writeToFile("<<< NMS_SERVER_CANCELCOUNTDOWN\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -274,7 +274,7 @@ public:
     GameMessage_Server_Chat(const unsigned char player, const ChatDestination destination, const std::string& text):
         GameMessage(NMS_SERVER_CHAT, player), destination(destination), text(text)
     {
-        LOG.writeCFormatToFile(">>> NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
+        LOG.writeToFile(">>> NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
     }
 
     void Serialize(Serializer& ser) const override
@@ -293,7 +293,7 @@ public:
 
     void Run(MessageInterface* callback) override
     {
-        LOG.writeCFormatToFile("<<< NMS_SERVER_CHAT(%d, %s)\n", destination, text.c_str());
+        LOG.writeToFile("<<< NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
         GetInterface(callback)->OnGameMessage(*this);
     }
 };
@@ -333,7 +333,7 @@ public:
     GameMessage_Server_Async(): GameMessage(NMS_SERVER_ASYNC) { }
     GameMessage_Server_Async(const std::vector<int>& checksums): GameMessage(NMS_SERVER_ASYNC, 0xFF), checksums(checksums)
     {
-        LOG.writeCFormatToFile(">>> NMS_SERVER_ASYNC(%d)\n", checksums.size());
+        LOG.writeToFile(">>> NMS_SERVER_ASYNC(%d)\n") % checksums.size();
     }
 
     void Serialize(Serializer& ser) const override
@@ -355,7 +355,7 @@ public:
 
     void Run(MessageInterface* callback) override
     {
-        LOG.writeCFormatToFile("<<< NMS_SERVER_ASYNC(%d)\n", checksums.size());
+        LOG.writeToFile("<<< NMS_SERVER_ASYNC(%d)\n") % checksums.size();
         GetInterface(callback)->OnGameMessage(*this);
     }
 };
@@ -369,7 +369,7 @@ public:
     GameMessage_Player_Id(): GameMessage(NMS_PLAYER_ID) { } //-V730
     GameMessage_Player_Id(const unsigned int playerId): GameMessage(NMS_PLAYER_ID, 0xFF), playerId(playerId)
     {
-        LOG.writeCFormatToFile(">>> NMS_PLAYER_ID(%d)\n", playerId);
+        LOG.writeToFile(">>> NMS_PLAYER_ID(%d)\n") % playerId;
     }
 
     void Serialize(Serializer& ser) const override
@@ -386,7 +386,7 @@ public:
 
     void Run(MessageInterface* callback) override
     {
-        LOG.writeCFormatToFile("<<< NMS_PLAYER_ID(%d)\n", playerId);
+        LOG.writeToFile("<<< NMS_PLAYER_ID(%d)\n") % playerId;
         GetInterface(callback)->OnGameMessage(*this);
     }
 };
@@ -401,7 +401,7 @@ public:
     GameMessage_Player_Name(): GameMessage(NMS_PLAYER_NAME) { }
     GameMessage_Player_Name(const std::string& playername): GameMessage(NMS_PLAYER_NAME, 0xFF), playername(playername)
     {
-        LOG.writeCFormatToFile(">>> NMS_PLAYER_NAME(%s)\n", playername.c_str());
+        LOG.writeToFile(">>> NMS_PLAYER_NAME(%s)\n") % playername;
     }
 
     void Serialize(Serializer& ser) const override
@@ -418,7 +418,7 @@ public:
 
     void Run(MessageInterface* callback) override
     {
-        LOG.writeCFormatToFile("<<< NMS_PLAYER_NAME(%s)\n", playername.c_str());
+        LOG.writeToFile("<<< NMS_PLAYER_NAME(%s)\n") % playername;
         GetInterface(callback)->OnGameMessage(*this);
     }
 };
@@ -448,7 +448,7 @@ public:
     GameMessage_Player_Set_State(): GameMessage(NMS_PLAYER_SETSTATE) { }
     GameMessage_Player_Set_State(const unsigned char player, PlayerState ps, AI::Info aiInfo): GameMessage(NMS_PLAYER_SETSTATE, player), ps(ps), aiInfo(aiInfo)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_SETSTATE(%d)\n", player);
+		LOG.writeToFile(">>> NMS_PLAYER_SETSTATE(%d)\n") % player;
 	}
 
     void Serialize(Serializer& ser) const override
@@ -469,7 +469,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_SETSTATE(%d)\n", player);
+		LOG.writeToFile("<<< NMS_PLAYER_SETSTATE(%d)\n") % player;
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -484,7 +484,7 @@ public:
 	GameMessage_Player_Set_Nation(): GameMessage(NMS_PLAYER_SET_NATION) {} //-V730
 	GameMessage_Player_Set_Nation(const unsigned char player, const Nation nation): GameMessage(NMS_PLAYER_SET_NATION, player), nation(nation)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_SET_NATION\n");
+		LOG.writeToFile(">>> NMS_PLAYER_SET_NATION\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -501,7 +501,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_SET_NATION\n");
+		LOG.writeToFile("<<< NMS_PLAYER_SET_NATION\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -515,7 +515,7 @@ public:
 	GameMessage_Player_Set_Team(): GameMessage(NMS_PLAYER_SET_TEAM) { } //-V730
 	GameMessage_Player_Set_Team(const unsigned char player, const Team team): GameMessage(NMS_PLAYER_SET_TEAM, player), team(team)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_SET_TEAM\n");
+		LOG.writeToFile(">>> NMS_PLAYER_SET_TEAM\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -532,7 +532,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_SET_TEAM\n");
+		LOG.writeToFile("<<< NMS_PLAYER_SET_TEAM\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -545,7 +545,7 @@ public:
 	GameMessage_Player_Set_Color(): GameMessage(NMS_PLAYER_SET_COLOR) { } //-V730
 	GameMessage_Player_Set_Color(const unsigned char player, const unsigned color): GameMessage(NMS_PLAYER_SET_COLOR, player), color(color)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_SET_COLOR\n");
+		LOG.writeToFile(">>> NMS_PLAYER_SET_COLOR\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -562,7 +562,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_SET_COLOR\n");
+		LOG.writeToFile("<<< NMS_PLAYER_SET_COLOR\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -594,7 +594,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_KICKED\n");
+		LOG.writeToFile("<<< NMS_PLAYER_KICKED\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -622,7 +622,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		//LOG.writeCFormatToFile("<<< NMS_PLAYER_PING\n");
+		//LOG.writeToFile("<<< NMS_PLAYER_PING\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -637,7 +637,7 @@ public:
 	GameMessage_Player_New(): GameMessage(NMS_PLAYER_NEW) { }
 	GameMessage_Player_New(const unsigned char player, const std::string& name): GameMessage(NMS_PLAYER_NEW, player), name(name)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_NEW\n");
+		LOG.writeToFile(">>> NMS_PLAYER_NEW\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -654,7 +654,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_NEW\n");
+		LOG.writeToFile("<<< NMS_PLAYER_NEW\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -669,7 +669,7 @@ public:
 	GameMessage_Player_Ready(): GameMessage(NMS_PLAYER_READY) { } //-V730
 	GameMessage_Player_Ready(const unsigned char player, const bool ready): GameMessage(NMS_PLAYER_READY, player), ready(ready)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_READY\n");
+		LOG.writeToFile(">>> NMS_PLAYER_READY\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -686,7 +686,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_READY\n");
+		LOG.writeToFile("<<< NMS_PLAYER_READY\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -700,7 +700,7 @@ public:
 	GameMessage_Player_Swap(): GameMessage(NMS_PLAYER_SWAP) { } //-V730
 	GameMessage_Player_Swap(const unsigned char player, const unsigned char player2): GameMessage(NMS_PLAYER_SWAP, player),  player2(player2)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PLAYER_SWAP\n");
+		LOG.writeToFile(">>> NMS_PLAYER_SWAP\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -717,7 +717,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PLAYER_SWAP\n");
+		LOG.writeToFile("<<< NMS_PLAYER_SWAP\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -736,7 +736,7 @@ public:
 	GameMessage_Map_Info(const std::string& map_name, const MapType mt, const unsigned mapLen, const unsigned mapCompressedLen, const unsigned luaLen, const unsigned luaCompressedLen)
 		: GameMessage(NMS_MAP_INFO, 0xFF), map_name(map_name),  mt(mt), mapLen(mapLen), mapCompressedLen(mapCompressedLen), luaLen(luaLen), luaCompressedLen(luaCompressedLen)
 	{
-		LOG.writeCFormatToFile(">>> NMS_MAP_INFO\n");
+		LOG.writeToFile(">>> NMS_MAP_INFO\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -763,7 +763,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_MAP_INFO\n");
+		LOG.writeToFile("<<< NMS_MAP_INFO\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -782,7 +782,7 @@ public:
 	GameMessage_Map_Data(bool isMapData, const unsigned offset, const char* const data, const unsigned length)
 		: GameMessage(NMS_MAP_DATA, 0xFF), isMapData(isMapData), offset(offset), data(data, data + length)
 	{
-		LOG.writeCFormatToFile(">>> NMS_MAP_DATA\n");
+		LOG.writeToFile(">>> NMS_MAP_DATA\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -805,7 +805,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_MAP_DATA\n");
+		LOG.writeToFile("<<< NMS_MAP_DATA\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -819,7 +819,7 @@ public:
 	GameMessage_Map_Checksum(): GameMessage(NMS_MAP_CHECKSUM) { } //-V730
 	GameMessage_Map_Checksum(const unsigned mapChecksum, const unsigned luaChecksum): GameMessage(NMS_MAP_CHECKSUM, 0xFF), mapChecksum(mapChecksum), luaChecksum(luaChecksum)
 	{
-		LOG.writeCFormatToFile(">>> NMS_MAP_CHECKSUM\n");
+		LOG.writeToFile(">>> NMS_MAP_CHECKSUM\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -838,7 +838,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_MAP_CHECKSUM\n");
+		LOG.writeToFile("<<< NMS_MAP_CHECKSUM\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -880,7 +880,7 @@ public:
 	GameMessage_GGSChange(): GameMessage(NMS_GGS_CHANGE) {}
 	GameMessage_GGSChange(const GlobalGameSettings& ggs): GameMessage(NMS_GGS_CHANGE, 0xFF), ggs(ggs)
 	{
-		LOG.writeCFormatToFile(">>> NMS_GGS_CHANGE\n");
+		LOG.writeToFile(">>> NMS_GGS_CHANGE\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -897,7 +897,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_GGS_CHANGE\n");
+		LOG.writeToFile("<<< NMS_GGS_CHANGE\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -921,7 +921,7 @@ public:
 	GameMessage_Server_Speed(): GameMessage(NMS_SERVER_SPEED) { } //-V730
 	GameMessage_Server_Speed(const unsigned int gf_length): GameMessage(NMS_SERVER_SPEED, 0xFF), gf_length(gf_length)
 	{
-		LOG.writeCFormatToFile(">>> NMS_SERVER_SPEED(%d)\n", gf_length);
+		LOG.writeToFile(">>> NMS_SERVER_SPEED(%d)\n") % gf_length;
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -938,7 +938,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SERVER_SPEED(%d)\n", gf_length);
+		LOG.writeToFile("<<< NMS_SERVER_SPEED(%d)\n") % gf_length;
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -954,7 +954,7 @@ public:
 	GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr, const unsigned int gf_length, const bool first = false):
         GameMessage(NMS_SERVER_NWF_DONE, player), nr(nr), gf_length(gf_length), first(first)
 	{
-		LOG.writeCFormatToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n", nr, gf_length, (first ? 1 : 0));
+		LOG.writeToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -975,7 +975,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_NWF_DONE(%d, %d, %d)\n", nr, gf_length, (first ? 1 : 0));
+		LOG.writeToFile("<<< NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -990,7 +990,7 @@ public:
 	GameMessage_Pause(): GameMessage(NMS_PAUSE) { } //-V730
 	GameMessage_Pause(const bool paused, const unsigned nr): GameMessage(NMS_PAUSE, 0xFF), paused(paused), nr(nr)
 	{
-		LOG.writeCFormatToFile(">>> NMS_PAUSE(%d)\n", paused ? 1 : 0);
+		LOG.writeToFile(">>> NMS_PAUSE(%d)\n") % (paused ? 1 : 0);
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -1009,7 +1009,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_PAUSE(%d)\n", paused ? 1 : 0);
+		LOG.writeToFile("<<< NMS_PAUSE(%d)\n") % (paused ? 1 : 0);
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -1021,11 +1021,11 @@ public:
 	GameMessage_GetAsyncLog(): GameMessage(NMS_GET_ASYNC_LOG) {}
 	GameMessage_GetAsyncLog(const unsigned char player): GameMessage(NMS_GET_ASYNC_LOG, player)
 	{
-		LOG.writeCFormatToFile(">>> NMS_GET_ASYNC_LOG\n");
+		LOG.writeToFile(">>> NMS_GET_ASYNC_LOG\n");
 	}
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_GET_ASYNC_LOG\n");
+		LOG.writeToFile("<<< NMS_GET_ASYNC_LOG\n");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
@@ -1042,7 +1042,7 @@ public:
 	GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last):
         GameMessage(NMS_SEND_ASYNC_LOG, 0xFF), entries(async_log), last(last)
 	{
-		LOG.writeCFormatToFile(">>> NMS_SEND_ASYNC_LOG\n");
+		LOG.writeToFile(">>> NMS_SEND_ASYNC_LOG\n");
 	}
 
 	void Serialize(Serializer& ser) const override
@@ -1086,7 +1086,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeCFormatToFile("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n", entries.size(), last ? "last" : "non-last");
+		LOG.writeToFile("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n") % entries.size() % (last ? "last" : "non-last");
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };

@@ -64,7 +64,7 @@ bool GameManager::Start()
     /// Videotreiber laden
     if(!VIDEODRIVER.LoadDriver())
     {
-        LOG.writeCFormat("Video driver couldn't be loaded!\n");
+        LOG.write("Video driver couldn't be loaded!\n");
         return false;
     }
 
@@ -99,7 +99,7 @@ bool GameManager::Start()
     /// Audiodriver laden
     if(!AUDIODRIVER.LoadDriver())
     {
-        LOG.writeCFormat("Audio driver couldn't be loaded!\n");
+        LOG.write("Audio driver couldn't be loaded!\n");
         //return false;
     }
 
@@ -110,7 +110,7 @@ bool GameManager::Start()
     // Treibereinstellungen abspeichern
     SETTINGS.Save();
 
-    LOG.writeCFormat("\nStarte das Spiel\n");
+    LOG.write("\nStarte das Spiel\n");
     if(!StartMenu())
         return false;
 
@@ -200,9 +200,12 @@ bool GameManager::Run()
         if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
 		{
 			if(skipgf_last_time)
-				LOG.writeCFormat("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber(),double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/5000);
+				LOG.write("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")
+				% GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber()
+				% (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000)
+				% (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/5000);
 			else
-				LOG.writeCFormat("jumping to gf %i, now at gf %i \n",GAMECLIENT.skiptogf, GAMECLIENT.GetGFNumber());
+				LOG.write("jumping to gf %i, now at gf %i \n") % GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber();
 			skipgf_last_time=VIDEODRIVER.GetTickCount();
 			skipgf_last_report_gf=GAMECLIENT.GetGFNumber();
 		}
@@ -213,9 +216,12 @@ bool GameManager::Run()
 		if(skipgf_last_time)
 		{
 			if((GAMECLIENT.skiptogf-1)%5000>0)
-				LOG.writeCFormat("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n",GAMECLIENT.skiptogf, (GAMECLIENT.skiptogf-1)%5000+1,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000,double (VIDEODRIVER.GetTickCount()-skipgf_last_time)/((GAMECLIENT.skiptogf-1)%5000));
+				LOG.write("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")
+				% GAMECLIENT.skiptogf % ((GAMECLIENT.skiptogf-1)%5000+1)
+                % (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000)
+				% (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/((GAMECLIENT.skiptogf-1)%5000));
 			else
-				LOG.writeCFormat("jump to gf %i complete \n",GAMECLIENT.skiptogf);
+				LOG.write("jump to gf %i complete \n") % GAMECLIENT.skiptogf;
 		}
 		skipgf_last_time=0;
 		skipgf_last_report_gf=0;

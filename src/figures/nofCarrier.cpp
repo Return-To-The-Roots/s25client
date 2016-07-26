@@ -619,7 +619,7 @@ void nofCarrier::GoalReached()
         }
     }
 
-    LOG.writeCFormat("nofCarrier::GoalReached: ERROR: Road of carrier (id: %u) not found!\n", GetObjId());
+    LOG.write("nofCarrier::GoalReached: ERROR: Road of carrier (id: %u) not found!\n") % GetObjId();
 }
 
 void nofCarrier::AbrogateWorkplace()

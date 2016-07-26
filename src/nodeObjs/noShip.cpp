@@ -258,7 +258,7 @@ void noShip::HandleEvent(const unsigned int id)
         {
         default: 
             RTTR_Assert(false);
-            LOG.writeCFormat("Bug detected: Invalid state in ship event");
+            LOG.write("Bug detected: Invalid state in ship event");
             break;
         case STATE_EXPEDITION_LOADING:
             // Schiff ist nun bereit und Expedition kann beginnen
@@ -773,7 +773,7 @@ void noShip::HandleState_TransportDriving()
             // Dann müssen alle Leute ihren Heimatgebäuden Bescheid geben, dass sie
             // nun nicht mehr kommen
             // Das Schiff muss einen Notlandeplatz ansteuern
-            //LOG.writeCFormat(("transport goal harbor doesnt exist player %i state %i pos %u,%u \n",player,state,x,y);
+            //LOG.write(("transport goal harbor doesnt exist player %i state %i pos %u,%u \n",player,state,x,y);
             for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 (*it)->Abrogate();
@@ -990,8 +990,8 @@ void noShip::StartDrivingToHarborPlace()
     {
         // todo
         RTTR_Assert(false);
-        LOG.writeCFormat("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n",
-            GetEvMgr().GetCurrentGF(), player, state, pos.x, pos.y, coastalPos.x, coastalPos.y, goal_harborId, gwg->GetHarborPoint(goal_harborId).x, gwg->GetHarborPoint(goal_harborId).y);
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n")
+            % GetEvMgr().GetCurrentGF() % player % state % pos.x % pos.y % coastalPos.x % coastalPos.y % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
         goal_harborId = 0;
         return;
     }
@@ -1026,7 +1026,7 @@ void noShip::FindUnloadGoal(State newState)
         else
         {
             RTTR_Assert(false);
-            LOG.writeCFormat("Bug detected: Invalid state for FindUnloadGoal");
+            LOG.write("Bug detected: Invalid state for FindUnloadGoal");
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
         }
     }
@@ -1221,7 +1221,7 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
     if(!gwg->IsHarborAtSea(hb->GetHarborPosID(), seaId_))
         return;
 
-    //LOG.writeCFormat(("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
+    //LOG.write(("lost ship has new goal harbor player %i state %i pos %u,%u \n",player,state,x,y);
     home_harbor = goal_harborId = hb->GetHarborPosID();
     lost = false;
 
@@ -1237,7 +1237,7 @@ void noShip::NewHarborBuilt(nobHarborBuilding* hb)
         break;
     default:
         RTTR_Assert(false); // Das darf eigentlich nicht passieren
-        LOG.writeCFormat("Bug detected: Invalid state in NewHarborBuilt");
+        LOG.write("Bug detected: Invalid state in NewHarborBuilt");
         break;
     }
 }

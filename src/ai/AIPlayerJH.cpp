@@ -215,7 +215,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if (!gfisnwf) //try to complete a job on the list
     {
-		//LOG.writeCFormat(("ai doing stuff %i \n",playerId);
+		//LOG.write(("ai doing stuff %i \n",playerId);
         if (gf % 100 == 0)
             construction->RefreshBuildingCount();
         ExecuteAIJob();
@@ -304,7 +304,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
     }};
     const unsigned resGatherBldCount = 14; /* The first n buildings in the above list, that gather resources */
 
-    //LOG.writeCFormat(("new buildorders %i whs and %i mil for player %i \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
+    //LOG.write(("new buildorders %i whs and %i mil for player %i \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
 
     const std::list<nobBaseWarehouse*>& storehouses = aii.GetStorehouses();
     if(!storehouses.empty())
@@ -363,7 +363,7 @@ bool AIPlayerJH::TestDefeat()
 {		
     if (isInitGfCompleted>=10 && aii.GetStorehouses().empty())
     {
-		//LOG.writeCFormat(("ai defeated player %i \n",playerId);
+		//LOG.write(("ai defeated player %i \n",playerId);
         defeated = true;
         aii.Surrender();
         Chat(_("You win"));
@@ -1127,7 +1127,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	//have frontier warehouses?
 	if(!frontierWhs.empty())
 	{
-		//LOG.writeCFormat(("distribute maxranks - got frontierwhs for player %i \n",playerId);
+		//LOG.write(("distribute maxranks - got frontierwhs for player %i \n",playerId);
 		bool hasUnderstaffedWh=false;
 		//try to gather limit maxranks in each - if we have that many unblock for all frontier whs, 
 		//check if there is at least one with less than limit first
@@ -1163,7 +1163,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	}
 	else //there are no frontier whs!
 	{
-		//LOG.writeCFormat(("distribute maxranks - got NO frontierwhs for player %i \n",playerId);
+		//LOG.write(("distribute maxranks - got NO frontierwhs for player %i \n",playerId);
 		bool hasUnderstaffedWh=false;
 		//try to gather limit maxranks in each - if we have that many unblock for all  whs, 
 		//check if there is at least one with less than limit first
@@ -1181,7 +1181,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
             bool shouldBlock;
 			if(wh.GetPos() == upwh->GetPos()) // warehouse next to upgradebuilding should block when there is more than 1 wh
 			{
-				//LOG.writeCFormat(("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerId);
+				//LOG.write(("distribute maxranks - got NO frontierwhs for player %i , block at hq \n",playerId);
                 shouldBlock = true;
             } else if(hasUnderstaffedWh)
             {
@@ -1891,7 +1891,7 @@ void AIPlayerJH::TrySeaAttack()
     /*else
     {
         for(unsigned i=0;i<seaidswithattackers.size();i++)
-            LOG.writeCFormat(("attackers at sea ids for player %i, sea id %i, count %i \n",playerId, seaidswithattackers[i], attackersatseaid[i]);
+            LOG.write(("attackers at sea ids for player %i, sea id %i, count %i \n",playerId, seaidswithattackers[i], attackersatseaid[i]);
     }*/
     //first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
     for(unsigned i = 1; i < gwb.GetHarborPointCount(); i++)
@@ -1911,7 +1911,7 @@ void AIPlayerJH::TrySeaAttack()
                             undefendedTargets.push_back(hb);
                         else //todo: maybe only attack this when there is a fair win chance for the attackers?
                             potentialTargets.push_back(hb);
-                        //LOG.writeCFormat(("found a defended harbor we can attack at %i,%i \n",hb->GetPos());
+                        //LOG.write(("found a defended harbor we can attack at %i,%i \n",hb->GetPos());
                     }
                 }
                 else//cant attack player owning the harbor -> add to list
@@ -1924,7 +1924,7 @@ void AIPlayerJH::TrySeaAttack()
         else//no harbor -> add to list
         {
             searcharoundharborspots.push_back(i);
-            //LOG.writeCFormat(("found an unused harborspot we have to look around of at %i,%i \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
+            //LOG.write(("found an unused harborspot we have to look around of at %i,%i \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
         }
     }
     //any undefendedTargets? -> pick one by random
@@ -2280,7 +2280,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
 			{
 				if (construction->IsConnectedToRoadSystem((*it)->GetFlag()))
 				{
-					//LOG.writeCFormat(("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerId, count);
+					//LOG.write(("UpdateUpgradeBuilding at %i,%i for player %i (listslot %i) \n",(*it)->GetX(), (*it)->GetY(), playerId, count);
                     UpgradeBldPos = (*it)->GetPos();
 					UpgradeBldListNumber=count;
 					return count;
@@ -2480,7 +2480,7 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
 			}
         }
     }	
-	//LOG.writeCFormat(("bqcheck at %i,%i r%u result: %u,%u \n",pt,range,count,maxvalue);
+	//LOG.write(("bqcheck at %i,%i r%u result: %u,%u \n",pt,range,count,maxvalue);
     return ((count*100)/maxvalue);
 }
 
@@ -2521,7 +2521,7 @@ bool AIPlayerJH::NoEnemyHarbor()
     {
         if(aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BLD_HARBORBUILDING) && !aii.IsOwnTerritory(gwb.GetHarborPoint(i)))
         {
-            //LOG.writeCFormat(("found a harbor at spot %i ",i);
+            //LOG.write(("found a harbor at spot %i ",i);
             return false;
         }
     }
@@ -2559,7 +2559,7 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
             {
                 if(gwb.GetNode(t2).resources > 0x80 && gwb.GetNode(t2).resources < 0x90) //fish on current spot?
                 {
-                    //LOG.writeCFormat(("found fish at %i,%i ",t2);
+                    //LOG.write(("found fish at %i,%i ",t2);
                     //try to find a path to a neighboring node on the coast
                     for(int j = 0; j < 6; j++)
                     {
@@ -2591,7 +2591,7 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
                     onetimeuseseaids.push_back(seaId);
                 else
                 {
-                    //LOG.writeCFormat(("found a second harbor at sea id %i \n",seaIds[r]);
+                    //LOG.write(("found a second harbor at sea id %i \n",seaIds[r]);
                     onetimeuseseaids.remove(seaId);
                     validseaids.push_back(seaId);
                 }
@@ -2713,6 +2713,6 @@ unsigned AIPlayerJH::CalcMilSettings()
 			break;
 		returnValue--;
 	}
-	//LOG.writeCFormat(("player %i inland milsetting %i \n",playerId,returnvalue);
+	//LOG.write(("player %i inland milsetting %i \n",playerId,returnvalue);
 	return returnValue;
 }

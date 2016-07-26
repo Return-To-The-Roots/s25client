@@ -56,7 +56,7 @@ void GameServerPlayer::checkConnectTimeout()
 {
     if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
     {
-        LOG.writeCFormat("SERVER: Reserved slot freed due to ping timeout\n");
+        LOG.write("SERVER: Reserved slot freed due to ping timeout\n");
         CloseConnections();
     }
 }

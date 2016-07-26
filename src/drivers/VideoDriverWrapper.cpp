@@ -186,10 +186,10 @@ bool VideoDriverWrapper::DestroyScreen()
     }
 
     // Texturen aufräumen
-    LOG.writeCFormat("Saeubere Texturespeicher: ");
+    LOG.write("Saeubere Texturespeicher: ");
     unsigned int ladezeit = GetTickCount();
     CleanUp();
-    LOG.writeCFormat("fertig (nach %dms)\n", GetTickCount() - ladezeit);
+    LOG.write("fertig (nach %dms)\n") % (GetTickCount() - ladezeit);
 
     // Videotreiber zurücksetzen
     videodriver->DestroyScreen();

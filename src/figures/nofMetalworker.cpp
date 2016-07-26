@@ -42,7 +42,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
 {
     if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
     {
-        LOG.writeCFormat("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, report this!");
+        LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, report this!");
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }

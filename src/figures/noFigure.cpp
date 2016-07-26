@@ -261,7 +261,7 @@ void noFigure::StartWalking(const unsigned char newDir)
     RTTR_Assert(newDir <= 5);
     if(newDir > 5)
     {
-        LOG.writeCFormat("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n", GetEvMgr().GetCurrentGF(), unsigned(newDir));
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n") % GetEvMgr().GetCurrentGF() % unsigned(newDir);
         return;
     }
 
@@ -992,7 +992,7 @@ void noFigure::Abrogate()
         {
             if(!on_ship) //no goal but going home - should not happen
             {
-                LOG.writeCFormat("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n", player, fs, pos.x, pos.y);
+                LOG.write("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n") % player % fs % pos.x % pos.y;
                 //RTTR_Assert(false);
             }
         }

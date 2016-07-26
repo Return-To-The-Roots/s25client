@@ -233,7 +233,7 @@ bool DebugInfo::SendStackTrace()
                 process, thread, &frame,
                 ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL) && (num_frames < maxTrace))
     {
-        LOG.writeCFormat("Reading stack frame %d\n", num_frames);
+        LOG.write("Reading stack frame %d\n") % num_frames;
         stacktrace[num_frames++] = (void*) frame.AddrPC.Offset;
     }
 
@@ -247,13 +247,13 @@ bool DebugInfo::SendStackTrace()
     }
 
     unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
-    LOG.writeCFormat("Read Frames %d\n", num_frames);
+    LOG.write("Read Frames %d\n") % num_frames;
     */
 #else
     unsigned num_frames = backtrace(stacktrace, maxTrace);
 #endif
 
-    LOG.writeCFormat("Will now send %d stack frames\n", num_frames);
+    LOG.write("Will now send %d stack frames\n") % num_frames;
 
     if (!SendString("StackTrace"))
         return(false);
@@ -265,7 +265,7 @@ bool DebugInfo::SendStackTrace()
 
 bool DebugInfo::SendReplay()
 {
-    LOG.writeCFormat("Sending replay...\n");
+    LOG.write("Sending replay...\n");
 
     // Replay mode is on, no recording of replays active
     if (!GAMECLIENT.IsReplayModeOn())
@@ -284,7 +284,7 @@ bool DebugInfo::SendReplay()
 
         unsigned replay_len = f->Tell();
 
-        LOG.writeCFormat("- Replay length: %u\n", replay_len);
+        LOG.write("- Replay length: %u\n") % replay_len;
 
         boost::interprocess::unique_ptr<char, Deleter<char[]> > replay(new char[replay_len]);
 
@@ -301,22 +301,22 @@ bool DebugInfo::SendReplay()
             return false;
         }
 
-        LOG.writeCFormat("- Compressing...\n");
+        LOG.write("- Compressing...\n");
         if (BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned int*) &compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
         {
-            LOG.writeCFormat("- Sending...\n");
+            LOG.write("- Sending...\n");
 
             if (SendString(compressed.get(), compressed_len))
             {
-                LOG.writeCFormat("-> success\n");
+                LOG.write("-> success\n");
                 return true;
             }
 
-            LOG.writeCFormat("-> Sending replay failed :(\n");
+            LOG.write("-> Sending replay failed :(\n");
         }
         else
         {
-            LOG.writeCFormat("-> BZ2 compression failed.\n");
+            LOG.write("-> BZ2 compression failed.\n");
         }
 
         SendUnsigned(0);
@@ -324,7 +324,7 @@ bool DebugInfo::SendReplay()
     }
     else
     {
-        LOG.writeCFormat("-> Already in replay mode, do not send replay\n");
+        LOG.write("-> Already in replay mode, do not send replay\n");
     }
 
     return true;

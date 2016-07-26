@@ -32,7 +32,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
     if(!file)
     {
-        LOG.writeCFormat("FATAL ERROR: can't write to %s: %s\n", filePath.c_str(), strerror(errno));
+        LOG.write("FATAL ERROR: can't write to %s: %s\n") % filePath % strerror(errno);
         return false;
     }
 
@@ -43,19 +43,19 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
     int err = BZ2_bzBuffToBuffDecompress(uncompressedData.get(), &outLength, &data[0], data.size(), 0, 0);
     if(err != BZ_OK)
     {
-        LOG.writeCFormat("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n", err);
+        LOG.write("FATAL ERROR: BZ2_bzBuffToBuffDecompress failed with code %d\n") % err;
         return false;
     }
 
     if(outLength != length)
     {
-        LOG.writeCFormat("FATAL ERROR: Length mismatch after decompressing. Expected: %u, got %u\n", length, outLength);
+        LOG.write("FATAL ERROR: Length mismatch after decompressing. Expected: %u, got %u\n") % length % outLength;
         return false;
     }
 
     if(!file.write(uncompressedData.get(), length))
     {
-        LOG.writeCFormat("FATAL ERROR: Writing to %s failed\n", filePath.c_str());
+        LOG.write("FATAL ERROR: Writing to %s failed\n") % filePath;
         return false;
     }
 
@@ -76,7 +76,7 @@ bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* che
 
     if(!file.read(uncompressedData.get(), length))
     {
-        LOG.writeCFormat("Could not read from %s\n", filePath.c_str());
+        LOG.write("Could not read from %s\n") % filePath;
         return false;
     }
 
@@ -84,7 +84,7 @@ bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* che
     int err = BZ2_bzBuffToBuffCompress(&data[0], &compressedLen, uncompressedData.get(), length, 9, 0, 250);
     if(err != BZ_OK)
     {
-        LOG.writeCFormat("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n", err);
+        LOG.write("FATAL ERROR: BZ2_bzBuffToBuffCompress failed with error: %d\n") % err;
         return false;
     }
     data.resize(compressedLen);
