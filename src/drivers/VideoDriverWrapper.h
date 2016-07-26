@@ -76,6 +76,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         bool IsRightDown();
         // setzt den Mausstatus
         void SetMousePos(const int x, const int y);
+        void SetMousePos(const Point<int>& newPos);
         /// Get state of the modifier keys
         KeyEvent GetModKeyState() const;
 

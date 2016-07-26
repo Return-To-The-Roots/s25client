@@ -506,12 +506,17 @@ void GameWorldView::ToggleShowNamesAndProductivity()
  */
 void GameWorldView::MoveTo(int x, int y, bool absolute)
 {
-    if(absolute)
-        offset = DrawPoint(x, y);
-    else
-    	offset += DrawPoint(x, y);
+    MoveTo(DrawPoint(x, y), absolute);
+}
 
-    Point<int> size(GetWorld().GetWidth() * TR_W, GetWorld().GetHeight() * TR_H);
+void GameWorldView::MoveTo(const DrawPoint& newPos, bool absolute)
+{
+    if(absolute)
+        offset = newPos;
+    else
+        offset += newPos;
+
+    DrawPoint size(GetWorld().GetWidth() * TR_W, GetWorld().GetHeight() * TR_H);
     if(size.x && size.y)
     {
         offset.x %= size.x;
@@ -534,7 +539,7 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
     lastOffset = offset;
     Point<int> nodePos = GetWorld().GetNodePos(pt);
 
-    MoveTo(nodePos.x - width / 2, nodePos.y - height / 2, true);
+    MoveTo(nodePos - DrawPoint(GetSize() / 2), true);
 }
 
 /// Springt zur letzten Position, bevor man "weggesprungen" ist

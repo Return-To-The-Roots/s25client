@@ -23,6 +23,7 @@
 #include "postSystem/PostBox.h"
 
 #include <iostream>
+#include <sstream>
 
 /**
  *  Objekt-ID-Counter.
@@ -85,4 +86,11 @@ EventManager& GameObject::GetEvMgr() const
 void GameObject::SendPostMessage(unsigned player, PostMsg* msg)
 {
     gwg->GetPostMgr().SendMsg(player, msg);
+}
+
+std::string GameObject::ToString() const
+{
+    std::stringstream s;
+    s << "GameObject(" << objId << ")";
+    return s.str();
 }

@@ -64,7 +64,7 @@ class IngameWindow : public Window
         /// minimiert das Fenster.
         void SetMinimized(bool minimized = true);
         /// ist das Fenster minimiert?
-        bool GetMinimized() { return isMinimized_; }
+        bool IsMinimized() { return isMinimized_; }
 
         /// Fenster wird bei Rechtsklick geschlossen?
         void SetCloseOnRightClick(bool close_on_right_click) {this->close_on_right_click = close_on_right_click;}

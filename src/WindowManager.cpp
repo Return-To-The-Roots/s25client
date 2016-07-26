@@ -93,7 +93,7 @@ void WindowManager::Draw()
             (*it)->Draw();
 
             // wurde es minimiert?
-            if(!(*it)->GetMinimized())
+            if(!(*it)->IsMinimized())
             {
                 // nein, Msg_PaintAfter aufrufen
                 (*it)->Msg_PaintAfter();

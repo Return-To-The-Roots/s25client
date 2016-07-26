@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef GAMEOBJECT_H_INCLUDED
 #define GAMEOBJECT_H_INCLUDED
 
@@ -21,7 +22,6 @@
 
 #include "gameTypes/GO_Type.h"
 #include <string>
-#include <sstream>
 
 class SerializedGameData;
 class GameWorldGame;
@@ -32,6 +32,9 @@ class PostMsg;
 class GameObject
 {
     public:
+        /// ID for an invalid GameObject
+        static const unsigned INVALID_ID = 0xFFFFFFFF;
+
         GameObject();
         GameObject(SerializedGameData& sgd, const unsigned obj_id);
         GameObject(const GameObject& go);
@@ -53,6 +56,23 @@ class GameObject
         /// Liefert den GOT (siehe oben)
         virtual GO_Type GetGOT() const = 0;
 
+        virtual std::string ToString() const;
+
+    protected:
+
+        /// Serialisierungsfunktion.
+        void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
+        // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
+        EventManager& GetEvMgr() const;
+        /// Send the msg to given player
+        void SendPostMessage(unsigned player, PostMsg* msg);
+
+
+    private:
+        unsigned int objId; /// eindeutige Objekt-ID
+
+// Static members
+    public:
         /// Setzt Pointer auf GameWorld und EventManager
         static void SetPointers(GameWorldGame* const gameWorld){ GameObject::gwg = gameWorld; }
         /// setzt den Objekt und Objekt-ID-Counter zurück
@@ -66,25 +86,14 @@ class GameObject
         /// Setzt Counter (NUR FÜR DAS LADEN!)
         static void SetObjIDCounter(const unsigned obj_id_counter) { objIdCounter_ = obj_id_counter; }
 
-        virtual std::string ToString() const {std::stringstream s; s << "GameObject(" << objId << ")"; return s.str();}
     protected:
-
-        /// Serialisierungsfunktion.
-        void Serialize_GameObject(SerializedGameData&  /*sgd*/) const {}
-        // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
-        EventManager& GetEvMgr() const;
-        /// Send the msg to given player
-        void SendPostMessage(unsigned player, PostMsg* msg);
-
-
         /// Zugriff auf übrige Spielwelt
         static GameWorldGame* gwg;
 
     private:
-        unsigned int objId; /// eindeutige Objekt-ID
-
         static unsigned objIdCounter_; /// Objekt-ID-Counter
         static unsigned objCounter_;    /// Objekt-Counter
+
 };
 
 #endif /// GAMEOBJECT_H_INCLUDED
