@@ -40,8 +40,6 @@ class GameObject
         GameObject(const GameObject& go);
         virtual ~GameObject();
 
-        GameObject& operator=(const GameObject& obj);
-
         /// zerstört das Objekt.
         virtual void Destroy() = 0;
 
