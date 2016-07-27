@@ -136,8 +136,8 @@ private:
 
     /// Aktuelle Anzahl an Objekten
     unsigned objectsCount;
-    /// Expected number of objects during reading
-    unsigned expectedObjectsReadCount;
+    /// Expected number of objects to be read/written
+    unsigned expectedObjectsCount;
 
     /// EventManager, used during deserialization to add events, NULL otherwise
     EventManager* em;

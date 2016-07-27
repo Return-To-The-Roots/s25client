@@ -182,7 +182,7 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
     }
 }
 
-SerializedGameData::SerializedGameData() : debugMode(false), objectsCount(0), expectedObjectsReadCount(0), em(NULL), isReading(false)
+SerializedGameData::SerializedGameData() : debugMode(false), objectsCount(0), expectedObjectsCount(0), em(NULL), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)
@@ -192,7 +192,7 @@ void SerializedGameData::Prepare(bool reading)
     writtenObjIds.clear();
     readObjects.clear();
     objectsCount = 0;
-    expectedObjectsReadCount = 0;
+    expectedObjectsCount = 0;
     isReading = reading;
 }
 
@@ -201,7 +201,8 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw)
     Prepare(false);
 
     // Anzahl Objekte reinschreiben
-    PushUnsignedInt(GameObject::GetObjCount());
+    expectedObjectsCount = GameObject::GetObjCount();
+    PushUnsignedInt(expectedObjectsCount);
 
     // Objektmanager serialisieren
     gw.Serialize(*this);
@@ -210,6 +211,10 @@ void SerializedGameData::MakeSnapshot(GameWorld& gw)
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
         gw.GetPlayer(i).Serialize(*this);
+
+    // If this check fails, we missed some objects or some objects were destroyed without decreasing the obj count
+    RTTR_Assert(writtenObjIds.size() == objectsCount);
+    RTTR_Assert(expectedObjectsCount == objectsCount + 1); // "Nothing" nodeObj does not get serialized
 
     writtenObjIds.clear();
 }
@@ -220,7 +225,7 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
 
     em = &gw.GetEvMgr();
 
-    expectedObjectsReadCount = PopUnsignedInt();
+    expectedObjectsCount = PopUnsignedInt();
     GameObject::SetObjCount(0);
 
     gw.Deserialize(*this);
@@ -229,8 +234,8 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
         gw.GetPlayer(i).Deserialize(*this);
 
     // If this check fails, we did not serialize all objects or there was an async
-    RTTR_Assert(expectedObjectsReadCount == GameObject::GetObjCount());
-    RTTR_Assert(expectedObjectsReadCount == objectsCount + 1); // "Nothing" nodeObj does not get serialized
+    RTTR_Assert(expectedObjectsCount == GameObject::GetObjCount());
+    RTTR_Assert(expectedObjectsCount == objectsCount + 1); // "Nothing" nodeObj does not get serialized
     em = NULL;
     readObjects.clear();
 }
@@ -382,7 +387,7 @@ void SerializedGameData::AddObject(GameObject* go)
     RTTR_Assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
     readObjects[go->GetObjId()] = go;
     objectsCount++;
-    RTTR_Assert(objectsCount < expectedObjectsReadCount);
+    RTTR_Assert(objectsCount < expectedObjectsCount);
 }
 
 bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
