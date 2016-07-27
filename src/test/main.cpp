@@ -18,6 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 
 #include "Random.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/StringStreamWriter.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
@@ -34,6 +36,9 @@ struct TestSetup
 {
     TestSetup()
     {
+        // Write to string stream only to avoid file output on the test server
+        LOG.open(new StringStreamWriter);
+
         // Make sure we have the RTTR folder in our current working directory
         std::vector<std::string> possiblePaths;
         possiblePaths.push_back(".");

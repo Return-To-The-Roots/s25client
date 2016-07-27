@@ -80,7 +80,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, GAMECLIENT.IsSavegame()))
         {
             RTTR_Assert(GAMECLIENT.IsHost()); // This should be done first for the host so others won't even see the script
-            LOG.lprintf("Lua was disabled by the script itself\n");
+            LOG.write("Lua was disabled by the script itself\n");
             lua.reset();
             // Double check...
             if(GAMECLIENT.IsHost())
@@ -568,7 +568,7 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsig
     // Keinen Namen gefunden?
     if(player2 == gameLobby.GetPlayerCount())
     {
-        LOG.lprintf("dskHostGame: ERROR: No Origin Name found, stop swapping!\n");
+        LOG.write("dskHostGame: ERROR: No Origin Name found, stop swapping!\n");
         return;
     }
 
@@ -592,7 +592,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id >= ID_SWAP_BUTTON && ctrl_id < ID_SWAP_BUTTON + MAX_PLAYERS)
     {
-        LOG.lprintf("dskHostGame: swap button pressed\n");
+        LOG.write("dskHostGame: swap button pressed\n");
         unsigned char p = 0;
         while(p < MAX_PLAYERS && !gameLobby.GetPlayer(p).isHost)
             p++;
@@ -602,7 +602,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             GAMESERVER.SwapPlayer(p, ctrl_id - ID_SWAP_BUTTON);
             CI_PlayersSwapped(p, ctrl_id - ID_SWAP_BUTTON);
         }else
-            LOG.lprintf("dskHostGame: could not find host\n");
+            LOG.write("dskHostGame: could not find host\n");
         return;
     }
     switch(ctrl_id)

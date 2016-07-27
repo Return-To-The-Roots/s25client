@@ -195,7 +195,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             else if(lc >= 0xF0 && lc <= 0xFD)
                 obj = new noTree(pt, 3, 3);
             else
-                LOG.lprintf("Unbekannter Baum1-4 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
+                LOG.write("Unbekannter Baum1-4 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
         } break;
 
         // Baum 5-8
@@ -210,7 +210,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             else if(lc >= 0xF0 && lc <= 0xFD)
                 obj = new noTree(pt, 7, 3);
             else
-                LOG.lprintf("Unbekannter Baum5-8 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
+                LOG.write("Unbekannter Baum5-8 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
         } break;
 
         // Baum 9
@@ -219,7 +219,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             if(lc >= 0x30 && lc <= 0x3D)
                 obj = new noTree(pt, 8, 3);
             else
-                LOG.lprintf("Unbekannter Baum9 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
+                LOG.write("Unbekannter Baum9 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
         } break;
 
         // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
@@ -291,7 +291,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             else if(lc == 0x35)
                 obj = new noStaticObject(pt, 4, 5);
             else
-                LOG.lprintf("Unbekanntes Naturzeug auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
+                LOG.write("Unbekanntes Naturzeug auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
 
         } break;
 
@@ -301,7 +301,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             if(lc >= 0x01 && lc <= 0x06)
                 obj = new noGranite(GT_1, lc - 1);
             else
-                LOG.lprintf("Unbekannter Granit1 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
+                LOG.write("Unbekannter Granit1 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
         } break;
 
         // Granit Typ 2
@@ -310,7 +310,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             if(lc >= 0x01 && lc <= 0x06)
                 obj = new noGranite(GT_2, lc - 1);
             else
-                LOG.lprintf("Unbekannter Granit2 auf x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, lc);
+                LOG.write("Unbekannter Granit2 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
         } break;
 
         // Nichts
@@ -320,7 +320,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
         default:
 #ifndef NDEBUG
             unsigned char unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
-            LOG.lprintf("Unbekanntes Objekt (0x%0X) auf x=%d, y=%d: (0x%0X)\n", unknownObj, pt.x, pt.y, lc);
+            LOG.write("Unbekanntes Objekt (0x%0X) auf x=%d, y=%d: (0x%0X)\n") % unknownObj % pt.x % pt.y % lc;
 #endif // !NDEBUG
             break;
         }
@@ -349,7 +349,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         default:
 #ifndef NDEBUG
             unsigned char unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
-            LOG.lprintf("Unknown animal species at x=%d, y=%d: (0x%0X)\n", pt.x, pt.y, unknownAnimal, unknownAnimal);
+            LOG.write("Unknown animal species at x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % unknownAnimal % unknownAnimal;
 #endif // !NDEBUG
             species = SPEC_NOTHING;
             break;
@@ -393,7 +393,7 @@ bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const 
         // Does the HQ have a position?
         if(i >= hqPositions.size() || !hqPositions[i].isValid())
         {
-            LOG.lprintf(_("Player %u does not have a valid start position!"), i);
+            LOG.write(_("Player %u does not have a valid start position!")) % i;
             return false;
         }
         nobHQ* hq = new nobHQ(hqPositions[i], i, playerNations[i]);
@@ -431,7 +431,7 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         }
         if(!foundCoast)
         {
-            LOG.lprintf("Map Bug: Found harbor without coast at %u:%u. Removing!\n", it->pos.x, it->pos.y);
+            LOG.write("Map Bug: Found harbor without coast at %u:%u. Removing!\n") % it->pos.x % it->pos.y;
             it = world.harbor_pos.erase(it);
         } else
         {

@@ -55,7 +55,7 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseB
     opendoor(sgd.PopSignedChar())
 {
     if(opendoor < 0){
-        LOG.lprintf("Bug detected: Door was closed to many times. Please report replay before this savegame/replay!");
+        LOG.write("Bug detected: Door was closed to many times. Please report replay before this savegame/replay!");
         opendoor = 0;
     }
 }

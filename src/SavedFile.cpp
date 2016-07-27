@@ -54,7 +54,7 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
     if(memcmp(read_signature, signature, signature_length) != 0)
     {
         // unterscheiden sich! --> raus
-        LOG.lprintf("Error: File is not in a valid format! File path: %s\n", file.getFilePath().c_str());
+        LOG.write("Error: File is not in a valid format! File path: %s\n") % file.getFilePath();
         return false;
     }
 
@@ -66,7 +66,7 @@ bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, co
     if(read_version != version)
     {
         // anderes Dateiformat --> raus
-        LOG.lprintf("Warning: File has an old version and cannot be used (version: %u; expected: %u, file path: %s)!\n", read_version, version, file.getFilePath().c_str());
+        LOG.write("Warning: File has an old version and cannot be used (version: %u; expected: %u, file path: %s)!\n") % read_version % version % file.getFilePath();
         return false;
     }
 

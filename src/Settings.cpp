@@ -164,7 +164,7 @@ bool Settings::Load()
 {
     if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
     {
-        warning("No or corrupt \"%s\" found, using default values.\n", GetFilePath(FILE_PATHS[0]).c_str());
+        s25Util::warning(std::string("No or corrupt \"") + GetFilePath(FILE_PATHS[0])  + "\" found, using default values.");
         return LoadDefaults();
     }
 
@@ -187,7 +187,7 @@ bool Settings::Load()
       )
     {
         // nein, dann Standardeinstellungen laden
-        warning("\"%s\" found, but its corrupted or has wrong version. Loading default values.\n", GetFilePath(FILE_PATHS[0]).c_str());
+        s25Util::warning(GetFilePath(FILE_PATHS[0]) + " found, but its corrupted or has wrong version. Loading default values.");
         return LoadDefaults();
     }
 
@@ -195,7 +195,7 @@ bool Settings::Load()
     // {
     // stimmt die Spielrevision überein?
     if(iniGlobal->getValue("gameversion") != GetWindowRevision())
-        warning("Your application version has changed - please recheck your settings!\n");
+        s25Util::warning("Your application version has changed - please recheck your settings!\n");
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
     global.use_upnp = iniGlobal->getValueI("use_upnp");
@@ -219,7 +219,7 @@ bool Settings::Load()
     if(video.fullscreen_width == 0 || video.fullscreen_height == 0
             || video.windowed_width == 0 || video.windowed_height == 0)
     {
-        warning("Corrupted \"%s\" found, reverting to default values.\n", GetFilePath(FILE_PATHS[0]).c_str());
+        s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
         return LoadDefaults();
     }
 

@@ -579,7 +579,7 @@ void glArchivItem_Font::initFont()
     else
     {
         // Fall back to first glyph in map (kinda random, but should not happen anyway)
-        LOG.write("Cannot find '?' glyph in font!");
+        LOG.writeToFile("Cannot find '?' glyph in font!");
         placeHolder = utf8_mapping.begin()->second;
     }
 

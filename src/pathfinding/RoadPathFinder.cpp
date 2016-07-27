@@ -140,7 +140,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     {
         // Path where start==goal should never happen
         RTTR_Assert(false);
-        LOG.lprintf("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in pathfinding %u,%u)\n", gwb_.GetEvMgr().GetCurrentGF(), unsigned(start.GetX()), unsigned(start.GetY()));
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in pathfinding %u,%u)\n") % gwb_.GetEvMgr().GetCurrentGF() % unsigned(start.GetX()) % unsigned(start.GetY());
         // But for now we assume it to be valid and return (kind of) correct values
         if(length)
             *length = 0;
