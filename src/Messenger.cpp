@@ -73,9 +73,9 @@ void Messenger::Draw()
 
 void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg, const unsigned color_msg)
 {
-    LOG.writeColoredCFormat(color_author, "%s", author);
-    LOG.writeColoredCFormat(CD_COLORS[cd], "%s", CD_STRINGS[cd]);
-    LOG.write("%s\n") % msg;
+    LOG.writeColored(author, color_author);
+    LOG.writeColored(CD_STRINGS[cd], CD_COLORS[cd]);
+    LOG.write(msg + "\n");
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
     glArchivItem_Font::WrapInfo wi = LargeFont->GetWrapInfo(
