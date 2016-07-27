@@ -35,7 +35,7 @@
 #include "addons/AddonMaxWaterwayLength.h"
 #include "gameTypes/RoadBuildState.h"
 #include "helpers/converters.h"
-#include "gameData/GameConsts.h"
+#include "gameData/GuiConsts.h"
 #include <boost/format.hpp>
 #include <stdexcept>
 
@@ -71,47 +71,47 @@ const GameWorldBase& GameWorldView::GetWorld() const
 
 void GameWorldView::SetNextZoomFactor()
 {
-    if (zoomFactor == targetZoomFactor)
+    if (zoomFactor == targetZoomFactor) // == with float is ok here, is explicitly set in last step
         return;
 
-    float zoomDirection = targetZoomFactor - zoomFactor;
+    float remainingZoomDiff = targetZoomFactor - zoomFactor;
 
-    // last step
-    if (abs(zoomDirection) < abs(zoomSpeed))
+    if (abs(remainingZoomDiff) <= 0.5 * zoomSpeed * zoomSpeed / ZOOM_ACCELERATION)
     {
-        zoomFactor = targetZoomFactor;
-        zoomSpeed = 0;
-    }
-    // deceleration towards zero zoom speed
-    else if (abs(zoomDirection) <= 0.5 * zoomSpeed * zoomSpeed / ZOOM_ACCELERATION)
-    {
+        // deceleration towards zero zoom speed
         if (zoomSpeed > 0)
             zoomSpeed -= ZOOM_ACCELERATION;
         else
             zoomSpeed += ZOOM_ACCELERATION;
     }
-    // acceleration to unlimited speed
     else
     {
-        if (zoomDirection > 0)
+        // acceleration to unlimited speed
+        if (remainingZoomDiff > 0)
             zoomSpeed += ZOOM_ACCELERATION;
         else
             zoomSpeed -= ZOOM_ACCELERATION;
     }
 
+    if (abs(remainingZoomDiff) < abs(zoomSpeed))
+    {
+        // last step
+        zoomFactor = targetZoomFactor;
+        zoomSpeed = 0;
+    }
+
     zoomFactor = zoomFactor + zoomSpeed;
     CalcFxLx();
-
-    // allow overshoot, but swing back
-    if (zoomFactor < ZOOM_MIN)
-        targetZoomFactor = ZOOM_MIN;
-    else if (zoomFactor > ZOOM_MAX)
-        targetZoomFactor = ZOOM_MAX;
 }
 
 void GameWorldView::SetZoomFactor(float zoomFactor)
 {
-    targetZoomFactor = zoomFactor;
+    if (zoomFactor < ZOOM_MIN)
+        targetZoomFactor = ZOOM_MIN;
+    else if (zoomFactor > ZOOM_MAX)
+        targetZoomFactor = ZOOM_MAX;
+    else
+        targetZoomFactor = zoomFactor;
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const

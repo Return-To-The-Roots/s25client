@@ -70,6 +70,7 @@
 #include "gameData/TerrainData.h"
 #include "gameData/const_gui_ids.h"
 #include "gameData/GameConsts.h"
+#include "gameData/GuiConsts.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Sound.h"
