@@ -271,6 +271,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
     if(NOT ${CHECK_CLANG_INLINE})
         add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
     endif()
+
+    # Some workaround flags for execssive warnings in clang
+    add_definitions(-Wno-unused-local-typedefs)
 endif()
 
 ################################################################################
