@@ -52,15 +52,6 @@ GameObject::GameObject(const GameObject& go) : objId(go.objId)
     ++objCounter_;
 }
 
-GameObject& GameObject::operator=(const GameObject& obj)
-{
-    if(this == &obj)
-        return *this;
-    objId = obj.objId;
-    ++objCounter_;
-    return *this;
-}
-
 void GameObject::Destroy()
 {
 }
