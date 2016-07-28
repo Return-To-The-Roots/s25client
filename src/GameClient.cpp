@@ -767,7 +767,7 @@ void GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     std::string filePathLog = GetFilePath(FILE_PATHS[47]) + timeStr + "Player.log";
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
-    LOG.write("Async log saved at \"%s\" % game saved at \"%s\"\n") % filePathLog % filePathSave;
+    LOG.write("Async log saved at \"%s\", game saved at \"%s\"\n") % filePathLog % filePathSave;
 }
 
 /**
@@ -858,7 +858,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 // Karteninformationen laden
                 if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
                 {
-                    LOG.write("GameClient::OnMapData: ERROR: Map \"%s\" % couldn't load header!\n") % mapinfo.filepath;
+                    LOG.write("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
                     if(ci)
                         ci->CI_Error(CE_WRONGMAP);
                     Stop();
