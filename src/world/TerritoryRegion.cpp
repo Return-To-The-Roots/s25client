@@ -41,20 +41,23 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<MapPoint>& polygon, con
 // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 // The site contains a lot of details and information.
 
-    bool ret = false;
+    bool inside = false;
+    const Point<int> ptInt(pt);
+    const std::vector< Point<int> > polygonInt(polygon.begin(), polygon.end());
 
-    std::vector<MapPoint>::const_iterator it = polygon.begin();
-    std::vector<MapPoint>::const_iterator prev = polygon.end() - 1;
+    std::vector< Point<int> >::const_iterator it = polygonInt.begin();
+    std::vector< Point<int> >::const_iterator prev = polygonInt.end() - 1;
 
-    for (; it < polygon.end(); prev = it, ++it)
+    for (; it < polygonInt.end(); prev = it, ++it)
     {
-        if (((it->y > pt.y) != (prev->y > pt.y)) && (pt.x < (prev->x - it->x) * (pt.y - it->y) / (prev->y - it->y) + it->x))
+        if (((it->y > ptInt.y) != (prev->y > ptInt.y)) &&
+            ((ptInt.x - it->x) * (prev->y - it->y) < (prev->x - it->x) * (ptInt.y - it->y)))
         {
-            ret = !ret;
+            inside = !inside;
         }
     }
 
-    return(ret);
+    return(inside);
 }
 
 bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt)
