@@ -36,7 +36,7 @@ public:
     static void Register(kaguya::State& state);
 
     Serializer Serialize();
-    void Deserialize(Serializer& luaState);
+    bool Deserialize(Serializer& luaState);
 
     void EventExplored(unsigned player, const MapPoint pt, unsigned char owner);
     void EventOccupied(unsigned player, const MapPoint pt);

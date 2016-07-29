@@ -38,6 +38,7 @@
 #include <boost/format.hpp>
 #include <vector>
 #include "nodeObjs/noEnvObject.h"
+#include "gameTypes/Resource.h"
 
 namespace{
     class GameWorldWithLuaAccess: public GameWorldGame
@@ -108,9 +109,12 @@ namespace{
             logWriter->getStream().str("");
         }
 
-        std::string getLog()
+        std::string getLog(bool clear = true)
         {
-            return logWriter->getText();
+            std::string result = logWriter->getText();
+            if(clear)
+                clearLog();
+            return result;
         }
 
         void executeLua(const std::string& luaCode)
@@ -456,6 +460,111 @@ BOOST_AUTO_TEST_CASE(World)
     // Can't replace buildings
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
     BOOST_REQUIRE(!world.GetSpecObj<noStaticObject>(hqPos));
+}
+
+BOOST_AUTO_TEST_CASE(WorldEvents)
+{
+    const MapPoint pt1(3, 4), pt2(5, 1), pt3(7, 6);
+    // All events need to work w/o having them
+    LuaInterfaceGame& lua = world.GetLua();
+    lua.EventStart(true);
+    Serializer serData1 = lua.Serialize();
+    BOOST_REQUIRE_EQUAL(serData1.GetLength(), 0u);
+    BOOST_REQUIRE(lua.Deserialize(serData1));
+    lua.EventOccupied(1, pt1);
+    lua.EventExplored(1, pt2, 0);
+    lua.EventGameFrame(0);
+    lua.EventResourceFound(1, pt3, RES_GOLD, 1);
+    executeLua("function getResName(res)\n  if(res==RES_IRON) then return 'Iron' "
+        "elseif(res==RES_GOLD) then return 'Gold' "
+        "elseif(res==RES_COAL) then return 'Coal' "
+        "elseif(res==RES_GRANITE) then return 'Granite' "
+        "elseif(res==RES_WATER) then return 'Water' "
+        "else assert(false)\n  end\n  end");
+    executeLua("function onStart(isFirstStart)\n  rttr:Log('start: '..tostring(isFirstStart))\nend");
+    clearLog();
+    lua.EventStart(true);
+    BOOST_REQUIRE_EQUAL(getLog(), "start: true\n");
+    lua.EventStart(false);
+    BOOST_REQUIRE_EQUAL(getLog(), "start: false\n");
+
+    executeLua("function onSave(serializer)\n"
+        "serializer:PushInt(42)\n"
+        "serializer:PushBool(true)\n"
+        "serializer:PushBool(false)\n"
+        "serializer:PushString('Hello World!')\n"
+        "rttr:Log('saved')\n  return true\nend");
+    Serializer serData2 = lua.Serialize();
+    BOOST_REQUIRE_EQUAL(getLog(), "saved\n");
+    BOOST_REQUIRE_GT(serData2.GetLength(), 0u);
+
+    // Returning false should not save anything but should also print an error
+    executeLua("function onSave(serializer)\n"
+        "serializer:PushInt(42)\n  return false\nend");
+    Serializer serData3 = lua.Serialize();
+    BOOST_REQUIRE_EQUAL(serData3.GetLength(), 0u);
+    BOOST_REQUIRE_NE(getLog(), "");
+
+    executeLua("function onLoad(serializer)\n"
+        "assert(serializer:PopInt() == 42)\n"
+        "assert(serializer:PopBool() == true)\n"
+        "assert(serializer:PopBool() == false)\n"
+        "assert(serializer:PopString() == 'Hello World!')\n"
+        "rttr:Log('loaded')\n  return true\nend");
+    BOOST_REQUIRE(lua.Deserialize(serData2));
+    BOOST_REQUIRE_EQUAL(getLog(), "loaded\n");
+    BOOST_REQUIRE_EQUAL(serData2.GetBytesLeft(), 0u);
+
+    // Throwing an error in onSave/onLoad should be caught
+    GLOBALVARS.isTest = false;
+
+    executeLua("function onSave(serializer)\n  serializer:PushInt(42)\n  assert(false)\nend");
+    Serializer serData4 = lua.Serialize();
+    BOOST_REQUIRE_EQUAL(serData3.GetLength(), 0u);
+    BOOST_REQUIRE_NE(getLog(), "");
+    // Error from C++
+    BOOST_REQUIRE(!lua.Deserialize(serData2));
+    BOOST_REQUIRE_NE(getLog(), "");
+    // Error from Lua
+    executeLua("function onLoad(serializer)\n  assert(false)\nend");
+    BOOST_REQUIRE(!lua.Deserialize(serData4));
+    BOOST_REQUIRE_NE(getLog(), "");
+    // False returned
+    executeLua("function onLoad(serializer)\n  return false\nend");
+    BOOST_REQUIRE(!lua.Deserialize(serData4));
+    BOOST_REQUIRE_NE(getLog(), "");
+    // Re-enable
+    GLOBALVARS.isTest = true;
+
+    executeLua("function onOccupied(player_id, x, y)\n  rttr:Log('occupied: '..player_id..'('..x..', '..y..')')\nend");
+    lua.EventOccupied(1, pt1);
+    BOOST_REQUIRE_EQUAL(getLog(), (boost::format("occupied: %1%%2%\n") % 1 % pt1).str());
+
+    executeLua("function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', '..y..')'..tostring(owner))\nend");
+    // Owner == 0 -> No owner (nil in lua)
+    lua.EventExplored(0, pt2, 0);
+    BOOST_REQUIRE_EQUAL(getLog(), (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % "nil").str());
+    // Else owner-1 = playerIdx
+    lua.EventExplored(0, pt2, 2);
+    BOOST_REQUIRE_EQUAL(getLog(), (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % 1).str());
+
+    executeLua("function onGameFrame(gameframe_number)\n  rttr:Log('gf: '..gameframe_number)\nend");
+    lua.EventGameFrame(0);
+    lua.EventGameFrame(42);
+    BOOST_REQUIRE_EQUAL(getLog(), "gf: 0\ngf: 42\n");
+
+    executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', '..y..')'..getResName(type)..':'..quantity)\nend");
+    boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
+    lua.EventResourceFound(2, pt3, RES_IRON_ORE, 1);
+    BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Iron" % 1).str());
+    lua.EventResourceFound(2, pt3, RES_GOLD, 2);
+    BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Gold" % 2).str());
+    lua.EventResourceFound(2, pt3, RES_COAL, 3);
+    BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Coal" % 3).str());
+    lua.EventResourceFound(2, pt3, RES_GRANITE, 6);
+    BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Granite" % 6).str());
+    lua.EventResourceFound(2, pt3, RES_WATER, 5);
+    BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Water" % 5).str());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
