@@ -54,7 +54,7 @@ matrix:
           #                                                             Travis libs are x64 only
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="--no-arch=i386" GCOV="gcov"
     exclude:
-        - compiler: g++
+        - compiler: clang
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
         - compiler: clang
           env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03
@@ -62,12 +62,10 @@ matrix:
 install:
     # Enable coverage analysis only in debug and for clang
     - |
-        if [ "$CXX" = "clang++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
-            # Use clangs gcov wrapper
-            export GCOV="$HOME/llvm-gcov.sh"
-            echo "#!/bin/bash" > "$GCOV"
-            echo 'exec llvm-cov-3.8 gcov "$@"' >> "$GCOV"
-            chmod +x "$GCOV"
+        if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
+            # GCov 4.6 cannot handle the file structure
+            export CXX="g++-4.8"
+            export GCOV="gcov-4.8"
             
             # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
             export LCOV_ROOT="$HOME/lcov"
@@ -89,8 +87,6 @@ install:
         fi
     # C++11 requires gcc-4.8 or newer
     - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; export CC="gcc-4.8"; fi
-    # Older Clang does not really work with (newer) libstdc++, but we need >= 3.8 for coverage
-    - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8"; export CC="clang-3.8"; fi
     # Use clang 3.5
     - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.5"; export CC="clang-3.5"; fi
 
@@ -116,7 +112,7 @@ after_success:
     # Coverage.io
     - |
         if [ "$RTTR_COVERAGE" = "1" ]; then
-            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
+            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -lpb {} +" || true
             files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
             if [ "$files" != "" ]; then
                 bash <(curl -s https://codecov.io/bash) -f "$files"
