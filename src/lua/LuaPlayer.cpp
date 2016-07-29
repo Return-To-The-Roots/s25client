@@ -53,6 +53,7 @@ void LuaPlayer::Register(kaguya::State& state)
         .addMemberFunction("AddWares", &LuaPlayer::AddWares)
         .addMemberFunction("AddPeople", &LuaPlayer::AddPeople)
         .addMemberFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
+        .addMemberFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
         .addMemberFunction("GetWareCount", &LuaPlayer::GetWareCount)
         .addMemberFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
         .addMemberFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
@@ -166,6 +167,13 @@ unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
     check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
     return player.GetBuildingCount().buildings[bld];
+}
+
+unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld)
+{
+    check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+
+    return player.GetBuildingCount().buildingSites[bld];
 }
 
 unsigned LuaPlayer::GetWareCount(GoodType ware)

@@ -45,6 +45,7 @@ public:
     bool AddWares(const std::map<GoodType, unsigned>& wares);
     bool AddPeople(const std::map<Job, unsigned>& people);
     unsigned GetBuildingCount(BuildingType bld);
+    unsigned GetBuildingSitesCount(BuildingType bld);
     unsigned GetWareCount(GoodType ware);
     unsigned GetPeopleCount(Job job);
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
