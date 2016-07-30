@@ -25,20 +25,26 @@
 #include "ClientInterface.h"
 #include "GameMessages.h"
 #include "GamePlayer.h"
+#include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noStaticObject.h"
+#include "notifications/BuildingNote.h"
 #include "postSystem/PostMsg.h"
+#include "gameTypes/Resource.h"
 #include "world/MapLoader.h"
 #include "world/GameWorldGame.h"
 #include "helpers/converters.h"
+#include "helpers/Deleter.h"
 #include "test/PointOutput.h"
 #include "libutil/src/colors.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
+#include "libutil/src/tmpFile.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/format.hpp>
 #include <vector>
-#include "nodeObjs/noEnvObject.h"
-#include "gameTypes/Resource.h"
 
 namespace{
     class GameWorldWithLuaAccess: public GameWorldGame
@@ -172,6 +178,37 @@ BOOST_AUTO_TEST_CASE(AssertionThrows)
     BOOST_REQUIRE_THROW(executeLua("assert(false)"), std::runtime_error);
 }
 
+BOOST_AUTO_TEST_CASE(ScriptLoading)
+{
+    std::string script = "assert(true)";
+    LuaInterfaceGame& lua = world.GetLua();
+    BOOST_REQUIRE(lua.LoadScriptString(script));
+    BOOST_REQUIRE_EQUAL(lua.GetScript(), script);
+    // Load from file
+    TmpFile luaFile(".lua");
+    script += "assert(42==42)";
+    luaFile.GetStream() << script;
+    luaFile.GetStream().close();
+    BOOST_REQUIRE(lua.LoadScript(luaFile.filePath));
+    BOOST_REQUIRE_EQUAL(lua.GetScript(), script);
+
+    // Test failing load
+    GLOBALVARS.isTest = false;
+    // Invalid code
+    script = "assertTypo(rue)";
+    BOOST_REQUIRE(!lua.LoadScriptString(script));
+    BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
+    TmpFile luaFile2(".lua");
+    luaFile2.GetStream() << script;
+    luaFile2.GetStream().close();
+    BOOST_REQUIRE(!lua.LoadScript(luaFile2.filePath));
+    BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
+
+    GLOBALVARS.isTest = true;
+    BOOST_REQUIRE_THROW(lua.LoadScriptString(script), std::runtime_error);
+    BOOST_REQUIRE_THROW(lua.LoadScript(luaFile2.filePath), std::runtime_error);
+}
+
 BOOST_AUTO_TEST_CASE(BaseFunctions)
 {
     executeLua("rttr:Log('Hello World')");
@@ -302,22 +339,52 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
     BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_VIKINGS"));
     BOOST_CHECK(isLuaEqual("player:GetTeam()", "TM_TEAM1"));
     BOOST_CHECK(isLuaEqual("player:GetColor()", "5"));
+    BOOST_CHECK(isLuaEqual("player:IsHuman()", "true"));
     BOOST_CHECK(isLuaEqual("player:IsAI()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "-1"));
 
     executeLua("player = rttr:GetPlayer(1)");
+    BasePlayerInfo& player = world.GetPlayer(1);
     BOOST_CHECK(isLuaEqual("player:GetName()", "'PlayerAI'"));
     BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
     BOOST_CHECK(isLuaEqual("player:GetTeam()", "TM_TEAM2"));
     BOOST_CHECK(isLuaEqual("player:GetColor()", helpers::toString(0xFFFF0000)));
+    BOOST_CHECK(isLuaEqual("player:IsHuman()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsAI()", "true"));
     BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+    player.aiInfo = AI::Info(AI::DUMMY, AI::MEDIUM);
+    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "0"));
+    player.aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "1"));
+    player.aiInfo = AI::Info(AI::DEFAULT, AI::MEDIUM);
+    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "2"));
+    player.aiInfo = AI::Info(AI::DEFAULT, AI::HARD);
+    BOOST_CHECK(isLuaEqual("player:GetAILevel()", "3"));
 
     executeLua("player = rttr:GetPlayer(2)");
+    BOOST_CHECK(isLuaEqual("player:IsHuman()", "false"));
+    BOOST_CHECK(isLuaEqual("player:IsAI()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsClosed()", "true"));
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+}
+
+namespace{
+    struct CatchConstructionNote
+    {
+        boost::interprocess::unique_ptr<BuildingNote, Deleter<BuildingNote> > note_;
+        Subscribtion sub;
+
+        CatchConstructionNote(GameWorldGame& world): sub(world.GetNotifications().subscribe<BuildingNote>(boost::ref(*this)))
+        {}
+
+        void operator()(const BuildingNote& note)
+        {
+            note_.reset(new BuildingNote(note));
+        }
+    };
 }
 
 BOOST_AUTO_TEST_CASE(IngamePlayer)
@@ -365,6 +432,12 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
 
     executeLua("player:SetRestrictedArea()");
     BOOST_REQUIRE_EQUAL(player.GetRestrictedArea().size(), 0u);
+    
+    // Numbers must be pairs
+    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3)"), std::runtime_error);
+    // And non negative
+    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, -3,4)"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3,-4)"), std::runtime_error);
 
     executeLua("player:ClearResources()");
     for(unsigned gd = 0; gd < WARE_TYPES_COUNT; gd++)
@@ -380,22 +453,22 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
 
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
                "people = {[JOB_HELPER] = 30,[JOB_WOODCUTTER] = 6,[JOB_FISHER] = 0,[JOB_FORESTER] = 2}");
-    executeLua("player:AddWares(wares)");
+    executeLua("assert(player:AddWares(wares))");
     BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_HAMMER], 8u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_AXE], 6u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_SAW], 3u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealWaresCount(GD_HAMMER), 8u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealWaresCount(GD_AXE), 6u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealWaresCount(GD_SAW), 3u);
-    executeLua("player:AddPeople(people)");
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealWaresCount(GD_HAMMER), 8u);
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealWaresCount(GD_AXE), 6u);
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealWaresCount(GD_SAW), 3u);
+    executeLua("assert(player:AddPeople(people))");
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_HELPER], 30u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_WOODCUTTER], 6u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FISHER], 0u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FORESTER], 2u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealFiguresCount(JOB_HELPER), 30u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealFiguresCount(JOB_WOODCUTTER), 6u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealFiguresCount(JOB_FISHER), 0u);
-    BOOST_REQUIRE_EQUAL(hqs[1]->GetRealFiguresCount(JOB_FORESTER), 2u);
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_HELPER), 30u);
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_WOODCUTTER), 6u);
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_FISHER), 0u);
+    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_FORESTER), 2u);
 
     BOOST_CHECK(isLuaEqual("player:GetWareCount(GD_HAMMER)", "8"));
     BOOST_CHECK(isLuaEqual("player:GetWareCount(GD_AXE)", "6"));
@@ -403,11 +476,36 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK(isLuaEqual("player:GetPeopleCount(JOB_HELPER)", "30"));
     BOOST_CHECK(isLuaEqual("player:GetPeopleCount(JOB_FORESTER)", "2"));
 
+    // Invalid ware/player throws
+    BOOST_CHECK_THROW(executeLua("player:AddWares({[9999]=8})"), std::runtime_error);
+    BOOST_CHECK_THROW(executeLua("player:AddPeople({[9999]=8})"), std::runtime_error);
+
     BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_WOODCUTTER)", "0"));
     BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_HEADQUARTERS)", "1"));
+    BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_HEADQUARTERS)", "0"));
+    BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_WOODCUTTER)", "0"));
+    world.SetNO(hqs[1]->GetPos() + MapPoint(4, 0), new noBuildingSite(BLD_WOODCUTTER, hqs[1]->GetPos() + MapPoint(4, 0), 1));
+    BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_WOODCUTTER)", "0"));
+    BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_WOODCUTTER)", "1"));
 
-    // TODO: Test AIConstructionOrder(x, y, buildingtype)
-    
+    CatchConstructionNote note(world);
+    // Closed or non-AI player
+    BOOST_REQUIRE(isLuaEqual("rttr:GetPlayer(0):AIConstructionOrder(12, 13, BLD_WOODCUTTER)", "false"));
+    BOOST_REQUIRE(isLuaEqual("rttr:GetPlayer(2):AIConstructionOrder(12, 13, BLD_WOODCUTTER)", "false"));
+    // Wrong coordinate
+    BOOST_REQUIRE_THROW(executeLua("player:AIConstructionOrder(9999, 13, BLD_WOODCUTTER)"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("player:AIConstructionOrder(12, 9999, BLD_WOODCUTTER)"), std::runtime_error);
+    // Wrong building
+    BOOST_REQUIRE_THROW(executeLua("player:AIConstructionOrder(12, 13, 9999)"), std::runtime_error);
+    // Correct
+    BOOST_REQUIRE(!note.note_);
+    BOOST_REQUIRE(isLuaEqual("player:AIConstructionOrder(12, 13, BLD_WOODCUTTER)", "true"));
+    BOOST_REQUIRE(note.note_);
+    BOOST_CHECK_EQUAL(note.note_->type, BuildingNote::LuaOrder);
+    BOOST_CHECK_EQUAL(note.note_->player, 1u);
+    BOOST_CHECK_EQUAL(note.note_->bld, BLD_WOODCUTTER);
+    BOOST_CHECK_EQUAL(note.note_->pos, MapPoint(12, 13));
+
     executeLua("player:ModifyHQ(true)");
     BOOST_REQUIRE(hqs[1]->IsTent());
     executeLua("player:ModifyHQ(false)");
@@ -416,6 +514,18 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("hqX, hqY = player:GetHQPos()");
     BOOST_CHECK(isLuaEqual("hqX", helpers::toString(hqs[1]->GetPos().x)));
     BOOST_CHECK(isLuaEqual("hqY", helpers::toString(hqs[1]->GetPos().y)));
+
+    // Destroy players HQ
+    world.DestroyNO(hqs[1]->GetPos());
+    // HQ-Pos is invalid
+    executeLua("hqX, hqY = player:GetHQPos()");
+    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(MapPoint::Invalid().x)));
+    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(MapPoint::Invalid().y)));
+    // Adding wares/people returns false
+    executeLua("assert(player:AddWares(wares) == false)");
+    executeLua("assert(player:AddPeople(people) == false)");
+    // ModifyHQ does not crash
+    executeLua("player:ModifyHQ(true)");
 }
 
 BOOST_AUTO_TEST_CASE(World)
@@ -441,6 +551,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
     BOOST_REQUIRE(!world.GetSpecObj<noEnvObject>(hqPos));
 
+    // ID only
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 501)") % envPt2.x % envPt2.y);
     const noStaticObject* obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
@@ -448,6 +559,15 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 501u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 0xFFFFu);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 0u);
+    // ID and File
+    executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
+    obj2 = world.GetSpecObj<noStaticObject>(envPt);
+    BOOST_REQUIRE(obj2);
+    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
+    BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 5u);
+    BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 3u);
+    BOOST_REQUIRE_EQUAL(obj2->GetSize(), 0u);
+    // ID, File and Size
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 2)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
@@ -459,6 +579,8 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y), std::runtime_error);
     // Can't replace buildings
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
+    BOOST_REQUIRE(!world.GetSpecObj<noStaticObject>(hqPos));
+    executeLua(boost::format("world:AddStaticObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
     BOOST_REQUIRE(!world.GetSpecObj<noStaticObject>(hqPos));
 }
 

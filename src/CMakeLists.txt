@@ -3,6 +3,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
 FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system program_options REQUIRED)
 
+
 ################################################################################
 
 INCLUDE_DIRECTORIES(

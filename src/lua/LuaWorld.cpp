@@ -37,8 +37,13 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
 {
     MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
     noBase* obj = gw.GetNode(pt).obj;
-    if(obj && (obj->GetGOT() != GOT_NOTHING) && (obj->GetGOT() != GOT_STATICOBJECT) && (obj->GetGOT() != GOT_ENVOBJECT))
-        return false;
+    if(obj)
+    {
+        const GO_Type got = obj->GetGOT();
+        RTTR_Assert(got != GOT_NOTHING);
+        if(got != GOT_STATICOBJECT && got != GOT_ENVOBJECT)
+            return false;
+    }
 
     gw.DestroyNO(pt, false);
     gw.SetNO(pt, new noEnvObject(pt, id, file));
@@ -53,8 +58,13 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
     
     MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
     noBase* obj = gw.GetNode(pt).obj;
-    if(obj && (obj->GetGOT() != GOT_NOTHING) && (obj->GetGOT() != GOT_STATICOBJECT) && (obj->GetGOT() != GOT_ENVOBJECT))
-        return false;
+    if(obj)
+    {
+        const GO_Type got = obj->GetGOT();
+        RTTR_Assert(got != GOT_NOTHING);
+        if(got != GOT_STATICOBJECT && got != GOT_ENVOBJECT)
+            return false;
+    }
 
     gw.DestroyNO(pt, false);
     gw.SetNO(pt, new noStaticObject(pt, id, file, size));
