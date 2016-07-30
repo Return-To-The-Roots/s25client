@@ -17,19 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaInterfaceSettings.h"
-#include "GameServer.h"
+#include "GameServerInterface.h"
 #include "LuaServerPlayer.h"
+#include "GlobalGameSettings.h"
+#include "lua/LuaHelpers.h"
+#include "gameTypes/GameSettingTypes.h"
 #include "addons/Addons.h"
 #include "addons/const_addons.h"
 #include "libutil/src/Log.h"
 
-inline void check(bool testValue, const std::string& error)
-{
-    if(!testValue)
-        throw std::runtime_error(error);
-}
-
-LuaInterfaceSettings::LuaInterfaceSettings()
+LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer): gameServer_(gameServer)
 {
     Register(lua);
     LuaServerPlayer::Register(lua);
@@ -87,35 +84,35 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 
 unsigned LuaInterfaceSettings::GetPlayerCount()
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
-    return GAMESERVER.GetMaxPlayerCount();
+    RTTR_Assert(gameServer_.IsRunning());
+    return gameServer_.GetMaxPlayerCount();
 }
 
 LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
-    check(idx < GetPlayerCount(), "Invalid player idx");
-    return LuaServerPlayer(idx);
+    RTTR_Assert(gameServer_.IsRunning());
+    lua::assertTrue(idx < GetPlayerCount(), "Invalid player idx");
+    return LuaServerPlayer(gameServer_, idx);
 }
 
 void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
-    GlobalGameSettings ggs = GAMESERVER.GetGGS();
+    RTTR_Assert(gameServer_.IsRunning());
+    GlobalGameSettings ggs = gameServer_.GetGGS();
     ggs.setSelection(id, value);
-    GAMESERVER.ChangeGlobalGameSettings(ggs);
+    gameServer_.ChangeGlobalGameSettings(ggs);
 }
 
 void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
+    RTTR_Assert(gameServer_.IsRunning());
     SetAddon(id, value ? 1 : 0);
 }
 
 void LuaInterfaceSettings::ResetAddons()
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
-    GlobalGameSettings ggs = GAMESERVER.GetGGS();
+    RTTR_Assert(gameServer_.IsRunning());
+    GlobalGameSettings ggs = gameServer_.GetGGS();
     for(unsigned i = 0; i < ggs.getCount(); ++i)
     {
         unsigned int status;
@@ -125,40 +122,40 @@ void LuaInterfaceSettings::ResetAddons()
             continue;
         ggs.setSelection(addon->getId(), addon->getDefaultStatus());
     }
-    GAMESERVER.ChangeGlobalGameSettings(ggs);
+    gameServer_.ChangeGlobalGameSettings(ggs);
 }
 
 void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
-    GlobalGameSettings ggs = GAMESERVER.GetGGS();
+    RTTR_Assert(gameServer_.IsRunning());
+    GlobalGameSettings ggs = gameServer_.GetGGS();
     std::vector<std::string>keys = settings.keys<std::string>();
 
     if(std::find(keys.begin(), keys.end(), "speed") != keys.end())
     {
         GameSpeed speed = settings.getField("speed");
-        check(unsigned(speed) <= GS_VERYFAST, "Speed is invalid");
+        lua::assertTrue(unsigned(speed) <= GS_VERYFAST, "Speed is invalid");
         ggs.game_speed = speed;
     }
 
     if(std::find(keys.begin(), keys.end(), "objective") != keys.end())
     {
         GameObjective objective = settings.getField("objective");
-        check(unsigned(objective) <= GO_TOTALDOMINATION, "Objective is invalid");
+        lua::assertTrue(unsigned(objective) <= GO_TOTALDOMINATION, "Objective is invalid");
         ggs.game_objective = objective;
     }
 
     if(std::find(keys.begin(), keys.end(), "startWares") != keys.end())
     {
         StartWares wares = settings.getField("startWares");
-        check(unsigned(wares) <= SWR_ALOT, "Start wares is invalid");
+        lua::assertTrue(unsigned(wares) <= SWR_ALOT, "Start wares is invalid");
         ggs.start_wares = wares;
     }
 
     if(std::find(keys.begin(), keys.end(), "fow") != keys.end())
     {
         Exploration fow = settings.getField("fow");
-        check(unsigned(fow) <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
+        lua::assertTrue(unsigned(fow) <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
         ggs.exploration = fow;
     }
 
@@ -171,7 +168,7 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
     if(std::find(keys.begin(), keys.end(), "randomStartPosition") != keys.end())
         ggs.random_location = settings.getField("randomStartPosition");
 
-    GAMESERVER.ChangeGlobalGameSettings(ggs);
+    gameServer_.ChangeGlobalGameSettings(ggs);
 }
 
 kaguya::LuaRef LuaInterfaceSettings::GetAllowedChanges()
@@ -197,7 +194,7 @@ bool LuaInterfaceSettings::EventSettingsInit(bool isSinglePlayer, bool isSavegam
 
 void LuaInterfaceSettings::EventSettingsReady()
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
+    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onSettingsReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>();
@@ -205,7 +202,7 @@ void LuaInterfaceSettings::EventSettingsReady()
 
 void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
+    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onPlayerJoined"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
@@ -213,7 +210,7 @@ void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
 
 void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
+    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onPlayerLeft"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
@@ -221,7 +218,7 @@ void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
 
 void LuaInterfaceSettings::EventPlayerReady(unsigned playerIdx)
 {
-    RTTR_Assert(GAMESERVER.IsRunning());
+    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onPlayerReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);

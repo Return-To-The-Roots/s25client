@@ -72,7 +72,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
-        lua.reset(new LuaInterfaceSettings());
+        lua.reset(new LuaInterfaceSettings(GAMESERVER.GetInterface()));
         if(!lua->LoadScript(GAMECLIENT.GetLuaFilePath()))
         {
             WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));

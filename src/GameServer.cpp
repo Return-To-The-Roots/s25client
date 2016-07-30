@@ -769,6 +769,11 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
         SendNothingNC(playerId);
 }
 
+void GameServer::KickPlayer(unsigned playerIdx)
+{
+    KickPlayer(playerIdx, NP_NOCAUSE, 0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // testet, ob in der Verbindungswarteschlange Clients auf Verbindung warten
 void GameServer::ClientWatchDog()
@@ -1530,4 +1535,9 @@ void GameServer::SwapPlayer(const unsigned char player1, const unsigned char pla
     // Swap everything
     using std::swap;
     swap(players[player1], players[player2]);
+}
+
+JoinPlayerInfo& GameServer::GetJoinPlayer(unsigned playerIdx)
+{
+    return players.at(playerIdx);
 }
