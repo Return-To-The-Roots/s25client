@@ -299,7 +299,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                 continue;
 
             Point<int> curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
-            curPos.y -= 10;
+            curPos.y -= 22;
 
             // Draw object name
             if(show_names)
