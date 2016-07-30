@@ -51,7 +51,10 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<MapPoint>& polygon, con
     for (; it < polygonInt.end(); prev = it, ++it)
     {
         if (((it->y > ptInt.y) != (prev->y > ptInt.y)) &&
-            ((ptInt.x - it->x) * (prev->y - it->y) < (prev->x - it->x) * (ptInt.y - it->y)))
+            ((prev->y < it->y) ?
+                ((ptInt.x - it->x) * (prev->y - it->y) > (prev->x - it->x) * (ptInt.y - it->y)) :
+                ((ptInt.x - it->x) * (prev->y - it->y) < (prev->x - it->x) * (ptInt.y - it->y))
+            ))
         {
             inside = !inside;
         }
