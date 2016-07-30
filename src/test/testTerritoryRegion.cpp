@@ -23,6 +23,7 @@
 #include <boost/bind.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/assign/std/set.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
 #include <vector>
 #include <string>
 
@@ -42,25 +43,25 @@ BOOST_AUTO_TEST_SUITE(TerritoryRegionTestSuite)
 
 BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture1P)
 {
-    std::vector<MapPoint> polygon;
-
-    // Separator 1
-    polygon += MapPoint(0, 0);
-
-    // Outer polygon
-    polygon += MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20), MapPoint(10, 10);
-
-    // Separator 2
-    polygon += MapPoint(0, 0);
+    std::vector<MapPoint> hole, hole_reversed;
+    std::vector<MapPoint> outer, outer_reversed;
 
     // Hole
-    polygon += MapPoint(14, 14), MapPoint(16, 14), MapPoint(16, 16), MapPoint(14, 16), MapPoint(14, 14);
+    hole += MapPoint(14, 14), MapPoint(16, 14), MapPoint(16, 16), MapPoint(14, 16), MapPoint(14, 14);
 
-    // Separator 3
-    polygon += MapPoint(0, 0);
+    // Reverse it...
+	hole_reversed = hole;
+	std::reverse(hole_reversed.begin(), hole_reversed.end());
+
+    // Outer polygon
+    outer += MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20), MapPoint(10, 10);
+
+    // Reverse it...
+	outer_reversed = outer;
+	std::reverse(outer_reversed.begin(), outer_reversed.end());
 
     // Set of MapPoints that should return true
-    std::set<MapPoint,MapPointComp> results;
+    std::set<MapPoint, MapPointComp> results;
 
     // Auto-generated data (from different implementation with tests)
     results += MapPoint(10,10), MapPoint(10,11), MapPoint(10,12), MapPoint(10,13), MapPoint(10,14);
@@ -85,11 +86,34 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture1P)
     results += MapPoint(19,19);
 
     // check the whole area
+    std::vector<MapPoint> polygon[8];
+
+    // Generate polygons for all eight cases of ordering
+    for (int i = 0; i < 8; ++i)
+    {
+        // i = 1, 3, 5, 7 -> hole, then outer
+        // i = 2, 3, 6, 7 -> hole reversed
+        // i = 4, 5, 6, 7 -> outer reversed
+
+        polygon[i] += MapPoint(0, 0);
+        polygon[i] = boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) : ((i & (1 << 2)) ? outer : outer_reversed));
+        polygon[i] += MapPoint(0, 0);
+        polygon[i] = boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) : ((i & (1 << 1)) ? hole : hole_reversed));
+        polygon[i] += MapPoint(0, 0);
+    }
+
+    // check the whole area
     for (int x = 0; x < 30; ++x)
     {
         for (int y = 0; y < 30; ++y)
         {
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, polygon, MapPoint(x, y)), results.find(MapPoint(x, y)) != results.end());
+            // Result for this particular point
+            bool result = results.find(MapPoint(x, y)) != results.end();
+
+            for (int i = 0; i < 8; ++i)
+            {
+                BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, polygon[i], MapPoint(x, y)), result);
+            }
         }
     }
 }
