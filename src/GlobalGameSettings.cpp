@@ -30,27 +30,42 @@
 #include <stdexcept>
 #include <algorithm>
 
-GlobalGameSettings::GlobalGameSettings() : speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL), lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true), randomStartPosition(false)
+GlobalGameSettings::GlobalGameSettings(): speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL),
+    lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true), randomStartPosition(false)
 {
     // register addons
     reset();
 }
 
-GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
+GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs): speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares),
+    lockedTeams(ggs.lockedTeams), exploration(ggs.exploration), teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
 {
-    Serializer ser;
-    ggs.Serialize(ser);
-    Deserialize(ser);
+    // register addons
+    reset();
+    for(unsigned i=0; i<ggs.getNumAddons(); i++){
+        unsigned status;
+        AddonId id = ggs.getAddon(i, status)->getId();
+        setSelection(id, status);
+    }
 }
 
 GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 {
     if(this == &ggs)
         return *this;
+    speed = ggs.speed;
+    objective = ggs.objective;
+    startWares = ggs.startWares;
+    lockedTeams = ggs.lockedTeams;
+    exploration = ggs.exploration; 
+    teamView = ggs.teamView; 
+    randomStartPosition = ggs.randomStartPosition;
+    for(unsigned i = 0; i < ggs.getNumAddons(); i++){
+        unsigned status;
+        AddonId id = ggs.getAddon(i, status)->getId();
+        setSelection(id, status);
+    }
 
-    Serializer ser;
-    ggs.Serialize(ser);
-    Deserialize(ser);
     return *this;
 }
 
