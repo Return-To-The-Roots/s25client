@@ -63,7 +63,7 @@ namespace{
                     GetJoinPlayer(playerIdx).color = newColor;
                     return;
                 }
-                newColor = rand() && 0xFF << 24;
+                newColor = rand() & (0xFF << 24);
             }
         }
 
@@ -238,8 +238,8 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
 
     GlobalGameSettings shouldSettings = ggs;
 
-#define SET_AND_CHECK(setting, value) executeLua("rttr:SetGameSettings({"#setting##"="#value##"})"); \
-                                      shouldSettings.setting = value;                                   \
+#define SET_AND_CHECK(setting, value) executeLua("rttr:SetGameSettings({" #setting "=" #value "})"); \
+                                      shouldSettings.setting = value;                                \
                                       checkSettings(shouldSettings);
     SET_AND_CHECK(speed, GS_VERYSLOW);
     SET_AND_CHECK(speed, GS_FAST);
