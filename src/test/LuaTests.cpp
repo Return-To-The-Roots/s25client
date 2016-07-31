@@ -107,6 +107,7 @@ namespace{
 
         ~LuaTestsFixture()
         {
+            GLOBALVARS.isTest = false;
             GameObject::SetPointers(NULL);
         }
 
@@ -168,7 +169,6 @@ namespace{
             }
         }
     };
-
 }
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
