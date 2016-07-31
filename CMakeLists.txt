@@ -241,6 +241,14 @@ if(NOT MSVC)
 		endif()
 		# Note: "--coverage" instead of "-coverage" makes this work with ccache
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 --coverage")
+		if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+			# Inlining makes the coverage statistic much harder to read and may lead to lots of partials
+			# However expect a slowdown!
+			message(STATUS "Enabled no-inline for better coverage statistics")
+			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-default-inline -fno-inline")
+		else()
+			message(STATUS "Using default inlining which probably influences coverage statistics")
+		endif()
 	endif()
 endif()
 
@@ -273,7 +281,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
     endif()
 
     # Some workaround flags for execssive warnings in clang
-    add_definitions(-Wno-unused-local-typedefs)
+    CheckAndAddFlag(-Wno-unused-local-typedefs)
 endif()
 
 ################################################################################
