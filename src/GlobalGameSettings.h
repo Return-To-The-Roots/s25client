@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -39,17 +39,18 @@ class GlobalGameSettings
         void Deserialize(Serializer& ser);
 
     public:
-        GameSpeed game_speed;
-        GameObjective game_objective;
-        StartWares start_wares;
-        bool lock_teams;
+        GameSpeed speed;
+        GameObjective objective;
+        StartWares startWares;
+        bool lockedTeams;
         Exploration exploration;
-        bool team_view;
-        bool random_location;
+        bool teamView;
+        bool randomStartPosition;
 
-        /// clears the addon memory.
-        unsigned int getCount() const { return addons.size(); }
+        unsigned int getNumAddons() const { return addons.size(); }
         const Addon* getAddon(unsigned int nr, unsigned int& status) const;
+        const Addon* getAddon(unsigned int nr) const;
+        /// clears the addon memory.
         void reset(bool recreate = true);
 
         bool isEnabled(AddonId id) const;

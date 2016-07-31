@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 /**
  *  Addon adds a 'order home' command button to military buildings. Pressing this button will send all soldiers of the highest rank available to the next warehouse

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Addons.h"
+#include "AddonList.h"
 #include "mygettext/src/mygettext.h"
 #include <boost/array.hpp>
 

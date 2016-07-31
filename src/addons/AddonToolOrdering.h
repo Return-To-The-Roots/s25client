@@ -1,7 +1,7 @@
 #ifndef ADDONTOOLORDERING_H_INCLUDED
 #define ADDONTOOLORDERING_H_INCLUDED
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 class AddonToolOrdering : public AddonBool
 {

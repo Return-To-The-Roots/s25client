@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwAddons.h"
 
-#include "addons/Addons.h"
+#include "addons/Addon.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "controls/ctrlOptionGroup.h"
@@ -55,7 +55,7 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vect
     optiongroup->AddTextButton(ADDONGROUP_OTHER, 560, 50, 120, 22, TC_GREEN2, _("Other"), NormalFont);
 
     ctrlScrollBar* scrollbar = AddScrollBar(6, width_ - SCROLLBAR_WIDTH - 20, 90, SCROLLBAR_WIDTH, height_ - 140, SCROLLBAR_WIDTH, TC_GREEN2, (height_ - 140) / 30 - 1);
-    scrollbar->SetRange(ggs.getCount());
+    scrollbar->SetRange(ggs.getNumAddons());
 
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
 }
@@ -77,7 +77,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                 Close();
 
             // Einstellungen in ADDONMANAGER übertragen
-            for(unsigned int i = 0; i < ggs.getCount(); ++i)
+            for(unsigned int i = 0; i < ggs.getNumAddons(); ++i)
             {
                 unsigned int status;
                 const Addon* addon = ggs.getAddon(i, status);
@@ -86,7 +86,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                     continue;
 
                 bool failed = false;
-                status = addon->getGuiStatus(this, 10 + 20 * (ggs.getCount() - i - 1), failed);
+                status = addon->getGuiStatus(this, 10 + 20 * (ggs.getNumAddons() - i - 1), failed);
                 if(!failed)
                     ggs.setSelection(addon->getId(), status);
             }
@@ -117,7 +117,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
         case 3: // Load S2 Defaults
         {
             // Standardeinstellungen aufs Fenster übertragen
-            for(unsigned int i = 0; i < ggs.getCount(); ++i)
+            for(unsigned int i = 0; i < ggs.getNumAddons(); ++i)
             {
                 unsigned int status;
                 const Addon* addon = ggs.getAddon(i, status);
@@ -127,7 +127,7 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                 if(policy == HOSTGAME_WHITELIST && !helpers::contains(addonIds, addon->getId()))
                     continue;
 
-                addon->setGuiStatus(this, 10 + 20 * (ggs.getCount() - i - 1), addon->getDefaultStatus());
+                addon->setGuiStatus(this, 10 + 20 * (ggs.getNumAddons() - i - 1), addon->getDefaultStatus());
             }
         } break;
     }
@@ -139,9 +139,9 @@ void iwAddons::UpdateView(const unsigned short selection)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
     unsigned short numAddonsInCurCategory = 0;
-    for(unsigned int i = 0; i < ggs.getCount(); ++i)
+    for(unsigned int i = 0; i < ggs.getNumAddons(); ++i)
     {
-        unsigned int id = 10 + 20 * (ggs.getCount() - i - 1);
+        unsigned int id = 10 + 20 * (ggs.getNumAddons() - i - 1);
         unsigned int status;
         const Addon* addon = ggs.getAddon(i, status);
 

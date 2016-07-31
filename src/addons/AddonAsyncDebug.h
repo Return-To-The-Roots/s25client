@@ -18,7 +18,7 @@
 #define ADDONASYNCDEBUG_H_INCLUDED
 
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 /**
  *  Addon for a debugging asyncs

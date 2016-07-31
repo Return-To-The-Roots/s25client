@@ -258,7 +258,7 @@ void GameClient::StartGame(const unsigned random_init)
     framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
-    framesinfo.gf_length = SPEED_GF_LENGTHS[gameLobby->GetSettings().game_speed];
+    framesinfo.gf_length = SPEED_GF_LENGTHS[gameLobby->GetSettings().speed];
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
@@ -1140,7 +1140,7 @@ void GameClient::StatisticStep()
         gw->GetPlayer(i).StatisticStep();
 
     // Check objective if there is one and there are at least two players
-    if (GetGGS().game_objective != GO_CONQUER3_4 && GetGGS().game_objective != GO_TOTALDOMINATION)
+    if (GetGGS().objective != GO_CONQUER3_4 && GetGGS().objective != GO_TOTALDOMINATION)
         return;
 
     // check winning condition
@@ -1150,7 +1150,7 @@ void GameClient::StatisticStep()
     for(unsigned i = 0; i < gw->GetPlayerCount(); ++i)
     {
         GamePlayer& player = gw->GetPlayer(i);
-        if(GetGGS().lock_teams) //in games with locked team settings check for team victory
+        if(GetGGS().lockedTeams) //in games with locked team settings check for team victory
         {
             if(player.IsDefeated())
                 continue;
@@ -1185,27 +1185,27 @@ void GameClient::StatisticStep()
         sum += v;
     }
 
-    switch (GetGGS().game_objective)
+    switch (GetGGS().objective)
     {
         case GO_CONQUER3_4: // at least 3/4 of the land
             if ((max * 4 >= sum * 3) && (best != 0xFFFF))
             {
-                ggs.game_objective = GO_NONE;
+                ggs.objective = GO_NONE;
             }
             if ((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
             {
-                ggs.game_objective = GO_NONE;
+                ggs.objective = GO_NONE;
             }
             break;
 
         case GO_TOTALDOMINATION:    // whole populated land
             if ((max == sum) && (best != 0xFFFF))
             {
-                ggs.game_objective = GO_NONE;
+                ggs.objective = GO_NONE;
             }
             if ((maxteam == sum) && (bestteam != 0xFFFF))
             {
-                ggs.game_objective = GO_NONE;
+                ggs.objective = GO_NONE;
             }
             break;
         default:
@@ -1213,7 +1213,7 @@ void GameClient::StatisticStep()
     }
 
     // We have a winner! Objective was changed to GO_NONE to avoid further checks.
-    if (GetGGS().game_objective == GO_NONE)
+    if (GetGGS().objective == GO_NONE)
     {
         if(maxteam <= best)
             gw->GetGameInterface()->GI_Winner(best);
@@ -1795,8 +1795,8 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
-    if(unsigned(GetGGS().game_objective) >= OBJECTIVES_COUNT)
-        return TOURNAMENT_MODES_DURATION[GetGGS().game_objective - OBJECTIVES_COUNT] * 60 * 1000 / framesinfo.gf_length;
+    if(unsigned(GetGGS().objective) >= OBJECTIVES_COUNT)
+        return TOURNAMENT_MODES_DURATION[GetGGS().objective - OBJECTIVES_COUNT] * 60 * 1000 / framesinfo.gf_length;
     else
         return 0;
 }

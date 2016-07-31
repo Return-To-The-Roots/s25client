@@ -253,7 +253,7 @@ void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData/* = tr
 void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
 {
     // If visibility changed for us, or our team mate if shared view is on -> Update renderer
-    if(player == playerId_ || (GetWorld().GetGGS().team_view && GetWorld().GetPlayer(playerId_).IsAlly(player)))
+    if(player == playerId_ || (GetWorld().GetGGS().teamView && GetWorld().GetPlayer(playerId_).IsAlly(player)))
         tr.VisibilityChanged(pt, *this);
 }
 
@@ -311,7 +311,7 @@ const FoWNode& GameWorldViewer::GetYoungestFOWNode(const MapPoint pos) const
     unsigned youngest_time = bestNode->last_update_time;
 
     // Shared team view enabled?
-    if(GetWorld().GetGGS().team_view)
+    if(GetWorld().GetGGS().teamView)
     {
         const GamePlayer& player = GetWorld().GetPlayer(playerId_);
         // Then check if team members have a better (="younger", see our economy) fow object

@@ -31,7 +31,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     : nobBaseWarehouse(BLD_HEADQUARTERS, pos, player, nation), isTent_(isTent)
 {
     // StartWaren setzen
-    switch(gwg->GetGGS().start_wares)
+    switch(gwg->GetGGS().startWares)
     {
             //sehr wenig
         case 0:

@@ -22,7 +22,7 @@
 #include "GlobalGameSettings.h"
 #include "lua/LuaHelpers.h"
 #include "gameTypes/GameSettingTypes.h"
-#include "addons/Addons.h"
+#include "addons/Addon.h"
 #include "addons/const_addons.h"
 #include "libutil/src/Log.h"
 
@@ -113,7 +113,7 @@ void LuaInterfaceSettings::ResetAddons()
 {
     RTTR_Assert(gameServer_.IsRunning());
     GlobalGameSettings ggs = gameServer_.GetGGS();
-    for(unsigned i = 0; i < ggs.getCount(); ++i)
+    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
         unsigned int status;
         const Addon* addon = ggs.getAddon(i, status);
@@ -135,21 +135,21 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
     {
         GameSpeed speed = settings.getField("speed");
         lua::assertTrue(unsigned(speed) <= GS_VERYFAST, "Speed is invalid");
-        ggs.game_speed = speed;
+        ggs.speed = speed;
     }
 
     if(std::find(keys.begin(), keys.end(), "objective") != keys.end())
     {
         GameObjective objective = settings.getField("objective");
         lua::assertTrue(unsigned(objective) <= GO_TOTALDOMINATION, "Objective is invalid");
-        ggs.game_objective = objective;
+        ggs.objective = objective;
     }
 
     if(std::find(keys.begin(), keys.end(), "startWares") != keys.end())
     {
         StartWares wares = settings.getField("startWares");
         lua::assertTrue(unsigned(wares) <= SWR_ALOT, "Start wares is invalid");
-        ggs.start_wares = wares;
+        ggs.startWares = wares;
     }
 
     if(std::find(keys.begin(), keys.end(), "fow") != keys.end())
@@ -160,13 +160,13 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
     }
 
     if(std::find(keys.begin(), keys.end(), "lockedTeams") != keys.end())
-        ggs.lock_teams = settings.getField("lockedTeams");
+        ggs.lockedTeams = settings.getField("lockedTeams");
 
     if(std::find(keys.begin(), keys.end(), "teamView") != keys.end())
-        ggs.team_view = settings.getField("teamView");
+        ggs.teamView = settings.getField("teamView");
 
     if(std::find(keys.begin(), keys.end(), "randomStartPosition") != keys.end())
-        ggs.random_location = settings.getField("randomStartPosition");
+        ggs.randomStartPosition = settings.getField("randomStartPosition");
 
     gameServer_.ChangeGlobalGameSettings(ggs);
 }

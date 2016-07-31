@@ -18,7 +18,7 @@
 #define ADDONCHARBURNER_H_INCLUDED
 
 
-#include "Addons.h"
+#include "AddonBool.h"
 #include "mygettext/src/mygettext.h"
 
 /**

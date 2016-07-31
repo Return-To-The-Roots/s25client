@@ -777,19 +777,19 @@ void dskHostGame::UpdateGGS()
     GlobalGameSettings& ggs = gameLobby.GetSettings();
 
     // Geschwindigkeit
-    ggs.game_speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
+    ggs.speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
     // Spielziel
-    ggs.game_objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
+    ggs.objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
     // Waren zu Beginn
-    ggs.start_wares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
+    ggs.startWares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
     // Aufklärung
     ggs.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
     // Teams gesperrt
-    ggs.lock_teams = GetCtrl<ctrlCheck>(20)->GetCheck();
+    ggs.lockedTeams = GetCtrl<ctrlCheck>(20)->GetCheck();
     // Team sicht
-    ggs.team_view = GetCtrl<ctrlCheck>(19)->GetCheck();
+    ggs.teamView = GetCtrl<ctrlCheck>(19)->GetCheck();
     //random locations
-    ggs.random_location = GetCtrl<ctrlCheck>(23)->GetCheck();
+    ggs.randomStartPosition = GetCtrl<ctrlCheck>(23)->GetCheck();
 
     // An Server übermitteln
     GAMESERVER.ChangeGlobalGameSettings(ggs);
@@ -942,19 +942,19 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings&  /*ggs*/)
     const GlobalGameSettings& ggs = gameLobby.GetSettings();
 
     // Geschwindigkeit
-    GetCtrl<ctrlComboBox>(43)->SetSelection(static_cast<unsigned short>(ggs.game_speed));
+    GetCtrl<ctrlComboBox>(43)->SetSelection(static_cast<unsigned short>(ggs.speed));
     // Ziel
-    GetCtrl<ctrlComboBox>(42)->SetSelection(static_cast<unsigned short>(ggs.game_objective));
+    GetCtrl<ctrlComboBox>(42)->SetSelection(static_cast<unsigned short>(ggs.objective));
     // Waren
-    GetCtrl<ctrlComboBox>(41)->SetSelection(static_cast<unsigned short>(ggs.start_wares));
+    GetCtrl<ctrlComboBox>(41)->SetSelection(static_cast<unsigned short>(ggs.startWares));
     // Aufklärung
     GetCtrl<ctrlComboBox>(40)->SetSelection(static_cast<unsigned short>(ggs.exploration));
     // Teams
-    GetCtrl<ctrlCheck>(20)->SetCheck(ggs.lock_teams);
+    GetCtrl<ctrlCheck>(20)->SetCheck(ggs.lockedTeams);
     // Team-Sicht
-    GetCtrl<ctrlCheck>(19)->SetCheck(ggs.team_view);
+    GetCtrl<ctrlCheck>(19)->SetCheck(ggs.teamView);
     //random location
-    GetCtrl<ctrlCheck>(23)->SetCheck(ggs.random_location);
+    GetCtrl<ctrlCheck>(23)->SetCheck(ggs.randomStartPosition);
 
     TogglePlayerReady(GAMECLIENT.GetPlayerId(), false);
 }

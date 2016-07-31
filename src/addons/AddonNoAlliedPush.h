@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 /**
  *  Addon stops allied players from pushing your borders back with new military buildings

@@ -1,7 +1,7 @@
 #ifndef ADDONSTOPMETALWORKSONZERO_H_INCLUDED
 #define ADDONSTOPMETALWORKSONZERO_H_INCLUDED
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 class AddonMetalworksBehaviorOnZero : public AddonList
 {
