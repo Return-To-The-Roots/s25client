@@ -137,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
 
     results.clear();
     // All points inside must be inside
-    for(int i = 0; i < rectAreas.size(); i++)
+    for(unsigned i = 0; i < rectAreas.size(); i++)
     {
         for(int x = 11; x < 15; ++x)
         {
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
         for(int x = 0; x <= 3; x++)
             borderPts += MapPoint(x + 11, y), MapPoint(x + 16, y);
     }
-    for(int i = 0; i < rectAreas.size(); i++)
+    for(unsigned i = 0; i < rectAreas.size(); i++)
     {
         // Those must be outside
         BOOST_FOREACH(MapPoint pt, outsidePts)
@@ -190,7 +190,7 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
         const bool isValid = TerritoryRegion::IsPointValid(world, rectAreas[0], pt);
         if(isValid)
             results.insert(pt);
-        for(int i = 1; i < rectAreas.size(); i++)
+        for(unsigned i = 1; i < rectAreas.size(); i++)
             BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, rectAreas[i], pt), isValid);
     }
 
