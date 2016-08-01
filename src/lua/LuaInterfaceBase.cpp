@@ -72,8 +72,6 @@ bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
     if(!lua.dofile(scriptPath))
     {
         script_.clear();
-        if(GLOBALVARS.isTest)
-            throw std::runtime_error("Could not load lua script");
         return false;
     } else
     {
@@ -88,8 +86,6 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script)
     if(!lua.dostring(script))
     {
         script_.clear();
-        if(GLOBALVARS.isTest)
-            throw std::runtime_error("Could not load lua script");
         return false;
     } else
     {

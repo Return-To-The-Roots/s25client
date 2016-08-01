@@ -464,7 +464,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
     // sie einfach auf sichtbar zu setzen
     const unsigned visualRadius = militaryRadius + VISUALRANGE_MILITARY;
     if(destroyed)
-        RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), destroyed ? &building : NULL);
+        RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), &building);
     else
         SetVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }

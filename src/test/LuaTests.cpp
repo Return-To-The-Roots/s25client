@@ -540,26 +540,25 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE(obj);
     BOOST_REQUIRE_EQUAL(obj->GetItemID(), 500u);
     BOOST_REQUIRE_EQUAL(obj->GetItemFile(), 0xFFFFu);
-    // Replace and test wrap around
-    const MapPoint envPt2(envPt.x + world.GetWidth(), envPt.y - world.GetHeight());
+    // Replace and test wrap around (envPt2==envPt1)
+    const Point<int> envPt2(envPt.x + world.GetWidth(), envPt.y - world.GetHeight());
+    BOOST_REQUIRE_EQUAL(world.MakeMapPoint(envPt2), envPt);
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % envPt2.x % envPt2.y);
     obj = world.GetSpecObj<noEnvObject>(envPt);
     BOOST_REQUIRE(obj);
     BOOST_REQUIRE_EQUAL(obj->GetItemID(), 1u);
     BOOST_REQUIRE_EQUAL(obj->GetItemFile(), 2u);
-    // Can't replace buildings
-    executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
-    BOOST_REQUIRE(!world.GetSpecObj<noEnvObject>(hqPos));
 
     // ID only
-    executeLua(boost::format("world:AddStaticObject(%1%, %2%, 501)") % envPt2.x % envPt2.y);
-    const noStaticObject* obj2 = world.GetSpecObj<noStaticObject>(envPt);
+    const MapPoint envPt3(envPt.x + 5, envPt.y);
+    executeLua(boost::format("world:AddStaticObject(%1%, %2%, 501)") % envPt3.x % envPt3.y);
+    const noStaticObject* obj2 = world.GetSpecObj<noStaticObject>(envPt3);
     BOOST_REQUIRE(obj2);
     BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 501u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 0xFFFFu);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 0u);
-    // ID and File
+    // ID and File (replace env obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
@@ -567,7 +566,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 5u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 3u);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 0u);
-    // ID, File and Size
+    // ID, File and Size (replace static obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 2)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
@@ -577,11 +576,17 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 2u);
     // Invalid Size
     BOOST_REQUIRE_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y), std::runtime_error);
+
     // Can't replace buildings
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
-    BOOST_REQUIRE(!world.GetSpecObj<noStaticObject>(hqPos));
+    BOOST_REQUIRE(!world.GetSpecObj<noEnvObject>(hqPos));
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
     BOOST_REQUIRE(!world.GetSpecObj<noStaticObject>(hqPos));
+    // But environment obj can also replace static one
+    executeLua(boost::format("world:AddEnvObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
+    obj2 = world.GetSpecObj<noStaticObject>(envPt);
+    BOOST_REQUIRE(obj2);
+    BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_ENVOBJECT);
 }
 
 BOOST_AUTO_TEST_CASE(WorldEvents)

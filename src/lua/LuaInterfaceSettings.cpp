@@ -115,11 +115,7 @@ void LuaInterfaceSettings::ResetAddons()
     GlobalGameSettings ggs = gameServer_.GetGGS();
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
-        unsigned int status;
-        const Addon* addon = ggs.getAddon(i, status);
-
-        if(!addon)
-            continue;
+        const Addon* addon = ggs.getAddon(i);
         ggs.setSelection(addon->getId(), addon->getDefaultStatus());
     }
     gameServer_.ChangeGlobalGameSettings(ggs);

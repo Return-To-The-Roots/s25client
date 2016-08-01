@@ -28,6 +28,7 @@
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
 #include <vector>
+#include "colors.h"
 
 namespace{
 
@@ -209,6 +210,16 @@ BOOST_AUTO_TEST_CASE(Events)
     BOOST_REQUIRE_EQUAL(allowedAddons[0], AddonId::LIMIT_CATAPULTS);
     BOOST_REQUIRE_EQUAL(allowedAddons[1], AddonId::CHARBURNER);
     BOOST_REQUIRE_EQUAL(allowedAddons[2], AddonId::TRADE);
+    // Return invalid type -> ignored, but log output
+    clearLog();
+    executeLua("function getAllowedAddons()\n  return {'ADDON_FAIL_ME'}\nend");
+    allowedAddons = lua.GetAllowedAddons();
+    BOOST_REQUIRE(allowedAddons.empty());
+    BOOST_REQUIRE(!getLog().empty());
+    executeLua("function getAllowedAddons()\n  return {9999}\nend");
+    allowedAddons = lua.GetAllowedAddons();
+    BOOST_REQUIRE(allowedAddons.empty());
+    BOOST_REQUIRE(!getLog().empty());
 }
 
 BOOST_AUTO_TEST_CASE(SettingsFunctions)
@@ -270,6 +281,51 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     shouldSettings.speed = GS_VERYFAST;
     shouldSettings.lockedTeams = true;
     checkSettings(shouldSettings);
+}
+
+BOOST_AUTO_TEST_CASE(PlayerSettings)
+{
+    executeLua("player = rttr:GetPlayer(0)");
+    executeLua("player1 = rttr:GetPlayer(1)");
+    executeLua("player:SetNation(NAT_ROMANS)");
+    BOOST_REQUIRE_EQUAL(players[0].nation, NAT_ROMANS);
+    executeLua("player1:SetNation(NAT_BABYLONIANS)");
+    BOOST_REQUIRE_EQUAL(players[1].nation, NAT_BABYLONIANS);
+
+    executeLua("player:SetTeam(TM_TEAM2)");
+    BOOST_REQUIRE_EQUAL(players[0].team, TM_TEAM2);
+
+    executeLua("player:SetColor(2)");
+    BOOST_REQUIRE_EQUAL(players[0].color, PLAYER_COLORS[2]);
+    executeLua("player:SetColor(0xFF0000FF)");
+    BOOST_REQUIRE_EQUAL(players[0].color, 0xFF0000FF);
+    executeLua("player1:SetColor(2)");
+    BOOST_REQUIRE_EQUAL(players[1].color, PLAYER_COLORS[2]);
+    // Duplicate color are allowed
+    executeLua("player1:SetColor(0xFF0000FF)");
+    BOOST_REQUIRE_EQUAL(players[0].color, 0xFF0000FF);
+    BOOST_REQUIRE_EQUAL(players[1].color, 0xFF0000FF);
+
+    executeLua("player1:Close()");
+    BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
+
+    executeLua("player:SetAI(0)");
+    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DUMMY);
+    executeLua("player:SetAI(1)");
+    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::EASY);
+    executeLua("player:SetAI(2)");
+    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::MEDIUM);
+    executeLua("player:SetAI(3)");
+    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::HARD);
+    // Invalid lvl
+    BOOST_REQUIRE_THROW(executeLua("player:SetAI(4)"), std::exception);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
