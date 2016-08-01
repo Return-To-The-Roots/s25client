@@ -292,6 +292,13 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     executeLua("player1:SetNation(NAT_BABYLONIANS)");
     BOOST_REQUIRE_EQUAL(players[1].nation, NAT_BABYLONIANS);
 
+    // Check some properties
+    BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
+    BOOST_CHECK(isLuaEqual("player:IsHuman()", "true"));
+    BOOST_CHECK(isLuaEqual("player:IsAI()", "false"));
+    BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
+    BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
+
     executeLua("player:SetTeam(TM_TEAM2)");
     BOOST_REQUIRE_EQUAL(players[0].team, TM_TEAM2);
 
@@ -306,6 +313,14 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     BOOST_REQUIRE_EQUAL(players[0].color, 0xFF0000FF);
     BOOST_REQUIRE_EQUAL(players[1].color, 0xFF0000FF);
 
+    // Kick AI
+    executeLua("player1:Close()");
+    BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
+    // Kick Human
+    players[1].ps = PS_OCCUPIED;
+    executeLua("player1:Close()");
+    BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
+    // Kick none
     executeLua("player1:Close()");
     BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
 

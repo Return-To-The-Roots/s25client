@@ -77,10 +77,7 @@ void LuaServerPlayer::Close()
     if(player.ps == PS_LOCKED)
         return;
     if(player.ps == PS_OCCUPIED)
-    {
         gameServer_.KickPlayer(playerId);
-        return;
-    }
     player.ps = PS_LOCKED;
     player.isReady = false;
 
