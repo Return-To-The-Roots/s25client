@@ -213,6 +213,23 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
 {
     executeLua("rttr:Log('Hello World')");
     BOOST_REQUIRE_EQUAL(getLog(), "Hello World\n");
+
+    // No getRequiredLuaVersion
+    LuaInterfaceBase& lua = world.GetLua();
+    BOOST_REQUIRE(!lua.CheckScriptVersion());
+    // Wrong version
+    executeLua("function getRequiredLuaVersion()\n return 0\n end");
+    BOOST_REQUIRE(!lua.CheckScriptVersion());
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (lua.GetVersion().first + 1));
+    BOOST_REQUIRE(!lua.CheckScriptVersion());
+    // Correct version
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion().first);
+    BOOST_REQUIRE(lua.CheckScriptVersion());
+
+    executeLua("vMajor, vMinor = rttr:GetVersion()");
+    BOOST_CHECK(isLuaEqual("vMajor", helpers::toString(lua.GetVersion().first)));
+    BOOST_CHECK(isLuaEqual("vMinor", helpers::toString(lua.GetVersion().second)));
+
     // (Invalid) connect to set params
     BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, true, false));
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "true"));
@@ -649,6 +666,11 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     Serializer serData4 = lua.Serialize();
     BOOST_REQUIRE_EQUAL(serData3.GetLength(), 0u);
     BOOST_REQUIRE_NE(getLog(), "");
+    // And in test mode it throws
+    GLOBALVARS.isTest = true;
+    BOOST_REQUIRE_THROW(lua.Serialize(), std::runtime_error);
+    GLOBALVARS.isTest = false;
+
     // Error from C++
     BOOST_REQUIRE(!lua.Deserialize(serData2));
     BOOST_REQUIRE_NE(getLog(), "");
@@ -656,6 +678,11 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     executeLua("function onLoad(serializer)\n  assert(false)\nend");
     BOOST_REQUIRE(!lua.Deserialize(serData4));
     BOOST_REQUIRE_NE(getLog(), "");
+    // And in test mode it throws
+    GLOBALVARS.isTest = true;
+    BOOST_REQUIRE_THROW(lua.Deserialize(serData4), std::runtime_error);
+    GLOBALVARS.isTest = false;
+
     // False returned
     executeLua("function onLoad(serializer)\n  return false\nend");
     BOOST_REQUIRE(!lua.Deserialize(serData4));

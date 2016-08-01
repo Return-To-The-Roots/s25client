@@ -22,7 +22,27 @@
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "libutil/src/Log.h"
+#include <utility>
 #include <fstream>
+
+namespace kaguya{
+    template<typename T1, typename T2>
+    struct lua_type_traits< std::pair<T1, T2> >
+    {
+        static int push(lua_State* l, const std::pair<T1, T2>& v)
+        {
+            int count = 0;
+            count += lua_type_traits<T1>::push(l, v.first);
+            count += lua_type_traits<T2>::push(l, v.second);
+            return count;
+        }
+    };
+}
+
+std::pair<unsigned, unsigned> LuaInterfaceBase::GetVersion()
+{
+    return std::pair<unsigned, unsigned>(1, 0);
+}
 
 LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
 {
@@ -41,6 +61,7 @@ LuaInterfaceBase::~LuaInterfaceBase()
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::ClassMetatable<LuaInterfaceBase>()
+        .addStaticFunction("GetVersion", &LuaInterfaceBase::GetVersion)
         .addMemberFunction("Log", &LuaInterfaceBase::Log)
         .addMemberFunction("IsHost", &LuaInterfaceBase::IsHost)
         .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
@@ -91,6 +112,18 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script)
     {
         script_ = script;
         return true;
+    }
+}
+
+bool LuaInterfaceBase::CheckScriptVersion()
+{
+    kaguya::LuaRef func = lua["getRequiredLuaVersion"];
+    if(func.type() == LUA_TFUNCTION)
+        return func.call<unsigned>() == GetVersion().first;
+    else
+    {
+        LOG.write("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.");
+        return false;
     }
 }
 
