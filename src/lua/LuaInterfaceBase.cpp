@@ -22,6 +22,7 @@
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "libutil/src/Log.h"
+#include "mygettext/src/mygettext.h"
 #include <utility>
 #include <fstream>
 
@@ -75,7 +76,7 @@ void LuaInterfaceBase::Register(kaguya::State& state)
 
 void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 {
-    LOG.write("Lua error: %s\n") % message;
+    LOG.write(_("Lua error: %s\n")) % message;
     if(GLOBALVARS.isTest)
     {
         GLOBALVARS.errorOccured = true;
@@ -119,10 +120,18 @@ bool LuaInterfaceBase::CheckScriptVersion()
 {
     kaguya::LuaRef func = lua["getRequiredLuaVersion"];
     if(func.type() == LUA_TFUNCTION)
-        return func.call<unsigned>() == GetVersion().first;
-    else
     {
-        LOG.write("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.");
+        const unsigned scriptVersion = func.call<unsigned>();
+        if(scriptVersion == GetVersion().first)
+            return true;
+        else
+        {
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion().first % GetVersion().second;
+            return false;
+        }
+    } else
+    {
+        LOG.write(_("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated."));
         return false;
     }
 }
