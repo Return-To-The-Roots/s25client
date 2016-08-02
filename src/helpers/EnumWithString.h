@@ -132,8 +132,8 @@ struct EnumName {                                                      \
         }                                                              \
     }                                                                  \
    namespace{ struct Init ## EnumName{                                 \
-        Init ## EnumName ## (){ EnumName::init_(); }                   \
-        ~Init ## EnumName ## (){ EnumName::free_(); }                  \
+        Init ## EnumName (){ EnumName::init_(); }                   \
+        ~Init ## EnumName (){ EnumName::free_(); }                  \
         } Initializer ## EnumName ## __;                               \
     }
 
