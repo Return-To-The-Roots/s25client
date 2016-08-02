@@ -41,6 +41,7 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
 #include "notifications/ToolNote.h"
+#include "addons/const_addons.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/GoodTypes.h"

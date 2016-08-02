@@ -23,6 +23,7 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "addons/const_addons.h"
 
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)

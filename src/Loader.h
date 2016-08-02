@@ -20,7 +20,6 @@
 #pragma once
 
 #include "../libutil/src/Singleton.h"
-#include "addons/const_addons.h"
 #include "gameData/NationConsts.h"
 #include "Rect.h"
 #include "ogl/glSmartBitmap.h"
@@ -38,6 +37,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+struct AddonId;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;

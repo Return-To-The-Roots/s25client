@@ -30,6 +30,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
+#include "addons/const_addons.h"
 #include "gameData/TerrainData.h"
 #include "gameData/MapConsts.h"
 #include "gameData/GameConsts.h"

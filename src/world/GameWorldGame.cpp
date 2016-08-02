@@ -40,6 +40,7 @@
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/RoadNote.h"
+#include "addons/const_addons.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/GameConsts.h"

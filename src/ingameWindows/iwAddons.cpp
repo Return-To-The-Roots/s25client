@@ -26,7 +26,6 @@
 #include "gameData/const_gui_ids.h"
 #include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
-class MouseCoords;
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vector<AddonId>& addonIds)
     : IngameWindow(CGI_ADDONS, 0xFFFF, 0xFFFF, 700, 500, _("Addon Settings"), LOADER.GetImageN("resource", 41), true), ggs(ggs), policy(policy), addonIds(addonIds)

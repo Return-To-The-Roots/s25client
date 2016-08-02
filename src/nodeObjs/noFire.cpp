@@ -26,6 +26,7 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
+#include "addons/const_addons.h"
 
 noFire::noFire(const MapPoint pos, const unsigned char size)
     : noCoordBase(NOP_FIRE, pos), size(size), was_sounding(false), last_sound(0), next_interval(0)

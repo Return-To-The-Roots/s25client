@@ -38,6 +38,7 @@
 #include "ogl/glAllocator.h"
 #include "ogl/glTexturePacker.h"
 #include "ogl/glArchivItem_Font.h"
+#include "addons/const_addons.h"
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
 

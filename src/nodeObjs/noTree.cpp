@@ -29,6 +29,7 @@
 #include "GameInterface.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
+#include "addons/const_addons.h"
 
 unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;

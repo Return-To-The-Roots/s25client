@@ -42,6 +42,7 @@
 #include "EventManager.h"
 #include "GameEvent.h"
 #include "gameTypes/RoadBuildState.h"
+#include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIPlayerJH.h"
 #include "helpers/Deleter.h"

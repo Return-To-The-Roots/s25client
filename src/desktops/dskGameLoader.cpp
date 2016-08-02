@@ -32,6 +32,7 @@
 #include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ogl/glArchivItem_Font.h"
+#include "addons/const_addons.h"
 #include "files.h"
 
 /**

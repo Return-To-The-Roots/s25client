@@ -29,6 +29,7 @@
 #include "iwHelp.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
+#include "addons/const_addons.h"
 #include "gameData/const_gui_ids.h"
 #include "gameData/ToolConsts.h"
 #include "helpers/converters.h"

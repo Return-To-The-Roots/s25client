@@ -29,6 +29,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
+#include "addons/const_addons.h"
 #include "gameData/MilitaryConsts.h"
 
 noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NOP_FIGHTING)
