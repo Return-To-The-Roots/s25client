@@ -14,27 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONCHARBURNER_H_INCLUDED
-#define ADDONCHARBURNER_H_INCLUDED
 
+#include "defines.h" // IWYU pragma: keep
+#include "LuaHelpers.h"
+#include <stdexcept>
 
-#include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+namespace lua{
 
-/**
- *  Addon for a Charburner
- */
-class AddonCharburner : public AddonBool
-{
-    public:
-        AddonCharburner() : AddonBool(AddonId::CHARBURNER,
-                                          ADDONGROUP_ECONOMY,
-                                          _("Enable charburner"),
-                                          _("Allows to build the charburner."),
-                                          0
-                                         )
-        {
-        }
-};
+    void assertTrue(bool testValue, const std::string& error)
+    {
+        if(!testValue)
+            throw std::runtime_error(error);
+    }
 
-#endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED
+} // namespace lua

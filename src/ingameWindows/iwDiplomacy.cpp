@@ -171,7 +171,7 @@ void iwDiplomacy::Msg_PaintAfter()
 
 void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    if (gwv.GetWorld().GetGGS().lock_teams)
+    if (gwv.GetWorld().GetGGS().lockedTeams)
     {
         WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         return;

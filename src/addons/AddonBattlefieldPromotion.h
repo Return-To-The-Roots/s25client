@@ -18,7 +18,7 @@
 #define ADDONBATTLEFIELDPROMOTION_H_INCLUDED
 
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 /**
  *  Addon for Battlefield Promotions

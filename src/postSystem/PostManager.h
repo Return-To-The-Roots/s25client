@@ -30,7 +30,7 @@ public:
     PostManager();
     ~PostManager();
     void AddPostBox(unsigned player);
-    PostBox* GetPostBox(unsigned player) const { return postBoxes[player]; }
+    PostBox* GetPostBox(unsigned player) const;
     void RemovePostBox(unsigned player);
     void SendMsg(unsigned player, PostMsg* msg);
 

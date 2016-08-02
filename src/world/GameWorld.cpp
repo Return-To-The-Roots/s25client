@@ -65,7 +65,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     MapLoader loader(*this, players);
-    if(!loader.Load(map, GetGGS().random_location, GetGGS().exploration))
+    if(!loader.Load(map, GetGGS().randomStartPosition, GetGGS().exploration))
         return false;
 
     CreateTradeGraphs();

@@ -23,11 +23,12 @@
 #include <vector>
 
 class LuaServerPlayer;
+class GameServerInterface;
 struct AddonId;
 
 class LuaInterfaceSettings: public LuaInterfaceBase{
 public:
-    LuaInterfaceSettings();
+    LuaInterfaceSettings(GameServerInterface& gameServer);
     virtual ~LuaInterfaceSettings();
 
     static void Register(kaguya::State& state);
@@ -55,6 +56,7 @@ public:
     void SetGameSettings(const kaguya::LuaTable& settings);
 
 private:
+    GameServerInterface& gameServer_;
     kaguya::LuaRef GetAllowedChanges();
 };
 

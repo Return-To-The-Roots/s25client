@@ -17,7 +17,7 @@
 #ifndef ADDONTRADE_H_INCLUDED
 #define ADDONTRADE_H_INCLUDED
 
-#include "Addons.h"
+#include "AddonBool.h"
 #include "mygettext/src/mygettext.h"
 
 class AddonTrade : public AddonBool

@@ -513,7 +513,7 @@ bool GameServer::StartGame()
         }
     }
 
-    framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2 = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.game_speed];
+    framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2 = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
     unsigned i = 1;
@@ -767,6 +767,11 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
 
     if(status == SS_GAME)
         SendNothingNC(playerId);
+}
+
+void GameServer::KickPlayer(unsigned playerIdx)
+{
+    KickPlayer(playerIdx, NP_NOCAUSE, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1530,4 +1535,9 @@ void GameServer::SwapPlayer(const unsigned char player1, const unsigned char pla
     // Swap everything
     using std::swap;
     swap(players[player1], players[player2]);
+}
+
+JoinPlayerInfo& GameServer::GetJoinPlayer(unsigned playerIdx)
+{
+    return players.at(playerIdx);
 }

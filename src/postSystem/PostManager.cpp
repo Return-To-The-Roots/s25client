@@ -42,6 +42,11 @@ void PostManager::AddPostBox(unsigned player)
     postBoxes[player] = new PostBox();
 }
 
+PostBox* PostManager::GetPostBox(unsigned player) const
+{
+    return (player < postBoxes.size()) ?  postBoxes[player] : NULL;
+}
+
 void PostManager::RemovePostBox(unsigned player)
 {
     deletePtr(postBoxes[player]);

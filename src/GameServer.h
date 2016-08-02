@@ -21,6 +21,7 @@
 #pragma once
 
 #include "Singleton.h"
+#include "GameServerInterface.h"
 #include "GameMessageInterface.h"
 #include "GlobalGameSettings.h"
 #include "gameTypes/MapInfo.h"
@@ -39,9 +40,8 @@ class GameMessage_GameCommand;
 class GameServerPlayer;
 namespace AIEvent { class Base; }
 
-class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
+class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, private GameServerInterface
 {
-    friend class LuaServerPlayer;
     public:
         BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
 
@@ -67,7 +67,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void ToggleAITeam(unsigned char playerId);
         void ToggleAIColor(unsigned char playerId);
         void TogglePlayerState(unsigned char playerId);
-        void ChangeGlobalGameSettings(const GlobalGameSettings& ggs);
+        void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override;
         /// Removes the lua script for the currently loaded map (only valid in config mode)
         void RemoveLuaScript();
 
@@ -79,17 +79,21 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         std::string GetGameName() const { return config.gamename; }
         bool HasPwd() const { return !config.password.empty(); }
         unsigned short GetPort() const { return config.port; }
-        unsigned GetMaxPlayerCount() const { return config.playercount; }
-        bool IsRunning() const { return status != SS_STOPPED; }
+        unsigned GetMaxPlayerCount() const override { return config.playercount; }
+        bool IsRunning() const override { return status != SS_STOPPED; }
 
-        const GlobalGameSettings& GetGGS(){ return ggs_; }
-    private:
+        const GlobalGameSettings& GetGGS() const override { return ggs_; }
+
+        GameServerInterface& GetInterface() { return *this; }
+
+private:
 
         /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
         void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
-        void SendToAll(const GameMessage& msg);
+        void SendToAll(const GameMessage& msg) override;
         void KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param);
+        void KickPlayer(unsigned playerIdx) override;
 
         void ClientWatchDog();
 
@@ -101,7 +105,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         unsigned GetFilledSlots() const;
         /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
-        void AnnounceStatusChange();
+        void AnnounceStatusChange() override;
 
         void OnGameMessage(const GameMessage_Pong& msg) override;
         void OnGameMessage(const GameMessage_Server_Type& msg) override;
@@ -121,7 +125,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 
         /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
         /// Sends a notification to all players if the color was changed
-        void CheckAndSetColor(unsigned playerIdx, unsigned newColor);
+        void CheckAndSetColor(unsigned playerIdx, unsigned newColor) override;
 
         /// Handles advancing of GFs, actions of AI and potentially the NWF
         void ExecuteGameFrame();
@@ -129,6 +133,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         void ExecuteNWF(const unsigned currentTime);
         void CheckAndKickLaggingPlayer(const unsigned char playerIdx);
         unsigned char GetLaggingPlayer() const;
+        JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override;
 
     private:
         enum ServerState

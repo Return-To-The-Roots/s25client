@@ -209,7 +209,7 @@ Serializer LuaInterfaceGame::Serialize()
     return Serializer();
 }
 
-void LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
+bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
 {
     kaguya::LuaRef load = lua["onLoad"];
     if(load.type() == LUA_TFUNCTION)
@@ -217,17 +217,25 @@ void LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
         lua.setErrorHandler(ErrorHandlerThrow);
         try
         {
-            if(!load.call<bool>(kaguya::standard::ref(luaSaveState)))
-                LOG.write("Lua state was not loaded correctly!");
+            bool result = load.call<bool>(kaguya::standard::ref(luaSaveState));
             lua.setErrorHandler(ErrorHandler);
+            if(result)
+                return true;
+            else
+            {
+                LOG.write("Lua state was not loaded correctly!");
+                return false;
+            }
         } catch(std::exception& e)
         {
             lua.setErrorHandler(ErrorHandler);
             LOG.write("Error during loading: %s\n") % e.what();
             if(GLOBALVARS.isTest)
                 throw std::runtime_error("Error during lua call");
+            return false;
         }
-    }
+    } else
+        return true;
 }
 
 void LuaInterfaceGame::ClearResources()

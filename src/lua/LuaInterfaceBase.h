@@ -20,6 +20,7 @@
 
 #include <kaguya/kaguya.hpp>
 #include <string>
+#include <utility>
 
 class LuaInterfaceBase{
 public:
@@ -32,6 +33,12 @@ public:
     bool LoadScript(const std::string& scriptPath);
     bool LoadScriptString(const std::string& script);
     const std::string& GetScript() const { return script_; }
+
+    bool CheckScriptVersion();
+
+    /// Return major and minor version of the interface
+    /// Major version changes reflect breaking changes while minor version changes reflect only added features
+    static std::pair<unsigned, unsigned> GetVersion();
 
 protected:
     kaguya::State lua;

@@ -25,15 +25,10 @@
 #include "gameTypes/BuildingCount.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "notifications/BuildingNote.h"
+#include "lua/LuaHelpers.h"
 #include "helpers/converters.h"
 #include "libutil/src/Log.h"
 #include <stdexcept>
-
-inline void check(bool testValue, const std::string& error)
-{
-    if(!testValue)
-        throw std::runtime_error(error);
-}
 
 const BasePlayerInfo& LuaPlayer::GetPlayer() const
 {
@@ -64,7 +59,7 @@ void LuaPlayer::Register(kaguya::State& state)
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 {
-    check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
     player.EnableBuilding(bld);
     if(notify)
     {
@@ -80,7 +75,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 
 void LuaPlayer::DisableBuilding(BuildingType bld)
 {
-    check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
     player.DisableBuilding(bld);
 }
 
@@ -164,27 +159,27 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
 
 unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
 {
-    check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
     return player.GetBuildingCount().buildings[bld];
 }
 
 unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld)
 {
-    check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
     return player.GetBuildingCount().buildingSites[bld];
 }
 
 unsigned LuaPlayer::GetWareCount(GoodType ware)
 {
-    check(unsigned(ware) < WARE_TYPES_COUNT, "Invalid ware");
+    lua::assertTrue(unsigned(ware) < WARE_TYPES_COUNT, "Invalid ware");
     return player.GetInventory().goods[ware];
 }
 
 unsigned LuaPlayer::GetPeopleCount(Job job)
 {
-    check(unsigned(job) < JOB_TYPES_COUNT, "Invalid ware");
+    lua::assertTrue(unsigned(job) < JOB_TYPES_COUNT, "Invalid ware");
     return player.GetInventory().people[job];
 }
 
@@ -193,10 +188,10 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
         return false;
-    check(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
     GameWorldGame& world = player.GetGameWorld();
-    check(x < world.GetWidth(), "x coordinate to large");
-    check(y < world.GetHeight(), "y coordinate to large");
+    lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
+    lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
     world.GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));
     return true;
 }

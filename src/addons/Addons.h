@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,96 +14,57 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONS_H_INCLUDED
-#define ADDONS_H_INCLUDED
 
 #pragma once
 
-#include "const_addons.h"
-#include "helpers/containerUtils.h"
-#include <string>
-#include <vector>
+#ifndef ADDONS_H_INCLUDED
+#define ADDONS_H_INCLUDED
 
-class Window;
+// Include with all addons
 
-/**
- *  Addon baseclass
- */
-class Addon
-{
-    public:
-        Addon(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
-            : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)  {   }
-        virtual ~Addon() {  }
+#include "addons/AddonLimitCatapults.h"
+#include "addons/AddonInexhaustibleMines.h"
+#include "addons/AddonRefundMaterials.h"
+#include "addons/AddonExhaustibleWells.h"
+#include "addons/AddonRefundOnEmergency.h"
+#include "addons/AddonManualRoadEnlargement.h"
+#include "addons/AddonCatapultGraphics.h"
+#include "addons/AddonMetalworksBehaviorOnZero.h"
 
-        virtual void hideGui(Window* window, unsigned int id) const;
-        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-        virtual void setGuiStatus(Window*  /*window*/, unsigned int  /*id*/, unsigned int  /*status*/) const { }
+#include "addons/AddonDemolitionProhibition.h"
+#include "addons/AddonCharburner.h"
+#include "addons/AddonTrade.h"
 
-        virtual unsigned int getGuiStatus(Window*  /*window*/, unsigned int  /*id*/, bool& failed) const
-        {
-            failed = false;
-            return getDefaultStatus();
-        }
+#include "addons/AddonChangeGoldDeposits.h"
+#include "addons/AddonMaxWaterwayLength.h"
+#include "addons/AddonCustomBuildSequence.h"
+#include "addons/AddonStatisticsVisibility.h"
 
-        AddonId getId() const { return id_; }
-        unsigned int getGroups() const { return (ADDONGROUP_ALL | groups_); }
-        std::string getName() const { return name_; }
-        std::string getDescription() const { return description_; }
-        unsigned int getDefaultStatus() const { return defaultStatus_; }
+#include "addons/AddonDefenderBehavior.h"
+#include "addons/AddonAIDebugWindow.h"
 
-    private:
-        AddonId id_;
-        unsigned int groups_;
-        std::string name_;
-        std::string description_;
-        unsigned int defaultStatus_;
-};
+#include "addons/AddonNoCoinsDefault.h"
 
-/**
- *  Addon baseclass for option-list addons
- *  first option added will be the default one
- */
-class AddonList : public Addon
-{
-    public:
-        AddonList(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
-            : Addon(id, groups, name, description, default_status) { }
+#include "addons/AddonAdjustMilitaryStrength.h"
 
-        void hideGui(Window* window, unsigned int id) const override;
-        void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const override;
-        void setGuiStatus(Window* window, unsigned int id, unsigned int status) const override;
-        unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const override;
+#include "addons/AddonToolOrdering.h"
 
-    protected:
-        void removeOptions()
-        {
-            options.clear();
-        }
+#include "addons/AddonMilitaryAid.h"
+#include "addons/AddonInexhaustibleGraniteMines.h"
+#include "addons/AddonMaxRank.h"
+#include "addons/AddonSeaAttack.h"
+#include "addons/AddonInexhaustibleFish.h"
 
-        void addOption(const std::string& name)
-        {
-            if(!helpers::contains(options, name))
-                options.push_back(name);
-        }
+#include "addons/AddonShipSpeed.h"
+#include "addons/AddonMoreAnimals.h"
+#include "addons/AddonBurnDuration.h"
+#include "addons/AddonNoAlliedPush.h"
+#include "addons/AddonBattlefieldPromotion.h"
+#include "addons/AddonHalfCostMilEquip.h"
+#include "addons/AddonMilitaryControl.h"
 
-    private:
-        std::vector<std::string> options;
-};
+#include "addons/AddonMilitaryHitpoints.h"
 
-/**
- *  Addon baseclass for boolean addons
- */
-class AddonBool : public Addon
-{
-    public:
-        AddonBool(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
-            : Addon(id, groups, name, description, default_status) { }
-
-        void hideGui(Window* window, unsigned int id) const override;
-        void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const override;
-        void setGuiStatus(Window* window, unsigned int id, unsigned int status) const override;
-        unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const override;
-};
+#include "addons/AddonNumScoutsExploration.h"
 
 #endif // !ADDONS_H_INCLUDED

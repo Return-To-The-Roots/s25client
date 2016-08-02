@@ -322,7 +322,7 @@ void dskGameInterface::Msg_PaintAfter()
     */
 
     // Draw speed indicator icon
-    const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().game_speed];
+    const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().speed];
     const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
 
     if(speedStep != 0)
@@ -1146,7 +1146,7 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 void dskGameInterface::GI_TreatyOfAllianceChanged(unsigned playerId)
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(playerId == worldViewer.GetPlayerId() && worldViewer.GetWorld().GetGGS().team_view)
+    if(playerId == worldViewer.GetPlayerId() && worldViewer.GetWorld().GetGGS().teamView)
     {
         /// Sichtbarkeiten neu berechnen
         worldViewer.RecalcAllColors();

@@ -116,8 +116,8 @@ class GamePlayer: public GamePlayerInfo
         /// Returns true if the given wh does still exist and hence the ptr is valid
         bool IsWarehouseValid(nobBaseWarehouse* wh) const{ return helpers::contains(warehouses, wh); }
         /// Gibt erstes Lagerhaus zurück
-        nobBaseWarehouse* GetFirstWH() { return *warehouses.begin(); }
-        /// Looks for the closes warehouse for the point 'start' (including it) that matches the conditions by the functor
+        nobBaseWarehouse* GetFirstWH() { return warehouses.empty() ? NULL : *warehouses.begin(); }
+        /// Looks for the closest warehouse for the point 'start' (including it) that matches the conditions by the functor
         /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be considered
         /// - to_wh true if path to wh is searched, false for path from wh
         /// - length is optional for the path length

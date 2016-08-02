@@ -464,7 +464,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
     // sie einfach auf sichtbar zu setzen
     const unsigned visualRadius = militaryRadius + VISUALRANGE_MILITARY;
     if(destroyed)
-        RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), destroyed ? &building : NULL);
+        RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), &building);
     else
         SetVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }
@@ -595,7 +595,7 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
             if(GetNode(curMapPt).owner == region.GetOwner(pt))
                 continue;
             // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-            if(GetGGS().game_objective == GO_CONQUER3_4)
+            if(GetGGS().objective == GO_CONQUER3_4)
                 return true;
             TerrainType t1 = GetNode(curMapPt).t1, t2 = GetNode(curMapPt).t2;
             if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))

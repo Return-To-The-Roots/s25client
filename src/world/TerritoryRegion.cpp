@@ -36,28 +36,32 @@ TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, con
 TerritoryRegion::~TerritoryRegion()
 {}
 
-bool TerritoryRegion::IsPointInPolygon(const std::vector<MapPoint>& polygon, const MapPoint pt)
+bool TerritoryRegion::IsPointInPolygon(const std::vector< Point<int> >& polygon, const Point<int> pt)
 {
 // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 // The site contains a lot of details and information.
 
     bool inside = false;
-    const Point<int> ptInt(pt);
-    const std::vector< Point<int> > polygonInt(polygon.begin(), polygon.end());
 
-    std::vector< Point<int> >::const_iterator it = polygonInt.begin();
-    std::vector< Point<int> >::const_iterator prev = polygonInt.end() - 1;
-
-    for (; it < polygonInt.end(); prev = it, ++it)
+    std::vector< Point<int> >::const_iterator it = polygon.begin();
+    std::vector< Point<int> >::const_iterator prev = polygon.end() - 1;
+    // Check each edge if a ray from the point to the right crosses the edge
+    for (; it != polygon.end(); prev = it, ++it)
     {
-        if (((it->y > ptInt.y) != (prev->y > ptInt.y)) &&
-            ((prev->y < it->y) ?
-                ((ptInt.x - it->x) * (prev->y - it->y) > (prev->x - it->x) * (ptInt.y - it->y)) :
-                ((ptInt.x - it->x) * (prev->y - it->y) < (prev->x - it->x) * (ptInt.y - it->y))
-            ))
-        {
+        // Check if the edge crosses the horizontal line at height pt.y
+        // Includes edge point at lower coord and excludes the one at higher coord
+        if((it->y > pt.y) == (prev->y > pt.y))
+            continue;
+        // Check if the intersection point in X is right of our point
+        // Original formula for (signed) floating point:
+        // if (pt.x < (prev->x - it->x) * (pt.y - it->y) / (prev->y - it->y) + it->x)
+        // ==>(pt.x - it->x < (prev->x - it->x) * (pt.y - it->y) / (prev->y - it->y))
+        const int dy = prev->y - it->y;
+        const int lhs = (pt.x - it->x) * dy;
+        const int rhs = (prev->x - it->x) * (pt.y - it->y);
+        
+        if((dy < 0 && lhs > rhs) || (dy > 0 && lhs < rhs))
             inside = !inside;
-        }
     }
 
     return(inside);
@@ -65,16 +69,18 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<MapPoint>& polygon, con
 
 bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt)
 {
+    typedef Point<int> PointI;
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
-    MapPoint pt2 = MapPoint(pt.x + gwb.GetWidth(), pt.y),
-             pt3 = MapPoint(pt.x, pt.y + gwb.GetHeight()),
-             pt4 = MapPoint(pt.x + gwb.GetWidth(), pt.y + gwb.GetHeight());
+    PointI pt2(pt.x + gwb.GetWidth(), pt.y),
+           pt3(pt.x, pt.y + gwb.GetHeight()),
+           pt4(pt.x + gwb.GetWidth(), pt.y + gwb.GetHeight());
+    const std::vector<PointI> polygonInt(polygon.begin(), polygon.end());
     return(polygon.empty() ||
-           IsPointInPolygon(polygon, pt) ||
-           IsPointInPolygon(polygon, pt2) ||
-           IsPointInPolygon(polygon, pt3) ||
-           IsPointInPolygon(polygon, pt4));
+           IsPointInPolygon(polygonInt, PointI(pt)) ||
+           IsPointInPolygon(polygonInt, pt2) ||
+           IsPointInPolygon(polygonInt, pt3) ||
+           IsPointInPolygon(polygonInt, pt4));
 }
 
 void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)

@@ -17,26 +17,22 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaServerPlayer.h"
-#include "GameServer.h"
-#include "GameServerPlayer.h"
+#include "GameServerInterface.h"
+#include "JoinPlayerInfo.h"
 #include "GameMessages.h"
+#include "lua/LuaHelpers.h"
 #include "helpers/converters.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/colors.h"
 #include <stdexcept>
-
-inline void check(bool testValue, const std::string& error)
-{
-    if(!testValue)
-        throw std::runtime_error(error);
-}
 
 const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
 {
     return player;
 }
 
-LuaServerPlayer::LuaServerPlayer(unsigned playerId): playerId(playerId), player(GAMESERVER.players.at(playerId))
+LuaServerPlayer::LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId):
+    gameServer_(gameServer), playerId(playerId), player(gameServer_.GetJoinPlayer(playerId))
 {}
 
 void LuaServerPlayer::Register(kaguya::State& state)
@@ -53,27 +49,27 @@ void LuaServerPlayer::Register(kaguya::State& state)
 
 void LuaServerPlayer::SetNation(Nation nat)
 {
-    check(unsigned(nat) < NAT_COUNT, "Invalid Nation");
+    lua::assertTrue(unsigned(nat) < NAT_COUNT, "Invalid Nation");
     player.nation = nat;
-    GAMESERVER.SendToAll(GameMessage_Player_Set_Nation(playerId, nat));
+    gameServer_.SendToAll(GameMessage_Player_Set_Nation(playerId, nat));
 }
 
 void LuaServerPlayer::SetTeam(Team team)
 {
-    check(unsigned(team) < TEAM_COUNT, "Invalid team");
+    lua::assertTrue(unsigned(team) < TEAM_COUNT, "Invalid team");
     player.team = team;
-    GAMESERVER.SendToAll(GameMessage_Player_Set_Team(playerId, team));
+    gameServer_.SendToAll(GameMessage_Player_Set_Team(playerId, team));
 }
 
 void LuaServerPlayer::SetColor(unsigned colorOrIdx)
 {
     if(GetAlpha(colorOrIdx) == 0)
     {
-        check(colorOrIdx < PLAYER_COLORS.size(), "Invalid color");
+        lua::assertTrue(colorOrIdx < PLAYER_COLORS.size(), "Invalid color");
         player.color = PLAYER_COLORS[colorOrIdx];
     } else
         player.color = colorOrIdx;
-    GAMESERVER.SendToAll(GameMessage_Player_Set_Color(playerId, player.color));
+    gameServer_.SendToAll(GameMessage_Player_Set_Color(playerId, player.color));
 }
 
 void LuaServerPlayer::Close()
@@ -81,15 +77,12 @@ void LuaServerPlayer::Close()
     if(player.ps == PS_LOCKED)
         return;
     if(player.ps == PS_OCCUPIED)
-    {
-        GAMESERVER.KickPlayer(playerId, NP_NOCAUSE, 0);
-        return;
-    }
+        gameServer_.KickPlayer(playerId);
     player.ps = PS_LOCKED;
     player.isReady = false;
 
-    GAMESERVER.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
-    GAMESERVER.AnnounceStatusChange();
+    gameServer_.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
+    gameServer_.AnnounceStatusChange();
 }
 
 void LuaServerPlayer::SetAI(unsigned level)
@@ -101,19 +94,19 @@ void LuaServerPlayer::SetAI(unsigned level)
     case 1: info.level = AI::EASY; break;
     case 2: info.level = AI::MEDIUM; break;
     case 3: info.level = AI::HARD; break;
-    default: check(false, "Invalid AI level");
+    default: lua::assertTrue(false, "Invalid AI level");
     }
     if(player.ps == PS_OCCUPIED)
-        GAMESERVER.KickPlayer(playerId, NP_NOCAUSE, 0);
+        gameServer_.KickPlayer(playerId);
     bool wasUsed = player.isUsed();
     player.ps = PS_AI;
     player.aiInfo = info;
     player.isReady = true;
     player.SetAIName(playerId);
-    GAMESERVER.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
+    gameServer_.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
     // If we added a new AI, set an initial color
     // Do this after(!) the player state was set
     if(!wasUsed)
-        GAMESERVER.CheckAndSetColor(playerId, player.color);
-    GAMESERVER.AnnounceStatusChange();
+        gameServer_.CheckAndSetColor(playerId, player.color);
+    gameServer_.AnnounceStatusChange();
 }

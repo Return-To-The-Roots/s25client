@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Addons.h"
+#include "AddonBool.h"
 
 /**
  *  Addon adds shows the hitpoints of a soldier above his picture in military buildings. 

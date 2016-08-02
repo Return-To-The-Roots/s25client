@@ -20,12 +20,6 @@
 #include "BasePlayerInfo.h"
 #include <stdexcept>
 
-inline void check(bool testValue, const std::string& error)
-{
-    if(!testValue)
-        throw std::runtime_error(error);
-}
-
 void LuaPlayerBase::Register(kaguya::State& state)
 {
     state["PlayerBase"].setClass(kaguya::ClassMetatable<LuaPlayerBase>()

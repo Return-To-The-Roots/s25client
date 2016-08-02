@@ -21,16 +21,18 @@
 #include "LuaPlayerBase.h"
 #include <kaguya/kaguya.hpp>
 
-class GameServerPlayer;
+struct JoinPlayerInfo;
+class GameServerInterface;
 
 class LuaServerPlayer: public LuaPlayerBase
 {
+    GameServerInterface& gameServer_;
     const unsigned playerId;
-    GameServerPlayer& player;
+    JoinPlayerInfo& player;
 protected:
     const BasePlayerInfo& GetPlayer() const override;
 public:
-    LuaServerPlayer(unsigned playerId);
+    LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId);
     static void Register(kaguya::State& state);
 
     void SetNation(Nation nat);

@@ -22,7 +22,28 @@
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "libutil/src/Log.h"
+#include "mygettext/src/mygettext.h"
+#include <utility>
 #include <fstream>
+
+namespace kaguya{
+    template<typename T1, typename T2>
+    struct lua_type_traits< std::pair<T1, T2> >
+    {
+        static int push(lua_State* l, const std::pair<T1, T2>& v)
+        {
+            int count = 0;
+            count += lua_type_traits<T1>::push(l, v.first);
+            count += lua_type_traits<T2>::push(l, v.second);
+            return count;
+        }
+    };
+}
+
+std::pair<unsigned, unsigned> LuaInterfaceBase::GetVersion()
+{
+    return std::pair<unsigned, unsigned>(1, 0);
+}
 
 LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
 {
@@ -41,6 +62,7 @@ LuaInterfaceBase::~LuaInterfaceBase()
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::ClassMetatable<LuaInterfaceBase>()
+        .addStaticFunction("GetVersion", &LuaInterfaceBase::GetVersion)
         .addMemberFunction("Log", &LuaInterfaceBase::Log)
         .addMemberFunction("IsHost", &LuaInterfaceBase::IsHost)
         .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
@@ -54,7 +76,7 @@ void LuaInterfaceBase::Register(kaguya::State& state)
 
 void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 {
-    LOG.write("Lua error: %s\n") % message;
+    LOG.write(_("Lua error: %s\n")) % message;
     if(GLOBALVARS.isTest)
     {
         GLOBALVARS.errorOccured = true;
@@ -72,8 +94,6 @@ bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
     if(!lua.dofile(scriptPath))
     {
         script_.clear();
-        if(GLOBALVARS.isTest)
-            throw std::runtime_error("Could not load lua script");
         return false;
     } else
     {
@@ -88,13 +108,31 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script)
     if(!lua.dostring(script))
     {
         script_.clear();
-        if(GLOBALVARS.isTest)
-            throw std::runtime_error("Could not load lua script");
         return false;
     } else
     {
         script_ = script;
         return true;
+    }
+}
+
+bool LuaInterfaceBase::CheckScriptVersion()
+{
+    kaguya::LuaRef func = lua["getRequiredLuaVersion"];
+    if(func.type() == LUA_TFUNCTION)
+    {
+        const unsigned scriptVersion = func.call<unsigned>();
+        if(scriptVersion == GetVersion().first)
+            return true;
+        else
+        {
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion().first % GetVersion().second;
+            return false;
+        }
+    } else
+    {
+        LOG.write(_("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated."));
+        return false;
     }
 }
 

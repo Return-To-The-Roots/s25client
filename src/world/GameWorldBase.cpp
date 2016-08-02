@@ -310,7 +310,7 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigne
         return best_visibility;
 
     /// Teamsicht aktiviert?
-    if(GetGGS().team_view)
+    if(GetGGS().teamView)
     {
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
         for(unsigned i = 0; i < GetPlayerCount(); ++i)

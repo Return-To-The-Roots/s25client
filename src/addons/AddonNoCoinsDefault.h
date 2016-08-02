@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Addons.h"
+#include "AddonBool.h"
 #include "mygettext/src/mygettext.h"
 
 /**
