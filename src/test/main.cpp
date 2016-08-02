@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 
 #include "Random.h"
+#include "test/testHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
 
@@ -31,6 +32,17 @@
 #include <ctime>
 
 namespace bfs = boost::filesystem;
+
+void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
+{
+#ifdef RTTR_RAND_TEST
+    RANDOM.Init(rand() + defaultValue);
+#else
+    RANDOM.Init(defaultValue);
+#endif
+    if(fileName)
+        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentRandomValue() << std::endl;
+}
 
 struct TestSetup
 {
@@ -58,9 +70,6 @@ struct TestSetup
             }
         }
         srand(static_cast<unsigned>(time(NULL)));
-#ifdef RTTR_RAND_TEST
-        RANDOM.Init(rand());
-#endif
     }
 };
 

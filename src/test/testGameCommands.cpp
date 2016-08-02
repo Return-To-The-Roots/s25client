@@ -27,12 +27,12 @@
 #include "figures/nofPassiveSoldier.h"
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
-#include "Random.h"
 #include "PointOutput.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
+#include "test/testHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
@@ -332,6 +332,8 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
 {
+    initGameRNG();
+
     const MapPoint closePt = hqPos + MapPoint(2, 0);
     const MapPoint farmPt = hqPos + MapPoint(6, 0);
     const MapPoint closeMilPt = hqPos - MapPoint(4, 0);
@@ -389,8 +391,8 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 {
-    std::cout << "SendSoldiersHome Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
-    
+    initGameRNG();
+
     const MapPoint milPt = hqPos + MapPoint(6, 0);
     // Setup: Give player 3 generals
     GamePlayer& player = world.GetPlayer(curPlayer);
@@ -541,11 +543,15 @@ namespace{
 
 BOOST_FIXTURE_TEST_CASE(CallGeologist, WorldWithGCExecution2P)
 {
+    initGameRNG();
+
     FlagWorkerTest(*this, JOB_GEOLOGIST, GD_HAMMER, boost::lambda::bind(&GameCommandFactory::CallGeologist, this, boost::lambda::_1));
 }
 
 BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 {
+    initGameRNG();
+
     FlagWorkerTest(*this, JOB_SCOUT, GD_BOW, boost::lambda::bind(&GameCommandFactory::CallScout, this, boost::lambda::_1));
 }
 

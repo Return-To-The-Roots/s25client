@@ -19,6 +19,7 @@
 #include "CreateSeaWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "test/testHelpers.h"
 #include <boost/foreach.hpp>
 
 CreateSeaWorld::CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers):
@@ -61,6 +62,9 @@ namespace{
 
 bool CreateSeaWorld::operator()(GameWorldGame& world) const
 {
+    // For consistent results
+    doInitGameRNG(0);
+
     world.Init(width_, height_, LT_GREENLAND);
     // Set everything to water
     RTTR_FOREACH_PT(MapPoint, width_, height_)

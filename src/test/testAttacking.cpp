@@ -26,7 +26,7 @@
 #include "nodeObjs/noFlag.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
-#include "Random.h"
+#include "test/testHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
@@ -144,6 +144,8 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
 
 BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, AttackFixture)
 {
+    initGameRNG();
+
     // Connect buildings
     curPlayer = 1;
     BuildRoadForBlds(hqPos[1], milBld1Near->GetPos());
@@ -197,6 +199,8 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, AttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
 {
+    initGameRNG();
+
     world.GetPlayer(0).team = TM_TEAM1;
     world.GetPlayer(1).team = TM_TEAM2;
     world.GetPlayer(2).team = TM_TEAM1;
@@ -281,7 +285,8 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
 {
-    std::cout << "ConquerBld Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    initGameRNG();
+
     AddSoldiers(milBld2Pos, 1, 5);
     AddSoldiersWithRank(milBld1NearPos, 1, 0);
     AddSoldiersWithRank(milBld1NearPos, 1, 1);

@@ -19,6 +19,7 @@
 #include "CreateEmptyWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "test/testHelpers.h"
 
 CreateEmptyWorld::CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers):
     width_(width), height_(height), playerNations_(numPlayers, NAT_AFRICANS)
@@ -26,6 +27,9 @@ CreateEmptyWorld::CreateEmptyWorld(unsigned width, unsigned height, unsigned num
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 {
+    // For consistent results
+    doInitGameRNG(0);
+
     world.Init(width_, height_, LT_GREENLAND);
     // Set everything to meadow
     for(MapPoint pt(0,0); pt.y < height_; ++pt.y)

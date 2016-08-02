@@ -19,6 +19,8 @@
 #include "test/WorldWithGCExecution.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "RTTR_AssertError.h"
+#include "addons/const_addons.h"
+#include "test/testHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 
@@ -103,6 +105,8 @@ BOOST_FIXTURE_TEST_CASE(TradeBothOrNone, TradeFixture)
 
 BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
 {
+    initGameRNG();
+
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
@@ -151,6 +155,8 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
 
 BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
 {
+    initGameRNG();
+
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_WOODCUTTER, 2);
@@ -191,6 +197,8 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
 
 BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
 {    
+    initGameRNG();
+
     // Trade more wares than available (not limited by donkeys)
     BOOST_REQUIRE_LT(numSaws, numDonkeys);
     this->TradeOverLand(players[0]->GetHQPos(), GD_SAW, JOB_NOTHING, numSaws * 2);
@@ -219,6 +227,8 @@ BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
 
 BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
 {
+    initGameRNG();
+
     this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
     // Each donkey carries a ware and we need a leader
     numBoards -= 2;
