@@ -14,19 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef RANDOM_H_INCLUDED
-#define RANDOM_H_INCLUDED
 
 #pragma once
+
+#ifndef RANDOM_H_INCLUDED
+#define RANDOM_H_INCLUDED
 
 #include "Singleton.h"
 #include <boost/array.hpp>
 #include <vector>
 #include <string>
-
-#ifdef max
-    #undef max
-#endif
 
 struct RandomEntry
 {
@@ -56,25 +53,8 @@ class Random : public Singleton<Random>
         /// Erzeugt eine Zufallszahl.
         int Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max);
 
-        template <typename T>
-        void Shuffle(T* const elements, unsigned int length, unsigned int repeat = 3)
-        {
-            for(unsigned int i = 0; i < repeat; ++i)
-            {
-                for(unsigned int j = 0; j < length; j++)
-                {
-                    unsigned int to = Rand(__FILE__, __LINE__, 0, length);
-
-                    T temp = elements[i];
-                    elements[i] = elements[to];
-                    elements[to] = temp;
-                }
-            }
-        }
-
         /// Gibt aktuelle Zufallszahl zurück
         int GetCurrentRandomValue() const { return rngState_; }
-        void ReplaySet(const unsigned int checksum) { rngState_ = checksum; }
 
         std::vector<RandomEntry> GetAsyncLog();
 
@@ -82,6 +62,7 @@ class Random : public Singleton<Random>
         void SaveLog(const std::string& filename);
 
         static int GetValueFromState(const int rngState, const int maxVal);
+
     private:
         int rngState_; /// Die aktuelle Zufallszahl.
         static inline int GetNextState(const int rngState, const int maxVal);
@@ -90,6 +71,23 @@ class Random : public Singleton<Random>
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #define RANDOM Random::inst()
+
+/// functor using RANDOM.Rand(...) e.g. for std::random_shuffle
+struct RandomFunctor
+{
+    const char* file_;
+    unsigned line_;
+    RandomFunctor(const char* file, unsigned line): file_(file), line_(line){}
+
+    ptrdiff_t operator()(ptrdiff_t max) const
+    {
+        RTTR_Assert(max < std::numeric_limits<int>::max());
+        return RANDOM.Rand(file_, line_, 0, static_cast<int>(max));
+    }
+};
+
+/// Shortcut for creating an instance of RandomFunctor
+#define RANDOM_FUNCTOR(varName) RandomFunctor varName(__FILE__, __LINE__)
 
 unsigned RandomEntry::GetValue() const {
     return Random::GetValueFromState(rngState, max);

@@ -1435,7 +1435,8 @@ void GamePlayer::RefreshDefenderList()
     for(unsigned i = 0; i < defenders.size(); ++i)
         defenders[i] = (i < militarySettings_[2] * 5u / MILITARY_SETTINGS_SCALE[2]);
     // und ordentlich schütteln
-    RANDOM.Shuffle(&defenders[0], defenders.size());
+    RANDOM_FUNCTOR(random);
+    std::random_shuffle(defenders.begin(), defenders.end(), random);
 
     defenders_pos = 0;
 }

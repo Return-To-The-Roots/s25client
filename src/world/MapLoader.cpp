@@ -365,22 +365,12 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
     }
 }
 
-// random function using RANDOM.Rand(...) for std::random_shuffle
-struct RandomFunctor
-{
-    ptrdiff_t operator()(ptrdiff_t max) const
-    {
-        RTTR_Assert(max < std::numeric_limits<int>::max());
-        return RANDOM.Rand(__FILE__, __LINE__, 0, static_cast<int>(max));
-    }
-};
-
 bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos)
 {
     //random locations? -> randomize them :)
     if(randomStartPos)
     {
-        RandomFunctor random;
+        RANDOM_FUNCTOR(random);
         std::random_shuffle(hqPositions.begin(), hqPositions.end(), random);
     }
 
