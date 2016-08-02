@@ -43,7 +43,7 @@ GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs): speed(ggs
     // register addons
     reset();
     for(unsigned i=0; i<ggs.getNumAddons(); i++){
-        unsigned status;
+        unsigned status = 0;
         AddonId id = ggs.getAddon(i, status)->getId();
         setSelection(id, status);
     }
@@ -61,7 +61,7 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     teamView = ggs.teamView; 
     randomStartPosition = ggs.randomStartPosition;
     for(unsigned i = 0; i < ggs.getNumAddons(); i++){
-        unsigned status;
+        unsigned status = 0;
         AddonId id = ggs.getAddon(i, status)->getId();
         setSelection(id, status);
     }
