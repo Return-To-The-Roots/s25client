@@ -24,6 +24,7 @@
 #include <boost/array.hpp>
 #include <vector>
 #include <string>
+#include <limits>
 
 struct RandomEntry
 {
