@@ -157,7 +157,7 @@ namespace{
         void initWorld()
         {
             // For consistent results
-            initGameRNG(0);
+            doInitGameRNG(0);
 
             world.Init(32, 32, LT_GREENLAND);
             hqPositions.push_back(MapPoint(0, 1));
