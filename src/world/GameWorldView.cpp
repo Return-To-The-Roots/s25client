@@ -76,29 +76,32 @@ void GameWorldView::SetNextZoomFactor()
 
     float remainingZoomDiff = targetZoomFactor - zoomFactor;
 
-    if (abs(remainingZoomDiff) <= 0.5 * zoomSpeed * zoomSpeed / ZOOM_ACCELERATION)
-    {
-        // deceleration towards zero zoom speed
-        if (zoomSpeed > 0)
-            zoomSpeed -= ZOOM_ACCELERATION;
-        else
-            zoomSpeed += ZOOM_ACCELERATION;
-    }
-    else
-    {
-        // acceleration to unlimited speed
-        if (remainingZoomDiff > 0)
-            zoomSpeed += ZOOM_ACCELERATION;
-        else
-            zoomSpeed -= ZOOM_ACCELERATION;
-    }
-
-    if (abs(remainingZoomDiff) < abs(zoomSpeed))
+    if (std::abs(remainingZoomDiff) < std::abs(zoomSpeed))
     {
         // last step
         zoomFactor = targetZoomFactor;
         zoomSpeed = 0;
     }
+    else
+    {
+        if (std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed * zoomSpeed / ZOOM_ACCELERATION)
+        {
+            // deceleration towards zero zoom speed
+            if (zoomSpeed > 0)
+                zoomSpeed -= ZOOM_ACCELERATION;
+            else
+                zoomSpeed += ZOOM_ACCELERATION;
+        }
+        else
+        {
+            // acceleration to unlimited speed
+            if (remainingZoomDiff > 0)
+                zoomSpeed += ZOOM_ACCELERATION;
+            else
+                zoomSpeed -= ZOOM_ACCELERATION;
+        }
+    }
+
 
     zoomFactor = zoomFactor + zoomSpeed;
     CalcFxLx();
