@@ -21,6 +21,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/MapConsts.h"
 #include "Settings.h"
+#include "GlobalVars.h"
 #include "GameClient.h"
 #include "world/MapGeometry.h"
 #include "world/GameWorldViewer.h"
@@ -230,7 +231,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         }
     }
 
-    if(SETTINGS.video.vbo && glGenBuffersARB && glBindBufferARB && glBufferDataARB)
+    if(SETTINGS.video.vbo && GLOBALVARS.ext_vbo)
     {
         // Create and fill the 3 VBOs for vertices, texCoords and colors
         GLuint vbos[3];

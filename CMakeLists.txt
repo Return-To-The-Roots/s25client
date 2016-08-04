@@ -216,10 +216,17 @@ ENDMACRO()
 
 IF (MSVC)
 	CheckAndAddFlag("/W3")
+	ADD_DEFINITIONS(/WX) # warning = error
+	ADD_DEFINITIONS(/MP) # parallel compilation
 ELSE (MSVC)
 	CheckAndAddFlag("-Wall")
+	CheckAndAddFlag("-Werror")
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
+CheckAndAddFlag("-Wpedantic")
+CheckAndAddFlag("-Wparentheses")
+CheckAndAddFlag("-Wfloat-conversion")
+CheckAndAddFlag("-Wsuggest-override")
 CheckAndAddFlag("-Wno-long-long")
 CheckAndAddFlag("-Wno-deprecated-register")
 CheckAndAddFlag("-Wno-unknown-pragmas")

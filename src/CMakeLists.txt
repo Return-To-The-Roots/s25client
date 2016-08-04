@@ -188,8 +188,6 @@ IF (MSVC)
 	ADD_DEFINITIONS(/wd4267)
 	# Signed/Unsigned operations
 	ADD_DEFINITIONS(/we4389)
-	ADD_DEFINITIONS(/WX) # warning = error
-	ADD_DEFINITIONS(/MP) # parallel compilation
 ENDIF()
 
 # Add Icon to Application

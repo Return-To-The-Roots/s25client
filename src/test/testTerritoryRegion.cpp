@@ -148,7 +148,6 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
                     pt.x += y - 10;
                 else if(y >= 13)
                     pt.x += 15 - y;
-                bool ok = TerritoryRegion::IsPointValid(world, rectAreas[i], pt);
                 BOOST_REQUIRE(TerritoryRegion::IsPointValid(world, rectAreas[i], pt));
                 if(i==0)
                     results.insert(pt);
