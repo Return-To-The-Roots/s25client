@@ -57,10 +57,10 @@ void glArchivItem_Bitmap_Player::Draw(DrawPoint dst, short dst_w, short dst_h, s
     std::copy(vertices, vertices + 4, vertices + 4);
     std::copy(texCoords, texCoords + 4, texCoords + 4);
 
-    texCoords[4].x += 0.5;
-    texCoords[5].x += 0.5;
-    texCoords[6].x += 0.5;
-    texCoords[7].x += 0.5;
+    texCoords[4].x += 0.5f;
+    texCoords[5].x += 0.5f;
+    texCoords[6].x += 0.5f;
+    texCoords[7].x += 0.5f;
 
     struct
     {
