@@ -39,7 +39,7 @@ addons:
             - libbz2-dev
             - libminiupnpc-dev
             - liblua5.2-dev
-            
+
 matrix:
     include:
         - os: osx
@@ -57,15 +57,16 @@ matrix:
         - compiler: clang
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
         - compiler: clang
-          env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03            
+          env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03
 
 install:
-    # Enable coverage analysis only in debug and for g++
+    # Enable coverage analysis only in debug and for clang
     - |
         if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
-            export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
             # GCov 4.6 cannot handle the file structure
             export CXX="g++-4.8"
+            export GCOV="gcov-4.8"
+            
             # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
             export LCOV_ROOT="$HOME/lcov"
             mkdir -p "$LCOV_ROOT"
@@ -73,21 +74,19 @@ install:
             tar xf "$LCOV_ROOT/lcov.tar.gz" --strip-components=1 -C $LCOV_ROOT
             export PATH="$LCOV_ROOT/bin:$PATH"
             which lcov
+            
+            # Install coveralls tool
             gem install coveralls-lcov
+            
+            # Enable
             export RTTR_COVERAGE="1"
+            export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
         else
+            export GCOV="gcov" # Just to have anything valid
             export RTTR_COVERAGE="0"
         fi
     # C++11 requires gcc-4.8 or newer
-    - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; fi
-    - |
-        if [[ "$CXX" == "g++"* ]]; then
-            # Adapt versions by simply replacing the prefix "g++"
-            export CC=${CXX/g++/gcc};
-            export GCOV=${CXX/g++/gcov};
-        else
-            export GCOV="gcov"
-        fi
+    - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; export CC="gcc-4.8"; fi
     # Use clang 3.5
     - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.5"; export CC="clang-3.5"; fi
 
@@ -113,7 +112,7 @@ after_success:
     # Coverage.io
     - |
         if [ "$RTTR_COVERAGE" = "1" ]; then
-            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -pb {} +" || true
+            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -lpb {} +" || true
             files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
             if [ "$files" != "" ]; then
                 bash <(curl -s https://codecov.io/bash) -f "$files"
