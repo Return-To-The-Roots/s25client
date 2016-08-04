@@ -32,10 +32,10 @@ const unsigned MAX_POS_SAVE_ENTRIES = CGI_MERCHANDISE_STATISTICS + 1;
 std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES, Point<unsigned short>::Invalid());
 
 IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
-                           const std::string& title, glArchivItem_Bitmap* background, bool modal, bool close_on_right_click, Window* parent)
+                           const std::string& title, glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
     : Window(x, y, id, parent, width, height),
       iwHeight(height), title_(title), background(background), last_x(0), last_y(0),
-      last_down(false), last_down2(false), modal(modal), closeme(false), isMinimized_(false), move(false), close_on_right_click(close_on_right_click)
+      last_down(false), last_down2(false), modal(modal), closeme(false), isMinimized_(false), move(false), closeOnRightClick_(closeOnRightClick)
 {
     memset(button_state, BUTTON_UP, sizeof(ButtonState) * 2);
 
@@ -128,7 +128,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
                 SetMinimized(!IsMinimized());
                 LOADER.GetSoundN("sound", 113)->Play(255, false);
             }
-            else if(!modal)
+            else if(!IsModal() || closeOnRightClick_)
                 Close();
         }
     }
@@ -223,7 +223,7 @@ bool IngameWindow::Draw_()
     };
 
     // Titelleiste
-    if(!modal)
+    if(closeOnRightClick_ || !IsModal())
         LOADER.GetImageN("resource", ids[0][button_state[0]])->Draw(pos);
 
     LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(pos + DrawPoint(width_ - 16, 0));
