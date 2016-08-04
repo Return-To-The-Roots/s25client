@@ -28,7 +28,7 @@
 #include "libutil/src/colors.h"
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, ChangePolicy policy, const std::vector<AddonId>& addonIds)
-    : IngameWindow(CGI_ADDONS, 0xFFFF, 0xFFFF, 700, 500, _("Addon Settings"), LOADER.GetImageN("resource", 41), true), ggs(ggs), policy(policy), addonIds(addonIds)
+    : IngameWindow(CGI_ADDONS, 0xFFFF, 0xFFFF, 700, 500, _("Addon Settings"), LOADER.GetImageN("resource", 41), true, false), ggs(ggs), policy(policy), addonIds(addonIds)
 {
     AddText(0, 20, 30, _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
 

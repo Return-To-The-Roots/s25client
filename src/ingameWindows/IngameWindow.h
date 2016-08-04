@@ -73,7 +73,7 @@ class IngameWindow : public Window
         /// "modalisiert" das Fenster.
         void SetModal(bool modal = true) { this->modal = modal; }
         /// ist das Fenster ein modales Fenster?
-        bool GetModal() { return modal; }
+        bool IsModal() { return modal; }
 
         void MouseLeftDown(const MouseCoords& mc);
         void MouseLeftUp(const MouseCoords& mc);
