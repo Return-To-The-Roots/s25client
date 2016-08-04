@@ -361,7 +361,8 @@ std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) con
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
         {
             // Ist es auch ein Figur und befindet sie sich an diesem Punkt?
-            if((*it)->GetType() == NOP_FIGURE || (*it)->GetGOT() == GOT_ANIMAL || (*it)->GetGOT() == GOT_SHIP)
+            const NodalObjectType noType = (*it)->GetType();
+            if(noType == NOP_FIGURE || noType == GOT_ANIMAL || noType == GOT_SHIP)
             {
                 if(static_cast<noMovable*>(*it)->GetPos() == pt)
                     objects.push_back(*it);

@@ -159,7 +159,7 @@ MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
     }
 
     // This should be the same, but faster
-    RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Point<int>(pt), dir)));
+    //RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Point<int>(pt), dir)));
     return res;
 }
 

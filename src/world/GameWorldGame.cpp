@@ -1172,13 +1172,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned c
         }
     }
 
-
-
     return false;
-
-    ///// Auf eigenem Terrain --> sichtbar
-    //if(GetNode(x, y).owner == player+1)
-    //  visible = true;
 }
 
 bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned player, const unsigned distance) const
@@ -1194,7 +1188,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
             if((*it)->GetGOT() == GOT_NOF_SCOUT_FREE)
             {
                 // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
-                nofScout_Free* scout = dynamic_cast<nofScout_Free*>(*it);
+                nofScout_Free* scout = static_cast<nofScout_Free*>(*it);
                 if(scout->GetPos() == pt && scout->GetPlayer() == player)
                     return true;
             }
@@ -1206,7 +1200,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
             // Soldaten?
             if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
             {
-                nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
+                nofActiveSoldier* soldier = static_cast<nofActiveSoldier*>(*it);
                 if(soldier->GetPos() == pt && soldier->GetPlayer() == player)
                     return true;
             }
@@ -1214,7 +1208,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
             else if((*it)->GetGOT() == GOT_FIGHTING)
             {
                 // Prüfen, ob da ein Soldat vom angegebenen Spieler dabei ist
-                if(dynamic_cast<noFighting*>(*it)->IsSoldierOfPlayer(player))
+                if(static_cast<noFighting*>(*it)->IsSoldierOfPlayer(player))
                     return true;
             }
         }
@@ -1223,7 +1217,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
 
         if((*it)->GetGOT() == GOT_SHIP)
         {
-            noShip* ship = dynamic_cast<noShip*>(*it);
+            noShip* ship = static_cast<noShip*>(*it);
             if(distance <= ship->GetVisualRange())
             {
                 if(ship->GetPos() == pt && ship->GetPlayer() == player)

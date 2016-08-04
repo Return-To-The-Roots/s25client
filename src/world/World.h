@@ -256,17 +256,16 @@ MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const { retu
 
 unsigned World::GetIdx(const MapPoint pt) const
 {
+    RTTR_Assert(pt.x < width_ && pt.y < height_);
     return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x);
 }
 
 const MapNode& World::GetNode(const MapPoint pt) const
 {
-    RTTR_Assert(pt.x < width_ && pt.y < height_);
     return nodes[GetIdx(pt)];
 }
 MapNode& World::GetNodeInt(const MapPoint pt)
 {
-    RTTR_Assert(pt.x < width_ && pt.y < height_);
     return nodes[GetIdx(pt)];
 }
 
