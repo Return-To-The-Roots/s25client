@@ -41,6 +41,7 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "TradePathCache.h"
 #include "notifications/ToolNote.h"
+#include "addons/const_addons.h"
 #include "gameTypes/VisualSettings.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/GoodTypes.h"
@@ -1434,7 +1435,8 @@ void GamePlayer::RefreshDefenderList()
     for(unsigned i = 0; i < defenders.size(); ++i)
         defenders[i] = (i < militarySettings_[2] * 5u / MILITARY_SETTINGS_SCALE[2]);
     // und ordentlich schütteln
-    RANDOM.Shuffle(&defenders[0], defenders.size());
+    RANDOM_FUNCTOR(random);
+    std::random_shuffle(defenders.begin(), defenders.end(), random);
 
     defenders_pos = 0;
 }

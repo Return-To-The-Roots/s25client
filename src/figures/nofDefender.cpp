@@ -26,6 +26,7 @@
 #include "nofPassiveSoldier.h"
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
+#include "addons/const_addons.h"
 
 
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player,

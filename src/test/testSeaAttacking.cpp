@@ -28,10 +28,11 @@
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "GamePlayer.h"
-#include "Random.h"
 #include "world/GameWorldViewer.h"
+#include "addons/const_addons.h"
 #include "gameData/SettingTypeConv.h"
 #include "test/PointOutput.h"
+#include "test/testHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
@@ -389,7 +390,8 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
 {
-    std::cout << "Random AttackHarbor: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    initGameRNG();
+
     BuildRoadForBlds(milBld2Pos, harborPos[2]);
     BuildRoadForBlds(milBld2Pos, hqPos[2]);
     // Add 1 soldier to dest harbor so we have a defender

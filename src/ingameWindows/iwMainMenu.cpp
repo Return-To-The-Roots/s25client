@@ -41,6 +41,7 @@
 #include "world/GameWorldViewer.h"
 #include "GameServer.h"
 #include "GamePlayer.h"
+#include "addons/const_addons.h"
 #include "gameData/const_gui_ids.h"
 
 iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)

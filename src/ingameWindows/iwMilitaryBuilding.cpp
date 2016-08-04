@@ -34,6 +34,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "controls/ctrlButton.h"
+#include "addons/const_addons.h"
 #include <boost/foreach.hpp>
 #include <set>
 

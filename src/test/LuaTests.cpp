@@ -37,6 +37,7 @@
 #include "helpers/converters.h"
 #include "helpers/Deleter.h"
 #include "test/PointOutput.h"
+#include "test/testHelpers.h"
 #include "libutil/src/colors.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
@@ -155,6 +156,9 @@ namespace{
 
         void initWorld()
         {
+            // For consistent results
+            initGameRNG(0);
+
             world.Init(32, 32, LT_GREENLAND);
             hqPositions.push_back(MapPoint(0, 1));
             hqPositions.push_back(MapPoint(16, 17));

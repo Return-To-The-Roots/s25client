@@ -30,6 +30,7 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
+#include "addons/const_addons.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/JobConsts.h"

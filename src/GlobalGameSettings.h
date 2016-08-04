@@ -18,12 +18,12 @@
 #ifndef GlobalGameSettings_H_INCLUDED
 #define GlobalGameSettings_H_INCLUDED
 
-#include "addons/const_addons.h"
 #include "gameTypes/GameSettingTypes.h"
 #include <vector>
 
 class Serializer;
 class Addon;
+struct AddonId;
 
 class GlobalGameSettings
 {

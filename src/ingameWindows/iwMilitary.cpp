@@ -25,6 +25,7 @@
 #include "iwHelp.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "addons/const_addons.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/const_gui_ids.h"
 

@@ -36,6 +36,7 @@
 #include "notifications/RoadNote.h"
 #include "notifications/ShipNote.h"
 #include "AIConstruction.h"
+#include "addons/const_addons.h"
 #include "gameData/TerrainData.h"
 #include "FindWhConditions.h"
 #include "GameMessages.h"

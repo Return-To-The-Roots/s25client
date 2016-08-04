@@ -27,7 +27,7 @@
 #include "postSystem/ShipPostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "PointOutput.h"
-#include "Random.h"
+#include "test/testHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -69,7 +69,8 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
 
 BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
 {
-    std::cout << "ShipBuilding Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    initGameRNG();
+
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const MapPoint hqPos = player.GetHQPos();
     const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
@@ -156,7 +157,8 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
 
 BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
 {
-    std::cout << "ExplorationExpedition Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    initGameRNG();
+
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
     const nobHarborBuilding& harbor = *player.GetHarbors().front();
@@ -224,7 +226,8 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
 
 BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)
 {
-    std::cout << "Expedition Rand: " << RANDOM.GetCurrentRandomValue() << std::endl;
+    initGameRNG();
+
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
     const nobHarborBuilding& harbor = *player.GetHarbors().front();

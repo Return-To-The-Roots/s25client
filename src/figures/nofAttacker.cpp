@@ -32,6 +32,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noFlag.h"
+#include "addons/const_addons.h"
 
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER

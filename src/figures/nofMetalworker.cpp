@@ -30,6 +30,7 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "addons/const_addons.h"
 #include "gameData/ToolConsts.h"
 #include "Log.h"
 

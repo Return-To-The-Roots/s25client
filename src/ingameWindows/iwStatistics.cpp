@@ -30,6 +30,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "addons/const_addons.h"
 #include "gameData/const_gui_ids.h"
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv):

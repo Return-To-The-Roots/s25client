@@ -22,6 +22,7 @@
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
 #include "notifications/BuildingNote.h"
+#include "addons/const_addons.h"
 #include "gameData/DoorConsts.h"
 #include "gameData/MapConsts.h"
 #include "nobBaseWarehouse.h"

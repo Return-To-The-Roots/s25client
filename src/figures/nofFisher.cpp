@@ -26,6 +26,7 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "addons/const_addons.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)

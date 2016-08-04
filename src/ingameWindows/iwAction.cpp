@@ -37,6 +37,7 @@
 #include "nodeObjs/noFlag.h"
 #include "buildings/nobMilitary.h"
 #include "ogl/glArchivItem_Font.h"
+#include "addons/const_addons.h"
 #include "gameData/const_gui_ids.h"
 
 // Tab - Flags

@@ -41,14 +41,30 @@ namespace detail
 #define STRINGIZE_SINGLE(s, data, expression) STRINGIZE_2(expression),
 #define STRINGIZE(...) BOOST_PP_SEQ_FOR_EACH(STRINGIZE_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
+#define __HAS_COMMA(...) BOOST_PP_VARIADIC_ELEM(15, __VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+#define __TRIGGER_PARENTHESIS_(...) ,
+
+#define IS_EMPTY(...) \
+        /* test if placing it between _TRIGGER_PARENTHESIS_ and the parenthesis adds a comma */ \
+        __HAS_COMMA(__TRIGGER_PARENTHESIS_ __VA_ARGS__ (/*empty*/))
 
 /// Generates an enum with members:
 /// count_ Number of enum entries
 /// values_() Function returning an array of all values
 /// toString() Member function returning the string representation of the value
 ///
-/// Usage: ENUM_WITH_STRING(MyFanceEnum, Value1, Value2 = 42, Value3)
+/// Usage: Put ENUM_WITH_STRING(MyFancyEnum, Value1, Value2 = 42, Value3) in a header
+/// In exactly 1 cpp file "#define DEFINE_MyFancyEnum" and include that header
 #define ENUM_WITH_STRING(EnumName, ...)                                \
+    BOOST_PP_IF(                                                       \
+        IS_EMPTY(DEFINE_##EnumName),                                   \
+        DEFINE_ENUM_WITH_STRING,                                       \
+        DECL_ENUM_WITH_STRING                                          \
+    )(EnumName, __VA_ARGS__)
+
+/// Declares the enum. Used when DEFINE_[EnumName] is not defined
+/// Do not use directly. Use ENUM_WITH_STRING
+#define DECL_ENUM_WITH_STRING(EnumName, ...)                           \
 struct EnumName {                                                      \
     enum type_ { __VA_ARGS__ };                                        \
                                                                        \
@@ -57,50 +73,68 @@ struct EnumName {                                                      \
     EnumName(type_ value) : value_(value) { }                          \
     operator type_() const { return value_; }                          \
                                                                        \
-    const char* toString() const                                       \
-    {                                                                  \
-        for (size_t index = 0; index < count_; ++index) {              \
-            if (values_()[index] == value_)                            \
-                return names_()[index];                                \
-        }                                                              \
-                                                                       \
-        return NULL;                                                   \
-    }                                                                  \
+    const char* toString() const;                                      \
                                                                        \
     static const size_t count_ = BOOST_PP_SEQ_SIZE(                    \
                                     BOOST_PP_VARIADIC_TO_SEQ(          \
                                         __VA_ARGS__));                 \
                                                                        \
-    static const int* values_()                                        \
+    static const int* values_();                                       \
+    static const char*  names_[count_];                                \
+    static void init_(); static void free_();                          \
+                                                                       \
+};
+
+/// Declares and defines the enum. Used when DEFINE_[EnumName] is defined
+/// Do not use directly. Use ENUM_WITH_STRING
+#define DEFINE_ENUM_WITH_STRING(EnumName, ...)                         \
+    DECL_ENUM_WITH_STRING(EnumName, __VA_ARGS__)                       \
+                                                                       \
+    const char* EnumName::toString() const                             \
+    {                                                                  \
+        for (size_t index = 0; index < count_; ++index) {              \
+            if (values_()[index] == value_)                            \
+                return names_[index];                                  \
+        }                                                              \
+                                                                       \
+        return NULL;                                                   \
+    }                                                                  \
+                                                                       \
+    const int* EnumName::values_()                                     \
     {                                                                  \
         static const int values[] =                                    \
             { IGNORE_ASSIGN(__VA_ARGS__) };                            \
         return values;                                                 \
     }                                                                  \
                                                                        \
-    static const char* const* names_()                                 \
+    const char*  EnumName::names_[EnumName::count_];                   \
+    void EnumName::init_()                                             \
     {                                                                  \
         static const char* const    rawnames_[] =                      \
             { STRINGIZE(__VA_ARGS__) };                                \
                                                                        \
-        static char*                processednames_[count_];           \
-        static bool                 initialized = false;               \
-                                                                       \
-        if (!initialized) {                                            \
             for (size_t index = 0; index < count_; ++index) {          \
                 size_t length =                                        \
                     std::strcspn(rawnames_[index], " =\t\n\r");        \
                                                                        \
-                processednames_[index] = new char[length + 1];         \
+                char* name = new char[length + 1];                     \
+                names_[index] = name;                                  \
                                                                        \
-                std::strncpy(                                          \
-                    processednames_[index], rawnames_[index], length); \
-                processednames_[index][length] = '\0';                 \
+                std::strncpy(name, rawnames_[index], length);          \
+                name[length] = '\0';                                   \
             }                                                          \
-        }                                                              \
-                                                                       \
-        return processednames_;                                        \
     }                                                                  \
-};
+    void EnumName::free_()                                             \
+    {                                                                  \
+        for (size_t index = 0; index < count_; ++index) {              \
+            delete[] names_[index];                                    \
+            names_[index] = NULL;                                      \
+        }                                                              \
+    }                                                                  \
+   namespace{ struct Init ## EnumName{                                 \
+        Init ## EnumName (){ EnumName::init_(); }                   \
+        ~Init ## EnumName (){ EnumName::free_(); }                  \
+        } Initializer ## EnumName ## __;                               \
+    }
 
 #endif // EnumWithString_h__
