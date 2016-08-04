@@ -32,7 +32,7 @@ ctrlMultiline::ctrlMultiline(Window* parent,
                              TextureColor tc,
                              glArchivItem_Font* font,
                              unsigned int format)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       tc(tc), font(font), format(format), lines_in_control((height - 4) / font->getHeight()), draw_box(true)
 {
     AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, lines_in_control);

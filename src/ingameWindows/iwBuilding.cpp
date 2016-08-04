@@ -38,7 +38,7 @@ const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
 iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
-    : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol
@@ -231,7 +231,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it=buildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
 					iwBuilding* nextscrn=new iwBuilding(gwv, gcFactory, *it);
-					nextscrn->Move(x_,y_);
+					nextscrn->Move(pos_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;
 				}

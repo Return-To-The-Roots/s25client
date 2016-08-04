@@ -37,7 +37,7 @@
 #include <boost/lambda/lambda.hpp>
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_TOOLS, 0xFFFE, 0xFFFE, 166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
+    IngameWindow(CGI_TOOLS, IngameWindow::posAtMouse,  166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory),
     settings_changed(false), ordersChanged(false), shouldUpdateTexts(false), isReplay(GAMECLIENT.IsReplayModeOn())
 {

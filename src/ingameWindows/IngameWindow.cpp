@@ -28,44 +28,35 @@
 #include "gameData/const_gui_ids.h"
 #include <cstring>
 
-const unsigned MAX_POS_SAVE_ENTRIES = CGI_MERCHANDISE_STATISTICS + 1;
-std::vector< Point<unsigned short> > IngameWindow::last_pos(MAX_POS_SAVE_ENTRIES, Point<unsigned short>::Invalid());
+std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
+const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(), std::numeric_limits<DrawPoint::ElementType>::max());
+const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max()-1, std::numeric_limits<DrawPoint::ElementType>::max()-1);
 
-IngameWindow::IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
+IngameWindow::IngameWindow(unsigned int id, const DrawPoint& pos, unsigned short width, unsigned short height,
                            const std::string& title, glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
-    : Window(x, y, id, parent, width, height),
-      iwHeight(height), title_(title), background(background), last_x(0), last_y(0),
+    : Window(pos, id, parent, width, height),
+      iwHeight(height), title_(title), background(background), lastMousePos(0, 0),
       last_down(false), last_down2(false), modal(modal), closeme(false), isMinimized_(false), move(false), closeOnRightClick_(closeOnRightClick)
 {
     memset(button_state, BUTTON_UP, sizeof(ButtonState) * 2);
 
     // Load last position or center the window
-    if(x == 0xFFFF)
+    if(pos == posLastOrCenter)
     {
-        MoveToCenter();
 
-        if(id < MAX_POS_SAVE_ENTRIES)
-        {
-            Point<unsigned short> pos = last_pos[id];
-            if(pos.x != 0xffff)
-            {
-                Move(pos.x, pos.y);
-            }
-        }
-
-
-    }
-    else if(x == 0xFFFE)
-    {
+        if(id < last_pos.size() && last_pos[id].isValid())
+            Move(last_pos[id]);
+        else
+            MoveToCenter();
+    } else if(pos == posAtMouse)
         MoveNextToMouse();
-    }
 }
 
 IngameWindow::~IngameWindow()
 {
     // Possibly save our old position
-    if(id_ < MAX_POS_SAVE_ENTRIES)
-        last_pos[id_] = Point<unsigned short>(x_, y_);
+    if(id_ < last_pos.size())
+        last_pos[id_] = pos_;
 }
 
 void IngameWindow::SetMinimized(bool minimized)
@@ -78,8 +69,8 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
     // Maus muss sich auf der Titelleiste befinden
     Rect title_rect(
-        static_cast<unsigned short>(x_ + LOADER.GetImageN("resource", 36)->getWidth()),
-        y_,
+        static_cast<unsigned short>(pos_.x + LOADER.GetImageN("resource", 36)->getWidth()),
+        pos_.y,
         static_cast<unsigned short>(width_ - LOADER.GetImageN("resource", 36)->getWidth() - LOADER.GetImageN("resource", 37)->getWidth()),
         LOADER.GetImageN("resource", 43)->getHeight()
         );
@@ -88,8 +79,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     {
         // Start mit Bewegung
         move = true;
-        last_x = mc.x;
-        last_y = mc.y;
+        lastMousePos = DrawPoint(mc.x, mc.y);
     }
 
     // beiden Buttons oben links und rechts prfen
@@ -139,42 +129,36 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     // Fenster bewegen, wenn die Bewegung aktiviert wurde
     if(move)
     {
-        int nx, ny;
-        int NewMouseX = mc.x;
-        int NewMouseY = mc.y;
+        DrawPoint newMousePos(mc.x, mc.y);
 
-        nx = x_ + (mc.x - last_x);
-        ny = y_ + (mc.y - last_y);
-        if(nx < 0)
+        DrawPoint newPos = pos_ + newMousePos - lastMousePos;
+        if(newPos.x < 0)
         {
-            NewMouseX -= nx;
-            nx = 0;
+            newMousePos.x -= newPos.x;
+            newPos.x = 0;
         }
-        if(ny < 0)
+        if(newPos.y < 0)
         {
-            NewMouseY -= ny;
-            ny = 0;
+            newMousePos.y -= newPos.y;
+            newPos.y = 0;
         }
-        if(nx > VIDEODRIVER.GetScreenWidth() - width_)
+        if(newPos.x > VIDEODRIVER.GetScreenWidth() - width_)
         {
-            NewMouseX -= nx - (VIDEODRIVER.GetScreenWidth() - width_);
-            nx = VIDEODRIVER.GetScreenWidth() - width_;
+            newMousePos.x -= newPos.x - (VIDEODRIVER.GetScreenWidth() - width_);
+            newPos.x = VIDEODRIVER.GetScreenWidth() - width_;
         }
-        if(ny > VIDEODRIVER.GetScreenHeight() - height_)
+        if(newPos.y > VIDEODRIVER.GetScreenHeight() - height_)
         {
-            NewMouseY -= ny - (VIDEODRIVER.GetScreenHeight() - height_);
-            ny = VIDEODRIVER.GetScreenHeight() - height_;
+            newMousePos.y -= newPos.y - (VIDEODRIVER.GetScreenHeight() - height_);
+            newPos.y = VIDEODRIVER.GetScreenHeight() - height_;
         }
 
         // Fix mouse position if moved too far
-        if(NewMouseX - mc.x || NewMouseY - mc.y)
-            VIDEODRIVER.SetMousePos(NewMouseX, NewMouseY);
+        if(newMousePos.x - mc.x || newMousePos.y - mc.y)
+            VIDEODRIVER.SetMousePos(newMousePos);
 
-        x_ = (unsigned short)nx;
-        y_ = (unsigned short)ny;
-
-        last_x = mc.x;
-        last_y = mc.y;
+        pos_ = newPos;
+        lastMousePos = DrawPoint(mc.x, mc.y);
     }
 
     // beiden Buttons oben links und rechts prfen
@@ -206,14 +190,12 @@ bool IngameWindow::Draw_()
         Close(false);
     }
 
-    DrawPoint pos(x_, y_);
-
     // Linkes oberes Teil
     glArchivItem_Bitmap* leftUpperImg = LOADER.GetImageN("resource", 36);
-    leftUpperImg->Draw(pos);
+    leftUpperImg->Draw(pos_);
     // Rechtes oberes Teil
     glArchivItem_Bitmap* rightUpperImg = LOADER.GetImageN("resource", 37);
-    rightUpperImg->Draw(pos + DrawPoint(width_ - rightUpperImg->getWidth(), 0));
+    rightUpperImg->Draw(pos_ + DrawPoint(width_ - rightUpperImg->getWidth(), 0));
 
     // Die beiden Buttons oben
     static const unsigned short ids[2][3] =
@@ -224,9 +206,9 @@ bool IngameWindow::Draw_()
 
     // Titelleiste
     if(closeOnRightClick_ || !IsModal())
-        LOADER.GetImageN("resource", ids[0][button_state[0]])->Draw(pos);
+        LOADER.GetImageN("resource", ids[0][button_state[0]])->Draw(pos_);
 
-    LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(pos + DrawPoint(width_ - 16, 0));
+    LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(pos_ + DrawPoint(width_ - 16, 0));
 
 
     // Breite berechnen
@@ -245,7 +227,7 @@ bool IngameWindow::Draw_()
     }
 
     glArchivItem_Bitmap& titleImg = *LOADER.GetImageN("resource", title_index);
-    DrawPoint titleImgPos = pos + DrawPoint(leftUpperImg->getWidth(), 0);
+    DrawPoint titleImgPos = pos_ + DrawPoint(leftUpperImg->getWidth(), 0);
     for(unsigned short i = 0; i < title_count; ++i)
     {
         titleImg.Draw(titleImgPos);
@@ -259,7 +241,7 @@ bool IngameWindow::Draw_()
         titleImg.Draw(titleImgPos, rest, 0, 0, 0, rest, 0);
 
     // Text auf die Leiste
-    NormalFont->Draw(pos + DrawPoint(width_, titleImg.getHeight()) / 2, title_, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
+    NormalFont->Draw(pos_ + DrawPoint(width_, titleImg.getHeight()) / 2, title_, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
 
     if(!isMinimized_)
     {
@@ -273,7 +255,7 @@ bool IngameWindow::Draw_()
         glArchivItem_Bitmap* leftSideImg = LOADER.GetImageN("resource", 38);
         glArchivItem_Bitmap* rightSideImg = LOADER.GetImageN("resource", 39);
         title_count = side_height / leftSideImg->getHeight();
-        DrawPoint leftImgPos = pos + DrawPoint(0, leftUpperImg->getHeight());
+        DrawPoint leftImgPos = pos_ + DrawPoint(0, leftUpperImg->getHeight());
         DrawPoint rightImgPos = leftImgPos + DrawPoint(width_ - leftSideImg->getWidth(), 0);
         for(unsigned short i = 0; i < title_count; ++i)
         {
@@ -298,7 +280,7 @@ bool IngameWindow::Draw_()
         // Wieviel mal nebeneinanderzeichnen?
         glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
         title_count = side_width / bottomBarImg->getWidth();
-        DrawPoint bottomImgPos = pos + DrawPoint(bottomBorderSideImg->getWidth(), iwHeight - bottomBarImg->getHeight());
+        DrawPoint bottomImgPos = pos_ + DrawPoint(bottomBorderSideImg->getWidth(), iwHeight - bottomBarImg->getHeight());
         for(unsigned short i = 0; i < title_count; ++i)
         {
             bottomBarImg->Draw(bottomImgPos);
@@ -319,12 +301,12 @@ bool IngameWindow::Draw_()
             unsigned client_width = width_ - 20;
             unsigned client_height = iwHeight - 31;
 
-            background->Draw(pos + DrawPoint(leftSideImg->getWidth(), leftUpperImg->getHeight()), client_width, client_height, 0, 0, client_width, client_height);
+            background->Draw(pos_ + DrawPoint(leftSideImg->getWidth(), leftUpperImg->getHeight()), client_width, client_height, 0, 0, client_width, client_height);
         }
 
         // Links und rechts unten die 2 kleinen Knäufe
-        bottomBorderSideImg->Draw(pos + DrawPoint(0, iwHeight - bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->Draw(pos + DrawPoint(width_ - bottomBorderSideImg->getWidth(), iwHeight - bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos_ + DrawPoint(0, iwHeight - bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos_ + DrawPoint(width_ - bottomBorderSideImg->getWidth(), iwHeight - bottomBorderSideImg->getHeight()));
 
         // Msg_PaintBefore aufrufen vor den Controls
         Msg_PaintBefore();
@@ -338,7 +320,7 @@ bool IngameWindow::Draw_()
         unsigned side_width = width_ - bottomBorderSideImg->getWidth() * 2;
         title_count = side_width / bottomBarImg->getWidth();
 
-        DrawPoint bottomImgPos = pos + DrawPoint(bottomBorderSideImg->getWidth(), 20);
+        DrawPoint bottomImgPos = pos_ + DrawPoint(bottomBorderSideImg->getWidth(), 20);
         for(unsigned short i = 0; i < title_count; ++i)
         {
             bottomBarImg->Draw(bottomImgPos);
@@ -350,8 +332,8 @@ bool IngameWindow::Draw_()
         if(rest)
             bottomBarImg->Draw(bottomImgPos, rest, 0, 0, 0, rest, 0);
 
-        bottomBorderSideImg->Draw(pos + DrawPoint(0, bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->Draw(pos + DrawPoint(width_ - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos_ + DrawPoint(0, bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos_ + DrawPoint(width_ - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
     }
 
     return true;
@@ -360,9 +342,7 @@ bool IngameWindow::Draw_()
 /// Verschiebt Fenster in die Bildschirmmitte
 void IngameWindow::MoveToCenter()
 {
-    // Ja, also zentrieren
     Move( (VIDEODRIVER.GetScreenWidth() - width_) / 2, (VIDEODRIVER.GetScreenHeight() - height_) / 2 );
-
 }
 
 /// Verschiebt Fenster neben die Maus
@@ -370,17 +350,17 @@ void IngameWindow::MoveNextToMouse()
 {
     // Fenster soll neben der Maus dargestellt werden
     if(VIDEODRIVER.GetMouseX() + 20 + width_ < VIDEODRIVER.GetScreenWidth())
-        this->x_ = VIDEODRIVER.GetMouseX() + 20;
+        pos_.x = VIDEODRIVER.GetMouseX() + 20;
     else
-        this->x_ = VIDEODRIVER.GetScreenWidth() - width_;
+        pos_.x = VIDEODRIVER.GetScreenWidth() - width_;
 
 
     if(VIDEODRIVER.GetMouseY() - height_ / 2 < 0)
-        this->y_ = 0;
+        pos_.y = 0;
     else if(VIDEODRIVER.GetMouseY() + 20 + height_ / 2 > VIDEODRIVER.GetScreenHeight())
-        this->y_ = VIDEODRIVER.GetScreenHeight() - height_;
+        pos_.y = VIDEODRIVER.GetScreenHeight() - height_;
     else
-        this->y_ = VIDEODRIVER.GetMouseY() - height_ / 2;
+        pos_.y = VIDEODRIVER.GetMouseY() - height_ / 2;
 }
 
 /// Weiterleitung von Nachrichten erlaubt oder nicht?

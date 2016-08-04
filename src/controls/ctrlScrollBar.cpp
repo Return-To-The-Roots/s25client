@@ -31,7 +31,7 @@ ctrlScrollBar::ctrlScrollBar(Window* parent,
                              unsigned short button_height,
                              TextureColor tc,
                              unsigned short pagesize)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       button_height(button_height), tc(tc), pagesize(pagesize),
       move(false), scroll_range(0), scroll_pos(0), scroll_height(0), scrollbar_height(0), scrollbar_pos(0), last_y(0)
 {

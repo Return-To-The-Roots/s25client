@@ -32,7 +32,7 @@ ctrlText::ctrlText(Window* parent,
                    unsigned int color,
                    unsigned int format,
                    glArchivItem_Font* font)
-    : Window(x, y, id, parent), ctrlBaseText(text, color, font), format(format)
+    : Window(DrawPoint(x, y), id, parent), ctrlBaseText(text, color, font), format(format)
 {
 }
 

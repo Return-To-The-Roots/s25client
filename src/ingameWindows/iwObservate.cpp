@@ -33,7 +33,7 @@
 #include <boost/foreach.hpp>
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
-    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), 0xFFFE, 0xFFFE, 300, 250, _("Observation window"), NULL),
+    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse,  300, 250, _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
     selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
@@ -151,24 +151,24 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             for (unsigned i = 1; i <= 4; ++i)
                 GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false) - diff, GetHeight() - 50);
 
-            if (x_ + width_ >= VIDEODRIVER.GetScreenWidth())
+            if (pos_.x + width_ >= VIDEODRIVER.GetScreenWidth())
             {
-                Move(VIDEODRIVER.GetScreenWidth() - width_ - 1, y_);
+                Move(VIDEODRIVER.GetScreenWidth() - width_ - 1, pos_.y);
             }
 
-            if (y_ + height_ >= VIDEODRIVER.GetScreenHeight())
+            if (pos_.y + height_ >= VIDEODRIVER.GetScreenHeight())
             {
-                Move(x_, VIDEODRIVER.GetScreenHeight() - height_ - 1);
+                Move(pos_.x, VIDEODRIVER.GetScreenHeight() - height_ - 1);
             }
     }
 }
 
 bool iwObservate::Draw_()
 {
-    if ((x_ != lastWindowPos.x) || (y_ != lastWindowPos.y))
+    if (pos_ != lastWindowPos)
     {
         view->SetPos(Point<int>(GetX() + 10, GetY() + 15));
-        lastWindowPos = Point<unsigned short>(x_, y_);
+        lastWindowPos = pos_;
     }
 
     if (followMovableId != GameObject::INVALID_ID)

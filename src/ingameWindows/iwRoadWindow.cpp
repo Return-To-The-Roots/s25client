@@ -25,7 +25,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
-    : IngameWindow(CGI_ROADWINDOW, mouse_x, mouse_y, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
+    : IngameWindow(CGI_ROADWINDOW, IngameWindow::posAtMouse, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), mousePosAtOpen_(mouse_x, mouse_y)
 {
     // Bau abbrechen
@@ -38,11 +38,6 @@ iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, in
         // Abbrechenbutton daneben schieben
         cancel->Move(46, 20);
     }
-
-    if(x_ + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        x_ = mouse_x - GetWidth() - 40;
-    if(y_ + GetIwHeight() > VIDEODRIVER.GetScreenHeight())
-        y_ = mouse_y - GetIwHeight() - 40;
 
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 45);
 }

@@ -53,7 +53,7 @@ enum TabID
 };
 
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
-    : IngameWindow(CGI_ACTION, mouse_x, mouse_y, 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
+    : IngameWindow(CGI_ACTION, DrawPoint(mouse_x, mouse_y), 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)
 {
     /*
@@ -332,10 +332,10 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
     main_tab->SetSelection(0, true);
 
-    if(x_ + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        x_ = mouse_x - GetWidth() - 40;
-    if(y_ + GetHeight() > VIDEODRIVER.GetScreenHeight())
-        y_ = mouse_y - GetHeight() - 40;
+    if(pos_.x + GetWidth() > VIDEODRIVER.GetScreenWidth())
+        pos_.x = mouse_x - GetWidth() - 40;
+    if(pos_.y + GetHeight() > VIDEODRIVER.GetScreenHeight())
+        pos_.y = mouse_y - GetHeight() - 40;
 
     VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
 }

@@ -30,9 +30,16 @@ class IngameWindow : public Window
 {
 
         /// For each id we save the last posistion of the window
-        static std::vector< Point<unsigned short> > last_pos;
+        static std::vector<DrawPoint> last_pos;
     public:
-        IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
+        /// Special position that gets translated to the last know position or screen center when passed to the ctor
+        /// Used to be -1 or 0xFFFF
+        static const DrawPoint posLastOrCenter;
+        /// Special position that gets translated to the mouse position when passed to the ctor
+        /// Used to be -2 or 0xFFFE
+        static const DrawPoint posAtMouse;
+
+        IngameWindow(unsigned int id, const DrawPoint& pos, unsigned short width, unsigned short height,
             const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true, Window* parent = NULL);
         ~IngameWindow() override;
 
@@ -96,14 +103,13 @@ class IngameWindow : public Window
         unsigned short iwHeight;
         std::string title_;
         glArchivItem_Bitmap* background;
-        unsigned short last_x;
-        unsigned short last_y;
+        DrawPoint lastMousePos;
         bool last_down;
         bool last_down2;
         ButtonState button_state[2];
 
-        Rect GetLeftButtonRect()  const { return Rect(x_, y_, 16, 16); }
-        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(x_ + width_ - 16), y_, 16, 16); }
+        Rect GetLeftButtonRect()  const { return Rect(pos_, 16, 16); }
+        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(pos_.x + width_ - 16), pos_.y, 16, 16); }
 
     private:
         bool modal;

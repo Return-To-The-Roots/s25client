@@ -30,7 +30,7 @@
  *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
  *  mehrfach betätigen kann.
  */
-iwPleaseWait::iwPleaseWait() : IngameWindow(CGI_PLEASEWAIT, 0xFFFF, 0xFFFF, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true, false)
+iwPleaseWait::iwPleaseWait() : IngameWindow(CGI_PLEASEWAIT, IngameWindow::posLastOrCenter, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true, false)
 {
     GAMEMANAGER.SetCursor(CURSOR_MOON);
     AddText(0, GetWidth() / 2, GetHeight() / 2, _("Please wait..."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, NormalFont);

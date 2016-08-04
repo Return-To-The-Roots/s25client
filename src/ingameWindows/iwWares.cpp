@@ -30,11 +30,11 @@
 #include "gameData/ShieldConsts.h"
 
 //167, 416
-iwWares::iwWares(unsigned int id, unsigned short x , unsigned short y,
+iwWares::iwWares(unsigned int id, const DrawPoint& pos,
                  const unsigned short width, const unsigned short height,
                  const std::string& title, unsigned char page_count,
                  bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player)
-    : IngameWindow(id, x, y, width, height, title, LOADER.GetImageN("io", 5)),
+    : IngameWindow(id, pos, width, height, title, LOADER.GetImageN("io", 5)),
       inventory(inventory), player(player), page(0), page_count(page_count)
 {
     if(!font)

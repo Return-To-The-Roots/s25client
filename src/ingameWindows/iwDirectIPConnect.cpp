@@ -32,7 +32,7 @@
 #include "libutil/src/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
-    : IngameWindow(CGI_DIRECTIPCONNECT, 0xFFFF, 0xFFFF, 300, 285, _("Join Game"), LOADER.GetImageN("resource", 41), true),
+    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, 300, 285, _("Join Game"), LOADER.GetImageN("resource", 41), true),
       server_type(server_type)
 {
     ctrlEdit* host, *port;

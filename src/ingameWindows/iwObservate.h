@@ -36,7 +36,7 @@ class iwObservate : public IngameWindow
         GameWorldView* view;
 
         const MapPoint selectedPt;
-        Point<unsigned short> lastWindowPos;
+        DrawPoint lastWindowPos;
 
         // Scrolling
         bool isScrolling;

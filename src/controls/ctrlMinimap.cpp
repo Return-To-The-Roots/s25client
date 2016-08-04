@@ -30,7 +30,7 @@ ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned short padding_y,
                           const unsigned short map_width,
                           const unsigned short map_height)
-    : Window(x, y, id, parent, width, height), padding(padding_x, padding_y), mapWidth_(map_width), mapHeight_(map_height)
+    : Window(DrawPoint(x, y), id, parent, width, height), padding(padding_x, padding_y), mapWidth_(map_width), mapHeight_(map_height)
 {
     SetMapSize(map_width, map_height);
 }
