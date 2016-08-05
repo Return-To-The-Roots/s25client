@@ -30,26 +30,33 @@ class IngameWindow : public Window
 {
 
         /// For each id we save the last posistion of the window
-        static std::vector< Point<unsigned short> > last_pos;
+        static std::vector<DrawPoint> last_pos;
     public:
-        IngameWindow(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
-            const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool close_on_right_click = true, Window* parent = NULL);
+        /// Special position that gets translated to the last know position or screen center when passed to the ctor
+        /// Used to be -1 or 0xFFFF
+        static const DrawPoint posLastOrCenter;
+        /// Special position that gets translated to the mouse position when passed to the ctor
+        /// Used to be -2 or 0xFFFE
+        static const DrawPoint posAtMouse;
+
+        IngameWindow(unsigned int id, const DrawPoint& pos, unsigned short width, unsigned short height,
+            const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true, Window* parent = NULL);
         ~IngameWindow() override;
 
         /// setzt die Fenster-ID.
         void SetID(unsigned int id) { this->id_ = id; }
         /// liefert die Fenster-ID.
-        unsigned int GetID() { return id_; }
+        unsigned int GetID() const { return id_; }
 
         /// setzt den Hintergrund.
         void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
         /// liefert den Hintergrund.
-        glArchivItem_Bitmap* GetBackground() { return background; }
+        glArchivItem_Bitmap* GetBackground() const { return background; }
 
         /// setzt den Fenstertitel.
         void SetTitle(const std::string& title) { this->title_ = title; }
         /// liefert den Fenstertitel.
-        const std::string& GetTitle() { return title_; }
+        const std::string& GetTitle() const { return title_; }
 
         /// setzt die ausgeklappte Höhe des Fensters.
         void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!isMinimized_) this->height_ = height; }
@@ -59,21 +66,23 @@ class IngameWindow : public Window
         /// merkt das Fenster zum Schließen vor.
         void Close(bool closeme = true) { this->closeme = closeme; }
         /// soll das Fenster geschlossen werden.
-        bool ShouldBeClosed() { return closeme; }
+        bool ShouldBeClosed() const { return closeme; }
 
         /// minimiert das Fenster.
         void SetMinimized(bool minimized = true);
         /// ist das Fenster minimiert?
-        bool IsMinimized() { return isMinimized_; }
+        bool IsMinimized() const { return isMinimized_; }
 
-        /// Fenster wird bei Rechtsklick geschlossen?
-        void SetCloseOnRightClick(bool close_on_right_click) {this->close_on_right_click = close_on_right_click;}
-        bool GetCloseOnRightClick() {return(close_on_right_click);}
+        /// Can we close the window on right-click?
+        /// If this is false and the window is modal the close button at the title bar will be hidden
+        void SetCloseOnRightClick(bool closeOnRightClick) {closeOnRightClick_ = closeOnRightClick;}
+        bool GetCloseOnRightClick() const {return closeOnRightClick_;}
 
-        /// "modalisiert" das Fenster.
+        /// Toggle the modal property. Modal windows disallow focus change.
+        /// To also disallow closing of the window via the title bar or right-click set close_on_right_click to false
         void SetModal(bool modal = true) { this->modal = modal; }
         /// ist das Fenster ein modales Fenster?
-        bool GetModal() { return modal; }
+        bool IsModal() const { return modal; }
 
         void MouseLeftDown(const MouseCoords& mc);
         void MouseLeftUp(const MouseCoords& mc);
@@ -94,21 +103,20 @@ class IngameWindow : public Window
         unsigned short iwHeight;
         std::string title_;
         glArchivItem_Bitmap* background;
-        unsigned short last_x;
-        unsigned short last_y;
+        DrawPoint lastMousePos;
         bool last_down;
         bool last_down2;
         ButtonState button_state[2];
 
-        Rect GetLeftButtonRect()  const { return Rect(x_, y_, 16, 16); }
-        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(x_ + width_ - 16), y_, 16, 16); }
+        Rect GetLeftButtonRect()  const { return Rect(pos_, 16, 16); }
+        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(pos_.x + width_ - 16), pos_.y, 16, 16); }
 
     private:
         bool modal;
         bool closeme;
         bool isMinimized_;
         bool move;
-        bool close_on_right_click;
+        bool closeOnRightClick_;
 };
 
 #endif // !INGAMEWINDOW_H_INCLUDED

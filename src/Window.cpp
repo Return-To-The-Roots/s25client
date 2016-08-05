@@ -26,7 +26,7 @@
 #include <cstdarg>
 
 Window::Window()
-    : x_(0), y_(0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
+    : pos_(0, 0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
 {
 }
 
@@ -38,14 +38,13 @@ Window::Window()
  *  @param[in] id     ID des Fensters
  *  @param[in] parent Handle auf das Parentfenster.
  */
-Window::Window(unsigned short x,
-               unsigned short y,
+Window::Window(const DrawPoint& pos,
                unsigned int id,
                Window* parent,
                unsigned short width,
                unsigned short height,
                const std::string& tooltip)
-    : x_(x), y_(y), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip), isInMouseRelay(false)
+    : pos_(pos), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip), isInMouseRelay(false)
 {
 }
 
@@ -75,12 +74,12 @@ bool Window::Draw()
  *
  *  @return die X-Koordinate.
  */
-unsigned short Window::GetX(bool absolute) const
+DrawPoint::ElementType Window::GetX(bool absolute) const
 {
     if(!absolute)
-        return x_;
+        return pos_.x;
 
-    unsigned short abs_x = x_;
+    DrawPoint::ElementType abs_x = pos_.x;
     const Window* temp = this;
 
     // Relative Koordinaten in absolute umrechnen
@@ -88,7 +87,7 @@ unsigned short Window::GetX(bool absolute) const
     while(temp->parent_)
     {
         temp = temp->parent_;
-        abs_x += temp->x_;
+        abs_x += temp->pos_.x;
     }
 
     return abs_x;
@@ -101,12 +100,12 @@ unsigned short Window::GetX(bool absolute) const
  *
  *  @return die Y-Koordinate.
  */
-unsigned short Window::GetY(bool absolute) const
+DrawPoint::ElementType Window::GetY(bool absolute) const
 {
     if(!absolute)
-        return y_;
+        return pos_.y;
 
-    unsigned short abs_y = y_;
+    DrawPoint::ElementType abs_y = pos_.y;
     const Window* temp = this;
 
     // Relative Koordinaten in absolute umrechnen
@@ -114,7 +113,7 @@ unsigned short Window::GetY(bool absolute) const
     while(temp->parent_)
     {
         temp = temp->parent_;
-        abs_y += temp->y_;
+        abs_y += temp->pos_.y;
     }
 
     return abs_y;
@@ -123,7 +122,7 @@ unsigned short Window::GetY(bool absolute) const
 
 DrawPoint Window::GetDrawPos() const
 {
-    DrawPoint result(x_, y_);
+    DrawPoint result = pos_;
     const Window* temp = this;
 
     // Relative Koordinaten in absolute umrechnen
@@ -131,7 +130,7 @@ DrawPoint Window::GetDrawPos() const
     while(temp->parent_)
     {
         temp = temp->parent_;
-        result += DrawPoint(temp->x_, temp->y_);
+        result += temp->pos_;
     }
 
     return result;
@@ -244,6 +243,14 @@ void Window::FreeRegion(Window* window)
         tofreeAreas_.push_back(window);
     else
         lockedAreas_.erase(window);
+}
+
+void Window::Move(const DrawPoint& offsetOrPos, bool absolute /*= true*/)
+{
+    if(absolute)
+        pos_ = offsetOrPos;
+    else
+        pos_ += offsetOrPos;
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?

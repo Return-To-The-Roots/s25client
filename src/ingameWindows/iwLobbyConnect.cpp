@@ -32,7 +32,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwLobbyConnect::iwLobbyConnect()
-    : IngameWindow(CGI_LOBBYCONNECT, 0xFFFF, 0xFFFF, 500, 260, _("Connecting to Lobby"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_LOBBYCONNECT, IngameWindow::posLastOrCenter, 500, 260, _("Connecting to Lobby"), LOADER.GetImageN("resource", 41))
 {
     // Benutzername
     AddText(0,  20, 40, _("Username:"), COLOR_YELLOW, 0, NormalFont);

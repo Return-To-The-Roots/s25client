@@ -37,7 +37,7 @@
 #include <cstdio>
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
-    : IngameWindow(CGI_INPUTWINDOW, 0xFFFE, 0xFFFE,
+    : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, 
                    300, 100, title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
 {
     AddEdit(0, 20, 30, GetWidth() - 40, 22, TC_GREEN2, NormalFont);
@@ -61,7 +61,7 @@ void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 
 
 iwMusicPlayer::iwMusicPlayer()
-    : IngameWindow(CGI_MUSICPLAYER, (unsigned short) - 1, (unsigned short) - 1, 430, 330, _("Music player"),
+    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter,  430, 330, _("Music player"),
                    LOADER.GetImageN("resource", 41)), changed(false)
 {
 

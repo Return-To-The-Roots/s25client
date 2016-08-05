@@ -33,7 +33,7 @@
 ctrlTimer::ctrlTimer(Window* parent,
                      unsigned int id,
                      unsigned int timeout)
-    : Window(0, 0, id, parent)
+    : Window(DrawPoint(0, 0), id, parent)
 {
     Start(timeout);
 }

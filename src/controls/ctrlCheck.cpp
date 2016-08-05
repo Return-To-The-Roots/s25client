@@ -33,7 +33,7 @@ ctrlCheck::ctrlCheck(Window* parent,
                      const std::string& text,
                      glArchivItem_Font* font,
                      bool readonly)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       tc(tc), text(text), font(font), check(false), readonly(readonly)
 {
 }

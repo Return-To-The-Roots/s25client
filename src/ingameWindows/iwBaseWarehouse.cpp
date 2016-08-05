@@ -41,7 +41,7 @@
 #include <stdexcept>
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh):
-    iwWares(wh->CreateGUIID(), 0xFFFE, 0xFFFE, 167, 416, title, page_count, true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+    iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse,  167, 416, title, page_count, true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
     gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
@@ -216,19 +216,19 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
 						iwHQ* nextscrn=new iwHQ(gwv, gcFactory, (*it),_("Headquarters"), 3);
-						nextscrn->Move(x_,y_);
+						nextscrn->Move(pos_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 					{
 						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-						nextscrn->Move(x_,y_);
+						nextscrn->Move(pos_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 					{
 						iwStorehouse* nextscrn=new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-						nextscrn->Move(x_,y_);
+						nextscrn->Move(pos_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					break;

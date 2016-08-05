@@ -62,7 +62,7 @@ namespace{
 }
 
 iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
-    IngameWindow(CGI_POSTOFFICE, 0xFFFF, 0xFFFF, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL)
 {
     AddImageButton(ID_SHOW_ALL,    18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier

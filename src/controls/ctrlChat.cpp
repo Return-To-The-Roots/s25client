@@ -47,7 +47,7 @@ ctrlChat::ctrlChat(Window* parent,
                    unsigned short height,
                    TextureColor tc,
                    glArchivItem_Font* font)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       tc(tc), font(font), time_color(0xFFFFFFFF)
 {
     // Zeilen pro Seite festlegen errechnen

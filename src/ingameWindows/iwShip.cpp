@@ -36,7 +36,7 @@
 #include "gameData/ShieldConsts.h"
 
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship):
-    IngameWindow(CGI_SHIP, (unsigned short) - 2, (unsigned short) - 2, 252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_SHIP, IngameWindow::posAtMouse,  252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory),
     player(ship ? ship->GetPlayer() : gwv.GetViewer().GetPlayerId()),
     ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)

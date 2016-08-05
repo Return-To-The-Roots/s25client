@@ -30,7 +30,7 @@ ctrlPercent::ctrlPercent(Window* parent,
                          unsigned int text_color,
                          glArchivItem_Font* font,
                          const unsigned short* percentage)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       tc(tc), text_color(text_color), font(font), percentage_(percentage)
 {
 }

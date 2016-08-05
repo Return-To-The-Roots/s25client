@@ -37,7 +37,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
-iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, 0xFFFF, 0xFFFF, 300, 515, _("Game menu"), LOADER.GetImageN("resource", 41))
+iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, 300, 515, _("Game menu"), LOADER.GetImageN("resource", 41))
 {
     // Der Soldat oben
     AddImage(1, 150, 36, LOADER.GetImageN("io", 30));

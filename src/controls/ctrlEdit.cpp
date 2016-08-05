@@ -37,7 +37,7 @@ ctrlEdit::ctrlEdit(Window* parent,
                    bool password,
                    bool disabled,
                    bool notify)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       maxLength_(maxlength), texColor_(tc), font_(font), isPassword_(password), isDisabled_(disabled),
       focus_(false), newFocus_(false), notify_(notify), numberOnly_(false)
 {

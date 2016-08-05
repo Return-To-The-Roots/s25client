@@ -320,7 +320,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
     // ist das zuletzt aktiv gewesene Fenster Modal?
     IngameWindow& lastActiveWnd = *windows.back();
-    if(lastActiveWnd.GetModal())
+    if(lastActiveWnd.IsModal())
     {
         if(!lastActiveWnd.IsActive())
             lastActiveWnd.SetActive();
@@ -452,14 +452,19 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     // Sind Fenster vorhanden && ist das aktive Fenster ok
     if(!windows.empty())
     {
-        // ist das Fenster modal? wenn ja, dann raus
-        if (windows.back()->GetModal())
-            return;
-
-        // prüfen ob Fenster geschlossen werden muss
         IngameWindow* foundWindow = FindWindowUnderMouse(mc);
         if(foundWindow){
-            // ja, dann schliessen
+            if(windows.back()->IsModal())
+            {
+                // We have a modal window -> Activate it
+                curDesktop->SetActive(false);
+                windows.back()->SetActive(true);
+                // Ignore actions in all other windows
+                if(foundWindow != windows.back())
+                    return;
+            }
+
+            // Close it if requested
             if (foundWindow->GetCloseOnRightClick())
                 foundWindow->Close();
             else
@@ -543,7 +548,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 
     // ist das zuletzt aktiv gewesene Fenster Modal?
     IngameWindow& activeWnd = *windows.back();
-    if(activeWnd.GetModal())
+    if(activeWnd.IsModal())
     {
         // Msg_LeftDownaufrufen
         activeWnd.Msg_WheelUp(mc);
@@ -606,7 +611,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         return;
     }
     IngameWindow& activeWnd = *windows.back();
-    if(activeWnd.GetModal())
+    if(activeWnd.IsModal())
     {
         activeWnd.Msg_WheelDown(mc);
         activeWnd.RelayMouseMessage(&Window::Msg_WheelDown, mc);

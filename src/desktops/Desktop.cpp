@@ -75,8 +75,8 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
                 continue;
             Window* ctrl = it->second;
             // unskalierte Position und Größe bekommen
-            unsigned realX = ctrl->GetX() * 800 / sr.oldWidth;
-            unsigned realY = ctrl->GetY() * 600 / sr.oldHeight;
+            int realX = ctrl->GetX() * 800 / sr.oldWidth;
+            int realY = ctrl->GetY() * 600 / sr.oldHeight;
             unsigned realWidth = ctrl->GetWidth() * 800 / sr.oldWidth;
             unsigned realHeight = ctrl->GetHeight() * 600 / sr.oldHeight;
             // Rundungsfehler?

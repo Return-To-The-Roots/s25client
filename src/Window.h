@@ -70,14 +70,14 @@ class Window
 
     public:
         Window();
-        Window(unsigned short x, unsigned short y, unsigned int id, Window* parent, unsigned short width = 0, unsigned short height = 0, const std::string& tooltip = "");
+        Window(const DrawPoint& position, unsigned int id, Window* parent, unsigned short width = 0, unsigned short height = 0, const std::string& tooltip = "");
         virtual ~Window();
         /// zeichnet das Fenster.
         bool Draw();
         /// liefert die X-Koordinate.
-        unsigned short GetX(bool absolute = true) const;
+        DrawPoint::ElementType GetX(bool absolute = true) const;
         /// liefert die Y-Koordinate.
-        unsigned short GetY(bool absolute = true) const;
+        DrawPoint::ElementType GetY(bool absolute = true) const;
         // Gets the absolute (X,Y) position as when calling GetX/GetY for drawing
         DrawPoint GetDrawPos() const;
         /// liefert die Breite des Fensters.
@@ -107,7 +107,8 @@ class Window
         /// setzt das Parentfenster.
         void SetParent(Window* parent) { this->parent_ = parent; }
         /// verschiebt das Fenster.
-        void Move(short x, short y, bool absolute = true) { this->x_ = (absolute ? x : this->x_ + x); this->y_ = (absolute ? y : this->y_ + y); }
+        void Move(short x, short y, bool absolute = true) { Move(DrawPoint(x, y), absolute); }
+        void Move(const DrawPoint& offsetOrPos, bool absolute = true);
 
         // macht das Fenster sichtbar oder blendet es aus
         virtual void SetVisible(bool visible) { this->visible_ = visible; }
@@ -281,7 +282,7 @@ class Window
     protected:
 
         /// gets the extent of the window
-        Rect GetRect() const { return Rect(x_, y_, GetWidth(), GetHeight()); }
+        Rect GetRect() const { return Rect(pos_, GetWidth(), GetHeight()); }
         /// scales X- und Y values to fit the screen
         unsigned short ScaleX(const unsigned short val) const;
         unsigned short ScaleY(const unsigned short val) const;
@@ -318,8 +319,7 @@ class Window
             BUTTON_UNKNOWN = 0xFF
         };
 
-        unsigned short x_;         /// X-Position des Fensters.
-        unsigned short y_;         /// Y-Position des Fensters.
+        DrawPoint pos_;            /// Position des Fensters.
         unsigned short width_;     /// Breite des Fensters.
         unsigned short height_;    /// Höhe des Fensters.
         unsigned int id_;          /// ID des Fensters.

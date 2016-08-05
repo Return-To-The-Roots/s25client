@@ -47,7 +47,7 @@ const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] =
 };
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
-    : IngameWindow(CGI_SAVE, 0xFFFF, 0xFFFF, 600, 400 + add_height, window_title, LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, 600, 400 + add_height, window_title, LOADER.GetImageN("resource", 41))
 {
     AddTable(0, 20, 30, 560, 300, TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250, ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER,  "", 0, ctrlTable::SRT_STRING);
 }

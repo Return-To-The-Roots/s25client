@@ -87,7 +87,7 @@ const unsigned short font_distance_y = 20;
 
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_BUILDINGS, 0xFFFE, 0xFFFE, 185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_BUILDINGS, IngameWindow::posAtMouse,  185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory)
 {
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
@@ -184,7 +184,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			{
 				gwv.MoveToMapPt((*it)->GetPos());
 				iwStorehouse* nextscrn=new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-				nextscrn->Move(x_,y_);
+				nextscrn->Move(pos_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
 			}
@@ -199,7 +199,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
 			{
 				gwv.MoveToMapPt((*it)->GetPos());
 				iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-				nextscrn->Move(x_,y_);
+				nextscrn->Move(pos_);
 				WINDOWMANAGER.Show(nextscrn);
 				return;
 			}

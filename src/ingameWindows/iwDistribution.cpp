@@ -42,7 +42,7 @@ const unsigned GROUP_SIZES[7] =
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_DISTRIBUTION, 0xFFFF, 0xFFFF, 290, 312, _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, 290, 312, _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     ctrlGroup* group;

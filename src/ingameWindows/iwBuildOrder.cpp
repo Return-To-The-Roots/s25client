@@ -28,7 +28,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
-    : IngameWindow(CGI_BUILDORDER, (unsigned short) - 1, (unsigned short) - 1, 320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),
+    : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter,  320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),
       gwv(gwv), settings_changed(false)
 {
     ctrlList* list = AddList(0, 15, 60, 150, 220, TC_GREY, NormalFont);

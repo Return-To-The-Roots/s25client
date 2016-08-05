@@ -39,7 +39,7 @@
 #include <set>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
-    : IngameWindow(building->CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
@@ -201,7 +201,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it=militaryBuildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
 					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gcFactory, *it);
-					nextscrn->Move(x_,y_);
+					nextscrn->Move(pos_);
 					WINDOWMANAGER.Show(nextscrn);
 					break;
 				}

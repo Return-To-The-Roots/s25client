@@ -26,7 +26,7 @@
 
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                        unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
-    : Window(x, y, id, parent, width, height), tc(tc), state(BUTTON_UP), border(true),
+    : Window(DrawPoint(x, y), id, parent, width, height), tc(tc), state(BUTTON_UP), border(true),
       check(false), illuminated(false), enabled(true)
 {
     SetTooltip(tooltip);

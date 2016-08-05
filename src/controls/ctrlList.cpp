@@ -30,7 +30,7 @@ ctrlList::ctrlList(Window* parent,
                    unsigned short height,
                    TextureColor tc,
                    glArchivItem_Font* font)
-    : Window(x, y, id, parent, width, height),
+    : Window(DrawPoint(x, y), id, parent, width, height),
       tc(tc), font(font), selection_(-1), mouseover(-1)
 {
     pagesize = (height - 4) / font->getHeight();

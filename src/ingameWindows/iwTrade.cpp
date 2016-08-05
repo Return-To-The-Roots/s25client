@@ -34,7 +34,7 @@
 #include <cstdio>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(wh.CreateGUIID(), (unsigned short) - 2, (unsigned short) - 2, 400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(wh.CreateGUIID(), IngameWindow::posAtMouse,  400, 194, _("Trade"), LOADER.GetImageN("resource", 41)),
       wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player

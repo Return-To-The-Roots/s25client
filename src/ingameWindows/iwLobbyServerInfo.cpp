@@ -45,7 +45,7 @@ void iwLobbyServerInfo::UpdateServerInfo()
 }
 
 iwLobbyServerInfo::iwLobbyServerInfo()
-    : IngameWindow(CGI_LOBBYSERVERINFO, 0xFFFF, 0xFFFF, 260, 260, _("Server Information"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_LOBBYSERVERINFO, IngameWindow::posLastOrCenter, 260, 260, _("Server Information"), LOADER.GetImageN("resource", 41))
 {
     AddText(0, 30,  40, _("Map Name:"), COLOR_YELLOW, 0, NormalFont);
     AddEdit(1, 30,  60, 200, 22, TC_GREEN2, NormalFont, 0, false, true);
