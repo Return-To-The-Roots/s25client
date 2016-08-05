@@ -29,6 +29,23 @@ IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
+################################################################################
+# C++11 Handling
+# By using this if-else one can assume that:
+# CMAKE_CXX_STANDARD==11 <=> CMAKE_CXX_FLAGS contains "-std=c++11"
+if("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+11")
+    set(CMAKE_CXX_STANDARD 11)
+elseif("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+14")
+    set(CMAKE_CXX_STANDARD 14)
+elseif("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+98")
+    set(CMAKE_CXX_STANDARD 98)
+elseif(NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "-std=c++${CMAKE_CXX_STANDARD}")
+else()
+    set(CMAKE_CXX_STANDARD 98)
+endif()
+################################################################################
+
 STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
 SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
 
@@ -231,13 +248,16 @@ CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wpedantic")
 CheckAndAddFlag("-Wparentheses")
 CheckAndAddFlag("-Wfloat-conversion")
-CheckAndAddFlag("-Wsuggest-override")
 CheckAndAddFlag("-Wno-long-long")
 CheckAndAddFlag("-Wno-deprecated-register")
 CheckAndAddFlag("-Wno-unknown-pragmas")
 CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
 CheckAndAddFlag("-Qunused-arguments")
+if(${CMAKE_CXX_STANDARD} EQUAL 11 OR ${CMAKE_CXX_STANDARD} EQUAL 14)
+    CheckAndAddFlag("-Wsuggest-override")
+    CheckAndAddFlag("-Wno-error=suggest-override")
+endif()
 
 # Variadic macros are part of C99 but supported by all big compilers in C++03
 CheckAndAddFlag("-Wno-variadic-macros")

@@ -53,6 +53,8 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
+#include <boost/array.hpp>
+#include <boost/foreach.hpp>
 
 #ifdef __APPLE__
 #   include <SDL_main.h>
@@ -283,15 +285,15 @@ bool InitProgram()
 
 bool InitDirectories()
 {
-    std::string curPath = boost::filesystem::current_path().string();
-    LOG.write("Starting in %s\n") % curPath;
+    // Note: Do not use logger yet. Filepath may not exist
+    const std::string curPath = boost::filesystem::current_path().string();
+    LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    const unsigned int dir_count = 7;
-    unsigned int dirs[dir_count] = { 94, 47, 48, 51, 85, 98, 99 }; // settingsdir muss zuerst angelegt werden (94)
+    boost::array<unsigned, 7> dirs = {{ 94, 47, 48, 51, 85, 98, 99 }}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
-    std::string newSettingsDir = GetFilePath(FILE_PATHS[94]);
+    const std::string newSettingsDir = GetFilePath(FILE_PATHS[94]);
 
 #ifdef _WIN32
     oldSettingsDir = GetFilePath("~/Siedler II.5 RttR");
@@ -301,19 +303,28 @@ bool InitDirectories()
     if(!oldSettingsDir.empty() && boost::filesystem::is_directory(oldSettingsDir))
         boost::filesystem::rename(oldSettingsDir, newSettingsDir);
 
-    for(unsigned int i = 0; i < dir_count; ++i)
+    BOOST_FOREACH(unsigned dirIdx, dirs)
     {
-        std::string dir = GetFilePath(FILE_PATHS[dirs[i]]);
+        std::string dir = GetFilePath(FILE_PATHS[dirIdx]);
         boost::system::error_code ec;
         boost::filesystem::create_directories(dir, ec);
         if(ec != boost::system::errc::success)
         {
-            s25Util::error(std::string("Directory ") + dir + " could not be created.");
-            s25Util::error("Failed to start the game");
+            // This writes to the log. If the log folder or file could not be created, an exception is thrown
+            // Make sure we catch that
+            try{
+                s25Util::error(std::string("Directory ") + dir + " could not be created.");
+                s25Util::error("Failed to start the game");
+            }catch(const std::runtime_error& error)
+            {
+                LOG.write("Additional error: %1%\n", LogTarget::Stderr) % error.what();
+            }
             WaitForEnter();
             return false;
         }
     }
+    // Write this to file too, after folders are created
+    LOG.write("Starting in %s\n", LogTarget::File) % curPath;
     return true;
 }
 
