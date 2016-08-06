@@ -1,0 +1,273 @@
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+//
+// This file is part of Return To The Roots.
+//
+// Return To The Roots is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Return To The Roots is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
+#include "defines.h" // IWYU pragma: keep
+#include "GamePlayer.h"
+#include "buildings/nobBaseMilitary.h"
+#include "RTTR_AssertError.h"
+#include "test/BQOutput.h"
+#include "test/PointOutput.h"
+#include "test/WorldFixture.h"
+#include "test/CreateEmptyWorld.h"
+#include <boost/test/unit_test.hpp>
+#include <boost/foreach.hpp>
+#include "nodeObjs/noStaticObject.h"
+
+// Test stuff related to building/building quality
+BOOST_AUTO_TEST_SUITE(BuildingSuite)
+
+typedef WorldFixture<CreateEmptyWorld, 0, 22, 22> EmptyWorldFixture0P;
+typedef WorldFixture<CreateEmptyWorld, 1, 22, 22> EmptyWorldFixture1P;
+typedef std::map<MapPoint, BuildingQuality> ReducedBQMap;
+
+/// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
+boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)
+{
+    BOOST_FOREACH(MapPoint pt, pts)
+    {
+        BuildingQuality bqReq;
+        if(helpers::contains(reducedBQs, pt))
+            bqReq = reducedBQs.find(pt)->second;
+        else
+            bqReq = BQ_CASTLE;
+        const BuildingQuality isBQ = world.GetNode(pt).bq;
+        if(bqReq == isBQ)
+            continue;
+        boost::test_tools::predicate_result result(false);
+        result.message() << isBQ << "!=" << bqReq << " at " << pt;
+        return result;
+    }
+    return true;
+}
+
+BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
+{
+    const MapPoint flagPos = world.GetPlayer(0).GetHQPos() - MapPoint(3, 6);
+    const MapPoint bldPos = world.GetNeighbour(flagPos, Direction::NORTHWEST);
+    // All points possibly affected by a building
+    const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(bldPos, 4);
+    const std::vector<MapPoint> radius1Pts = world.GetPointsInRadius(bldPos, 1);
+    ReducedBQMap reducedBQs;
+    // Initially all are full
+    BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
+
+    // Place flag
+    world.SetFlag(flagPos, 0);
+    reducedBQs.clear();
+    reducedBQs[flagPos] = BQ_NOTHING;
+    // Flag to any building would be to close and flag also to close (min diff of 2 required)
+    reducedBQs[world.GetNeighbour(flagPos, Direction::WEST)] = BQ_NOTHING;
+    reducedBQs[world.GetNeighbour(flagPos, Direction::NORTHEAST)] = BQ_NOTHING;
+    // Can build houses but not castles
+    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir)
+        reducedBQs[world.GetNeighbour(flagPos, dir)] = BQ_HOUSE;
+    // Flag to bld is blocked by flag
+    for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
+        reducedBQs[world.GetNeighbour(bldPos, dir)] = BQ_FLAG;
+    BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
+
+    // Remove flag -> BQ reset
+    world.DestroyFlag(flagPos, 0);
+    BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
+
+    // Place hut -> Addionally to changes by flag we can't place blds in range 1
+    // and no large blds in range 2
+    world.SetBuildingSite(BLD_WOODCUTTER, bldPos, 0);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_HUT);
+    reducedBQs[bldPos] = BQ_NOTHING;
+    // Every bq with distance==2 has BQ_HOUSE
+    for(unsigned i = 0; i < 12; i++)
+        reducedBQs[world.GetNeighbour2(bldPos, i)] = BQ_HOUSE;
+    BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, bldPos));
+    BOOST_FOREACH(MapPoint pt, radius1Pts)
+        BOOST_REQUIRE(pt == flagPos || world.IsRoadAvailable(false, pt));
+
+    // Remove -> BQ reset
+    world.DestroyFlag(flagPos, 0);
+    BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
+
+    // Place house -> Same as hut
+    world.SetBuildingSite(BLD_SAWMILL, bldPos, 0);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_HOUSE);
+    BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, bldPos));
+    BOOST_FOREACH(MapPoint pt, radius1Pts)
+        BOOST_REQUIRE(pt == flagPos || world.IsRoadAvailable(false, pt));
+
+    // Remove -> BQ reset
+    world.DestroyFlag(flagPos, 0);
+    BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
+
+    // Place castle
+    world.SetBuildingSite(BLD_FORTRESS, bldPos, 0);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_CASTLE);
+    // Addionally:
+    // Even flag is blocked by castle (model size)
+    for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
+    {
+        const MapPoint wouldBeFlagPt = world.GetNeighbour(bldPos, dir);
+        reducedBQs[wouldBeFlagPt] = BQ_NOTHING;
+        // And therefore also the bld
+        reducedBQs[world.GetNeighbour(wouldBeFlagPt, Direction::NORTHWEST)] = BQ_FLAG;
+    }
+    BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, bldPos));
+    // No roads over attachment
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::WEST)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::NORTHWEST)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::NORTHEAST)));
+    // But other 2 points are ok
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::SOUTHWEST)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(bldPos, Direction::EAST)));
+
+    // Remove -> BQ reset
+    world.DestroyFlag(flagPos, 0);
+    BOOST_REQUIRE(checkBQs(world, pts, ReducedBQMap()));
+}
+
+BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
+{
+    // Init BQ
+    world.InitAfterLoad();
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        BuildingQuality bq = world.GetNode(pt).bq;
+        BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bqNames[bq] << "!=" << bqNames[BQ_CASTLE] << " at " << pt.x << "," << pt.y);
+    }
+    // Create a road of length 6
+    std::vector<MapPoint> roadPts;
+    MapPoint curPt(10, 10);
+    for(unsigned i = 0; i < 6; i++)
+    {
+        roadPts.push_back(curPt);
+        world.SetPointRoad(curPt, 4, 1);
+        world.RecalcBQForRoad(curPt);
+        curPt = world.GetNeighbour(curPt, 4);
+    }
+    // Final pt still belongs to road
+    roadPts.push_back(curPt);
+    // Normally this is done by the flag
+    world.RecalcBQForRoad(curPt);
+
+    BOOST_FOREACH(MapPoint pt, roadPts)
+    {
+        BOOST_REQUIRE(world.IsOnRoad(pt));
+        // On the road we only allow flags
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt).bq, BQ_FLAG);
+        // Next to the road should be houses
+        // But left to first point is still a castle
+        BuildingQuality leftBQ = (pt == roadPts[0]) ? BQ_CASTLE : BQ_HOUSE;
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt - MapPoint(1, 0)).bq, leftBQ);
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt + MapPoint(1, 0)).bq, BQ_HOUSE);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
+{
+    // Calc all BQs
+    world.InitAfterLoad();
+    GamePlayer& player = world.GetPlayer(0);
+    const MapPoint hqPos = player.GetHQPos();
+    const nobBaseMilitary* hq = world.GetSpecObj<nobBaseMilitary>(hqPos);
+    BOOST_REQUIRE(hq);
+    const unsigned hqRadius = hq->GetMilitaryRadius();
+    BOOST_REQUIRE_GT(hqRadius, 4u);
+    std::vector<MapPoint> pts = world.GetPointsInRadius(hqPos, hq->GetMilitaryRadius() + 1);
+    BOOST_FOREACH(const MapPoint pt, pts)
+    {
+        const unsigned distance = world.CalcDistance(pt, hqPos);
+        if(distance < 3)
+            continue; // Influenced by HQ
+        else if(distance + 1 < hqRadius)
+        {
+            // Our territory -> No restrictions
+            BOOST_REQUIRE(world.IsPlayerTerritory(pt));
+            BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_CASTLE);
+        } else if(distance < hqRadius)
+        {
+            // Near border, flag if we cant build a buildings flag
+            BOOST_REQUIRE(world.IsPlayerTerritory(pt));
+            if(!world.IsPlayerTerritory(world.GetNeighbour(pt, Direction::SOUTHEAST)))
+                BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_FLAG);
+            else
+                BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_CASTLE);
+        } else if(distance == hqRadius)
+        {
+            // At border
+            BOOST_REQUIRE(!world.IsPlayerTerritory(pt));
+            BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, 0u + 1u);
+            BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_NOTHING);
+        } else
+        {
+            // Outside border
+            BOOST_REQUIRE(!world.IsPlayerTerritory(pt));
+            BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, 0u);
+            BOOST_REQUIRE_EQUAL(world.GetBQ(pt, 0), BQ_NOTHING);
+        }
+    }
+
+    // Place a flag near a border
+    MapPoint flagPt = hqPos;
+    for(unsigned i = 0; i < hqRadius - 2; i++)
+        flagPt = world.GetNeighbour(flagPt, i % 2 ? Direction::SOUTHEAST : Direction::SOUTHWEST);
+    // This is near the border, so only a flag is possible
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_FLAG);
+    world.SetFlag(flagPt, 0);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetGOT(), GOT_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::WEST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHWEST), 0), BQ_CASTLE); // Building to this flag
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHEAST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::EAST), 0), BQ_HOUSE); // This flag blocks castles extensions
+                                                                                                // This flag is to close and border prohibits building
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHWEST), 0), BQ_NOTHING);
+}
+
+void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned size)
+{
+    world.DestroyNO(pos, false);
+    world.SetNO(pos, new noStaticObject(pos, 0, 0, size));
+    world.RecalcBQAroundPointBig(pos);
+}
+
+BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
+{
+    const MapPoint objPos = world.GetPlayer(0).GetHQPos() - MapPoint(3, 6);
+    const std::vector<MapPoint> ptsAroundObj = world.GetPointsInRadiusWithCenter(objPos, 2);
+    const std::vector<MapPoint> radius1Pts = world.GetPointsInRadius(objPos, 1);
+    BOOST_REQUIRE(checkBQs(world, ptsAroundObj, ReducedBQMap()));
+    ReducedBQMap reducedBQs;
+
+    // Size=0 -> Block only point
+    addStaticObj(world, objPos, 0);
+    reducedBQs[objPos] = BQ_NOTHING;
+    reducedBQs[world.GetNeighbour(objPos, Direction::NORTHWEST)] = BQ_FLAG;
+    // Can build houses but not castles
+    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir)
+        reducedBQs[world.GetNeighbour(objPos, dir)] = BQ_HOUSE;
+    BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
+    BOOST_FOREACH(MapPoint pt, radius1Pts)
+        BOOST_REQUIRE(world.IsRoadAvailable(false, pt));
+}
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -37,6 +37,10 @@ private:
 template<typename T_IsOnRoad>
 BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly /*= false*/) const
 {
+    // Cannot build on blocking objects
+    if(world.GetNO(pt)->GetBM() != noBase::BM_NOTBLOCKING)
+        return BQ_NOTHING;
+
     //////////////////////////////////////////////////////////////////////////
     // 1. Check maximum allowed BQ on terrain
 
@@ -44,7 +48,6 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     unsigned mine_hits = 0;
     unsigned flag_hits = 0;
 
-    // bebaubar?
     for(unsigned char i = 0; i < 6; ++i)
     {
         TerrainBQ bq = TerrainData::GetBuildingQuality(world.GetTerrainAround(pt, i));
@@ -73,13 +76,13 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return BQ_NOTHING;
 
 
+    RTTR_Assert(curBQ == BQ_FLAG || curBQ == BQ_MINE || curBQ == BQ_CASTLE);
+
     //////////////////////////////////////////////////////////////////////////
     // 2. Reduce BQ based on altitude
 
-    RTTR_Assert(curBQ == BQ_FLAG || curBQ == BQ_MINE || curBQ == BQ_CASTLE);
-
     unsigned char curAltitude = world.GetNode(pt).altitude;
-    // Bergwerke anders handhaben
+    // Restraints for buildings
     if(curBQ == BQ_CASTLE)
     {
         // First check the height of the (possible) buildings flag
@@ -124,10 +127,6 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     //////////////////////////////////////////////////////////////////////////
     // 3. Check neighbouring objects that make building impossible
 
-    // Cannot build on blocking objects
-    if(world.GetNO(pt)->GetBM() != noBase::BM_NOTBLOCKING)
-        return BQ_NOTHING;
-
     // Blocking manners of neighbours (cache for reuse)
     boost::array<noBase::BlockingManner, 6> neighbourBlocks;
     for(unsigned i = 0; i < 6; ++i)
@@ -139,10 +138,6 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         if(neighbourBlocks[i] == noBase::BM_CHARBURNERPILE)
             return BQ_NOTHING;
     }
-
-    // Build nothing if we have a flag EAST or SW
-    if(neighbourBlocks[3] == noBase::BM_FLAG || neighbourBlocks[5] == noBase::BM_FLAG)
-        return BQ_NOTHING;
 
     if(flagOnly)
     {
@@ -157,35 +152,27 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return BQ_FLAG;
     }
 
+    // Build nothing if we have a flag EAST or SW
+    if(neighbourBlocks[Direction::EAST] == noBase::BM_FLAG || neighbourBlocks[Direction::SOUTHWEST] == noBase::BM_FLAG)
+        return BQ_NOTHING;
+
     //////////////////////////////////////////////////////////////////////////
     // 4. Potentially reduce BQ if some objects are nearby
 
+    // Trees allow only huts and mines around
     if(curBQ > BQ_HUT && curBQ != BQ_MINE)
     {
         for(unsigned i = 0; i < 6; ++i)
         {
-            // Baum --> around = hut
             if(neighbourBlocks[i] == noBase::BM_TREE)
             {
                 curBQ = BQ_HUT;
                 break;
             }
-
-            /*// StaticObject --> rundrum flag/hut
-            else if(GetNO(GetXA(x, y, i), GetYA(x, y, i))->GetType() == NOP_OBJECT)
-            {
-            const noStaticObject *obj = GetSpecObj<noStaticObject>(GetXA(x, y, i), GetYA(x, y, i));
-            if(obj->GetSize() == 2)
-            val = BQ_FLAG;
-            else
-            val = BQ_HUT;
-
-            break;
-            }*/
         }
     }
 
-    // Stein, Feuer und Getreidefeld --> rundrum Flagge
+    // Granite type block (stones, fire, grain fields) -> Flag around
     for(unsigned i = 0; i < 6; ++i)
     {
         if(neighbourBlocks[i] == noBase::BM_GRANITE)
@@ -195,17 +182,20 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         }
     }
 
-    // Flagge
+    // Castle-sized buildings have extensions -> Need non-blocking object there so it can be removed
+    // Note: S2 allowed blocking environment objects here which leads to visual bugs and problems as we can't place the extensions
     if(curBQ == BQ_CASTLE)
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            if(neighbourBlocks[i] == noBase::BM_FLAG)
+            if(neighbourBlocks[i] != noBase::BM_NOTBLOCKING)
                 curBQ = BQ_HOUSE;
         }
     }
 
-    // Buildings
+    // Check for buildings in a range of 2 -> House only
+    // Note: This is inconsistent (as in the original) as it allows building a castle then a house, but not the other way round
+    // --> Remove this check? Only possible reason why castles could not be build should be the extensions
     if(curBQ == BQ_CASTLE)
     {
         for(unsigned i = 0; i < 12; ++i)
@@ -220,6 +210,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         }
     }
 
+    // Road at attachment -> No castle
     if(curBQ == BQ_CASTLE)
     {
         for(unsigned i = 0; i < 3; ++i)
@@ -232,12 +223,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         }
     }
 
-    if(curBQ != BQ_FLAG)
-    {
-        // If point is on a road -> Flag only
-        if(isOnRoad(pt))
-            curBQ = BQ_FLAG;
-    }
+    // If point is on a road -> Flag only
+    if(curBQ != BQ_FLAG && isOnRoad(pt))
+        curBQ = BQ_FLAG;
 
     if(curBQ == BQ_FLAG)
     {
@@ -251,9 +239,8 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return BQ_FLAG;
     }
 
-    // Schloss bis hierhin und ist hier ein Hafenplatz?
+    // If we can build a castle and this is a harbor point -> Allow harbor
     if(curBQ == BQ_CASTLE && world.GetNode(pt).harborId)
-        // Dann machen wir einen Hafen draus
         curBQ = BQ_HARBOR;
 
     //////////////////////////////////////////////////////////////////////////
@@ -269,8 +256,10 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
 
     // If not, we could still build a flag, unless there is another one around
     for(unsigned i = 0; i < 3; ++i)
+    {
         if(neighbourBlocks[i] == noBase::BM_FLAG)
             return BQ_NOTHING;
+    }
     return BQ_FLAG;
 }
 
