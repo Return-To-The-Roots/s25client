@@ -49,14 +49,14 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         const bool fow = (visibility == VIS_FOW);
 
         unsigned char owner;
-        NodalObjectType got = NOP_NOTHING;
+        NodalObjectType noType = NOP_NOTHING;
         FOW_Type fot = FOW_NOTHING;
         if(!fow)
         {
             const MapNode& node = gwv.GetNode(pt);
             owner = node.owner;
             if(node.obj)
-                got = node.obj->GetType();
+                noType = node.obj->GetType();
         } else
         {
             const FoWNode& node = gwv.GetYoungestFOWNode(pt);
@@ -66,7 +66,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         }
 
        // Baum an dieser Stelle?
-        if((!fow && got == NOP_TREE) || (fow && fot == FOW_TREE)) //-V807
+        if((!fow && noType == NOP_TREE) || (fow && fot == FOW_TREE)) //-V807
         {
             color = VaryBrightness(TREE_COLOR, VARY_TREE_COLOR);
             drawn_object = DO_TERRAIN;
@@ -79,7 +79,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             }
         }
         // Granit an dieser Stelle?
-        else if((!fow && got == NOP_GRANITE) || (fow && fot == FOW_GRANITE))
+        else if((!fow && noType == NOP_GRANITE) || (fow && fot == FOW_GRANITE))
         {
             color = VaryBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
             drawn_object = DO_TERRAIN;
@@ -98,7 +98,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             if(owner)
             {
                 // Building?
-                if(((!fow && (got == NOP_BUILDING || got == NOP_BUILDINGSITE)) || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
+                if(((!fow && (noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)) || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
                     drawn_object = DO_BUILDING;
                 /// Roads?
                 else if(IsRoad(pt, visibility))
