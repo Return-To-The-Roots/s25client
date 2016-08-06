@@ -35,6 +35,7 @@
 #include "addons/AddonMaxWaterwayLength.h"
 #include "gameTypes/RoadBuildState.h"
 #include "helpers/converters.h"
+#include "gameData/GuiConsts.h"
 #include <boost/format.hpp>
 #include <stdexcept>
 
@@ -52,7 +53,9 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
 	d_active(false),
 	pos(pos),
 	width(width), height(height),
-    zoomFactor(1.f)
+    zoomFactor(1.f),
+    targetZoomFactor(1.f),
+    zoomSpeed(0.f)
 {
     MoveTo(0, 0);
 }
@@ -66,10 +69,54 @@ const GameWorldBase& GameWorldView::GetWorld() const
     return gwv.GetWorld();
 }
 
+void GameWorldView::SetNextZoomFactor()
+{
+    if (zoomFactor == targetZoomFactor) // == with float is ok here, is explicitly set in last step
+        return;
+
+    float remainingZoomDiff = targetZoomFactor - zoomFactor;
+
+    if (std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed * zoomSpeed / ZOOM_ACCELERATION)
+    {
+        // deceleration towards zero zoom speed
+        if (zoomSpeed > 0)
+            zoomSpeed -= ZOOM_ACCELERATION;
+        else
+            zoomSpeed += ZOOM_ACCELERATION;
+    }
+    else
+    {
+        // acceleration to unlimited speed
+        if (remainingZoomDiff > 0)
+            zoomSpeed += ZOOM_ACCELERATION;
+        else
+            zoomSpeed -= ZOOM_ACCELERATION;
+    }
+
+    if (std::abs(remainingZoomDiff) < std::abs(zoomSpeed))
+    {
+        // last step
+        zoomFactor = targetZoomFactor;
+        zoomSpeed = 0;
+    }
+
+    zoomFactor = zoomFactor + zoomSpeed;
+    CalcFxLx();
+}
+
 void GameWorldView::SetZoomFactor(float zoomFactor)
 {
-    this->zoomFactor = zoomFactor;
-    CalcFxLx();
+    if (zoomFactor < ZOOM_MIN)
+        targetZoomFactor = ZOOM_MIN;
+    else if (zoomFactor > ZOOM_MAX)
+        targetZoomFactor = ZOOM_MAX;
+    else
+        targetZoomFactor = zoomFactor;
+}
+
+float GameWorldView::GetCurrentTargetZoomFactor() const
+{
+    return targetZoomFactor;
 }
 
 struct ObjectBetweenLines
@@ -82,6 +129,8 @@ struct ObjectBetweenLines
 
 void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, const MapPoint selected, unsigned* water)
 {
+    SetNextZoomFactor();
+
     int shortestDistToMouse = 100000;
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
     mousePos -= Point<int>(pos);

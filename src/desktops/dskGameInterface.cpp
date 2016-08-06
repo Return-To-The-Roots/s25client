@@ -70,6 +70,7 @@
 #include "gameData/TerrainData.h"
 #include "gameData/const_gui_ids.h"
 #include "gameData/GameConsts.h"
+#include "gameData/GuiConsts.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Sound.h"
@@ -92,7 +93,7 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
-    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(0)
+    selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -341,7 +342,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw zoom level indicator icon
-    if (zoomLvl > 0)
+    if (gwv.GetCurrentTargetZoomFactor() != 1.f)
     {
         glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
         const DrawPoint drawPos(iconPos);
@@ -349,8 +350,8 @@ void dskGameInterface::Msg_PaintAfter()
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
         magnifierImg->Draw(drawPos, 0, 0, 0, 0);
 
-        std::string multiplier = helpers::toString(zoomLvl);
-        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), multiplier, glArchivItem_Font::DF_LEFT, COLOR_YELLOW);
+        std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
+        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
     }
 }
 
@@ -764,24 +765,53 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case 's': // Produktivität anzeigen
             gwv.ToggleShowProductivity();
             return true;
+        case 26: // ctrl+z
+            gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+            return true;
         case 'z': // zoom
-            if(++zoomLvl > 5)
+            if (++zoomLvl >= ZOOM_FACTORS.size())
                 zoomLvl = 0;
+
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
             return true;
-        case 'Z':
+        case 'Z': // shift-z, reverse zoom
             if (zoomLvl == 0)
-            {
-                zoomLvl = 5;
-            } else
-            {
+                zoomLvl = ZOOM_FACTORS.size() - 1;
+            else
                 zoomLvl--;
-            }
+
             gwv.SetZoomFactor(ZOOM_FACTORS[zoomLvl]);
             return true;
     }
 
     return false;
+}
+
+bool dskGameInterface::Msg_WheelUp(const MouseCoords& mc) 
+{ 
+    WheelZoom(ZOOM_WHEEL_INCREMENT);
+    return true; 
+}
+bool dskGameInterface::Msg_WheelDown(const MouseCoords& mc) 
+{ 
+    WheelZoom(-ZOOM_WHEEL_INCREMENT);
+    return true; 
+}
+
+void dskGameInterface::WheelZoom(float step)
+{
+    float new_zoom = gwv.GetCurrentTargetZoomFactor() * (1 + step);
+    gwv.SetZoomFactor(new_zoom);
+
+    // also keep track in terms of fixed defined zoom levels
+    zoomLvl = ZOOM_DEFAULT_INDEX;
+    for (size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
+        if (ZOOM_FACTORS[i] < new_zoom)
+            zoomLvl = i;
+
+    for (size_t i = ZOOM_DEFAULT_INDEX; i-- > 0; )
+        if (ZOOM_FACTORS[i] > new_zoom)
+            zoomLvl = i;
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)
