@@ -69,7 +69,7 @@ class noCharburnerPile : public noCoordBase
         void Draw(DrawPoint drawPt) override;
         void HandleEvent(const unsigned int id) override;
 
-        BlockingManner GetBM() const override { return BM_CHARBURNERPILE; }
+        BlockingManner GetBM() const override { return BlockingManner::NothingAround; }
 
         /// Get the current state of the charburner pile
         State GetState() const { return state; }

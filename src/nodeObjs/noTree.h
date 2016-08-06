@@ -106,7 +106,7 @@ class noTree : public noCoordBase
 
         void HandleEvent(const unsigned int id) override;
 
-        BlockingManner GetBM() const override { return BM_TREE; }
+        BlockingManner GetBM() const override { return BlockingManner::Tree; }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         FOWObject* CreateFOWObject() const override;

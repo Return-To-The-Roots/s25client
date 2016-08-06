@@ -22,9 +22,24 @@
 #include "GameObject.h"
 #include "NodalObjectTypes.h"
 #include "DrawPoint.h"
+#include <boost/core/scoped_enum.hpp>
 
 class FOWObject;
 class SerializedGameData;
+
+/// How does an object influence other objects/Building quality
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(BlockingManner)
+{
+    None,         /// Does not block and can be removed
+    Flag,         /// Is a flag (Block pt and no flags around)
+    Building,     /// Is a building (Like Single, but special handling in BQ calculation)
+    Single,       /// Blocks only the point this is on
+    Tree,         /// Is a tree. Passable by figures but allows only huts around
+    FlagsAround,  /// Allow only flags around
+    NothingAround /// Allow nothing around
+}
+BOOST_SCOPED_ENUM_DECLARE_END(BlockingManner)
+
 
 class noBase : public GameObject
 {
@@ -42,21 +57,6 @@ class noBase : public GameObject
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         virtual FOWObject* CreateFOWObject() const;
-
-        /// Gibt an, inwieweit ein Objekt auf der Karte die BQ beeinflusst
-        enum BlockingManner
-        {
-            BM_NOTBLOCKING, // blockiert gar nicht (z.B. Zierobjekte)
-            BM_HUT,
-            BM_HOUSE,
-            BM_CASTLE,
-            BM_MINE,
-            BM_SINGLEBLOCKING, // Blockiert nur einzelnen Punkt, hat aber sonst keinen weiteren Einfluss auf Umgebung
-            BM_GRANITE,
-            BM_TREE,
-            BM_FLAG,
-            BM_CHARBURNERPILE
-        };
 
         virtual BlockingManner GetBM() const;
         /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt

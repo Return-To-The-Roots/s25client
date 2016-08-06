@@ -53,7 +53,7 @@ class noFire : public noCoordBase
 
         GO_Type GetGOT() const override { return GOT_FIRE; }
 
-        BlockingManner GetBM() const override { return BM_GRANITE; }
+        BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
         /// Zeichnen
         void Draw(DrawPoint drawPt) override;

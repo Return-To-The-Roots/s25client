@@ -152,9 +152,9 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
         return PQ_NOTPOSSIBLE;
 
     // Der Platz muss frei sein
-    noBase::BlockingManner bm = gwg->GetNO(pt)->GetBM();
+    BlockingManner bm = gwg->GetNO(pt)->GetBM();
 
-    if(bm != noBase::BM_NOTBLOCKING)
+    if(bm != BlockingManner::None)
         return PQ_NOTPOSSIBLE;
 
     // Kein Grenzstein darf da stehen
@@ -169,7 +169,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
     {
         // Don't set it next to buildings and other charburner piles and grain fields
         BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetBM();
-        if(bm != BM_NOTBLOCKING)
+        if(bm != BlockingManner::None)
             return PQ_NOTPOSSIBLE;
         // darf außerdem nicht neben einer Straße liegen
         for(unsigned char j = 0; j < 6; ++j)

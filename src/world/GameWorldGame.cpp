@@ -246,9 +246,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     }
     else
     {
-        // Check if we can build a flag there, also check for trees at that point.
-        // TODO: Probably safe to remove the tree check as BQ checks for trees already
-        if(GetBQ(curPt, playerId) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
+        // Check if we can build a flag there
+        if(GetBQ(curPt, playerId) == BQ_NOTHING || IsFlagAround(curPt))
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
@@ -707,8 +706,8 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
         return false;
 
     // Irgendwelche Objekte im Weg?
-    noBase::BlockingManner bm = GetNO(pt)->GetBM();
-    if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
+    const BlockingManner bm = GetNO(pt)->GetBM();
+    if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
         return false;
 
     // Terrain untersuchen
@@ -1094,8 +1093,8 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
         }
     }
     // Liegt hier was rum auf dem man nicht kämpfen sollte?
-    noBase::BlockingManner bm = GetNO(pt)->GetBM();
-    return !(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG);
+    const BlockingManner bm = GetNO(pt)->GetBM();
+    return bm == BlockingManner::None || bm == BlockingManner::Tree || bm == BlockingManner::Flag;
 }
 
 bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const

@@ -246,14 +246,9 @@ void noBaseBuilding::DestroyBuildingExtensions()
     }
 }
 
-noBase::BlockingManner noBaseBuilding::GetBM() const
+BlockingManner noBaseBuilding::GetBM() const
 {
-    BuildingQuality bq = GetSize();
-
-    if(bq == BQ_HARBOR)
-        return noBase::BM_CASTLE;
-    else
-        return noBase::BlockingManner(unsigned(bq) - 1);
+    return BlockingManner::Building;
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude

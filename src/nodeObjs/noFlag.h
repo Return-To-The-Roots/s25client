@@ -42,7 +42,7 @@ class noFlag : public noRoadNode
 
         void Draw(DrawPoint drawPt) override;
 
-        BlockingManner GetBM() const override { return BM_FLAG; }
+        BlockingManner GetBM() const override { return BlockingManner::Flag; }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
         FOWObject* CreateFOWObject() const override;

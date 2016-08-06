@@ -38,7 +38,7 @@ class noShipBuildingSite: public noCoordBase
         /// Das Schiff wird um eine Stufe weitergebaut
         void MakeBuildStep();
 
-        BlockingManner GetBM() const override { return BM_HUT; }
+        BlockingManner GetBM() const override { return BlockingManner::Building; }
 
     protected:
 

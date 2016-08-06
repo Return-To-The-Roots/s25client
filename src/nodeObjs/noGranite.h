@@ -45,7 +45,7 @@ class noGranite : public noBase
 
         void Draw(DrawPoint drawPt) override;
 
-        BlockingManner GetBM() const override { return BM_GRANITE; }
+        BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         FOWObject* CreateFOWObject() const override;

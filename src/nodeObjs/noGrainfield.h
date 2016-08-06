@@ -65,7 +65,7 @@ class noGrainfield : public noCoordBase
         void Draw(DrawPoint drawPt) override;
         void HandleEvent(const unsigned int id) override;
 
-        BlockingManner GetBM() const override { return BM_GRANITE; }
+        BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
         /// Kann man es abernten?
         bool IsHarvestable() const { return size == 3 && state == STATE_NORMAL;}

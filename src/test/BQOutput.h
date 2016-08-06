@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,22 +14,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOENVOBJECT_H_INCLUDED
-#define NOENVOBJECT_H_INCLUDED
 
-#pragma once
+#ifndef BQOutput_h__
+#define BQOutput_h__
 
-#include "noStaticObject.h"
-class SerializedGameData;
+#include "gameTypes/BuildingQuality.h"
+#include <iosfwd>
+#include <boost/array.hpp>
 
-class noEnvObject : public noStaticObject
+const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
+inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
 {
-    public:
-        noEnvObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF);
-        noEnvObject(SerializedGameData& sgd, const unsigned obj_id);
+    return stream << bqNames[bq];
+}
 
-        GO_Type GetGOT() const override { return GOT_ENVOBJECT; }
-
-};
-
-#endif // !NOENVOBJECT_H_INCLUDED
+#endif // BQOutput_h__

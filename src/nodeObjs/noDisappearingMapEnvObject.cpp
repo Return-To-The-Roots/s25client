@@ -56,16 +56,3 @@ void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
     // Schatten
     LOADER.GetMapImageN(map_id + 100)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
 }
-
-void noDisappearingMapEnvObject::HandleEvent(const unsigned int id)
-{
-    HandleEvent_noDisappearingEnvObject(id);
-}
-
-/**
- *  Räumt das Objekt auf.
- */
-void noDisappearingMapEnvObject::Destroy_noDisappearingMapEnvObject()
-{
-    Destroy_noDisappearingEnvObject();
-}

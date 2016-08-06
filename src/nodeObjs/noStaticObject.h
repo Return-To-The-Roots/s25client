@@ -37,7 +37,7 @@ class noStaticObject : public noCoordBase
         /// gibt die Größe des Objekts zurück.
         unsigned char GetSize() const { return size; }
 
-        BlockingManner GetBM() const override { return BlockingManner(unsigned(BM_HUT) + size); }
+        BlockingManner GetBM() const override;
 
         /// zeichnet das Objekt.
         void Draw(DrawPoint drawPt) override;

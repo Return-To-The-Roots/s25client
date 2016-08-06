@@ -240,13 +240,13 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 obj = new noEnvObject(pt, 542 + lc - 0x10);
             // exists in mis0bobs-mis5bobs -> take stranded ship
             else if(lc == 0x15)
-                obj = new noStaticObject(pt, 0, 0, 1);
+                obj = new noStaticObject(pt, 0, 0);
             // gate
             else if(lc == 0x16)
-                obj = new noStaticObject(pt, 560, 0xFFFF, 2);
+                obj = new noStaticObject(pt, 560, 0xFFFF);
             // open gate
             else if(lc == 0x17)
-                obj = new noStaticObject(pt, 561, 0xFFFF, 2);
+                obj = new noStaticObject(pt, 561, 0xFFFF);
             // Stalagmiten (mis1bobs)
             else if(lc >= 0x18 && lc <= 0x1E)
                 obj = new noStaticObject(pt, (lc - 0x18) * 2, 1);
@@ -267,7 +267,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
             // tower ruin
             else if(lc == 0x2E)
-                obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 1);
+                obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
             // castle ruin
             else if(lc == 0x2F)
                 obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 2);
@@ -283,7 +283,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             // whale skeleton (head right)
             else if(lc == 0x33)
                 obj = new noStaticObject(pt, 0, 5);
-            // The next 2 are non standard and only for access in RTTR (replace in original though
+            // The next 2 are non standard and only for access in RTTR (replaced in original by
             // whale skeleton (head left)
             else if(lc == 0x34)
                 obj = new noStaticObject(pt, 2, 5);
