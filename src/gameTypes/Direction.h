@@ -43,6 +43,8 @@ struct Direction
     /// Returns the Direction as an UInt (for legacy code)
     unsigned toUInt() const { return t_; }
     Direction operator+(unsigned i) const { return Direction(t_ + i); }
+    inline Direction& operator++();
+    inline Direction operator++(int);
     // TODO: Add iterator to iterate over all values from a given value
 private:
     //prevent automatic conversion for any other built-in types such as bool, int, etc
@@ -50,5 +52,17 @@ private:
     operator T() const;
 };
 //-V:Direction:801 
+
+Direction& Direction::operator++()
+{
+    t_ = Type((t_ + 1) % COUNT);
+    return *this;
+}
+Direction Direction::operator++(int)
+{
+    Direction result(*this);
+    ++(*this);
+    return result;
+}
 
 #endif // Direction_h__
