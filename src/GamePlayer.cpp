@@ -318,6 +318,8 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
 
 void GamePlayer::Deserialize(SerializedGameData& sgd)
 {
+    std::fill(building_enabled.begin(), building_enabled.end(), true);
+
     // Ehemaligen PS auslesen
     PlayerState origin_ps = PlayerState(sgd.PopUnsignedChar());
     // Nur richtige Spieler serialisieren
