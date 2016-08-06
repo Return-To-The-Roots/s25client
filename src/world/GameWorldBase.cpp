@@ -167,8 +167,10 @@ bool GameWorldBase::IsOnRoad(const MapPoint& pt) const
 bool GameWorldBase::IsFlagAround(const MapPoint& pt) const
 {
     for(unsigned i = 0; i < 6; ++i)
+    {
         if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
             return true;
+    }
     return false;
 }
 

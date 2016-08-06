@@ -246,9 +246,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     }
     else
     {
-        // Check if we can build a flag there, also check for trees at that point.
-        // TODO: Probably safe to remove the tree check as BQ checks for trees already
-        if(GetBQ(curPt, playerId) == BQ_NOTHING || GetNO(curPt)->GetType() == NOP_TREE)
+        // Check if we can build a flag there
+        if(GetBQ(curPt, playerId) == BQ_NOTHING || IsFlagAround(curPt))
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
