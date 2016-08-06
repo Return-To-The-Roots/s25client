@@ -29,7 +29,6 @@ class noEnvObject : public noStaticObject
         noEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
         GO_Type GetGOT() const override { return GOT_ENVOBJECT; }
-        BlockingManner GetBM() const override { return BlockingManner::None; }
 
 };
 

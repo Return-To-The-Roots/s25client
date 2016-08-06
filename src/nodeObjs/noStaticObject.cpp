@@ -67,6 +67,11 @@ noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) :
 }
 
 
+BlockingManner noStaticObject::GetBM() const
+{
+    return (size == 0) ? BlockingManner::None : BlockingManner::Single;
+}
+
 /**
  *  zeichnet das Objekt.
  *
@@ -103,7 +108,7 @@ void noStaticObject::Draw(DrawPoint drawPt)
     RTTR_Assert(bitmap);
 
     // Bild zeichnen
-    bitmap->Draw(drawPt, 0, 0, 0, 0, 0, 0);
+    bitmap->Draw(drawPt);
 
     // Schatten zeichnen
     if(shadow)
@@ -119,9 +124,7 @@ void noStaticObject::Destroy_noStaticObject()
     if(GetSize() == 2)
     {
         for(unsigned i = 0; i < 3; ++i)
-        {
             gwg->DestroyNO(gwg->GetNeighbour(pos, i));
-        }
     }
 
     Destroy_noBase();

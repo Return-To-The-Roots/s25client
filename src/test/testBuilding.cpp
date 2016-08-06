@@ -119,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     // Place castle
     world.SetBuildingSite(BLD_FORTRESS, bldPos, 0);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_CASTLE);
-    // Addionally:
+    // Addionally to reduced BQs by hut:
     // Even flag is blocked by castle (model size)
     for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
     {
@@ -257,8 +257,15 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, ReducedBQMap()));
     ReducedBQMap reducedBQs;
 
-    // Size=0 -> Block only point
+    // Size=0 -> Block Nothing
     addStaticObj(world, objPos, 0);
+    BOOST_REQUIRE(checkBQs(world, ptsAroundObj, ReducedBQMap()));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, objPos));
+    BOOST_FOREACH(MapPoint pt, radius1Pts)
+        BOOST_REQUIRE(world.IsRoadAvailable(false, pt));
+
+    // Size=1 -> Block only point
+    addStaticObj(world, objPos, 1);
     reducedBQs[objPos] = BQ_NOTHING;
     reducedBQs[world.GetNeighbour(objPos, Direction::NORTHWEST)] = BQ_FLAG;
     // Can build houses but not castles
@@ -268,6 +275,31 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
     BOOST_FOREACH(MapPoint pt, radius1Pts)
         BOOST_REQUIRE(world.IsRoadAvailable(false, pt));
+
+    // Size=2 -> Block like a castle
+    addStaticObj(world, objPos, 2);
+    // Addionally reduced BQs:
+    // Extensions block spots
+    for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
+    {
+        const MapPoint extensionPos = world.GetNeighbour(objPos, dir);
+        reducedBQs[extensionPos] = BQ_NOTHING;
+        // And therefore also the bld
+        reducedBQs[world.GetNeighbour(extensionPos, Direction::NORTHWEST)] = BQ_FLAG;
+    }
+    // Also blocked by extensions:
+    reducedBQs[world.GetNeighbour(world.GetNeighbour(objPos, Direction::WEST), Direction::SOUTHWEST)] = BQ_HOUSE;
+    reducedBQs[world.GetNeighbour(world.GetNeighbour(objPos, Direction::NORTHEAST), Direction::EAST)] = BQ_HOUSE;
+    BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
+    // No roads over attachment
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::WEST)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::NORTHWEST)));
+    BOOST_REQUIRE(!world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::NORTHEAST)));
+    // But other 3 points are ok
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::EAST)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::SOUTHEAST)));
+    BOOST_REQUIRE(world.IsRoadAvailable(false, world.GetNeighbour(objPos, Direction::SOUTHWEST)));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
