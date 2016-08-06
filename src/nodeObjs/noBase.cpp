@@ -36,9 +36,9 @@ FOWObject* noBase::CreateFOWObject() const
     return NULL;
 }
 
-noBase::BlockingManner noBase::GetBM() const
+BlockingManner noBase::GetBM() const
 {
-    return BM_NOTBLOCKING;
+    return BlockingManner::None;
 }
 
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt

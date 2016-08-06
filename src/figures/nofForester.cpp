@@ -117,9 +117,9 @@ void nofForester::WorkFinished()
 nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt)
 {
     // Der Platz muss frei sein
-    noBase::BlockingManner bm = gwg->GetNO(pt)->GetBM();
+    BlockingManner bm = gwg->GetNO(pt)->GetBM();
 
-    if(bm != noBase::BM_NOTBLOCKING)
+    if(bm != BlockingManner::None)
         return PQ_NOTPOSSIBLE;
 
     // Kein Grenzstein darf da stehen

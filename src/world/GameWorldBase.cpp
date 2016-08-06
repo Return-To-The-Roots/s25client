@@ -86,8 +86,8 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     // Hindernisse
     if(GetNode(pt).obj)
     {
-        noBase::BlockingManner bm = GetNode(pt).obj->GetBM();
-        if(bm != noBase::BM_NOTBLOCKING)
+        BlockingManner bm = GetNode(pt).obj->GetBM();
+        if(bm != BlockingManner::None)
             return false;
     }
 
@@ -98,17 +98,11 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     for(unsigned char z = 0; z < 6; ++z)
     {
         // Roads around charburner piles are not possible
-        if(GetNO(GetNeighbour(pt, z))->GetBM() == noBase::BM_CHARBURNERPILE)
+        if(GetNO(GetNeighbour(pt, z))->GetBM() == BlockingManner::NothingAround)
             return false;
 
         // Other roads at this point?
         if(GetPointRoad(pt, z))
-            return false;
-    }
-
-    for(unsigned char i = 3; i < 6; ++i)
-    {
-        if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_CASTLE)
             return false;
     }
 
@@ -168,7 +162,7 @@ bool GameWorldBase::IsFlagAround(const MapPoint& pt) const
 {
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetNO(GetNeighbour(pt, i))->GetBM() == noBase::BM_FLAG)
+        if(GetNO(GetNeighbour(pt, i))->GetBM() == BlockingManner::Flag)
             return true;
     }
     return false;

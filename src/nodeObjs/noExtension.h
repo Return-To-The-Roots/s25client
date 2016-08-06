@@ -40,7 +40,7 @@ class noExtension : public noBase
 
         GO_Type GetGOT() const override { return GOT_EXTENSION; }
 
-        BlockingManner GetBM() const override { return BM_SINGLEBLOCKING; }
+        BlockingManner GetBM() const override { return BlockingManner::Single; }
 
     protected:
         void Destroy_noExtension() { Destroy_noBase(); }

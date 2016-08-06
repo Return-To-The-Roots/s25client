@@ -38,7 +38,7 @@ template<typename T_IsOnRoad>
 BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly /*= false*/) const
 {
     // Cannot build on blocking objects
-    if(world.GetNO(pt)->GetBM() != noBase::BM_NOTBLOCKING)
+    if(world.GetNO(pt)->GetBM() != BlockingManner::None)
         return BQ_NOTHING;
 
     //////////////////////////////////////////////////////////////////////////
@@ -128,14 +128,14 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // 3. Check neighbouring objects that make building impossible
 
     // Blocking manners of neighbours (cache for reuse)
-    boost::array<noBase::BlockingManner, 6> neighbourBlocks;
+    boost::array<BlockingManner, 6> neighbourBlocks;
     for(unsigned i = 0; i < 6; ++i)
         neighbourBlocks[i] = world.GetNO(world.GetNeighbour(pt, i))->GetBM();
 
     // Don't build anything around charburner piles
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(neighbourBlocks[i] == noBase::BM_CHARBURNERPILE)
+        if(neighbourBlocks[i] == BlockingManner::NothingAround)
             return BQ_NOTHING;
     }
 
@@ -145,7 +145,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         // So do this there and skip the rest
         for(unsigned i = 0; i < 6; ++i)
         {
-            if(neighbourBlocks[i] == noBase::BM_FLAG)
+            if(neighbourBlocks[i] == BlockingManner::Flag)
                 return BQ_NOTHING;
         }
 
@@ -153,7 +153,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Build nothing if we have a flag EAST or SW
-    if(neighbourBlocks[Direction::EAST] == noBase::BM_FLAG || neighbourBlocks[Direction::SOUTHWEST] == noBase::BM_FLAG)
+    if(neighbourBlocks[Direction::EAST] == BlockingManner::Flag || neighbourBlocks[Direction::SOUTHWEST] == BlockingManner::Flag)
         return BQ_NOTHING;
 
     //////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(unsigned i = 0; i < 6; ++i)
         {
-            if(neighbourBlocks[i] == noBase::BM_TREE)
+            if(neighbourBlocks[i] == BlockingManner::Tree)
             {
                 curBQ = BQ_HUT;
                 break;
@@ -175,7 +175,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // Granite type block (stones, fire, grain fields) -> Flag around
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(neighbourBlocks[i] == noBase::BM_GRANITE)
+        if(neighbourBlocks[i] == BlockingManner::FlagsAround)
         {
             curBQ = BQ_FLAG;
             break;
@@ -188,7 +188,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            if(neighbourBlocks[i] != noBase::BM_NOTBLOCKING)
+            if(neighbourBlocks[i] != BlockingManner::None)
                 curBQ = BQ_HOUSE;
         }
     }
@@ -200,9 +200,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(unsigned i = 0; i < 12; ++i)
         {
-            noBase::BlockingManner bm = world.GetNO(world.GetNeighbour2(pt, i))->GetBM();
+            BlockingManner bm = world.GetNO(world.GetNeighbour2(pt, i))->GetBM();
 
-            if(bm >= noBase::BM_HUT && bm <= noBase::BM_MINE)
+            if(bm == BlockingManner::Building)
             {
                 curBQ = BQ_HOUSE;
                 break;
@@ -232,7 +232,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         // If any neighbour is a flag -> Flag is impossible
         for(unsigned i = 0; i < 6; ++i)
         {
-            if(neighbourBlocks[i] == noBase::BM_FLAG)
+            if(neighbourBlocks[i] == BlockingManner::Flag)
                 return BQ_NOTHING;
         }
         // Else -> Flag
@@ -247,7 +247,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // At this point we can still build a building/mine
 
     // If there is a flag where the house flag would be -> OK
-    if(neighbourBlocks[4] == noBase::BM_FLAG)
+    if(neighbourBlocks[4] == BlockingManner::Flag)
         return curBQ;
 
     // If we can build the house flag -> OK
@@ -257,7 +257,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // If not, we could still build a flag, unless there is another one around
     for(unsigned i = 0; i < 3; ++i)
     {
-        if(neighbourBlocks[i] == noBase::BM_FLAG)
+        if(neighbourBlocks[i] == BlockingManner::Flag)
             return BQ_NOTHING;
     }
     return BQ_FLAG;

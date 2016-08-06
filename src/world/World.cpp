@@ -384,7 +384,7 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         // Check for close flags, that prohibit to build a flag but not a building at this spot
         for(unsigned i = Direction::WEST; i <= Direction::NORTHEAST; i++)
         {
-            if(GetNO(GetNeighbour(pt, Direction::fromInt(i)))->GetBM() == noBase::BM_FLAG)
+            if(GetNO(GetNeighbour(pt, Direction::fromInt(i)))->GetBM() == BlockingManner::Flag)
                 return BQ_NOTHING;
         }
         return BQ_FLAG;

@@ -706,8 +706,8 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
         return false;
 
     // Irgendwelche Objekte im Weg?
-    noBase::BlockingManner bm = GetNO(pt)->GetBM();
-    if(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG)
+    const BlockingManner bm = GetNO(pt)->GetBM();
+    if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
         return false;
 
     // Terrain untersuchen
@@ -1093,8 +1093,8 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
         }
     }
     // Liegt hier was rum auf dem man nicht kämpfen sollte?
-    noBase::BlockingManner bm = GetNO(pt)->GetBM();
-    return !(bm != noBase::BM_NOTBLOCKING && bm != noBase::BM_TREE && bm != noBase::BM_FLAG);
+    const BlockingManner bm = GetNO(pt)->GetBM();
+    return bm == BlockingManner::None || bm == BlockingManner::Tree || bm == BlockingManner::Flag;
 }
 
 bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const

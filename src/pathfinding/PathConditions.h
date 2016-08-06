@@ -33,15 +33,14 @@ struct PathConditionHuman
     FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
         // Feld passierbar?
-        noBase::BlockingManner bm = gwb.GetNO(pt)->GetBM();
-        return bm == noBase::BM_NOTBLOCKING || bm == noBase::BM_TREE || bm == noBase::BM_FLAG;
+        const BlockingManner bm = gwb.GetNO(pt)->GetBM();
+        return bm == BlockingManner::None || bm == BlockingManner::Tree || bm == BlockingManner::Flag;
     }
 
     // Called for every node
     FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
-        // Feld passierbar?
-        // Nicht �ber Wasser, Lava, S�mpfe gehen
+        // Check terrain for node transition
         return gwb.IsNodeToNodeForFigure(fromPt, dir);
     }
 };
