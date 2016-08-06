@@ -38,6 +38,7 @@ struct Point
 
     inline bool operator==(const Point& second) const;
     inline bool operator!=(const Point& second) const;
+    inline bool operator<(const Point& second) const;
     inline Point& operator+=(const Point& right);
     inline Point& operator-=(const Point& right);
     inline friend Point operator+(Point left, const Point& right) { return (left+=right); }
@@ -68,6 +69,18 @@ template <typename T>
 bool Point<T>::operator!=(const Point<T>& second) const
 {
     return !(*this == second);
+}
+
+template <typename T>
+bool Point<T>::operator<(const Point<T>& second) const
+{
+    // Order by y, than x to correspond to memory layout
+    if(y < second.y)
+        return true;
+    else if(y == second.y)
+        return x < second.x;
+    else
+        return false;
 }
 
 template <typename T>
