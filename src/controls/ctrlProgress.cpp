@@ -92,7 +92,7 @@ bool ctrlProgress::Draw_()
     unsigned int progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
 
     // Farbe herausfinden
-    unsigned int color = 0xFFFF0000;
+    unsigned int color = 0xFFD70000;
 
     // Feste Farbe?
     if(force_color)
@@ -101,11 +101,11 @@ bool ctrlProgress::Draw_()
     {
         // Farbe wählen je nachdem wie viel Prozent
         if(percentage >= 60)
-            color = 0xFF00E000;
+            color = 0xFF71B63C;
         else if(percentage >= 30)
-            color = 0xFFFFFF00;
+            color = 0xFFFFBF33;
         else if(percentage >= 20)
-            color = 0xFFFF8000;
+            color = 0xFFDB7428;
     }
 
     // Leiste
