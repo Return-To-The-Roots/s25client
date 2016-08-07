@@ -38,10 +38,10 @@ class nofWoodcutter : public nofFarmhand
 
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) override;
+        PointQuality GetPointQuality(const MapPoint pt) const override;
 
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-        void WorkAborted_Farmhand() override;
+        void WorkAborted() override;
 
     public:
 

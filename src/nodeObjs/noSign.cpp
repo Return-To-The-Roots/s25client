@@ -39,7 +39,7 @@ noSign::noSign(const MapPoint pos,
 
 void noSign::Serialize_noSign(SerializedGameData& sgd) const
 {
-    Serialize_noDisappearingEnvObject(sgd);
+    noDisappearingEnvObject::Serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(quantity);
@@ -68,17 +68,4 @@ void noSign::Draw(DrawPoint drawPt)
 
     // Schatten des Schildes
     LOADER.GetMapImageN(700)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
-}
-
-void noSign::HandleEvent(const unsigned int id)
-{
-    HandleEvent_noDisappearingEnvObject(id);
-}
-
-/**
- *  Räumt das Objekt auf.
- */
-void noSign::Destroy_noSign()
-{
-    Destroy_noDisappearingEnvObject();
 }

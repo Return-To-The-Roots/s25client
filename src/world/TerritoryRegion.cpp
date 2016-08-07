@@ -29,6 +29,8 @@ TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, con
 {
     RTTR_Assert(startPt.x <= endPt.x);
     RTTR_Assert(startPt.y <= endPt.y);
+    RTTR_Assert(size.x <= gwb.GetWidth());
+    RTTR_Assert(size.y <= gwb.GetHeight());
     // Feld erzeugen
     nodes.resize(size.x * size.y);
 }

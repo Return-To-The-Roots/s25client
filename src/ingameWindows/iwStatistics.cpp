@@ -168,7 +168,7 @@ void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 1: case 2: case 3: case 4: case 5: case 6: case 7: // Spielerportraits
             activePlayers[ctrl_id - 1] = !activePlayers[ctrl_id - 1];
-
+            break;
         case 25: // Hilfe
         {
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(

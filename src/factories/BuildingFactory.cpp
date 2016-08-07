@@ -25,7 +25,7 @@
 #include "buildings/nobUsual.h"
 #include "GamePlayer.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
+noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
     noBuilding* bld;
     switch (type)
     {
@@ -48,12 +48,12 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame* gwg, const BuildingTy
         bld = new nobUsual(type, pt, player, nation);
         break;
     }
-    gwg->SetNO(pt, bld);
+    gwg.SetNO(pt, bld);
     if(type == BLD_HARBORBUILDING)
     {
         // For harbors tell the economics about the new harbor
         // Attention: Must be used after the harbours is added to the world (setNO) so it cannot be done in the ctor
-        gwg->GetPlayer(player).AddHarbor(static_cast<nobHarborBuilding*>(bld));
+        gwg.GetPlayer(player).AddHarbor(static_cast<nobHarborBuilding*>(bld));
     }
 
     return bld;

@@ -114,12 +114,9 @@ void nofFarmer::WorkFinished()
     }
     else
     {
-        // If there is any road now, don't set the grain field
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            if(gwg->GetPointRoad(pos, i))
-                return;
-        }
+        // If the point got bad (e.g. something was build), abort work
+        if(GetPointQuality(pos) == PQ_NOTPOSSIBLE)
+            return;
 
         // Was stand hier vorher?
         NodalObjectType noType = gwg->GetNO(pos)->GetType();
@@ -141,9 +138,8 @@ void nofFarmer::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt)
+nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
 {
-
     // Entweder gibts ein Getreidefeld, das wir abernten können...
     if(gwg->GetNO(pt)->GetType() == NOP_GRAINFIELD)
     {
@@ -174,7 +170,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt)
 
         // Ist Platz frei?
         NodalObjectType noType = gwg->GetNO(pt)->GetType();
-        if(noType != NOP_ENVIRONMENT && noType && noType != NOP_NOTHING)
+        if(noType != NOP_ENVIRONMENT && noType != NOP_NOTHING)
             return PQ_NOTPOSSIBLE;
 
         for(unsigned char i = 0; i < 6; ++i)
@@ -185,18 +181,15 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt)
                 return PQ_NOTPOSSIBLE;
         }
 
-        // Nicht direkt neben den Bauernhof pflanzen!
-        if(pt == workplace->GetPos())
-            return PQ_NOTPOSSIBLE;
-
         return PQ_CLASS2;
     }
 
 }
 
 
-void nofFarmer::WorkAborted_Farmhand()
+void nofFarmer::WorkAborted()
 {
+    nofFarmhand::WorkAborted();
     // dem Getreidefeld Bescheid sagen, damit es wieder verdorren kann, wenn wir abernten
     if(harvest && state == STATE_WORK)
         gwg->GetSpecObj<noGrainfield>(pos)->EndHarvesting();

@@ -54,7 +54,7 @@ class GameWorldGame: public GameWorldBase
     void MakeVisible(const MapPoint pt,  const unsigned char player);
 
     /// Creates a region with territories marked around a building with the given radius
-    TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, const unsigned short radius, const bool destroyed) const;
+    TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, const bool destroyed) const;
     /// Recalculates where border stones should be after a change in the given region
     void RecalcBorderStones(const TerritoryRegion& region);
 

@@ -40,9 +40,9 @@ Es wird eine längere Zeit gewartet, dann wächst der Baum, dabei wird die näch
 class noTree : public noCoordBase
 {
         /// Der Holzfäller ist Experte in Sachen Baum :)
-        friend class nofWoodcutter;
-        friend class AIPlayerJH;
-        friend class AIInterface;
+        //friend class nofWoodcutter;
+        //friend class AIPlayerJH;
+        //friend class AIInterface;
 
         /// Typ des Baumes (also welche Baumart)
         unsigned char type;
@@ -77,10 +77,6 @@ class noTree : public noCoordBase
 
     private:
 
-        /// Vom Holzfäller aufgerufen: Wenn der Holzfäller anfängt und der Baum dann in einer bestimmten Zeit umfallen soll
-        void FallSoon();
-        /// Vom Holzfäller aufgerufen: Der Holzfäller hat seine Arbeit unterbrochen und der Baum soll doch nicht umfallen
-        void DontFall();
         /// "Produziert" ein Tier
         void ProduceAnimal();
 
@@ -101,7 +97,6 @@ class noTree : public noCoordBase
 
         GO_Type GetGOT() const override { return GOT_TREE; }
 
-
         void Draw(DrawPoint drawPt) override;
 
         void HandleEvent(const unsigned int id) override;
@@ -110,6 +105,15 @@ class noTree : public noCoordBase
 
         /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
         FOWObject* CreateFOWObject() const override;
+        /// Can this tree(type) produce wood?
+        bool ProducesWood() const { return type != 5; }
+        /// Return if this tree is fully grown
+        bool IsFullyGrown() const { return size == 3; }
+
+        /// Vom Holzfäller aufgerufen: Wenn der Holzfäller anfängt und der Baum dann in einer bestimmten Zeit umfallen soll
+        void FallSoon();
+        /// Vom Holzfäller aufgerufen: Der Holzfäller hat seine Arbeit unterbrochen und der Baum soll doch nicht umfallen
+        void DontFall();
 
         /// Setzt Instance-Counter auf 0
         static void ResetInstanceCounter() { INSTANCE_COUNTER = 0; }

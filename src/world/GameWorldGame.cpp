@@ -613,14 +613,22 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
     return false;
 }
 
-TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& building, const unsigned short radius, const bool destroyed) const
+TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, const bool destroyed) const
 {
     const MapPoint bldPos = building.GetPos();
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
 
+    // Span at most half the map size (assert even sizes, given due to layout)
+    RTTR_Assert(GetWidth() % 2 == 0);
+    RTTR_Assert(GetHeight() % 2 == 0);
+    unsigned radiusX = std::min(radius, GetWidth() / 2u);
+    unsigned radiusY = std::min(radius, GetHeight() / 2u);
+
     // Koordinaten erzeugen für TerritoryRegion
-    const Point<int> startPt = Point<int>(bldPos) - Point<int>(radius, radius);
-    const Point<int> endPt   = Point<int>(bldPos) + Point<int>(radius + 1, radius + 1);
+    const Point<int> startPt = Point<int>(bldPos) - Point<int>(radiusX, radiusY);
+    // All points in the region are less than endPt. If we want to check the same number of points right of bld as left we need a +1
+    // unless radius is already half the map size in which case we would check the first point twice -> clamp to size/2
+    const Point<int> endPt   = Point<int>(bldPos) + Point<int>(std::min(radiusX + 1, GetWidth() / 2u), std::min(radiusY + 1, GetHeight() / 2u));
     TerritoryRegion region(startPt, endPt, *this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen

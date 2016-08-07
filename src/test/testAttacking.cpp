@@ -75,17 +75,17 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
 
         milBld1NearPos = hqPos[1] - MapPoint(8, 0);
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1NearPos, 1), BQ_CASTLE);
-        milBld1Near = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
+        milBld1Near = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Near);
 
         milBld1FarPos = hqPos[1] + MapPoint(5, 4);
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1FarPos, 1), BQ_CASTLE);
-        milBld1Far = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
+        milBld1Far = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Far);
 
         milBld2Pos = hqPos[2] - MapPoint(0, 6);
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld2Pos, 2), BQ_CASTLE);
-        milBld2 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
+        milBld2 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
         BOOST_REQUIRE(milBld2);
     }
 
@@ -213,11 +213,11 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     const nobMilitary& attackSrc = *milBld2;
     const MapPoint usualBldPos = hqPos[1] + MapPoint(2, 0);
     BOOST_REQUIRE_GE(world.GetBQ(usualBldPos, 1), BQ_HUT);
-    const noBuilding* usualBld = BuildingFactory::CreateBuilding(&world, BLD_WOODCUTTER, usualBldPos, 1, NAT_ROMANS);
+    const noBuilding* usualBld = BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 1, NAT_ROMANS);
     BOOST_REQUIRE(usualBld);
     const MapPoint storehousePos = hqPos[1] - MapPoint(4, 0);
     BOOST_REQUIRE_GE(world.GetBQ(storehousePos, 1), BQ_HOUSE);
-    const noBuilding* storeHouse = BuildingFactory::CreateBuilding(&world, BLD_STOREHOUSE, storehousePos, 1, NAT_ROMANS);
+    const noBuilding* storeHouse = BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, storehousePos, 1, NAT_ROMANS);
     BOOST_REQUIRE(storeHouse);
 
     SetCurPlayer(attackSrc.GetPlayer());

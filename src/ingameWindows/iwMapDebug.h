@@ -26,7 +26,7 @@ class GameWorldView;
 class iwMapDebug: public IngameWindow
 {
 public:
-    iwMapDebug(GameWorldView& gwv);
+    iwMapDebug(GameWorldView& gwv, bool allowCheating);
     ~iwMapDebug() override;
 
 private:

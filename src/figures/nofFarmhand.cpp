@@ -142,32 +142,26 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
             if(points_found)
             {
                 // Prefer 1st class objects and use only 2nd class objects if there are no more other objects anymore
-                MapPoint p(0, 0);
                 for(unsigned i = 0; i < 3; ++i)
                 {
                     if(!available_points[i].empty())
                     {
-                        p = available_points[i][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points[i].size())];
+                        dest = available_points[i][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points[i].size())];
                         break;
                     }
                 }
-
-                // Als neues Ziel nehmen
-                dest = p;
 
                 state = STATE_WALKTOWORKPOINT;
 
                 // Wir arbeiten jetzt
                 workplace->is_working = true;
+                StopNotWorking();
 
                 // Punkt für uns reservieren
                 gwg->SetReserved(dest, true);
 
                 // Anfangen zu laufen (erstmal aus dem Haus raus!)
-                StartWalking(4);
-
-                StopNotWorking();
-
+                StartWalking(Direction::SOUTHEAST);
                 WalkingStarted();
             }
             else if (wait)
@@ -222,7 +216,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned int  /*id*/)
     }
 }
 
-bool nofFarmhand::IsPointAvailable(const MapPoint pt)
+bool nofFarmhand::IsPointAvailable(const MapPoint pt) const
 {
     // Gibts an diesen Punkt überhaupt die nötigen Vorraussetzungen für den Beruf?
     if(GetPointQuality(pt) != PQ_NOTPOSSIBLE)
@@ -304,13 +298,6 @@ void nofFarmhand::WorkAborted()
     // Platz freigeben, falls man gerade arbeitet
     if(state == STATE_WORK || state == STATE_WALKTOWORKPOINT)
         gwg->SetReserved(dest, false);
-
-    WorkAborted_Farmhand();
-}
-
-
-void nofFarmhand::WorkAborted_Farmhand()
-{
 }
 
 

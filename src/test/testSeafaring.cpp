@@ -49,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     BOOST_REQUIRE_LT(world.CalcDistance(hqPos, hbPos), HQ_RADIUS);
     
-    nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(&world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+    nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
     BOOST_REQUIRE_EQUAL(player.GetHarbors().size(), 1u);
     BOOST_REQUIRE_EQUAL(player.GetHarbors().front(), harbor);
@@ -78,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     const MapPoint shipyardPos(hqPos.x + 3, hqPos.y - 5);
 
-    nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(&world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+    nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
     std::vector<unsigned char> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
         this->SetFlag(curPt);
     }
     BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
-    nobShipYard* shipYard = dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(&world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
+    nobShipYard* shipYard = dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(shipYard);
     road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
@@ -133,7 +133,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
         world.GetPostMgr().AddPostBox(curPlayer);
         postBox = world.GetPostMgr().GetPostBox(curPlayer);
 
-        nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(&world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+        nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
         BOOST_REQUIRE(harbor);
         world.RecalcBQAroundPointBig(hbPos);
         std::vector<unsigned char> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);

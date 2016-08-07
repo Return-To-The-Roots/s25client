@@ -31,7 +31,7 @@ class GameWorldGame;
 class BuildingFactory{
     BuildingFactory();
 public:
-    static noBuilding* CreateBuilding(GameWorldGame* gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
+    static noBuilding* CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
 };
 
 #endif // BuildingFactory_h__

@@ -41,7 +41,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
     dead_event = GetEvMgr().AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
 }
 
-void noDisappearingEnvObject::Serialize_noDisappearingEnvObject(SerializedGameData& sgd) const
+void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
@@ -83,7 +83,7 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 /**
  *  Benachrichtigen, wenn neuer GF erreicht wurde.
  */
-void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned int id)
+void noDisappearingEnvObject::HandleEvent(const unsigned int id)
 {
     if(id)
     {
@@ -104,7 +104,7 @@ void noDisappearingEnvObject::HandleEvent_noDisappearingEnvObject(const unsigned
 /**
  *  Räumt das Objekt auf.
  */
-void noDisappearingEnvObject::Destroy_noDisappearingEnvObject()
+void noDisappearingEnvObject::Destroy()
 {
     // Feld räumen, wenn ich sterbe
     gwg->SetNO(pos, NULL);

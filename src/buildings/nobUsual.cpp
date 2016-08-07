@@ -73,7 +73,7 @@ nobUsual::nobUsual(BuildingType type,
     owner.AddUsualBuilding(this);
 }
 
-nobUsual::nobUsual(SerializedGameData& sgd, const unsigned int obj_id):
+nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id):
     noBuilding(sgd, obj_id),
     worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
     productivity(sgd.PopUnsignedShort()),

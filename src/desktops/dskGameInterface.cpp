@@ -639,9 +639,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KT_F2: // Spiel speichern
             WINDOWMANAGER.Show(new iwSave);
             return true;
-        case KT_F3: // Koordinatenanzeige ein/aus vorläufig zu Debugzwecken
-            if(gameClient.IsSinglePlayer() || gameClient.IsReplayModeOn())
-                WINDOWMANAGER.Show(new iwMapDebug(gwv));
+        case KT_F3: // Map debug window/ Multiplayer coordinates
+            WINDOWMANAGER.Show(new iwMapDebug(gwv, gameClient.IsSinglePlayer() || gameClient.IsReplayModeOn()));
             return true;
         case KT_F8: // Tastaturbelegung
             WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));

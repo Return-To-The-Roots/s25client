@@ -406,16 +406,6 @@ class GamePlayer: public GamePlayerInfo
         /// Liste mit Punkten, die schon von Schiffen entdeckt wurden
         std::vector< MapPoint > enemies_discovered_by_ships;
 
-        /** Polygon(s) defining the area the player may have territory in.
-        *  No elements means no restrictions.
-        *  Multiple polygons may be specified, see
-        *  - http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-        *  The area is not allowed to shrink! This will lead to crashes!
-        */
-        std::vector< MapPoint > restricted_area;
-
-        boost::array<bool, BUILDING_TYPES_COUNT> building_enabled;
-
         /// Liste, welchen nächsten 10 Angreifern Verteidiger entgegenlaufen sollen
         boost::array<bool, 5> defenders;
         unsigned short defenders_pos;
@@ -440,8 +430,6 @@ class GamePlayer: public GamePlayerInfo
         ToolSettings toolsSettings_;
         // qx:tools
         boost::array<unsigned char, TOOL_COUNT> tools_ordered;
-        // TODO: Move to viewer. Mutable as a work-around
-        mutable boost::array<signed char, TOOL_COUNT> tools_ordered_delta;
 
         /// Bündnisse mit anderen Spielern
         struct Pact
@@ -483,6 +471,20 @@ class GamePlayer: public GamePlayerInfo
         bool FindWarehouseForJob(const Job job, noRoadNode* goal);
         /// Prüft, ob der Spieler besiegt wurde
         void TestDefeat();
+
+        //////////////////////////////////////////////////////////////////////////
+        /// Unsynchronized state (e.g. lua, gui...)
+        //////////////////////////////////////////////////////////////////////////
+        /** Polygon(s) defining the area the player may have territory in.
+        *  No elements means no restrictions.
+            *  Multiple polygons may be specified, see
+            *  -http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+        */
+        std::vector< MapPoint > restricted_area;
+        boost::array<bool, BUILDING_TYPES_COUNT> building_enabled;
+
+        // TODO: Move to viewer. Mutable as a work-around
+        mutable boost::array<signed char, TOOL_COUNT> tools_ordered_delta;
 };
 
 #endif

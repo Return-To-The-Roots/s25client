@@ -36,7 +36,7 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const
 
 void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const
 {
-    Serialize_noDisappearingEnvObject(sgd);
+    noDisappearingEnvObject::Serialize(sgd);
 
     sgd.PushUnsignedShort(map_id);
 }

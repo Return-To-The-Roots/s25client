@@ -597,7 +597,7 @@ void World::RecalcShadow(const MapPoint pt)
     int A = GetNeighbourNode(pt, Direction::NORTHEAST).altitude - altitude;
     int B = GetNode(GetNeighbour2(pt, 0)).altitude - altitude;
     int C = GetNode(GetNeighbour(pt, Direction::WEST)).altitude - altitude;
-    int D = GetNode(GetNeighbour2(pt, 7)).altitude - altitude;
+    int D = GetNode(GetNeighbour2(pt, 11)).altitude - altitude;
 
     int shadingS2 = 64 + 9 * A - 3 * B - 6 * C - 9 * D;
     if(shadingS2 > 128)

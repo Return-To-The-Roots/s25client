@@ -27,9 +27,6 @@ class noSign : public noDisappearingEnvObject
         noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
         noSign(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
-    protected:  void Destroy_noSign();
-    public:     void Destroy() override { Destroy_noSign(); }
         /// Serialisierungsfunktionen
     protected:  void Serialize_noSign(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
@@ -38,8 +35,6 @@ class noSign : public noDisappearingEnvObject
 
         /// An x,y zeichnen.
         void Draw(DrawPoint drawPt) override;
-
-        void HandleEvent(const unsigned int id) override;
 
         unsigned char GetSignType() const { return type; }
 

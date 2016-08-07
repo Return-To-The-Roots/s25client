@@ -215,7 +215,10 @@ void dskLobby::UpdatePlayerList(bool first)
             if(it->getId() != 0xFFFFFFFF)
             {
                 std::string punkte = boost::lexical_cast<std::string>(it->getPunkte());
-                playertable->AddRow(0, it->getName().c_str(), punkte.c_str(), it->getVersion().c_str());
+                std::string name = it->getName();
+                if(it->isIngame)
+                    name += _(" (playing)");
+                playertable->AddRow(0, name.c_str(), punkte.c_str(), it->getVersion().c_str());
             }
         }
         if(first)
