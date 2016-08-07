@@ -1097,7 +1097,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWareh
 	if(numCompleteWh<1) //no warehouses -> no job
 		return;
 
-	Job maxRankJob = static_cast<Job>(JOB_PRIVATE + ggs.GetMaxMilitaryRank()); //private + general - max rank limiter
+	Job maxRankJob = SOLDIER_JOBS[ggs.GetMaxMilitaryRank()];
 	
 	if(numCompleteWh==1 ) //only 1 warehouse? dont block max ranks here
 	{
@@ -2668,8 +2668,8 @@ unsigned AIPlayerJH::CalcMilSettings()
 	};
     ///first sum up all soldiers we have
     unsigned soldierCount=0;
-	for (unsigned i=0; i<ggs.GetMaxMilitaryRank(); i++)
-        soldierCount += aii.GetInventory().people[JOB_PRIVATE + i];
+	for (unsigned i=0; i<SOLDIER_JOBS.size(); i++)
+        soldierCount += aii.GetInventory().people[SOLDIER_JOBS[i]];
 	
 	//now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
     const unsigned numShouldStayConnected = PlannedConnectedInlandMilitary();
