@@ -40,7 +40,7 @@ void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""
 #else
     RANDOM.Init(defaultValue);
 #endif
-    if(fileName)
+    if(fileName && fileName[0])
         std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentRandomValue() << std::endl;
 }
 
