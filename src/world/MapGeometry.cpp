@@ -66,7 +66,7 @@ Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
     case 4:  pt.x += 1; break;
     case 5:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
     case 6:  pt.x += 2; break;
-    case 7:  pt.x += 2 - ((pt.y & 1) ? 0 : 1);
+    case 7:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
     case 8:  pt.x += 1; break;
     case 9:  break;
     case 10: pt.x -= 1; break;
