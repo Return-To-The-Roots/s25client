@@ -280,6 +280,9 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
         if(Coll(mc.x, mc.y, window_rect)){
             return *it;
         }
+        // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
+        if((*it)->TestWindowInRegion(NULL, mc))
+            return *it;
     }
     return NULL;
 }
