@@ -45,7 +45,7 @@ class nofCharburner : public nofFarmhand
         void WorkFinished() override;
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) override;
+        PointQuality GetPointQuality(const MapPoint pt) const override;
 
         /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
         void WalkingStarted() override;

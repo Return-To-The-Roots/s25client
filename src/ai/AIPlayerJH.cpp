@@ -2352,7 +2352,7 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
                 if(gwb.GetNO(t2)->GetType() == NOP_TREE)
                 {
                     //not already getting cut down or a freaking pineapple thingy?
-                    if (!gwb.GetNode(t2).reserved && (gwb.GetSpecObj<noTree>(t2))->type != 5)
+                    if (!gwb.GetNode(t2).reserved && gwb.GetSpecObj<noTree>(t2)->ProducesWood())
                     {
                         if(gwb.FindHumanPath(pt, t2, 20) != 0xFF)
                             return true;;

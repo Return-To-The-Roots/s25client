@@ -423,7 +423,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // Set all military stuff to max
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     // Build a watchtower and connect it
-    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
+    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<unsigned char>((milPt.x - hqPos.x), Direction::EAST));
     // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to and from flag), 30GFs for leaving carrier)
@@ -573,7 +573,7 @@ BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(&world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
+    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsGoldDisabled());
 
@@ -599,7 +599,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    nobUsual* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(&world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
+    nobUsual* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsProductionDisabled());
 

@@ -140,7 +140,7 @@ void nofFisher::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt)
+nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
 {
     // Der Punkt muss passierbar sein für Figuren
     if(!gwg->IsNodeForFigures(pt))

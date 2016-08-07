@@ -59,18 +59,19 @@ Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
 
     switch(dir)
     {
-    case 0: pt.x -= 2; break;
-    case 1: pt.x += - 2 + ((pt.y & 1) ? 1 : 0); break;
-    case 2: pt.x -= 1; break;
-    case 3: break;
-    case 4: pt.x += 1; break;
-    case 5: pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
-    case 6: pt.x += 2; break;
-    case 7: pt.x += - 2 + ((pt.y & 1) ? 1 : 0); break;
-    case 8: pt.x -= 1; break;
-    case 9: break;
-    case 10: pt.x += 1; break;
-    default: RTTR_Assert(dir == 11); pt.x += 2 - ((pt.y & 1) ? 0 : 1);
+    case 0:  pt.x -= 2; break;
+    case 1:  pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
+    case 2:  pt.x -= 1; break;
+    case 3:  break;
+    case 4:  pt.x += 1; break;
+    case 5:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
+    case 6:  pt.x += 2; break;
+    case 7:  pt.x += 2 - ((pt.y & 1) ? 0 : 1);
+    case 8:  pt.x += 1; break;
+    case 9:  break;
+    case 10: pt.x -= 1; break;
+    default: RTTR_Assert(dir == 11);
+             pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
     }
     pt.y += ADD_Y[dir];
     return pt;

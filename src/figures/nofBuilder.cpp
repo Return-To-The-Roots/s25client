@@ -159,7 +159,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned int  /*id*/)
                 gwg->SetNO(building_site->GetPos(), NULL);
                 deletePtr(building_site);
 
-                noBuilding* bld = BuildingFactory::CreateBuilding(gwg, building_type, pos, player, building_nation);
+                noBuilding* bld = BuildingFactory::CreateBuilding(*gwg, building_type, pos, player, building_nation);
                 gwg->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
                 // Special handling for storehouses and harbours

@@ -40,12 +40,10 @@ class nofFarmer : public nofFarmhand
         /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
         void WorkFinished() override;
         /// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
-        void WorkAborted_Farmhand() override;
+        void WorkAborted() override;
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) override;
-
-        bool checkSurrounding(const MapPoint pt, int type);
+        PointQuality GetPointQuality(const MapPoint pt) const override;
 
     public:
 

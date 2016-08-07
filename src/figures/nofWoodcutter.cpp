@@ -103,14 +103,14 @@ void nofWoodcutter::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt)
+nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt) const
 {
     // Gibt es hier an dieser Position einen Baum und ist dieser ausgewachsen?
     // außerdem keine Ananas fällen!
-    noBase* no = gwg->GetNO(pt);
+    const noBase* no = gwg->GetNO(pt);
     if(no->GetType() == NOP_TREE)
     {
-        if(static_cast<noTree*>(no)->size == 3 && static_cast<noTree*>(no)->type != 5)
+        if(static_cast<const noTree*>(no)->IsFullyGrown() && static_cast<const noTree*>(no)->ProducesWood())
             return PQ_CLASS1;
     }
 
@@ -118,8 +118,9 @@ nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt)
 }
 
 
-void nofWoodcutter::WorkAborted_Farmhand()
+void nofWoodcutter::WorkAborted()
 {
+    nofFarmhand::WorkAborted();
     // Dem Baum Bescheid sagen
     if(state == STATE_WORK)
         gwg->GetSpecObj<noTree>(pos)->DontFall();

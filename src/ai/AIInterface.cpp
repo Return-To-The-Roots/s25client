@@ -66,7 +66,7 @@ AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
         if (no == NOP_TREE)
         {
             //exclude pineapple because it's not a real tree
-            if (gwb.GetSpecObj<noTree>(pt)->type != 5)
+            if (gwb.GetSpecObj<noTree>(pt)->ProducesWood())
                 return AIJH::WOOD;
             else
                 return AIJH::BLOCKED;

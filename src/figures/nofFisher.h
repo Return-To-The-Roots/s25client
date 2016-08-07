@@ -41,7 +41,7 @@ class nofFisher : public nofFarmhand
         void WorkFinished() override;
 
         /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) override;
+        PointQuality GetPointQuality(const MapPoint pt) const override;
 
     public:
 

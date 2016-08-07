@@ -38,23 +38,13 @@ class nofFarmhand : public nofBuildingWorker
             PQ_CLASS3 /// Work is possible, points are only chosen if there are no other class 1/2's
         };
 
-    private:
+    protected:
 
         /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
         void WalkedDerived() override;
 
         /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
         void WorkAborted() override;
-        /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden (an abgeleitete Klassen)
-        virtual void WorkAborted_Farmhand();
-
-
-        ///// Fängt das "Warten-vor-dem-Arbeiten" an, falls er arbeiten kann (müssen ja bestimmte "Naturobjekte" gegeben sein)
-        //void TryToWork();
-        /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
-        bool IsPointAvailable(const MapPoint pt);
-        /// Returns the quality of this working point or determines if the worker can work here at all
-        virtual PointQuality GetPointQuality(const MapPoint pt) = 0;
 
         /// Läuft zum Arbeitspunkt
         void WalkToWorkpoint();
@@ -87,6 +77,10 @@ class nofFarmhand : public nofBuildingWorker
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
 
         void HandleDerivedEvent(const unsigned int id) override;
+        /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
+        bool IsPointAvailable(const MapPoint pt) const;
+        /// Returns the quality of this working point or determines if the worker can work here at all
+        virtual PointQuality GetPointQuality(const MapPoint pt) const = 0;
 };
 
 

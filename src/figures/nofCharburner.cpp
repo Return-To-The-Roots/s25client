@@ -118,7 +118,7 @@ void nofCharburner::WorkFinished()
 }
 
 /// Fragt abgeleitete Klasse, ob hier Platz bzw ob hier ein Baum etc steht, den z.B. der Holzfäller braucht
-nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt)
+nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) const
 {
     noBase* no = gwg->GetNO(pt);
 
