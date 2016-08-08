@@ -65,11 +65,10 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     {
         player.SendPostMessage(new PostMsgWithBuilding(
             player.GetGameWorld().GetEvMgr().GetCurrentGF(),
-            _(BUILDING_NAMES[bld]),
+            std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
             PostCategory::General,
             bld,
-            player.nation,
-            player.GetHQPos()));
+            player.nation));
     }
 }
 
