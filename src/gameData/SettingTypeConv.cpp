@@ -18,6 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SettingTypeConv.h"
 
+/// Max value for each setting.
+/// Note: We skip the first 2 steppings for the occupation (last 4 values) as they had no effect in S2
 const MilitarySettings SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE = {{10, 5, 5, 5, 8, 8, 8, 8}};
 const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
 {{   2, 12, 12, 12, 12, 12, 12, 12, 12, 12,

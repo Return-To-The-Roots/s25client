@@ -35,7 +35,12 @@ typedef boost::array<unsigned char, 14> TransportOrders;
 typedef boost::array<unsigned char, WARE_TYPES_COUNT> TransportPriorities;
 /// Priority of each tool
 typedef boost::array<unsigned char, TOOL_COUNT> ToolSettings;
-/// Value (0-10) of each military slider
+/// Value of each military slider
+/// 0: Recruiting ratio (to max possible recruits)
+/// 1: Defender strength (ratio to max available rank)
+/// 2: Active defenders (engaging attackers by leaving building): Chance that one is sent
+/// 3: Ratio of used attackers to available attackers
+/// 4-7: Ratio of soldiers in buildings to full occupation for inland, middle region, harbor spots, border regions
 typedef boost::array<unsigned char, 8> MilitarySettings;
 
 #endif // SettingsTypes_h__

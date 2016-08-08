@@ -120,8 +120,8 @@ void GamePlayer::LoadStandardMilitarySettings()
     militarySettings_[1] = 3;
     militarySettings_[2] = MILITARY_SETTINGS_SCALE[2];
     militarySettings_[3] = 3;
-    militarySettings_[4] = 2;
-    militarySettings_[5] = 4;
+    militarySettings_[4] = 0;
+    militarySettings_[5] = 1;
     militarySettings_[6] = MILITARY_SETTINGS_SCALE[6];
     militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
 }
@@ -1521,7 +1521,7 @@ void GamePlayer::ChangeBuildOrder(bool useCustomBuidOrder, const BuildOrders& od
 bool GamePlayer::ShouldSendDefender()
 {
     // Wenn wir schon am Ende sind, muss die Verteidgungsliste erneuert werden
-    if(defenders_pos == 4)
+    if(defenders_pos == defenders.size())
         RefreshDefenderList();
 
     return defenders[defenders_pos++];
