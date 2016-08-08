@@ -126,8 +126,8 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 
     if (!IsSinglePlayer())
     {
-        // Lobbychat disabled for now. Need server support
-        if(false && LOBBYCLIENT.IsLoggedIn())
+        // Enable lobby chat when we are logged in
+        if(LOBBYCLIENT.IsLoggedIn())
         {
             ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK, scale_);
             chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 178, 22, TC_GREEN2, _("Game Chat"), NormalFont);
