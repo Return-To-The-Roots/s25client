@@ -26,26 +26,27 @@
 #include "ogl/glArchivItem_Font.h"
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
-    : iwHQ(gwv, gcFactory, hb, _("Harbor building"), 4)
+    : iwHQ(gwv, gcFactory, hb)
 {
+    SetTitle(_("Harbor building"));
+
     // Zusätzliche Hafenseite
-    ctrlGroup* harbor_page = AddGroup(103);
+    ctrlGroup& harbor_page = AddPage();
+    grpIdExpedition = harbor_page.GetID();
 
     // "Expedition"-Überschrift
-    harbor_page->AddText(0, 83, 70, _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(0, 83, 70, _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page->AddImageButton(1, 65, 100, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
+    harbor_page.AddImageButton(1, 65, 100, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
     AdjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
-    harbor_page->AddText(2, 83, 140, _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(2, 83, 140, _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page->AddImageButton(3, 65, 170, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start exporation expedition"));
+    harbor_page.AddImageButton(3, 65, 170, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start exporation expedition"));
     AdjustExplorationExpeditionButton(false);
-
-    harbor_page->SetVisible(false);
 }
 
 /**
@@ -106,32 +107,19 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 
 void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    switch(group_id)
+    if(group_id == grpIdExpedition) // Hafengruppe?
     {
-        default:
-            break;
-
-        case 103: // Hafengruppe?
+        switch(ctrl_id)
         {
-            switch(ctrl_id)
-            {
-                default:
-                    break;
-
-                case 1: // Expedition starten
-                {
-                    // Entsprechenden GC senden
-                    if(GAMECLIENT.StartExpedition(wh->GetPos()))
-                        AdjustExpeditionButton(true);
-                } break;
-                case 3: // Expedition starten
-                {
-                    // Entsprechenden GC senden
-                    if(GAMECLIENT.StartExplorationExpedition(wh->GetPos()))
-                        AdjustExplorationExpeditionButton(true);
-                } break;
-            }
-        } break;
+            case 1: // Expedition starten
+                // Entsprechenden GC senden
+                if(GAMECLIENT.StartExpedition(wh->GetPos()))
+                    AdjustExpeditionButton(true);
+            case 3: // Expedition starten
+                // Entsprechenden GC senden
+                if(GAMECLIENT.StartExplorationExpedition(wh->GetPos()))
+                    AdjustExplorationExpeditionButton(true);
+        }
     }
 
     // an Basis weiterleiten

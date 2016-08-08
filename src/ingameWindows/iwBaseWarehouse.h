@@ -35,7 +35,7 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
         nobBaseWarehouse* wh; /// Pointer zum entsprechenden Lagerhaus
 
     public:
-        iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh);
+        iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
         ~iwBaseWarehouse() override;
 
         void OnChange(unsigned changeId) override;

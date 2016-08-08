@@ -40,8 +40,8 @@
 
 #include <stdexcept>
 
-iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, const std::string& title, unsigned char page_count, nobBaseWarehouse* wh):
-    iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse,  167, 416, title, page_count, true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh):
+    iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, 167, 416, _("Storehouse"), true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
     gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
@@ -100,7 +100,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
         {
             if(GAMECLIENT.IsReplayModeOn())
                 return;
-            RTTR_Assert(page < 2);
+            RTTR_Assert(GetCurPage() == pagePeople || GetCurPage() == pageWares);
             ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
 
             EInventorySetting setting;
@@ -112,12 +112,12 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
             default:
                 throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            InventorySetting state = page == 0 ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) : wh->GetInventorySettingVisual(Job(ctrl_id - 100));
+            InventorySetting state = GetCurPage() == pageWares ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) : wh->GetInventorySettingVisual(Job(ctrl_id - 100));
             state.Toggle(setting);
-            if(gcFactory.SetInventorySetting(wh->GetPos(), page != 0, ctrl_id - 100, state))
+            if(gcFactory.SetInventorySetting(wh->GetPos(), GetCurPage() == pagePeople, ctrl_id - 100, state))
             {
                 // optisch schonmal setzen
-                wh->SetInventorySettingVisual(page != 0, ctrl_id - 100, state);
+                wh->SetInventorySettingVisual(GetCurPage() == pagePeople, ctrl_id - 100, state);
                 UpdateOverlay(ctrl_id - 100);
             }
         } break;
@@ -138,7 +138,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             if(GAMECLIENT.IsReplayModeOn())
                 return;
-            if(page >= 2)
+            if(GetCurPage() != pageWares && GetCurPage() != pagePeople)
                 return;
             ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(10);
             EInventorySetting data;
@@ -150,10 +150,10 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
             default:
                 throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            const unsigned count = (page == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
+            const unsigned count = (GetCurPage() == pageWares) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
             std::vector<InventorySetting> states;
             states.reserve(count);
-            if(page == 0)
+            if(GetCurPage() == pageWares)
             {
                 for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
                     states.push_back(wh->GetInventorySettingVisual(i == GD_WATEREMPTY ? GD_WATER : GoodType(i)));
@@ -179,13 +179,13 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
                     states[i].Toggle(data);
             }
 
-            if(gcFactory.SetAllInventorySettings(wh->GetPos(), page != 0, states))
+            if(gcFactory.SetAllInventorySettings(wh->GetPos(), GetCurPage() == pagePeople, states))
             {
                 // optisch setzen
                 for(unsigned char i = 0; i < count; ++i)
                 {
                     // Status ändern
-                    wh->SetInventorySettingVisual(page != 0, i, states[i]);
+                    wh->SetInventorySettingVisual(GetCurPage() == pagePeople, i, states[i]);
                 }
                 UpdateOverlays();
             }
@@ -215,7 +215,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					gwv.MoveToMapPt((*it)->GetPos());
 					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
-						iwHQ* nextscrn=new iwHQ(gwv, gcFactory, (*it),_("Headquarters"), 3);
+						iwHQ* nextscrn=new iwHQ(gwv, gcFactory, *it);
 						nextscrn->Move(pos_);
 						WINDOWMANAGER.Show(nextscrn);
 					}
@@ -244,7 +244,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwBaseWarehouse::UpdateOverlay(unsigned i)
 {
-    UpdateOverlay(i, this->page == 0);
+    UpdateOverlay(i, GetCurPage() == pageWares);
 }
 
 void iwBaseWarehouse::UpdateOverlay(unsigned i, bool isWare)

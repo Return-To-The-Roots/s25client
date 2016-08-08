@@ -33,6 +33,8 @@ class iwHarborBuilding : public iwHQ
     private:
         void AdjustExpeditionButton(bool flip);
         void AdjustExplorationExpeditionButton(bool flip);
+
+        unsigned grpIdExpedition;
 };
 
 #endif // !iwHQ_H_INCLUDED

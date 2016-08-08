@@ -32,10 +32,10 @@
 //167, 416
 iwWares::iwWares(unsigned int id, const DrawPoint& pos,
                  const unsigned short width, const unsigned short height,
-                 const std::string& title, unsigned char page_count,
+                 const std::string& title,
                  bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player)
     : IngameWindow(id, pos, width, height, title, LOADER.GetImageN("io", 5)),
-      inventory(inventory), player(player), page(0), page_count(page_count)
+      inventory(inventory), player(player), curPage_(0), pageCount(0)
 {
     if(!font)
         font = SmallFont;
@@ -67,9 +67,11 @@ iwWares::iwWares(unsigned int id, const DrawPoint& pos,
     };
 
     // Warenseite hinzufügen
-    ctrlGroup* wares = AddGroup(100);
+    ctrlGroup& wares = AddPage();
+    pageWares = wares.GetID() - 100;
     // Figurenseite hinzufügen
-    ctrlGroup* figures = AddGroup(101);
+    ctrlGroup& figures = AddPage();
+    pagePeople = figures.GetID() - 100;
 
     bool four = true;
     unsigned short ware_id = 0;
@@ -90,33 +92,33 @@ iwWares::iwWares(unsigned int id, const DrawPoint& pos,
         // Hintergrundbutton oder -bild hinter Ware, nur beim Auslagern ein Button
         if(allow_outhousing)
         {
-            ctrlButton* b = wares->AddImageButton(100 + INVENTORY_IDS[0][ware_id], (four ? 27 : 13) + x * 28, 21 + y * 42, 26, 26, TC_GREY, LOADER.GetMapImageN(2298), _(WARE_NAMES[INVENTORY_IDS[0][ware_id]]));
+            ctrlButton* b = wares.AddImageButton(100 + INVENTORY_IDS[0][ware_id], (four ? 27 : 13) + x * 28, 21 + y * 42, 26, 26, TC_GREY, LOADER.GetMapImageN(2298), _(WARE_NAMES[INVENTORY_IDS[0][ware_id]]));
             b->SetBorder(false);
         }
         else
-            wares->AddImage(100 + INVENTORY_IDS[0][ware_id], (four ? 27 : 13) + x * 28 + 13, 21 + y * 42 + 13, LOADER.GetMapImageN(2298), _(WARE_NAMES[INVENTORY_IDS[0][ware_id]]));
+            wares.AddImage(100 + INVENTORY_IDS[0][ware_id], (four ? 27 : 13) + x * 28 + 13, 21 + y * 42 + 13, LOADER.GetMapImageN(2298), _(WARE_NAMES[INVENTORY_IDS[0][ware_id]]));
 
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
             if(allow_outhousing)
             {
-                ctrlButton* b = figures->AddImageButton(100 + INVENTORY_IDS[1][ware_id], (four ? 27 : 13) + x * 28, 21 + y * 42, 26, 26, TC_GREY, LOADER.GetMapImageN(2298), _(JOB_NAMES[INVENTORY_IDS[1][ware_id]]));
+                ctrlButton* b = figures.AddImageButton(100 + INVENTORY_IDS[1][ware_id], (four ? 27 : 13) + x * 28, 21 + y * 42, 26, 26, TC_GREY, LOADER.GetMapImageN(2298), _(JOB_NAMES[INVENTORY_IDS[1][ware_id]]));
                 b->SetBorder(false);
             }
             else
             {
 
-                figures->AddImage(100 + INVENTORY_IDS[1][ware_id], (four ? 27 : 13) + x * 28 + 13, 21 + y * 42 + 13, LOADER.GetMapImageN(2298), _(JOB_NAMES[INVENTORY_IDS[1][ware_id]]));
+                figures.AddImage(100 + INVENTORY_IDS[1][ware_id], (four ? 27 : 13) + x * 28 + 13, 21 + y * 42 + 13, LOADER.GetMapImageN(2298), _(JOB_NAMES[INVENTORY_IDS[1][ware_id]]));
             }
         }
 
         // Hintergrundbild hinter Anzahl
-        wares->AddImage(200 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 53 + y * 42, LOADER.GetMapImageN(2299));
+        wares.AddImage(200 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 53 + y * 42, LOADER.GetMapImageN(2299));
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
-            figures->AddImage(200 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 53 + y * 42, LOADER.GetMapImageN(2299));
+            figures.AddImage(200 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 53 + y * 42, LOADER.GetMapImageN(2299));
 
         // die jeweilige Ware
-        wares->AddImage(300 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, LOADER.GetMapImageN(2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? SHIELD_TYPES[player.nation] : INVENTORY_IDS[0][ware_id])));
+        wares.AddImage(300 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, LOADER.GetMapImageN(2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? SHIELD_TYPES[player.nation] : INVENTORY_IDS[0][ware_id])));
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
             glArchivItem_Bitmap* image;
@@ -126,54 +128,53 @@ iwWares::iwWares(unsigned int id, const DrawPoint& pos,
             else
                 image = LOADER.GetImageN("io_new", 5);
 
-            figures->AddImage(300 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, image);
+            figures.AddImage(300 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 34 + y * 42, image);
         }
 
         // Overlay für "Nicht Einlagern"
 
-        ctrlImage* image = wares->AddImage(400 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 30 + y * 42, LOADER.GetImageN("io", 222));
+        ctrlImage* image = wares.AddImage(400 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 30 + y * 42, LOADER.GetImageN("io", 222));
         image->SetVisible(false);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
-            image = figures->AddImage(400 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 30 + y * 42, LOADER.GetImageN("io", 222));
+            image = figures.AddImage(400 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 30 + y * 42, LOADER.GetImageN("io", 222));
             image->SetVisible(false);
         }
 
         // Overlay für "Auslagern"
-        image = wares->AddImage(500 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io", 221));
+        image = wares.AddImage(500 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io", 221));
         image->SetVisible(false);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
-            image = figures->AddImage(500 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io", 221));
+            image = figures.AddImage(500 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io", 221));
             image->SetVisible(false);
         }
 
         // die jeweilige Anzahl (Texte)
-        wares->AddVarText(600 + INVENTORY_IDS[0][ware_id], (four ? 53 : 39) + x * 28, 61 + y * 42, _("%d"), COLOR_YELLOW,
+        wares.AddVarText(600 + INVENTORY_IDS[0][ware_id], (four ? 53 : 39) + x * 28, 61 + y * 42, _("%d"), COLOR_YELLOW,
                           glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1,
                           &inventory.goods[INVENTORY_IDS[0][ware_id]]);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
-            figures->AddVarText(600 + INVENTORY_IDS[1][ware_id], (four ? 53 : 39) + x * 28, 61 + y * 42, _("%d"), COLOR_YELLOW,
+            figures.AddVarText(600 + INVENTORY_IDS[1][ware_id], (four ? 53 : 39) + x * 28, 61 + y * 42, _("%d"), COLOR_YELLOW,
                                 glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1,
                                 &inventory.people[INVENTORY_IDS[1][ware_id]]);
 
         // Overlay für "Einlagern"
-        image = wares->AddImage(700 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io_new", 3));
+        image = wares.AddImage(700 + INVENTORY_IDS[0][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io_new", 3));
         image->SetVisible(false);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
         {
-            image = figures->AddImage(700 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io_new", 3));
+            image = figures.AddImage(700 + INVENTORY_IDS[1][ware_id], (four ? 40 : 26) + x * 28, 44 + y * 42, LOADER.GetImageN("io_new", 3));
             image->SetVisible(false);
         }
     }
-
-    wares->SetVisible(true);
-    figures->SetVisible(false);
 
     // "Blättern"
     AddImageButton(0, 52, height - 47, 66, 32, TC_GREY, LOADER.GetImageN("io", 84), _("Next page"));
     // Hilfe
     AddImageButton(12,  16, height - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+
+    SetPage(0);
 }
 
 void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -182,7 +183,7 @@ void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
     {
         case 0: // "Blättern"
         {
-            SetPage( (page + 1) );
+            SetPage(curPage_ + 1);
         } break;
         case 12: // Hilfe
         {
@@ -197,20 +198,19 @@ void iwWares::Msg_PaintBefore()
 {
     // Farben ggf. aktualisieren
 
-    // nur Seite 1 und 2 hat sowas.
-    if(this->page >= 2)
+    if(curPage_ != pagePeople && curPage_ != pageWares)
         return;
 
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + page);
+    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
     {
-        unsigned count = (page == 0) ? 36 : 32;
+        unsigned count = (curPage_ == pageWares) ? 36 : 32;
 
         for(unsigned int i = 0; i < count; ++i)
         {
             ctrlVarText* text = group->GetCtrl<ctrlVarText>(600 + i);
             if(text)
-                text->SetColor( ((((page == 0) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW) );
+                text->SetColor((((curPage_ == pageWares) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW);
 
         }
     }
@@ -221,18 +221,26 @@ void iwWares::Msg_PaintBefore()
  *
  *  @param[in] page Die neue Seite
  */
-void iwWares::SetPage(unsigned char page)
+void iwWares::SetPage(unsigned page)
 {
     // alte Page verstecken
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + this->page);
+    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
         group->SetVisible(false);
 
     // neue Page setzen
-    this->page = page % page_count;
+    curPage_ = page % pageCount;
 
     // neue Page anzeigen
-    group = GetCtrl<ctrlGroup>(100 + this->page);
+    group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
         group->SetVisible(true);
+}
+
+ctrlGroup& iwWares::AddPage()
+{
+    ctrlGroup& grp = *AddGroup(100 + pageCount);
+    pageCount++;
+    grp.SetVisible(false);
+    return grp;
 }

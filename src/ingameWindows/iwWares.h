@@ -30,21 +30,27 @@ class iwWares : public IngameWindow
     protected:
         const Inventory& inventory;     /// Warenbestand
         const GamePlayer& player;
-        unsigned char page;       /// aktuelle Seite des Inventurfensters.
-        unsigned char page_count; /// maximale Seite des Inventurfensters.
+        unsigned pageWares, pagePeople;
 
     public:
-        iwWares(unsigned int id, const DrawPoint& pos, const unsigned short width, const unsigned short height, const std::string& title, unsigned char page_count,
+        iwWares(unsigned int id, const DrawPoint& pos, const unsigned short width, const unsigned short height, const std::string& title,
                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player);
-        /// bestimmte Inventurseite zeigen.
-        void SetPage(unsigned char page);
-        /// setzt die maximale Seitenzahl.
-        void SetPageCount(unsigned char page_count) { this->page_count = page_count; }
 
     protected:
+        /// bestimmte Inventurseite zeigen.
+        void SetPage(unsigned page);
+        /// Add a new page and return it. ID will be in range 100+
+        ctrlGroup& AddPage();
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_PaintBefore() override;
+
+        unsigned GetCurPage() const { return curPage_; }
+
+    private:
+        unsigned curPage_;       /// aktuelle Seite des Inventurfensters.
+        unsigned pageCount; /// maximale Seite des Inventurfensters.
+
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

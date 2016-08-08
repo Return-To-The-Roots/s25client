@@ -23,14 +23,17 @@
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
 
-iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh, const char* const title, const unsigned pages_count)
-    : iwBaseWarehouse(gwv, gcFactory, title, pages_count, wh)
+iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
+    : iwBaseWarehouse(gwv, gcFactory, wh)
 {
+    SetTitle(_("Headquarters"));
+
     // Soldaten Reservierungsseite
-    ctrlGroup* reserve = AddGroup(102);
+    ctrlGroup& reserve = AddPage();
+    grpIdReserve = reserve.GetID();
 
     // "Reserve"-Überschrift
-    reserve->AddText(0, 83, 70, _("Reserve"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    reserve.AddText(0, 83, 87, _("Reserve"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Y-Abstand zwischen den Zeilen
     const unsigned Y_DISTANCE = 30;
@@ -38,24 +41,22 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     for(unsigned i = 0; i < 5; ++i)
     {
         // Bildhintergrund
-        reserve->AddImage(1 + i, 34, 107 + Y_DISTANCE * i, LOADER.GetMapImageN(2298));
+        reserve.AddImage(1 + i, 34, 124 + Y_DISTANCE * i, LOADER.GetMapImageN(2298));
         // Rang-Bild
-        reserve->AddImage(6 + i, 34, 107 + Y_DISTANCE * i, LOADER.GetMapImageN(2321 + i));
+        reserve.AddImage(6 + i, 34, 124 + Y_DISTANCE * i, LOADER.GetMapImageN(2321 + i));
         // Minus-Button
-        reserve->AddImageButton(11 + i, 54, 95 + Y_DISTANCE * i, 24, 24, TC_RED1, LOADER.GetImageN("io", 139), _("Less"));
+        reserve.AddImageButton(11 + i, 54, 112 + Y_DISTANCE * i, 24, 24, TC_RED1, LOADER.GetImageN("io", 139), _("Less"));
         // Plus-Button
-        reserve->AddImageButton(16 + i, 118, 95 + Y_DISTANCE * i, 24, 24, TC_GREEN2, LOADER.GetImageN("io", 138), _("More"));
+        reserve.AddImageButton(16 + i, 118, 112 + Y_DISTANCE * i, 24, 24, TC_GREEN2, LOADER.GetImageN("io", 138), _("More"));
         // Anzahl-Text
-        reserve->AddVarText(21 + i, 100, 100 + Y_DISTANCE * i, _("%u/%u"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont, 2,
+        reserve.AddVarText(21 + i, 100, 117 + Y_DISTANCE * i, _("%u/%u"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont, 2,
                             wh->GetReservePointerAvailable(i), wh->GetReservePointerClaimed(i));
     }
-
-    reserve->SetVisible(false);
 }
 
 void iwHQ::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
 {
-    if(group_id == 102)
+    if(group_id == grpIdReserve)
     {
         // Minus-Button
         if(ctrl_id >= 11 && ctrl_id < 16)

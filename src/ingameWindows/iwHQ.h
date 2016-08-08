@@ -27,11 +27,12 @@ class nobBaseWarehouse;
 class iwHQ : public iwBaseWarehouse
 {
     public:
-        iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh,  const char* const title, const unsigned pages_count);
+        iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
 
     protected:
 
         void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+        unsigned grpIdReserve;
 
 };
 
