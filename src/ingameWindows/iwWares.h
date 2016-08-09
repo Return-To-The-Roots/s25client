@@ -38,7 +38,7 @@ class iwWares : public IngameWindow
 
     protected:
         /// bestimmte Inventurseite zeigen.
-        void SetPage(unsigned page);
+        virtual void SetPage(unsigned page);
         /// Add a new page and return it. ID will be in range 100+
         ctrlGroup& AddPage();
 

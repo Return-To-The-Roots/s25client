@@ -174,7 +174,7 @@ iwWares::iwWares(unsigned int id, const DrawPoint& pos,
     // Hilfe
     AddImageButton(12,  16, height - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
-    SetPage(0);
+    wares.SetVisible(true);
 }
 
 void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
