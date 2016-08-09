@@ -134,7 +134,7 @@ bool ctrlButton::Draw_()
             else
                 texture = tc * 2;
             unsigned color = enabled ? COLOR_WHITE : 0xFF666666;
-            LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_);
+            LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_, color);
         }
     }
 

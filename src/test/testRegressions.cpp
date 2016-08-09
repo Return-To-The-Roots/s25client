@@ -47,6 +47,9 @@ struct AddGoodsFixture: public WorldFixture<CreateEmptyWorld, 1, 10, 10>
     AddGoodsFixture()
     {
         GamePlayer& player = world.GetPlayer(0);
+        // Don't keep any reserve
+        for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
+            player.GetFirstWH()->SetRealReserve(i, 0);
         numPeople = numPeoplePlayer = player.GetInventory().people;
         numGoods = numGoodsPlayer = player.GetInventory().goods;
     }

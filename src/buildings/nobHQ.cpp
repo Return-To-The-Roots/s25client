@@ -322,8 +322,11 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     AddToInventory();
 
     // Take 1 as the reserve per rank
-    for(unsigned i = 0; i < gwg->GetGGS().GetMaxMilitaryRank(); ++i)
+    for(unsigned i = 0; i <= gwg->GetGGS().GetMaxMilitaryRank(); ++i)
+    {
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 1;
+        RefreshReserve(i);
+    }
 
     // Evtl. liegen am Anfang Waffen im HQ, sodass rekrutiert werden muss
     TryRecruiting();
