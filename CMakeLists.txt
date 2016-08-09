@@ -23,6 +23,7 @@ INCLUDE(CMakeDetectOsXArchs)
 
 PROJECT(s25client)
 
+
 ################################################################################
 
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)

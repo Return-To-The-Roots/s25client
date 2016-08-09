@@ -44,7 +44,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
         sgd.PushUnsignedChar(boundary_stones[b]);
     sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
-    RTTR_Assert(numPlayers < fow.size());
+    RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Serialize(sgd);
     sgd.PushObject(obj, false);
