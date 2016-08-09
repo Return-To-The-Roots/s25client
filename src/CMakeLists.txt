@@ -186,8 +186,6 @@ ENDIF()
 IF (MSVC)
 	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
 	ADD_DEFINITIONS(/wd4267)
-	# Signed/Unsigned operations
-	ADD_DEFINITIONS(/we4389)
 ENDIF()
 
 # Add Icon to Application
