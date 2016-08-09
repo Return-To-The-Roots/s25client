@@ -82,8 +82,11 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     AddToInventory();
 
     // Take 1 as the reserve per rank
-    for(unsigned i = 0; i < gwg->GetGGS().GetMaxMilitaryRank(); ++i)
+    for(unsigned i = 0; i <= gwg->GetGGS().GetMaxMilitaryRank(); ++i)
+    {
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 1;
+        RefreshReserve(i);
+    }
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     gwg->GetPlayer(player).AddWarehouse(this);

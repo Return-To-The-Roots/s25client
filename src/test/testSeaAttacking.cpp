@@ -399,6 +399,8 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
     Inventory newGoods;
     newGoods.Add(JOB_SERGEANT, 1);
     hbDest.AddGoods(newGoods, true);
+    // Don't keep him in reserve
+    hbDest.SetRealReserve(JOB_SERGEANT - JOB_PRIVATE, 0);
     BOOST_REQUIRE_EQUAL(hbDest.GetVisualFiguresCount(JOB_SERGEANT), 1u);
     BOOST_REQUIRE(!hbDest.GetDefender());
 
