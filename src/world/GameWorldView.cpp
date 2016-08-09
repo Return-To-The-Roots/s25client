@@ -104,7 +104,7 @@ void GameWorldView::SetNextZoomFactor()
     CalcFxLx();
 }
 
-void GameWorldView::SetZoomFactor(float zoomFactor)
+void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition/* = true*/)
 {
     if (zoomFactor < ZOOM_MIN)
         targetZoomFactor = ZOOM_MIN;
@@ -112,6 +112,8 @@ void GameWorldView::SetZoomFactor(float zoomFactor)
         targetZoomFactor = ZOOM_MAX;
     else
         targetZoomFactor = zoomFactor;
+    if(!smoothTransition)
+        zoomFactor = targetZoomFactor;
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const

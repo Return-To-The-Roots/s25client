@@ -92,7 +92,7 @@ public:
     Point<int> GetPos() const { return pos; }
     Point<unsigned> GetSize() const { return Point<unsigned>(width, height); }
 
-    void SetZoomFactor(float zoomFactor);
+    void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
     float GetCurrentTargetZoomFactor() const;
     void SetNextZoomFactor();
 

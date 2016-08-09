@@ -27,19 +27,21 @@
 #include "Settings.h"
 #include "controls/ctrlButton.h"
 #include "gameTypes/RoadBuildState.h"
+#include "gameData/GuiConsts.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/src/Log.h"
 #include "CollisionDetection.h"
 #include <boost/foreach.hpp>
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
-    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse,  300, 250, _("Observation window"), NULL),
+    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse,  260, 190, _("Observation window"), NULL),
     parentView(gwv),
-    view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 300 - 20, 250 - 20)),
+    view(new GameWorldView(gwv.GetViewer(), Point<int>(GetX() + 10, GetY() + 15), 260 - 20, 190 - 20)),
     selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
     followMovableId(GameObject::INVALID_ID)
 {
     view->MoveToMapPt(selectedPt);
+    view->SetZoomFactor(1.9f, false);
     SetCloseOnRightClick(false);
 
     // Lupe: 36
