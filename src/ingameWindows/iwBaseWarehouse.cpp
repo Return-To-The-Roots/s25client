@@ -256,6 +256,11 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwBaseWarehouse::SetPage(unsigned page)
 {
     iwWares::SetPage(page);
+    const bool showStorageSettings = GetCurPage() == pageWares || GetCurPage() == pagePeople;
+    GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP)->GetButton(ID_COLLECT)->Enable(showStorageSettings);
+    GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP)->GetButton(ID_STOP)->Enable(showStorageSettings);
+    GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP)->GetButton(ID_TAKEOUT)->Enable(showStorageSettings);
+    GetCtrl<ctrlButton>(ID_SELECT_ALL)->Enable(showStorageSettings);
 }
 
 void iwBaseWarehouse::UpdateOverlay(unsigned i)

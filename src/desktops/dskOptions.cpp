@@ -166,12 +166,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         _("Place cursor on default button for new dialogs / action windows (default)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor ? 10102 : 10103);
 
-    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
-        optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
-    else
-        optiongroup->AddTextButton(56, 280, 225, 190, 22, TC_GREY, _("On"), NormalFont);
-    optiongroup->AddTextButton(57, 480, 225, 190, 22, TC_GREY, _("Off"), NormalFont);
-
     // "Auflösung"
     groupGrafik->AddText(  40,  80, 80, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
     groupGrafik->AddComboBox(41, 280, 75, 190, 22, TC_GREY, NormalFont, 150);

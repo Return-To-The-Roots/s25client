@@ -115,14 +115,25 @@ bool ctrlButton::Draw_()
     if(tc != TC_INVISIBLE)
     {
         if(border)
-            Draw3D(GetDrawPos(), width_, height_, tc, (unsigned short)((check) ? 2 : state), illuminated);
-        else
+        {
+            bool isCurIlluminated = illuminated;
+            unsigned short type;
+            if(enabled)
+                type = (unsigned short)(check ? 2 : state);
+            else
+            {
+                type = 0;
+                isCurIlluminated |= check;
+            }
+            Draw3D(GetDrawPos(), width_, height_, tc, type, isCurIlluminated);
+        } else
         {
             unsigned texture;
-            if(state == BUTTON_UP || state == BUTTON_PRESSED)
+            if(enabled && (state == BUTTON_UP || state == BUTTON_PRESSED))
                 texture = tc * 2 + 1;
             else
                 texture = tc * 2;
+            unsigned color = enabled ? COLOR_WHITE : 0xFF666666;
             LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_);
         }
     }
@@ -174,7 +185,7 @@ void ctrlTextButton::DrawContent() const
 ctrlImageButton::ctrlImageButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                                  unsigned short width, unsigned short height, const TextureColor tc,
                                  glArchivItem_Bitmap* const image, const std::string& tooltip)
-    : ctrlButton(parent, id, x, y, width, height, tc, tooltip), image(image), modulation_color(0xFFFFFFFF)
+    : ctrlButton(parent, id, x, y, width, height, tc, tooltip), image(image), modulation_color(COLOR_WHITE)
 {
 }
 
@@ -183,8 +194,11 @@ void ctrlImageButton::DrawContent() const
     // Bild
     if(image)
     {
-        const unsigned short offset = (state == BUTTON_PRESSED || check) ? 2 : 0;
-        image->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset), 0, 0, 0, 0, 0, 0, modulation_color);
+        const unsigned short offset = ((state == BUTTON_PRESSED || check) && enabled) ? 2 : 0;
+        unsigned color = modulation_color;
+        if(!enabled && modulation_color == COLOR_WHITE)
+            color = 0xFF555555;
+        image->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset), 0, 0, 0, 0, 0, 0, color);
     }
 }
 
