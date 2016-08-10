@@ -55,8 +55,6 @@ class GameWorldGame: public GameWorldBase
 
     /// Creates a region with territories marked around a building with the given radius
     TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, const bool destroyed) const;
-    /// Recalculates where border stones should be after a change in the given region
-    void RecalcBorderStones(const TerritoryRegion& region);
 
 protected:
 
@@ -143,7 +141,7 @@ public:
     void RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
         const unsigned char moving_dir, MapPoint * enemy_territory);
 
-    /// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)
+    /// Return whether this is a border node (node belongs to player, but not all others around)
     bool IsBorderNode(const MapPoint pt, const unsigned char player) const;
 
     // Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
@@ -166,6 +164,8 @@ public:
 
     /// Writeable access to node. Use only for initial map setup!
     MapNode& GetNodeWriteable(const MapPoint pt);
+    /// Recalculates where border stones should be done after a change in the given region
+    void RecalcBorderStones(Point<int> startPt, Point<int> endPt);
 protected:
     void VisibilityChanged(const MapPoint pt, unsigned player) override;
 };
