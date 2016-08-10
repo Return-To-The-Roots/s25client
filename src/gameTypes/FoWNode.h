@@ -20,6 +20,7 @@
 
 #include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
+#include <stdint.h>
 
 class FOWObject;
 class SerializedGameData;

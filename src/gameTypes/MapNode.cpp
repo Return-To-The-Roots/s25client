@@ -73,7 +73,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
         boundary_stones[b] = sgd.PopUnsignedChar();
     bq = BuildingQuality(sgd.PopUnsignedChar());
-    RTTR_Assert(numPlayers < fow.size());
+    RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Deserialize(sgd);
     obj = sgd.PopObject<noBase>(GOT_UNKNOWN);
