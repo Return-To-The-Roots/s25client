@@ -160,7 +160,7 @@ class AIInterface: public GameCommandFactory
         }
 
         /// Tests whether the ai player can see a point
-        bool IsVisible(const MapPoint pt) const { return gwb.CalcWithAllyVisiblity(pt, playerID_) == VIS_VISIBLE; }
+        bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
 
         bool IsMilitaryBuildingNearNode(const MapPoint pt, const unsigned char player) const { return gwb.IsMilitaryBuildingNearNode(pt, player); }
 

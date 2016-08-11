@@ -36,7 +36,7 @@ class SerializedGameData;
 class noShip : public noMovable
 {
         /// Spieler des Schiffes
-        unsigned char player;
+        unsigned char ownerId_;
 
         /// Was macht das Schiff gerade?
         enum State
@@ -157,7 +157,7 @@ class noShip : public noMovable
         void HandleEvent(const unsigned int id) override;
 
         /// Gibt den Besitzer zurück
-        unsigned char GetPlayer() const { return player; }
+        unsigned char GetPlayerId() const { return ownerId_; }
         /// Gibt die ID des Meeres zurück, auf dem es sich befindet
         unsigned short GetSeaID() const { return seaId_; }
         /// Gibt den Schiffsnamen zurück
@@ -189,8 +189,12 @@ class noShip : public noMovable
         /// Gibt Sichtradius dieses Schiffes zurück
         unsigned GetVisualRange() const;
 
-        /// Beim Warten bei der Expedition: Gibt die Hafenpunkt-ID zurück, wo es sich gerade befindet
+        /// Return the harbor ID where the ship currently is. Only valid when waiting for expedition instructions
         unsigned GetCurrentHarbor() const;
+        /// Return the harbor the ship is currently targetting (0 if ship is idling)
+        unsigned GetTargetHarbor() const;
+        /// Return the source harbor from where the ship left the current mission (0 if ship is idling)
+        unsigned GetHomeHarbor() const;
 
         /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
         void GoToHarbor(const nobHarborBuilding& hb, const std::vector<unsigned char>& route);

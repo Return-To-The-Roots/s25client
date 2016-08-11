@@ -148,7 +148,7 @@ namespace{
         bool operator()(const MapPoint& pt) const
         {
             // Liegt Punkt im Nebel und für Figuren begehbar?
-            return gwg.CalcWithAllyVisiblity(pt, player) != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
+            return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
         }
     };
 }

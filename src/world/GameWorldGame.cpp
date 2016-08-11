@@ -778,7 +778,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
+    if(CalcVisiblityWithAllies(pt, player_attacker) != VIS_VISIBLE)
         return;
 
     // Militärgebäude in der Nähe finden
@@ -895,7 +895,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
         return;
 
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
+    if(CalcVisiblityWithAllies(pt, player_attacker) != VIS_VISIBLE)
         return;
 
     // Ist das angegriffenne ein normales Gebäude?
@@ -1229,7 +1229,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
             noShip* ship = static_cast<noShip*>(*it);
             if(distance <= ship->GetVisualRange())
             {
-                if(ship->GetPos() == pt && ship->GetPlayer() == player)
+                if(ship->GetPos() == pt && ship->GetPlayerId() == player)
                     return true;
             }
         }
@@ -1339,7 +1339,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         tt = GetNeighbour(tt, dir);
         // Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
-        Visibility old_vis = CalcWithAllyVisiblity(tt, player);
+        Visibility old_vis = CalcVisiblityWithAllies(tt, player);
         unsigned char old_owner = GetNode(tt).fow[player].owner;
         MakeVisible(tt, player);
         // Neues feindliches Gebiet entdeckt?
@@ -1363,7 +1363,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         tt = GetNeighbour(tt, dir);
         // Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
-        Visibility old_vis = CalcWithAllyVisiblity(tt, player);
+        Visibility old_vis = CalcVisiblityWithAllies(tt, player);
         unsigned char old_owner = GetNode(tt).fow[player].owner;
         MakeVisible(tt, player);
         // Neues feindliches Gebiet entdeckt?
@@ -1474,18 +1474,15 @@ bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_s
     return helpers::contains(harbor_building_sites_from_sea, building_site);
 }
 
-std::vector<unsigned> GameWorldGame::GetHarborPointsWithinReach(const unsigned hbId, const unsigned seaId) const
+std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId, unsigned playerId) const
 {
     std::vector<unsigned> hps;
     for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
     {
-        if(i == hbId || !IsHarborAtSea(i, seaId))
+        if(i == hbIdToSkip || !IsHarborAtSea(i, seaId))
             continue;
-        unsigned dist = CalcHarborDistance(hbId, i);
-        if(dist == 0xffffffff)
-            continue;
-
-        hps.push_back(i);
+        if(CalcVisiblityWithAllies(GetHarborPoint(i), playerId) != VIS_VISIBLE)
+            hps.push_back(i);
     }
     return hps;
 }

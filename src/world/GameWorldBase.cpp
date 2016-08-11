@@ -299,7 +299,7 @@ void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
         RecalcBQ(GetNeighbour2(pt, i));
 }
 
-Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const
+Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const
 {
     Visibility best_visibility = GetNode(pt).fow[player].visibility;
 
@@ -312,7 +312,7 @@ Visibility GameWorldBase::CalcWithAllyVisiblity(const MapPoint pt, const unsigne
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
         {
-            if(GetPlayer(i).IsAlly(player))
+            if(i != player && GetPlayer(i).IsAlly(player))
             {
                 if(GetNode(pt).fow[i].visibility > best_visibility)
                     best_visibility = GetNode(pt).fow[i].visibility;
@@ -705,7 +705,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
     if(!milBld || !milBld->IsAttackable(player_attacker))
         return attackers;
     // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcWithAllyVisiblity(pt, player_attacker) != VIS_VISIBLE)
+    if(CalcVisiblityWithAllies(pt, player_attacker) != VIS_VISIBLE)
         return attackers;
     std::vector<bool> use_seas(GetNumSeas());
 
