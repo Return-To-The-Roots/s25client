@@ -1202,18 +1202,28 @@ void noShip::ContinueExplorationExpedition()
     }
     else
     {
-        // Nächsten Zielpunkt bestimmen
+        // Find the next harbor spot to explore
         std::vector<unsigned> hps;
         if(goal_harborId)
             hps = gwg->GetUnexploredHarborPoints(goal_harborId, seaId_, GetPlayerId());
 
-        // Keine möglichen Häfen gefunden?
+        // No possible spots?
         if(hps.empty())
-            // Dann wieder Heimathafen ansteuern
-            goal_harborId = home_harbor;
-        else
-            // Zufällig den nächsten Hafen auswählen
+        {
+            if(goal_harborId != home_harbor)
+                goal_harborId = home_harbor;
+            else
+            {
+                // We are already at home -> End
+                state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
+                current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
+                return;
+            }
+        } else
+        {
+            // Choose one randomly
             goal_harborId = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];
+        }
     }
 
     StartDrivingToHarborPlace();
