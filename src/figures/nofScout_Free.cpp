@@ -23,6 +23,8 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
+#include "boost/foreach.hpp"
+#include <algorithm>
 class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)
@@ -146,7 +148,7 @@ namespace{
         bool operator()(const MapPoint& pt) const
         {
             // Liegt Punkt im Nebel und für Figuren begehbar?
-            return gwg.GetNode(pt).fow[player].visibility != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
+            return gwg.CalcWithAllyVisiblity(pt, player) != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
         }
     };
 }
@@ -154,40 +156,25 @@ namespace{
 void nofScout_Free::GoToNewNode()
 {
     std::vector<MapPoint> available_points = gwg->GetPointsInRadius<0>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
-
-    // Ein Objekt zufällig heraussuchen
-    bool found_point = false;
-    size_t numPointsLeft = available_points.size();
-    while(numPointsLeft && !found_point)
+    // Shuffle the points
+    RANDOM_FUNCTOR(randFunc);
+    std::random_shuffle(available_points.begin(), available_points.end(), randFunc);
+    BOOST_FOREACH(MapPoint pt, available_points)
     {
-        std::vector< MapPoint >::iterator p = available_points.begin();
-        std::advance(p, RANDOM.Rand(__FILE__, __LINE__, GetObjId(), numPointsLeft));
-
-        // Existiert ein Weg zu diesem Punkt und ist dieser Punkt auch noch von der Flagge noch in
-        // einigermaßen vernünftiger Entfernung zu erreichen, um das Drumherumlaufen um Berge usw. zu
-        // verhindern
-        if(gwg->FindHumanPath(pos, *p, SCOUT_RANGE * 2) != 0xFF && gwg->FindHumanPath(flag->GetPos(), *p, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
+        // Is there a path to this point and is the point also not to far away from the flag?
+        // (Second check avoids running around mountains with a very far way back)
+        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2) != 0xFF && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
         {
-            // Als neues Ziel nehmen
-            nextPos = *p;
-
+            // Take it
+            nextPos = pt;
             Scout();
-
-            found_point = true;
-            break;
+            return;
         }
-
-        available_points.erase(p);
-        numPointsLeft--;
     }
 
-    // Gibt es überhaupt einen Punkt, wo ich hingehen kann?
-    if(!found_point)
-    {
-        // Wieder zur Flagge zurückgehen
-        state = STATE_GOTOFLAG;
-        GoToFlag();
-    }
+    // Nothing found -> Go back
+    state = STATE_GOTOFLAG;
+    GoToFlag();
 }
 
 /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
