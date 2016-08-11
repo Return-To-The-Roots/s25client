@@ -140,3 +140,40 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     world.InitAfterLoad();
     return true;
 }
+
+
+CreateWaterWorld::CreateWaterWorld(unsigned width, unsigned height, unsigned numPlayers): width_(width), height_(height), playerNations_(numPlayers, NAT_ROMANS)
+{
+    // Only 2 players supported
+    RTTR_Assert(numPlayers == 2u);
+}
+
+bool CreateWaterWorld::operator()(GameWorldGame& world) const
+{
+    world.Init(width_, height_, LT_GREENLAND);
+    // Set everything to water
+    RTTR_FOREACH_PT(MapPoint, width_, height_)
+    {
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = TT_WATER;
+    }
+    // Create some land
+    for(MapPoint pt(0, 0); pt.y < 10; ++pt.y)
+    {
+        for(pt.x = 0; pt.x < 10; ++pt.x)
+        {
+            MapNode& node = world.GetNodeWriteable(pt);
+            node.t1 = node.t2 = TT_MEADOW1;
+        }
+    }
+    std::vector<MapPoint> hqPositions;
+    hqPositions.push_back(MapPoint(5, 9));
+    hqPositions.push_back(MapPoint(9, 9));
+    MapLoader::PlaceHQs(world, hqPositions, playerNations_, false);
+
+    std::vector<MapPoint> harbors;
+    PlaceHarbor(MapPoint(5, 0), world, harbors);
+    RTTR_Assert(harbors.size() == 1u);
+    MapLoader::InitSeasAndHarbors(world, harbors);
+    return true;
+}

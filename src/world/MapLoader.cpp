@@ -395,8 +395,16 @@ bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const 
 void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
 {
     world.harbor_pos.insert(world.harbor_pos.end(), additionalHarbors.begin(), additionalHarbors.end());
+    // Clear current harbors and seas
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        MapNode& node = world.GetNodeInt(pt);
+        node.seaId = 0u;
+        node.harborId = 0;
+    }
 
     /// Weltmeere vermessen
+    world.seas.clear();
     RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
     {
         // Noch kein Meer an diesem Punkt  Aber trotzdem Teil eines noch nicht vermessenen Meeres?
