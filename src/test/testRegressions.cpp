@@ -33,6 +33,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
+#include <algorithm>
 
 // This suite tests bugs that got fixed to avoid regressions
 // So:
@@ -302,6 +303,98 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     BOOST_REQUIRE(!farm->is_working);
     // Grainfield is gone
     BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(grainFieldPos));
+}
+
+typedef WorldFixture<CreateEmptyWorld, 0, 10, 10> WorldFixtureEmpty0P;
+boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
+{
+    world.RecalcBorderStones(Point<int>(0, 0), Point<int>(world.GetWidth() - 1, world.GetHeight() - 1));
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    {
+        const BoundaryStones& isValue = world.GetNode(pt).boundary_stones;
+        const BoundaryStones& expectedValue = expected[world.GetIdx(pt)];
+        for(unsigned i = 0; i < BoundaryStones::size(); i++)
+        {
+            if(isValue[i] != expectedValue[i])
+            {
+                boost::test_tools::predicate_result result(false);
+                result.message() << isValue[i] << "!=" << expectedValue[i] << " at " << pt << "[" << i << "]";
+                return result;
+            }
+        }
+    }
+    return true;
+}
+
+BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
+{
+    std::vector<MapPoint> ptsToTest;
+    // Check some point in the middle and at 0,0 which causes wrapping
+    ptsToTest.push_back(MapPoint(5, 5));
+    ptsToTest.push_back(MapPoint(0, 0));
+    BOOST_FOREACH(MapPoint middlePt, ptsToTest)
+    {
+        std::vector<BoundaryStones> expectedBoundaryStones(world.GetWidth() * world.GetHeight());
+        // Reset owner to 0 (None) and boundary stones to nothing
+        RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        {
+            world.SetOwner(pt, 0);
+            std::fill(expectedBoundaryStones[world.GetIdx(pt)].begin(), expectedBoundaryStones[world.GetIdx(pt)].end(), 0u);
+        }
+        // Get the minimum possible region where border stones would be placed
+        const std::vector<MapPoint> radius1Pts = world.GetPointsInRadius(middlePt, 1);
+        // Set only the middle pt and recalc
+        world.SetOwner(middlePt, 1);
+        // Only middle pt has a single boundary stone
+        expectedBoundaryStones[world.GetIdx(middlePt)][0] = 1u;
+        BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
+
+        BOOST_FOREACH(MapPoint pt, radius1Pts)
+            world.SetOwner(pt, 1);
+        // Midle pt lost its stone
+        expectedBoundaryStones[world.GetIdx(middlePt)][0] = 0u;
+        // Each border node should have a boundary stone at the center
+        BOOST_FOREACH(MapPoint pt, radius1Pts)
+            expectedBoundaryStones[world.GetIdx(pt)][0] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][2] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][1] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][3] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHEAST])][2] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::EAST])][3] = 1u;
+        // SE has no other stone
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::SOUTHWEST])][1] = 1u;
+        BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
+
+        // Now obtain another node:
+        const MapPoint doubleWestPt = world.GetNeighbour(radius1Pts[Direction::WEST], Direction::WEST);
+        world.SetOwner(doubleWestPt, 1);
+        // Still the same, but that node has 2 stones
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][0] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][1] = 1u;
+        BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
+
+        // Next, actually increasing our territory
+        // Note: The NW node and its WEST neighbour have (temporarly) 3 neigbouring stones leading to issue #538 where
+        // the half-way stone to E gets removed with prevent-blocking enabled
+        const MapPoint doubleWestPt2 = world.GetNeighbour(doubleWestPt, Direction::NORTHEAST);
+        const MapPoint doubleWestPt3 = world.GetNeighbour(doubleWestPt, Direction::SOUTHEAST);
+        world.SetOwner(doubleWestPt2, 1);
+        world.SetOwner(doubleWestPt3, 1);
+        // New points get some stones: Top
+        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][0] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][1] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][3] = 1u;
+        // Bottom
+        expectedBoundaryStones[world.GetIdx(doubleWestPt3)][0] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt3)][1] = 1u;
+        // Middle (gets one to bottom, looses one to right, as WEST point is now no border node anymore (affects 2 more)
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][2] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][1] = 0u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][0] = 0u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][2] = 0u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][3] = 0u;
+        BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

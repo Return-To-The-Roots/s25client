@@ -22,7 +22,7 @@ environment:
 install:
   - dir C:\Libraries
   - appveyor-retry git submodule update --init
-  - cinst unrar
+  - cinst -y unrar
   - cd contrib
   - unrar x full-contrib-msvc.rar
   - cd ..

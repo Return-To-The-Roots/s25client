@@ -954,7 +954,7 @@ void GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
         return;
     if(msg.player >= gw->GetPlayerCount())
         return;
-    LOG.writeToFile("CLIENT <<< GC %u\n") % msg.player;
+    //LOG.writeToFile("CLIENT <<< GC %u\n") % msg.player;
     // Nachricht in Queue einhängen
     gw->GetPlayer(msg.player).gc_queue.push(msg);
     // If this is our GC then it must be the next and only command as we need to execute this before we even send the next one

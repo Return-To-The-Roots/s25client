@@ -20,12 +20,13 @@
 
 #include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
+#include <stdint.h>
 
 class FOWObject;
 class SerializedGameData;
 
-/// Grenzsteine (der Punkt, und dann jeweils nach rechts, unten-links und unten-rechts die Zwischensteine)
-typedef boost::array<unsigned char, 4> BoundaryStones;
+/// Border stones on 1 node: Directly on Point and halfway to E, SE and SW
+typedef boost::array<uint8_t, 4> BoundaryStones;
 
 /// How a player sees the point in FoW
 struct FoWNode
@@ -36,7 +37,7 @@ struct FoWNode
     Visibility visibility;
     /// FOW-Objekt
     FOWObject* object;
-    boost::array<unsigned char, 3> roads;
+    boost::array<uint8_t, 3> roads;
     unsigned char owner;
     BoundaryStones boundary_stones;
 

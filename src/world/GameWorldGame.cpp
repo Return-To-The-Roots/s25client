@@ -455,7 +455,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
         }
     }
 
-    RecalcBorderStones(region);
+    RecalcBorderStones(region.startPt, region.endPt);
 
 
     // Sichtbarkeiten berechnen
@@ -469,20 +469,29 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
         SetVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }
 
-// When defined the game tries to remove "blocks" of border stones that look ugly
-#define PREVENT_BORDER_STONE_BLOCKING
+// When defined the game tries to remove "blocks" of border stones that look ugly (TODO: Example?)
+// DISABLED: This currently leads to bugs. If you enable/fix this, please add tests and document the conditions this tries to fix
+//#define PREVENT_BORDER_STONE_BLOCKING
 
-void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
+void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
 {
+    Point<int> size = endPt - startPt;
     // Add a bit extra space as this influences also border stones around the region
-    static const Point<int> EXTRA_SPACE(3, 3);
+    // But not so much we wrap completely around the map (+1 to round up, /2 to have extra space centered)
+    Point<int> EXTRA_SPACE(std::min(3, (GetWidth() - size.x + 1) / 2), std::min(3, (GetHeight() - size.y + 1) / 2));
+    startPt -= EXTRA_SPACE;
+    endPt += EXTRA_SPACE;
+    // We might still be 1 node to big, make sure we have don't exceed the mapsize
+    size = endPt - startPt;
+    if(size.x > GetWidth())
+        endPt.x = startPt.x + GetWidth();
+    if(size.y > GetWidth())
+        endPt.y = startPt.y + GetHeight();
 
-    const Point<int> startPt(region.startPt - EXTRA_SPACE);
-    const Point<int> endPt(region.endPt + EXTRA_SPACE);
 #ifdef PREVENT_BORDER_STONE_BLOCKING
     const int width = endPt.x - startPt.x;
-    // In diesem Array merken, wie wieviele Nachbarn ein Grenzstein hat
-    std::vector<unsigned> neighbors(width * (endPt.y - startPt.y), 0);
+    // Store how many neighbors a border stone has
+    std::vector<uint8_t> neighbors(width * (endPt.y - startPt.y), 0);
 #endif
 
 
@@ -490,28 +499,27 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
     {
         for(pt.x = startPt.x; pt.x < endPt.x; ++pt.x)
         {
-            // Korrigierte X-Koordinaten
+            // Make map point
             const MapPoint curMapPt = MakeMapPoint(pt);
             const unsigned char owner = GetNode(curMapPt).owner;
             BoundaryStones& boundaryStones = GetBoundaryStones(curMapPt);
 
-            // Grenzstein direkt auf diesem Punkt?
+            // Is this a border node?
             if(owner && IsBorderNode(curMapPt, owner))
             {
                 boundaryStones[0] = owner;
 
-                // Grenzsteine prüfen auf den Zwischenstücken in die 3 Richtungen nach unten und nach rechts
+                // Check which neighbors are also border nodes and place the half-way stones to them
                 for(unsigned i = 0; i < 3; ++i)
                 {
                     if(IsBorderNode(GetNeighbour(curMapPt, 3 + i), owner))
                         boundaryStones[i + 1] = owner;
                     else
                         boundaryStones[i + 1] = 0;
-
                 }
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
-                // Zählen
+                // Count number of border nodes with same owner
                 Point<int> offset(pt - startPt);
                 int idx = offset.y * width + offset.x;
                 for(unsigned i = 0; i < 6; ++i)
@@ -522,27 +530,22 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 #endif
             } else
             {
-                // Kein Grenzstein --> etwaige vorherige Grenzsteine löschen
-                for(unsigned i = 0; i < 4; ++i)
-                    boundaryStones[i] = 0;
-
-                //for(unsigned i = 0;i<3;++i)
-                //  GetNeighbourNode(x, y, 3+i).boundary_stones[i+1] = 0;
+                // Not a border node -> Delete all border stones
+                std::fill(boundaryStones.begin(), boundaryStones.end(), 0);
             }
         }
     }
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
-    // Nochmal durchgehen und bei Grenzsteinen mit mehr als 3 Nachbarn welche löschen
-    // da sich sonst gelegentlich solche "Klötzchen" bilden können
+    // Do a second pass and delete some stones with 3 or more neighbors to avoid blocks of stones
     for(Point<int> pt(startPt); pt.y < endPt.y; ++pt.y)
     {
         for(pt.x = startPt.x; pt.x < endPt.x; ++pt.x)
         {
             const MapPoint curMapPt = MakeMapPoint(pt);
 
-            // Steht auch hier ein Grenzstein?
-            unsigned char owner = GetNode(curMapPt).boundary_stones[0];
+            // Do we have a stone here?
+            const unsigned char owner = GetNode(curMapPt).boundary_stones[0];
             if(!owner)
                 continue;
 
@@ -553,7 +556,7 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
 
             for(unsigned dir = 0; dir < 3 && neighbors[idx] > 2; ++dir)
             {
-                // Da ein Grenzstein vom selben Besitzer?
+                // Do we have a border stone of the same owner on the node in that direction?
                 BoundaryStones& nbBoundStones = GetBoundaryStones(GetNeighbour(curMapPt, dir + 3));
 
                 if(nbBoundStones[0] != owner)
@@ -562,12 +565,11 @@ void GameWorldGame::RecalcBorderStones(const TerritoryRegion& region)
                 Point<int> pa = ::GetNeighbour(pt, Direction(dir + 3));
                 if(pa.x < startPt.x || pa.x >= endPt.x || pa.y < startPt.y || pa.y >= endPt.y)
                     continue;
-                // Hat der auch zu viele Nachbarn?
+                // If that one has to many stones too, we delete the connection stone
                 Point<int> offset(pa - startPt);
                 int idxNb = offset.y * width + offset.x;
                 if(neighbors[idxNb] > 2)
                 {
-                    // Dann löschen wir hier einfach die Verbindung
                     nbBoundStones[dir + 1] = 0;
                     --neighbors[idx];
                     --neighbors[idxNb];
@@ -1404,10 +1406,8 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
 
 }
 
-/// Stellt fest, ob auf diesem Punkt ein Grenzstein steht (ob das Grenzgebiet ist)
 bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) const
 {
-    // Wenn ich Besitzer des Punktes bin, dieser mir aber nicht gehört
     return (GetNode(pt).owner == player && !IsPlayerTerritory(pt));
 }
 
