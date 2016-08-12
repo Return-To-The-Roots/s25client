@@ -103,7 +103,7 @@ if [[ "$ARCH" =~ windows.* ]] ; then
 fi
 
 # create packed data and updater
-if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT] ; then
+if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 	echo "creating new archive"
 
 	# remove old build artefacts
