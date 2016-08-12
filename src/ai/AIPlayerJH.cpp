@@ -1498,7 +1498,7 @@ void AIPlayerJH::HandleExpedition(const MapPoint pt)
     {
         if((*it)->GetGOT() == GOT_SHIP)
         {
-            if(static_cast<noShip*>(*it)->GetPlayer() == playerId)
+            if(static_cast<noShip*>(*it)->GetPlayerId() == playerId)
             {
                 if (static_cast<noShip*>(*it)->IsWaitingForExpeditionInstructions())
                 {

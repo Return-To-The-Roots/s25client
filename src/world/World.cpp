@@ -487,12 +487,11 @@ MapPoint World::GetCoastalPoint(const unsigned harborId, const unsigned short se
     RTTR_Assert(harborId);
     RTTR_Assert(seaId);
 
-    for(unsigned i = 0; i < 6; ++i)
+    // Take point at NW last as often there is no path from it if the harbor is north of an island
+    for(unsigned i = 2; i < 6 + 2; ++i)
     {
-        if(harbor_pos[harborId].cps[i].seaId == seaId)
-        {
-            return GetNeighbour(harbor_pos[harborId].pos, i);
-        }
+        if(harbor_pos[harborId].cps[i % 6].seaId == seaId)
+            return GetNeighbour(harbor_pos[harborId].pos, Direction(i));
     }
 
     // Keinen Punkt gefunden

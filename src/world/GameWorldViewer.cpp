@@ -125,7 +125,7 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
     if(GetPlayer().IsDefeated())
         return VIS_VISIBLE;
 
-    return GetWorld().CalcWithAllyVisiblity(pt, playerId_);
+    return GetWorld().CalcVisiblityWithAllies(pt, playerId_);
 }
 
 bool GameWorldViewer::IsOwner(const MapPoint& pt) const
@@ -220,7 +220,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
                 continue;
             noShip* curShip = static_cast<noShip*>(*it);
 
-            if (curShip->GetPlayer() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
+            if (curShip->GetPlayerId() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
             {
                 if(curShip->IsWaitingForExpeditionInstructions())
                     return curShip;

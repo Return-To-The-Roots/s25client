@@ -38,7 +38,7 @@
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship):
     IngameWindow(CGI_SHIP, IngameWindow::posAtMouse,  252, 238, _("Ship register"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory),
-    player(ship ? ship->GetPlayer() : gwv.GetViewer().GetPlayerId()),
+    player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
     ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
 {
     AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
@@ -110,7 +110,7 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), ShipDirection::fromInt(i), ship->GetPlayer()) > 0);
+            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), ShipDirection::fromInt(i), ship->GetPlayerId()) > 0);
     }
     else
     {
@@ -163,7 +163,7 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         case 4:
         {
             if(ship_id == 0)
-                ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount() - 1;
+                ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
             else
                 --ship_id;
         } break;
@@ -171,14 +171,14 @@ void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
         case 5:
         {
             ++ship_id;
-            if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount())
+            if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount())
                 ship_id = 0;
 
         } break;
         // Letztes Schiff
         case 6:
         {
-            ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayer()).GetShipCount() - 1;
+            ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
         } break;
         case 7: // "Gehe Zu Ort"
         {

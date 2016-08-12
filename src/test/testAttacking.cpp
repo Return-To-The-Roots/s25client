@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     TestFailingAttack(hqPos[0], attackSrc);
 
     // Try to attack newly build bld -> Fail
-    BOOST_REQUIRE_EQUAL(world.CalcWithAllyVisiblity(milBld1NearPos, curPlayer), VIS_VISIBLE);
+    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1NearPos, curPlayer), VIS_VISIBLE);
     BOOST_REQUIRE(milBld1Near->IsNewBuilt());
     TestFailingAttack(milBld1NearPos, attackSrc);
 
@@ -243,7 +243,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     MapNode& node = world.GetNodeWriteable(milBld1NearPos);
     node.fow[0].visibility = VIS_FOW;
     node.fow[2].visibility = VIS_FOW;
-    BOOST_REQUIRE_EQUAL(world.CalcWithAllyVisiblity(milBld1NearPos, curPlayer), VIS_FOW);
+    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1NearPos, curPlayer), VIS_FOW);
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1NearPos), 5u);
     this->Attack(milBld1NearPos, 1, true);
     BOOST_REQUIRE_EQUAL(attackSrc.GetTroopsCount(), 6u);

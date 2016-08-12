@@ -120,7 +120,7 @@ public:
     void RecalcBQAroundPointBig(const MapPoint pt);
 
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
-    Visibility CalcWithAllyVisiblity(const MapPoint pt, const unsigned char player) const;
+    Visibility CalcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const;
 
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
     bool IsHarborPointFree(const unsigned harborId, const unsigned char player) const;

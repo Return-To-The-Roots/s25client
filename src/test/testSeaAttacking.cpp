@@ -29,6 +29,7 @@
 #include "nodeObjs/noShip.h"
 #include "GamePlayer.h"
 #include "world/GameWorldViewer.h"
+#include "world/MapLoader.h"
 #include "addons/const_addons.h"
 #include "gameData/SettingTypeConv.h"
 #include "test/PointOutput.h"
@@ -603,6 +604,85 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
     // All soldiers should have left
     BOOST_REQUIRE_EQUAL(hbSrc.GetVisualFiguresCount(JOB_PRIVATE), 0u);
     BOOST_REQUIRE_EQUAL(hbSrc.GetVisualFiguresCount(JOB_GENERAL), 0u);
+}
+
+BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, AttackFixture)
+{
+    // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
+    // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the walking path would go over the harbor or a blocked point
+    // if we can't walk around it
+    // Harbors is attackable by default
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
+    // build such a situation for player 1 (left)
+    // Make everything west of harbor water
+    for(MapPoint pt = harborPos[1] - MapPoint(0, 3); pt.y < harborPos[1].y + 3; pt.y++)
+    {
+        for(pt.x = harborPos[1].x - 3; pt.x <= harborPos[1].x; pt.x++)
+        {
+            if(world.CalcDistance(pt, harborPos[1]) < 2)
+                continue;
+            world.GetNodeWriteable(pt).t1 = TT_WATER;
+            world.GetNodeWriteable(pt).t2 = TT_WATER;
+        }
+    }
+    const MapPoint ptW = world.GetNeighbour(harborPos[1], Direction::WEST);
+    // Make west point a non-coastal point by adding land to its sea points
+    const MapPoint seaPtW = world.GetNeighbour(ptW, Direction::WEST);
+    const MapPoint seaPtW2 = world.GetNeighbour(ptW, Direction::NORTHWEST);
+    world.GetNodeWriteable(seaPtW).t2 = TT_MEADOW1;
+    world.GetNodeWriteable(seaPtW2).t1 = TT_MEADOW1;
+    // Make NE pt a sea point
+    const MapPoint ptNE = world.GetNeighbour(harborPos[1], Direction::NORTHEAST);
+    const MapPoint seaPtN = world.GetNeighbour(ptNE, Direction::NORTHWEST);
+    world.GetNodeWriteable(seaPtN).t1 = TT_WATER;
+    world.GetNodeWriteable(seaPtN).t2 = TT_WATER;
+
+    const MapPoint ptNW = world.GetNeighbour(harborPos[1], Direction::NORTHWEST);
+    BOOST_REQUIRE(world.IsWaterPoint(world.GetNeighbour(ptNW, Direction::NORTHWEST)));
+    BOOST_REQUIRE(world.IsWaterPoint(seaPtN));
+    // Re-init seas/harbors
+    MapLoader::InitSeasAndHarbors(world);
+
+    // Still have our harbor
+    const unsigned hbId = world.GetHarborPointID(harborPos[1]);
+    BOOST_REQUIRE(hbId);
+    // Should have coast to both north points
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::WEST), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), 1u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), 1u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::EAST), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SOUTHEAST), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SOUTHWEST), 0u);
+
+    // So we should still be able to attack
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
+    // Start attack
+    this->SeaAttack(harborPos[1], 5, true);
+    // Let soldier walk to harbor
+    unsigned distance = 2 * world.CalcDistance(milBld2Pos, harborPos[2]);
+    for(unsigned gf = 0; gf < distance * 20 + 30; gf++)
+        em.ExecuteNextGF();
+    // And ship go to harbor (+200 GFs for loading)
+    const noShip& ship = *world.GetPlayer(2).GetShipByID(0);
+    distance = world.CalcDistance(ship.GetPos(), harborPos[1]);
+    for(unsigned gf=0; gf<distance*2*20 + 200; gf++)
+    {
+        em.ExecuteNextGF();
+        if(!ship.IsMoving() && world.CalcDistance(ship.GetPos(), harborPos[1]) <= 2)
+            break;
+    }
+    BOOST_REQUIRE(ship.IsOnAttackMission());
+    BOOST_REQUIRE(!ship.IsMoving());
+    BOOST_REQUIRE_LE(world.CalcDistance(ship.GetPos(), harborPos[1]), 2u);
+    // Harbor should be destroyed and the ship go back
+    for(unsigned gf = 0; gf < 500; gf++)
+    {
+        em.ExecuteNextGF();
+        if(ship.IsMoving())
+            break;
+    }
+    BOOST_REQUIRE(ship.IsMoving());
+    BOOST_REQUIRE_EQUAL(world.GetNO(harborPos[1])->GetGOT(), GOT_FIRE);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

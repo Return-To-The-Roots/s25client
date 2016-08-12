@@ -806,7 +806,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
     {
         // We already have soldier per rank as reserve
-        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerClaimed(i), 1u);
+        BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), 1u);
         BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), 1u);
 
         unsigned newVal = i * 5 + 2;
@@ -814,7 +814,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv);
         // Update reserve -> Removed from inventory
         this->ChangeReserve(hqPos, i, newVal);
-        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerClaimed(i), newVal);
+        BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), newVal);
         BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), newVal);
         // Current figure ct should be old figure count minus the new reserve soldiers (currentVal - 1 for old reserve val)
         BOOST_REQUIRE_EQUAL(wh->GetVisualFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv - (newVal - 1));
@@ -828,7 +828,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
         unsigned numSoldiersReleased = *wh->GetReservePointerAvailable(i) - newVal;
         // Release some soldiers from reserve -> Added to inventory
         this->ChangeReserve(hqPos, i, newVal);
-        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerClaimed(i), newVal);
+        BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), newVal);
         BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), newVal);
         BOOST_REQUIRE_EQUAL(wh->GetVisualFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
         BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);

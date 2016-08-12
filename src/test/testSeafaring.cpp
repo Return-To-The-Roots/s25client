@@ -146,7 +146,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
             this->SetFlag(curPt);
         }
 
-        noShip* ship = new noShip(MapPoint(hbPos.x, hbPos.y - 7), curPlayer);
+        noShip* ship = new noShip(MapPoint(hbPos.x, hbPos.y - 3), curPlayer);
         world.AddFigure(ship, ship->GetPos());
         player.RegisterShip(ship);
 
@@ -159,10 +159,12 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
 {
     initGameRNG();
 
+    curPlayer = 0;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
     const nobHarborBuilding& harbor = *player.GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
+    const unsigned hbId = world.GetHarborPointID(hbPos);
     BOOST_REQUIRE(ship);
     BOOST_REQUIRE(ship->IsIdling());
     BOOST_REQUIRE(!harbor.IsExplorationExpeditionActive());
@@ -181,6 +183,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     // Expedition ready, ship ordered
     BOOST_REQUIRE(!ship->IsIdling());
     BOOST_REQUIRE(ship->IsGoingToHarbor(harbor));
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), hbId);
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 1u);
 
     // No available scouts
@@ -201,19 +204,79 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsIdling());
     BOOST_REQUIRE(!ship->IsGoingToHarbor(harbor));
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 0u);
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), 0u);
+    BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), 0u);
+
+    // We want the ship to only scout unexplored harbors, so set all but one to visible
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE;
+    // Team visibility, so set one to own team
+    world.GetPlayer(curPlayer).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(curPlayer).MakeStartPacts();
+    world.GetPlayer(1).MakeStartPacts();
+    world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = VIS_VISIBLE;
+    unsigned targetHbId = 8u;
 
     // Start again (everything is here)
     this->StartExplorationExpedition(hbPos);
     // ...so we can start right now
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
-
-    // Let the ship scout a bit
-    for(unsigned gf = 0; gf < 200+20*20; gf++)
+    // Load and start
+    for(unsigned gf = 0; gf < 202; gf++)
         this->em.ExecuteNextGF();
+    BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
+
+    unsigned distance = world.CalcDistance(hbPos, world.GetHarborPoint(targetHbId));
+    // Let the ship scout the harbor
+    for(unsigned gf = 0; gf < distance * 2 * 20; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(!ship->IsMoving())
+            break;
+    }
+    BOOST_REQUIRE(!ship->IsMoving());
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
-    BOOST_REQUIRE_GT(world.CalcDistance(hbPos, ship->GetPos()), 10u);
+    BOOST_REQUIRE_LE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()), 2u);
+    // Now the ship waits and will select the next harbor. We allow another one:
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_FOW;
+    targetHbId = 6u;
+    for(unsigned gf = 0; gf < 350; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsMoving())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsMoving());
+    BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
+    distance = world.CalcDistance(ship->GetPos(), world.GetHarborPoint(targetHbId));
+    // Let the ship scout the harbor
+    for(unsigned gf = 0; gf < distance * 2 * 20; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(!ship->IsMoving())
+            break;
+    }
+    BOOST_REQUIRE(!ship->IsMoving());
+    BOOST_REQUIRE(ship->IsOnExplorationExpedition());
+    BOOST_REQUIRE_LE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()), 2u);
+
+    // Now disallow the first harbor so ship returns home
+    world.GetNodeWriteable(world.GetHarborPoint(8)).fow[curPlayer].visibility = VIS_VISIBLE;
+
+    for(unsigned gf = 0; gf < 350; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsMoving())
+            break;
+    }
+    BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), hbId);
+
+    distance = world.CalcDistance(ship->GetPos(), world.GetHarborPoint(hbId));
     // And at some time it should return home
-    for(unsigned gf = 0; gf < 6200; gf++)
+    for(unsigned gf = 0; gf < distance * 2 * 20 + 200; gf++)
     {
         this->em.ExecuteNextGF();
         if(ship->IsIdling())
@@ -221,7 +284,19 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     }
     BOOST_REQUIRE(ship->IsIdling());
     BOOST_REQUIRE_EQUAL(ship->GetSeaID(), 1u);
-    BOOST_REQUIRE_EQUAL(ship->GetPos(), world.GetCoastalPoint(harbor.GetHarborPosID(), 1));
+    BOOST_REQUIRE_EQUAL(ship->GetPos(), world.GetCoastalPoint(hbId, 1));
+
+    // Now try to start an expedition but all harbors are explored -> Load, Unload, Idle
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE;
+    this->StartExplorationExpedition(hbPos);
+    BOOST_REQUIRE(ship->IsOnExplorationExpedition());
+    for(unsigned gf = 0; gf < 2*200 + 5; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsIdling())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsIdling());
 }
 
 BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)

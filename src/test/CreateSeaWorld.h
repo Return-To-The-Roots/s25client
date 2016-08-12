@@ -34,5 +34,14 @@ private:
     std::vector<Nation> playerNations_;
 };
 
+/// World for 2 players with all water except a small patch of land with player 0 HQ in the middle and player 1 HQ in the bottom left
+struct CreateWaterWorld
+{
+    CreateWaterWorld(unsigned width, unsigned height, unsigned numPlayers);
+    bool operator()(GameWorldGame& world) const;
+private:
+    unsigned width_, height_;
+    std::vector<Nation> playerNations_;
+};
 
 #endif // CreateSeaWorld_h__
