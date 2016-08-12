@@ -868,8 +868,8 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) con
             offset->y = 0;
         ptOut.y = static_cast<MapCoord>(pt.y);
     }
-    RTTR_Assert(ptOut.x >= 0 && ptOut.x < width);
-    RTTR_Assert(ptOut.y >= 0 && ptOut.y < height);
+    RTTR_Assert(ptOut.x < width);
+    RTTR_Assert(ptOut.y < height);
     RTTR_Assert(!offset || pt.x - ptOut.x == offset->x / TR_W);
     RTTR_Assert(!offset || pt.y - ptOut.y == offset->y / TR_H);
     return ptOut;
