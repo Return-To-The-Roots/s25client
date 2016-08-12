@@ -49,7 +49,7 @@
 #   ifndef _MSC_VER
         typedef WINBOOL (WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
         typedef WINBOOL (WINAPI* SymCleanupType)(HANDLE hProcess);
-        typedef NTSYSAPI VOID (WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
+        typedef VOID (WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
         typedef WINBOOL (WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord, PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine, PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine, PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 #   else
 #       undef CaptureStackBackTrace
