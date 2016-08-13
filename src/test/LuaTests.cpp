@@ -45,7 +45,11 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/format.hpp>
+#include <boost/assign/std/vector.hpp>
 #include <vector>
+
+using namespace boost::assign;
+#define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
 
 namespace{
     class GameWorldWithLuaAccess: public GameWorldGame
@@ -445,21 +449,6 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     for(unsigned bld = 0; bld < BUILDING_TYPES_COUNT; bld++)
         BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType(bld)));
 
-    executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
-    BOOST_REQUIRE_EQUAL(player.GetRestrictedArea().size(), 3u);
-    BOOST_REQUIRE_EQUAL(player.GetRestrictedArea()[0], MapPoint(5, 7));
-    BOOST_REQUIRE_EQUAL(player.GetRestrictedArea()[1], MapPoint(5, 12));
-    BOOST_REQUIRE_EQUAL(player.GetRestrictedArea()[2], MapPoint(15, 12));
-
-    executeLua("player:SetRestrictedArea()");
-    BOOST_REQUIRE_EQUAL(player.GetRestrictedArea().size(), 0u);
-    
-    // Numbers must be pairs
-    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3)"), std::runtime_error);
-    // And non negative
-    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, -3,4)"), std::runtime_error);
-    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3,-4)"), std::runtime_error);
-
     executeLua("player:ClearResources()");
     for(unsigned gd = 0; gd < WARE_TYPES_COUNT; gd++)
     {
@@ -547,6 +536,56 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("assert(player:AddPeople(people) == false)");
     // ModifyHQ does not crash
     executeLua("player:ModifyHQ(true)");
+}
+
+BOOST_AUTO_TEST_CASE(RestrictedArea)
+{
+    initWorld();
+
+    const GamePlayer& player = world.GetPlayer(1);
+    executeLua("player = rttr:GetPlayer(1)\nassert(player)");
+
+    // Just a single polygon
+    executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
+    std::vector<MapPoint> expectedRestrictedArea;
+    expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+
+    // Polygon with hole
+    executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");
+    expectedRestrictedArea.clear();
+    expectedRestrictedArea += MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1);
+    expectedRestrictedArea += MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5), MapPoint(7, 7), MapPoint(5, 5), MapPoint(0, 0);
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    // Some prefer using nils
+    executeLua("player:SetRestrictedArea(nil,nil, 1,1, 10,1, 10,10, 1,10, 1,1, nil,nil, 5,5, 7,5, 7,7, 5,5, nil,nil)");
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+
+    // New API: Single nil and no double point
+    executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    // Although you could use nil at the end...
+    executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7, nil)");
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    // ...or beginning
+    executeLua("player:SetRestrictedArea(nil,1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+
+    // Also for single polygon
+    executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12, nil)");
+    expectedRestrictedArea.clear();
+    expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+
+    executeLua("player:SetRestrictedArea()");
+    BOOST_REQUIRE_EQUAL(player.GetRestrictedArea().size(), 0u);
+
+    // Numbers must be pairs
+    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3)"), std::runtime_error);
+    // And non negative
+    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, -3,4)"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3,-4)"), std::runtime_error);
+
 }
 
 BOOST_AUTO_TEST_CASE(World)
