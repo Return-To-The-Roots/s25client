@@ -31,7 +31,7 @@
  *        schlecht.
  */
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content)
-    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("io", 5))
+    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("io", 5), true, false)
 {
     ctrlMultiline* text = AddMultiline(0, 10, 20, width_ - 20, 450, TC_GREEN2, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
 
