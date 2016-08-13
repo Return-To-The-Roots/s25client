@@ -108,18 +108,18 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
         GetRightButtonRect()
     };
 
-    for(unsigned char i = 0; i < 2; ++i)
+    for(unsigned i = 0; i < 2; ++i)
     {
         button_state[i] = BUTTON_UP;
         if(Coll(mc.x, mc.y, rec[i]))
         {
-            if(i)
+            if(i == 0 && (!IsModal() || closeOnRightClick_))
+                Close();
+            else if(i==1 && !IsModal())
             {
                 SetMinimized(!IsMinimized());
                 LOADER.GetSoundN("sound", 113)->Play(255, false);
             }
-            else if(!IsModal() || closeOnRightClick_)
-                Close();
         }
     }
 }
@@ -207,8 +207,8 @@ bool IngameWindow::Draw_()
     // Titelleiste
     if(closeOnRightClick_ || !IsModal())
         LOADER.GetImageN("resource", ids[0][button_state[0]])->Draw(pos_);
-
-    LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(pos_ + DrawPoint(width_ - 16, 0));
+    if(!IsModal())
+        LOADER.GetImageN("resource", ids[1][button_state[1]])->Draw(pos_ + DrawPoint(width_ - 16, 0));
 
 
     // Breite berechnen
