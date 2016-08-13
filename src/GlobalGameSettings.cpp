@@ -34,14 +34,14 @@ GlobalGameSettings::GlobalGameSettings(): speed(GS_NORMAL), objective(GO_NONE), 
     lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true), randomStartPosition(false)
 {
     // register addons
-    reset();
+    clearAddons();
 }
 
 GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs): speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares),
     lockedTeams(ggs.lockedTeams), exploration(ggs.exploration), teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
 {
     // register addons
-    reset();
+    clearAddons();
     for(unsigned i=0; i<ggs.getNumAddons(); i++){
         unsigned status = 0;
         AddonId id = ggs.getAddon(i, status)->getId();
@@ -72,7 +72,7 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 GlobalGameSettings::~GlobalGameSettings()
 {
     // clear memory and dont register addons again
-    reset(false);
+    clearAddons(false);
 }
 
 /**
@@ -81,7 +81,7 @@ GlobalGameSettings::~GlobalGameSettings()
  *  if @p recreate is @p true then the addons are re-registered
  *  and set to defaults
  */
-void GlobalGameSettings::reset(bool recreate)
+void GlobalGameSettings::clearAddons(bool recreate)
 {
     for(AddonContainer::iterator it = addons.begin(); it != addons.end(); ++it)
         delete it->addon;
@@ -186,7 +186,7 @@ void GlobalGameSettings::registerAddon(Addon* addon)
  */
 void GlobalGameSettings::LoadSettings()
 {
-    reset();
+    clearAddons();
 
     for( std::map<unsigned int, unsigned int>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
         setSelection((AddonId::type_)it->first, it->second);
@@ -242,7 +242,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     unsigned int count = ser.PopUnsignedInt();
 
-    reset();
+    clearAddons();
 
     LOG.writeToFile("<<< Addon Status:\n");
 
