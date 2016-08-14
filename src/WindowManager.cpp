@@ -208,21 +208,28 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
     if(!curDesktop)
         return;
 
-    // war das Fenster schon offen?
+    // Check for already open windows with same ID
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        // Evtl wird es schon geschlossen?
+        // Skip ones that are about to be closed
         if((*it)->ShouldBeClosed())
             continue;
 
         if(window->id_ == (*it)->id_)
         {
-            // Ja, also vorheriges schliessen
-            (*it)->Close();
-
-            // Hilfefenster nutzen gleiche ID, altes schließen und neues öffnen
-            if (window->id_ != CGI_HELP)
+            // Special cases:
+            // 1) Help windows simply replace other help windows
+            if(window->id_ == CGI_HELP)
+                (*it)->Close();
+            else if(window->id_ == CGI_MISSION_STATEMENT || window->id_ == CGI_MSGBOX)
             {
+                // 2) Mission statement and msg boxes get prepended (they are modal, so old needs to be closed first)
+                windows.insert(it, window);
+                return;
+            }else
+            {
+                // Same ID -> Close and don't open again
+                (*it)->Close();
                 delete window;
                 return;
             }
@@ -237,13 +244,10 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
 
     // alle anderen Fenster deaktivieren
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
-    {
         (*it)->SetActive(false);
-    }
 
     // Fenster aktivieren
     window->SetActive(true);
-
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
     disable_mouse = mouse;
@@ -456,17 +460,16 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     if(!windows.empty())
     {
         IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+        if(windows.back()->IsModal())
+        {
+            // We have a modal window -> Activate it
+            curDesktop->SetActive(false);
+            windows.back()->SetActive(true);
+            // Ignore actions in all other windows
+            if(foundWindow != windows.back())
+                return;
+        }
         if(foundWindow){
-            if(windows.back()->IsModal())
-            {
-                // We have a modal window -> Activate it
-                curDesktop->SetActive(false);
-                windows.back()->SetActive(true);
-                // Ignore actions in all other windows
-                if(foundWindow != windows.back())
-                    return;
-            }
-
             // Close it if requested
             if (foundWindow->GetCloseOnRightClick())
                 foundWindow->Close();
