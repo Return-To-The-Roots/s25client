@@ -930,7 +930,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
 
                 // Spiel pausieren
                 RTTR_Assert(!framesinfo.isPaused);
-                TogglePause();
+                SetPaused(true);
             }
         }
     }
@@ -1520,12 +1520,12 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
     swap(players[old_id].gc_queue, players[new_id].gc_queue);
 }
 
-bool GameServer::TogglePause()
+void GameServer::SetPaused(bool paused)
 {
-    framesinfo.isPaused = !framesinfo.isPaused;
-    SendToAll(GameMessage_Pause(framesinfo.isPaused, currentGF + framesinfo.nwf_length));
-
-    return framesinfo.isPaused;
+    if(framesinfo.isPaused == paused)
+        return;
+    framesinfo.isPaused = paused;
+    SendToAll(GameMessage_Pause(framesinfo.isPaused));
 }
 
 void GameServer::SwapPlayer(const unsigned char player1, const unsigned char player2)

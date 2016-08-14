@@ -1065,16 +1065,11 @@ void GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
  */
 void GameClient::OnGameMessage(const GameMessage_Pause& msg)
 {
-    //framesinfo.pause =  msg.paused;
-    if(msg.paused)
-        framesinfo.pause_gf = msg.nr;
-    else
-    {
-        framesinfo.isPaused =  false;
-        framesinfo.pause_gf = 0;
-    }
+    if(framesinfo.isPaused == msg.paused)
+        return;
+    framesinfo.isPaused = msg.paused;
 
-    LOG.writeToFile("<<< NMS_NFC_PAUSE(%u)\n") % framesinfo.pause_gf;
+    LOG.writeToFile("<<< NMS_NFC_PAUSE(%1%)\n") % msg.paused;
 
     if(msg.paused)
         ci->CI_GamePaused();
@@ -1229,11 +1224,6 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 {
     const unsigned curGF = GetGFNumber();
     unsigned currentTime = VIDEODRIVER.GetTickCount();
-    if(!framesinfo.isPaused && framesinfo.pause_gf != 0 && curGF == framesinfo.pause_gf)
-    {
-        framesinfo.pause_gf = 0;
-        framesinfo.isPaused = true;
-    }
 
     if(framesinfo.isPaused)
         return; // Pause
@@ -1611,8 +1601,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     if(!replay_mode)
     {
         //unpause before skipping
-        if(GAMESERVER.IsPaused())
-            GAMESERVER.TogglePause();
+        GAMESERVER.SetPaused(false);
         GAMESERVER.skiptogf = gf;
         skiptogf = gf;
         LOG.write("jumping from gf %i to gf %i \n") % GetGFNumber() % gf;

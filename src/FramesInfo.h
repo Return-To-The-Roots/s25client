@@ -54,8 +54,6 @@ public:
     unsigned gfLengthReq;
     /// Number of the GF that the server acknowledged -> Run only to this one -> gfNr <= gfNrServer
     unsigned gfNrServer;
-    /// GF at wich we should pause the game
-    unsigned pause_gf;
     /// Force pause the game (start TS and length) e.g. to compensate for lags
     unsigned forcePauseStart, forcePauseLen;
 };
