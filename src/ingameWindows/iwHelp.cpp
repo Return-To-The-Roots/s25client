@@ -28,7 +28,7 @@ const unsigned short HELP_WINDOW_WIDTH = 280;
 const unsigned MAX_LINES = 15;
 
 iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
-    : IngameWindow(gui_id, IngameWindow::posAtMouse,  HELP_WINDOW_WIDTH, 480, _("What is this?"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(gui_id, IngameWindow::posAtMouse,  HELP_WINDOW_WIDTH, 480, _("What is this?"), LOADER.GetImageN("io", 1))
 {
     glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(content, HELP_WINDOW_WIDTH - 28, HELP_WINDOW_WIDTH - 28);
 
