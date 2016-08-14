@@ -22,7 +22,7 @@
 #include "ogl/glArchivItem_Font.h"
 
 /// Breite des Fensters
-const unsigned short HELP_WINDOW_WIDTH = 240;
+const unsigned short HELP_WINDOW_WIDTH = 280;
 
 /// Maximale Anzahl von Zeilen, bis Scrollbar eingesetzt wird
 const unsigned MAX_LINES = 15;
@@ -46,16 +46,15 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
     unsigned short text_height = show_lines * NormalFont->getHeight();
 
     // Höhe setzen
-    SetIwHeight(text_height + 40);
+    SetIwHeight(text_height);
     // Fenster neben die Maus schieben
     MoveNextToMouse();
 
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
-    ctrlMultiline* text = AddMultiline(2, 10, 20, HELP_WINDOW_WIDTH - 20, text_height + 4, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
+    ctrlMultiline* text = AddMultiline(2, 10, 20, GetIwWidth(), text_height, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
     text->EnableBox(false);
 
     std::vector<std::string> lines = wi.CreateSingleStrings(content);
     for(std::vector<std::string>::const_iterator it = lines.begin(); it != lines.end(); ++it)
         text->AddString(*it, COLOR_YELLOW, false);
-
 }

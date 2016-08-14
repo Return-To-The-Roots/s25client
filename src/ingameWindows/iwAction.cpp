@@ -486,7 +486,7 @@ void iwAction::Msg_TabChange(const unsigned int ctrl_id, const unsigned short ta
             }
 
 
-            SetIwHeight(height);
+            SetHeight(height);
         } break;
     }
 
@@ -498,7 +498,7 @@ void iwAction::Msg_Group_TabChange(const unsigned  /*group_id*/, const unsigned 
     {
         case 1: // Gebäudetabs
         {
-            SetIwHeight(building_tab_heights[tab_id]);
+            SetHeight(building_tab_heights[tab_id]);
         } break;
     }
 }

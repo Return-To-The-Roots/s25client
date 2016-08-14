@@ -130,18 +130,18 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
             if (width_ == 260)
             {
                 SetWidth(300);
-                SetIwHeight(250);
+                SetHeight(250);
             }
             else if (width_ == 300)
             {
                 SetWidth(340);
-                SetIwHeight(310);
+                SetHeight(310);
                 GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 108));
             }
             else
             {
                 SetWidth(260);
-                SetIwHeight(190);
+                SetHeight(190);
                 GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 109));
             }
 

@@ -26,7 +26,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "gameData/const_gui_ids.h"
-#include <cstring>
+#include <algorithm>
 
 std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(), std::numeric_limits<DrawPoint::ElementType>::max());
@@ -35,10 +35,17 @@ const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementT
 IngameWindow::IngameWindow(unsigned int id, const DrawPoint& pos, unsigned short width, unsigned short height,
                            const std::string& title, glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
     : Window(pos, id, parent, width, height),
-      iwHeight(height), title_(title), background(background), lastMousePos(0, 0),
-      last_down(false), last_down2(false), modal(modal), closeme(false), isMinimized_(false), move(false), closeOnRightClick_(closeOnRightClick)
+      title_(title), background(background), lastMousePos(0, 0),
+      last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeOnRightClick_(closeOnRightClick)
 {
-    memset(button_state, BUTTON_UP, sizeof(ButtonState) * 2);
+    std::fill(button_state.begin(), button_state.end(), BUTTON_UP);
+    contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
+    contentOffset.y = LOADER.GetImageN("resource", 42)->getHeight();    // title bar
+    contentOffsetEnd.x = LOADER.GetImageN("resource", 39)->getWidth();  // right border
+    contentOffsetEnd.y = LOADER.GetImageN("resource", 40)->getHeight(); // bottom bar
+
+    // For compatibility we treat the given height as the window height, not the content height
+    iwHeight = std::max(0, height - contentOffset.y - contentOffsetEnd.y);
 
     // Load last position or center the window
     if(pos == posLastOrCenter)
@@ -59,10 +66,48 @@ IngameWindow::~IngameWindow()
         last_pos[id_] = pos_;
 }
 
+void IngameWindow::Resize(unsigned short width, unsigned short height)
+{
+    SetIwWidth(std::max(0, width - contentOffset.x - contentOffsetEnd.x));
+    SetIwHeight(std::max(0, height - contentOffset.y - contentOffsetEnd.y));
+}
+
+void IngameWindow::SetIwHeight(unsigned short height)
+{
+    this->iwHeight = height;
+    if(!isMinimized_)
+        Window::Resize(width_, height + contentOffset.y + contentOffsetEnd.y);
+}
+
+unsigned short IngameWindow::GetIwHeight() const
+{
+    return iwHeight;
+}
+
+void IngameWindow::SetIwWidth(unsigned short width)
+{
+    Window::Resize(width + contentOffset.x + contentOffsetEnd.x, height_);
+}
+
+unsigned short IngameWindow::GetIwWidth() const
+{
+    return std::max(0, GetWidth() - contentOffset.x - contentOffsetEnd.x);
+}
+
+unsigned short IngameWindow::GetIwRightBoundary() const
+{
+    return GetWidth() - contentOffsetEnd.x;
+}
+
+unsigned short IngameWindow::GetIwBottomBoundary() const
+{
+    return GetHeight() - contentOffsetEnd.y;
+}
+
 void IngameWindow::SetMinimized(bool minimized)
 {
     this->isMinimized_ = minimized;
-    SetHeight(minimized ? 31 : iwHeight);
+    Window::SetHeight((minimized ? 0 : iwHeight) + contentOffset.y + contentOffsetEnd.y);
 }
 
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
@@ -78,7 +123,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     if(Coll(mc.x, mc.y, title_rect))
     {
         // Start mit Bewegung
-        move = true;
+        isMoving = true;
         lastMousePos = DrawPoint(mc.x, mc.y);
     }
 
@@ -99,7 +144,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 {
     // Bewegung stoppen
-    move = false;
+    isMoving = false;
 
     // beiden Buttons oben links und rechts prfen
     const Rect rec[2] =
@@ -127,7 +172,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 void IngameWindow::MouseMove(const MouseCoords& mc)
 {
     // Fenster bewegen, wenn die Bewegung aktiviert wurde
-    if(move)
+    if(isMoving)
     {
         DrawPoint newMousePos(mc.x, mc.y);
 
@@ -184,7 +229,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
 
 bool IngameWindow::Draw_()
 {
-    if(modal)
+    if(isModal_)
     {
         SetActive(true);
         Close(false);
@@ -214,20 +259,16 @@ bool IngameWindow::Draw_()
     // Breite berechnen
     unsigned title_width = width_ - leftUpperImg->getWidth() - rightUpperImg->getWidth();
 
-    // Wieviel mal nebeneinanderzeichnen?
-    unsigned short title_count = title_width / LOADER.GetImageN("resource", 43)->getWidth();
-
-    unsigned short title_index = 42;
+    unsigned short title_index;
     if(active_)
-    {
-        if(move)
-            title_index = 44;
-        else
-            title_index = 43;
-    }
+        title_index = isMoving ? 44 : 43;
+    else
+        title_index = 42;
 
     glArchivItem_Bitmap& titleImg = *LOADER.GetImageN("resource", title_index);
     DrawPoint titleImgPos = pos_ + DrawPoint(leftUpperImg->getWidth(), 0);
+    // Wieviel mal nebeneinanderzeichnen?
+    unsigned short title_count = title_width / titleImg.getWidth();
     for(unsigned short i = 0; i < title_count; ++i)
     {
         titleImg.Draw(titleImgPos);
@@ -280,7 +321,7 @@ bool IngameWindow::Draw_()
         // Wieviel mal nebeneinanderzeichnen?
         glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
         title_count = side_width / bottomBarImg->getWidth();
-        DrawPoint bottomImgPos = pos_ + DrawPoint(bottomBorderSideImg->getWidth(), iwHeight - bottomBarImg->getHeight());
+        DrawPoint bottomImgPos = pos_ + DrawPoint(bottomBorderSideImg->getWidth(), GetIwBottomBoundary());
         for(unsigned short i = 0; i < title_count; ++i)
         {
             bottomBarImg->Draw(bottomImgPos);
@@ -296,22 +337,16 @@ bool IngameWindow::Draw_()
 
         // überhaupt ne Clienttexture gewnscht?
         if(background)
-        {
-            // Bereich ausrechnen
-            unsigned client_width = width_ - 20;
-            unsigned client_height = iwHeight - 31;
-
-            background->Draw(pos_ + DrawPoint(leftSideImg->getWidth(), leftUpperImg->getHeight()), client_width, client_height, 0, 0, client_width, client_height);
-        }
-
-        // Links und rechts unten die 2 kleinen Knäufe
-        bottomBorderSideImg->Draw(pos_ + DrawPoint(0, iwHeight - bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->Draw(pos_ + DrawPoint(width_ - bottomBorderSideImg->getWidth(), iwHeight - bottomBorderSideImg->getHeight()));
+            background->Draw(pos_ + contentOffset, GetIwWidth(), iwHeight, 0, 0, GetIwWidth(), iwHeight);
 
         // Msg_PaintBefore aufrufen vor den Controls
         Msg_PaintBefore();
 
         DrawControls();
+
+        // Links und rechts unten die 2 kleinen Knäufe
+        bottomBorderSideImg->Draw(pos_ + DrawPoint(0, height_ - bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->Draw(pos_ + DrawPoint(width_ - bottomBorderSideImg->getWidth(), height_ - bottomBorderSideImg->getHeight()));
     }
     else
     {
