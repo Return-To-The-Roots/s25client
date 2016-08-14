@@ -20,6 +20,8 @@
 #include "controls/ctrlMultiline.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
+#include "GameClient.h"
+#include "GameServer.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/foreach.hpp>
 #include <vector>
@@ -70,6 +72,23 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
 
 void iwMissionStatement::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
+    // TODO: Make something better, this is quite hacky (Client and server dependency)
+    if(GAMECLIENT.IsSinglePlayer())
+    {
+        RTTR_Assert(GAMECLIENT.IsHost());
+        GAMESERVER.SetPaused(false);
+    }
     Close();
+}
+
+void iwMissionStatement::SetActive(bool activate)
+{
+    IngameWindow::SetActive(activate);
+    // TODO: Make something better, this is quite hacky (Client and server dependency)
+    if(IsActive() && GAMECLIENT.IsSinglePlayer())
+    {
+        RTTR_Assert(GAMECLIENT.IsHost());
+        GAMESERVER.SetPaused(true);
+    }
 }
 
