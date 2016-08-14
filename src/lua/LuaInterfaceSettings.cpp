@@ -44,8 +44,9 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
         .addMemberFunction("SetAddon", &LuaInterfaceSettings::SetAddon)
         .addMemberFunction("SetAddon", &LuaInterfaceSettings::SetBoolAddon)
         .addMemberFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
+        .addMemberFunction("ResetGameSettings", &LuaInterfaceSettings::ResetGameSettings)
         .addMemberFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
-        );
+    );
 
     state["AddonId"].setClass(kaguya::ClassMetatable<AddonId>());
 
@@ -119,6 +120,13 @@ void LuaInterfaceSettings::ResetAddons()
         ggs.setSelection(addon->getId(), addon->getDefaultStatus());
     }
     gameServer_.ChangeGlobalGameSettings(ggs);
+}
+
+void LuaInterfaceSettings::ResetGameSettings()
+{
+    RTTR_Assert(gameServer_.IsRunning());
+    // Simply create a new instance
+    gameServer_.ChangeGlobalGameSettings(GlobalGameSettings());
 }
 
 void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)

@@ -50,6 +50,7 @@
 #include "liblobby/src/LobbyClient.h"
 #include "libutil/src/Log.h"
 #include "libsiedler2/src/prototypen.h"
+#include <set>
 
 namespace{
     enum CtrlIds

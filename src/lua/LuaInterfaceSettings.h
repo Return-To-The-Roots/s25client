@@ -47,17 +47,18 @@ public:
     /// Get addons that are allowed to be changed
     std::vector<AddonId> GetAllowedAddons();
 
+private:
+    GameServerInterface& gameServer_;
+    kaguya::LuaRef GetAllowedChanges();
+
     // Callable from Lua
     unsigned GetPlayerCount();
     LuaServerPlayer GetPlayer(unsigned idx);
     void SetAddon(AddonId id, unsigned value);
     void SetBoolAddon(AddonId id, bool enabled); // Alias
     void ResetAddons();
+    void ResetGameSettings();
     void SetGameSettings(const kaguya::LuaTable& settings);
-
-private:
-    GameServerInterface& gameServer_;
-    kaguya::LuaRef GetAllowedChanges();
 };
 
 #endif // LuaInterfaceSettings_h__

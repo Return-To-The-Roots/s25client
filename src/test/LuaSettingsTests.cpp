@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     SET_AND_CHECK(objective, GO_TOTALDOMINATION);
     SET_AND_CHECK(objective, GO_CONQUER3_4);
     SET_AND_CHECK(startWares, SWR_LOW);
-    SET_AND_CHECK(startWares, SWR_NORMAL);
+    SET_AND_CHECK(startWares, SWR_VLOW);
 
     executeLua("rttr:SetGameSettings({fow=EXP_FOGOFWARE_EXPLORED})");
     shouldSettings.exploration = EXP_FOGOFWARE_EXPLORED;
@@ -281,6 +281,23 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     shouldSettings.speed = GS_VERYFAST;
     shouldSettings.lockedTeams = true;
     checkSettings(shouldSettings);
+
+    // Reset all settings
+    executeLua("rttr:ResetGameSettings()");
+    shouldSettings.speed = GS_NORMAL;
+    shouldSettings.objective = GO_NONE;
+    shouldSettings.startWares = SWR_NORMAL;
+    shouldSettings.lockedTeams = false;
+    shouldSettings.exploration = EXP_FOGOFWAR;
+    shouldSettings.teamView = true;
+    shouldSettings.randomStartPosition = false;
+    checkSettings(shouldSettings);
+    BOOST_REQUIRE_EQUAL(ggs.getNumAddons(), shouldSettings.getNumAddons());
+    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
+    {
+        BOOST_REQUIRE_EQUAL(ggs.getSelection(ggs.getAddon(i)->getId()), ggs.getAddon(i)->getDefaultStatus());
+        BOOST_REQUIRE(!ggs.isEnabled(ggs.getAddon(i)->getId()));
+    }
 }
 
 BOOST_AUTO_TEST_CASE(PlayerSettings)

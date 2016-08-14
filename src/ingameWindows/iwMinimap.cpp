@@ -22,15 +22,13 @@
 #include "controls/ctrlButton.h"
 #include "gameData/const_gui_ids.h"
 
-/// (maximale) Größe des Minimapfensters normal
-const unsigned short MINIMAP_WINDOW_WIDTH = 200;
-const unsigned short MINIMAP_WINDOW_HEIGHT = 200;
-/// (maximale) Größe des Minimapfensters groß
-const unsigned short MINIMAP_WINDOW_BIG_WIDTH = 400;
-const unsigned short MINIMAP_WINDOW_BIG_HEIGHT = 400;
+/// (maximum) size of the minimap
+const unsigned short MINIMAP_SIZE = 170;
+/// (maximum) size of the zoomed minimap
+const unsigned short MINIMAP_SIZE_BIG = 370;
 
 /// Abstand der Kartenränder zum Fensterrand
-const unsigned short WINDOW_MAP_SPACE = 5;
+const unsigned short WINDOW_MAP_SPACE = 8;
 /// Breite der unteren Buttons
 const unsigned short BUTTON_WIDTH = 36;
 /// Höhe der unteren Buttons
@@ -43,21 +41,17 @@ const unsigned short BUTTON_WINDOW_SPACE = 5;
 
 
 iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
-    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_WINDOW_WIDTH,
-                   MINIMAP_WINDOW_HEIGHT, _("Outline map"), LOADER.GetImageN("resource", 41)), extended(false)
+    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, MINIMAP_SIZE, _("Outline map"),
+        LOADER.GetImageN("resource", 41)), extended(false)
 {
-
-
-    AddCtrl(0, new ctrlIngameMinimap(this, 0, 10, 20, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, minimap, gwv));
-
+    AddCtrl(0, new ctrlIngameMinimap(this, 0, contentOffset.x, contentOffset.y, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     for(unsigned i = 0; i < 3; ++i)
-        AddImageButton(i + 1, 10 + WINDOW_MAP_SPACE + BUTTON_WIDTH * i, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 85 + i));
+        AddImageButton(i + 1, contentOffset.x + WINDOW_MAP_SPACE + BUTTON_WIDTH * i, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 85 + i));
 
     // Fenster vergrößern/verkleinern
     AddImageButton(4, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 109));
-
 
     ChangeWindowSize(width_, height_);
 }
@@ -65,27 +59,25 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
 void iwMinimap::ChangeWindowSize(const unsigned short width, const unsigned short height)
 {
+    Resize(width, height);
     ctrlIngameMinimap* im = GetCtrl<ctrlIngameMinimap>(0);
 
-    im->Resize(width - 20, height - 30);
+    im->Resize(width, height);
 
     // Control kürzen in der Höhe
     im->RemoveBoundingBox(BUTTON_WIDTH * 4 + WINDOW_MAP_SPACE * 2, 0);
 
-    ////// Und nach ganz oben verschieben
-    //im->Move(im->GetX(false),20);
-
     // Fensterbreite anpassen
-    SetWidth(im->GetWidth() + 20);
-    SetIwHeight(im->GetHeight() + 30 + BUTTON_HEIGHT + BUTTON_MAP_SPACE + BUTTON_WINDOW_SPACE);
+    SetIwWidth(im->GetWidth());
+    SetIwHeight(im->GetHeight() + WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_HEIGHT + BUTTON_WINDOW_SPACE);
 
 
     // Buttonpositionen anpassen, nach unten verschieben
     for(unsigned i = 1; i < 4; ++i)
-        GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false), GetHeight() - 10 - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
+        GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false), GetIwBottomBoundary() - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
 
     // Vergrößern/Verkleinern-Button nach unten rechts verschieben
-    GetCtrl<ctrlImageButton>(4)->Move(GetWidth() - 10 - BUTTON_WIDTH - WINDOW_MAP_SPACE, GetHeight() - 10 - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
+    GetCtrl<ctrlImageButton>(4)->Move(GetIwRightBoundary() - BUTTON_WIDTH - WINDOW_MAP_SPACE, GetIwBottomBoundary() - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", extended ? 108 : 109));
@@ -103,8 +95,8 @@ void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
             // Fenster vergrößern/verkleinern
             this->extended = !extended;
 
-            ChangeWindowSize(extended ? MINIMAP_WINDOW_BIG_WIDTH : MINIMAP_WINDOW_WIDTH,
-                             extended ? MINIMAP_WINDOW_BIG_HEIGHT : MINIMAP_WINDOW_HEIGHT);
+            ChangeWindowSize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE,
+                             extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
         } break;
     }
 }

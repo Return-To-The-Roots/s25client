@@ -90,20 +90,76 @@ void LuaPlayer::DisableAllBuildings()
         player.DisableBuilding(BuildingType(building_type));
 }
 
-void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType points)
+void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
 {
-    if(points.size() % 2)
-        throw std::runtime_error("Invalid number of points given");
-    std::vector<MapPoint> pts;
-    for(kaguya::VariadicArgType::const_iterator it = points.begin(); it != points.end(); ++it)
+    if(inPoints.size() == 0)
     {
-        int x = *it;
-        ++it;
-        int y = *it;
-        if(x < 0 || y < 0)
-            throw std::runtime_error("Points must be non-negative");
-        pts.push_back(MapPoint(x, y));
+        // Skip everything else if we only want to lift the restrictions
+        player.GetRestrictedArea().clear();
+        return;
     }
+
+    std::vector<MapPoint> pts;
+    // Index where the current polygon started
+    int curPolyStart = -1;
+    // Detect old-style separators for multi-polygon detection
+    int lastNullPt = -1;
+    // Do we have multiple polygons?
+    bool isMultiPoly = false;
+    for(kaguya::VariadicArgType::const_iterator it = inPoints.begin(); it != inPoints.end(); ++it)
+    {
+        // Is this the separator between polygons?
+        if(it->isNilref())
+        {
+            if(pts.empty()) // Start separator (old style)
+                LOG.write("You don't need leading nils for SetRestrictedArea");
+            else if(curPolyStart < 0) // We don't have a current polygon? Can only happen for multiple nils (old style)
+                LOG.write("Duplicate nils found in SetRestrictedArea");
+            else if(pts.size() - static_cast<unsigned>(curPolyStart) < 3)
+                throw std::runtime_error(std::string("Invalid polygon (less than 3 points) found at index ") + helpers::toString(std::distance(inPoints.cbegin(), it)));
+            else if(pts[curPolyStart] != pts.back()) // Close polygon if not already done
+                pts.push_back(pts[curPolyStart]);
+            curPolyStart = -1;
+        }else
+        {
+            // Do we start a new polygon?
+            if(curPolyStart < 0)
+            {
+                if(!pts.empty())
+                {
+                    // We have multiple polygons -> Add separator
+                    isMultiPoly = true;
+                    if(pts.back() != MapPoint(0, 0))
+                        pts.push_back(MapPoint(0, 0));
+                }
+                curPolyStart = pts.size();
+            }
+            int x = *it;
+            ++it;
+            int y = *it;
+            if(x < 0 || y < 0)
+                throw std::runtime_error("Points must be non-negative");
+            MapPoint pt(x, y);
+            if(pt == MapPoint(0, 0))
+            {
+                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and first pt after 0,0 matches last pt
+                if(lastNullPt >= 0 && pts.size() - lastNullPt >= 3 && pts[lastNullPt + 1] == pts.back())
+                    isMultiPoly = true;
+                lastNullPt = pts.size();
+            }
+            pts.push_back(pt);
+        }
+    }
+    if(isMultiPoly)
+    {
+        if(curPolyStart >= 0 && pts[curPolyStart] != pts.back()) // Close polygon if not already done
+            pts.push_back(pts[curPolyStart]);
+        if(pts.front() != MapPoint(0, 0))
+            pts.insert(pts.begin(), MapPoint(0, 0));
+        if(pts.back() != MapPoint(0, 0))
+            pts.push_back(MapPoint(0, 0));
+    } else if(pts.front() == pts.back())
+        pts.pop_back();
     player.GetRestrictedArea() = pts;
 }
 

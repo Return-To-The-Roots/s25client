@@ -985,10 +985,9 @@ class GameMessage_Pause : public GameMessage
 public:
 	/// Pausiert?
     bool paused;
-	unsigned int nr; // GF
 
 	GameMessage_Pause(): GameMessage(NMS_PAUSE) { } //-V730
-	GameMessage_Pause(const bool paused, const unsigned nr): GameMessage(NMS_PAUSE, 0xFF), paused(paused), nr(nr)
+	GameMessage_Pause(const bool paused): GameMessage(NMS_PAUSE, 0xFF), paused(paused)
 	{
 		LOG.writeToFile(">>> NMS_PAUSE(%d)\n") % (paused ? 1 : 0);
 	}
@@ -997,14 +996,12 @@ public:
     {
         GameMessage::Serialize(ser);
         ser.PushBool(paused);
-        ser.PushUnsignedInt(nr);
     }
 
     void Deserialize(Serializer& ser) override
 	{
 		GameMessage::Deserialize(ser);
         paused = ser.PopBool();
-        nr = ser.PopUnsignedInt();
 	}
 
 	void Run(MessageInterface* callback) override

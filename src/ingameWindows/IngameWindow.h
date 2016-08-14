@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+#include <boost/array.hpp>
 #include <vector>
 
 class glArchivItem_Bitmap;
@@ -58,10 +59,19 @@ class IngameWindow : public Window
         /// liefert den Fenstertitel.
         const std::string& GetTitle() const { return title_; }
 
-        /// setzt die ausgeklappte Höhe des Fensters.
-        void SetIwHeight(unsigned short height) { this->iwHeight = height; if(!isMinimized_) this->height_ = height; }
-        /// liefert die ausgeklappte Höhe des Fensters.
-        unsigned short GetIwHeight() const { return iwHeight; }
+        void Resize(unsigned short width, unsigned short height) override;
+        /// Set the height of the (expanded) content area
+        void SetIwHeight(unsigned short height);
+        /// Get the expanded content area height
+        unsigned short GetIwHeight() const;
+        /// Set the content area width
+        void SetIwWidth(unsigned short width);
+        /// Get the content area width
+        unsigned short GetIwWidth() const;
+        /// Get the right position of the content end
+        unsigned short GetIwRightBoundary() const;
+        /// Get the bottom position of the content end
+        unsigned short GetIwBottomBoundary() const;
 
         /// merkt das Fenster zum Schließen vor.
         void Close(bool closeme = true) { this->closeme = closeme; }
@@ -80,9 +90,9 @@ class IngameWindow : public Window
 
         /// Toggle the modal property. Modal windows disallow focus change.
         /// To also disallow closing of the window via the title bar or right-click set close_on_right_click to false
-        void SetModal(bool modal = true) { this->modal = modal; }
+        void SetModal(bool modal = true) { this->isModal_ = modal; }
         /// ist das Fenster ein modales Fenster?
-        bool IsModal() const { return modal; }
+        bool IsModal() const { return isModal_; }
 
         void MouseLeftDown(const MouseCoords& mc);
         void MouseLeftUp(const MouseCoords& mc);
@@ -106,16 +116,21 @@ class IngameWindow : public Window
         DrawPoint lastMousePos;
         bool last_down;
         bool last_down2;
-        ButtonState button_state[2];
+        boost::array<ButtonState, 2> button_state;
+
+        /// Offset from left and top to actual content
+        DrawPoint contentOffset;
+        /// Offset from content to right and bottom boundary
+        DrawPoint contentOffsetEnd;
 
         Rect GetLeftButtonRect()  const { return Rect(pos_, 16, 16); }
         Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(pos_.x + width_ - 16), pos_.y, 16, 16); }
 
     private:
-        bool modal;
+        bool isModal_;
         bool closeme;
         bool isMinimized_;
-        bool move;
+        bool isMoving;
         bool closeOnRightClick_;
 };
 

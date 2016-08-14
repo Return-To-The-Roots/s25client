@@ -30,8 +30,9 @@ const unsigned BUILDING_COLOR = 0xFFFFFFFF;
 /// Färbe für Straßen
 const unsigned ROAD_COLOR = 0xFFAAAAAA;
 
-/// Skalierung in x-Richtung bei der Anzeige der Map
-const double MINIMAP_SCALE_X = 1.5;
+/// Scaling in x for displaying the map
+/// ~2/sqrt(3) based on hexagons beeing regular
+const double MINIMAP_SCALE_X = 1.1547;
 
 
 #endif

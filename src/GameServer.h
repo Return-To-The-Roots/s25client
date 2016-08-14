@@ -60,7 +60,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
         bool StartCountdown();
         void CancelCountdown();
 
-        bool TogglePause();
+        void SetPaused(bool paused);
 		bool IsPaused(){return framesinfo.isPaused;}
 
         void ToggleAINation(unsigned char playerId);

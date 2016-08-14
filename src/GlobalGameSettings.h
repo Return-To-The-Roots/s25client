@@ -51,7 +51,7 @@ class GlobalGameSettings
         const Addon* getAddon(unsigned int nr, unsigned int& status) const;
         const Addon* getAddon(unsigned int nr) const;
         /// clears the addon memory.
-        void reset(bool recreate = true);
+        void clearAddons(bool recreate = true);
 
         bool isEnabled(AddonId id) const;
         unsigned int getSelection(AddonId id) const;

@@ -745,17 +745,9 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 'p': // Pause
             if(gameClient.IsHost())
-            {
-                GAMESERVER.TogglePause();
-                //if(GAMESERVER.TogglePause())
-                //  gameClient.Command_Chat(_("pausing game"));
-                //else
-                //  gameClient.Command_Chat(_("continuing game"));
-            }
+                GAMESERVER.SetPaused(!gameClient.IsPaused());
             else if(gameClient.IsReplayModeOn())
-            {
                 gameClient.ToggleReplayPause();
-            }
             return true;
         case 'q': // Spiel verlassen
             if(ke.alt)
