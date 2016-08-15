@@ -18,9 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 
 #include "Random.h"
+#include "ogl/glAllocator.h"
 #include "test/testHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
+#include "libsiedler2.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
@@ -70,6 +72,11 @@ struct TestSetup
             }
         }
         srand(static_cast<unsigned>(time(NULL)));
+        libsiedler2::setAllocator(new GlAllocator());
+    }
+    ~TestSetup()
+    {
+        libsiedler2::setAllocator(NULL);
     }
 };
 
