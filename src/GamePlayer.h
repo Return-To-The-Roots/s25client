@@ -320,8 +320,11 @@ class GamePlayer: public GamePlayerInfo
         void EnableBuilding(BuildingType type) { building_enabled[type] = true; }
         void DisableBuilding(BuildingType type) { building_enabled[type] = false; }
         bool IsBuildingEnabled(BuildingType type) const { return building_enabled[type]; }
+        /// Set the area the player may have territory in
+        /// Nothing means all is allowed. See Lua description
         std::vector<MapPoint>& GetRestrictedArea() { return restricted_area; }
         const std::vector<MapPoint>& GetRestrictedArea() const { return restricted_area; }
+
         void SendPostMessage(PostMsg* msg);
 
         /// Returns number of tools ordered for the given tool including visual orders (not yet committed)
