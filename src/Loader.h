@@ -87,6 +87,9 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         /// Speichert die Settings.
         bool SaveSettings();
 
+        /// Creates archives with empty files for the GUI (for testing purposes)
+        void LoadDummyGUIFiles();
+
     protected:
         /// Lädt alle Sounds.
         inline bool LoadSounds();

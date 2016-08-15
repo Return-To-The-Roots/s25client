@@ -358,6 +358,42 @@ bool Loader::SaveSettings()
     return true;
 }
 
+
+void Loader::LoadDummyGUIFiles()
+{
+    // Palettes
+    libsiedler2::ArchivItem_Palette* palette = new libsiedler2::ArchivItem_Palette;
+    files_["colors"].archiv.push(palette);
+    // GUI elements
+    libsiedler2::ArchivInfo& resource = files_["resource"].archiv;
+    resource.alloc(57);
+    for(unsigned id = 4; id<57; id++)
+    {
+        glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
+        const uint32_t buffer = SetAlpha(0, 255);
+        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        resource.set(id, bmp);
+    }
+    // Fonts
+    libsiedler2::ArchivInfo& fonts = files_["outline_fonts"].archiv;
+    fonts.alloc(3);
+    for(unsigned i=0; i<3; i++)
+    {
+        glArchivItem_Font* font = new glArchivItem_Font();
+        font->setDx(9 + i * 3);
+        font->setDy(10 + i * 3);
+        font->alloc(255);
+        for(unsigned id = 0x21; id < 255; id++)
+        {
+            glArchivItem_Bitmap_Player* bmp = new glArchivItem_Bitmap_Player();
+            const uint32_t buffer = SetAlpha(0, 255);
+            bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette, 0);
+            font->set(id, bmp);
+        }
+        fonts.set(i, font);
+    }
+}
+
 /**
  *  Lädt die Spieldateien.
  *
