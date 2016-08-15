@@ -22,14 +22,14 @@
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/MapTypes.h"
 
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObject, 3, 5)
+
 void LuaWorld::Register(kaguya::State& state)
 {
-    state["World"].setClass(kaguya::ClassMetatable<LuaWorld>()
-        .addMemberFunction("AddEnvObject", &LuaWorld::AddEnvObject)
-        .addMemberFunction("AddEnvObject", &LuaWorld::AddEnvObject2)
-        .addMemberFunction("AddStaticObject", &LuaWorld::AddStaticObject)
-        .addMemberFunction("AddStaticObject", &LuaWorld::AddStaticObject2)
-        .addMemberFunction("AddStaticObject", &LuaWorld::AddStaticObject3)
+    state["World"].setClass(kaguya::UserdataMetatable<LuaWorld>()
+        .addFunction("AddEnvObject", AddEnvObjectWrapper())
+        .addFunction("AddStaticObject", AddStaticObjectWrapper())
         );
 }
 
@@ -51,7 +51,7 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
     return true;
 }
 
-bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 0 */)
+bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
 {
     if(size > 2)
         throw std::runtime_error("Invalid size");

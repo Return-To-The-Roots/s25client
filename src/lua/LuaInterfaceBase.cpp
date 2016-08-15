@@ -61,15 +61,13 @@ LuaInterfaceBase::~LuaInterfaceBase()
 
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
-    state["RTTRBase"].setClass(kaguya::ClassMetatable<LuaInterfaceBase>()
+    state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
         .addStaticFunction("GetVersion", &LuaInterfaceBase::GetVersion)
-        .addMemberFunction("Log", &LuaInterfaceBase::Log)
-        .addMemberFunction("IsHost", &LuaInterfaceBase::IsHost)
-        .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
-        .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox)
-        .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox2)
-        .addMemberFunction("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx)
-        .addMemberFunction("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx2)
+        .addFunction("Log", &LuaInterfaceBase::Log)
+        .addFunction("IsHost", &LuaInterfaceBase::IsHost)
+        .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
+        .addOverloadedFunctions("MsgBox", &LuaInterfaceBase::MsgBox, &LuaInterfaceBase::MsgBox2)
+        .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2)
         );
     state.setErrorHandler(ErrorHandler);
 }

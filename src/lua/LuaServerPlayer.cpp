@@ -38,12 +38,12 @@ LuaServerPlayer::LuaServerPlayer(GameServerInterface& gameServer, unsigned playe
 void LuaServerPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
-    state["Player"].setClass(kaguya::ClassMetatable<LuaServerPlayer, LuaPlayerBase>()
-        .addMemberFunction("SetNation", &LuaServerPlayer::SetNation)
-        .addMemberFunction("SetTeam", &LuaServerPlayer::SetTeam)
-        .addMemberFunction("SetColor", &LuaServerPlayer::SetColor)
-        .addMemberFunction("Close", &LuaServerPlayer::Close)
-        .addMemberFunction("SetAI", &LuaServerPlayer::SetAI)
+    state["Player"].setClass(kaguya::UserdataMetatable<LuaServerPlayer, LuaPlayerBase>()
+        .addFunction("SetNation", &LuaServerPlayer::SetNation)
+        .addFunction("SetTeam", &LuaServerPlayer::SetTeam)
+        .addFunction("SetColor", &LuaServerPlayer::SetColor)
+        .addFunction("Close", &LuaServerPlayer::Close)
+        .addFunction("SetAI", &LuaServerPlayer::SetAI)
         );
 }
 
