@@ -26,21 +26,15 @@
 #include <boost/foreach.hpp>
 #include <vector>
 
-/**
- *  Konstruktor von @p iwTextfile.
- *
- *  @todo Das Fenster ist zu klein, um 80 Zeichen pro Zeile darstellen zu
- *        koennen. Ein horizontaler Scrollbalken fuer 640x480 waere nicht
- *        schlecht.
- */
-iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content)
-    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("io", 5), true, false)
+iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image)
+    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("io", 5), true, false), pauseGame_(pauseGame)
 {
-    glArchivItem_Bitmap* img = LOADER.GetImageN("io", 234);
-    const unsigned short imgWidth = img->getWidth();
-    const unsigned short minImgSpaceTop = 60u;
-    const unsigned short imgSpaceRight = 20u;
-    const unsigned short imgSpaceLeft = 10u;
+    glArchivItem_Bitmap* img = (image == IM_NONE) ? NULL : LOADER.GetImageN("io", image);
+    const unsigned short imgWidth = img ? img->getWidth() : 0u;
+    const unsigned short imgHeight = img ? img->getHeight() : 0u;
+    const unsigned short minImgSpaceTop = img ? 60u : 0u;
+    const unsigned short imgSpaceRight = img ? 20u : 0u;
+    const unsigned short imgSpaceLeft = img ? 10u : 0u;
     const unsigned short imgSpace = imgSpaceRight + imgSpaceLeft;
     const unsigned short textSpace = 8u;
     const unsigned short buttonSpace = 12u;
@@ -64,20 +58,18 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
 
     // set window width to our determined max width
     SetIwWidth(max_line_width + textSpace + imgWidth + imgSpace);
-    SetIwHeight(std::max<unsigned>(text->GetLineCount() * NormalFont->getHeight() + textSpace + buttonHeight + buttonSpace*2, img->getHeight() + minImgSpaceTop + buttonSpace));
+    SetIwHeight(std::max<unsigned>(text->GetLineCount() * NormalFont->getHeight() + textSpace + buttonHeight + buttonSpace*2, imgHeight + minImgSpaceTop + buttonSpace));
     
     AddTextButton(1, (width_ - 100) / 2, GetIwBottomBoundary() - buttonSpace - buttonHeight, 100, buttonHeight, TC_GREY, _("Continue"), NormalFont);
-    AddImage(2, GetIwRightBoundary() - imgWidth + img->getNx() - imgSpaceRight, GetIwBottomBoundary() - buttonSpace - img->getHeight() + img->getNy(), img);
+    if(img)
+        AddImage(2, GetIwRightBoundary() - imgWidth + img->getNx() - imgSpaceRight, GetIwBottomBoundary() - buttonSpace - img->getHeight() + img->getNy(), img);
 }
 
 void iwMissionStatement::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
     // TODO: Make something better, this is quite hacky (Client and server dependency)
-    if(GAMECLIENT.IsSinglePlayer())
-    {
-        RTTR_Assert(GAMECLIENT.IsHost());
+    if(pauseGame_)
         GAMESERVER.SetPaused(false);
-    }
     Close();
 }
 
@@ -85,10 +77,6 @@ void iwMissionStatement::SetActive(bool activate)
 {
     IngameWindow::SetActive(activate);
     // TODO: Make something better, this is quite hacky (Client and server dependency)
-    if(IsActive() && GAMECLIENT.IsSinglePlayer())
-    {
-        RTTR_Assert(GAMECLIENT.IsHost());
+    if(IsActive() && pauseGame_)
         GAMESERVER.SetPaused(true);
-    }
 }
-

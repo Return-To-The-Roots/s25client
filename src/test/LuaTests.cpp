@@ -16,15 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GlobalGameSettings.h"
-#include "EventManager.h"
-#include "lua/LuaInterfaceGame.h"
-#include "GlobalVars.h"
-#include "PlayerInfo.h"
 #include "GameClient.h"
 #include "ClientInterface.h"
 #include "GameMessages.h"
-#include "GamePlayer.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noEnvObject.h"
@@ -32,152 +26,18 @@
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsg.h"
 #include "gameTypes/Resource.h"
-#include "world/MapLoader.h"
-#include "world/GameWorldGame.h"
 #include "helpers/converters.h"
 #include "helpers/Deleter.h"
 #include "test/PointOutput.h"
-#include "test/testHelpers.h"
-#include "libutil/src/colors.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/StringStreamWriter.h"
+#include "test/GameWorldWithLuaAccess.h"
 #include "libutil/src/tmpFile.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/format.hpp>
 #include <boost/assign/std/vector.hpp>
-#include <vector>
 
 using namespace boost::assign;
 #define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
-
-namespace{
-    class GameWorldWithLuaAccess: public GameWorldGame
-    {
-    public:
-        GlobalGameSettings ggs;
-        EventManager em;
-
-        GameWorldWithLuaAccess(): GameWorldGame(CreatePlayers(), ggs, em), em(0)
-        {
-            createLua();
-        }
-
-        void createLua()
-        {
-            lua.reset(new LuaInterfaceGame(*this));
-        }
-
-        void executeLua(const std::string& luaCode)
-        {
-            lua->LoadScriptString(luaCode);
-        }
-
-        static std::vector<PlayerInfo> CreatePlayers()
-        {
-            std::vector<PlayerInfo> players(3);
-            players[0].ps = PS_OCCUPIED;
-            players[0].name = "Player1";
-            players[0].nation = NAT_VIKINGS;
-            players[0].color = PLAYER_COLORS[5];
-            players[0].team = TM_TEAM1;
-            players[0].isHost = true;
-
-            players[1].ps = PS_AI;
-            players[1].name = "PlayerAI";
-            players[1].nation = NAT_ROMANS;
-            players[1].color = 0xFFFF0000;
-            players[1].team = TM_TEAM2;
-            players[1].isHost = false;
-
-            players[2].ps = PS_LOCKED;
-            return players;
-        }
-    };
-
-    struct LuaTestsFixture{
-        StringStreamWriter* logWriter;
-        GameWorldWithLuaAccess world;
-        std::vector<MapPoint> hqPositions;
-        boost::array<const nobHQ*, 2> hqs;
-
-        LuaTestsFixture()
-        {
-            GLOBALVARS.isTest = true;
-            logWriter = dynamic_cast<StringStreamWriter*>(LOG.getFileWriter());
-            BOOST_REQUIRE(logWriter);
-            clearLog();
-            GameObject::SetPointers(&world);
-        }
-
-        ~LuaTestsFixture()
-        {
-            GLOBALVARS.isTest = false;
-            GameObject::SetPointers(NULL);
-        }
-
-        void clearLog()
-        {
-            logWriter->getStream().str("");
-        }
-
-        std::string getLog(bool clear = true)
-        {
-            std::string result = logWriter->getText();
-            if(clear)
-                clearLog();
-            return result;
-        }
-
-        void executeLua(const std::string& luaCode)
-        {
-            world.executeLua(luaCode);
-        }
-
-        void executeLua(const boost::format& luaCode)
-        {
-            executeLua(luaCode.str());
-        }
-
-        boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
-        {
-            try
-            {
-                executeLua(std::string("assert(") + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
-            } catch(std::runtime_error& e)
-            {
-                boost::test_tools::predicate_result result(false);
-                std::string msg = e.what();
-                size_t xPos = msg.rfind("xxx=");
-                if(xPos != std::string::npos)
-                    result.message() << "Value = " << msg.substr(xPos + 4);
-                else
-                    result.message() << e.what();
-                return result;
-            }
-            return true;
-        }
-
-        void initWorld()
-        {
-            // For consistent results
-            doInitGameRNG(0);
-
-            world.Init(32, 32, LT_GREENLAND);
-            hqPositions.push_back(MapPoint(0, 1));
-            hqPositions.push_back(MapPoint(16, 17));
-            std::vector<Nation> playerNations;
-            playerNations.push_back(world.GetPlayer(0).nation);
-            playerNations.push_back(world.GetPlayer(1).nation);
-            BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations, false));
-            for(unsigned i = 0; i < hqs.size(); i++)
-            {
-                hqs[i] = world.GetSpecObj<nobHQ>(world.GetPlayer(i).GetHQPos());
-                BOOST_REQUIRE(hqs[i]);
-            }
-        }
-    };
-}
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
@@ -289,6 +149,10 @@ namespace{
 BOOST_AUTO_TEST_CASE(GameFunctions)
 {
     initWorld();
+    boost::array<nobHQ*, 2> hqs;
+    hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
+    hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
+
     BOOST_REQUIRE_GT(hqs[0]->GetRealWaresCount(GD_BOARDS), 0u);
 
     executeLua("rttr:ClearResources()");
@@ -357,6 +221,33 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     executeLua("assert(rttr:GetWorld())");
 }
 
+BOOST_AUTO_TEST_CASE(MissionGoal)
+{
+    initWorld();
+
+    const GamePlayer& player = world.GetPlayer(1);
+    const PostBox& postBox = *world.GetPostMgr().AddPostBox(1);
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+
+    // Set goal for non-existing or other player
+    executeLua("rttr:SetMissionGoal(99, 'Goal')");
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+    executeLua("rttr:SetMissionGoal(0, 'Goal')");
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+
+    // Set correctly
+    executeLua("rttr:SetMissionGoal(1, 'Goal')");
+    BOOST_REQUIRE_EQUAL(postBox.GetCurrentMissionGoal(), "Goal");
+
+    // Delete current goal
+    executeLua("rttr:SetMissionGoal(1, '')");
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+    // Set and delete with default arg -> clear
+    executeLua("rttr:SetMissionGoal(1, 'Goal')");
+    executeLua("rttr:SetMissionGoal(1)");
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+}
+
 BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
 {
     executeLua("player = rttr:GetPlayer(0)");
@@ -417,6 +308,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     initWorld();
 
     const GamePlayer& player = world.GetPlayer(1);
+    const nobHQ* hq = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
     executeLua("player = rttr:GetPlayer(1)\nassert(player)");
 
     BOOST_REQUIRE(player.IsBuildingEnabled(BLD_WOODCUTTER));
@@ -452,13 +344,13 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("player:ClearResources()");
     for(unsigned gd = 0; gd < WARE_TYPES_COUNT; gd++)
     {
-        BOOST_REQUIRE_EQUAL(hqs[1]->GetRealWaresCount(GoodType(gd)), 0u);
-        BOOST_REQUIRE_EQUAL(hqs[1]->GetVisualWaresCount(GoodType(gd)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetRealWaresCount(GoodType(gd)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetVisualWaresCount(GoodType(gd)), 0u);
     }
     for(unsigned job = 0; job < JOB_TYPES_COUNT; job++)
     {
-        BOOST_REQUIRE_EQUAL(hqs[1]->GetRealFiguresCount(Job(job)), 0u);
-        BOOST_REQUIRE_EQUAL(hqs[1]->GetVisualFiguresCount(Job(job)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetRealFiguresCount(Job(job)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetVisualFiguresCount(Job(job)), 0u);
     }
 
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
@@ -467,18 +359,18 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_HAMMER], 8u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_AXE], 6u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_SAW], 3u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealWaresCount(GD_HAMMER), 8u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealWaresCount(GD_AXE), 6u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealWaresCount(GD_SAW), 3u);
+    BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_HAMMER), 8u);
+    BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_AXE), 6u);
+    BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_SAW), 3u);
     executeLua("assert(player:AddPeople(people))");
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_HELPER], 30u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_WOODCUTTER], 6u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FISHER], 0u);
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FORESTER], 2u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_HELPER), 30u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_WOODCUTTER), 6u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_FISHER), 0u);
-    BOOST_CHECK_EQUAL(hqs[1]->GetRealFiguresCount(JOB_FORESTER), 2u);
+    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_HELPER), 30u);
+    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_WOODCUTTER), 6u);
+    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_FISHER), 0u);
+    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_FORESTER), 2u);
 
     BOOST_CHECK(isLuaEqual("player:GetWareCount(GD_HAMMER)", "8"));
     BOOST_CHECK(isLuaEqual("player:GetWareCount(GD_AXE)", "6"));
@@ -494,7 +386,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_HEADQUARTERS)", "1"));
     BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_HEADQUARTERS)", "0"));
     BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_WOODCUTTER)", "0"));
-    world.SetNO(hqs[1]->GetPos() + MapPoint(4, 0), new noBuildingSite(BLD_WOODCUTTER, hqs[1]->GetPos() + MapPoint(4, 0), 1));
+    world.SetNO(hq->GetPos() + MapPoint(4, 0), new noBuildingSite(BLD_WOODCUTTER, hq->GetPos() + MapPoint(4, 0), 1));
     BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_WOODCUTTER)", "0"));
     BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_WOODCUTTER)", "1"));
 
@@ -517,16 +409,16 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK_EQUAL(note.note_->pos, MapPoint(12, 13));
 
     executeLua("player:ModifyHQ(true)");
-    BOOST_REQUIRE(hqs[1]->IsTent());
+    BOOST_REQUIRE(hq->IsTent());
     executeLua("player:ModifyHQ(false)");
-    BOOST_REQUIRE(!hqs[1]->IsTent());
+    BOOST_REQUIRE(!hq->IsTent());
 
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(hqs[1]->GetPos().x)));
-    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(hqs[1]->GetPos().y)));
+    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(hq->GetPos().x)));
+    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(hq->GetPos().y)));
 
     // Destroy players HQ
-    world.DestroyNO(hqs[1]->GetPos());
+    world.DestroyNO(hq->GetPos());
     // HQ-Pos is invalid
     executeLua("hqX, hqY = player:GetHQPos()");
     BOOST_CHECK(isLuaEqual("hqX", helpers::toString(MapPoint::Invalid().x)));
@@ -594,7 +486,7 @@ BOOST_AUTO_TEST_CASE(World)
     executeLua("world = rttr:GetWorld()");
     
     const MapPoint envPt(15, 12);
-    const MapPoint hqPos(hqs[1]->GetPos());
+    const MapPoint hqPos(world.GetPlayer(1).GetHQPos());
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 500)") % envPt.x % envPt.y);
     const noEnvObject* obj = world.GetSpecObj<noEnvObject>(envPt);
     BOOST_REQUIRE(obj);
@@ -617,7 +509,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 501u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 0xFFFFu);
-    BOOST_REQUIRE_EQUAL(obj2->GetSize(), 0u);
+    BOOST_REQUIRE_EQUAL(obj2->GetSize(), 1u);
     // ID and File (replace env obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
@@ -625,7 +517,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_STATICOBJECT);
     BOOST_REQUIRE_EQUAL(obj2->GetItemID(), 5u);
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 3u);
-    BOOST_REQUIRE_EQUAL(obj2->GetSize(), 0u);
+    BOOST_REQUIRE_EQUAL(obj2->GetSize(), 1u);
     // ID, File and Size (replace static obj)
     executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 2)") % envPt2.x % envPt2.y);
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
@@ -765,4 +657,3 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

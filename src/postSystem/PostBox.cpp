@@ -84,3 +84,13 @@ const PostMsg* PostBox::GetMsg(unsigned idx) const
         return NULL;
     return messages[idx];
 }
+
+void PostBox::SetCurrentMissionGoal(const std::string& goal)
+{
+    currentMissionGoal = goal;
+}
+
+std::string PostBox::GetCurrentMissionGoal() const
+{
+    return currentMissionGoal;
+}

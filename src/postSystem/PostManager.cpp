@@ -61,3 +61,10 @@ void PostManager::SendMsg(unsigned player, PostMsg* msg)
     else
         deletePtr(msg);
 }
+
+void PostManager::SetMissionGoal(unsigned player, const std::string& newGoal)
+{
+    PostBox* box = GetPostBox(player);
+    if(box)
+        box->SetCurrentMissionGoal(newGoal);
+}

@@ -20,6 +20,7 @@
 
 #include "gameData/MaxPlayers.h"
 #include <boost/array.hpp>
+#include <string>
 
 class PostMsg;
 class PostBox;
@@ -33,7 +34,7 @@ public:
     PostBox* GetPostBox(unsigned player) const;
     void RemovePostBox(unsigned player);
     void SendMsg(unsigned player, PostMsg* msg);
-
+    void SetMissionGoal(unsigned player, const std::string& newGoal);
 private:
     boost::array<PostBox*, MAX_PLAYERS> postBoxes;
 };

@@ -44,6 +44,7 @@ class iwPostWindow : public IngameWindow
         unsigned curMsgId;
         unsigned lastMsgCt;
         const PostMsg* curMsg;
+        bool lastHasMissionGoal;
 
         /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
         void DisplayPostMessage();

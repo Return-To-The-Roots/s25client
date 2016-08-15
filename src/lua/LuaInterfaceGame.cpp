@@ -157,27 +157,30 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
 LuaInterfaceGame::~LuaInterfaceGame()
 {}
 
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
+
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
-    state["RTTRGame"].setClass(kaguya::ClassMetatable<LuaInterfaceGame, LuaInterfaceBase>()
-        .addMemberFunction("ClearResources", &LuaInterfaceGame::ClearResources)
-        .addMemberFunction("GetGF", &LuaInterfaceGame::GetGF)
-        .addMemberFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
-        .addMemberFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
-        .addMemberFunction("Chat", &LuaInterfaceGame::Chat)
-        .addMemberFunction("MissionStatement", &LuaInterfaceGame::MissionStatement)
-        .addMemberFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
-        .addMemberFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
-        .addMemberFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
-        .addMemberFunction("GetWorld", &LuaInterfaceGame::GetWorld)
+    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
+        .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
+        .addFunction("GetGF", &LuaInterfaceGame::GetGF)
+        .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
+        .addFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
+        .addFunction("Chat", &LuaInterfaceGame::Chat)
+        .addFunction("MissionStatement", &LuaInterfaceGame::MissionStatement)
+        .addFunction("SetMissionGoal", SetMissionGoalWrapper())
+        .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
+        .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
+        .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
+        .addFunction("GetWorld", &LuaInterfaceGame::GetWorld)
         );
-    state["RTTR_Serializer"].setClass(kaguya::ClassMetatable<Serializer>()
-        .addMemberFunction("PushInt", &Serializer::PushSignedInt)
-        .addMemberFunction("PopInt", &Serializer::PopSignedInt)
-        .addMemberFunction("PushBool", &Serializer::PushBool)
-        .addMemberFunction("PopBool", &Serializer::PopBool)
-        .addMemberFunction("PushString", &Serializer::PushString)
-        .addMemberFunction("PopString", &Serializer::PopString)
+    state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
+        .addFunction("PushInt", &Serializer::PushSignedInt)
+        .addFunction("PopInt", &Serializer::PopSignedInt)
+        .addFunction("PushBool", &Serializer::PushBool)
+        .addFunction("PopBool", &Serializer::PopBool)
+        .addFunction("PushString", &Serializer::PushString)
+        .addFunction("PopString", &Serializer::PopString)
         );
     state.setErrorHandler(ErrorHandler);
 }
@@ -271,7 +274,12 @@ void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title,
     if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(new iwMissionStatement(title, msg));
+    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer()));
+}
+
+void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)
+{
+    gw.GetPostMgr().SetMissionGoal(playerIdx, newGoal);
 }
 
 // Must not be PostMessage as this is a windows define :(
@@ -335,7 +343,7 @@ void LuaInterfaceGame::EventGameFrame(unsigned nr)
         onGameFrame.call<void>(nr);
 }
 
-void LuaInterfaceGame::EventResourceFound(const unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity)
+void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type, unsigned char quantity)
 {
     kaguya::LuaRef onResourceFound = lua["onResourceFound"];
     if(onResourceFound.type() == LUA_TFUNCTION)
