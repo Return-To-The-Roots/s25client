@@ -757,6 +757,15 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     }
 }
 
+
+const Window* WindowManager::GetTopMostWindow() const
+{
+    if(windows.empty())
+        return NULL;
+    else
+        return windows.back();
+}
+
 struct IsWindowId
 {
     const unsigned id;
@@ -768,12 +777,7 @@ struct IsWindowId
     }
 };
 
-/**
- *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
- *
- *  @param[in] it Iterator auf das Fenster in der Fensterliste
- */
-void WindowManager::Close(IngameWindow* window)
+void WindowManager::Close(const IngameWindow* window)
 {
     // ist das Fenster gültig?
     if(!window)
