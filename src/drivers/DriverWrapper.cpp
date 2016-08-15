@@ -110,6 +110,8 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 
 void* GetDLLFunction2(HINSTANCE dll, const std::string& name)
 {
+    if(!dll)
+        return NULL;
 #ifdef _WIN32
     union{
         FARPROC proc;

@@ -80,26 +80,6 @@ void VideoDriver::GetMousePos(int& x, int& y) const
 }
 
 /**
- *  Funktion zum Auslesen der X-Koordinate der Maus.
- *
- *  @return liefert die X-Koordinate
- */
-int VideoDriver::GetMousePosX() const
-{
-    return mouse_xy.x;
-}
-
-/**
- *  Funktion zum Auslesen der Y-Koordinate der Maus.
- *
- *  @return liefert die Y-Koordinate
- */
-int VideoDriver::GetMousePosY() const
-{
-    return mouse_xy.y;
-}
-
-/**
  *  Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
  *
  *  @return @p true bei Gedrückt, @p false bei Losgelassen

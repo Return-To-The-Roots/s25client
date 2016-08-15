@@ -53,24 +53,28 @@ VideoDriverWrapper::~VideoDriverWrapper()
  *
  *  @return liefert @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoDriverWrapper::LoadDriver()
+bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 {
+    if(!existingDriver)
+    {
 #ifdef _WIN32
-    // unter Windows standardmäßig WinAPI prüfen
-    if(SETTINGS.driver.video.empty())
-        SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
+        // unter Windows standardmäßig WinAPI prüfen
+        if(SETTINGS.driver.video.empty())
+            SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
 #endif
 
-    // DLL laden
-    if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
-        return false;
+        // DLL laden
+        if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
+            return false;
 
-    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+        PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
-    // Instanz erzeugen
-    videodriver = CreateVideoInstance(&WINDOWMANAGER);
-    if(!videodriver)
-        return false;
+        // Instanz erzeugen
+        videodriver = CreateVideoInstance(&WINDOWMANAGER);
+        if(!videodriver)
+            return false;
+    } else
+        videodriver = existingDriver;
 
     if(!videodriver->Initialize())
         return false;
@@ -454,18 +458,12 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
 
 int VideoDriverWrapper::GetMouseX() const
 {
-    if(!videodriver)
-        return 0;
-
-    return videodriver->GetMousePosX();
+    return GetMousePos().x;
 }
 
 int VideoDriverWrapper::GetMouseY() const
 {
-    if(!videodriver)
-        return 0;
-
-    return videodriver->GetMousePosY();
+    return GetMousePos().y;
 }
 
 Point<int> VideoDriverWrapper::GetMousePos() const

@@ -74,18 +74,6 @@ public:
     /// Funktion zum Setzen der Mauskoordinaten.
     virtual void SetMousePos(int x, int y) = 0;
 
-    /// Funktion zum Auslesen der X-Koordinate der Maus.
-    virtual int GetMousePosX() const = 0;
-
-    /// Funktion zum Setzen der X-Koordinate der Maus.
-    virtual void SetMousePosX(int x) = 0;
-
-    /// Funktion zum Auslesen der Y-Koordinate der Maus.
-    virtual int GetMousePosY() const = 0;
-
-    /// Funktion zum Setzen der Y-Koordinate der Maus.
-    virtual void SetMousePosY(int y) = 0;
-
     /// Return true when left mouse button is pressed
     virtual bool GetMouseStateL() const = 0;
 

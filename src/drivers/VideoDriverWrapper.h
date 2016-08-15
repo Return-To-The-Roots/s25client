@@ -35,8 +35,8 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         VideoDriverWrapper();
         ~VideoDriverWrapper() override;
 
-        /// Läd den Treiber
-        bool LoadDriver();
+        /// Loads a new driver. Takes the existing one, if given
+        bool LoadDriver(IVideoDriver* existingDriver = NULL);
 
         /// Erstellt das Fenster.
         bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);

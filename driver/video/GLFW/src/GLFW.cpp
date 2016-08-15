@@ -330,32 +330,6 @@ void VideoGLFW::SetMousePos(int x, int y)
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- *  Funktion zum Setzen der X-Koordinate der Maus.
- *
- *  @param[in] x X-Koordinate
- *
- *  @author FloSoft
- */
-void VideoGLFW::SetMousePosX(int x)
-{
-    SetMousePos(x, mouse_xy.y);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
- *  Funktion zum Setzen der Y-Koordinate der Maus.
- *
- *  @param[in] y Y-Koordinate
- *
- *  @author FloSoft
- */
-void VideoGLFW::SetMousePosY(int y)
-{
-    SetMousePos(mouse_xy.x, y);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/**
  *  Callbackfunktion des GL-Frameworks um Mausbewegungen abzufangen.
  *
  *  @param[in] x X-Koordinate
