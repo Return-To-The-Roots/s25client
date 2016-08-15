@@ -140,6 +140,7 @@ public:
     GamePlayer& GetPlayer(const unsigned id);
     const GamePlayer& GetPlayer(const unsigned id) const;
     unsigned GetPlayerCount() const;
+    bool IsSinglePlayer() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
     EventManager& GetEvMgr(){ return em; }
