@@ -123,13 +123,6 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     cbb.loadEdges( LOADER.GetInfoN("resource") );
     cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), borders);
 
-    PostBox& postBox = GetPostBox();
-    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1, _2));
-    postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
-    // Kann passieren dass schon Nachrichten vorliegen, bevor es uns gab (insb. HQ-Landverlust)
-    if(postBox.GetNumMsgs() > 0)
-        UpdatePostIcon(postBox.GetNumMsgs(), true);
-
     InitPlayer();
     worldViewer.InitTerrainRenderer();
 }
@@ -146,11 +139,17 @@ void dskGameInterface::InitPlayer()
         bl::if_(bl::bind(&BuildingNote::player, _1) == worldViewer.GetPlayerId())
         [bl::bind(&dskGameInterface::OnBuildingNote, this, _1)]
     );
+    PostBox& postBox = GetPostBox();
+    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1, _2));
+    postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
+    UpdatePostIcon(postBox.GetNumMsgs(), true);
 }
 
 PostBox& dskGameInterface::GetPostBox()
 {
     PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerId());
+    if(!postBox)
+        postBox = worldViewer.GetWorldNonConst().GetPostMgr().AddPostBox(worldViewer.GetPlayerId());
     RTTR_Assert(postBox != NULL);
     return *postBox;
 }
