@@ -53,9 +53,9 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
 	d_active(false),
 	pos(pos),
 	width(width), height(height),
-    zoomFactor(1.f),
-    targetZoomFactor(1.f),
-    zoomSpeed(0.f)
+    zoomFactor_(1.f),
+    targetZoomFactor_(1.f),
+    zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
@@ -71,54 +71,54 @@ const GameWorldBase& GameWorldView::GetWorld() const
 
 void GameWorldView::SetNextZoomFactor()
 {
-    if (zoomFactor == targetZoomFactor) // == with float is ok here, is explicitly set in last step
+    if (zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step
         return;
 
-    float remainingZoomDiff = targetZoomFactor - zoomFactor;
+    float remainingZoomDiff = targetZoomFactor_ - zoomFactor_;
 
-    if (std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed * zoomSpeed / ZOOM_ACCELERATION)
+    if (std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed_ * zoomSpeed_ / ZOOM_ACCELERATION)
     {
         // deceleration towards zero zoom speed
-        if (zoomSpeed > 0)
-            zoomSpeed -= ZOOM_ACCELERATION;
+        if (zoomSpeed_ > 0)
+            zoomSpeed_ -= ZOOM_ACCELERATION;
         else
-            zoomSpeed += ZOOM_ACCELERATION;
+            zoomSpeed_ += ZOOM_ACCELERATION;
     }
     else
     {
         // acceleration to unlimited speed
         if (remainingZoomDiff > 0)
-            zoomSpeed += ZOOM_ACCELERATION;
+            zoomSpeed_ += ZOOM_ACCELERATION;
         else
-            zoomSpeed -= ZOOM_ACCELERATION;
+            zoomSpeed_ -= ZOOM_ACCELERATION;
     }
 
-    if (std::abs(remainingZoomDiff) < std::abs(zoomSpeed))
+    if (std::abs(remainingZoomDiff) < std::abs(zoomSpeed_))
     {
         // last step
-        zoomFactor = targetZoomFactor;
-        zoomSpeed = 0;
+        zoomFactor_ = targetZoomFactor_;
+        zoomSpeed_ = 0;
     }
 
-    zoomFactor = zoomFactor + zoomSpeed;
+    zoomFactor_ = zoomFactor_ + zoomSpeed_;
     CalcFxLx();
 }
 
 void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition/* = true*/)
 {
     if (zoomFactor < ZOOM_MIN)
-        targetZoomFactor = ZOOM_MIN;
+        targetZoomFactor_ = ZOOM_MIN;
     else if (zoomFactor > ZOOM_MAX)
-        targetZoomFactor = ZOOM_MAX;
+        targetZoomFactor_ = ZOOM_MAX;
     else
-        targetZoomFactor = zoomFactor;
+        targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
-        zoomFactor = targetZoomFactor;
+        zoomFactor_ = targetZoomFactor_;
 }
 
 float GameWorldView::GetCurrentTargetZoomFactor() const
 {
-    return targetZoomFactor;
+    return targetZoomFactor_;
 }
 
 struct ObjectBetweenLines
@@ -138,21 +138,21 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     mousePos -= Point<int>(pos);
 
     glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
-    if(zoomFactor != 1.f)
+    if(zoomFactor_ != 1.f)
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
-        glScalef(zoomFactor, zoomFactor, 1);
+        glScalef(zoomFactor_, zoomFactor_, 1);
         // Offset to center view
-        Point<float> diff(width - width / zoomFactor, height - height / zoomFactor);
+        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
-        mousePos = Point<int>(Point<float>(mousePos) / zoomFactor + diff);
+        mousePos = Point<int>(Point<float>(mousePos) / zoomFactor_ + diff);
         glMatrixMode(GL_MODELVIEW);
     }
 
-    glTranslatef(static_cast<GLfloat>(pos.x) / zoomFactor, static_cast<GLfloat>(pos.y) / zoomFactor, 0.0f);
+    glTranslatef(static_cast<GLfloat>(pos.x) / zoomFactor_, static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     const TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
@@ -223,13 +223,13 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
             (*it)->Draw(offset);
     }
 
-    if(zoomFactor != 1.f)
+    if(zoomFactor_ != 1.f)
     {
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
     }
-    glTranslatef(-static_cast<GLfloat>(pos.x) / zoomFactor, -static_cast<GLfloat>(pos.y) / zoomFactor, 0.0f);
+    glTranslatef(-static_cast<GLfloat>(pos.x) / zoomFactor_, -static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
 
     glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 }
@@ -611,10 +611,10 @@ void GameWorldView::CalcFxLx()
     lastPt.x = (offset.x + width) / TR_W + 1;
     lastPt.y = (offset.y + height + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
 
-    if(zoomFactor != 1.f)
+    if(zoomFactor_ != 1.f)
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
-        Point<float> diff(width - width / zoomFactor, height - height / zoomFactor);
+        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
         // Stay centered by removing half the pixels from opposite sites
         diff = diff / 2.f;
         // Convert to map points

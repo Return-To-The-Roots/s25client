@@ -77,9 +77,9 @@ class GameWorldView
     unsigned width, height;
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
-    float zoomFactor;
-    float targetZoomFactor;
-    float zoomSpeed;
+    float zoomFactor_;
+    float targetZoomFactor_;
+    float zoomSpeed_;
 
 public:
     GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
