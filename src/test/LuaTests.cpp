@@ -225,7 +225,6 @@ BOOST_AUTO_TEST_CASE(MissionGoal)
 {
     initWorld();
 
-    const GamePlayer& player = world.GetPlayer(1);
     const PostBox& postBox = *world.GetPostMgr().AddPostBox(1);
     BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
 

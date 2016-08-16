@@ -46,7 +46,7 @@ class iwMissionStatement : public IngameWindow
             IM_AVATAR9,
             IM_AVATAR10,
             IM_AVATAR11,
-            IM_AVATAR12,
+            IM_AVATAR12
         };
         iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image = IM_SWORDSMAN);
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
