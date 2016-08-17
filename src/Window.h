@@ -119,38 +119,21 @@ class Window
         /// liefert das übergeordnete Fenster
         Window* GetParent() const { return parent_; }
         const unsigned int GetID() const { return id_; }
-
+        /// Get control with given ID of given type or NULL if not found or other type
         template<typename T>
-        T* GetCtrl(unsigned int id)
-        {
-            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
-            if(it == childIdToWnd_.end())
-                return NULL;
-
-            return dynamic_cast<T*>( it->second );
-        }
-
+        T* GetCtrl(unsigned int id);
+        /// Get control with given ID of given type or NULL if not found or other type
         template<typename T>
-        const T* GetCtrl(unsigned int id) const
-        {
-            std::map<unsigned int, Window*>::const_iterator it = childIdToWnd_.find(id);
-            if(it == childIdToWnd_.end())
-                return NULL;
+        const T* GetCtrl(unsigned int id) const;
 
-            return dynamic_cast<T*>( it->second );
-        }
+        /// Get all controls of given type
+        template<typename T>
+        std::vector<T*> GetCtrls();
+        /// Get all controls of given type
+        template<typename T>
+        std::vector<const T*> GetCtrls() const;
 
-        void DeleteCtrl(unsigned int id)
-        {
-            std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
-
-            if(it == childIdToWnd_.end())
-                return;
-
-            delete it->second;
-
-            childIdToWnd_.erase(it);
-        }
+        void DeleteCtrl(unsigned int id);
 
         /// fügt ein BuildingIcon hinzu.
         ctrlBuildingIcon* AddBuildingIcon(unsigned int id_, unsigned short x_, unsigned short y_, BuildingType type, const Nation nation, unsigned short size = 36, const std::string& tooltip_ = "");
@@ -318,6 +301,7 @@ class Window
             BUTTON_PRESSED,
             BUTTON_UNKNOWN = 0xFF
         };
+        typedef std::map<unsigned, Window*> ControlMap;
 
         DrawPoint pos_;            /// Position des Fensters.
         unsigned short width_;     /// Breite des Fensters.
@@ -332,7 +316,53 @@ class Window
         std::map<Window*, Rect> lockedAreas_;       /// gesperrte Regionen des Fensters.
         std::vector<Window*> tofreeAreas_;
         bool isInMouseRelay;
-        std::map<unsigned int, Window*> childIdToWnd_; /// Die Steuerelemente des Fensters.
+        ControlMap childIdToWnd_; /// Die Steuerelemente des Fensters.
 };
+
+template<typename T>
+inline T* Window::GetCtrl(unsigned int id)
+{
+    ControlMap::iterator it = childIdToWnd_.find(id);
+    if(it == childIdToWnd_.end())
+        return NULL;
+
+    return dynamic_cast<T*>(it->second);
+}
+
+template<typename T>
+inline const T* Window::GetCtrl(unsigned int id) const
+{
+    ControlMap::const_iterator it = childIdToWnd_.find(id);
+    if(it == childIdToWnd_.end())
+        return NULL;
+
+    return dynamic_cast<T*>(it->second);
+}
+
+template<typename T>
+inline std::vector<T*> Window::GetCtrls()
+{
+    std::vector<T*> result;
+    for(ControlMap::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
+    {
+        T* ctrl = dynamic_cast<T*>(it->second);
+        if(ctrl)
+            result.push_back(ctrl);
+    }
+    return result;
+}
+
+template<typename T>
+inline std::vector<const T*> Window::GetCtrls() const
+{
+    std::vector<const T*> result;
+    for(ControlMap::const_iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
+    {
+        const T* ctrl = dynamic_cast<const T*>(it->second);
+        if(ctrl)
+            result.push_back(ctrl);
+    }
+    return result;
+}
 
 #endif // !WINDOW_H_INCLUDED

@@ -145,6 +145,25 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
     lua["RES_IRON"] = RES_IRON_ORE;
 
 #undef ADD_LUA_CONST
+#define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name
+    ADD_LUA_CONST(IM_NONE);
+    ADD_LUA_CONST(IM_SWORDSMAN);
+    ADD_LUA_CONST(IM_READER);
+    ADD_LUA_CONST(IM_RIDER);
+    ADD_LUA_CONST(IM_AVATAR1);
+    ADD_LUA_CONST(IM_AVATAR2);
+    ADD_LUA_CONST(IM_AVATAR3);
+    ADD_LUA_CONST(IM_AVATAR4);
+    ADD_LUA_CONST(IM_AVATAR5);
+    ADD_LUA_CONST(IM_AVATAR6);
+    ADD_LUA_CONST(IM_AVATAR7);
+    ADD_LUA_CONST(IM_AVATAR8);
+    ADD_LUA_CONST(IM_AVATAR9);
+    ADD_LUA_CONST(IM_AVATAR10);
+    ADD_LUA_CONST(IM_AVATAR11);
+    ADD_LUA_CONST(IM_AVATAR12);
+
+#undef ADD_LUA_CONST
 #pragma endregion ConstDefs
 
     Register(lua);
@@ -167,7 +186,7 @@ void LuaInterfaceGame::Register(kaguya::State& state)
         .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
         .addFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
         .addFunction("Chat", &LuaInterfaceGame::Chat)
-        .addFunction("MissionStatement", &LuaInterfaceGame::MissionStatement)
+        .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement, &LuaInterfaceGame::MissionStatementWithImg)
         .addFunction("SetMissionGoal", SetMissionGoalWrapper())
         .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
         .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
@@ -271,10 +290,15 @@ void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 
 void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
 {
+    MissionStatementWithImg(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
+}
+
+void LuaInterfaceGame::MissionStatementWithImg(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx)
+{
     if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer()));
+    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer(), iwMissionStatement::HelpImage(imgIdx)));
 }
 
 void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)

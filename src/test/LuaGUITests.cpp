@@ -19,6 +19,7 @@
 #include "test/GameWorldWithLuaAccess.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
+#include "controls/ctrlImage.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "GameMessages.h"
 #include "GameClient.h"
@@ -77,6 +78,31 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     // Close wnd
     WINDOWMANAGER.Close(wnd2);
     BOOST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
+    
+    // No image
+    executeLua("rttr:MissionStatement(1, 'Title', 'Text', IM_NONE)");
+    wnd = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(wnd->GetCtrls<ctrlImage>().empty());
+    WINDOWMANAGER.Close(wnd);
+    // Non-default image
+    executeLua("rttr:MissionStatement(1, 'Title', 'Text', IM_AVATAR10)");
+    wnd = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
+    WINDOWMANAGER.Close(wnd);
+    // Invalid image
+    executeLua("rttr:MissionStatement(1, 'Title', 'Text', 999999)");
+    wnd = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(wnd->GetCtrls<ctrlImage>().empty());
+    WINDOWMANAGER.Close(wnd);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

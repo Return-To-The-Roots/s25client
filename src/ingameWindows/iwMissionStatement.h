@@ -28,11 +28,11 @@ class iwMissionStatement : public IngameWindow
         enum HelpImage{
             /// No image
             IM_NONE,
-            /// Default, Man with sword standing
+            /// Default, Octavianus with sword standing
             IM_SWORDSMAN = 234,
-            /// Same man sitting on stone, reading
+            /// Octavianus reading on stone
             IM_READER,
-            /// Same man riding on a horse
+            /// Octavianus riding on horse
             IM_RIDER,
             /// Avatar images of the nations (so IO.LST)
             IM_AVATAR1 = 239,
@@ -43,6 +43,7 @@ class iwMissionStatement : public IngameWindow
             IM_AVATAR6,
             IM_AVATAR7,
             IM_AVATAR8,
+            /// Mentor
             IM_AVATAR9,
             IM_AVATAR10,
             IM_AVATAR11,
