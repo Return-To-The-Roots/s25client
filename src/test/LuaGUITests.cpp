@@ -36,10 +36,14 @@ public: DummyDesktop(): Desktop(NULL){}
 
 BOOST_AUTO_TEST_CASE(MissionStatement)
 {
+    BOOST_TEST_CHECKPOINT("Load video driver");
     VIDEODRIVER.LoadDriver(new DummyVideoDriver());
+    BOOST_TEST_CHECKPOINT("Load dummy files");
     LOADER.LoadDummyGUIFiles();
     initWorld();
+    BOOST_TEST_CHECKPOINT("Switch to Desktop");
     WINDOWMANAGER.Switch(new DummyDesktop);
+    BOOST_TEST_CHECKPOINT("Dummy Draw");
     WINDOWMANAGER.Draw();
 
     // Set player
