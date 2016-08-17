@@ -643,7 +643,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
 
     executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', '..y..')'..getResName(type)..':'..quantity)\nend");
     boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
-    lua.EventResourceFound(2, pt3, RES_IRON_ORE, 1);
+    lua.EventResourceFound(2, pt3, RES_IRON, 1);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Iron" % 1).str());
     lua.EventResourceFound(2, pt3, RES_GOLD, 2);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Gold" % 2).str());
