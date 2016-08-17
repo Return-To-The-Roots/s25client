@@ -40,8 +40,8 @@ class iwAIDebug : public IngameWindow
     private:
         GameWorldView& gwv;
         std::vector<AIPlayerJH*> ais_;
-        unsigned selection;
-        unsigned overlay;
+        unsigned player_;
+        unsigned overlay_;
         ctrlText* text;
 };
 

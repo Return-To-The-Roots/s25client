@@ -50,8 +50,8 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
         players->AddString((*it)->GetPlayerName());
     }
 
-    selection = 0;
-    players->SetSelection(selection);
+    player_ = 0;
+    players->SetSelection(player_);
 
     ctrlComboBox* overlays = AddComboBox(0, 15, 60, 250, 20, TC_GREY, NormalFont, 100);
     overlays->AddString("None");
@@ -67,8 +67,8 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     overlays->AddString("Plantspace");
     overlays->AddString("Borderland");
     overlays->AddString("Fish");
-    overlay = 0;
-    overlays->SetSelection(overlay);
+    overlay_ = 0;
+    overlays->SetSelection(overlay_);
 
 	
 
@@ -91,13 +91,13 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
 
         case 1:
         {
-            this->selection = selection;
-            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerId(), false);
+            player_ = selection;
+            gwv.SetAIDebug(overlay_, ais_[player_]->GetPlayerId(), true);
         } break;
         case 0:
         {
-            overlay = selection;
-            gwv.SetAIDebug(overlay, ais_[selection]->GetPlayerId(), true);
+            overlay_ = selection;
+            gwv.SetAIDebug(overlay_, ais_[player_]->GetPlayerId(), true);
         } break;
     }
 }
@@ -106,14 +106,14 @@ void iwAIDebug::Msg_PaintBefore()
 {
     std::stringstream ss;
 
-    AIJH::Job* currentJob = ais_[selection]->GetCurrentJob();
+    AIJH::Job* currentJob = ais_[player_]->GetCurrentJob();
     if (!currentJob)
     {
         text->SetText(_("No current job"));
         return;
     }
 
-    ss << "Jobs to do: " << ais_[selection]->GetJobNum() << std::endl << std::endl;
+    ss << "Jobs to do: " << ais_[player_]->GetJobNum() << std::endl << std::endl;
 
     AIJH::BuildJob* bj = dynamic_cast<AIJH::BuildJob*>(currentJob);
     AIJH::EventJob* ej = dynamic_cast<AIJH::EventJob*>(currentJob);
