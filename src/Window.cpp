@@ -560,7 +560,7 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
         height = ScaleY(height);
     }
 
-    return AddCtrl(id, new ctrlMultiline(this, id, x, y, width, height, tc, font, format));
+    return AddCtrl(id, new ctrlMultiline(this, id, DrawPoint(x, y), width, height, tc, font, format));
 }
 
 /**

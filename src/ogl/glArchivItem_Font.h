@@ -45,8 +45,8 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         void Draw(DrawPoint pos, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
 
         /// liefert die Länge einer Zeichenkette.
-        unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* max = NULL) const;
-        unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* max = NULL) const;
+        unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
+        unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
         /// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
         inline unsigned short getHeight() const { return dy + 1; }
 
@@ -57,7 +57,6 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
                 /// Erzeugt ein Arrays aus eigenständigen Strings aus den Unterbrechungsinfos.
                 std::vector<std::string> CreateSingleStrings(const std::string& origin_text);
 
-            public:
                 /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
                 std::vector<unsigned int> positions;
         };

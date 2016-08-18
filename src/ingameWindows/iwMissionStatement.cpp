@@ -41,24 +41,14 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     const unsigned short buttonHeight = 22u;
 
     const unsigned short maxTextWidth = GetIwWidth() - imgWidth - textSpace - imgSpace;
-    ctrlMultiline* text = AddMultiline(0, contentOffset.x + textSpace, contentOffset.y + textSpace, maxTextWidth, GetIwHeight(), TC_GREEN2, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
-    text->EnableBox(false);
-
-    glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(content, text->GetWidth(), text->GetWidth());
-    std::vector<std::string> lines = wi.CreateSingleStrings(content);
-
-    unsigned short max_line_width = 0;
-    BOOST_FOREACH(const std::string& line, lines)
-    {
-        text->AddString(line, COLOR_YELLOW, false); // add this line to the window contents
-        unsigned short current_line_width = NormalFont->getWidth(line); // get the width of line in normal font
-        if (current_line_width > max_line_width) // if wider than max, re-set max
-            max_line_width = current_line_width;
-    }
+    ctrlMultiline* text = AddMultiline(0, contentOffset.x + textSpace, contentOffset.y + textSpace, maxTextWidth, GetIwHeight(), TC_GREEN2, NormalFont);
+    text->ShowBackground(false);
+    text->AddString(content, COLOR_YELLOW, false);
+    text->Resize(text->GetContentWidth(), text->GetContentHeight());
 
     // set window width to our determined max width
-    SetIwWidth(max_line_width + textSpace + imgWidth + imgSpace);
-    SetIwHeight(std::max<unsigned>(text->GetLineCount() * NormalFont->getHeight() + textSpace + buttonHeight + buttonSpace*2, imgHeight + minImgSpaceTop + buttonSpace));
+    SetIwWidth(text->GetWidth() + textSpace + imgWidth + imgSpace);
+    SetIwHeight(std::max<unsigned>(text->GetHeight() + textSpace + buttonHeight + buttonSpace*2, imgHeight + minImgSpaceTop + buttonSpace));
     
     AddTextButton(1, (width_ - 100) / 2, GetIwBottomBoundary() - buttonSpace - buttonHeight, 100, buttonHeight, TC_GREY, _("Continue"), NormalFont);
     if(img)

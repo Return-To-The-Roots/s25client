@@ -89,12 +89,9 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     AddImage(ID_IMG, 127, 155, LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 120, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
-    text->EnableBox(false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 0, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+    text->SetNumVisibleLines(4);
+    text->ShowBackground(false);
 
     // Button with OK and deny sign (tick and cross) for contracts
     AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
@@ -320,16 +317,8 @@ void iwPostWindow::DisplayPostMessage()
 void iwPostWindow::SetMessageText(const std::string& message)
 {
     ctrlMultiline* text = GetCtrl<ctrlMultiline>(ID_TEXT);
-
-    glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(message, 190, 190);
-    std::vector<std::string> lines = wi.CreateSingleStrings(message);
-    for(unsigned i = 0; i < text->GetLineCount(); ++i)
-    {
-        if (i < lines.size())
-            text->SetLine(i, lines[i], COLOR_WINDOWBROWN);
-        else
-            text->SetLine(i, "", COLOR_WINDOWBROWN);
-    }
+    text->Clear();
+    text->AddString(message, COLOR_WINDOWBROWN);
 }
 
 void iwPostWindow::FilterMessages()

@@ -33,6 +33,8 @@ class ctrlScrollBar : public Window
 
         unsigned short GetPageSize() const { return pagesize; }
         unsigned short GetPos() const { return scroll_pos; }
+        /// Scrolls by the given distance (less than 0 = up, else down)
+        void Scroll(int distance);
 
         bool Msg_LeftUp(const MouseCoords& mc) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -43,21 +45,26 @@ class ctrlScrollBar : public Window
         bool Draw_() override;
 
     private:
-        void CalculatePosition() { scroll_pos = (scrollbar_pos * scroll_range / scroll_height); }
-        void CalculateScrollBar(unsigned short height = 0);
+        void UpdatePosFromSlider();
+        void UpdateSliderFromPos();
+        void RecalculateSizes();
 
-    private:
         unsigned short button_height;
         TextureColor tc;
+        /// (max) Number of elements/lines visible
         unsigned short pagesize;
-
-        bool move;
+        /// Total number of elements
         unsigned short scroll_range;
+        /// Current element at top
         unsigned short scroll_pos;
+        /// Height of the actual area in which we can move the slider
         unsigned short scroll_height;
-        unsigned short scrollbar_height;
-        unsigned short scrollbar_pos;
+        /// Size of the slider
+        unsigned short sliderHeight;
+        /// Position of the slider in the scroll area (in [0, scroll_height - sliderHeight] )
+        unsigned short sliderPos;
 
+        bool isMouseScrolling;
         int last_y;
 };
 
