@@ -18,33 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "test/GameWorldWithLuaAccess.h"
 #include "WindowManager.h"
-#include "desktops/Desktop.h"
 #include "controls/ctrlImage.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "GameMessages.h"
 #include "GameClient.h"
-#include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "test/DummyVideoDriver.h"
 
 BOOST_FIXTURE_TEST_SUITE(LuaGUITestSuite, LuaTestsFixture)
 
-class DummyDesktop: public Desktop
-{
-public: DummyDesktop(): Desktop(NULL){}
-};
-
 BOOST_AUTO_TEST_CASE(MissionStatement)
 {
-    BOOST_TEST_CHECKPOINT("Load video driver");
-    VIDEODRIVER.LoadDriver(new DummyVideoDriver());
-    BOOST_TEST_CHECKPOINT("Load dummy files");
-    LOADER.LoadDummyGUIFiles();
-    initWorld();
-    BOOST_TEST_CHECKPOINT("Switch to Desktop");
-    WINDOWMANAGER.Switch(new DummyDesktop);
-    BOOST_TEST_CHECKPOINT("Dummy Draw");
-    WINDOWMANAGER.Draw();
+    initGUITests();
 
     // Set player
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
