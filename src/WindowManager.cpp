@@ -35,7 +35,7 @@
 
 WindowManager::WindowManager()
     : disable_mouse(false),
-      mouseCoords(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
+      lastMousePos(Point<int>::Invalid()), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
 {
 }
 
@@ -648,7 +648,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
-    this->mouseCoords = &mc;
+    lastMousePos = Point<int>(mc.x, mc.y);
 
     // ist unser Desktop gültig?
     if(!curDesktop)
@@ -889,16 +889,16 @@ void WindowManager::SetToolTip(const Window* ttw, const std::string& tooltip)
 void WindowManager::DrawToolTip()
 {
     // Tooltip zeichnen
-    if(curTooltip.length() && mouseCoords)
+    if(curTooltip.length() && lastMousePos.isValid())
     {
         const unsigned spacing = 30;
         unsigned text_width = NormalFont->getWidth(curTooltip);
-        DrawPoint ttPos = DrawPoint(mouseCoords->x + spacing, mouseCoords->y);
+        DrawPoint ttPos = DrawPoint(lastMousePos.x + spacing, lastMousePos.y);
         unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
-            ttPos.x = mouseCoords->x - spacing - text_width;
+            ttPos.x = lastMousePos.x - spacing - text_width;
 
         unsigned int numLines = 1;
         size_t pos = curTooltip.find('\n');

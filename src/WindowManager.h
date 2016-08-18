@@ -110,7 +110,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Windows that will be shown after desktop switch
         /// Otherwise the window will not be shown, if it was added after a switch request
         std::vector<IngameWindow*> nextWnds;
-        const MouseCoords* mouseCoords;
+        Point<int> lastMousePos;
         std::string curTooltip;
         unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
         unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe
