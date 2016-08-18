@@ -103,6 +103,7 @@ script:
     - make -j2
     # Execute tests
     - export CTEST_OUTPUT_ON_FAILURE=1
+    - export BOOST_TEST_CATCH_SYSTEM_ERRORS="no"
     - make test
     # Reset environment
     - cd ..
