@@ -35,35 +35,10 @@
 
 namespace bfs = boost::filesystem;
 
-#ifndef _WIN32
-#   include <execinfo.h>
-#   include <csignal>
-
-void SegFaultHandler(int /*sig*/)
-{
-    const unsigned int maxTrace = 256;
-    void* stacktrace[maxTrace];
-    unsigned num_frames = backtrace(stacktrace, maxTrace);
-    char** stacktraceNames = backtrace_symbols(stacktrace, num_frames);
-    for(unsigned i = 0; i < num_frames; i++){
-        std::cerr << std::hex << stacktrace[i];
-        if(stacktraceNames)
-            std::cerr << ": " << stacktraceNames[i];
-        std::cerr << std::endl;
-    }
-    free(stacktraceNames);
-
-    abort();
-}
-#endif
-
 struct TestSetup
 {
     TestSetup()
     {
-#ifndef _WIN32
-        signal(SIGSEGV, SegFaultHandler);
-#endif
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
 

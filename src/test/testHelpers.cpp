@@ -28,6 +28,40 @@
 #include <iostream>
 #include <cstdlib>
 
+#ifndef _WIN32
+#   include <execinfo.h>
+#   include <csignal>
+
+void SegFaultHandler(int /*sig*/)
+{
+    const unsigned int maxTrace = 256;
+    void* stacktrace[maxTrace];
+    unsigned num_frames = backtrace(stacktrace, maxTrace);
+    char** stacktraceNames = backtrace_symbols(stacktrace, num_frames);
+    for(unsigned i = 0; i < num_frames; i++){
+        std::cerr << std::hex << stacktrace[i];
+        if(stacktraceNames)
+            std::cerr << ": " << stacktraceNames[i];
+        std::cerr << std::endl;
+    }
+    free(stacktraceNames);
+
+    abort();
+}
+
+void installSegFaultHandler()
+{
+    signal(SIGSEGV, SegFaultHandler);
+    struct sigaction newAction;
+    newAction.sa_handler = SegFaultHandler;
+    sigemptyset(&newAction.sa_mask);
+    newAction.sa_flags = 0;
+    sigaction(SIGSEGV, &newAction, NULL);
+}
+#else
+void installSegFaultHandler(){}
+#endif
+
 void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
 {
 #ifdef RTTR_RAND_TEST
@@ -46,6 +80,7 @@ public: DummyDesktop(): Desktop(NULL){}
 
 void initGUITests()
 {
+    installSegFaultHandler();
     BOOST_TEST_CHECKPOINT("Load video driver");
     VIDEODRIVER.LoadDriver(new DummyVideoDriver());
     BOOST_TEST_CHECKPOINT("Load dummy files");
