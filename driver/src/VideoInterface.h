@@ -91,6 +91,8 @@ public:
     virtual void* GetMapPointer() const = 0;
 
     virtual bool IsInitialized() = 0;
+    /// Shall we support OpenGL? (Disabled for tests)
+    virtual bool IsOpenGL() = 0;
 };
 
 class VideoDriverLoaderInterface;

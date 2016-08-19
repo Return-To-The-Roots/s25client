@@ -48,6 +48,7 @@ class VideoDriver: public IVideoDriver
 
         /// prüft auf Initialisierung.
         bool IsInitialized() override { return initialized; }
+        bool IsOpenGL() override { return true; }
 
     protected:
         VideoDriverLoaderInterface* CallBack;  /// Das DriverCallback für Rückmeldungen.

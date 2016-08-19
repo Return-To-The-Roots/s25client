@@ -33,7 +33,7 @@
 #   include <valgrind/memcheck.h>
 #endif
 
-VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
+VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), isOglEnabled_(false), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
@@ -78,6 +78,8 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 
     if(!videodriver->Initialize())
         return false;
+
+    isOglEnabled_ = videodriver->IsOpenGL();
 
     return true;
 }
@@ -211,7 +213,7 @@ bool VideoDriverWrapper::DestroyScreen()
 bool VideoDriverWrapper::hasExtension(const std::string& extension)
 {
     // Extension mit Leerzeichen gibts nich
-    if( extension.empty() || extension.find(' ') != std::string::npos)
+    if(!isOglEnabled_ || extension.empty() || extension.find(' ') != std::string::npos)
         return false;
 
     // ermittle Extensions String
@@ -241,7 +243,8 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-    glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
+    if(isOglEnabled_)
+        glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
 
     std::fill(texture_list.begin(), texture_list.end(), 0);
     texture_pos = 0;
@@ -271,7 +274,8 @@ void VideoDriverWrapper::BindTexture(unsigned int t)
     if (t != texture_current)
     {
         texture_current = t;
-        glBindTexture(GL_TEXTURE_2D, t);
+        if(isOglEnabled_)
+            glBindTexture(GL_TEXTURE_2D, t);
     }
 }
 
@@ -279,7 +283,8 @@ void VideoDriverWrapper::DeleteTexture(unsigned int t)
 {
     if (t == texture_current)
         texture_current = 0;
-    glDeleteTextures(1, &t);
+    if(isOglEnabled_)
+        glDeleteTextures(1, &t);
 }
 
 KeyEvent VideoDriverWrapper::GetModKeyState() const
@@ -301,6 +306,12 @@ bool VideoDriverWrapper::SwapBuffers()
     return videodriver->SwapBuffers();
 }
 
+void VideoDriverWrapper::ClearScreen()
+{
+    if(isOglEnabled_)
+        glClear(GL_COLOR_BUFFER_BIT);
+}
+
 bool VideoDriverWrapper::Run()
 {
     if(!videodriver)
@@ -314,10 +325,13 @@ bool VideoDriverWrapper::Run()
 
 bool VideoDriverWrapper::Initialize()
 {
+    if(!isOglEnabled_)
+        return true;
+
     RenewViewport();
 
     // Depthbuffer und Colorbuffer einstellen
-    glClearColor(0.0, 0.0, 0.0, 0.5);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
     // Smooth - Shading aktivieren
     glShadeModel(GL_SMOOTH);
@@ -349,8 +363,7 @@ bool VideoDriverWrapper::Initialize()
     if(!LoadAllExtensions())
         return false;
 
-    // Puffer leeren
-    glClear(GL_COLOR_BUFFER_BIT);
+    ClearScreen();
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);

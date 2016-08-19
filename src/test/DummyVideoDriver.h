@@ -37,10 +37,11 @@ public:
     bool MessageLoop() override { return true; }
     unsigned long GetTickCount() const override { return 0; }
     void* GetFunction(const char* /*function*/) const override { return NULL; }
-    void ListVideoModes(std::vector<VideoMode>& video_modes) const override { video_modes = std::vector<VideoMode>(1, VideoMode(800, 600)); }
+    void ListVideoModes(std::vector<VideoMode>& video_modes) const override {}
     void SetMousePos(int x, int y) override { mouse_xy.x = x; mouse_xy.y = y; }
     KeyEvent GetModKeyState() const override { return KeyEvent(); }
     void* GetMapPointer() const override { return NULL; }
+    bool IsOpenGL() override { return false; }
 };
 
 #endif // DummyVideoDriver_h__

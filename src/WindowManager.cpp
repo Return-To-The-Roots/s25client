@@ -837,8 +837,7 @@ void WindowManager::Close(unsigned int id)
 void WindowManager::Switch()
 {
     RTTR_Assert(nextdesktop);
-    // einmal richtig clearen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    VIDEODRIVER.ClearScreen();
 
     SetToolTip(NULL, "");
 
