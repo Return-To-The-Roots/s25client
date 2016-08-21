@@ -19,9 +19,13 @@
 #include "test/GameWorldWithLuaAccess.h"
 #include "WindowManager.h"
 #include "controls/ctrlImage.h"
+#include "controls/ctrlButton.h"
 #include "ingameWindows/iwMissionStatement.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ogl/glArchivItem_Font.h"
 #include "GameMessages.h"
 #include "GameClient.h"
+#include "Loader.h"
 
 BOOST_FIXTURE_TEST_SUITE(LuaGUITestSuite, LuaTestsFixture)
 
@@ -89,6 +93,55 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     BOOST_REQUIRE(wnd->IsActive());
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
     BOOST_REQUIRE(wnd->GetCtrls<ctrlImage>().empty());
+    WINDOWMANAGER.Close(wnd);
+}
+
+BOOST_AUTO_TEST_CASE(MessageBoxTest)
+{
+    initGUITests();
+    // Default Info
+    executeLua("rttr:MsgBox('Title', string.rep('Text\\n', 20))");
+    const iwMsgbox* wnd = dynamic_cast<const iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
+    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(), LOADER.GetImageN("io", MSB_EXCLAMATIONGREEN));
+    BOOST_REQUIRE(!wnd->GetCtrls<ctrlButton>().empty());
+    // 20 lines of text, button must be below
+    BOOST_REQUIRE_GT(wnd->GetCtrls<ctrlButton>().front()->GetY(false), 20 * NormalFont->getHeight());
+    // And window higher than button
+    BOOST_REQUIRE_GT(wnd->GetIwHeight(), wnd->GetCtrls<ctrlButton>().front()->GetY(false));
+    WINDOWMANAGER.Close(wnd);
+    // Error
+    executeLua("rttr:MsgBox('Title', 'Text', true)");
+    wnd = dynamic_cast<const iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
+    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(), LOADER.GetImageN("io", MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Close(wnd);
+    // MsgBoxEx
+    executeLua("rttr:MsgBoxEx('Title', 'Text', 'io', 100)");
+    wnd = dynamic_cast<const iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
+    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(), LOADER.GetImageN("io", 100));
+    WINDOWMANAGER.Close(wnd);
+    // MsgBoxEx with position
+    executeLua("rttr:MsgBoxEx('Title', 'Text', 'io', 101, 42, 13)");
+    wnd = dynamic_cast<const iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_REQUIRE(wnd);
+    BOOST_REQUIRE(wnd->IsActive());
+    BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
+    BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
+    const ctrlImage* img = wnd->GetCtrls<ctrlImage>().front();
+    BOOST_REQUIRE_EQUAL(img->GetImage(), LOADER.GetImageN("io", 101));
+    BOOST_REQUIRE_EQUAL(img->GetX(false), 42);
+    BOOST_REQUIRE_EQUAL(img->GetY(false), 13);
     WINDOWMANAGER.Close(wnd);
 }
 

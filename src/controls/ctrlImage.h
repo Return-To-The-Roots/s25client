@@ -30,6 +30,7 @@ class ctrlImage : public Window
         ~ctrlImage() override;
 
         void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
+        const glArchivItem_Bitmap* GetImage() const { return image; }
 
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
