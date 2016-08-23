@@ -83,6 +83,8 @@ class ctrlMultiline : public Window
         std::vector<Line> drawLines;
         /// Anzahl der Zeilen, die in das Control passen
         unsigned maxNumVisibleLines;
+        /// Width of content as last calculated or 0
+        mutable unsigned cachedContentWidth;
 
         void RecalcVisibleLines();
         void RecalcWrappedLines();

@@ -28,7 +28,7 @@ ctrlMultiline::ctrlMultiline(Window* parent, unsigned int id,
                              const DrawPoint& pos, unsigned short width, unsigned short height,
                              TextureColor tc, glArchivItem_Font* font, unsigned format):
     Window(pos, id, parent, width, height),
-    tc_(tc), font(font), format_(format), showBackground_(true)
+    tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
 {
     RecalcVisibleLines();
     AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, maxNumVisibleLines);
@@ -87,6 +87,7 @@ void ctrlMultiline::RecalcVisibleLines()
 void ctrlMultiline::RecalcWrappedLines()
 {
     drawLines.clear();
+    cachedContentWidth = 0;
     // No space for a single line, or to narrow to even show the scrollbar -> Bail out
     if(maxNumVisibleLines == 0 || width_ < 2 * PADDING + SCROLLBAR_WIDTH)
     {
@@ -182,14 +183,17 @@ bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
 
 void ctrlMultiline::Resize(unsigned short width, unsigned short height)
 {
-    Point<unsigned short> oldSize(GetWidth(), GetHeight());
+    const Point<unsigned short> oldSize(GetWidth(), GetHeight());
+    const unsigned oldMaxNumVisLines = maxNumVisibleLines;
     Window::Resize(width, height);
 
     RecalcVisibleLines();
     GetCtrl<ctrlScrollBar>(0)->SetPageSize(maxNumVisibleLines);
     GetCtrl<ctrlScrollBar>(0)->Move(width - SCROLLBAR_WIDTH, 0);
-    // Do only if vertical space changed or horizontal space decreased (might need scrollbar then)
-    if(GetWidth() != oldSize.x || GetHeight() < oldSize.y)
+    // Recalc only if:
+    // - we increased the size or decreased beyond content width
+    // - scrollbar requirement has changed (e.g. now need one but did not need it before)
+    if(GetWidth() > oldSize.x || GetWidth() < GetContentWidth() || (maxNumVisibleLines < drawLines.size() != oldMaxNumVisLines < drawLines.size()))
         RecalcWrappedLines();
 }
 
@@ -215,6 +219,9 @@ unsigned ctrlMultiline::GetContentHeight() const
 
 unsigned ctrlMultiline::GetContentWidth() const
 {
+    if(cachedContentWidth > 0)
+        return cachedContentWidth;
+
     unsigned maxWidth = 0;
     unsigned addWidth = 2 * PADDING;
     if(drawLines.size() > maxNumVisibleLines)
@@ -229,5 +236,6 @@ unsigned ctrlMultiline::GetContentWidth() const
                 return GetWidth();
         }
     }
-    return std::min<unsigned>(GetWidth(), maxWidth);
+    cachedContentWidth = std::min<unsigned>(GetWidth(), maxWidth);
+    return cachedContentWidth;
 }
