@@ -195,7 +195,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             else if(lc >= 0xF0 && lc <= 0xFD)
                 obj = new noTree(pt, 3, 3);
             else
-                LOG.write("Unbekannter Baum1-4 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
+                LOG.write(_("Unknown tree1-4 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
         } break;
 
         // Baum 5-8
@@ -210,7 +210,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             else if(lc >= 0xF0 && lc <= 0xFD)
                 obj = new noTree(pt, 7, 3);
             else
-                LOG.write("Unbekannter Baum5-8 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
+                LOG.write(_("Unknown tree5-8 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
         } break;
 
         // Baum 9
@@ -219,7 +219,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             if(lc >= 0x30 && lc <= 0x3D)
                 obj = new noTree(pt, 8, 3);
             else
-                LOG.write("Unbekannter Baum9 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
+                LOG.write(_("Unknown tree9 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
         } break;
 
         // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
@@ -291,7 +291,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             else if(lc == 0x35)
                 obj = new noStaticObject(pt, 4, 5);
             else
-                LOG.write("Unbekanntes Naturzeug auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
+                LOG.write(_("Unknown nature object at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
 
         } break;
 
@@ -301,7 +301,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             if(lc >= 0x01 && lc <= 0x06)
                 obj = new noGranite(GT_1, lc - 1);
             else
-                LOG.write("Unbekannter Granit1 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
+                LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
         } break;
 
         // Granit Typ 2
@@ -310,7 +310,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             if(lc >= 0x01 && lc <= 0x06)
                 obj = new noGranite(GT_2, lc - 1);
             else
-                LOG.write("Unbekannter Granit2 auf x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % lc;
+                LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
         } break;
 
         // Nichts
@@ -319,8 +319,8 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 
         default:
 #ifndef NDEBUG
-            unsigned char unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
-            LOG.write("Unbekanntes Objekt (0x%0X) auf x=%d, y=%d: (0x%0X)\n") % unknownObj % pt.x % pt.y % lc;
+            unsigned unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
+            LOG.write(_("Unknown object at (%1%, %2%): (0x%3$x: 0x%4$x)\n")) % pt.x % pt.y % unknownObj % unsigned(lc);
 #endif // !NDEBUG
             break;
         }
@@ -345,11 +345,13 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         case 4: species = SPEC_DEER; break;
         case 5: species = SPEC_DUCK; break;
         case 6: species = SPEC_SHEEP; break;
-        case 0: species = SPEC_NOTHING; break;
+        case 0:
+        case 0xFF: // 0xFF is for (really) old S2 maps
+            species = SPEC_NOTHING; break;
         default:
 #ifndef NDEBUG
-            unsigned char unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
-            LOG.write("Unknown animal species at x=%d, y=%d: (0x%0X)\n") % pt.x % pt.y % unknownAnimal % unknownAnimal;
+            unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
+            LOG.write(_("Unknown animal species at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unknownAnimal;
 #endif // !NDEBUG
             species = SPEC_NOTHING;
             break;
