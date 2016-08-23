@@ -188,8 +188,10 @@ void ctrlMultiline::Resize(unsigned short width, unsigned short height)
     Window::Resize(width, height);
 
     RecalcVisibleLines();
-    GetCtrl<ctrlScrollBar>(0)->SetPageSize(maxNumVisibleLines);
-    GetCtrl<ctrlScrollBar>(0)->Move(width - SCROLLBAR_WIDTH, 0);
+    ctrlScrollBar* scrollBar = GetCtrl<ctrlScrollBar>(0);
+    scrollBar->SetPageSize(maxNumVisibleLines);
+    scrollBar->SetHeight(GetHeight());
+    scrollBar->Move(width - SCROLLBAR_WIDTH, 0);
     // Recalc only if:
     // - we increased the size or decreased beyond content width
     // - scrollbar requirement has changed (e.g. now need one but did not need it before)

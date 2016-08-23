@@ -28,6 +28,7 @@ class iwHelp : public IngameWindow
 {
     public:
         iwHelp(const GUI_ID gui_id, const std::string& content);
+        bool Draw_();
 };
 
 #endif // iwHELP_H_INCLUDED

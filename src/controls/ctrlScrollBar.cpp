@@ -197,6 +197,8 @@ void ctrlScrollBar::Resize(unsigned short width, unsigned short height)
 bool ctrlScrollBar::Draw_()
 {
     RTTR_Assert(scroll_range > pagesize); // Don't show unneccessary scrollbars, otherwise invariants might be violated.
+    if(scroll_height == 0)
+        return true;
     DrawPoint pos = GetDrawPos();
     // Leiste
     Draw3D(pos + DrawPoint(0, button_height - 2), width_, height_ - button_height * 2 + 4, tc, 2);

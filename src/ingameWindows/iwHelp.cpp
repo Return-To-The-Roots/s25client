@@ -31,12 +31,20 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
     : IngameWindow(gui_id, IngameWindow::posAtMouse,  HELP_WINDOW_WIDTH, 480, _("What is this?"), LOADER.GetImageN("io", 1))
 {
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
-    ctrlMultiline* text = AddMultiline(2, 10, 20, HELP_WINDOW_WIDTH - 28, 0, TC_GREEN1, NormalFont);
+    ctrlMultiline* text = AddMultiline(2, contentOffset.x, contentOffset.y, GetIwWidth(), 0, TC_GREEN1, NormalFont);
     text->SetNumVisibleLines(MAX_LINES);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);
     // Shrink to content
     text->Resize(text->GetContentWidth(), text->GetContentHeight());
+    SetIwWidth(text->GetWidth());
     SetIwHeight(text->GetHeight());
     MoveNextToMouse();
+}
+
+bool iwHelp::Draw_()
+{
+    IngameWindow::Draw_();
+    DrawRectangle(contentOffset, GetIwWidth(), 10, COLOR_YELLOW);
+    return true;
 }
