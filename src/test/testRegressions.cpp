@@ -25,6 +25,7 @@
 #include "figures/nofFarmhand.h"
 #include "EventManager.h"
 #include "TerrainRenderer.h"
+#include "ingameWindows/iwHelp.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/MapConsts.h"
 #include "RTTR_AssertError.h"
@@ -42,6 +43,25 @@
 //      - Before you fix a bug, reproduce it here (or in a fitting suite) -> Test fails
 //      - Fix the bug -> Test succeeds
 BOOST_AUTO_TEST_SUITE(RegressionsSuite)
+
+BOOST_AUTO_TEST_CASE(IngameWnd)
+{
+    initGUITests();
+    iwHelp wnd(CGI_HELP, "Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
+    const unsigned oldW = wnd.GetWidth();
+    const unsigned oldH = wnd.GetHeight();
+    BOOST_REQUIRE_GT(oldW, 50u);
+    BOOST_REQUIRE_GT(oldH, 50u);
+    // Window should reduce height (only)
+    wnd.SetMinimized(true);
+    BOOST_REQUIRE_EQUAL(wnd.GetWidth(), oldW);
+    BOOST_REQUIRE_GT(wnd.GetHeight(), 0u);
+    BOOST_REQUIRE_LT(wnd.GetHeight(), oldH);
+    // And fully expand to old size
+    wnd.SetMinimized(false);
+    BOOST_REQUIRE_EQUAL(wnd.GetWidth(), oldW);
+    BOOST_REQUIRE_EQUAL(wnd.GetHeight(), oldH);
+}
 
 struct AddGoodsFixture: public WorldFixture<CreateEmptyWorld, 1, 10, 10>
 {

@@ -107,7 +107,7 @@ unsigned short IngameWindow::GetIwBottomBoundary() const
 void IngameWindow::SetMinimized(bool minimized)
 {
     this->isMinimized_ = minimized;
-    Window::SetHeight((minimized ? 0 : iwHeight) + contentOffset.y + contentOffsetEnd.y);
+    Window::Resize(GetWidth(), (minimized ? 0 : iwHeight) + contentOffset.y + contentOffsetEnd.y);
 }
 
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
