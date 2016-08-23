@@ -866,12 +866,6 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, PointI* offset) const
     MapPoint ptOut =  MakeMapPoint(pt, width_, height_);
     RTTR_Assert(ptOut.x < width_);
     RTTR_Assert(ptOut.y < height_);
-    if(offset && pt.x - ptOut.x != offset->x / TR_W){
-        std::cout << pt.x << " x " << ptOut.x << " " << offset->x/TR_W << std::endl;
-    }
-    if(offset && pt.y - ptOut.y != offset->y / TR_H){
-        std::cout << pt.y << " y " << ptOut.y << " " << offset->y/TR_H << std::endl;
-    }
     RTTR_Assert(!offset || pt.x - ptOut.x == offset->x / TR_W);
     RTTR_Assert(!offset || pt.y - ptOut.y == offset->y / TR_H);
     return ptOut;
