@@ -47,11 +47,11 @@ std::pair<unsigned, unsigned> LuaInterfaceBase::GetVersion()
 
 LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
 {
-    luaopen_base(lua.state());
-    luaopen_package(lua.state());
-    luaopen_string(lua.state());
-    luaopen_table(lua.state());
-    luaopen_math(lua.state());
+    lua.openlib("base", luaopen_base);
+    lua.openlib("package", luaopen_package);
+    lua.openlib("string", luaopen_string);
+    lua.openlib("table", luaopen_table);
+    lua.openlib("math", luaopen_math);
 
     Register(lua);
 }

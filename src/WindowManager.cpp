@@ -256,7 +256,6 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
 void WindowManager::ShowAfterSwitch(IngameWindow* window)
 {
     RTTR_Assert(window);
-    RTTR_Assert(nextdesktop); // Only usefull if we are about to switch, otherwise use regular Show function
     nextWnds.push_back(window);
 }
 
