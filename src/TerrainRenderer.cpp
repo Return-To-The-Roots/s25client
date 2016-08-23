@@ -55,7 +55,7 @@
  */
 
 TerrainRenderer::TerrainRenderer() :
-	width(0), height(0),
+	width_(0), height_(0),
     vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false)
 {}
 
@@ -92,15 +92,10 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt
 
 void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 {
-    vertices.clear();
-    terrain.clear();
-    vertices.resize(width * height);
-    terrain.resize(vertices.size());
-
     // Terrain generieren
-    for(MapCoord y = 0; y < height; ++y)
+    for(MapCoord y = 0; y < height_; ++y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width_; ++x)
         {
             MapPoint pt(x, y);
             UpdateVertexPos(pt, gwv);
@@ -110,8 +105,8 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
     }
 
     // Ränder generieren
-    for(MapCoord y = 0; y < height; ++y)
-        for(MapCoord x = 0; x < width; ++x)
+    for(MapCoord y = 0; y < height_; ++y)
+        for(MapCoord x = 0; x < width_; ++x)
             UpdateBorderVertex(MapPoint(x, y));
 }
 
@@ -158,26 +153,43 @@ void TerrainRenderer::UpdateBorderVertex(const MapPoint pt)
     vertex.borderColor[1] = ( GetColor(GetNeighbour(pt, Direction::EAST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
 }
 
+void TerrainRenderer::Init(MapCoord width, MapCoord height)
+{
+    width_ = width;
+    height_ = height;
+    // Clear first, so they are default-initialized
+    vertices.clear();
+    terrain.clear();
+    borders.clear();
+    vertices.resize(width_ * height_);
+    terrain.resize(vertices.size());
+    borders.resize(width_ * height_);
+
+    gl_vertices.clear();
+    gl_texcoords.clear();
+    gl_colors.clear();
+    // We have 2 triangles per map point
+    gl_vertices.resize(vertices.size() * 2);
+    gl_texcoords.resize(gl_vertices.size());
+    gl_colors.resize(gl_vertices.size());
+}
+
 /**
  *  erzeugt die OpenGL-Vertices.
  */
 void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 {
     const GameWorldBase& world = gwv.GetWorld();
-    width = world.GetWidth();
-    height = world.GetHeight();
-    LandscapeType lt = world.GetLandscapeType();
+    Init(world.GetWidth(), world.GetHeight());
 
     GenerateVertices(gwv);
 
-    // We have 2 triangles per map point
-    unsigned int triangleCount = width * height * 2;
-
-    // Ränder zählen
-    borders.resize(width * height);
-    for(MapCoord y = 0; y < height; ++y)
+    // Add extra vertices for borders
+    unsigned triangleCount = gl_vertices.size();
+    const LandscapeType lt = world.GetLandscapeType();
+    for(MapCoord y = 0; y < height_; ++y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width_; ++x)
         {
             MapPoint pt(x, y);
             const unsigned pos = GetVertexIdx(pt);
@@ -208,9 +220,9 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     gl_colors.resize(triangleCount);
 
     // Normales Terrain erzeugen
-    for(MapCoord y = 0; y < height; ++y)
+    for(MapCoord y = 0; y < height_; ++y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width_; ++x)
         {
             MapPoint pt(x, y);
             UpdateTrianglePos(pt, false);
@@ -220,9 +232,9 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     }
 
     // Ränder erzeugen
-    for(MapCoord y = 0; y < height; ++y)
+    for(MapCoord y = 0; y < height_; ++y)
     {
-        for(MapCoord x = 0; x < width; ++x)
+        for(MapCoord x = 0; x < width_; ++x)
         {
             MapPoint pt(x, y);
             UpdateBorderTrianglePos(pt, false);
@@ -509,8 +521,8 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, const bool up
         gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
         gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(GetNeighbour(pt, Direction::EAST));
         MapPoint pt2(pt.x + i, pt.y);
-        if(pt2.x >= width)
-            pt2.x -= width;
+        if(pt2.x >= width_)
+            pt2.x -= width_;
         gl_colors[offset][i ? 0 : 2].r = gl_colors[offset][i ? 0 : 2].g = gl_colors[offset][i ? 0 : 2].b = GetBorderColor(pt2, i ? 0 : 1);
 
         ++count_borders;
@@ -791,7 +803,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
                 lastOffset = it->posOffset;
             }
 
-            RTTR_Assert(it->tileOffset + it->count <= width * height * 2u);
+            RTTR_Assert(it->tileOffset + it->count <= width_ * height_ * 2u);
             glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
@@ -832,44 +844,34 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
-MapPoint TerrainRenderer::ConvertCoords(const PointI pt, Point<int>* offset) const
+MapPoint TerrainRenderer::ConvertCoords(const PointI pt, PointI* offset) const
 {
-    MapPoint ptOut;
-	if (pt.x < 0)
-	{
-	    if (offset)
-	    	offset->x = -TR_W * width;
-		ptOut.x = static_cast<MapCoord>(width + (pt.x % width));
-	} else if(pt.x >= width)
-	{
-	    if (offset)
-	    	offset->x = (pt.x / width) * (TR_W * width);
-		ptOut.x = static_cast<MapCoord>(pt.x % width);
-    } else
+    if(offset)
     {
-        if(offset)
-            offset->x = 0;
-        ptOut.x = static_cast<MapCoord>(pt.x);
+        // We need the screen offset by which we shifted the point
+        // this is the world size (in screen units) times the number we shifted the point
+        // This factor is floor(pos/size) which we do here in integer
+        // and avoid implementation defined (prior C++11) rounding for negative values by using the integer ceil on the inverse
+        if(pt.x >= 0)
+            offset->x = pt.x / width_;
+        else
+            offset->x = -((-pt.x + width_ - 1) / width_);
+        if(pt.y >= 0)
+            offset->y = pt.y / height_;
+        else
+            offset->y = -((-pt.y + height_ - 1) / height_);
+        offset->x *= (TR_W * width_);
+        offset->y *= (TR_H * height_);
     }
-	
-	if (pt.y < 0)
-	{
-	    if (offset)
-	    	offset->y = -TR_H * height;
-		ptOut.y = static_cast<MapCoord>(height + (pt.y % height));
-	} else if(pt.y >= height)
-	{
-	    if (offset)
-	    	offset->y = (pt.y / height) * (TR_H * height);
-		ptOut.y = static_cast<MapCoord>(pt.y % height);
-	} else
-    {
-        if(offset)
-            offset->y = 0;
-        ptOut.y = static_cast<MapCoord>(pt.y);
+    MapPoint ptOut =  MakeMapPoint(pt, width_, height_);
+    RTTR_Assert(ptOut.x < width_);
+    RTTR_Assert(ptOut.y < height_);
+    if(offset && pt.x - ptOut.x != offset->x / TR_W){
+        std::cout << pt.x << " x " << ptOut.x << " " << offset->x/TR_W << std::endl;
     }
-    RTTR_Assert(ptOut.x < width);
-    RTTR_Assert(ptOut.y < height);
+    if(offset && pt.y - ptOut.y != offset->y / TR_H){
+        std::cout << pt.y << " y " << ptOut.y << " " << offset->y/TR_H << std::endl;
+    }
     RTTR_Assert(!offset || pt.x - ptOut.x == offset->x / TR_W);
     RTTR_Assert(!offset || pt.y - ptOut.y == offset->y / TR_H);
     return ptOut;
@@ -881,8 +883,8 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
 
     Visibility visibility = gwViewer.GetVisibility(pt);
 
-	int totalWidth  = width  * TR_W;
-	int totalHeight = height * TR_H;
+	int totalWidth  = width_  * TR_W;
+	int totalHeight = height_ * TR_H;
 
     // Wegtypen für die drei Richtungen
     for(unsigned dir = 0; dir < 3; ++dir)
@@ -1111,20 +1113,20 @@ void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer
 
 void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 {
-    for(MapCoord y = 0; y < height; ++y)
-        for(MapCoord x = 0; x < width; ++x)
+    for(MapCoord y = 0; y < height_; ++y)
+        for(MapCoord x = 0; x < width_; ++x)
             UpdateVertexColor(MapPoint(x, y), gwv);
 
-    for(MapCoord y = 0; y < height; ++y)
-        for(MapCoord x = 0; x < width; ++x)
+    for(MapCoord y = 0; y < height_; ++y)
+        for(MapCoord x = 0; x < width_; ++x)
             UpdateBorderVertex(MapPoint(x, y));
 
-    for(MapCoord y = 0; y < height; ++y)
-        for(MapCoord x = 0; x < width; ++x)
+    for(MapCoord y = 0; y < height_; ++y)
+        for(MapCoord x = 0; x < width_; ++x)
             UpdateTriangleColor(MapPoint(x, y), false);
 
-    for(MapCoord y = 0; y < height; ++y)
-        for(MapCoord x = 0; x < width; ++x)
+    for(MapCoord y = 0; y < height_; ++y)
+        for(MapCoord x = 0; x < width_; ++x)
             UpdateBorderTriangleColor(MapPoint(x, y), false);
 
     if(vboBuffersUsed)
@@ -1137,5 +1139,5 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 
 MapPoint TerrainRenderer::GetNeighbour(const MapPoint& pt, const Direction dir) const
 {
-    return MakeMapPoint(::GetNeighbour(Point<int>(pt), dir), width, height);
+    return MakeMapPoint(::GetNeighbour(Point<int>(pt), dir), width_, height_);
 }

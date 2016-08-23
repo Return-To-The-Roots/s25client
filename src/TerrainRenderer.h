@@ -36,7 +36,9 @@ public:
     TerrainRenderer();
     ~TerrainRenderer();
 
-    /// Generate OpenGL structs and init data
+    /// Generates data structures (uninitialized)
+    void Init(MapCoord width, MapCoord height);
+    /// Generate OpenGL structs and init data (also calls Init)
     void GenerateOpenGL(const GameWorldViewer& gwv);
 
     /// Draws the map between the given points. Optionally returns percentage of water drawn
@@ -44,7 +46,7 @@ public:
 
     /// Converts given point into a MapPoint (0 <= x < width and 0 <= y < height)
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
-    MapPoint ConvertCoords(const PointI pt, Point<int>* offset = 0) const;
+    MapPoint ConvertCoords(const PointI pt, PointI* offset = 0) const;
     /// Get position of node in pixels (VertexPos)
     PointF GetNodePos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
@@ -117,7 +119,7 @@ private:
     };
 
     /// Size of the map
-    unsigned short width, height;
+    MapCoord width_, height_;
     /// Map sized array of vertex related data
     std::vector<Vertex> vertices;
     /// Map sized array with terrain indices/textures (bottom, bottom right of node)
@@ -137,7 +139,7 @@ private:
     typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
 
     /// Returns the index of a vertex. Used to access vertices and borders
-    unsigned GetVertexIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width) + static_cast<unsigned>(pt.x); }
+    unsigned GetVertexIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
     unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node

@@ -24,7 +24,9 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
 #include "EventManager.h"
+#include "TerrainRenderer.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/MapConsts.h"
 #include "RTTR_AssertError.h"
 #include "test/testHelpers.h"
 #include "test/PointOutput.h"
@@ -395,6 +397,44 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
         expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][3] = 0u;
         BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
     }
+}
+
+BOOST_AUTO_TEST_CASE(TR_ConvertCoords){
+    TerrainRenderer tr;
+    const unsigned w = 23;
+    const unsigned h = 32;
+    tr.Init(w, h);
+    typedef Point<int> PointI;
+    PointI offset;
+    // Test border cases
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(0, 0), &offset), MapPoint(0, 0));
+    BOOST_REQUIRE_EQUAL(offset, PointI(0, 0));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w-1, h-1), &offset), MapPoint(w-1, h-1));
+    BOOST_REQUIRE_EQUAL(offset, PointI(0, 0));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w, h-1), &offset), MapPoint(0, h-1));
+    BOOST_REQUIRE_EQUAL(offset, PointI(w * TR_W, 0));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w-1, h), &offset), MapPoint(w-1, 0));
+    BOOST_REQUIRE_EQUAL(offset, PointI(0, h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w, h), &offset), MapPoint(0, 0));
+    BOOST_REQUIRE_EQUAL(offset, PointI(w * TR_W, h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w+w/2, h+h/2), &offset), MapPoint(w/2, h/2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(w * TR_W, h * TR_H));
+    // Big value
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(10*w+w/2, 11*h+h/2), &offset), MapPoint(w/2, h/2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(10*w * TR_W, 11*h * TR_H));
+
+    // Negative cases
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-1, -1), &offset), MapPoint(w-1, h-1));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-w * TR_W, -h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w + 1, -h + 2), &offset), MapPoint(1, 2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-w * TR_W, -h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w, -h), &offset), MapPoint(0, 0));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-w * TR_W, -h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w-1, -h-2), &offset), MapPoint(w-1, h-2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-2*w * TR_W, -2*h * TR_H));
+    // Big value
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-10*w+w/2, -11*h+h/2), &offset), MapPoint(w/2, h/2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-10*w * TR_W, -11*h * TR_H));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
