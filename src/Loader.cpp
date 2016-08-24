@@ -385,17 +385,19 @@ void Loader::LoadDummyGUIFiles()
     // Fonts
     libsiedler2::ArchivInfo& fonts = files_["outline_fonts"].archiv;
     fonts.alloc(3);
+    std::vector<uint32_t> buffer(15*16, SetAlpha(0, 255));
     for(unsigned i=0; i<3; i++)
     {
         glArchivItem_Font* font = new glArchivItem_Font();
-        font->setDx(9 + i * 3);
-        font->setDy(10 + i * 3);
+        const unsigned dx = 9 + i * 3;
+        const unsigned dy = 10 + i * 3;
+        font->setDx(dx);
+        font->setDy(dy);
         font->alloc(255);
         for(unsigned id = 0x21; id < 255; id++)
         {
             glArchivItem_Bitmap_Player* bmp = new glArchivItem_Bitmap_Player();
-            const uint32_t buffer = SetAlpha(0, 255);
-            bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette, 0);
+            bmp->create(dx, dy, reinterpret_cast<const unsigned char*>(&buffer[0]), dx, dy, libsiedler2::FORMAT_RGBA, palette, 0);
             font->set(id, bmp);
         }
         fonts.set(i, font);

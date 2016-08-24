@@ -421,8 +421,8 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
 
 BOOST_AUTO_TEST_CASE(TR_ConvertCoords){
     TerrainRenderer tr;
-    const unsigned w = 23;
-    const unsigned h = 32;
+    const int w = 23;
+    const int h = 32;
     tr.Init(w, h);
     typedef Point<int> PointI;
     PointI offset;
